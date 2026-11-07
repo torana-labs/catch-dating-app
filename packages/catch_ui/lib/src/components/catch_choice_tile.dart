@@ -1,14 +1,29 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
+import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
+
+/// The system ChoiceCard layouts. row: full width with a radio at the end.
+/// tile: a card in a grid with a tick when selected. day: a weekday over its
+/// date in a strip. add: dashed, to add one more (a photo, a step).
+enum CatchChoiceTileVariant { row, tile, day, add }
 
 /// One mutually exclusive choice with optional explanatory copy.
 ///
 /// The whole tile is one checked target, including its subtitle. The owning
 /// ChoiceInput supplies group selection; a null action disables this item.
+///
+/// With a [variant] it is the system ChoiceCard: an outlined card whose
+/// selection takes an ink outline, or the [format] colour when one is given;
+/// a selected day fills with ink. An add card is a dashed button and has no
+/// checked state. Without a [variant] the tile keeps its leading radio, as
+/// before.
 class CatchChoiceTile extends StatefulWidget {
   const CatchChoiceTile({
     super.key,
@@ -19,6 +34,10 @@ class CatchChoiceTile extends StatefulWidget {
     this.subtitle,
     this.selected = false,
     this.onTap,
+    this.variant,
+    this.format,
+    this.icon,
+    this.meta,
   });
 
   final String title;
@@ -28,6 +47,16 @@ class CatchChoiceTile extends StatefulWidget {
   final String? subtitle;
   final bool selected;
   final VoidCallback? onTap;
+
+  /// Null keeps the leading-radio tile; a variant selects the system card.
+  final CatchChoiceTileVariant? variant;
+
+  /// Fills a selected card with this event colour instead of an ink outline.
+  final CatchFormat? format;
+  final IconData? icon;
+
+  /// A small mark, such as "4 of 4": at the end of a row, in a tile's corner.
+  final String? meta;
 
   @override
   State<CatchChoiceTile> createState() => _CatchChoiceTileState();
@@ -53,6 +82,8 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
       'CatchChoiceTile value must be allowed by its contract.',
     );
     final t = CatchTokens.of(context);
+    final variant = widget.variant;
+    if (variant != null) return _system(context, t, variant);
 
     final surface = CatchLegacySurface(
       onTap: widget.onTap,
@@ -124,4 +155,298 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
       child: surface,
     );
   }
+
+  Widget _system(
+    BuildContext context,
+    CatchTokens t,
+    CatchChoiceTileVariant variant,
+  ) {
+    final ground = CatchRootScope.groundOf(context);
+    final selected = widget.selected && variant != CatchChoiceTileVariant.add;
+    final format = widget.format;
+    final formatFill = selected && format != null;
+    final dayFill = selected && variant == CatchChoiceTileVariant.day;
+    final onTile = ground == CatchGround.tile || ground == CatchGround.nested;
+    final Color? fill = formatFill
+        ? format.accent
+        : dayFill
+        ? t.primary
+        : onTile
+        ? t.nested
+        : ground.isNight
+        ? t.tile
+        : selected
+        ? t.tile
+        : null;
+    final foreground = formatFill
+        ? format.ink
+        : dayFill
+        ? t.onPrimary
+        : variant == CatchChoiceTileVariant.add
+        ? t.ink2
+        : t.ink;
+    final radius = BorderRadius.circular(
+      variant == CatchChoiceTileVariant.day ? CatchRadius.sm : CatchRadius.md,
+    );
+    final BoxBorder? border = formatFill || dayFill
+        ? null
+        : _focused
+        ? Border.all(color: t.focus, width: CatchStroke.focus)
+        : selected
+        ? Border.all(color: t.ink, width: CatchStroke.selected)
+        : variant == CatchChoiceTileVariant.add || onTile
+        ? null
+        : ground.isNight
+        ? Border.all(color: t.line)
+        : Border.all(color: t.controlLine, width: CatchStroke.control);
+    final title = widget.title;
+    final subtitle = widget.subtitle;
+    final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+    final meta = widget.meta;
+    final icon = widget.icon;
+    final copy = Column(
+      crossAxisAlignment: variant == CatchChoiceTileVariant.day
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      spacing: variant == CatchChoiceTileVariant.day ? 0 : CatchSpacing.micro2,
+      children: variant == CatchChoiceTileVariant.day
+          ? [
+              CatchText(title, variant: CatchTextVariant.labelBadge),
+              if (hasSubtitle)
+                CatchText(
+                  subtitle,
+                  variant: CatchTextVariant.displayXs,
+                  numeric: true,
+                ),
+            ]
+          : [
+              CatchText(title, variant: CatchTextVariant.titleRow),
+              if (hasSubtitle)
+                Opacity(
+                  opacity: _secondaryOpacity,
+                  child: CatchText(
+                    subtitle,
+                    variant: CatchTextVariant.bodySmall,
+                  ),
+                ),
+            ],
+    );
+    final metaText = meta == null
+        ? null
+        : Opacity(
+            opacity: _secondaryOpacity,
+            child: CatchText(meta, variant: CatchTextVariant.labelAction),
+          );
+    final Widget content = switch (variant) {
+      CatchChoiceTileVariant.row => ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: CatchSpacing.s16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.s4,
+            vertical: CatchSpacing.s3,
+          ),
+          child: Row(
+            spacing: CatchSpacing.s3,
+            children: [
+              if (icon != null) Icon(icon, size: CatchIconSize.control),
+              Expanded(child: copy),
+              ?metaText,
+              _RadioMark(selected: selected, t: t),
+            ],
+          ),
+        ),
+      ),
+      CatchChoiceTileVariant.tile => ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _tileMinHeight),
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.micro14),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                spacing: CatchSpacing.s2,
+                children: [
+                  if (icon != null) Icon(icon, size: CatchIconSize.control),
+                  if (metaText != null)
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: metaText,
+                    ),
+                  copy,
+                ],
+              ),
+              if (selected)
+                const PositionedDirectional(
+                  end: -CatchSpacing.s1,
+                  bottom: -CatchSpacing.s1,
+                  child: _Tick(),
+                ),
+            ],
+          ),
+        ),
+      ),
+      CatchChoiceTileVariant.day => SizedBox(
+        height: CatchSpacing.s16,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro6),
+          child: Center(child: copy),
+        ),
+      ),
+      CatchChoiceTileVariant.add => ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _tileMinHeight),
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.micro14),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: CatchSpacing.s1,
+            children: [
+              Icon(icon ?? CatchIcons.add, size: CatchIconSize.lg),
+              CatchText(
+                title,
+                variant: CatchTextVariant.labelAction,
+                align: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    };
+    Widget card = DecoratedBox(
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: radius,
+        border: border,
+      ),
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: foreground),
+        child: IconTheme.merge(
+          data: IconThemeData(color: foreground),
+          child: content,
+        ),
+      ),
+    );
+    if (variant == CatchChoiceTileVariant.add) {
+      card = CustomPaint(
+        foregroundPainter: _DashedOutline(color: t.controlLine, radius: radius),
+        child: card,
+      );
+    }
+    final onTap = widget.onTap;
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      checked: variant == CatchChoiceTileVariant.add ? null : widget.selected,
+      inMutuallyExclusiveGroup: variant == CatchChoiceTileVariant.add
+          ? null
+          : true,
+      enabled: onTap != null,
+      label: [title, if (hasSubtitle) subtitle, ?meta].join('\n'),
+      onTap: onTap,
+      child: Opacity(
+        opacity: onTap == null ? CatchOpacity.disabledControl : 1,
+        child: Focus(
+          canRequestFocus: onTap != null,
+          onFocusChange: (focused) {
+            if (_focused != focused) setState(() => _focused = focused);
+          },
+          child: ClipRRect(
+            borderRadius: radius,
+            child: CatchRowPressSurface(
+              onTap: onTap,
+              semanticButton: false,
+              child: card,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Subtitles, day names and meta at 78% of the card's ink.
+  static const double _secondaryOpacity = 0.78;
+
+  static const double _tileMinHeight = CatchSpacing.s16 + CatchSpacing.s3;
+}
+
+/// The radio at the end of a row card: a hollow ring, or an ink ring 7 px
+/// thick once selected.
+class _RadioMark extends StatelessWidget {
+  const _RadioMark({required this.selected, required this.t});
+
+  final bool selected;
+  final CatchTokens t;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: CatchIconSize.row,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: t.nested,
+        border: selected
+            ? Border.all(
+                color: t.ink,
+                width: CatchSpacing.micro6 + CatchStroke.hairline,
+              )
+            : Border.all(color: t.fieldLine, width: CatchStroke.control),
+      ),
+    ),
+  );
+}
+
+/// The ink tick in a selected tile's corner.
+class _Tick extends StatelessWidget {
+  const _Tick();
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: CatchIconSize.row,
+    child: DecoratedBox(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: CatchTokens.editorialBlack,
+      ),
+      child: Icon(
+        CatchIcons.check,
+        size: CatchIconSize.xs,
+        color: CatchTokens.editorialWhite,
+      ),
+    ),
+  );
+}
+
+/// The add card's dashed outline.
+class _DashedOutline extends CustomPainter {
+  const _DashedOutline({required this.color, required this.radius});
+
+  final Color color;
+  final BorderRadius radius;
+
+  static const double _dash = CatchSpacing.micro6;
+  static const double _gap = CatchSpacing.s1;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final inset = CatchStroke.control / 2;
+    final rect =
+        Offset(inset, inset) &
+        Size(size.width - inset * 2, size.height - inset * 2);
+    final path = Path()..addRRect(radius.toRRect(rect));
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = CatchStroke.control;
+    for (final metric in path.computeMetrics()) {
+      for (var at = 0.0; at < metric.length; at += _dash + _gap) {
+        canvas.drawPath(metric.extractPath(at, at + _dash), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedOutline oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.radius != radius;
 }
