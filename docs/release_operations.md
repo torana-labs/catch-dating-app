@@ -2832,7 +2832,11 @@ both from `main` only:
   Store review as a phased release, which is released by hand after approval.
   On Android it promotes that internal-track version code to production as a
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
-  environment, which requires a reviewer's approval.
+  environment, which requires a reviewer's approval. App Store Connect refuses
+  a submission whose version carries no "What's New", so each iOS release
+  first updates `fastlane/metadata/<role>/en-US/release_notes.txt` for that
+  marketing version (the lane uploads only that file's metadata and stops if
+  it is missing).
 
 Both environments deploy only from `main` and hold the same credentials: the
 `catch-github-mobile-prod` App Store Connect API key in the three
