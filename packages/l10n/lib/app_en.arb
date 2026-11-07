@@ -833,6 +833,318 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.today"
   },
+  "hostTodayGreeting": "{part, select, morning{Good morning, {name}} afternoon{Good afternoon, {name}} other{Good evening, {name}}}",
+  "@hostTodayGreeting": {
+    "description": "Today top bar title greeting the manager by first name for the part of the day.",
+    "placeholders": {
+      "part": {},
+      "name": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 40
+  },
+  "hostTodayGreetingAlone": "{part, select, morning{Good morning} afternoon{Good afternoon} other{Good evening}}",
+  "@hostTodayGreetingAlone": {
+    "description": "Today top bar title when the manager's first name is unknown.",
+    "placeholders": {
+      "part": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 24
+  },
+  "hostTodayIdentityLabel": "{name}. Switch organizer",
+  "@hostTodayIdentityLabel": {
+    "description": "Screen-reader label of the organizer avatar that opens the organizer switcher on Today.",
+    "placeholders": {
+      "name": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayOpenDoor": "Open the door",
+  "@hostTodayOpenDoor": {
+    "description": "Today action that opens check-in for the featured event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayMessageGuests": "Message guests",
+  "@hostTodayMessageGuests": {
+    "description": "Today action that opens messages to the featured event's guests.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayLiveConsole": "Live console",
+  "@hostTodayLiveConsole": {
+    "description": "Today action that opens the live console of the event under way.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayNewEvent": "New event",
+  "@hostTodayNewEvent": {
+    "description": "Today primary action when there is no event to feature.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayNeedsYouTitle": "Needs you",
+  "@hostTodayNeedsYouTitle": {
+    "description": "Today section title for open attention items.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayNeedsYouBeforeDoors": "{count} before doors",
+  "@hostTodayNeedsYouBeforeDoors": {
+    "description": "Today Needs you note: how many open items are due before the featured event starts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayNeedsYouChecking": "Still checking",
+  "@hostTodayNeedsYouChecking": {
+    "description": "Today Needs you note while some attention sources have not reported yet.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayNeedsYouRetry": "Try again",
+  "@hostTodayNeedsYouRetry": {
+    "description": "Today Needs you action when the attention queue could not be read.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayNeedsYouEmpty": "Nothing needs you right now.",
+  "@hostTodayNeedsYouEmpty": {
+    "description": "Today Needs you copy when there are no open items.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 48
+  },
+  "hostTodayThisWeekTitle": "This week",
+  "@hostTodayThisWeekTitle": {
+    "description": "Today section title for the next seven days of events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayThisWeekEmpty": "Nothing else on this week.",
+  "@hostTodayThisWeekEmpty": {
+    "description": "Today This week copy when no other event starts in the next seven days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 48
+  },
+  "hostTodayAllEvents": "All events",
+  "@hostTodayAllEvents": {
+    "description": "Today This week action that opens the Events tab.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayLastThirtyDaysTitle": "Last 30 days",
+  "@hostTodayLastThirtyDaysTitle": {
+    "description": "Today section title for the organizer's numbers over the last thirty days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayLastThirtyDaysEmpty": "These numbers are not ready yet.",
+  "@hostTodayLastThirtyDaysEmpty": {
+    "description": "Today Last 30 days copy when the report could not be read.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 48
+  },
+  "hostTodayInsights": "Insights",
+  "@hostTodayInsights": {
+    "description": "Today Last 30 days action that opens organizer insights.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayStatBookings": "Bookings",
+  "@hostTodayStatBookings": {
+    "description": "Today stat label: bookings in the last thirty days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayStatTicketSales": "Ticket sales",
+  "@hostTodayStatTicketSales": {
+    "description": "Today stat label: ticket revenue in the last thirty days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayStatUp": "Up {percent}%",
+  "@hostTodayStatUp": {
+    "description": "Today stat note: change against the previous period, upwards.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayStatDown": "Down {percent}%",
+  "@hostTodayStatDown": {
+    "description": "Today stat note: change against the previous period, downwards.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 16
+  },
+  "hostTodayStatSame": "Same as before",
+  "@hostTodayStatSame": {
+    "description": "Today stat note: no change against the previous period.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayCountBooked": "Booked",
+  "@hostTodayCountBooked": {
+    "description": "Today event poster count label: guests booked.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 12
+  },
+  "hostTodayCountWaitlist": "Waitlist",
+  "@hostTodayCountWaitlist": {
+    "description": "Today event poster count label: guests on the waitlist.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 12
+  },
+  "hostTodayCountNewFaces": "New faces",
+  "@hostTodayCountNewFaces": {
+    "description": "Today event poster count label: booked guests coming for the first time.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 12
+  },
+  "hostTodayWhenLive": "Live now",
+  "@hostTodayWhenLive": {
+    "description": "Today event poster badge for an event under way.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 20
+  },
+  "hostTodayWhenTonight": "Tonight · doors at {time}",
+  "@hostTodayWhenTonight": {
+    "description": "Today event poster badge for an evening event today.",
+    "placeholders": {
+      "time": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 32
+  },
+  "hostTodayWhenToday": "Today · {time}",
+  "@hostTodayWhenToday": {
+    "description": "Today event poster badge for a daytime event today.",
+    "placeholders": {
+      "time": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 32
+  },
+  "hostTodayWhenLater": "{day} · {time}",
+  "@hostTodayWhenLater": {
+    "description": "Today event poster badge for the next event on a later day.",
+    "placeholders": {
+      "day": {},
+      "time": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 32
+  },
+  "hostTodayWeekMeta": "{time} · {booked} of {capacity} booked",
+  "@hostTodayWeekMeta": {
+    "description": "Today This week row meta: start time and how many places are booked.",
+    "placeholders": {
+      "time": {},
+      "booked": {
+        "type": "int"
+      },
+      "capacity": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 40
+  },
+  "hostTodayWeekLeft": "{count} left",
+  "@hostTodayWeekLeft": {
+    "description": "Today This week row status: places still free.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 12
+  },
+  "hostTodayWeekFull": "Full",
+  "@hostTodayWeekFull": {
+    "description": "Today This week row status: every place is booked.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today",
+    "x-max-chars": 12
+  },
   "hostInboxUnreadCount": "{count, plural, =0{Unread} =1{Unread · 1} other{Unread · {count}}}",
   "@hostInboxUnreadCount": {
     "description": "Host inbox filter label showing the number of unread attendee inquiries.",

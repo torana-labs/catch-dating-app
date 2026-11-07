@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -21,14 +21,11 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -118,14 +115,28 @@ class WidgetbookHostShellScope extends StatelessWidget {
         unawaited(controller.refresh());
         return controller;
       }),
-      hostTodayPreferenceProvider.overrideWith(
-        (ref, scope) async => const HostTodayPreference.skipped(),
+      watchActiveEventsForOrganizerProvider.overrideWith(
+        (ref, query) =>
+            organizerEventStreams[query.organizerId] ??
+            Stream<List<Event>>.value(
+              HostOperationsFixtures.eventsByOrganizer[query.organizerId] ??
+                  const [],
+            ),
       ),
-      hostTodayRoadmapProvider.overrideWith(
-        (ref, scope) => const HostTodayRoadmapEvidence(),
-      ),
-      hostTodayFeedControllerProvider.overrideWith2(
-        (_) => _WidgetbookHostTodayFeedController(organizerEventStreams),
+      hostAttentionProjectionProvider.overrideWith(
+        (ref, organizerId) => Stream.value(
+          HostAttentionProjection(
+            organizerId: organizerId,
+            policyVersion: hostAttentionPolicyVersion,
+            items: widgetbookTodayAttentionItems(
+              HostOperationsFixtures.eventsByOrganizer[organizerId] ?? const [],
+              DateTime.now(),
+            ),
+            coverage: hostAttentionCatalogCoverage,
+            evaluatedAt: null,
+            sourceCoverage: HostAttentionSourceCoverage.complete,
+          ),
+        ),
       ),
       hostEventsTimelineControllerProvider.overrideWith2(
         (_) => _WidgetbookHostEventsTimelineController(organizerEventStreams),
@@ -209,36 +220,6 @@ class WidgetbookHostShellScope extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: overrides,
         child: WidgetbookThemedHostPreview(themeMode: themeMode, child: child),
-      ),
-    );
-  }
-}
-
-class _WidgetbookHostTodayFeedController extends HostTodayFeedController {
-  _WidgetbookHostTodayFeedController(this.eventStreamsByOrganizer);
-
-  final Map<String, Stream<List<Event>>> eventStreamsByOrganizer;
-
-  @override
-  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
-    final events = await _readWidgetbookEvents(
-      ref,
-      eventStreamsByOrganizer[request.organizerId] ??
-          Stream<List<Event>>.value(
-            HostOperationsFixtures.eventsByOrganizer[request.organizerId] ??
-                const [],
-          ),
-    );
-    return HostTodayFeedData(
-      activeEvents: events
-          .where((event) => event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
-      pastEvents: events
-          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
-      attentionItems: widgetbookTodayAttentionItems(
-        events.where((event) => event.endTime.isAfter(request.sessionBoundary)),
-        request.sessionBoundary,
       ),
     );
   }

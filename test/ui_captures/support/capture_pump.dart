@@ -213,6 +213,7 @@ Widget _frame({
           ? (context, child) => MediaQuery(
               data: _captureMediaQuery(
                 MediaQuery.of(context),
+                brightness: brightness,
                 device: device,
                 textScale: textScale,
                 disableAnimations: disableAnimations,
@@ -228,6 +229,7 @@ Widget _frame({
                 builder: (context) => MediaQuery(
                   data: _captureMediaQuery(
                     MediaQuery.of(context),
+                    brightness: brightness,
                     device: device,
                     textScale: textScale,
                     disableAnimations: disableAnimations,
@@ -265,11 +267,14 @@ ThemeData _captureTheme(ThemeData theme) {
 
 MediaQueryData _captureMediaQuery(
   MediaQueryData data, {
+  required Brightness brightness,
   required CaptureDevice device,
   required double textScale,
   required bool disableAnimations,
 }) {
+  // The phone's dark-mode setting, which a system CatchRoot follows.
   return data.copyWith(
+    platformBrightness: brightness,
     padding: device.safeArea,
     viewPadding: device.safeArea,
     textScaler: TextScaler.linear(textScale),

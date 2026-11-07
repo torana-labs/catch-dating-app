@@ -194,6 +194,30 @@ class HostShellBackend {
         'nextCursor': null,
       },
       'listOrganizerPrograms' => {'programs': const <Object?>[]},
+      // Today's Last 30 days: an organizer with no bookings yet.
+      'getHostAnalytics' => {
+        'generatedAt': DateTime.now().toUtc().toIso8601String(),
+        'summaryCards': [
+          for (final (id, label, unit) in const [
+            ('bookings', 'Bookings', 'count'),
+            ('revenue', 'Revenue', 'money_minor'),
+          ])
+            {
+              'id': id,
+              'label': label,
+              'value': 0,
+              'unit': unit,
+              'status': 'ready',
+              'caption': null,
+              'previousValue': null,
+            },
+        ],
+        'trend': const <Object?>[],
+        'topEvents': const <Object?>[],
+        'reviewSummary': const <String, Object?>{},
+        'discoverySummary': const <String, Object?>{},
+        'dataQuality': const <Object?>[],
+      },
       'listOrganizerForms' => {
         'organizerId': organizerId,
         'items': const <Object?>[],

@@ -30,8 +30,6 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -67,14 +65,6 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -340,12 +330,6 @@ Future<void> _pumpHostScreen(
       retry: catchProviderRetry,
       overrides: [
         firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
-        hostTodayPreferenceProvider.overrideWith(
-          (ref, scope) async => const HostTodayPreference.skipped(),
-        ),
-        hostTodayRoadmapProvider.overrideWith(
-          (ref, scope) => const HostTodayRoadmapEvidence(),
-        ),
         hostTrackingSettingsProvider.overrideWith(
           (ref, organizerId) async => HostTrackingSettings(
             organizerId: organizerId,

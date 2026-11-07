@@ -1,8 +1,7 @@
-import {claimGuidance} from "@content/claimGuidance";
-import {HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, ButtonLink, ActionGroup} from "../../shared/ui/primitives";
+import {CatchPageBody, CatchPaneLayout, CatchRoot, CatchStack} from "@catch/web-ui";
 import {DemoContinuationWorkspace} from "./DemoContinuationWorkspace";
-import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
-import {ClaimFlowMain} from "../../shared/ui/primitives";
+import {PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {ClaimGuidance, ClaimSiteFooter} from "./sections/ClaimParts";
 import {
   ClaimHeroSection,
   ClaimSearchSection,
@@ -21,7 +20,9 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
 /**
  * One way through: find the page (unless the link already named it), sign in
  * with a phone, then prove it with a code or ask for a review. A pending
- * review does not block proving it straight away.
+ * review does not block proving it straight away. On the white ground, in the
+ * desktop board's reading layout: the flow in the lane, the page card and
+ * steps (or, before a page is chosen, the help) beside it.
  */
 function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
   const controller = useClaimFlowController(routeState);
@@ -30,38 +31,39 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
   const claimable = Boolean(listing) && (!claimUrlState || pendingReview);
 
   return (
-    <>
+    <CatchRoot theme="day">
       <PublicSiteHeader />
-
-      <ClaimFlowMain>
-        <ClaimHeroSection listing={listing} />
-
-        {claimUrlState && !claimable ? (
-          <ClaimUrlStateSection
-            state={claimUrlState}
-            listing={listing}
-            lookup={controller.claimLookup}
-            requestId={controller.activeRequestId}
-          />
-        ) : null}
-        {!claimUrlState && !controller.listingFromLink ? <ClaimSearchSection controller={controller} /> : null}
-        {claimable && listing ? <InstantClaim key={listing.id} listing={listing} pendingReview={pendingReview}
-          onStart={controller.markClaimStarted} /> : null}
-        <HostPreviewSection variant="faq">
-          <HostPreviewSectionHead titleId="claim-guidance-title" title={claimGuidance.title} body={claimGuidance.body} />
-          <HostPreviewFaqList items={[...claimGuidance.items]} />
-          <ActionGroup><ButtonLink href="/help/" variant="ghost">{claimGuidance.help}</ButtonLink><ButtonLink href="/host/apply/" variant="ghost">{claimGuidance.pilot}</ButtonLink></ActionGroup>
-        </HostPreviewSection>
-      </ClaimFlowMain>
-
-      <PublicSiteFooter />
-    </>
+      <WebsitePageMain id="claim">
+        <CatchPageBody gutter={false} pb="s0" pt="s4">
+          {claimable && listing ? (
+            <InstantClaim key={listing.id} listing={listing} onChangeListing={controller.listingFromLink ? undefined : controller.clearListing}
+              onStart={controller.markClaimStarted} pendingReview={pendingReview} />
+          ) : (
+            <CatchPaneLayout
+              aside={<ClaimGuidance />}
+              main={
+                claimUrlState ? (
+                  <ClaimUrlStateSection lookup={controller.claimLookup} listing={listing} requestId={controller.activeRequestId} state={claimUrlState} />
+                ) : (
+                  <CatchStack gap={24}>
+                    <ClaimHeroSection listing={null} />
+                    {controller.listingFromLink ? null : <ClaimSearchSection controller={controller} />}
+                  </CatchStack>
+                )
+              }
+              pattern="reading"
+            />
+          )}
+        </CatchPageBody>
+      </WebsitePageMain>
+      <ClaimSiteFooter />
+    </CatchRoot>
   );
 }
 
-function InstantClaim({listing, pendingReview, onStart}: {
-  listing: HostListing; pendingReview: boolean; onStart: () => void;
+function InstantClaim({listing, pendingReview, onStart, onChangeListing}: {
+  listing: HostListing; pendingReview: boolean; onStart: () => void; onChangeListing?: () => void;
 }) {
   return <InstantClaimPanel controller={useInstantClaimController(listing.id, onStart)} listing={listing}
-    pendingReview={pendingReview} />;
+    onChangeListing={onChangeListing} pendingReview={pendingReview} />;
 }

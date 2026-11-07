@@ -80,9 +80,9 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
@@ -217,10 +217,8 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
+import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
@@ -288,6 +286,7 @@ import 'package:catch_platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
@@ -2897,6 +2896,7 @@ List<Object> _hostOperationsProviderOverrides({
   AsyncValue<HostPaymentAccount?>? paymentAccountValue,
   HostAnalyticsRepository analyticsRepository =
       const HostFixtureAnalyticsRepository(),
+  Map<String, List<HostAttentionItem>>? attentionByOrganizer,
 }) {
   final uid = HostOperationsFixtures.hostUid;
   final hosted = hostedOrganizers ?? HostOperationsFixtures.organizers;
@@ -2942,8 +2942,33 @@ List<Object> _hostOperationsProviderOverrides({
       unawaited(controller.refresh());
       return controller;
     }),
-    hostTodayFeedControllerProvider.overrideWith2(
-      (_) => _CaptureHostTodayFeedController(timelineEventsByOrganizer),
+    watchActiveEventsForOrganizerProvider.overrideWith(
+      (ref, query) => Stream.value(
+        timelineEventsByOrganizer[query.organizerId] ?? const <Event>[],
+      ),
+    ),
+    hostAttentionProjectionProvider.overrideWith(
+      (ref, organizerId) => Stream.value(
+        HostAttentionProjection(
+          organizerId: organizerId,
+          policyVersion: hostAttentionPolicyVersion,
+          items:
+              attentionByOrganizer?[organizerId] ??
+              _captureTodayAttentionItems(
+                timelineEventsByOrganizer[organizerId] ?? const <Event>[],
+                HostOperationsFixtures.now,
+              ),
+          coverage: hostAttentionCatalogCoverage,
+          evaluatedAt: HostOperationsFixtures.now,
+          sourceCoverage: HostAttentionSourceCoverage.complete,
+        ),
+      ),
+    ),
+    hostTodayAttendanceOutboxProvider.overrideWith(
+      (ref, accountId) async => const HostAttendanceOutboxSummary([]),
+    ),
+    hostAnalyticsDeviceTimezoneProvider.overrideWith(
+      (ref) async => 'Asia/Kolkata',
     ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _CaptureHostEventsTimelineController(timelineEventsByOrganizer),
@@ -3028,30 +3053,185 @@ List<Object> _hostOperationsProviderOverrides({
   ];
 }
 
-class _CaptureHostTodayFeedController extends HostTodayFeedController {
-  _CaptureHostTodayFeedController(this.eventsByOrganizer);
+// Today on the system: tonight, what needs the host, the week and the last
+// thirty days, on a Tuesday evening before doors.
+final _hostTodayNow = DateTime(2026, 10, 27, 17, 40);
+final _hostTodayOrganizer = HostOperationsFixtures.primaryOrganizer;
+final _hostTodayTonight = HostOperationsFixtures.event(
+  id: 'design-today-trivia',
+  organizer: _hostTodayOrganizer,
+  start: DateTime(2026, 10, 27, 19, 30),
+  bookedCount: 26,
+  waitlistedCount: 4,
+  capacityLimit: 32,
+  activityKind: ActivityKind.pubQuiz,
+  meetingPoint: 'Harbour Room, Bandra West',
+).copyWith(name: 'Tuesday Trivia Night');
+final _hostTodayWeek = [
+  HostOperationsFixtures.event(
+    id: 'design-today-run',
+    organizer: _hostTodayOrganizer,
+    start: DateTime(2026, 11, 1, 6, 30),
+    bookedCount: 32,
+    capacityLimit: 40,
+    meetingPoint: 'Carter Road Promenade',
+  ).copyWith(name: 'Carter Road Social Run'),
+  HostOperationsFixtures.event(
+    id: 'design-today-supper',
+    organizer: _hostTodayOrganizer,
+    start: DateTime(2026, 10, 29, 20),
+    bookedCount: 14,
+    capacityLimit: 14,
+    activityKind: ActivityKind.dinner,
+    meetingPoint: 'The Long Table, Khar',
+  ).copyWith(name: 'Long Table Supper'),
+  HostOperationsFixtures.event(
+    id: 'design-today-ladder',
+    organizer: _hostTodayOrganizer,
+    start: DateTime(2026, 11, 2, 7),
+    bookedCount: 9,
+    capacityLimit: 16,
+    activityKind: ActivityKind.pickleball,
+    meetingPoint: 'Otters Club Courts',
+  ).copyWith(name: 'Pickleball Ladder'),
+];
 
-  final Map<String, List<Event>> eventsByOrganizer;
+HostAttentionItem _hostTodayAttention(
+  String id,
+  HostAttentionKind kind,
+  HostAttentionUrgency urgency, {
+  required int count,
+  required DateTime dueAt,
+}) => HostAttentionItem(
+  id: 'design-today-$id',
+  kind: kind,
+  scope: HostAttentionScope.event,
+  sourceOwner: HostAttentionSourceOwner.events,
+  sourceId: _hostTodayTonight.id,
+  sourceRevision: 'capture-$id',
+  eventId: _hostTodayTonight.id,
+  status: HostAttentionStatus.open,
+  consequence: HostAttentionConsequence.risksGuestExperience,
+  blocking: false,
+  urgency: urgency,
+  destination: HostAttentionDestination(
+    route: HostAttentionDestinationRoute.hostEventManage,
+    section: 'guests',
+    eventId: _hostTodayTonight.id,
+  ),
+  context: HostAttentionContext(
+    eventName: _hostTodayTonight.title,
+    count: count,
+  ),
+  dedupeKey: '${kind.name}:${_hostTodayTonight.id}',
+  policyVersion: 1,
+  resolutionVersion: 1,
+  assignedHostUid: null,
+  openedAt: _hostTodayNow.subtract(const Duration(hours: 2)),
+  dueAt: dueAt,
+  expiresAt: _hostTodayTonight.endTime,
+);
 
-  @override
-  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
-    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
-    final activeEvents = events
-        .where((event) => event.endTime.isAfter(request.sessionBoundary))
-        .toList(growable: false);
-    return HostTodayFeedData(
-      activeEvents: activeEvents,
-      pastEvents: events
-          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
-      attentionItems: _captureTodayAttentionItems(
-        activeEvents,
-        request.sessionBoundary,
+final _hostTodayAttentionItems = [
+  _hostTodayAttention(
+    'join',
+    HostAttentionKind.eventJoinRequestReview,
+    HostAttentionUrgency.immediate,
+    count: 2,
+    dueAt: DateTime(2026, 10, 27, 18),
+  ),
+  _hostTodayAttention(
+    'waitlist',
+    HostAttentionKind.eventWaitlistReview,
+    HostAttentionUrgency.soon,
+    count: 4,
+    dueAt: DateTime(2026, 10, 27, 18, 30),
+  ),
+  _hostTodayAttention(
+    'delivery',
+    HostAttentionKind.eventAssistanceDeliveryReview,
+    HostAttentionUrgency.upcoming,
+    count: 26,
+    dueAt: DateTime(2026, 10, 27, 19),
+  ),
+];
+
+final _hostTodayAttendees = [
+  for (final (index, name) in const [
+    'Aanya Mehta',
+    'Ishaan Sen',
+    'Kabir Rao',
+  ].indexed)
+    EventAttendee(
+      id: 'design-today-attendee-$index',
+      eventId: _hostTodayTonight.id,
+      organizerId: _hostTodayOrganizer.id,
+      displayName: name,
+      searchName: name.toLowerCase(),
+      source: EventAttendeeSource.catchBooking,
+      status: EventAttendeeStatus.registered,
+      createdAt: _hostTodayNow.subtract(const Duration(days: 3)),
+      updatedAt: _hostTodayNow.subtract(const Duration(days: 3)),
+    ),
+];
+
+final _hostTodayRoster = HostEventRosterInsights(
+  eventId: _hostTodayTonight.id,
+  organizerId: _hostTodayOrganizer.id,
+  cutoffAt: _hostTodayTonight.startTime,
+  sourceCoverage: HostRosterInsightCoverage.exact,
+  spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+  rows: [
+    for (var index = 0; index < 26; index++)
+      HostEventRosterInsight(
+        attendeeId: 'design-today-roster-$index',
+        contactId: null,
+        availability: HostRosterInsightAvailability.ready,
+        signals: {
+          index < 9
+              ? HostRosterInsightSignal.firstTime
+              : HostRosterInsightSignal.returning,
+        },
+        priorAttendedEventCount: index < 9 ? 0 : 2,
+        priorExpectedEventCount: index < 9 ? 0 : 2,
+        priorNoShowCount: 0,
+        lastAttendedAt: null,
+        attendanceRate: null,
+        catchSpend: const [],
       ),
-      localAttendanceMerged: true,
-    );
-  }
-}
+  ],
+  computedAt: _hostTodayNow,
+);
+
+List<Object> _hostTodayCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [_hostTodayOrganizer],
+    ownedOrganizers: [_hostTodayOrganizer],
+    organizerEvents: {
+      _hostTodayOrganizer.id: AsyncData<List<Event>>([
+        _hostTodayTonight,
+        ..._hostTodayWeek,
+      ]),
+    },
+    attentionByOrganizer: {_hostTodayOrganizer.id: _hostTodayAttentionItems},
+  ),
+  watchEventAttendeesProvider(
+    _hostTodayTonight.id,
+  ).overrideWith((ref) => Stream.value(_hostTodayAttendees)),
+  hostEventRosterInsightsProvider(
+    _hostTodayTonight.id,
+  ).overrideWith((ref) => Stream.value(_hostTodayRoster)),
+];
+
+Widget _hostTodayCapture() => _HostRoutedShellCapture(
+  initialLocation: '/host/today',
+  activeIndex: 0,
+  child: HostTodayScreen(
+    initialOrganizerId: _hostTodayOrganizer.id,
+    now: _hostTodayNow,
+  ),
+);
 
 List<HostAttentionItem> _captureTodayAttentionItems(
   Iterable<Event> events,
@@ -10289,34 +10469,32 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_today_focus',
-    routeIds: const <String>['hostTodayFocusScreen'],
+    id: 'host_today_phone',
+    routeIds: const <String>['hostTodayScreen'],
     device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      uidProvider.overrideWithValue(
-        const AsyncData<String?>(HostOperationsFixtures.hostUid),
-      ),
-      hostOperableOrganizersProvider(
-        HostOperationsFixtures.hostUid,
-      ).overrideWithValue(AsyncData([_hostEventsReferenceOrganizer])),
-      hostTodayFeedControllerProvider.overrideWith2(
-        (_) => _CaptureHostTodayFeedController(const {}),
-      ),
-      hostTodayPreferenceProvider.overrideWith(
-        (ref, scope) async => const HostTodayPreference.unanswered(),
-      ),
-    ],
-    builder: (context) =>
-        HostTodayFocusScreen(organizerId: _hostEventsReferenceOrganizer.id),
-    drive: (tester) async {
-      expect(find.byType(HostTodayFocusScreen), findsOneWidget);
-      for (final focus in HostTodayFocus.values) {
-        expect(
-          find.byKey(ValueKey('host-today-focus-${focus.name}')),
-          findsOneWidget,
-        );
-      }
-    },
+    providerOverrides: _hostTodayCaptureOverrides(),
+    builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_today_medium',
+    routeIds: const <String>['hostTodayScreen'],
+    device: CaptureDevice.auditMedium,
+    providerOverrides: _hostTodayCaptureOverrides(),
+    builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_today_desktop',
+    routeIds: const <String>['hostTodayScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: _hostTodayCaptureOverrides(),
+    builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_today_tablet',
+    routeIds: const <String>['hostTodayScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: _hostTodayCaptureOverrides(),
+    builder: (context) => _hostTodayCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',
