@@ -604,7 +604,6 @@ class _EventSuccessHostSectionState
                 resolution: resolution,
               ),
         );
-        ref.invalidate(watchEventAttendeesProvider(event.id));
       },
       microPodsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(

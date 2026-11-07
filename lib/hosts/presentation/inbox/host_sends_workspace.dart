@@ -184,9 +184,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       },
     );
     if (!mounted || !_sameScope(generation) || !sent) return;
-    ref.invalidate(
-      watchOrganizerPostRemainingWeeklyQuotaProvider(widget.organizer.id),
-    );
     ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
   }

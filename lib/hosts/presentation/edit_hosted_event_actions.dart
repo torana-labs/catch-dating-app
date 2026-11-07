@@ -215,8 +215,6 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
               includePolicy: request.includePolicy,
               inviteCode: request.inviteCode,
             );
-        ref.invalidate(watchEventProvider(widget.event.id));
-        ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
         showCatchNotice(context, screenState.saveOutcome.successMessage);
         if (screenState.saveOutcome.popRouteOnSuccess &&
