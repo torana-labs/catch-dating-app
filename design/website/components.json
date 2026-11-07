@@ -3443,6 +3443,164 @@
       "notes": "The sole Host pilot intake page: the Host page chrome and section row, one heading, then the existing application controller."
     },
     {
+      "id": "route_weddings",
+      "kind": "route",
+      "routeIds": [
+        "weddings"
+      ],
+      "owner": "features/weddings",
+      "source": "website/src/features/weddings/WeddingsPage.tsx",
+      "exportName": "WeddingsPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "phone"
+        ]
+      },
+      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares the route review states but no catchComponent yet, so the record stays planned."
+    },
+    {
+      "id": "weddings_bands",
+      "kind": "supporting-component",
+      "routeIds": [
+        "weddings"
+      ],
+      "owner": "features/weddings/sections",
+      "source": "website/src/features/weddings/sections/weddingsBands.tsx",
+      "exportName": "WeddingsBands",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchBarIndicator.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchTable.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "phone"
+        ]
+      },
+      "notes": "The landing's bands in board order: the running-order hero, why planners switch, one wedding through six chapters (illustrative interface excerpts that run nothing), the team, messages and the family, pricing by headcount, the guided pilot with the step-1 card, questions and the foot band."
+    },
+    {
+      "id": "route_weddings_apply",
+      "kind": "route",
+      "routeIds": [
+        "weddings_apply"
+      ],
+      "owner": "features/weddings",
+      "source": "website/src/features/weddings/WeddingsApplicationPage.tsx",
+      "exportName": "WeddingsApplicationPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepper.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "step-one",
+          "step-two",
+          "sent"
+        ]
+      },
+      "notes": "/weddings/apply/ (noindex): step 2 and the sent state of the guided-pilot application, taking step 1 from the landing through sessionStorage in the same tab. No intake front door yet, so Send stays disabled until one is chosen."
+    },
+    {
+      "id": "weddings_application_flow",
+      "kind": "flow",
+      "routeIds": [
+        "weddings_apply"
+      ],
+      "owner": "features/weddings/sections",
+      "source": "website/src/features/weddings/sections/weddingsApplicationSections.tsx",
+      "exportName": "WeddingsApplicationView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepper.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "step-two",
+          "sent"
+        ]
+      },
+      "notes": "The application drawn from the weddings controller: the stepper, step 2's summary of step 1 and its fields, then the sent state."
+    },
+    {
+      "id": "weddings_step_one_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "weddings",
+        "weddings_apply"
+      ],
+      "owner": "features/weddings/sections",
+      "source": "website/src/features/weddings/sections/weddingsApplicationSections.tsx",
+      "exportName": "StepOneCard",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "step-one"
+        ]
+      },
+      "notes": "Step 1 of the guided pilot (name, company, phone, date, destination, guests and current tools, then Continue), shared by the landing's pilot band and /weddings/apply/."
+    },
+    {
       "id": "shared_app_capture_image",
       "kind": "supporting-component",
       "routeIds": [
