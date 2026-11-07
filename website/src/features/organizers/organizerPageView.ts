@@ -1,4 +1,4 @@
-import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchBandGround, type CatchIconName} from "@catch/web-ui";
+import {catchAvatarInitialsOf, catchFormatAccentOf, catchFormatOf, type CatchBandGround, type CatchFormat, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 import {brand} from "@catch/brand";
@@ -16,6 +16,8 @@ export interface OrganizerEventView {
   title: string;
   date: {dateTime: string; day: string; month: string; weekday: string};
   ground: CatchBandGround;
+  /** The system format the event's date tile and marker take, when its activity has one. */
+  format?: CatchFormat;
   /** "6:30 AM · Carter Road jetty" */
   detail: string;
   sourceLabel: string;
@@ -79,6 +81,8 @@ export interface OrganizerPageView {
     coverUrl: string | null;
     coverAlt?: string;
     accent: Accent;
+    /** The organiser's most common format: the logo square, the cover placeholder and the figures. */
+    format: CatchFormat;
     monogram: string;
     monogramGround: CatchBandGround;
     verified: boolean;
@@ -138,6 +142,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const generated = kind === "generated";
   const allEvents = [...record.upcomingEvents, ...record.pastMoments];
   const accent = organizerAccent(allEvents);
+  const pageFormat = organizerFormat(allEvents);
   const sourceNames = publicSourceNames(record);
   const rows = record.upcomingEvents.map((item, index) => eventView(item, index, kind, accent));
   const average = averageOf(record);
@@ -165,6 +170,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       coverUrl: coverEvent?.source === "catch" ? coverEvent.event.photoUrl ?? null : null,
       coverAlt: coverEvent ? coverEvent.event.title : undefined,
       accent,
+      format: pageFormat,
       monogram: record.identity.logo.text || catchAvatarInitialsOf(record.identity.name),
       monogramGround: generated ? "white" : accent,
       verified: record.identity.verified,
@@ -240,7 +246,7 @@ function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageK
   const detail = [format(start, zone, {hour: "numeric", minute: "2-digit", hour12: true}), item.event.location]
     .filter(Boolean).join(" · ");
   const shared = {key: `${item.source}-${item.eventId}`, eventId: item.eventId, source: item.source, title: item.event.title,
-    date, detail, price: item.event.priceLabel};
+    date, detail, price: item.event.priceLabel, ...formatOf(item.event.activityKind)};
   if (item.source === "external") {
     const free = /^(free|₹\s*0)$/iu.test(item.event.priceLabel.trim());
     return {...shared, href: item.booking.url, ground: kind === "generated" ? "paper" : "indigo",
@@ -251,7 +257,7 @@ function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageK
   const {event, booking} = item;
   const capacity = event.capacityLimit > 0;
   const bookable = event.registrationMode !== "closed" && (!capacity || booking.spotsLeft > 0);
-  const note = !capacity || event.registrationMode === "closed" ? "" : booking.spotsLeft > 0 ? copy.spotsLeft(booking.spotsLeft) :
+  const note = !capacity || event.registrationMode === "closed" ? "" : booking.spotsLeft > 0 ? copy.placesLeftShort(booking.spotsLeft) :
     event.waitlistAvailable ? copy.waitlist : copy.full;
   return {...shared, href: booking.path,
     ground: kind === "generated" ? "paper" : index === 0 ? catchFormatAccentOf(event.activityKind) ?? accent : "paper",
@@ -268,9 +274,16 @@ function nextUpView(row: OrganizerEventView, item: OrganizerPageEvent, readAt: n
     ...row,
     label: copy.nextUp(copy.countdown(days)),
     when: [when, item.event.location.split(",")[0]?.trim()].filter(Boolean).join(" · "),
-    meta: [row.price, row.note].filter(Boolean).join(" · "),
+    meta: [row.price, nextUpNote(row, item)].filter(Boolean).join(" · "),
     nextAction: row.source === "external" ? copy.getTickets : row.action,
   };
+}
+
+/** The next event spells out its places ("11 places left"); the calendar rows keep the short form. */
+function nextUpNote(row: OrganizerEventView, item: OrganizerPageEvent): string {
+  if (item.source !== "catch" || !row.note) return row.note;
+  return item.booking.spotsLeft > 0 && row.note === copy.placesLeftShort(item.booking.spotsLeft) ?
+    copy.spotsLeft(item.booking.spotsLeft) : row.note;
 }
 
 function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView[] {
@@ -389,6 +402,15 @@ function averageOf(record: OrganizerPageRecord): string | null {
 function organizerAccent(events: readonly OrganizerPageEvent[]): Accent {
   const accents = events.flatMap((item) => catchFormatAccentOf(item.event.activityKind) ?? []);
   return (mostCommon(accents) as Accent | null) ?? "coral";
+}
+
+function organizerFormat(events: readonly OrganizerPageEvent[]): CatchFormat {
+  return mostCommon(events.flatMap((item) => catchFormatOf(item.event.activityKind) ?? [])) ?? "games";
+}
+
+function formatOf(activityKind: string): {format?: CatchFormat} {
+  const format = catchFormatOf(activityKind);
+  return format ? {format} : {};
 }
 
 function placeOf(record: OrganizerPageRecord): string {

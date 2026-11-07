@@ -1,76 +1,78 @@
 import {
-  CatchAvatar,
   CatchButton,
   CatchField,
-  CatchGap,
-  CatchGroundCard,
-  CatchRatingSummary,
-  CatchReviewItem,
-  CatchSplit,
+  CatchIndexRow,
+  CatchSection,
+  CatchStack,
   CatchStarInput,
-  CatchLegacyText,
+  CatchStarRating,
+  CatchSurface,
+  CatchText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
-import {organizerSectionHeading} from "./organizerSectionHeading";
 
-/** The rating over its distribution, then the latest reviews, each marked verified or unverified. */
+/**
+ * Reviews: the average beside its stars, a bar for each star, the policy,
+ * then the latest reviews, each marked as booked on Catch or unverified,
+ * with the organiser's reply or why a generated page has none.
+ */
 export function OrganizerReviewsSection({controller}: {controller: OrganizerPageController}) {
   const {review, view} = controller;
   const {reviews} = view;
   if (!reviews.readable) return null;
+  const total = Math.max(1, reviews.distribution.reduce((sum, row) => sum + row.count, 0));
   return (
-    <CatchGap aria-labelledby="organizer-reviews-title" as="section" id="reviews" size="formField">
-      {organizerSectionHeading({
-        action: review ? <CatchButton label={copy.writeReview} onPressed={review.toggle} size="md" variant="secondary" /> : undefined,
-        id: "organizer-reviews-title",
-        title: copy.reviewsTitle,
-      })}
-      {review?.open ? <OrganizerReviewForm review={review} /> : null}
-      {reviews.items.length ? (
-        <CatchSplit
-          end={(
-            <CatchGap size="headerTitleToSubtitle">
-              {reviews.items.map((item) => (
-                <CatchReviewItem
-                  avatar={<CatchAvatar ground={item.ground} initials={item.initials} name={item.name} recipe="monogram" size={36} />}
-                  badge={(
-                    <CatchLegacyText as="span" color={item.verified ? "mint" : "ink2"} variant="statusLabel">
-                      {item.verified ? copy.verifiedReview : copy.unverifiedReview}
-                    </CatchLegacyText>
-                  )}
-                  body={item.body}
-                  footer={item.note ? <CatchLegacyText color="ink2" variant="bodyS">{item.note}</CatchLegacyText> : undefined}
-                  key={item.key}
-                  meta={item.meta}
-                  name={item.name}
-                  rating={item.rating}
-                  ratingLabel={item.ratingLabel}
-                  reply={item.reply}
-                />
-              ))}
-            </CatchGap>
+    <CatchStack gap={0} id="reviews">
+      <CatchSection
+        action={review ? {label: copy.writeReview, onPressed: review.toggle} : undefined}
+        dividers="none"
+        title={copy.reviewsTitle}
+      >
+        <CatchStack gap={16}>
+          {review?.open ? <OrganizerReviewForm review={review} /> : null}
+          {reviews.items.length ? (
+            <>
+              <CatchStack align="center" direction="row" gap={16}>
+                <CatchText numeric variant="display-xl">{reviews.average}</CatchText>
+                <CatchStack gap={4}>
+                  <CatchStarRating label={copy.ratingLabel(Math.round(Number(reviews.average)))} value={Number(reviews.average)} />
+                  <CatchText tone="secondary" variant="body-small">{reviews.countLabel}</CatchText>
+                </CatchStack>
+              </CatchStack>
+              <CatchSection dividers="none">
+                {reviews.distribution.map((row) => (
+                  <CatchIndexRow density="compact" key={row.stars} progress={{label: row.label, max: total, value: row.count}}
+                    title={`${row.stars}★`} value={String(row.count)} />
+                ))}
+              </CatchSection>
+              <CatchText as="p" tone="secondary" variant="body-small">{reviews.policy}</CatchText>
+              <CatchSection>
+                {reviews.items.map((item) => (
+                  <CatchIndexRow
+                    body={item.body}
+                    density="roomy"
+                    key={item.key}
+                    meta={item.reply ? `${item.reply.author} ${item.reply.verb} ${item.reply.text}` : item.note}
+                    status={item.verified ? copy.verifiedReview : copy.unverifiedReview}
+                    statusTone={item.verified ? "success" : "secondary"}
+                    subtitle={item.meta}
+                    title={item.name}
+                    trailing={<CatchStarRating label={item.ratingLabel} value={item.rating} />}
+                    wrap
+                  />
+                ))}
+              </CatchSection>
+            </>
+          ) : (
+            <CatchSurface>
+              <CatchText as="p" variant="title-row">{copy.reviewsEmptyTitle}</CatchText>
+              <CatchText as="p" tone="secondary" variant="body-small">{`${copy.reviewsEmptyBody} ${reviews.policy}`}</CatchText>
+            </CatchSurface>
           )}
-          gap="compact"
-          ratio="even"
-          start={(
-            <CatchRatingSummary
-              average={reviews.average}
-              countLabel={reviews.countLabel}
-              distribution={reviews.distribution}
-              note={reviews.policy}
-            />
-          )}
-        />
-      ) : (
-        <CatchGroundCard>
-          <CatchGap size="headerTitleToSubtitle">
-            <CatchLegacyText variant="sectionTitle">{copy.reviewsEmptyTitle}</CatchLegacyText>
-            <CatchLegacyText color="ink2" variant="bodyM">{`${copy.reviewsEmptyBody} ${reviews.policy}`}</CatchLegacyText>
-          </CatchGap>
-        </CatchGroundCard>
-      )}
-    </CatchGap>
+        </CatchStack>
+      </CatchSection>
+    </CatchStack>
   );
 }
 
@@ -80,28 +82,22 @@ type ReviewForm = NonNullable<OrganizerPageController["review"]>;
 function OrganizerReviewForm({review}: {review: ReviewForm}) {
   const form = copy.reviewForm;
   if (review.done) {
-    return (
-      <CatchGroundCard>
-        <CatchLegacyText role="status" variant="bodyL">{form.done(review.name.trim())}</CatchLegacyText>
-      </CatchGroundCard>
-    );
+    return <CatchSurface role="status"><CatchText as="p" variant="body">{form.done(review.name.trim())}</CatchText></CatchSurface>;
   }
   return (
-    <CatchGroundCard>
-      <CatchGap size="formField">
-        <CatchGap size="inline">
-          <CatchLegacyText id="organizer-review-stars" variant="sectionTitle">{form.starsLabel}</CatchLegacyText>
-          <CatchStarInput labelledBy="organizer-review-stars" onChanged={review.setStars}
-            optionLabel={(stars) => copy.ratingLabel(stars)} value={review.stars} />
-        </CatchGap>
-        <CatchField inputHint={form.textPlaceholder} maxLines={null} minLines={4} onChanged={review.setText}
-          recipe="input" title={form.textLabel} value={review.text} />
-        <CatchField autoComplete="given-name" onChanged={review.setName} recipe="input" title={form.nameLabel} value={review.name} />
-        {review.error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{review.error}</CatchLegacyText> : null}
-        <CatchGap crossAxisAlignment="start" size="inline">
-          <CatchButton label={form.submit} onPressed={review.submit} status={review.pending ? "loading" : "idle"} />
-        </CatchGap>
-      </CatchGap>
-    </CatchGroundCard>
+    <CatchSurface>
+      <CatchStack gap={8}>
+        <CatchText as="p" id="organizer-review-stars" variant="title-row">{form.starsLabel}</CatchText>
+        <CatchStarInput labelledBy="organizer-review-stars" onChanged={review.setStars}
+          optionLabel={(stars) => copy.ratingLabel(stars)} value={review.stars} />
+      </CatchStack>
+      <CatchField inputHint={form.textPlaceholder} maxLines={null} minLines={4} onChanged={review.setText}
+        recipe="input" title={form.textLabel} value={review.text} />
+      <CatchField autoComplete="given-name" onChanged={review.setName} recipe="input" title={form.nameLabel} value={review.name} />
+      {review.error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{review.error}</CatchText> : null}
+      <CatchStack align="start">
+        <CatchButton label={form.submit} onPressed={review.submit} status={review.pending ? "loading" : "idle"} />
+      </CatchStack>
+    </CatchSurface>
   );
 }
