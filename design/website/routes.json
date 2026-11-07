@@ -961,9 +961,9 @@
       "source": "website/src/features/weddings/WeddingsPage.tsx",
       "metaKey": "weddings",
       "staticOutput": "postbuild",
-      "indexing": "index",
-      "sitemap": "included",
-      "notes": "Catch for weddings (programmes), band for band as the RbWebWeddings board on the system in the nights-out format: the running-order hero, why planners switch, one wedding in six chapters, the team, messages and the family, pricing by headcount, the pilot with the step-1 application card (Continue opens /weddings/apply/), questions and the foot band. Every interface excerpt is illustrative, fictional data.",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Catch for weddings (programmes), band for band as the RbWebWeddings board on the system in the nights-out format: the running-order hero, why planners switch, one wedding in six chapters, the team, messages and the family, pricing by headcount, the pilot with the step-1 application card (Continue opens /weddings/apply/), questions and the foot band. Every interface excerpt is illustrative, fictional data. Noindex and out of the sitemap until the application has an intake submitter.",
       "review": {
         "priority": "p1",
         "status": "ready",

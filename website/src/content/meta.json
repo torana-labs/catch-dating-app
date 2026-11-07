@@ -137,7 +137,8 @@
       "title": "Catch for weddings | The whole wedding weekend, on one running order",
       "description": "Guest list, replies for every function, flights, airport pickups, rooms, staff and messages in one place for wedding planners and destination events. Selected pilot weddings, priced by headcount.",
       "canonicalPath": "/weddings/",
-      "twitterDescription": "The whole wedding weekend, on one running order. Apply for the Catch for weddings pilot."
+      "twitterDescription": "The whole wedding weekend, on one running order. Apply for the Catch for weddings pilot.",
+      "robots": "noindex, follow"
     },
     "weddings_apply": {
       "title": "Apply for the pilot | Catch for weddings",
