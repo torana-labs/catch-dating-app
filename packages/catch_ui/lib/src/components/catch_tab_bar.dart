@@ -156,12 +156,17 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>>
                           inset,
                           0,
                         ),
-                        child: SizedBox(
-                          height: CatchLayout.topBarHeight,
+                        // 56 px, growing with large text rather than
+                        // clipping the identity.
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: CatchLayout.topBarHeight,
+                          ),
                           child: Align(
                             alignment: sidebar
                                 ? AlignmentDirectional.centerStart
                                 : Alignment.center,
+                            heightFactor: 1,
                             child: header,
                           ),
                         ),
