@@ -73,13 +73,17 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
-  testWidgets('first-launch Host is asked for a Today focus', (tester) async {
+  testWidgets('a Host with nothing scheduled sees the day on Today', (
+    tester,
+  ) async {
     final backend = HostShellBackend(uid: _hostUid);
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
 
-    expect(find.text('What would you like to work on?'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Explore for now'), findsOneWidget);
     expect(find.byType(HostTodayScreen, skipOffstage: false), findsOneWidget);
+    expect(find.text('Needs you'), findsOneWidget);
+    expect(find.text('This week'), findsOneWidget);
+    expect(find.text('Nothing else on this week.'), findsOneWidget);
+    expect(find.widgetWithText(CatchButton, 'New event'), findsWidgets);
     expectHostSurfaceLoaded(tester, backend, surface: 'first-launch Today');
     await unmountHostAppShell(tester);
   });
