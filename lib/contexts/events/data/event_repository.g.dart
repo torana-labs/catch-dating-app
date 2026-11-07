@@ -354,6 +354,103 @@ final class WatchEventsForOrganizerFamily extends $Family
   String toString() => r'watchEventsForOrganizerProvider';
 }
 
+/// The organizer's live and coming events, as a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it.
+
+@ProviderFor(watchActiveEventsForOrganizer)
+final watchActiveEventsForOrganizerProvider =
+    WatchActiveEventsForOrganizerFamily._();
+
+/// The organizer's live and coming events, as a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it.
+
+final class WatchActiveEventsForOrganizerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Event>>,
+          List<Event>,
+          Stream<List<Event>>
+        >
+    with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
+  /// The organizer's live and coming events, as a Firestore listener: it
+  /// declares no cache tags or lifetime, and writes never invalidate it.
+  WatchActiveEventsForOrganizerProvider._({
+    required WatchActiveEventsForOrganizerFamily super.from,
+    required ActiveOrganizerEventsQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchActiveEventsForOrganizerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchActiveEventsForOrganizerHash();
+
+  @override
+  String toString() {
+    return r'watchActiveEventsForOrganizerProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Event>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Event>> create(Ref ref) {
+    final argument = this.argument as ActiveOrganizerEventsQuery;
+    return watchActiveEventsForOrganizer(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchActiveEventsForOrganizerProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchActiveEventsForOrganizerHash() =>
+    r'be92c09e4b0b6ae83c558bbec5d7c03c2e004b83';
+
+/// The organizer's live and coming events, as a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it.
+
+final class WatchActiveEventsForOrganizerFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<Event>>,
+          ActiveOrganizerEventsQuery
+        > {
+  WatchActiveEventsForOrganizerFamily._()
+    : super(
+        retry: null,
+        name: r'watchActiveEventsForOrganizerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organizer's live and coming events, as a Firestore listener: it
+  /// declares no cache tags or lifetime, and writes never invalidate it.
+
+  WatchActiveEventsForOrganizerProvider call(
+    ActiveOrganizerEventsQuery query,
+  ) => WatchActiveEventsForOrganizerProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'watchActiveEventsForOrganizerProvider';
+}
+
 @ProviderFor(eventVenueSession)
 final eventVenueSessionProvider = EventVenueSessionFamily._();
 
