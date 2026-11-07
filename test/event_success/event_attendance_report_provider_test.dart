@@ -8,6 +8,7 @@ import 'package:catch_dating_app/event_success/presentation/event_attendance_dis
 import 'package:catch_dating_app/event_success/presentation/event_attendance_disposition_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_attendance_report_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -50,6 +51,7 @@ void main() {
     decisions = AttendanceTestRepository();
     auth = StreamController<String?>.broadcast();
     container = ProviderContainer(
+      retry: catchProviderRetry,
       overrides: [
         uidProvider.overrideWith((ref) => auth.stream),
         eventAttendanceReportRepositoryProvider.overrideWith(
@@ -82,7 +84,8 @@ void main() {
       await repository.waitForReads(2);
       expect(container.read(provider).isLoading, isTrue);
       expect(container.read(provider).hasValue, isFalse);
-      const failure = NetworkException('unavailable', 'Offline');
+      // A failure the container retry policy does not retry.
+      const failure = PermissionException('Access denied.');
       repository.reads.last.result.completeError(failure);
       await container.pump();
       expect(container.read(provider).error, same(failure));

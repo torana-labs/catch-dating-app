@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_as
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,6 +29,7 @@ void main() {
     repository = _Repository();
     auth = StreamController<String?>.broadcast();
     container = ProviderContainer(
+      retry: catchProviderRetry,
       overrides: [
         uidProvider.overrideWith((ref) => auth.stream),
         eventRehearsalRepositoryProvider.overrideWith((ref) => repository),

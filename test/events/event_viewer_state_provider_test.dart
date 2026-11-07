@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_tags.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -242,6 +244,8 @@ void main() {
         eventViewerStateProvider('event-1', 'runner-1').overrideWith((
           ref,
         ) async {
+          // As the read owner does: booking writes declare this tag stale.
+          ref.providesTags({EventTags.viewer('event-1')});
           reads++;
           return reads == 1
               ? viewerFixture(admission: 'nativeParticipation')
