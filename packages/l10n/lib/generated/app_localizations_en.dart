@@ -498,6 +498,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationOrganizer => 'Organizer';
 
   @override
+  String get hostNavigationPeople => 'People';
+
+  @override
+  String get hostNavigationNewEvent => 'New event';
+
+  @override
   String get hostTodayEmptyTitle => 'You’re all caught up';
 
   @override

@@ -789,6 +789,22 @@
     "x-surface": "host.navigation",
     "x-max-chars": 16
   },
+  "hostNavigationPeople": "People",
+  "@hostNavigationPeople": {
+    "description": "Host navigation label for the audience: people, saved audiences, forms, responses and the inbox.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
+  "hostNavigationNewEvent": "New event",
+  "@hostNavigationNewEvent": {
+    "description": "Host rail and sidebar primary action that starts creating an event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
   "hostTodayEmptyTitle": "You’re all caught up",
   "@hostTodayEmptyTitle": {
     "description": "Today workspace title when no live or upcoming event needs attention.",

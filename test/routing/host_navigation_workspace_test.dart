@@ -31,7 +31,7 @@ void main() {
           final productionShell =
               hostWorkspaceRouteGraph(
                     AppAnalytics(),
-                  ).branches[HostWorkspaceRoot.audience.index].routes.single
+                  ).branches[HostWorkspaceRoot.people.index].routes.first
                   as ShellRoute;
           final route = productionShell.routes
               .whereType<HostWorkspaceDestination>()
@@ -124,17 +124,17 @@ void main() {
   });
 
   test(
-    'every Host named route belongs to one of the five workspace branches',
+    'every Host named route belongs to one of the four workspace branches',
     () {
       final graph = hostWorkspaceRouteGraph(AppAnalytics());
-      expect(graph.branches, hasLength(5));
+      expect(graph.branches, hasLength(4));
       final names = <String>[];
       void visit(RouteBase route) {
         if (route is GoRoute) {
           expect(route.parentNavigatorKey, isNull, reason: route.name);
           if (route.name != null) names.add(route.name!);
           if (!HostWorkspaceRoot.values.any(
-            (root) => root.route.name == route.name,
+            (root) => root.indexes.any((index) => index.name == route.name),
           )) {
             expect(
               route,
@@ -149,9 +149,18 @@ void main() {
         }
       }
 
-      for (final branch in graph.branches) {
-        expect(branch.routes.single, isA<ShellRoute>());
-        visit(branch.routes.single);
+      for (final (index, branch) in graph.branches.indexed) {
+        final root = HostWorkspaceRoot.values[index];
+        expect(branch.routes, hasLength(root.indexes.length));
+        for (final (position, shell) in branch.routes.indexed) {
+          expect(shell, isA<ShellRoute>());
+          // Each workspace opens over its own index route.
+          expect(
+            (shell.routes.first as GoRoute).name,
+            root.indexes[position].name,
+          );
+          visit(shell);
+        }
       }
       expect(names.toSet(), {
         for (final route in Routes.values)
@@ -168,6 +177,34 @@ void main() {
       expect(names.length, names.toSet().length);
     },
   );
+
+  test('People holds the audience and the inbox over their own indexes', () {
+    final graph = hostWorkspaceRouteGraph(AppAnalytics());
+    final people = graph.branches[HostWorkspaceRoot.people.index].routes
+        .cast<ShellRoute>();
+    final [audience, inbox] = people;
+    List<HostWorkspaceDestination> destinations(ShellRoute shell) =>
+        shell.routes.whereType<HostWorkspaceDestination>().toList();
+
+    expect((audience.routes.first as GoRoute).path, '/host/audience');
+    expect((inbox.routes.first as GoRoute).path, '/host/inbox');
+    expect(destinations(audience), hasLength(36));
+    expect(
+      destinations(inbox).map((route) => route.name),
+      unorderedEquals([
+        Routes.hostNewMessageScreen.name,
+        Routes.hostChatScreen.name,
+      ]),
+    );
+    for (final route in [...destinations(audience), ...destinations(inbox)]) {
+      expect(route.root, HostWorkspaceRoot.people, reason: route.name);
+      expect(
+        route.path.startsWith('/host/inbox'),
+        route.index == Routes.hostInboxScreen,
+        reason: route.name,
+      );
+    }
+  });
 
   // Requests holds its own queue panes in CatchPaneLayout.
   for (final view in HostAudienceView.values.where(
@@ -212,7 +249,8 @@ void main() {
       final graph = hostWorkspaceRouteGraph(AppAnalytics());
       final destinations = [
         for (final branch in graph.branches)
-          ...branch.routes.single.routes.whereType<HostWorkspaceDestination>(),
+          for (final shell in branch.routes)
+            ...shell.routes.whereType<HostWorkspaceDestination>(),
       ];
       final router = GoRouter(
         routes: [GoRoute(path: '/', builder: (_, _) => const SizedBox())],
@@ -231,7 +269,10 @@ void main() {
         );
         final ancestry = hostWorkspaceAncestors(destinations, route, state);
         expect(
-          ancestry.every((parent) => parent.root == route.root),
+          ancestry.every(
+            (parent) =>
+                parent.root == route.root && parent.index == route.index,
+          ),
           isTrue,
           reason: route.name,
         );

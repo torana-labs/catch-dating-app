@@ -21,9 +21,9 @@ class _RouterNavigatorKeys {
   final explore = GlobalKey<NavigatorState>();
   final chats = GlobalKey<NavigatorState>();
   final profile = GlobalKey<NavigatorState>();
-  final hostToday = GlobalKey<NavigatorState>();
-  final hostEvents = GlobalKey<NavigatorState>();
-  final hostAudience = GlobalKey<NavigatorState>();
-  final hostInbox = GlobalKey<NavigatorState>();
-  final hostOrganizer = GlobalKey<NavigatorState>();
+
+  /// One navigator per Host destination, in [HostWorkspaceRoot] order.
+  final host = [
+    for (final _ in HostWorkspaceRoot.values) GlobalKey<NavigatorState>(),
+  ];
 }

@@ -1,14 +1,23 @@
 part of 'go_router.dart';
 
+/// The Host app's four destinations, in branch order. People holds the
+/// audience and the inbox: each keeps its own index route.
 enum HostWorkspaceRoot {
   today(Routes.hostTodayScreen),
   events(Routes.hostEventsScreen),
-  audience(Routes.hostAudienceScreen),
-  inbox(Routes.hostInboxScreen),
+  people(Routes.hostAudienceScreen, [Routes.hostInboxScreen]),
   organizer(Routes.hostOrganizerScreen);
 
-  const HostWorkspaceRoot(this.route);
+  const HostWorkspaceRoot(this.route, [this.otherIndexes = const []]);
+
+  /// The destination's home: the index its tab opens.
   final Routes route;
+
+  /// Further index routes in the same branch.
+  final List<Routes> otherIndexes;
+
+  /// Every index route of the branch, home first.
+  List<Routes> get indexes => [route, ...otherIndexes];
 }
 
 /// Navigation metadata lives beside the actual destination builder.
@@ -37,6 +46,15 @@ class HostWorkspaceDestination extends GoRoute {
   final HostAudienceView? audienceView;
   Routes? parentFor(GoRouterState state) =>
       contextualParent?.call(state) ?? parent;
+
+  /// The index route this destination opens over: the root's index whose path
+  /// prefixes this path (a People destination under `/host/inbox` opens over
+  /// the inbox), otherwise the root's home.
+  Routes get index =>
+      root.otherIndexes
+          .where((index) => path.startsWith(index.path))
+          .firstOrNull ??
+      root.route;
 }
 
 @visibleForTesting
@@ -57,7 +75,7 @@ List<HostWorkspaceDestination> hostWorkspaceAncestors(
     if (!visited.add(ancestor.name!)) {
       throw StateError('Cyclic Host navigation ancestry');
     }
-    if (ancestor.root != selected!.root || ancestor.builder == null) {
+    if (ancestor.index != selected!.index || ancestor.builder == null) {
       throw StateError(
         'Host ancestry must have a builder in its owning workspace',
       );

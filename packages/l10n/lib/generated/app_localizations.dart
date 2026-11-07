@@ -901,6 +901,18 @@ abstract class AppLocalizations {
   /// **'Organizer'**
   String get hostNavigationOrganizer;
 
+  /// Host navigation label for the audience: people, saved audiences, forms, responses and the inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostNavigationPeople;
+
+  /// Host rail and sidebar primary action that starts creating an event.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get hostNavigationNewEvent;
+
   /// Today workspace title when no live or upcoming event needs attention.
   ///
   /// In en, this message translates to:
