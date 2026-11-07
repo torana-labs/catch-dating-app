@@ -658,7 +658,7 @@
             "text-custom-padding"
           ]
         },
-        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton); it is deleted when the D20 call-site moves to CatchButton land."
+        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton); it is deleted when the D20 call-site moves to CatchButton land. The System story: it takes the system's ghost and accent variants, leadingIcon/trailingIcon (icon roles) and fill, and reads the ground from CatchRoot/CatchSurface: secondary turns white on a tile or format colour. A link button needs no onPressed."
       },
       "design": {
         "figma": {
@@ -1213,20 +1213,28 @@
         ]
       },
       "react": {
-        "symbol": "ToggleButtonControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchChip",
+        "file": "packages/web-ui/src/components/CatchChip.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Toggle",
+          "story": "packages/web-ui/src/components/CatchChip.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "unselected",
-            "selected",
-            "disabled"
+            "filter",
+            "choice",
+            "dot",
+            "colour-when-selected",
+            "input",
+            "link",
+            "tag",
+            "sizes",
+            "on-tile",
+            "on-colour",
+            "recipes"
           ]
         },
-        "notes": "Shared pressed-state and labelled-group semantics used by website choice controls and the admin segmented-control adapter; visual density remains surface-owned."
+        "notes": "Without a recipe the system Chip (kind filter, choice, input, link or tag; dot, colourWhenSelected, count, leadingIcon), ground-aware like the system's. The recipe prop keeps Flutter's five constructors for the callers that use them. ToggleButtonControl stays a headless primitive in primitives.tsx."
       },
       "design": {
         "figma": {
@@ -6019,7 +6027,7 @@
             "columns"
           ]
         },
-        "notes": "Design system v15 Section: a titled group that owns the lines between its rows; a list with a chosen row drops its lines (rule 12); a tile container for settings groups; a journey drawn as joined markers from steps; columns that fold to one on phones."
+        "notes": "Design system v15 Section: a titled group that owns the lines between its rows; a list with a chosen row drops its lines (rule 12); a tile container for settings groups; a journey drawn as joined markers from steps; columns that fold to one on phones. The TimelineRows story: timeline={true} joins the leading markers or times of CatchIndexRow children, as the system Section does; a step list still draws its own rows."
       },
       "system": {
         "name": "Section",
@@ -7684,6 +7692,9 @@
         "symbol": "CatchMetricSection",
         "file": "packages/web-ui/src/components/CatchMetricSection.tsx",
         "api": "styled",
+        "additionalSymbols": [
+          "CatchMetricTile"
+        ],
         "storybook": {
           "status": "ready",
           "story": "packages/web-ui/src/components/CatchMetricSection.stories.tsx",
@@ -7696,7 +7707,7 @@
             "notes"
           ]
         },
-        "notes": "Design system v15 Stat strip: caller-formatted metrics with toned notes, as tiles or an inline strip; the quiet register sets values in plain type."
+        "notes": "Design system v15 Stat strip: caller-formatted metrics with toned notes, as tiles or an inline strip; the quiet register sets values in plain type. CatchMetricTile is the system Stat (tile, inline or fact, with an optional meter), Flutter's CatchMetricTile.stat."
       },
       "system": {
         "name": "Stat",
@@ -8672,6 +8683,28 @@
       "roleNoun": "IconAction",
       "naming": {
         "useCase": ""
+      },
+      "react": {
+        "symbol": "CatchIconAction",
+        "file": "packages/web-ui/src/components/CatchIconAction.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIconAction.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "outlined",
+            "filled",
+            "ghost",
+            "overlay",
+            "sizes",
+            "square",
+            "badge",
+            "pressed",
+            "on-tile"
+          ]
+        },
+        "notes": "The system IconButton under the Flutter symbol: always labelled (aria-label and title), a link with href, a toggle with pressed; a small button keeps a 44px touch target."
       },
       "system": {
         "name": "IconButton",
@@ -11058,7 +11091,7 @@
             "moment"
           ]
         },
-        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; Flutter's pre-redesign identity, tone, emphasis, navigation and search recipes are CatchLegacyTopBar."
+        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; Flutter's pre-redesign identity, tone, emphasis, navigation and search recipes are CatchLegacyTopBar. The Site story: variant=\"site\" is the website header: the wordmark (title) linking to homeHref, quiet page links that fold away under 600px, and actions."
       },
       "system": {
         "name": "TopBar",
@@ -14563,6 +14596,22 @@
         ],
         "reason": "Edits two ordered numeric endpoints as one interval, with contract-derived bounds, step divisions and an end-of-drag commit seam. ChoiceInput selects arbitrary typed members of a supplied set; TextInput edits characters. Neither has the interval constraints or paired adjustment semantics of this input."
       },
+      "react": {
+        "symbol": "CatchRangeInput",
+        "file": "packages/web-ui/src/components/CatchRangeInput.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchRangeInput.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "single",
+            "range",
+            "on-tile"
+          ]
+        },
+        "notes": "The system Slider under the Flutter symbol: one value, or a [low, high] range, over native range inputs (arrow keys step, values announced). React takes the system props (min, max, step, value, defaultValue, onChange, label), not Flutter's values/onChanged pair."
+      },
       "system": {
         "name": "Slider",
         "states": ["rest"],
@@ -17077,6 +17126,26 @@
         ],
         "reason": "The system EventCard API (variant, format, formatLabel, when, place, counts, people, peopleTotal) as a domain-free library card: callers pass formatted strings and a CatchFormat, and it draws through CatchSurface, CatchBadge, CatchText and CatchAvatarRow. EventCard binds an event to the CatchTicket recipe with ActivityKind artwork; it stays the ticket member until the cover and compact variants arrive with their first screens."
       },
+      "react": {
+        "symbol": "CatchEventCard",
+        "file": "packages/web-ui/src/components/CatchEventCard.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchEventCard.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "poster",
+            "poster-counts-people",
+            "cover",
+            "cover-no-photo",
+            "compact",
+            "external",
+            "statuses"
+          ]
+        },
+        "notes": "The system EventCard in all four variants: poster (a format spotlight with the when badge, kicker, title, place, counts and faces), cover and compact (photo-led, or the format colour with the title when there is no photo or it fails), and external (a tile that links out). Faces use CatchAvatarRow with a +N count. CatchPlanCard stays as the Website v2 card until its pages migrate."
+      },
       "system": {
         "name": "EventCard",
         "states": ["rest", "pressed"],
@@ -19129,7 +19198,7 @@
             "dark"
           ]
         },
-        "notes": "onTap makes the row a button and the web-only href makes it a link; with neither it is passive, as Flutter disables it. selected is aria-current. Leading and trailing stay passive inside a link or button row. Keyboard focus adds an inset ring on the web, where the 4% overlay alone is too faint. The footer lays its children in one wrapping line 8px apart."
+        "notes": "onTap makes the row a button and the web-only href makes it a link; with neither it is passive, as Flutter disables it. selected is aria-current. Leading and trailing stay passive inside a link or button row. Keyboard focus adds an inset ring on the web, where the 4% overlay alone is too faint. The footer lays its children in one wrapping line 8px apart. The SystemRows story shows it: with a density (compact, regular, roomy) it is the system ListRow: leading icon, date, marker, rank or time; body, meta and progress under the title; value, status, action and chevron on the right; no line of its own."
       },
       "design": {
         "figma": {
@@ -20690,6 +20759,24 @@
       "roleNoun": "Ticket",
       "naming": {
         "useCase": ""
+      },
+      "react": {
+        "symbol": "CatchTicket",
+        "file": "packages/web-ui/src/components/CatchTicket.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchTicket.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "valid",
+            "no-code",
+            "used",
+            "refunded",
+            "night"
+          ]
+        },
+        "notes": "The system Ticket: the format-coloured head, three facts, a perforation and a real QR code (CatchQrCode) beside the guest and the code. Door copy and status labels are props with English defaults."
       },
       "system": {
         "name": "Ticket",
@@ -22895,6 +22982,26 @@
         "conceptRole": "concept",
         "conceptId": "catch.marker"
       },
+      "react": {
+        "symbol": "CatchMarker",
+        "file": "packages/web-ui/src/components/CatchMarker.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMarker.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "dot",
+            "ring",
+            "check",
+            "number",
+            "tones",
+            "format",
+            "live"
+          ]
+        },
+        "notes": "React lands first under the record's name; the Dart port takes CatchMarker. Decorative (aria-hidden): the row beside it carries the meaning. A live marker pulses, and is still under reduced motion."
+      },
       "system": {
         "name": "Marker",
         "states": ["rest", "live"],
@@ -23145,6 +23252,28 @@
         "conceptRole": "concept",
         "conceptId": "catch.meter"
       },
+      "react": {
+        "symbol": "CatchMeter",
+        "file": "packages/web-ui/src/components/CatchMeter.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMeter.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "progress",
+            "cap",
+            "segments",
+            "stack",
+            "thickness",
+            "fills",
+            "on-tile",
+            "on-colour",
+            "labelled"
+          ]
+        },
+        "notes": "React lands first under the record's name; the Dart port takes CatchMeter. Progress, cap, segments and stack, 4/6/8 thick; the track follows the ground (nested on a tile, white at the on-colour opacity on a format colour, where the fill turns ink). Absorbs CatchBarIndicator's single bar when its callers move."
+      },
       "system": {
         "name": "Meter",
         "states": ["rest"],
@@ -23314,6 +23443,23 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.accordion"
+      },
+      "react": {
+        "symbol": "CatchAccordion",
+        "file": "packages/web-ui/src/components/CatchAccordion.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchAccordion.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "system-md",
+            "system-lg",
+            "multiple",
+            "website"
+          ]
+        },
+        "notes": "Native details and summary, so answers are in the page without script. items take the system's {title, body} or the Website v2 {id, question, answer}; with size it draws the system Accordion (chevron, 17/20px questions), without it the Website v2 FAQ list. multiple is the system's name for exclusive={false}. React lands first under the record's name."
       },
       "system": {
         "name": "Accordion",
