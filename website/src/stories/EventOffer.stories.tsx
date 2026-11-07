@@ -8,7 +8,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 const empty = () => undefined;
 const {startMillis} = eventTimesMillis(demoEventId);
-// The world's trivia night is free; the paid states add a price.
+// Each step of the RbWebOffer board on the white ground. The world's trivia
+// night is free; the paid states add a price.
 const amountPaise = 85000;
 const fixture: ReturnType<typeof useOfferCheckoutController> = {
   hasInvitation: true, phase: "ready", phone: "+91 98765 43210", setPhone: empty, code: "", setCode: empty,
@@ -47,6 +48,7 @@ export const Admitted: Story = {render: () => <EventOfferView {...fixture} payme
 export const Refund: Story = {render: () => <EventOfferView {...fixture} payment={{...payment, status: "refundPending"}} />};
 export const Cancelled: Story = {render: () => <EventOfferView {...fixture} payment={{...payment,
   status: "refundPending", cancellationReason: "eventCancelled"}} />};
+export const Loading: Story = {render: () => <EventOfferView {...fixture} grant={null} phase="loading" />};
 export const Unavailable: Story = {render: () => <EventOfferView {...fixture} grant={null} phase="unavailable" />};
 
 export const CancellationReview: Story = {render: () => <EventOfferView {...fixture} grant={null}

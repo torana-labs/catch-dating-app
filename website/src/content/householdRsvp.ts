@@ -80,7 +80,7 @@ export const householdRsvpViewFixture = {
 };
 
 export const householdRsvpCopy = {
-  brand: `${brand.name} home`, brandWord: "catch", kicker: "You're invited",
+  brand: `${brand.name} home`, kicker: "You're invited",
   loadingTitle: "Getting your invitation",
   loading: "Loading your household's invitation…",
   unavailableTitle: "This invitation link is unavailable",
@@ -88,21 +88,27 @@ export const householdRsvpCopy = {
   networkTitle: "We couldn't load your invitation",
   networkBody: "Check your connection and try again.",
   refresh: "Refresh", refreshing: "Refreshing…",
-  attending: "Attending", maybe: "Maybe", declined: "Can't make it",
+  attending: "Coming", maybe: "Maybe", declined: "Can't make it",
   partySize: "Seats needed", partySizePlaceholder: "1",
   note: "Anything we should know? (optional)",
   notePlaceholder: "Allergies, accessibility, travel timing…",
   consentLabel:
     "It's OK to message this household about schedule changes and event updates.",
-  submit: "Send RSVP", sending: "Sending your RSVP…",
+  submit: "Send our reply", sending: "Sending your reply…",
   saved: "Your RSVP is saved. You can update it any time before the event.",
   uncertain:
     "We couldn't confirm your RSVP. Check your connection and try again.",
-  itinerary: "Add to calendar (.ics)",
-  dressCodeLabel: "Dress code:",
+  itinerary: "Add to calendar",
+  dressCodeLabel: "Wear:",
   functionsHeading: "Functions",
   membersHeading: "Your household",
-  travelHeading: "Travel (optional)",
+  travelHeading: "Getting there",
+  travelNote: "Optional",
+  // The RbProgRsvp board: the dates over the title, the greeting, who is
+  // coming to each function, then the footer line.
+  dates: "{first} to {last}",
+  greeting: "Hi {household}! Say who’s coming to each function. You can change it any time before the event.",
+  madeWith: `Made with ${brand.name}`,
   travelBlockTitle: (name: string, kindLabel: string) =>
     `${name} · ${kindLabel}`,
   travelArrival: "Arrival",

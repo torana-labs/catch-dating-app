@@ -191,7 +191,7 @@ it("shows a no-refund warning before cancellation and focuses the safe action", 
   expect(api.call.mock.calls.some(([input]) => input.action === "cancelAdmission")).toBe(false);
   fireEvent.click(screen.getByRole("button", {name: "Confirm cancellation"}));
   await screen.findByRole("heading", {name: "Your place is cancelled"});
-  expect(screen.queryByRole("button", {name: "Reserve a seat and pay"})).toBeNull();
+  expect(screen.queryByRole("button", {name: /^Take the place/u})).toBeNull();
 });
 
 it("accepts a free invitation without opening payment and links event access", async () => {
@@ -200,7 +200,7 @@ it("accepts a free invitation without opening payment and links event access", a
     {grant: {...grant, amountPaise: 0, freeAdmission}, payment: null, serverTimeMillis: 1000} :
     {grant: null, payment: null, admission: {eventId: "event1", attendeeId: "guest1"}, serverTimeMillis: 2000});
   render(<EventOfferPage credential={credential} />, {wrapper});
-  const accept = await screen.findByRole("button", {name: "Accept invitation"});
+  const accept = await screen.findByRole("button", {name: "Take the place · free"});
   expect(screen.queryByText(/Full cash refund/u)).toBeNull();
   fireEvent.click(accept);
   expect((await screen.findByRole("link", {name: "View your booking and event access"})).getAttribute("href"))

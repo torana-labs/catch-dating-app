@@ -151,7 +151,7 @@ async function exerciseDomain(page, name, release, lookupStarted) {
   if (await consent.isChecked()) throw new Error("Synthetic consent was preselected");
   if (await page.evaluate(() => window.__domainCalls.some((call) => call.name === "submit"))) throw new Error("Submitted without explicit consent");
   await consent.check();
-  await page.getByRole("button", {name: "Submit response"}).click();
+  await page.getByRole("button", {name: "Send"}).click();
   await page.getByRole("heading", {name: "Synthetic response received"}).waitFor();
   const calls = await page.evaluate(() => window.__domainCalls);
   if (calls.filter((call) => call.name === "get").length !== 1 ||
@@ -378,7 +378,7 @@ createRoot(document.getElementById("root")).render(<QueryClientProvider client={
           `${origin}/${scenario.wrapper ? "__rsvp_wrapper" : "__rsvp_evidence"}?state=${scenario.name}`);
         const integration = domainMode ? await exerciseDomain(page, name, releaseLookup, lookupStarted) : null;
         const rendered = scenario.wrapper ? page.frameLocator("iframe") : page;
-        if (!domainMode) await rendered.locator(".public-form").waitFor();
+        if (!domainMode) await rendered.locator("[data-public-form]").waitFor();
         if (scenario.wrapper) await page.waitForFunction(() => Number.parseInt(document.querySelector("iframe").style.height, 10) > 500);
         if (scenario.name.startsWith("purpose") || scenario.wrapper) {
           for (const label of ["Application updates", "Organizer future events", "Catch future experiences"]) {

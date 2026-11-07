@@ -118,10 +118,10 @@ describe("public form choices", () => {
     expect(change).toHaveBeenLastCalledWith("city", null);
   });
 
-  it("keeps short choices visible as buttons", () => {
+  it("keeps short choices visible as chips", () => {
     renderForm({...city, options: city.options.slice(0, 2)});
     expect(screen.queryByRole("combobox")).toBeNull();
-    expect(screen.getByRole("button", {name: "Mumbai"})).not.toBeNull();
+    expect(screen.getByRole("radio", {name: "Mumbai"})).not.toBeNull();
   });
 
   it("labels optional questions and does not give them native required validation", () => {
@@ -322,7 +322,7 @@ describe("review messaging choices", () => {
     expect((screen.getByRole("checkbox", {name: "Application updates"}) as
       HTMLInputElement).disabled).toBe(true);
     expect(screen.getByText(/leave these boxes unchecked/u)).not.toBeNull();
-    expect(screen.getByRole("button", {name: "Submit response"})).not.toBeNull();
+    expect(screen.getByRole("button", {name: publicFormsCopy.submit})).not.toBeNull();
   });
 });
 
@@ -546,7 +546,7 @@ describe("question-aware review and reuse displays", () => {
     await load();
     fireEvent.change(screen.getByRole("combobox", {name: "Home city"}),
       {target: {value: "in-mh-mumbai"}});
-    fireEvent.click(screen.getByRole("button", {name: "Relaxed"}));
+    fireEvent.click(screen.getByRole("radio", {name: "Relaxed"}));
     fireEvent.click(screen.getByRole("button", {name: "Walks"}));
     fireEvent.click(screen.getByRole("button", {name: "Quiz nights"}));
     fireEvent.change(screen.getByRole("textbox", {name: "Your note"}),
@@ -567,7 +567,7 @@ describe("question-aware review and reuse displays", () => {
       .toBe("in-mh-mumbai");
     fireEvent.change(screen.getByRole("combobox", {name: "Home city"}),
       {target: {value: "in-ka-bengaluru"}});
-    fireEvent.click(screen.getByRole("button", {name: "Brisk"}));
+    fireEvent.click(screen.getByRole("radio", {name: "Brisk"}));
     fireEvent.click(screen.getByRole("button", {name: "Quiz nights"}));
     fireEvent.click(screen.getByRole("button", {name: "Cycling"}));
     await review();
@@ -576,7 +576,7 @@ describe("question-aware review and reuse displays", () => {
     expect(reviewAnswer("Activities")).toBe("Walks, Cycling");
     expectUncheckedMessaging();
     fireEvent.click(screen.getByRole("checkbox", {name: "Share my answers"}));
-    fireEvent.click(screen.getByRole("button", {name: "Submit response"}));
+    fireEvent.click(screen.getByRole("button", {name: publicFormsCopy.submit}));
     await screen.findByRole("heading", {name: "Received"});
     expect(formApi.saveOrganizerFormResponseDraft).toHaveBeenLastCalledWith(
       expect.objectContaining({answers: {home: "in-ka-bengaluru", pace: "pace_fast",
@@ -605,9 +605,10 @@ describe("question-aware review and reuse displays", () => {
     });
     fireEvent.click(screen.getByRole("button", {name: "Review this response"}));
     const previewCity = await screen.findByRole("checkbox", {name: "Event city"});
-    expect(screen.getByText("Pune", {selector: "dd"})).toBeTruthy();
-    expect(screen.getByText("Relaxed", {selector: "dd"})).toBeTruthy();
-    expect(screen.getByText("Walks, Quiz nights", {selector: "dd"})).toBeTruthy();
+    const previous = within(screen.getByRole("region", {name: publicFormsCopy.reuseTitle}));
+    expect(previous.getByText("Pune")).toBeTruthy();
+    expect(previous.getByText("Relaxed")).toBeTruthy();
+    expect(previous.getByText("Walks, Quiz nights")).toBeTruthy();
     expect(screen.queryByRole("checkbox", {name: "Your note"})).toBeNull();
     expect((previewCity as HTMLInputElement).checked).toBe(false);
     expect((screen.getByRole("button", {name: "Use selected answers"}) as HTMLButtonElement)
@@ -616,9 +617,9 @@ describe("question-aware review and reuse displays", () => {
       fireEvent.click(screen.getByRole("checkbox", {name}));
     }
     fireEvent.click(screen.getByRole("button", {name: "Use selected answers"}));
-    expect(screen.getByRole("button", {name: "Pune"}).getAttribute("aria-pressed"))
+    expect(screen.getByRole("radio", {name: "Pune"}).getAttribute("aria-checked"))
       .toBe("true");
-    expect(screen.getByRole("button", {name: "Relaxed"}).getAttribute("aria-pressed"))
+    expect(screen.getByRole("radio", {name: "Relaxed"}).getAttribute("aria-checked"))
       .toBe("true");
     await review();
     expect(reviewAnswer("Event city")).toBe("Pune");
