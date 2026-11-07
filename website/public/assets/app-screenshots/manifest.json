@@ -1,5 +1,19 @@
 {
   "version": 1,
   "updated": "2026-11-08",
-  "captures": []
+  "captures": [
+    {
+      "id": "guest-join-phone",
+      "audience": "guest",
+      "surface": "Guest check-in in the browser",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/guest-join-phone.png",
+      "width": 1020,
+      "height": 1964,
+      "alt": "Saturday Trivia Social check-in page open in Safari at catchdates.com, asking for the mobile number used for the booking",
+      "caption": "Fictional app preview. Guests check in from their phone's browser with the number they booked with. Nothing to download.",
+      "walkthroughStep": "Check in",
+      "pages": []
+    }
+  ]
 }
