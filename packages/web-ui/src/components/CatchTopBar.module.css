@@ -162,3 +162,42 @@
 }
 
 .segments > span[data-done] { background: var(--catch-theme-ink); }
+
+/*
+ * site: the website header (the system's .c-topbar[data-variant="site"]): the
+ * wordmark in display-xs, quiet page links 16px apart that fold away on
+ * phones, actions on the right, and a hairline under the bar.
+ */
+.bar[data-variant="site"] {
+  padding-inline: max(var(--catch-gutter, var(--catch-layout-gutter-compact)), calc((100% - var(--catch-website-content-max)) / 2));
+  background: var(--catch-theme-ground);
+  box-shadow: 0 var(--catch-stroke-hairline) 0 var(--catch-theme-line);
+}
+
+.siteRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  min-height: var(--catch-size-control-md);
+}
+
+.site { display: flex; align-items: center; gap: var(--catch-space-s6); min-width: 0; }
+
+.brand {
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-typography-role-display-xs-family);
+  font-size: 24px;
+  font-weight: var(--catch-typography-role-display-xs-weight);
+  line-height: var(--catch-typography-role-display-xs-line-height);
+  letter-spacing: var(--catch-typography-role-display-xs-tracking);
+  text-decoration: none;
+}
+
+.brand:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); }
+
+.links { display: flex; align-items: center; gap: var(--catch-space-s4); }
+
+@media (max-width: 599px) {
+  .links { display: none; }
+}

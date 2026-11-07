@@ -77,3 +77,23 @@ describe("CatchButton", () => {
     expect(screen.getByRole("button", {name: "Delete"}).dataset).toMatchObject({recipe: "text", tone: "danger"});
   });
 });
+
+describe("CatchButton with the system's names", () => {
+  it("draws ghost and accent, icon roles, fill, and a link without a handler", () => {
+    render(<>
+      <CatchButton href="/host/" label="See a night on Catch" variant="ghost" />
+      <CatchButton fill label="Continue" leadingIcon="download" onPressed={() => undefined} trailingIcon="expand" variant="accent" />
+    </>);
+    const link = screen.getByRole("link", {name: "See a night on Catch"});
+    expect(link.getAttribute("href")).toBe("/host/");
+    expect(link.dataset).toMatchObject({variant: "ghost", on: "ground"});
+    const button = screen.getByRole("button", {name: "Continue"});
+    expect(button.dataset).toMatchObject({variant: "accent", fullWidth: "true"});
+    expect(button.querySelectorAll("svg")).toHaveLength(2);
+  });
+
+  it("still disables a link with a null handler", () => {
+    render(<CatchButton href="/x" label="Off" onPressed={null} />);
+    expect(screen.getByText("Off").closest("a")?.hasAttribute("href")).toBe(false);
+  });
+});

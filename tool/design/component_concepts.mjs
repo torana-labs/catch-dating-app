@@ -389,8 +389,10 @@ export function componentTierProblems(components) {
     if ((tier === "T3" || tier === "T4") && component.react) {
       problems.push(`${component.id}: ${tier} entries are Flutter-only but declare React implementation ${component.react.symbol}; promote to T2 through registry review`);
     }
-    if (component.react?.api === "styled" && component.react.symbol !== component.dart?.symbol) {
-      problems.push(`${component.id}: styled React implementation ${component.react.symbol} must use the Flutter symbol ${component.dart?.symbol}`);
+    // A planned record whose React lands before its Dart takes the record's name, which the Dart port must then use.
+    const sharedSymbol = component.dart?.symbol ?? (isPlannedWithoutDart(component) ? component.name : undefined);
+    if (component.react?.api === "styled" && component.react.symbol !== sharedSymbol) {
+      problems.push(`${component.id}: styled React implementation ${component.react.symbol} must use the Flutter symbol ${sharedSymbol}`);
     }
     problems.push(...contractTsTypeProblems(component));
     const governance = component.governance ?? {};

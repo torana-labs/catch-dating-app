@@ -1,0 +1,119 @@
+/*
+ * catch.meter, transcribed from the system's .c-meter: a pill track in the
+ * track colour (the nested fill on a tile, white at the on-colour opacity on a
+ * format colour, where the fill turns ink), 4, 6 or 8px thick; segments 4px
+ * apart; a 2px limit mark for a cap; a 12px stack of shares with a legend.
+ */
+.meter {
+  --catch-meter-fill: var(--catch-theme-primary);
+  --catch-meter-track: var(--catch-theme-track);
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  width: 100%;
+  min-width: 0;
+}
+
+.meter:is([data-on="tile"], [data-on="nested"]) { --catch-meter-track: var(--catch-theme-nested); }
+
+.meter[data-on="colour"] {
+  --catch-meter-track: color-mix(in srgb, var(--catch-palette-white) calc(var(--catch-opacity-on-colour) * 100%), transparent);
+  --catch-meter-fill: var(--catch-color-light-ink);
+}
+
+.meter[data-fill="success"] { --catch-meter-fill: var(--catch-theme-format-courts); }
+.meter[data-fill="warning"] { --catch-meter-fill: var(--catch-theme-format-games); }
+.meter[data-fill="danger"] { --catch-meter-fill: var(--catch-theme-format-run); }
+.meter[data-format="run"] { --catch-meter-fill: var(--catch-format-run-accent); }
+.meter[data-format="dinner"] { --catch-meter-fill: var(--catch-format-dinner-accent); }
+.meter[data-format="games"] { --catch-meter-fill: var(--catch-format-games-accent); }
+.meter[data-format="courts"] { --catch-meter-fill: var(--catch-format-courts-accent); }
+.meter[data-format="nightsOut"] { --catch-meter-fill: var(--catch-format-nights-out-accent); }
+
+
+.track {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-meter-track);
+}
+
+.meter[data-thickness="4"] :is(.track, .segment) { height: 4px; }
+.meter[data-thickness="6"] :is(.track, .segment) { height: 6px; }
+.meter[data-thickness="8"] :is(.track, .segment) { height: 8px; }
+
+.bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--catch-meter-fill);
+  transition: width var(--catch-duration-slow) var(--catch-motion-standard-curve);
+}
+
+.limit {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--catch-theme-ink);
+}
+
+.segments { display: flex; gap: var(--catch-space-s1); }
+
+.segment {
+  flex: 1 1 0;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-meter-track);
+  transition: background-color var(--catch-duration-standard);
+}
+
+.segment[data-done] { background: var(--catch-meter-fill); }
+
+.stack {
+  display: flex;
+  gap: 3px;
+  height: 12px;
+  overflow: hidden;
+  border-radius: var(--catch-radius-pill);
+}
+
+.part,
+.key { background: var(--catch-theme-ink); }
+
+.part[data-fill="muted"],
+.key[data-fill="muted"] { background: var(--catch-theme-track); }
+
+.part[data-fill="indigo"],
+.key[data-fill="indigo"] { background: var(--catch-theme-indigo); }
+
+.part[data-format="run"], .key[data-format="run"] { background: var(--catch-format-run-accent); }
+.part[data-format="dinner"], .key[data-format="dinner"] { background: var(--catch-format-dinner-accent); }
+.part[data-format="games"], .key[data-format="games"] { background: var(--catch-format-games-accent); }
+.part[data-format="courts"], .key[data-format="courts"] { background: var(--catch-format-courts-accent); }
+.part[data-format="nightsOut"], .key[data-format="nightsOut"] { background: var(--catch-format-nights-out-accent); }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-micro6) var(--catch-space-s4);
+  color: var(--catch-theme-ink2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.legend > span { display: inline-flex; align-items: center; gap: var(--catch-space-micro6); }
+
+.key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--catch-radius-pill);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .segment { transition: none; }
+}

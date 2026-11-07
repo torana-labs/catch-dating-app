@@ -1,0 +1,22 @@
+/*
+ * The system Stat (.c-stat): a tile 6px between its lines and 118px tall at
+ * least, its note pushed to the foot; inline puts the value over the label,
+ * 2px apart; a fact is a small tile with words for a value.
+ */
+.stat { gap: var(--catch-space-micro6); min-height: 118px; }
+
+.stat[data-layout="inline"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-height: 0;
+}
+
+.stat[data-layout="inline"] .label { order: 2; }
+.stat[data-layout="inline"] .value { order: 1; }
+.note { margin-top: auto; }
+
+.stat[data-layout="fact"] { gap: var(--catch-space-micro2); min-height: 0; }
+.stat[data-layout="fact"] .note { margin-top: 0; }
+
+:global([data-register="quiet"]) .stat[data-layout="tile"] { min-height: 0; }

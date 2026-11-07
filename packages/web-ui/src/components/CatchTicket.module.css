@@ -1,0 +1,80 @@
+/*
+ * catch.ticket, transcribed from the system's .c-ticket: a floating card with
+ * 24px corners (the tile on night), a format-coloured head, facts in three
+ * columns, a dashed perforation with notches in the fill behind the ticket,
+ * and a 104px code beside the guest's name.
+ */
+.ticket {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-theme-ground);
+  box-shadow: var(--catch-elevation-float);
+  color: var(--catch-theme-ink);
+}
+
+.ticket[data-on^="night"] { background: var(--catch-theme-tile); }
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  padding: var(--catch-space-micro18) var(--catch-space-s5);
+  background: var(--catch-ticket-accent);
+  color: var(--catch-theme-on-format);
+}
+
+.head[data-format="run"] { --catch-ticket-accent: var(--catch-format-run-accent); }
+.head[data-format="dinner"] { --catch-ticket-accent: var(--catch-format-dinner-accent); }
+.head[data-format="games"] { --catch-ticket-accent: var(--catch-format-games-accent); }
+.head[data-format="courts"] { --catch-ticket-accent: var(--catch-format-courts-accent); }
+.head[data-format="nightsOut"] { --catch-ticket-accent: var(--catch-format-nights-out-accent); }
+
+.kicker { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--catch-space-micro10);
+  padding: var(--catch-space-s4) var(--catch-space-s5);
+}
+
+.facts > span { display: flex; flex-direction: column; gap: var(--catch-space-micro2); }
+
+.perforation {
+  position: relative;
+  height: 0;
+  margin: 0 var(--catch-space-s5);
+  border-top: var(--catch-stroke-focus) dashed var(--catch-theme-line);
+}
+
+.perforation::before,
+.perforation::after {
+  position: absolute;
+  top: -12px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-surface-fill, var(--catch-theme-ground));
+  content: "";
+}
+
+.perforation::before { left: -32px; }
+.perforation::after { right: -32px; }
+
+.code {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--catch-space-s4);
+  padding: var(--catch-space-s4) var(--catch-space-s5) var(--catch-space-s5);
+}
+
+.qr { display: block; width: 104px; }
+.qr :global(svg) { display: block; width: 100%; height: auto; }
+
+.codeText { display: flex; flex-direction: column; gap: var(--catch-space-s1); }
+
+.ticket:is([data-status="used"], [data-status="refunded"]) .code { opacity: 0.35; }
+
+.status { position: absolute; right: var(--catch-space-s5); bottom: var(--catch-space-s5); }

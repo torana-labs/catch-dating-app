@@ -33,10 +33,12 @@ export interface CatchSectionProps {
   /** plain rows on the page, or rows inside a tile (a settings group). */
   container?: "plain" | "tile";
   /**
-   * A journey drawn as joined markers: a filled ink marker for each done step, a dot for the step
-   * that waits now and a ring for what comes next. The line is ink below a done step.
+   * A journey drawn as joined markers. `true` joins the leading markers (or times) of the
+   * CatchIndexRow children, as the system Section does: the line is ink below a filled ink marker
+   * and grey below the rest. A list of steps draws the rows itself: a filled ink marker for each
+   * done step, a dot for the step that waits now and a ring for what comes next.
    */
-  timeline?: readonly CatchSectionStep[];
+  timeline?: boolean | readonly CatchSectionStep[];
   /** Shown instead of children when there are none. */
   empty?: ReactNode;
   footer?: ReactNode;
@@ -64,7 +66,8 @@ export function CatchSection({
   columns,
   children,
 }: CatchSectionProps) {
-  const rows = timeline ? timeline.map((step, index) => (
+  const steps = Array.isArray(timeline) ? (timeline as readonly CatchSectionStep[]) : undefined;
+  const rows = steps ? steps.map((step, index) => (
     <div className={styles.step} data-state={step.state} data-tone={step.tone} key={`${index}-${step.title}`} role="listitem">
       <span aria-hidden="true" className={styles.marker} />
       <span className={styles.stepText}>
@@ -101,8 +104,8 @@ export function CatchSection({
         className={styles.list}
         data-columns={columns}
         data-dividers={columns ? "none" : dividers}
-        data-timeline={timeline ? "" : undefined}
-        role={timeline ? "list" : undefined}
+        data-timeline={steps ? "" : timeline ? "rows" : undefined}
+        role={steps ? "list" : undefined}
         style={perColumn ? ({"--catch-section-rows": perColumn} as CSSProperties) : undefined}
       >
         {rows.length > 0 ? rows : empty}

@@ -29,3 +29,14 @@ describe("CatchTopBar", () => {
     expect(screen.queryByRole("heading")).toBeNull();
   });
 });
+
+describe("CatchTopBar site", () => {
+  it("links the wordmark home, names its page links and keeps actions", () => {
+    render(<CatchTopBar actions={<a href="/app">Get the app</a>} homeHref="/" links={[{label: "Explore", href: "/explore/"}, {label: "For hosts", href: "/host/"}]} title="Catch" variant="site" />);
+    expect(screen.getByRole("link", {name: "Catch"}).getAttribute("href")).toBe("/");
+    const nav = screen.getByRole("navigation", {name: "Site"});
+    expect(nav.querySelectorAll("a")).toHaveLength(2);
+    expect(screen.getByRole("link", {name: "For hosts"}).getAttribute("href")).toBe("/host/");
+    expect(screen.getByRole("link", {name: "Get the app"})).toBeTruthy();
+  });
+});

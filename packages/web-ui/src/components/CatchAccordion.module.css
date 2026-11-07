@@ -65,3 +65,22 @@
   .sign::before,
   .sign::after { transition: none; }
 }
+
+/*
+ * The system Accordion (a size is set; .c-accordion): lines between items
+ * only, a 17px semibold question 16px above and below (20px and 24px at lg),
+ * a chevron that turns over when open, and a 15px secondary answer.
+ */
+.accordion[data-size] { border-bottom: 0; }
+.accordion[data-size] .item { border-top: 0; }
+.accordion[data-size] .item:not(:last-child) { box-shadow: inset 0 calc(-1 * var(--catch-stroke-hairline)) 0 var(--catch-theme-line); }
+.accordion[data-size] .question { padding: var(--catch-space-s4) 0; font-size: 17px; font-weight: 600; line-height: 1.3; }
+.accordion[data-size="lg"] .question { padding: var(--catch-space-s6) 0; font-size: 20px; }
+.accordion[data-size] .question:focus-visible { outline-color: var(--catch-theme-focus); border-radius: var(--catch-radius-sm); }
+.chevron { display: inline-flex; flex: none; transition: transform var(--catch-duration-standard) var(--catch-motion-standard-curve); }
+.item[open] .chevron { transform: rotate(180deg); }
+.accordion[data-size] .answer { max-width: none; padding-bottom: var(--catch-space-s4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron { transition: none; }
+}

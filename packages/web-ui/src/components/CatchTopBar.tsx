@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import {CatchButton} from "./CatchButton";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTopBar.module.css";
@@ -18,8 +19,9 @@ export interface CatchTopBarBack extends CatchTopBarAction {
 /**
  * tab-home: a tab's own screen. tool: a sub-screen with back. step: a step in a flow, with
  * progress. live: a live console with its badge. moment: a full-screen moment with close only.
+ * site: the website header, with the wordmark (title), page links and actions such as "Get the app".
  */
-export type CatchTopBarVariant = "tab-home" | "tool" | "step" | "live" | "moment";
+export type CatchTopBarVariant = "tab-home" | "tool" | "step" | "live" | "moment" | "site";
 
 export interface CatchTopBarProps {
   variant?: CatchTopBarVariant;
@@ -35,6 +37,12 @@ export interface CatchTopBarProps {
   step?: {index: number; total: number};
   /** live: the badge, such as "Live · 9:04 PM". */
   live?: ReactNode;
+  /** site: page links beside the wordmark; they fold away on phones. */
+  links?: readonly CatchTopBarAction[];
+  /** site: where the wordmark goes. */
+  homeHref?: string;
+  /** site: the links' accessible name. */
+  linksLabel?: string;
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
@@ -56,8 +64,25 @@ function TextAction({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site"}: CatchTopBarProps) {
   const {scrolled, sizeClass} = useCatchViewport();
+  if (variant === "site") {
+    return (
+      <header className={styles.bar} data-variant="site">
+        <span className={styles.siteRow}>
+          <span className={styles.site}>
+            <a className={styles.brand} href={homeHref ?? "/"}>{title ?? "Catch"}</a>
+            {links && links.length > 0 ? (
+              <nav aria-label={linksLabel} className={styles.links}>
+                {links.map((link) => <CatchButton href={link.href} key={link.label} label={link.label} onPressed={link.onPressed} size="sm" variant="quiet" />)}
+              </nav>
+            ) : null}
+          </span>
+          {actions ? <span className={styles.actions}>{actions}</span> : null}
+        </span>
+      </header>
+    );
+  }
   const stepLabel = step ? `Step ${step.index} of ${step.total}` : undefined;
   const liveBadge = live ? <span className={styles.live}><span aria-hidden="true" className={styles.liveDot} />{live}</span> : null;
   const trailing = liveBadge || action || actions

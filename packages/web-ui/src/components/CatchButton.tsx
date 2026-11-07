@@ -1,10 +1,16 @@
 "use client";
 
 import type {CSSProperties, MouseEvent, ReactNode} from "react";
+import type {CatchIconName} from "../icons/catchIconGlyphs";
+import {useCatch} from "./catchRootContext";
+import {CatchIcon} from "./CatchIcon";
 import styles from "./CatchButton.module.css";
 
-/** Flutter `CatchButtonVariant`, with the D20 names. */
-export type CatchButtonVariant = "primary" | "secondary" | "quiet" | "danger" | "light";
+/**
+ * Flutter `CatchButtonVariant` plus the system's ghost (outlined on colour or
+ * photos, in the ink of what it sits on) and accent (the event colour).
+ */
+export type CatchButtonVariant = "primary" | "secondary" | "ghost" | "quiet" | "accent" | "danger" | "light";
 /** Flutter `CatchButtonSize`, the D20 sizes: sm 32px, md 40px, lg 48px (the default). */
 export type CatchButtonSize = "sm" | "md" | "lg";
 /** Flutter `CatchButtonMode`, retiring: under D20 both draw 4px corners. */
@@ -26,8 +32,8 @@ interface CatchButtonWeb {
 
 interface CatchButtonAction extends CatchButtonWeb {
   label: string;
-  /** Null disables the button, as in Flutter. */
-  onPressed: (() => void) | null;
+  /** Null disables the button, as in Flutter. A link button may leave it out. */
+  onPressed?: (() => void) | null;
 }
 
 interface CatchButtonColours {
@@ -52,6 +58,11 @@ export interface CatchButtonDefaultProps extends CatchButtonAction, CatchButtonC
   /** Web addition: a glyph after the label, such as an outward arrow. */
   trailing?: ReactNode;
   variant?: CatchButtonVariant;
+  /** The system's names: an icon role before or after the label, 16px on sm and 18px otherwise. */
+  leadingIcon?: CatchIconName;
+  trailingIcon?: CatchIconName;
+  /** The system's name for fullWidth: stretch to the container. */
+  fill?: boolean;
 }
 
 /** `CatchButton.sheet`: a full-width sheet action whose purpose sets its hierarchy. */
@@ -126,8 +137,10 @@ export function CatchButton(props: CatchButtonProps) {
   const loading = (props.recipe === undefined || props.recipe === "default" || props.recipe === "sheet") &&
     props.status === "loading";
   const interactive = props.recipe === undefined || props.recipe === "default" ? props.isInteractive !== false : true;
+  const {ground} = useCatch();
   const action = props.onPressed ?? undefined;
-  const enabled = interactive && action !== undefined && !loading;
+  // A link button needs no handler; null still disables it.
+  const enabled = interactive && !loading && (action !== undefined || (props.onPressed === undefined && props.href !== undefined));
 
   let variant: CatchButtonVariant = "primary";
   let size: CatchButtonSize = "lg";
@@ -142,8 +155,9 @@ export function CatchButton(props: CatchButtonProps) {
     case "default":
       variant = props.variant ?? "primary";
       size = props.size ?? "lg";
-      fullWidth = props.fullWidth ?? false;
-      ({leading, trailing} = props);
+      fullWidth = props.fullWidth ?? props.fill ?? false;
+      leading = props.leading ?? (props.leadingIcon ? <CatchIcon name={props.leadingIcon} size={size === "sm" ? 16 : 18} /> : undefined);
+      trailing = props.trailing ?? (props.trailingIcon ? <CatchIcon name={props.trailingIcon} size={size === "sm" ? 16 : 18} /> : undefined);
       ariaLabel = props.semanticsLabel;
       style = colourOverrides(props, variant === "primary" ? props.accentColor : undefined);
       break;
@@ -200,6 +214,7 @@ export function CatchButton(props: CatchButtonProps) {
     className: styles.button,
     "data-full-width": fullWidth || undefined,
     "data-loading": loading || undefined,
+    "data-on": ground,
     "data-recipe": recipe,
     "data-size": size,
     "data-tone": props.recipe === "text" ? props.tone ?? "primary" : undefined,
