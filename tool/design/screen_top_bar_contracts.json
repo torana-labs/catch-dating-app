@@ -57,9 +57,9 @@
       "routeName": "Routes.hostTodayScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
-          "symbol": "HostTodayHeader",
-          "owner": "CatchLegacyTopBar.primaryRail"
+          "path": "lib/hosts/today/host_today_screen.dart",
+          "symbol": "_HostTodayScreenState",
+          "owner": "CatchTopBar.tabHome"
         }
       ]
     },
@@ -380,14 +380,6 @@
     },
     {
       "path": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
-      "path": "lib/hosts/today/personalization/presentation/host_today_focus_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
       "owner": "CatchLegacyTopBar",

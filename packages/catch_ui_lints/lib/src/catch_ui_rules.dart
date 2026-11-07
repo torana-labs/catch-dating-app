@@ -932,8 +932,11 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.fieldDividerIsSectionOwned);
     }
 
+    // Under the D24 roots the unnamed constructor is the system Section;
+    // legacy screens keep choosing a named recipe.
     if (typeName == 'CatchSection' &&
         constructorName == null &&
+        !isZeroDrawingPath &&
         !_isCatchSectionImplementationPath) {
       _reportAtNode(node, CatchUiLayoutRules.useNamedCatchSectionConstructor);
     }

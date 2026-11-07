@@ -222,6 +222,41 @@ class EventRepository with EventRepositoryActions {
     action: 'fetch active organizer events page',
   );
 
+  /// The organizer's published active events that end after [endsAfter],
+  /// the soonest ending first, kept current while listened to. A caller's
+  /// clock moves an event from upcoming to live to over; [endsAfter] is a
+  /// boundary the caller resets on purpose (the start of its day).
+  Stream<List<Event>> watchActiveEventsForOrganizer({
+    required String organizerId,
+    required DateTime endsAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => withBackendErrorStream(
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    () => _db
+        .collection(_collectionPath)
+        .where('publicationState', isEqualTo: 'published')
+        .where('organizerId', isEqualTo: organizerId)
+        .where('status', isEqualTo: EventLifecycleStatus.active.name)
+        .where('endTime', isGreaterThan: Timestamp.fromDate(endsAfter))
+        .orderBy('endTime')
+        .orderBy(FieldPath.documentId)
+        .limit(limit)
+        .snapshots()
+        .map(
+          (snap) => List<Event>.unmodifiable(
+            snap.docs
+                .map(publishedRichEvent)
+                .whereType<Event>()
+                .where((event) => !event.synthetic),
+          ),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch active organizer events',
+      resource: _collectionPath,
+    ),
+  );
+
   /// Fetches completed organizer events newest-first with an opaque cursor.
   Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
     required String organizerId,
@@ -417,6 +452,19 @@ Stream<List<Event>> watchEventsForOrganizer(Ref ref, String organizerId) => ref
     .watch(eventRepositoryProvider)
     .watchEventsForOrganizer(organizerId: organizerId);
 
+/// The organizer's live and coming events, as a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it.
+@riverpod
+Stream<List<Event>> watchActiveEventsForOrganizer(
+  Ref ref,
+  ActiveOrganizerEventsQuery query,
+) => ref
+    .watch(eventRepositoryProvider)
+    .watchActiveEventsForOrganizer(
+      organizerId: query.organizerId,
+      endsAfter: query.endsAfter,
+    );
+
 @riverpod
 Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
   while (ref.mounted) {
@@ -444,6 +492,25 @@ Stream<List<Event>> watchEventsForOrganizers(
 Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref
     .watch(eventRepositoryProvider)
     .watchEventsByIds(eventIds: query.eventIds);
+
+/// One organizer's events that end after the start of the given day.
+/// The day, not the instant, keys the listener, so it is reused all day.
+class ActiveOrganizerEventsQuery {
+  ActiveOrganizerEventsQuery({required this.organizerId, required DateTime day})
+    : endsAfter = DateTime(day.year, day.month, day.day);
+
+  final String organizerId;
+  final DateTime endsAfter;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ActiveOrganizerEventsQuery &&
+      other.organizerId == organizerId &&
+      other.endsAfter == endsAfter;
+
+  @override
+  int get hashCode => Object.hash(organizerId, endsAfter);
+}
 
 class EventsByIdQuery {
   EventsByIdQuery._(Iterable<String> eventIds)

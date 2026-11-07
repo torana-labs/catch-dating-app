@@ -3,9 +3,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
+import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -45,22 +43,7 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayOverview,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostOrganizerAvatar,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostTodayEventSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostTodayEventMetricTile,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -233,54 +216,6 @@ Widget hostHomeRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Route states',
-  type: HostTodayScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostTodayScreenStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayLoadedRoute,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayLoadedRouteStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayBody,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayBodyStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayHeader,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayHeaderStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayOrganizerEmptyState,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayOrganizerEmptyStateStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayEventMetadataRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayEventMetadataStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
   name: 'Navigation identity states',
   type: HostOrganizerAvatar,
   path: '[P1 product surfaces]/Host operations/Composed sections',
@@ -325,30 +260,6 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
 )
 Widget hostOrganizerSwitcherSheetStates(BuildContext context) =>
     hostOrganizerIdentityPillStates(context);
-
-@widgetbook.UseCase(
-  name: 'Overview route states',
-  type: HostTodayOverview,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayOverviewStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Operational spotlight states',
-  type: HostTodayEventSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayEventSpotlightStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Operational metric states',
-  type: HostTodayEventMetricTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayEventMetricStates(BuildContext context) =>
-    hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
@@ -73,13 +73,17 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
-  testWidgets('first-launch Host is asked for a Today focus', (tester) async {
+  testWidgets('a Host with nothing scheduled sees the day on Today', (
+    tester,
+  ) async {
     final backend = HostShellBackend(uid: _hostUid);
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
 
-    expect(find.text('What would you like to work on?'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Explore for now'), findsOneWidget);
     expect(find.byType(HostTodayScreen, skipOffstage: false), findsOneWidget);
+    expect(find.text('Needs you'), findsOneWidget);
+    expect(find.text('This week'), findsOneWidget);
+    expect(find.text('Nothing else on this week.'), findsOneWidget);
+    expect(find.widgetWithText(CatchButton, 'New event'), findsWidgets);
     expectHostSurfaceLoaded(tester, backend, surface: 'first-launch Today');
     await unmountHostAppShell(tester);
   });
