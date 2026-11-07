@@ -131,8 +131,12 @@ test("the train previews the commit it validated, wherever main has moved since"
 
 test("the train workflow gates production on the protected environment and never cancels a pending approval", () => {
   const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-release.yml", import.meta.url), "utf8");
-  assert.match(workflow, /workflow_run:\n {4}workflows: \[CI\]\n {4}types: \[completed\]\n {4}branches: \[main\]/u);
-  assert.match(workflow, /schedule:\n {4}- cron: "23 \* \* \* \*"/u);
+  // CI is off for the redesign sprint (owner, 8 Nov 2026; #1564): the train
+  // runs once a night from main, not after main's CI. When CI returns, assert
+  // the workflow_run trigger (workflows [CI], completed, main) and the hourly
+  // catch-up cron again.
+  assert.doesNotMatch(workflow, /workflow_run:\n {4}workflows:/u);
+  assert.match(workflow, /schedule:\n {4}- cron: "40 22 \* \* \*"/u);
   assert.match(workflow, /concurrency:\n {2}group: website-release\n {2}cancel-in-progress: false/u);
   const job = (name) => workflow.split(`\n  ${name}:\n`)[1].split(/\n {2}[a-z]+:\n/u)[0];
   const approve = job("approve");
