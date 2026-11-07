@@ -98,11 +98,11 @@ class _PrivateWidget extends StatelessWidget {
   @override Widget build(BuildContext context) => const SizedBox();
 }
 class CatchInterfaceRow extends StatelessWidget {
-  const CatchInterfaceRow({required this.primaryRail, required this.header,
+  const CatchInterfaceRow({required this.primaryRail, required this.masthead,
     required this.page, required this.wrapper, required this.actions,
     required this.data});
   final CatchRail primaryRail;
-  final CatchNestedRail header;
+  final CatchNestedRail masthead;
   final CatchPageOwner page;
   final _PrivateWidget wrapper;
   final List<CatchNestedRail> actions;
@@ -208,7 +208,7 @@ test("a Widget generic bound keeps slot naming enforceable", () => {
 test("follows direct and transitive Widget interfaces for typed slots", () => {
   assert.deepEqual(inventory.classes.find((row) => row.name === "CatchNestedRail").interfaces, ["CatchRail"]);
   assert.deepEqual(forSymbol("CatchInterfaceRow").map((row) => [row.rule, row.parameter]), [
-    ["slot", "primaryRail"], ["slot", "header"], ["slot", "page"], ["slot", "wrapper"],
+    ["slot", "primaryRail"], ["slot", "masthead"], ["slot", "page"], ["slot", "wrapper"],
   ]);
 });
 
