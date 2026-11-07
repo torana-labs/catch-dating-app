@@ -177,4 +177,80 @@ void main() {
     expect(find.text('Booked'), findsOneWidget);
     expect(find.text('+24'), findsOneWidget);
   });
+
+  testWidgets('a download row reads its badge, value and chevron', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await _pump(
+      tester,
+      CatchIndexRow(
+        title: 'Guest list and check-ins',
+        badge: const CatchIndexRowBadge(label: 'New'),
+        icon: CatchIcons.download,
+        value: 'CSV',
+        chevron: true,
+        density: CatchIndexRowSize.regular,
+        onTap: () {},
+      ),
+    );
+    expect(
+      find.bySemanticsLabel('Guest list and check-ins, New, CSV'),
+      findsOneWidget,
+    );
+    expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
+    expect(find.byIcon(CatchIcons.download), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('a row with an action draws no chevron', (tester) async {
+    await _pump(
+      tester,
+      CatchIndexRow(
+        title: 'Dev Patel',
+        chevron: true,
+        action: CatchIndexRowAction(
+          label: 'Check in',
+          onPressed: () {},
+          variant: CatchIndexRowActionVariant.primary,
+        ),
+        density: CatchIndexRowSize.compact,
+        onTap: () {},
+      ),
+    );
+    expect(find.byIcon(CatchIcons.disclosure), findsNothing);
+    expect(find.text('Check in'), findsOneWidget);
+  });
+
+  testWidgets('a time leads the marker and a rank stands alone', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const Column(
+        children: [
+          CatchIndexRow(
+            title: 'Round two',
+            time: '9:00',
+            leading: CatchMarker(tone: CatchMarkerTone.format),
+            density: CatchIndexRowSize.compact,
+            onTap: null,
+          ),
+          CatchIndexRow(
+            title: 'Quizzy Rascals',
+            rank: 1,
+            value: '41',
+            density: CatchIndexRowSize.compact,
+            onTap: null,
+          ),
+        ],
+      ),
+    );
+    expect(
+      tester.getTopLeft(find.text('9:00')).dx,
+      lessThan(tester.getTopLeft(find.byType(CatchMarker)).dx),
+    );
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('41'), findsOneWidget);
+  });
 }

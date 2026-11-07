@@ -11,7 +11,9 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_network_image.dart';
 import 'package:flutter/material.dart';
 
-enum CatchAvatarStatus { none, online }
+/// The dot at an avatar's corner: [online] and [checkedIn] (at the door)
+/// in green, [away] in yellow.
+enum CatchAvatarStatus { none, online, checkedIn, away }
 
 /// Canonical avatar for photos, initials, activity identity, counts and veils.
 /// Callers own names, image URLs, count copy and activity colors. This component
@@ -227,7 +229,7 @@ class CatchAvatar extends StatelessWidget {
         child: avatar,
       );
     }
-    if (status != CatchAvatarStatus.online) return avatar;
+    if (status == CatchAvatarStatus.none) return avatar;
     return SizedBox(
       width: size,
       height: size,
@@ -241,7 +243,9 @@ class CatchAvatar extends StatelessWidget {
               width: CatchLayout.avatarStatusDotExtent,
               height: CatchLayout.avatarStatusDotExtent,
               decoration: BoxDecoration(
-                color: t.success,
+                color: status == CatchAvatarStatus.away
+                    ? t.formatGames
+                    : t.success,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: t.surface,
