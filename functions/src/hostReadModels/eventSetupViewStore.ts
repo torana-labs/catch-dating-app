@@ -1,4 +1,3 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import type {HostEventSetupViewDocument} from
@@ -12,21 +11,19 @@ import {
   PrivateEventSetupSummary,
   projectPrivateEventSetupSummary,
 } from "../events/progressiveSetup/readModel";
+import {
+  countOutcome,
+  emptyOutcomeCounts,
+  planViewWrite,
+  positiveInteger,
+  ViewOutcome,
+  ViewOutcomeCounts,
+} from "./support/viewWrite";
 
 export const eventSetupViewsCollection = "hostEventSetupViews";
 const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 
-export type EventSetupViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-    written: boolean;
-  };
+export type EventSetupViewOutcome = ViewOutcome;
 
 export interface EventSetupViewStoreDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -101,37 +98,22 @@ export async function reconcileEventSetupView(
       incompleteSource: invalid?.source ?? null,
       summary,
     };
-    const previousRevision = positiveInteger(previous?.revision) ?? 0;
-    const unchanged = previous !== null && isDeepStrictEqual({
-      organizerId: previous.organizerId,
-      setupRevision: previous.setupRevision,
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      summary: previous.summary,
-    }, next);
-    const revision = unchanged ? previousRevision : previousRevision + 1;
-    if (!unchanged) {
-      const document: HostEventSetupViewDocument = {
-        schemaVersion: 1,
-        eventId,
-        ...next,
-        revision,
-        evaluatedAt: deps.now(),
-      };
-      tx.set(viewRef, document);
-    }
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const, eventId,
+      ...next}, deps.now());
+    if (!plan.unchanged) tx.set(viewRef, plan.document);
     if (invalid !== null) {
-      return {kind: "invalidSource", incompleteSource: invalid.source,
-        detail: invalid.detail, revision, written: !unchanged};
+      return {kind: "invalidSource", source: invalid.source,
+        detail: invalid.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
-    return unchanged ? {kind: "unchanged", revision} :
-      {kind: "complete", revision};
+    return plan.unchanged ? {kind: "unchanged", revision: plan.revision} :
+      {kind: "complete", revision: plan.revision};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host event setup view read an invalid source.", {
       eventId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }
@@ -140,7 +122,7 @@ export async function reconcileEventSetupView(
 
 export interface EventSetupViewBackfillReport {
   events: number;
-  outcomes: Record<EventSetupViewOutcome["kind"], number>;
+  outcomes: ViewOutcomeCounts;
 }
 
 /**
@@ -154,13 +136,11 @@ export async function backfillEventSetupViews(
   reconcile: (eventId: string) => Promise<EventSetupViewOutcome> =
   (eventId) => reconcileEventSetupView(db, eventId)
 ): Promise<EventSetupViewBackfillReport> {
-  const outcomes: EventSetupViewBackfillReport["outcomes"] = {
-    removed: 0, unchanged: 0, complete: 0, invalidSource: 0,
-  };
+  const outcomes = emptyOutcomeCounts();
   let events = 0;
   for await (const eventId of setupEventIdsForOrganizer(db, organizerId)) {
     events++;
-    if (apply) outcomes[(await reconcile(eventId)).kind]++;
+    if (apply) countOutcome(outcomes, await reconcile(eventId));
   }
   return {events, outcomes};
 }
@@ -188,9 +168,4 @@ export async function* setupEventIdsForOrganizer(
     cursor = page.size === organizerEventPageSize ? page.docs.at(-1) :
       undefined;
   } while (cursor);
-}
-
-function positiveInteger(value: unknown): number | null {
-  return Number.isSafeInteger(value) && (value as number) > 0 ?
-    value as number : null;
 }

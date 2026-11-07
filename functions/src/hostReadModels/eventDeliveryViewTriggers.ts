@@ -13,14 +13,13 @@ import {ASSISTANCE_WORKFLOW} from
   "../eventSuccess/operations/liveWorkRecords";
 import {eventDeliveryViewsCollection, reconcileEventDeliveryView} from
   "./eventDeliveryViewStore";
+import {distinctIds, isAssistanceId} from "./support/ids";
 import {
-  distinctIds,
-  isAssistanceId,
   pagedIds,
   perGuestFanoutLimit,
   sameFields,
   valueAt,
-} from "./liveViewFanout";
+} from "./support/fanout";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 

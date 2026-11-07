@@ -1,7 +1,5 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
-import {HttpsError} from "firebase-functions/v2/https";
 import type {
   HostEventSetupDefaultViewDocument,
   OrganizerDocument,
@@ -12,20 +10,12 @@ import {
 } from "../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from
   "../organizers/eventSetupDefaults/dependencies";
+import {SourceInvalidError, stage} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 
 export const eventSetupDefaultViewsCollection = "hostEventSetupDefaultViews";
 
-export type EventSetupDefaultViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-    written: boolean;
-  };
+export type EventSetupDefaultViewOutcome = ViewOutcome;
 
 export interface EventSetupDefaultViewStoreDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -45,10 +35,10 @@ type ManagerDefaults = NonNullable<HostEventSetupDefaultViewDocument["view"]>;
  * Re-evaluates hostEventSetupDefaultViews/{organizerId} from the organizer
  * and its organizerEventSetupDefaults document in one transaction, with the
  * projection and hashes the defaults commands are fenced by. Writes only
- * when the projection changed. A failed-precondition or invalid-argument
- * from the projection records sourceCoverage invalidSource and keeps the
- * previous view, so a trigger never retries forever on it; any other error
- * throws, so the trigger retries. An organizer that is gone has no view.
+ * when the projection changed. An invalid source from the projection
+ * records sourceCoverage invalidSource and keeps the previous view, so a
+ * trigger never retries forever on it; any other error throws, so the
+ * trigger retries. An organizer that is gone has no view.
  */
 export async function reconcileEventSetupDefaultView(
   db: FirebaseFirestore.Firestore,
@@ -72,20 +62,20 @@ export async function reconcileEventSetupDefaultView(
       viewSnap.data() as HostEventSetupDefaultViewDocument : null;
     const raw = defaultsSnap.data();
     let view: ManagerDefaults | null;
-    let invalid: {source: string; detail: string} | null = null;
+    let invalid: SourceInvalidError | null = null;
     try {
-      view = projectManagerEventSetupDefaults(organizerId,
+      // The defaults document owns every preference; without one only the
+      // organizer's legacy hostDefaults can be malformed.
+      const source = raw === undefined ? "organizers" :
+        "organizerEventSetupDefaults";
+      view = stage(source, () => projectManagerEventSetupDefaults(organizerId,
         organizerSnap.data() as OrganizerDocument, raw,
         {...deps.defaults(db), db,
           serverTimestamp: admin.firestore.FieldValue.serverTimestamp}
-      ) as ManagerDefaults;
+      ) as ManagerDefaults);
     } catch (error) {
-      if (!(error instanceof HttpsError) || !["failed-precondition",
-        "invalid-argument"].includes(error.code)) throw error;
-      // The defaults document owns every preference; without one only the
-      // organizer's legacy hostDefaults can be malformed.
-      invalid = {source: raw === undefined ? "organizers" :
-        "organizerEventSetupDefaults", detail: error.message};
+      if (!(error instanceof SourceInvalidError)) throw error;
+      invalid = error;
       view = previous?.view ?? null;
     }
     const next = {
@@ -94,36 +84,22 @@ export async function reconcileEventSetupDefaultView(
       incompleteSource: invalid?.source ?? null,
       view,
     };
-    const previousRevision = Number.isSafeInteger(previous?.revision) &&
-      (previous?.revision as number) > 0 ? previous!.revision : 0;
-    const unchanged = previous !== null && isDeepStrictEqual({
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      view: previous.view,
-    }, next);
-    const revision = unchanged ? previousRevision : previousRevision + 1;
-    if (!unchanged) {
-      const document: HostEventSetupDefaultViewDocument = {
-        schemaVersion: 1,
-        organizerId,
-        revision,
-        evaluatedAt: deps.now(),
-        ...next,
-      };
-      tx.set(viewRef, document);
-    }
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const,
+      organizerId, ...next}, deps.now());
+    if (!plan.unchanged) tx.set(viewRef, plan.document);
     if (invalid !== null) {
-      return {kind: "invalidSource", incompleteSource: invalid.source,
-        detail: invalid.detail, revision, written: !unchanged};
+      return {kind: "invalidSource", source: invalid.source,
+        detail: invalid.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
-    return unchanged ? {kind: "unchanged", revision} :
-      {kind: "complete", revision};
+    return plan.unchanged ? {kind: "unchanged", revision: plan.revision} :
+      {kind: "complete", revision: plan.revision};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host event setup defaults view read an invalid source.", {
       organizerId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }

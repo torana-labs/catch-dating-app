@@ -31,12 +31,11 @@ import {
   defaultMovementViewDeps,
   departureViewsCollection,
   LiveContext,
-  MovementSourceInvalidError,
   MovementViewDeps,
   operableEvent,
-  parsing,
-  planViewWrite,
 } from "./movementViewSupport";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite} from "./support/viewWrite";
 
 export type DepartureViewOutcome =
   | {kind: "removed"; existed: boolean}
@@ -93,7 +92,7 @@ export async function reconcileDepartureView(
         raw.rosterId !== rosterId || raw.context.mode !== "live") {
       // Without a valid roster the view's own keys are unknown; keep the
       // previous row and record why.
-      return keepInvalid(tx, viewRef, previous, new MovementSourceInvalidError(
+      return keepInvalid(tx, viewRef, previous, new SourceInvalidError(
         DEPARTURE_ROSTERS, "The roster fails its contract."), deps);
     }
     const context = raw.context as LiveContext;
@@ -135,7 +134,7 @@ export async function reconcileDepartureView(
         reportSnap?.data(), scope, roster, now));
       view = historyRow(roster, source, checkpointId, report);
     } catch (error) {
-      if (!(error instanceof MovementSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       return keepInvalid(tx, viewRef, previous, error, deps, {
         eventId: context.eventId, organizerId: context.organizerId,
         groupId: raw.groupId, progressId, rosterId,
@@ -164,7 +163,7 @@ function assertRosterAgainstProgress(roster: Roster,
   progress: ReturnType<typeof parseGroupProgress>) {
   if (roster.destination?.kind === "groupCheckpoint" &&
       roster.destination.groupId !== roster.groupId) {
-    throw new MovementSourceInvalidError(DEPARTURE_ROSTERS,
+    throw new SourceInvalidError(DEPARTURE_ROSTERS,
       "The roster's destination belongs to another group.");
   }
   if (roster.progressRevision > (progress?.revision ?? 0) ||
@@ -175,7 +174,7 @@ function assertRosterAgainstProgress(roster: Roster,
           progress.confirmedAt !== roster.confirmedAt ||
           (roster.destination && operationContentHash(roster.destination) !==
             operationContentHash(progress.destination))))) {
-    throw new MovementSourceInvalidError(GROUP_PROGRESS,
+    throw new SourceInvalidError(GROUP_PROGRESS,
       "The progress row disagrees with its departure roster.");
   }
 }
@@ -211,7 +210,7 @@ type ViewKeys = Pick<ViewDocument, "eventId" | "organizerId" | "groupId" |
 /** Records an invalid source on the view, keeping its previous row. */
 function keepInvalid(tx: FirebaseFirestore.Transaction,
   viewRef: FirebaseFirestore.DocumentReference, previous: ViewDocument | null,
-  invalid: MovementSourceInvalidError, deps: MovementViewDeps,
+  invalid: SourceInvalidError, deps: MovementViewDeps,
   keys?: ViewKeys): DepartureViewOutcome {
   const base = keys ?? previous;
   if (!base) {

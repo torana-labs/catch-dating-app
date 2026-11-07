@@ -8,18 +8,14 @@ import {validateEventAttendeeDocument} from
 import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
 import {accountabilityState} from
   "../eventSuccess/operations/accountabilityProjection";
-import {
-  isAssistanceDocumentId,
-  MovementSourceInvalidError,
-  operableEvent,
-  parsing,
-  planViewWrite,
-} from "./movementViewSupport";
+import {operableEvent} from "./movementViewSupport";
+import {isAssistanceId} from "./support/ids";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 import {
   accountabilityViewsCollection,
   defaultGuestViewDeps,
   GuestViewDeps,
-  GuestViewOutcome,
   readManagerMembership,
 } from "./guestViewSupport";
 
@@ -41,10 +37,10 @@ export async function reconcileAccountabilityView(
   eventId: string,
   attendeeId: string,
   deps: GuestViewDeps = defaultGuestViewDeps
-): Promise<GuestViewOutcome> {
+): Promise<ViewOutcome> {
   const id = accountabilityViewId(eventId, attendeeId);
   const outcome = await db.runTransaction(async (tx):
-    Promise<GuestViewOutcome> => {
+    Promise<ViewOutcome> => {
     const viewRef = db.collection(accountabilityViewsCollection).doc(id);
     const [viewSnap, eventSnap, attendeeSnap] = await tx.getAll(viewRef,
       db.collection("events").doc(eventId),
@@ -54,7 +50,7 @@ export async function reconcileAccountabilityView(
     const attendee = attendeeSnap.data();
     const operable = operableEvent(eventId, event);
     if (!operable || !attendee || attendee.eventId !== eventId ||
-        !isAssistanceDocumentId(attendeeId) ||
+        !isAssistanceId(attendeeId) ||
         eventSuccessPrimitivesFor(event!.eventFormat).accountability !==
           "sweep") {
       if (viewSnap.exists) tx.delete(viewRef);
@@ -74,14 +70,15 @@ export async function reconcileAccountabilityView(
       view = accountabilityState({scope: {context, groupId: "event:whole",
         attendeeId}, member, checkpoint: null});
     } catch (error) {
-      if (!(error instanceof MovementSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, sourceCoverage: "invalidSource" as const,
         incompleteSource: error.source, view: previous?.view ?? null},
       nowStamp);
       if (!plan.unchanged) tx.set(viewRef, plan.document);
       return {kind: "invalidSource", source: error.source,
-        detail: error.detail, written: !plan.unchanged};
+        detail: error.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
     const plan = planViewWrite(previous, {schemaVersion: 1 as const, ...keys,
       sourceCoverage: "complete" as const, incompleteSource: null, view},

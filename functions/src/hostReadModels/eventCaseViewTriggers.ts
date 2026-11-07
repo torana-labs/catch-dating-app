@@ -9,14 +9,13 @@ import {
 import {guestCollections} from "../eventSuccess/operations/guestRecords";
 import {eventCaseViewsCollection, reconcileEventCaseView} from
   "./eventCaseViewStore";
+import {distinctIds, isAssistanceId} from "./support/ids";
 import {
-  distinctIds,
-  isAssistanceId,
   pagedIds,
   perGuestFanoutLimit,
   sameFields,
   valueAt,
-} from "./liveViewFanout";
+} from "./support/fanout";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 

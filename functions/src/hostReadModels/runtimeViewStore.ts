@@ -7,17 +7,13 @@ import {runtimeConfigId, runtimeConfigSource} from
   "../eventSuccess/operations/runtimeConfigRecords";
 import {readRuntimeConfigState, runtimeView} from
   "../eventSuccess/operations/runtimeConfigStore";
-import {
-  MovementSourceInvalidError,
-  operableEvent,
-  parsing,
-  planViewWrite,
-} from "./movementViewSupport";
+import {operableEvent} from "./movementViewSupport";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 import {
   defaultGuestViewDeps,
   GuestViewDeps,
   runtimeViewsCollection,
-  GuestViewOutcome,
 } from "./guestViewSupport";
 
 /**
@@ -33,9 +29,9 @@ export async function reconcileRuntimeView(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   deps: GuestViewDeps = defaultGuestViewDeps
-): Promise<GuestViewOutcome> {
+): Promise<ViewOutcome> {
   const outcome = await db.runTransaction(async (tx):
-    Promise<GuestViewOutcome> => {
+    Promise<ViewOutcome> => {
     const [eventSnap, planSnap] = await tx.getAll(
       db.collection("events").doc(eventId),
       db.collection("eventSuccessPlans").doc(eventId));
@@ -61,7 +57,7 @@ export async function reconcileRuntimeView(
     let closed: boolean;
     try {
       if (!validateOrganizerDocument(organizerSnap.data())) {
-        throw new MovementSourceInvalidError("organizers",
+        throw new SourceInvalidError("organizers",
           "The organizer fails its contract.");
       }
       const state = await parsing("eventAssistanceRuntimeConfigs", () =>
@@ -72,7 +68,7 @@ export async function reconcileRuntimeView(
       closed = source.closed;
       view = runtimeView({...state, source, now: endAtMillis - 1});
     } catch (error) {
-      if (!(error instanceof MovementSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, closed: previous?.closed ?? true,
         sourceCoverage: "invalidSource" as const,
@@ -80,7 +76,8 @@ export async function reconcileRuntimeView(
       nowStamp);
       if (!plan.unchanged) tx.set(viewRef, plan.document);
       return {kind: "invalidSource", source: error.source,
-        detail: error.detail, written: !plan.unchanged};
+        detail: error.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
     const plan = planViewWrite(previous, {schemaVersion: 1 as const, ...keys,
       closed, sourceCoverage: "complete" as const, incompleteSource: null,
