@@ -1,6 +1,6 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
+import {HttpsError} from "firebase-functions/v2/https";
 import type {
   HostEventDeliveryViewDocument,
   OrganizerDocument,
@@ -29,28 +29,24 @@ import {
   parseHostDelivery,
   projectHostDelivery,
 } from "../eventSuccess/operations/hostDeliveryRecords";
+import {isAssistanceId} from "./support/ids";
+import {pagedIds} from "./support/fanout";
 import {
-  isAssistanceId,
   isSourceInvalid,
-  pagedIds,
-  positiveInteger,
+  SourceInvalidError,
   stage,
-  ViewSourceInvalidError,
-} from "./liveViewFanout";
+} from "./support/sourceInvalid";
+import {
+  countOutcome,
+  emptyOutcomeCounts,
+  planViewWrite,
+  ViewOutcome,
+  ViewOutcomeCounts,
+} from "./support/viewWrite";
 
 export const eventDeliveryViewsCollection = "hostEventDeliveryViews";
 
-export type EventDeliveryViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-    written: boolean;
-  };
+export type EventDeliveryViewOutcome = ViewOutcome;
 
 export interface EventDeliveryViewStoreDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -112,13 +108,13 @@ export async function reconcileEventDeliveryView(
     // message id. A malformed id is an invalid work source: it is staged here
     // and raised in the evaluation below, so the previous view is kept.
     let workIds: ReturnType<typeof deliveryWorkIds> | null = null;
-    let workIdsInvalid: ViewSourceInvalidError | null = null;
+    let workIdsInvalid: SourceInvalidError | null = null;
     if (hasAutomaticDelivery(raw as never)) {
       try {
         workIds = stage(operationCollections.workItems,
           () => deliveryWorkIds(messageId));
       } catch (error) {
-        if (!(error instanceof ViewSourceInvalidError)) throw error;
+        if (!(error instanceof SourceInvalidError)) throw error;
         workIdsInvalid = error;
       }
     }
@@ -144,12 +140,12 @@ export async function reconcileEventDeliveryView(
     let relevantUntilMillis: number | null;
     let createdAt: number;
     let lifecycle: Lifecycle;
-    let invalid: ViewSourceInvalidError | null = null;
+    let invalid: SourceInvalidError | null = null;
     try {
       const organizer = stage("organizers", () => {
         const data = organizerSnap.data();
         if (!validateOrganizerDocument(data)) {
-          throw new ViewSourceInvalidError("organizers",
+          throw new SourceInvalidError("organizers",
             "The organizer does not match its contract.");
         }
         return data as unknown as OrganizerDocument;
@@ -157,14 +153,14 @@ export async function reconcileEventDeliveryView(
       stage("events", () => {
         const data = eventSnap.data();
         if (!validateEventDocument(data) || data.organizerId !== organizerId) {
-          throw new ViewSourceInvalidError("events",
+          throw new SourceInvalidError("events",
             "The event does not match its contract or organizer.");
         }
       });
       const message = stage(EVENT_ASSISTANCE_MESSAGES, () =>
         parseLiveDelivery(raw, messageId, context, nowMillis));
       if (attendeeSnap === undefined || guestSnap === undefined) {
-        throw new ViewSourceInvalidError(EVENT_ASSISTANCE_MESSAGES,
+        throw new SourceInvalidError(EVENT_ASSISTANCE_MESSAGES,
           "The message names no usable attendee.");
       }
       if (workIdsInvalid !== null) throw workIdsInvalid;
@@ -185,7 +181,7 @@ export async function reconcileEventDeliveryView(
       createdAt = message.createdAt;
       lifecycle = message.lifecycle;
     } catch (error) {
-      if (!(error instanceof ViewSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       invalid = error;
       view = previous?.view ?? null;
       relevantUntilMillis = previous?.relevantUntilMillis ?? null;
@@ -205,40 +201,22 @@ export async function reconcileEventDeliveryView(
       relevantUntilMillis,
       view,
     };
-    const previousRevision = positiveInteger(previous?.revision) ?? 0;
-    const unchanged = previous !== null && isDeepStrictEqual({
-      eventId: previous.eventId,
-      organizerId: previous.organizerId,
-      createdAt: previous.createdAt,
-      lifecycle: previous.lifecycle,
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      relevantUntilMillis: previous.relevantUntilMillis,
-      view: previous.view,
-    }, next);
-    const revision = unchanged ? previousRevision : previousRevision + 1;
-    if (!unchanged) {
-      const document: HostEventDeliveryViewDocument = {
-        schemaVersion: 1,
-        messageId,
-        ...next,
-        revision,
-        evaluatedAt: now,
-      };
-      tx.set(viewRef, document);
-    }
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const,
+      messageId, ...next}, now);
+    if (!plan.unchanged) tx.set(viewRef, plan.document);
     if (invalid !== null) {
-      return {kind: "invalidSource", incompleteSource: invalid.source,
-        detail: invalid.detail, revision, written: !unchanged};
+      return {kind: "invalidSource", source: invalid.source,
+        detail: invalid.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
-    return unchanged ? {kind: "unchanged", revision} :
-      {kind: "complete", revision};
+    return plan.unchanged ? {kind: "unchanged", revision: plan.revision} :
+      {kind: "complete", revision: plan.revision};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host event delivery view read an invalid source.", {
       messageId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }
@@ -248,7 +226,8 @@ export async function reconcileEventDeliveryView(
 /**
  * The message parser is pure over the record already read, so whatever it
  * rejects is the record itself: its plain validation errors name the messages
- * collection instead of retrying the trigger.
+ * collection instead of retrying the trigger. Its HttpsErrors are left to the
+ * stage, which records only the invalid-source codes.
  */
 function parseLiveDelivery(
   ...args: Parameters<typeof parseHostDelivery>
@@ -256,14 +235,15 @@ function parseLiveDelivery(
   try {
     return parseHostDelivery(...args);
   } catch (error) {
-    if (!(error instanceof Error) || isSourceInvalid(error)) throw error;
-    throw new ViewSourceInvalidError(EVENT_ASSISTANCE_MESSAGES, error.message);
+    if (!(error instanceof Error) || error instanceof HttpsError ||
+        isSourceInvalid(error)) throw error;
+    throw new SourceInvalidError(EVENT_ASSISTANCE_MESSAGES, error.message);
   }
 }
 
 export interface EventDeliveryViewBackfillReport {
   messages: number;
-  outcomes: Record<EventDeliveryViewOutcome["kind"], number>;
+  outcomes: ViewOutcomeCounts;
 }
 
 /**
@@ -277,16 +257,14 @@ export async function backfillEventDeliveryViews(
   reconcile: (messageId: string) => Promise<EventDeliveryViewOutcome> =
   (messageId) => reconcileEventDeliveryView(db, messageId)
 ): Promise<EventDeliveryViewBackfillReport> {
-  const outcomes: EventDeliveryViewBackfillReport["outcomes"] = {
-    removed: 0, unchanged: 0, complete: 0, invalidSource: 0,
-  };
+  const outcomes = emptyOutcomeCounts();
   let messages = 0;
   for await (const messageId of pagedIds(db.collection(
     EVENT_ASSISTANCE_MESSAGES)
     .where("intent.context.mode", "==", "live")
     .where("intent.context.organizerId", "==", organizerId))) {
     messages++;
-    if (apply) outcomes[(await reconcile(messageId)).kind]++;
+    if (apply) countOutcome(outcomes, await reconcile(messageId));
   }
   return {messages, outcomes};
 }

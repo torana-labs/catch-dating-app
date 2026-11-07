@@ -17,12 +17,11 @@ import {
   configuredGroupIds,
   defaultMovementViewDeps,
   groupProgressViewsCollection,
-  MovementSourceInvalidError,
   MovementViewDeps,
   operableEvent,
-  parsing,
-  planViewWrite,
 } from "./movementViewSupport";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite} from "./support/viewWrite";
 
 /** More progress rows than this for one event cannot be legitimate. */
 const maxProgressRows = 200;
@@ -73,7 +72,7 @@ export async function reconcileGroupProgressViews(
       const beforeEnd = endAtMillis - 1;
       let eventSource: ReturnType<typeof parseGroupProgressEvent> | null =
         null;
-      let eventError: MovementSourceInvalidError | null = null;
+      let eventError: SourceInvalidError | null = null;
       try {
         const event = eventSnap.data();
         eventSource = await parsing(validateEventDocument(event) &&
@@ -81,11 +80,11 @@ export async function reconcileGroupProgressViews(
           "events", () => parseGroupProgressEvent(context, eventSnap,
           planSnap));
         if (progressRows!.size > maxProgressRows) {
-          throw new MovementSourceInvalidError(GROUP_PROGRESS,
+          throw new SourceInvalidError(GROUP_PROGRESS,
             "More progress rows than any event can configure.");
         }
       } catch (error) {
-        if (!(error instanceof MovementSourceInvalidError)) throw error;
+        if (!(error instanceof SourceInvalidError)) throw error;
         eventError = error;
       }
       const rows = new Map(progressRows!.docs.map((doc) =>
@@ -110,7 +109,7 @@ export async function reconcileGroupProgressViews(
             void _serverTime;
             view = projected;
           } catch (error) {
-            if (!(error instanceof MovementSourceInvalidError)) throw error;
+            if (!(error instanceof SourceInvalidError)) throw error;
             invalid = error;
           }
         }

@@ -11,18 +11,14 @@ import {membershipResponse} from
   "../eventSuccess/operations/membershipTransitions";
 import {readMembershipReceiverCandidates} from
   "../eventSuccess/operations/membershipReceivers";
-import {
-  isAssistanceDocumentId,
-  MovementSourceInvalidError,
-  operableEvent,
-  parsing,
-  planViewWrite,
-} from "./movementViewSupport";
+import {operableEvent} from "./movementViewSupport";
+import {isAssistanceId} from "./support/ids";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 import {
   defaultGuestViewDeps,
   GuestViewDeps,
   membershipViewsCollection,
-  GuestViewOutcome,
   readManagerMembership,
 } from "./guestViewSupport";
 
@@ -44,9 +40,9 @@ export async function reconcileMembershipView(
   eventId: string,
   attendeeId: string,
   deps: GuestViewDeps = defaultGuestViewDeps
-): Promise<GuestViewOutcome> {
+): Promise<ViewOutcome> {
   const outcome = await db.runTransaction(async (tx):
-    Promise<GuestViewOutcome> => {
+    Promise<ViewOutcome> => {
     const [eventSnap, attendeeSnap] = await tx.getAll(
       db.collection("events").doc(eventId),
       db.collection("eventAttendees").doc(attendeeId));
@@ -55,7 +51,7 @@ export async function reconcileMembershipView(
       .limit(5));
     const event = eventSnap.data();
     const attendee = attendeeSnap.data();
-    const operable = isAssistanceDocumentId(attendeeId) ?
+    const operable = isAssistanceId(attendeeId) ?
       operableEvent(eventId, event) : null;
     const id = operable ? membershipIdentity({context: operable.context,
       attendeeId}) : null;
@@ -97,7 +93,7 @@ export async function reconcileMembershipView(
       void _review;
       view = rest;
     } catch (error) {
-      if (!(error instanceof MovementSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       for (const doc of stale) tx.delete(doc.ref);
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, sourceCoverage: "invalidSource" as const,
@@ -105,7 +101,8 @@ export async function reconcileMembershipView(
         receivers: previous?.receivers ?? []}, nowStamp);
       if (!plan.unchanged) tx.set(viewRef, plan.document);
       return {kind: "invalidSource", source: error.source,
-        detail: error.detail, written: !plan.unchanged};
+        detail: error.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
     for (const doc of stale) tx.delete(doc.ref);
     const plan = planViewWrite(previous, {schemaVersion: 1 as const, ...keys,

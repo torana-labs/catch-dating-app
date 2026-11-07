@@ -35,12 +35,11 @@ import {
   configuredGroupIds,
   defaultMovementViewDeps,
   LiveContext,
-  MovementSourceInvalidError,
   MovementViewDeps,
   operableEvent,
-  parsing,
-  planViewWrite,
 } from "./movementViewSupport";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite} from "./support/viewWrite";
 
 export type CheckpointViewOutcome =
   | {kind: "removed"; existed: boolean}
@@ -94,7 +93,7 @@ export async function reconcileCheckpointView(
       const previous = stale.empty ? null :
         stale.docs[0].data() as ViewDocument;
       return keepInvalid(tx, stale.empty ? null : stale.docs[0].ref, previous,
-        new MovementSourceInvalidError(DEPARTURE_ROSTERS,
+        new SourceInvalidError(DEPARTURE_ROSTERS,
           "The roster fails its contract."), deps);
     }
     const roster = raw as Roster;
@@ -148,7 +147,7 @@ export async function reconcileCheckpointView(
       accountability = await memberAccountability(db, tx, state, eventSnap,
         planSnap, now);
     } catch (error) {
-      if (!(error instanceof MovementSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       return keepInvalid(tx, viewRef, previous, error, deps, keys);
     }
     const plan = planViewWrite(previous, {schemaVersion: 1 as const, ...keys,
@@ -166,16 +165,21 @@ export async function reconcileCheckpointView(
   return outcome;
 }
 
-/** The checkpoint reader's own failures, attributed to their collection. */
+/**
+ * The checkpoint reader's own failures, attributed to their collection: an
+ * invalid work record names operationWorkItems, anything else the checkpoint.
+ */
 async function checkpointSources(read: () => Promise<CheckpointState>) {
-  try {
-    return await parsing("eventAssistanceCheckpoints", read);
-  } catch (error) {
-    if (error instanceof Error && error.message === invalidWorkMessage) {
-      throw new MovementSourceInvalidError("operationWorkItems", error.message);
+  return parsing("eventAssistanceCheckpoints", async () => {
+    try {
+      return await read();
+    } catch (error) {
+      if (error instanceof Error && error.message === invalidWorkMessage) {
+        throw new SourceInvalidError("operationWorkItems", error.message);
+      }
+      throw error;
     }
-    throw error;
-  }
+  });
 }
 
 /**
@@ -240,7 +244,7 @@ type ViewKeys = Pick<ViewDocument, "checkpointViewId" | "eventId" |
 /** Records an invalid source on the view, keeping its previous projection. */
 function keepInvalid(tx: FirebaseFirestore.Transaction,
   viewRef: FirebaseFirestore.DocumentReference | null,
-  previous: ViewDocument | null, invalid: MovementSourceInvalidError,
+  previous: ViewDocument | null, invalid: SourceInvalidError,
   deps: MovementViewDeps, keys?: ViewKeys): CheckpointViewOutcome {
   const base = keys ?? previous;
   if (!base || !viewRef) {

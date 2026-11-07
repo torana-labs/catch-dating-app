@@ -1,21 +1,14 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
-import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/eventDocument";
 import {timestampEvidence} from
   "../eventSuccess/operations/groupProgressSource";
+import {isAssistanceId} from "./support/ids";
 
 export const groupProgressViewsCollection = "hostEventGroupProgressViews";
 export const departureViewsCollection = "hostEventDepartureViews";
 export const checkpointViewsCollection = "hostEventCheckpointViews";
 /** Checkpoint views stop changing this long after their event ends. */
 export const checkpointViewFreezeMillis = 24 * 60 * 60 * 1000;
-const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
-
-/** Ids the assistance records accept; any other row has no view. */
-export function isAssistanceDocumentId(id: string): boolean {
-  return documentIdPattern.test(id);
-}
 
 export interface MovementViewDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -35,9 +28,8 @@ export type LiveContext = {mode: "live"; organizerId: string; eventId: string};
 export function operableEvent(eventId: string,
   event: FirebaseFirestore.DocumentData | undefined):
   {context: LiveContext; endAtMillis: number} | null {
-  if (!event || !event.eventFormat || !documentIdPattern.test(eventId) ||
-      typeof event.organizerId !== "string" ||
-      !documentIdPattern.test(event.organizerId)) return null;
+  if (!event || !event.eventFormat || !isAssistanceId(eventId) ||
+      !isAssistanceId(event.organizerId)) return null;
   let endAtMillis: number;
   try {
     const end = timestampEvidence(event.endTime);
@@ -58,85 +50,4 @@ export function configuredGroupIds(event: Pick<EventDocument, "eventFormat">):
     (route.paceGroups ?? []).map((group) => group.id) : [];
   return ["event:whole", ...new Set(paceGroups.filter((id) =>
     id !== "event:whole"))];
-}
-
-/** A source document that failed validation, named by its collection. */
-export class MovementSourceInvalidError extends Error {
-  constructor(readonly source: string, readonly detail: string) {
-    super(`${source}: ${detail}`);
-    this.name = "MovementSourceInvalidError";
-  }
-}
-
-/**
- * Runs one parsing stage of an evaluation. The operations readers report an
- * invalid or unconfigured source as a failed-precondition (or, for guest
- * rows, not-found) HttpsError; those become a MovementSourceInvalidError
- * naming [source]. Any other error is a transport or programming failure and
- * propagates, so the trigger retries.
- */
-export async function parsing<T>(source: string,
-  read: () => T | Promise<T>): Promise<T> {
-  try {
-    return await read();
-  } catch (error) {
-    if (error instanceof MovementSourceInvalidError) throw error;
-    if (error instanceof HttpsError && (error.code === "failed-precondition" ||
-        error.code === "not-found")) {
-      throw new MovementSourceInvalidError(source, error.message);
-    }
-    if (error instanceof Error &&
-        error.message === "Invalid assistance document id") {
-      throw new MovementSourceInvalidError(source, error.message);
-    }
-    throw error;
-  }
-}
-
-/** What every movement view records about its last evaluation. */
-export interface EvaluationFields {
-  revision: number;
-  evaluatedAt: FirebaseFirestore.Timestamp;
-  sourceCoverage: "complete" | "invalidSource";
-  incompleteSource: string | null;
-}
-
-/**
- * Plans one view write with no-op avoidance: [next] is everything except
- * revision and evaluatedAt. An unchanged document is not written; a changed
- * one gets revision + 1 and evaluatedAt now. Firestore does not keep map key
- * order, so documents are compared structurally.
- */
-export function planViewWrite<D extends EvaluationFields>(
-  previous: D | null, next: Omit<D, "revision" | "evaluatedAt">,
-  now: FirebaseFirestore.Timestamp
-): {unchanged: true; revision: number} |
-  {unchanged: false; revision: number; document: D} {
-  const previousRevision = positiveInteger(previous?.revision) ?? 0;
-  if (previous !== null) {
-    const {revision: _revision, evaluatedAt: _evaluatedAt, ...rest} =
-      previous;
-    void _revision;
-    void _evaluatedAt;
-    if (isDeepStrictEqual(normalized(rest), normalized(next))) {
-      return {unchanged: true, revision: previousRevision};
-    }
-  }
-  const revision = previousRevision + 1;
-  return {unchanged: false, revision,
-    document: {...next, revision, evaluatedAt: now} as unknown as D};
-}
-
-/** Firestore drops undefined fields; compare what a read would return. */
-function normalized(value: unknown): unknown {
-  return JSON.parse(JSON.stringify(value));
-}
-
-export function positiveInteger(value: unknown): number | null {
-  return Number.isSafeInteger(value) && (value as number) > 0 ?
-    value as number : null;
-}
-
-export function millisOf(stamp: FirebaseFirestore.Timestamp): number {
-  return stamp.toMillis();
 }

@@ -25,19 +25,12 @@ export const maxEventAttendees = 1000;
 
 /**
  * The guest and settings view evaluators read the clock as the movement
- * view evaluators do; operableEvent, configuredGroupIds, parsing,
- * planViewWrite, isAssistanceDocumentId and the invalid-source error come
- * from movementViewSupport.
+ * view evaluators do; operableEvent and configuredGroupIds come from
+ * movementViewSupport, and the view outcome, write planning, id check and
+ * invalid-source error from support/.
  */
 export type GuestViewDeps = MovementViewDeps;
 export const defaultGuestViewDeps: GuestViewDeps = defaultMovementViewDeps;
-
-export type GuestViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {kind: "invalidSource"; source: string; detail: string;
-    written: boolean};
 
 /**
  * The actor the guest views read membership as. The views carry no actor:

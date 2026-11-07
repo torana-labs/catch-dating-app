@@ -170,7 +170,7 @@ test("a missing coordinator records invalidSource and keeps the previous view",
     h.fake.remove(operationCollections.workItems + "/" + ids.workItemId);
     const outcome = await h.reconcile();
     assert.ok(outcome.kind === "invalidSource");
-    assert.equal(outcome.incompleteSource, operationCollections.workItems);
+    assert.equal(outcome.source, operationCollections.workItems);
     const after = (await h.view())!;
     assert.equal(after.sourceCoverage, "invalidSource");
     assert.deepEqual(after.view, before.view);
@@ -190,7 +190,7 @@ test("an automatic message under a malformed id fails closed", async () => {
       named ? {...raw, messageId: malformed} : raw);
     const outcome = await h.reconcile(malformed);
     assert.ok(outcome.kind === "invalidSource", JSON.stringify(outcome));
-    assert.equal(outcome.incompleteSource, "eventAssistanceMessages");
+    assert.equal(outcome.source, "eventAssistanceMessages");
     const written = (await h.view(malformed))!;
     assert.equal(written.sourceCoverage, "invalidSource");
     assert.equal(written.view, null);

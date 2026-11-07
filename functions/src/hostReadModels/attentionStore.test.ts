@@ -186,7 +186,7 @@ test("an invalid source row records only the schedule and keeps the rows",
     const outcome = await reconcileOrganizerAttention(store.asFirestore(),
       "org", clock(nowMillis));
     assert.equal(outcome.kind, "invalidSource");
-    assert.equal(outcome.kind === "invalidSource" && outcome.incompleteSource,
+    assert.equal(outcome.kind === "invalidSource" && outcome.source,
       "operationWorkItems");
     assert.match(outcome.kind === "invalidSource" ? outcome.detail : "",
       /work:delivery:broken failed its canonical contract/);

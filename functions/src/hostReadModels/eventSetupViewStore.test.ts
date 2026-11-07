@@ -181,7 +181,7 @@ for (const [label, patch] of [
         "event-1", clock());
       assert.equal(outcome.kind, "invalidSource");
       assert.equal(outcome.kind === "invalidSource" &&
-        outcome.incompleteSource, "events");
+        outcome.source, "events");
       const written = view(db)!;
       assert.ok(validateView(written), JSON.stringify(validateView.errors));
       assert.equal(written.sourceCoverage, "invalidSource");
@@ -200,7 +200,7 @@ test("invalid preferences and organizers name their source", async () => {
     eventId: "event-1", revision: 1, preferences: {}, paymentTerms: {}}});
   const outcome = await reconcileEventSetupView(db.asFirestore(), "event-1",
     clock());
-  assert.equal(outcome.kind === "invalidSource" && outcome.incompleteSource,
+  assert.equal(outcome.kind === "invalidSource" && outcome.source,
     "eventSetupPreferences");
   assert.equal(view(db)!.summary, null);
   assert.ok(validateView(view(db)), JSON.stringify(validateView.errors));
@@ -209,7 +209,7 @@ test("invalid preferences and organizers name their source", async () => {
   const organizerOutcome = await reconcileEventSetupView(db.asFirestore(),
     "event-1", clock());
   assert.equal(organizerOutcome.kind === "invalidSource" &&
-    organizerOutcome.incompleteSource, "organizers");
+    organizerOutcome.source, "organizers");
   delete db.docs["organizers/org"];
   assert.equal((await reconcileEventSetupView(db.asFirestore(), "event-1",
     clock())).kind, "invalidSource");

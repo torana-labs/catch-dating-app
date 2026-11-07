@@ -88,7 +88,7 @@ test("invalid defaults are recorded with their source and keep the last view",
       "org", clock());
     assert.equal(outcome.kind, "invalidSource");
     assert.equal(outcome.kind === "invalidSource" &&
-      outcome.incompleteSource, "organizerEventSetupDefaults");
+      outcome.source, "organizerEventSetupDefaults");
     const written = view(db)!;
     assert.ok(validateView(written), JSON.stringify(validateView.errors));
     assert.deepEqual(written.view, previous);

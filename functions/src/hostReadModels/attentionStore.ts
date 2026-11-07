@@ -35,7 +35,7 @@ export type AttentionReconcileOutcome =
   | {kind: "overCap"; incompleteSource: string; revision: number}
   | {
     kind: "invalidSource";
-    incompleteSource: string;
+    source: string;
     detail: string;
     revision: number;
   }
@@ -141,7 +141,7 @@ export async function reconcileOrganizerAttention(
       recordIncomplete("invalidSource", invalid.source);
       return {
         kind: "invalidSource" as const,
-        incompleteSource: invalid.source,
+        source: invalid.source,
         detail: invalid.detail,
         revision,
       };
@@ -216,7 +216,7 @@ export async function reconcileOrganizerAttention(
   } else if (outcome.kind === "invalidSource") {
     logger.error("Host Today attention evaluation read an invalid source.", {
       organizerId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }

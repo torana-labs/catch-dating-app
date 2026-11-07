@@ -7,11 +7,10 @@ import {readSettingState} from
 import {settingView} from "../eventSuccess/operations/policySettingsStore";
 import {
   configuredGroupIds,
-  MovementSourceInvalidError,
   operableEvent,
-  parsing,
-  planViewWrite,
 } from "./movementViewSupport";
+import {parsing, SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite} from "./support/viewWrite";
 import {
   consoleSettingKinds,
   defaultGuestViewDeps,
@@ -61,13 +60,13 @@ export async function reconcileSettingViews(
           const scope = {context, groupId, workflowKind};
           const id = settingId(scope);
           let view: ViewDocument["view"] = previous.get(id)?.view ?? null;
-          let invalid: MovementSourceInvalidError | null = null;
+          let invalid: SourceInvalidError | null = null;
           try {
             const state = await parsing("eventAssistanceSettings", () =>
               readSettingState(db, tx, scope, eventSnap, () => now));
             view = await parsing("events", () => settingView(state));
           } catch (error) {
-            if (!(error instanceof MovementSourceInvalidError)) throw error;
+            if (!(error instanceof SourceInvalidError)) throw error;
             invalid = error;
             result.invalidSource.push({settingId: id, source: error.source,
               detail: error.detail});

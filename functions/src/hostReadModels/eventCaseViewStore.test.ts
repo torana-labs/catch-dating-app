@@ -186,7 +186,7 @@ test("an invalid case keeps the previous view and records its source",
     const outcome = await h.reconcile();
     assert.equal(outcome.kind, "invalidSource");
     assert.ok(outcome.kind === "invalidSource");
-    assert.equal(outcome.incompleteSource, "eventAssistanceCases");
+    assert.equal(outcome.source, "eventAssistanceCases");
     const after = (await h.view())!;
     assert.equal(after.sourceCoverage, "invalidSource");
     assert.equal(after.incompleteSource, "eventAssistanceCases");
@@ -194,7 +194,7 @@ test("an invalid case keeps the previous view and records its source",
     assert.equal(after.revision, 2);
     // A second evaluation of the same bad source writes nothing more.
     assert.deepEqual(await h.reconcile(), {kind: "invalidSource",
-      incompleteSource: "eventAssistanceCases", detail: outcome.detail,
+      source: "eventAssistanceCases", detail: outcome.detail,
       revision: 2, written: false});
   });
 

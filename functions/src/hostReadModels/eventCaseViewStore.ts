@@ -1,4 +1,3 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import type {
@@ -14,27 +13,20 @@ import {validateEventAttendeeDocument} from
 import {guestCollections} from "../eventSuccess/operations/guestRecords";
 import {parseHostCase, projectHostCase} from
   "../eventSuccess/operations/hostCaseRecords";
+import {isAssistanceId} from "./support/ids";
+import {pagedIds} from "./support/fanout";
+import {SourceInvalidError, stage} from "./support/sourceInvalid";
 import {
-  isAssistanceId,
-  pagedIds,
-  positiveInteger,
-  stage,
-  ViewSourceInvalidError,
-} from "./liveViewFanout";
+  countOutcome,
+  emptyOutcomeCounts,
+  planViewWrite,
+  ViewOutcome,
+  ViewOutcomeCounts,
+} from "./support/viewWrite";
 
 export const eventCaseViewsCollection = "hostEventCaseViews";
 
-export type EventCaseViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-    written: boolean;
-  };
+export type EventCaseViewOutcome = ViewOutcome;
 
 export interface EventCaseViewStoreDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -94,12 +86,12 @@ export async function reconcileEventCaseView(
     let view: HostEventCaseViewDocument["view"];
     let status: HostEventCaseViewDocument["status"];
     let receivedAt: number;
-    let invalid: ViewSourceInvalidError | null = null;
+    let invalid: SourceInvalidError | null = null;
     try {
       const organizer = stage("organizers", () => {
         const data = organizerSnap.data();
         if (!validateOrganizerDocument(data)) {
-          throw new ViewSourceInvalidError("organizers",
+          throw new SourceInvalidError("organizers",
             "The organizer does not match its contract.");
         }
         return data as unknown as OrganizerDocument;
@@ -107,12 +99,12 @@ export async function reconcileEventCaseView(
       stage("events", () => {
         const data = eventSnap.data();
         if (!validateEventDocument(data) || data.organizerId !== organizerId) {
-          throw new ViewSourceInvalidError("events",
+          throw new SourceInvalidError("events",
             "The event does not match its contract or organizer.");
         }
       });
       if (attendeeSnap === undefined) {
-        throw new ViewSourceInvalidError("eventAssistanceCases",
+        throw new SourceInvalidError("eventAssistanceCases",
           "The case names no usable attendee.");
       }
       const request = stage("eventAssistanceCases", () =>
@@ -122,7 +114,7 @@ export async function reconcileEventCaseView(
       status = request.status;
       receivedAt = request.receivedAt;
     } catch (error) {
-      if (!(error instanceof ViewSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       invalid = error;
       view = previous?.view ?? null;
       status = previous?.status ??
@@ -140,39 +132,22 @@ export async function reconcileEventCaseView(
       incompleteSource: invalid?.source ?? null,
       view,
     };
-    const previousRevision = positiveInteger(previous?.revision) ?? 0;
-    const unchanged = previous !== null && isDeepStrictEqual({
-      eventId: previous.eventId,
-      organizerId: previous.organizerId,
-      status: previous.status,
-      receivedAt: previous.receivedAt,
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      view: previous.view,
-    }, next);
-    const revision = unchanged ? previousRevision : previousRevision + 1;
-    if (!unchanged) {
-      const document: HostEventCaseViewDocument = {
-        schemaVersion: 1,
-        caseId,
-        ...next,
-        revision,
-        evaluatedAt: now,
-      };
-      tx.set(viewRef, document);
-    }
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const, caseId,
+      ...next}, now);
+    if (!plan.unchanged) tx.set(viewRef, plan.document);
     if (invalid !== null) {
-      return {kind: "invalidSource", incompleteSource: invalid.source,
-        detail: invalid.detail, revision, written: !unchanged};
+      return {kind: "invalidSource", source: invalid.source,
+        detail: invalid.detail, revision: plan.revision,
+        written: !plan.unchanged};
     }
-    return unchanged ? {kind: "unchanged", revision} :
-      {kind: "complete", revision};
+    return plan.unchanged ? {kind: "unchanged", revision: plan.revision} :
+      {kind: "complete", revision: plan.revision};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host event case view read an invalid source.", {
       caseId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }
@@ -191,7 +166,7 @@ function attendeeSource(row: Data | undefined, organizerId: string,
 
 export interface EventCaseViewBackfillReport {
   cases: number;
-  outcomes: Record<EventCaseViewOutcome["kind"], number>;
+  outcomes: ViewOutcomeCounts;
 }
 
 /**
@@ -205,16 +180,14 @@ export async function backfillEventCaseViews(
   reconcile: (caseId: string) => Promise<EventCaseViewOutcome> =
   (caseId) => reconcileEventCaseView(db, caseId)
 ): Promise<EventCaseViewBackfillReport> {
-  const outcomes: EventCaseViewBackfillReport["outcomes"] = {
-    removed: 0, unchanged: 0, complete: 0, invalidSource: 0,
-  };
+  const outcomes = emptyOutcomeCounts();
   let cases = 0;
   for await (const caseId of pagedIds(db.collection(guestCollections.cases)
     .where("context.mode", "==", "live")
     .where("context.organizerId", "==", organizerId)
     .where("owner", "==", "eventLead"))) {
     cases++;
-    if (apply) outcomes[(await reconcile(caseId)).kind]++;
+    if (apply) countOutcome(outcomes, await reconcile(caseId));
   }
   return {cases, outcomes};
 }

@@ -1,4 +1,3 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import type {
@@ -23,6 +22,8 @@ import {
   SpendRebuildReport,
   spendTotalsCollection,
 } from "./organizerSpendStore";
+import {SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 
 export const rosterInsightViewsCollection = "hostEventRosterInsightViews";
 export const maxRosterAttendees = 1000;
@@ -35,7 +36,7 @@ const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 type Coverage = HostEventRosterInsightViewDocument["sourceCoverage"];
 
 export type RosterInsightViewOutcome =
-  | {kind: "removed"; existed: boolean}
+  | Extract<ViewOutcome, {kind: "removed" | "invalidSource"}>
   | {kind: "frozen"}
   | {kind: "unchanged"; revision: number; sourceCoverage: Coverage}
   | {
@@ -44,13 +45,6 @@ export type RosterInsightViewOutcome =
     sourceCoverage: Exclude<Coverage, "invalidSource">;
     rows: number;
     recomputedAccounts: number;
-  }
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-    written: boolean;
   };
 
 export interface RosterInsightViewStoreDeps {
@@ -60,14 +54,6 @@ export interface RosterInsightViewStoreDeps {
 const defaultDeps: RosterInsightViewStoreDeps = {
   now: () => admin.firestore.Timestamp.now(),
 };
-
-/** A source row the view cannot use; recorded on the view, never thrown. */
-export class RosterInsightSourceInvalidError extends Error {
-  constructor(readonly source: string, readonly detail: string) {
-    super(`Roster insight source ${source} is invalid: ${detail}`);
-    this.name = "RosterInsightSourceInvalidError";
-  }
-}
 
 const identityStates = new Set(["unlinked", "verified", "ambiguous", "merged"]);
 
@@ -84,7 +70,7 @@ export function rosterEdge(
   id: string,
   data: FirebaseFirestore.DocumentData | undefined
 ): OrganizerContactEventEdgeDocument {
-  const invalid = (detail: string) => new RosterInsightSourceInvalidError(
+  const invalid = (detail: string) => new SourceInvalidError(
     "organizerContactEventEdges", `${id} ${detail}`);
   if (data === undefined) throw invalid("is empty.");
   if (typeof data.contactId !== "string" ||
@@ -111,7 +97,7 @@ export function rosterContact(
   data: FirebaseFirestore.DocumentData | undefined
 ): ContactRow | null {
   if (data === undefined) return null;
-  const invalid = (detail: string) => new RosterInsightSourceInvalidError(
+  const invalid = (detail: string) => new SourceInvalidError(
     "organizerContacts", `${id} ${detail}`);
   if (!identityStates.has(data.identityState)) {
     throw invalid("has an unknown identityState.");
@@ -134,7 +120,7 @@ export function rosterTraits(
   if (data === undefined) return null;
   if (!Array.isArray(data.segmentIds) ||
       data.segmentIds.some((value: unknown) => typeof value !== "string")) {
-    throw new RosterInsightSourceInvalidError("organizerContactTraits",
+    throw new SourceInvalidError("organizerContactTraits",
       `${id} has invalid segmentIds.`);
   }
   return data as OrganizerContactTraitDocument;
@@ -248,12 +234,11 @@ export async function reconcileRosterInsightView(
     }
     const previous = viewSnap.exists ?
       viewSnap.data() as HostEventRosterInsightViewDocument : null;
-    const previousRevision = previous?.revision ?? 0;
     const startTime = event.startTime;
     if (!isTimestamp(startTime) || !isNullableTimestamp(event.endTime)) {
       return recordInvalid(tx, viewRef, {eventId, organizerId, previous, now,
         cutoffAtMillis: previous?.cutoffAtMillis ?? 0,
-        error: new RosterInsightSourceInvalidError("events",
+        error: new SourceInvalidError("events",
           `${eventId} has an invalid startTime or endTime.`)});
     }
     const cutoffAtMillis = startTime.toMillis();
@@ -266,7 +251,7 @@ export async function reconcileRosterInsightView(
     try {
       sources = await readRosterSources(db, tx, eventId);
     } catch (error) {
-      if (!(error instanceof RosterInsightSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       return recordInvalid(tx, viewRef, {eventId, organizerId, previous, now,
         cutoffAtMillis, error});
     }
@@ -298,33 +283,20 @@ export async function reconcileRosterInsightView(
       "partial" as const;
     const next = {organizerId, cutoffAtMillis, sourceCoverage,
       incompleteSource, rows};
-    const unchanged = previous !== null && isDeepStrictEqual({
-      organizerId: previous.organizerId,
-      cutoffAtMillis: previous.cutoffAtMillis,
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      rows: previous.rows,
-    }, next);
-    if (unchanged) {
-      return {kind: "unchanged", revision: previousRevision, sourceCoverage};
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const, eventId,
+      ...next}, now);
+    if (plan.unchanged) {
+      return {kind: "unchanged", revision: plan.revision, sourceCoverage};
     }
-    const revision = previousRevision + 1;
-    const document: HostEventRosterInsightViewDocument = {
-      schemaVersion: 1,
-      eventId,
-      ...next,
-      revision,
-      evaluatedAt: now,
-    };
-    tx.set(viewRef, document);
-    return {kind: "written", revision, sourceCoverage, rows: rows.length,
-      recomputedAccounts: spend.recomputedAccounts};
+    tx.set(viewRef, plan.document);
+    return {kind: "written", revision: plan.revision, sourceCoverage,
+      rows: rows.length, recomputedAccounts: spend.recomputedAccounts};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host roster insight view read an invalid source.", {
       eventId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   }
@@ -340,7 +312,7 @@ function recordInvalid(
     previous: HostEventRosterInsightViewDocument | null;
     now: FirebaseFirestore.Timestamp;
     cutoffAtMillis: number;
-    error: RosterInsightSourceInvalidError;
+    error: SourceInvalidError;
   }
 ): RosterInsightViewOutcome {
   const previous = params.previous;
@@ -363,7 +335,7 @@ function recordInvalid(
     };
     tx.set(viewRef, document);
   }
-  return {kind: "invalidSource", incompleteSource: params.error.source,
+  return {kind: "invalidSource", source: params.error.source,
     detail: params.error.detail, revision, written: !unchanged};
 }
 

@@ -1,4 +1,3 @@
-import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import type {
@@ -6,6 +5,8 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerProviderSetupCallableResponse} from
   "../shared/generated/organizerProviderSetupCallableResponse";
+import {SourceInvalidError} from "./support/sourceInvalid";
+import {planViewWrite, ViewOutcome} from "./support/viewWrite";
 
 export const providerConnectionViewsCollection = "hostProviderConnectionViews";
 const connectionsCollection = "organizerProviderConnections";
@@ -16,16 +17,9 @@ export type ProviderConnectionRow =
   OrganizerProviderSetupCallableResponse["connections"][number];
 
 export type ProviderConnectionViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
+  | Exclude<ViewOutcome, {kind: "complete"}>
   | {kind: "complete"; revision: number; connections: number}
-  | {kind: "overCap"; revision: number}
-  | {
-    kind: "invalidSource";
-    incompleteSource: string;
-    detail: string;
-    revision: number;
-  };
+  | {kind: "overCap"; revision: number};
 
 export interface ProviderConnectionViewStoreDeps {
   now: () => FirebaseFirestore.Timestamp;
@@ -34,14 +28,6 @@ export interface ProviderConnectionViewStoreDeps {
 const defaultDeps: ProviderConnectionViewStoreDeps = {
   now: () => admin.firestore.Timestamp.now(),
 };
-
-/** A connection document the view cannot project; recorded, never thrown. */
-export class ProviderConnectionSourceInvalidError extends Error {
-  constructor(readonly detail: string) {
-    super(`Provider connection source is invalid: ${detail}`);
-    this.name = "ProviderConnectionSourceInvalidError";
-  }
-}
 
 const connectionStatuses =
   new Set(["active", "degraded", "credentialRevoked", "disconnected"]);
@@ -60,7 +46,7 @@ export function providerConnectionRow(
   data: FirebaseFirestore.DocumentData | undefined
 ): ProviderConnectionRow {
   const invalid = (detail: string) =>
-    new ProviderConnectionSourceInvalidError(`${connectionId} ${detail}`);
+    new SourceInvalidError(connectionsCollection, `${connectionId} ${detail}`);
   if (data === undefined) throw invalid("is empty or missing.");
   if (data.provider !== "luma") throw invalid("has an unknown provider.");
   if (!connectionStatuses.has(data.status)) {
@@ -137,12 +123,12 @@ export async function reconcileProviderConnectionView(
     const previous = viewSnap.exists ?
       viewSnap.data() as HostProviderConnectionViewDocument : null;
     let connections: ProviderConnectionRow[];
-    let invalid: ProviderConnectionSourceInvalidError | null = null;
+    let invalid: SourceInvalidError | null = null;
     try {
       connections = connectionsSnap.docs.slice(0, maxProviderConnections)
         .map((doc) => providerConnectionRow(doc.id, doc.data()));
     } catch (error) {
-      if (!(error instanceof ProviderConnectionSourceInvalidError)) throw error;
+      if (!(error instanceof SourceInvalidError)) throw error;
       invalid = error;
       connections = previous?.connections ?? [];
     }
@@ -154,36 +140,23 @@ export async function reconcileProviderConnectionView(
         connectionsCollection : null,
       connections,
     };
-    const previousRevision = positiveInteger(previous?.revision) ?? 0;
-    const unchanged = previous !== null && isDeepStrictEqual({
-      sourceCoverage: previous.sourceCoverage,
-      incompleteSource: previous.incompleteSource,
-      connections: previous.connections,
-    }, next);
-    const revision = unchanged ? previousRevision : previousRevision + 1;
-    if (!unchanged) {
-      const document: HostProviderConnectionViewDocument = {
-        schemaVersion: 1,
-        organizerId,
-        revision,
-        evaluatedAt: deps.now(),
-        ...next,
-      };
-      tx.set(viewRef, document);
-    }
+    const plan = planViewWrite(previous, {schemaVersion: 1 as const,
+      organizerId, ...next}, deps.now());
+    if (!plan.unchanged) tx.set(viewRef, plan.document);
+    const revision = plan.revision;
     if (invalid !== null) {
-      return {kind: "invalidSource", incompleteSource: connectionsCollection,
-        detail: invalid.detail, revision};
+      return {kind: "invalidSource", source: invalid.source,
+        detail: invalid.detail, revision, written: !plan.unchanged};
     }
     if (overCap) return {kind: "overCap", revision};
-    return unchanged ? {kind: "unchanged", revision} :
+    return plan.unchanged ? {kind: "unchanged", revision} :
       {kind: "complete", revision, connections: connections.length};
   });
   // Logged once per committed evaluation, not once per transaction attempt.
   if (outcome.kind === "invalidSource") {
     logger.error("Host provider connection view read an invalid source.", {
       organizerId,
-      incompleteSource: outcome.incompleteSource,
+      source: outcome.source,
       detail: outcome.detail,
     });
   } else if (outcome.kind === "overCap") {
@@ -219,9 +192,4 @@ export async function backfillProviderConnectionView(
     viewExists: view.exists,
     outcome,
   };
-}
-
-function positiveInteger(value: unknown): number | null {
-  return Number.isSafeInteger(value) && (value as number) > 0 ?
-    value as number : null;
 }
