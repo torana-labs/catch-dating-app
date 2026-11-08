@@ -52,6 +52,8 @@ export const materializedNonSecretParams = [
   "FLIGHT_PROVIDER_POLICY",
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+  "PROGRAM_ASSISTANT_ENABLED",
+  "PROGRAM_ASSISTANT_KEY_VERSION",
 ];
 
 function option(name) {
@@ -259,6 +261,17 @@ function normalizedProviderParams(environment = process.env, projectId) {
       `${name} must pin its expected secret in this project`);
     assistanceReferences[name] = reference || " ";
   }
+  // The wedding assistant reads a pinned ANTHROPIC_API_KEY version; blank
+  // keeps it off, and turning it on requires the pinned key.
+  const programAssistantEnabled = normalizedBooleanParam(
+    environment, "PROGRAM_ASSISTANT_ENABLED");
+  const programAssistantKey = environment.PROGRAM_ASSISTANT_KEY_VERSION?.trim() || "";
+  const programAssistantPrefix = `projects/${projectId}/secrets/ANTHROPIC_API_KEY/versions/`;
+  assert(!programAssistantKey || programAssistantKey.startsWith(programAssistantPrefix) &&
+    /^[1-9][0-9]*$/.test(programAssistantKey.slice(programAssistantPrefix.length)),
+  "PROGRAM_ASSISTANT_KEY_VERSION must pin ANTHROPIC_API_KEY in this project");
+  assert(programAssistantEnabled === "false" || programAssistantKey,
+    "PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_KEY_VERSION");
   assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
     !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
   "Host operator alerts require a separately reviewed runtime activation");
@@ -312,6 +325,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
     FLIGHT_PROVIDER_POLICY: " ",
     ...assistanceReferences,
+    PROGRAM_ASSISTANT_ENABLED: programAssistantEnabled,
+    PROGRAM_ASSISTANT_KEY_VERSION: programAssistantKey || " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
@@ -323,9 +338,11 @@ const referenceNames = Object.freeze([
   "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+  "PROGRAM_ASSISTANT_KEY_VERSION",
 ]);
 const activationNames = Object.freeze([
   "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
+  "PROGRAM_ASSISTANT_ENABLED",
 ]);
 function paramsContents(params) {
   return Object.entries(params).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";

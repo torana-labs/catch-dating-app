@@ -60,6 +60,8 @@
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID": {"class": "identity"},
     "META_WHATSAPP_ENABLED": {"class": "feature-gate"},
     "META_WHATSAPP_GRAPH_VERSION": {"class": "feature-gate"},
+    "PROGRAM_ASSISTANT_ENABLED": {"class": "feature-gate"},
+    "PROGRAM_ASSISTANT_KEY_VERSION": {"class": "identity"},
     "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION": {"class": "identity"},
     "RAZORPAY_PUBLIC_KEY_ID": {"class": "identity"},
     "SERPAPI_KEY_VERSION": {"class": "identity"},

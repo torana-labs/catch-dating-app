@@ -514,6 +514,7 @@ enter previews.
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
 | `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
 | `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
+| `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |
