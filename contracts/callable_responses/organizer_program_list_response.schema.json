@@ -105,7 +105,31 @@
       ],
       "minimum": 0,
       "description": "Set once identity/free-text fields were scrubbed."
-     }
+     },
+      "guestCount": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100000,
+        "description": "Planner overview: guests in the programme, for a completely read batch. Omitted when unavailable; absence never means zero."
+      },
+      "flyingInCount": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100000,
+        "description": "Planner overview: inbound journeys. Omitted when unavailable."
+      },
+      "repliedShare": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Planner overview: the share of guests who have replied (any answer but pending). Omitted when unavailable or the programme has no guests."
+      },
+      "billedMinor": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991,
+        "description": "Planner overview: Catch fees billed for this programme in minor units. Reserved; omitted until programme billing lines exist."
+      }
     }
    }
   },

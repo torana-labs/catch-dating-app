@@ -133,3 +133,51 @@ final plannerBrandedProgram = OrganizerProgramDetail.fromCallableData({
   'hotels': <Object?>[],
   'counts': <String, Object?>{},
 }).program;
+
+Map<String, Object?> _row(
+  String id,
+  String title,
+  DateTime starts, {
+  int? guests,
+  int? flying,
+  double? replied,
+}) => {
+  'programId': id,
+  'kind': 'wedding',
+  'title': title,
+  'status': 'active',
+  'timezone': 'Asia/Kolkata',
+  'startsAtMillis': starts.millisecondsSinceEpoch,
+  'endsAtMillis': starts.add(const Duration(days: 2)).millisecondsSinceEpoch,
+  'capabilities': <String>[],
+  'functionCount': 5,
+  'canArchive': true,
+  'canUnarchive': false,
+  'revision': 1,
+  'guestCount': ?guests,
+  'flyingInCount': ?flying,
+  'repliedShare': ?replied,
+};
+
+/// Meher's programmes with their overview numbers.
+final plannerOverview = OrganizerProgramInventoryPage.fromCallableData({
+  'programs': [
+    _row(
+      plannerProgramId,
+      'Aditi and Kabir’s wedding',
+      DateTime(2026, 12, 12),
+      guests: 312,
+      flying: 196,
+      replied: 0.72,
+    ),
+    _row(
+      'sana-imran',
+      'Sana and Imran’s wedding',
+      DateTime(2027, 1, 20),
+      guests: 240,
+      flying: 80,
+      replied: 0.4,
+    ),
+    _row('bain', 'Bain & Co offsite', DateTime(2027, 2, 6)),
+  ],
+});

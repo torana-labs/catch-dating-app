@@ -40,6 +40,7 @@ import {
   nextRevision,
   requireProgramMutable,
 } from "../shared/programAuthority";
+import {loadProgramOverviewCounts} from "./programOverviewCounts";
 import {replanProgramMoments} from "../moments/momentRunner";
 import type {
   OrganizerDocument,
@@ -454,6 +455,8 @@ export async function listOrganizerProgramsHandler(
       logger.warn("Program inventory count unavailable", {error});
     }
   }
+  const overview = await loadProgramOverviewCounts(db, data.organizerId,
+    programDocs.map((doc) => doc.id));
   let exactProgram: OrganizerProgramDocument | null = null;
   if (data.programId !== undefined) {
     const programId = data.programId;
@@ -503,6 +506,7 @@ export async function listOrganizerProgramsHandler(
           program.status === "archived",
         ...(functionCounts.has(doc.id) ?
           {functionCount: functionCounts.get(doc.id)!} : {}),
+        ...(overview.get(doc.id) ?? {}),
         archivedAtMillis: program.archivedAt?.toMillis() ?? null,
         anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
         anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,

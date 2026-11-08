@@ -1,12 +1,14 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/host_events_programme_tile.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_body.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -216,5 +218,41 @@ void main() {
       find.byKey(const ValueKey('host-programme-branding-show')),
     );
     expect(shown, isFalse);
+  });
+
+  testWidgets('the planner home totals guests and opens a programme', (
+    tester,
+  ) async {
+    String? opened;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammesHomeBody(
+        status: HostProgrammesHomeStatus.ready,
+        programmes: plannerOverview.programs,
+        now: plannerNow,
+        onOpen: (row) => opened = row.programId,
+        onNew: () {},
+        onRetry: () {},
+      ),
+    );
+    expect(find.text('552'), findsOneWidget);
+    expect(find.text('312 guests · 196 flying in'), findsOneWidget);
+    expect(find.text('Live in 45 days'), findsOneWidget);
+    await tester.tap(find.text('Sana and Imran’s wedding'));
+    expect(opened, 'sana-imran');
+  });
+
+  testWidgets('the events tile shows guests, flights and replies', (
+    tester,
+  ) async {
+    await pumpPlannerBody(
+      tester,
+      HostEventsProgrammeTile(programme: plannerOverview.programs.first),
+    );
+    expect(
+      find.text('5 functions · 312 guests · 196 flying in'),
+      findsOneWidget,
+    );
+    expect(find.text('72% replied'), findsOneWidget);
   });
 }

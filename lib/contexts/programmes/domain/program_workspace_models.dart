@@ -17,6 +17,10 @@ class OrganizerProgramListRow {
     this.startsAt,
     this.endsAt,
     this.functionCount,
+    this.guestCount,
+    this.flyingInCount,
+    this.repliedShare,
+    this.billedMinor,
     this.canArchive = false,
     this.canUnarchive = false,
     this.archivedAt,
@@ -46,6 +50,10 @@ class OrganizerProgramListRow {
       functionCount: map['functionCount'] is num
           ? (map['functionCount']! as num).toInt()
           : null,
+      guestCount: (map['guestCount'] as num?)?.toInt(),
+      flyingInCount: (map['flyingInCount'] as num?)?.toInt(),
+      repliedShare: (map['repliedShare'] as num?)?.toDouble(),
+      billedMinor: (map['billedMinor'] as num?)?.toInt(),
       archivedAt: map['archivedAtMillis'] is num
           ? DateTime.fromMillisecondsSinceEpoch(
               (map['archivedAtMillis']! as num).toInt(),
@@ -73,6 +81,14 @@ class OrganizerProgramListRow {
   final DateTime? startsAt;
   final DateTime? endsAt;
   final int? functionCount;
+
+  /// Planner overview numbers; null when the server could not count them.
+  final int? guestCount;
+  final int? flyingInCount;
+
+  /// The share of guests who replied, 0 to 1.
+  final double? repliedShare;
+  final int? billedMinor;
 
   /// Actor-specific authority from the inventory response. Legacy responses
   /// fail closed; organizer membership and a grace deadline grant no authority.

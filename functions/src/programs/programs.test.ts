@@ -127,6 +127,25 @@ test("creator reopens and edits only their program after organizer-role loss",
     assert.deepEqual(db.docs, before);
   });
 
+test("the programme list carries the planner overview counts", async () => {
+  const seed = baseSeed();
+  seed["programGuests/guest-3"] = {...seed["programGuests/guest-1"],
+    rsvpStatus: "pending"};
+  seed["programGuests/guest-x"] = {...seed["programGuests/guest-1"],
+    organizerId: "org-2"};
+  const db = new FakeFirestore(seed);
+  const list = await listOrganizerProgramsHandler(request({
+    organizerId: "org-1",
+  }, "manager-1"), deps(db));
+  const row = list.programs.find((p) => p.programId === "program-1")!;
+  assert.equal(row.guestCount, 3);
+  assert.equal(row.repliedShare, 0.667);
+  assert.equal(row.flyingInCount, Object.entries(seed).filter(([key, doc]) =>
+    key.startsWith("programTravelLegs/") && doc.programId === "program-1" &&
+    doc.kind === "inbound" && doc.readiness !== "noShow").length);
+  assert.equal(row.billedMinor, undefined);
+});
+
 test("branding is set, read back and cleared through the update", async () => {
   const db = new FakeFirestore(baseSeed());
   const branding = {color: "marigold",
@@ -683,6 +702,8 @@ test(
     assert.equal(exact.programs[0].programId, result.entityId);
     assert.equal(exact.programs[0].functionCount, 0);
     assert.equal(exact.nextCursor, null);
-    assert.deepEqual(queryPaths, ["programFunctions"]);
+    // One bounded batch each: function counts and the planner overview.
+    assert.deepEqual(queryPaths,
+      ["programFunctions", "programGuests", "programTravelLegs"]);
   }
 );

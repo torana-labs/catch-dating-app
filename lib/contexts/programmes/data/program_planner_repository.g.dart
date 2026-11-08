@@ -135,3 +135,99 @@ final class ProgramPlannedMessagesFamily extends $Family
   @override
   String toString() => r'programPlannedMessagesProvider';
 }
+
+/// The planner home: the organiser's programmes with their overview
+/// numbers, from the first `listOrganizerPrograms` page.
+
+@ProviderFor(programmesOverview)
+final programmesOverviewProvider = ProgrammesOverviewFamily._();
+
+/// The planner home: the organiser's programmes with their overview
+/// numbers, from the first `listOrganizerPrograms` page.
+
+final class ProgrammesOverviewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<OrganizerProgramInventoryPage>,
+          OrganizerProgramInventoryPage,
+          FutureOr<OrganizerProgramInventoryPage>
+        >
+    with
+        $FutureModifier<OrganizerProgramInventoryPage>,
+        $FutureProvider<OrganizerProgramInventoryPage> {
+  /// The planner home: the organiser's programmes with their overview
+  /// numbers, from the first `listOrganizerPrograms` page.
+  ProgrammesOverviewProvider._({
+    required ProgrammesOverviewFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programmesOverviewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programmesOverviewHash();
+
+  @override
+  String toString() {
+    return r'programmesOverviewProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<OrganizerProgramInventoryPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<OrganizerProgramInventoryPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return programmesOverview(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgrammesOverviewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programmesOverviewHash() =>
+    r'3f54b4dbeb5ae527efd37e956d4fd3c537dd53e1';
+
+/// The planner home: the organiser's programmes with their overview
+/// numbers, from the first `listOrganizerPrograms` page.
+
+final class ProgrammesOverviewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<OrganizerProgramInventoryPage>,
+          String
+        > {
+  ProgrammesOverviewFamily._()
+    : super(
+        retry: null,
+        name: r'programmesOverviewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The planner home: the organiser's programmes with their overview
+  /// numbers, from the first `listOrganizerPrograms` page.
+
+  ProgrammesOverviewProvider call(String organizerId) =>
+      ProgrammesOverviewProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'programmesOverviewProvider';
+}

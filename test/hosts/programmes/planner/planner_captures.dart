@@ -18,6 +18,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_screen.dart'
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
@@ -74,6 +75,9 @@ List<Override> plannerCaptureOverrides() => [
     plannerProgramId,
     null,
   ).overrideWith((ref) async => plannerTravel.roster!),
+  programmesOverviewProvider(
+    plannerOrganizerId,
+  ).overrideWith((ref) async => plannerOverview),
   programLiveBoardViewProvider(plannerProgramId).overrideWith(
     (ref) async =>
         (value: staffLiveBoard(), snapshotAt: null, snapshotExpiresAt: null),
@@ -123,3 +127,6 @@ Widget plannerLiveBoardCapture() =>
 
 Widget plannerBrandingCapture() =>
     const HostProgrammeBrandingScreen(programId: plannerProgramId);
+
+Widget plannerHomeCapture() =>
+    const HostProgrammesHomeScreen(organizerId: plannerOrganizerId);
