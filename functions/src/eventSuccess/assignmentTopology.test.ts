@@ -60,8 +60,8 @@ test("pair rotation wrapper accepts doubles courts and refuses odd seats",
       structureConfig: {
         unitKind: "pairs" as const,
         unitSize: 2,
-        resourceCapacity: {concurrentUnits: 3, resourceLabelId: "court" as const,
-          seatsPerUnit},
+        resourceCapacity: {concurrentUnits: 3,
+          resourceLabelId: "court" as const, seatsPerUnit},
       },
     });
     assert.doesNotThrow(() => assertPairRotationTopology(courts(4)));
