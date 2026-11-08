@@ -1,3 +1,4 @@
+import {isDoublesCourt} from "./doublesSlots";
 import {HttpsError} from "firebase-functions/v2/https";
 
 export type EventSuccessUnitKind =
@@ -100,13 +101,9 @@ export function assertPairRotationTopology(
         "Use group assignments for tables."
     );
   }
-  const seats = resolveEventSuccessResourceCapacity(plan)?.seatsPerUnit;
-  if (seats !== null && seats !== undefined && seats > 2) {
-    throw new HttpsError("failed-precondition",
-      "Doubles courts are planned by the assignment engine, but rotation " +
-        "slots still hold one partner. Publishing doubles is not " +
-        "available yet.");
-  }
+  // Doubles courts (four seats) are planned by the assignment engine and
+  // persisted as partnerships with opponents; other seat counts are refused.
+  isDoublesCourt(resolveEventSuccessResourceCapacity(plan)?.seatsPerUnit);
   const unitKind = normalizedUnitKind(plan);
   const configuredSize = boundedInteger(
     plan.structureConfig?.unitSize,
