@@ -11338,6 +11338,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eventsEventPriceCopyHiddenUntilBookingOpens =>
+      'Price when booking opens';
+
+  @override
+  String get eventsEventDetailExternalBookingGetTickets => 'Get tickets';
+
+  @override
+  String eventsEventDetailExternalBookingGetTicketsOn({
+    required Object platform,
+  }) {
+    return 'Get tickets on $platform';
+  }
+
+  @override
   String get eventsEventPriceCopyPriceOnSource => 'Price on source';
 
   @override

@@ -107,6 +107,12 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
   const where = placeFact(event.location, catchEvent?.meetingLocation?.name);
   const photo = catchEvent?.photoUrl?.trim();
   const open = isOpen(event.startTime, event.endTime, now);
+  // The host's guest settings on a Catch event: tickets sold elsewhere, and a
+  // price hidden until Catch registration opens.
+  const sellsElsewhere = catchEvent?.externalBooking ?
+    {url: catchEvent.externalBooking.url,
+      label: copy.ticketPlatforms[catchEvent.externalBooking.provider] ?? copy.ticketPlatforms.generic} : null;
+  const priceLabel = catchEvent?.priceHidden ? copy.priceHidden : event.priceLabel;
   return {
     eventId: page.eventId,
     path: page.path,
@@ -128,8 +134,9 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
       when: start ? {label: copy.facts.when, value: dayLabel(start), note: timeRange(start, end)} :
         {label: copy.facts.when, value: event.date},
       where: {label: copy.facts.where, ...where},
-      price: {label: copy.facts.price, value: event.priceLabel, note: item.source === "external" ?
-        copy.ticketsOn(item.booking.label) : (catchEvent?.amountPaise ?? 0) > 0 ? copy.perPerson : undefined},
+      price: {label: copy.facts.price, value: priceLabel, note: item.source === "external" ?
+        copy.ticketsOn(item.booking.label) : sellsElsewhere ? copy.ticketsOn(sellsElsewhere.label) :
+          !catchEvent?.priceHidden && (catchEvent?.amountPaise ?? 0) > 0 ? copy.perPerson : undefined},
     },
     description: event.summary.trim() || null,
     moments: catchEvent ? momentsFor(catchEvent) : null,
@@ -178,8 +185,9 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
     } : null,
     booking: item.source === "external" ?
       {kind: "external", url: item.booking.url, label: item.booking.label, open} :
-      {kind: "catch", eventId: page.eventId, open},
-    priceLabel: event.priceLabel,
+      sellsElsewhere ? {kind: "external", ...sellsElsewhere, open} :
+        {kind: "catch", eventId: page.eventId, open},
+    priceLabel,
   };
 }
 
@@ -241,6 +249,8 @@ function goodToKnowFor(page: EventPageData): EventPageGoodToKnow[] {
 
 function goingFor(page: EventPageData): EventPageView["going"] {
   const {capacity} = page;
+  // The host can hide who else is going.
+  if (page.item.source === "catch" && page.item.event.showGuestList === false) return null;
   // Nobody booked yet is nothing to show; the booking card still counts the spots.
   if (capacity.state === "external" || !capacity.capacityLimit || !capacity.bookedCount ||
     capacity.spotsLeft === null) return null;

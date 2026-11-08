@@ -7,12 +7,16 @@ import 'package:catch_l10n/l10n.dart';
 /// Canonical price copy for Catch-owned events.
 ///
 /// Demand-priced events say "From" only while the viewer has no resolved
-/// quote. Once a quote exists, the exact quoted price is shown.
+/// quote. Once a quote exists, the exact quoted price is shown. A price the
+/// host hides until booking opens reads as such until a quote exists.
 String eventPriceLabel(
   AppLocalizations l10n,
   Event event, {
   int? quotedPriceInPaise,
 }) {
+  if (quotedPriceInPaise == null && event.priceHiddenForGuests) {
+    return l10n.eventsEventPriceCopyHiddenUntilBookingOpens;
+  }
   final priceInPaise = quotedPriceInPaise ?? event.priceInPaise;
   if (priceInPaise <= 0) return l10n.eventsEventPriceCopyFree;
 

@@ -17652,6 +17652,26 @@ abstract class AppLocalizations {
   /// **'From {price}'**
   String eventsEventPriceCopyFromPrice({required Object price});
 
+  /// Price label while the host hides the price until booking opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Price when booking opens'**
+  String get eventsEventPriceCopyHiddenUntilBookingOpens;
+
+  /// Event page booking button when tickets are sold on the organiser's own site.
+  ///
+  /// In en, this message translates to:
+  /// **'Get tickets'**
+  String get eventsEventDetailExternalBookingGetTickets;
+
+  /// Event page booking button when tickets are sold on another platform, such as Luma.
+  ///
+  /// In en, this message translates to:
+  /// **'Get tickets on {platform}'**
+  String eventsEventDetailExternalBookingGetTicketsOn({
+    required Object platform,
+  });
+
   /// Fallback price label for external events whose source has no parsed price.
   ///
   /// In en, this message translates to:

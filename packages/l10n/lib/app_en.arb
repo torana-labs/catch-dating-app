@@ -19806,6 +19806,28 @@
     "x-owner": "product",
     "x-surface": "events.shared.event_price_copy"
   },
+  "eventsEventPriceCopyHiddenUntilBookingOpens": "Price when booking opens",
+  "@eventsEventPriceCopyHiddenUntilBookingOpens": {
+    "description": "Price label while the host hides the price until booking opens.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.shared.event_price_copy"
+  },
+  "eventsEventDetailExternalBookingGetTickets": "Get tickets",
+  "@eventsEventDetailExternalBookingGetTickets": {
+    "description": "Event page booking button when tickets are sold on the organiser's own site.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
+  "eventsEventDetailExternalBookingGetTicketsOn": "Get tickets on {platform}",
+  "@eventsEventDetailExternalBookingGetTicketsOn": {
+    "description": "Event page booking button when tickets are sold on another platform, such as Luma.",
+    "placeholders": {"platform": {}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
   "eventsEventPriceCopyPriceOnSource": "Price on source",
   "@eventsEventPriceCopyPriceOnSource": {
     "description": "Fallback price label for external events whose source has no parsed price.",

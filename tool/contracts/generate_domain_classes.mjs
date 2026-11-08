@@ -497,6 +497,13 @@ const SPECS = [
           "default": "true"
         },
         {
+          "name": "externalBooking",
+          "dartType": "EventExternalBooking",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
           "name": "constraints",
           "dartType": "EventConstraints",
           "default": "EventConstraints()"
@@ -589,6 +596,24 @@ const SPECS = [
         },
         {
           "name": "connectedBy",
+          "dartType": "String"
+        }
+      ]
+    },
+    {
+      "name": "EventExternalBooking",
+      "pointer": "/properties/externalBooking",
+      "fields": [
+        {
+          "name": "provider",
+          "dartType": "ExternalBookingProvider",
+          "jsonKey": {
+            "fromJson": "externalBookingProviderFromJson",
+            "toJson": "externalBookingProviderToJson"
+          }
+        },
+        {
+          "name": "url",
           "dartType": "String"
         }
       ]

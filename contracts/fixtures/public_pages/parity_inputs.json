@@ -1666,7 +1666,13 @@
             "organizerId": "owner-made",
             "publicationState": "published",
             "currency": "INR",
-            "eventTimezone": "Asia/Kolkata"
+            "eventTimezone": "Asia/Kolkata",
+            "showGuestList": false,
+            "priceHiddenUntilBookingOpens": true,
+            "externalBooking": {
+              "provider": "luma",
+              "url": "https://lu.ma/owner-upcoming"
+            }
           }
         }
       ],

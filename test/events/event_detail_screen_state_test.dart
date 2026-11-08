@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
+import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/catch_async_state.dart';
@@ -34,6 +35,82 @@ void main() {
   });
 
   group('EventDetail booking dock state', () {
+    test('hides the price until registration opens', () {
+      final hidden = events
+          .buildEvent(priceInPaise: 15000)
+          .copyWith(priceHiddenUntilBookingOpens: true);
+
+      expect(eventPriceLabel(_l10n, hidden), 'Price when booking opens');
+      expect(
+        eventPriceLabel(
+          _l10n,
+          hidden.copyWith(publicRegistrationEnabled: true),
+        ),
+        isNot('Price when booking opens'),
+      );
+      expect(
+        eventPriceLabel(_l10n, hidden, quotedPriceInPaise: 15000),
+        isNot('Price when booking opens'),
+      );
+    });
+
+    test('links out when tickets are sold elsewhere', () {
+      final event = events.buildEvent().copyWith(
+        externalBooking: const EventExternalBooking(
+          provider: ExternalBookingProvider.luma,
+          url: 'https://lu.ma/run',
+        ),
+      );
+
+      final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
+        event: event,
+        userProfile: events.buildUser(),
+        participation: null,
+        now: event.startTime.subtract(const Duration(hours: 1)),
+        hasInviteCode: false,
+        supportsPaidBookings: true,
+      );
+
+      expect(state.label, 'Get tickets on Luma');
+      expect(
+        state.primaryAction,
+        EventDetailBookingDockAction.openExternalBooking,
+      );
+      expect(event.externalBookingUri, Uri.parse('https://lu.ma/run'));
+    });
+
+    test('a generic ticket link reads Get tickets; http is ignored', () {
+      final generic = events.buildEvent().copyWith(
+        externalBooking: const EventExternalBooking(
+          provider: ExternalBookingProvider.generic,
+          url: 'https://tickets.example.test/run',
+        ),
+      );
+      final insecure = events.buildEvent().copyWith(
+        externalBooking: const EventExternalBooking(
+          provider: ExternalBookingProvider.generic,
+          url: 'http://tickets.example.test/run',
+        ),
+      );
+      EventDetailBookingDockState dockFor(Event event) =>
+          eventDetailBookingDockStateFrom(
+            l10n: _l10n,
+            event: event,
+            userProfile: events.buildUser(),
+            participation: null,
+            now: event.startTime.subtract(const Duration(hours: 1)),
+            hasInviteCode: false,
+            supportsPaidBookings: true,
+          );
+
+      expect(dockFor(generic).label, 'Get tickets');
+      expect(
+        dockFor(insecure).primaryAction,
+        isNot(EventDetailBookingDockAction.openExternalBooking),
+      );
+    });
+
     test('hides Catch booking for an unclaimed organizer', () {
       final event = events.buildEvent();
 
