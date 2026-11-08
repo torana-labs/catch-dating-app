@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_organizer_bills_controller.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -288,7 +289,7 @@ CatchBadgeTone _statusTone(HostOrganizerBill bill, DateTime now) =>
     };
 
 String _monthLabel(AppLocalizations l10n, HostOrganizerBill bill) =>
-    DateFormat.yMMMM(l10n.localeName).format(bill.month);
+    hostOrganizerBillPeriodLabel(bill, l10n.localeName);
 
 String _dayLabel(AppLocalizations l10n, DateTime date) =>
     DateFormat.MMMd(l10n.localeName).format(date);

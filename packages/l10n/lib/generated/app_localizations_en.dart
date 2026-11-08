@@ -19194,7 +19194,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostOrganizerBillNoneBody =>
-      'No bills yet. Catch bills you once a month, for the month before.';
+      'No bills yet. After your free trial, Catch bills you when each billing cycle ends, for the sales in it.';
 
   @override
   String hostOrganizerBillBody({required String sales}) {

@@ -55,7 +55,7 @@ class HostOrganizerBillRow extends StatelessWidget {
     final onPay = bill.canPay ? this.onPay : null;
     return CatchIndexRow(
       key: ValueKey<String>('host-organizer-bill-${bill.billId}'),
-      title: DateFormat.yMMMM(locale).format(bill.month),
+      title: hostOrganizerBillPeriodLabel(bill, locale),
       subtitle: bill.status == HostOrganizerBillStatus.free
           ? l10n.hostOrganizerBillTrial
           : bill.capped
@@ -73,6 +73,23 @@ class HostOrganizerBillRow extends StatelessWidget {
       onTap: onPay,
     );
   }
+}
+
+/// A bill's period as people say it: "October 2026" for a calendar month, or
+/// "Nov 9 – Dec 8 2026" for a rolling cycle (its last day, not its exclusive
+/// end).
+String hostOrganizerBillPeriodLabel(HostOrganizerBill bill, String locale) {
+  final start = bill.periodStart;
+  final end = bill.periodEnd;
+  if (bill.periodKind != HostOrganizerBillPeriodKind.cycle ||
+      start == null ||
+      end == null) {
+    return DateFormat.yMMMM(locale).format(bill.month);
+  }
+  final last = end.subtract(const Duration(milliseconds: 1));
+  final day = DateFormat.MMMd(locale);
+  return '${day.format(start)} – ${day.format(last)} '
+      '${DateFormat.y(locale).format(last)}';
 }
 
 /// Whole-rupee money as the bills print it, such as ₹7,400.

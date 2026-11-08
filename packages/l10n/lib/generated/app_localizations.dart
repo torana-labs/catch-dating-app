@@ -30692,7 +30692,7 @@ abstract class AppLocalizations {
   /// **'Guests can’t pay for events, forms or memberships until you connect an account again.'**
   String get hostOrganizerRazorpayDisconnectBody;
 
-  /// Payments bill spotlight kicker with the month billed.
+  /// Payments bill spotlight kicker with the period billed: a month, or a billing cycle as a date range.
   ///
   /// In en, this message translates to:
   /// **'Your Catch bill · {month}'**
@@ -30707,7 +30707,7 @@ abstract class AppLocalizations {
   /// Payments bill spotlight body before the first bill.
   ///
   /// In en, this message translates to:
-  /// **'No bills yet. Catch bills you once a month, for the month before.'**
+  /// **'No bills yet. After your free trial, Catch bills you when each billing cycle ends, for the sales in it.'**
   String get hostOrganizerBillNoneBody;
 
   /// Payments bill spotlight body.
