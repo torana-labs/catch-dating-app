@@ -36,7 +36,7 @@ describe("account page model", () => {
 
 describe("sign-in email links", () => {
   it("returns to the same page, marked, without stale link parameters", () => {
-    const url = new URL(emailLinkReturnUrl("https://catchdates.com/organizers/run/?ref=ig&oobCode=old#reviews"));
+    const url = new URL(emailLinkReturnUrl("https://site.example/organizers/run/?ref=ig&oobCode=old#reviews"));
     expect(url.pathname).toBe("/organizers/run/");
     expect(url.searchParams.get("ref")).toBe("ig");
     expect(url.searchParams.get("oobCode")).toBeNull();
@@ -44,12 +44,12 @@ describe("sign-in email links", () => {
     expect(url.hash).toBe("");
   });
   it("recognises only this sheet's links, directly or through continueUrl", () => {
-    expect(isMarkedEmailLinkReturn("https://catchdates.com/a/?catchSignIn=1&oobCode=x&mode=signIn")).toBe(true);
-    expect(isMarkedEmailLinkReturn(`https://catchdates.com/a/?oobCode=x&continueUrl=${encodeURIComponent("https://catchdates.com/a/?catchSignIn=1")}`)).toBe(true);
-    expect(isMarkedEmailLinkReturn("https://catchdates.com/f/form/?oobCode=x&mode=signIn")).toBe(false);
+    expect(isMarkedEmailLinkReturn("https://site.example/a/?catchSignIn=1&oobCode=x&mode=signIn")).toBe(true);
+    expect(isMarkedEmailLinkReturn(`https://site.example/a/?oobCode=x&continueUrl=${encodeURIComponent("https://site.example/a/?catchSignIn=1")}`)).toBe(true);
+    expect(isMarkedEmailLinkReturn("https://site.example/f/form/?oobCode=x&mode=signIn")).toBe(false);
   });
   it("strips the one-time parameters after sign-in", () => {
-    expect(withoutEmailLinkParams("https://catchdates.com/a/?ref=ig&catchSignIn=1&oobCode=x&apiKey=k&mode=signIn&lang=en#top"))
+    expect(withoutEmailLinkParams("https://site.example/a/?ref=ig&catchSignIn=1&oobCode=x&apiKey=k&mode=signIn&lang=en#top"))
       .toBe("/a/?ref=ig#top");
   });
 });
