@@ -29,8 +29,8 @@ void main() {
     expect(newRootLegacyFiles.every(newRootPath), isTrue);
   });
 
-  test('the new roots are the app packages, lib/pages, Today, Create, '
-      'Onboarding and People', () {
+  test('the new roots are the app packages, lib/pages, Today, Create and '
+      'Onboarding', () {
     for (final file in const [
       'apps/host/lib/main.dart',
       'apps/consumer/lib/explore/widgets/row.dart',
@@ -38,7 +38,6 @@ void main() {
       'lib/hosts/today/host_today_body.dart',
       'lib/hosts/create/create_basics_body.dart',
       'lib/hosts/onboarding/sign_in_body.dart',
-      'lib/hosts/people/people_body.dart',
       'tool/catch_ui_lints_probe/run.x/1/apps/host/lib/a.dart',
       'tool/catch_ui_lints_probe/run.x/1/arch/lib/pages/a/a.dart',
     ]) {

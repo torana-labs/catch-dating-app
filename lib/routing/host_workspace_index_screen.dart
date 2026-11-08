@@ -101,9 +101,12 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
             ),
           ),
         ),
-        _ => hostPeopleScreenForUri(uri),
+        _ => hostAudienceScreenForUri(
+          uri,
+          initialContactDisplayName: initialContactDisplayName,
+        ),
       },
-      Routes.hostInboxScreen => hostMessagesScreenForUri(
+      Routes.hostInboxScreen => hostInboxScreenForUri(
         uri,
         initialOrganizerId: initialOrganizerId,
       ),

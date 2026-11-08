@@ -725,8 +725,6 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_people_desktop",
-        "host_people_phone",
         "host_customers_populated",
         "host_customers_audiences_populated",
         "host_forms_populated",
@@ -736,12 +734,9 @@
     },
     {
       "routeId": "hostNewMessageScreen",
-      "status": "captured",
+      "status": "planned",
       "priority": "P2",
-      "captureIds": [
-        "host_compose_phone"
-      ],
-      "reason": "The People compose screen sends one message to an event's booked guests or waitlist."
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
     },
     {
       "routeId": "hostEventRosterScreen",
@@ -810,7 +805,6 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_saved_group_phone",
         "host_saved_audience_detail",
         "host_group_overview",
         "host_group_edit"
@@ -886,7 +880,6 @@
       "priority": "P2",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_automations_phone",
         "host_audience_automations"
       ]
     },
@@ -921,7 +914,6 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_person_phone",
         "host_customer_detail_memory",
         "host_person_overview",
         "host_person_details",
@@ -1442,7 +1434,6 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_messages_phone",
         "host_inbox_uid_loading",
         "host_inbox_loading",
         "host_inbox_error",
