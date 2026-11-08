@@ -32,6 +32,7 @@ class EventSuccessHostDraft {
         const EventSuccessQuestionnaireConfig.defaultTemplate(),
     this.conversationGraphConsentMode =
         EventSuccessConversationGraphConsentMode.optIn,
+    this.revealUsesStandings = false,
   }) : assert(targetAttendeeCount > 0);
 
   factory EventSuccessHostDraft.fromPlaybook(
@@ -53,6 +54,7 @@ class EventSuccessHostDraft {
       targetAttendeeCount: target,
       structureConfig: profile.structureConfig,
       compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
+      revealUsesStandings: profile.revealUsesStandings,
     );
   }
 
@@ -83,6 +85,7 @@ class EventSuccessHostDraft {
               .round(),
       structureConfig: profile.structureConfig,
       compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
+      revealUsesStandings: profile.revealUsesStandings,
     );
   }
 
@@ -96,6 +99,10 @@ class EventSuccessHostDraft {
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
   final EventSuccessConversationGraphConsentMode conversationGraphConsentMode;
+
+  /// The format's reveal shows score or rank standings, so it needs no pod or
+  /// rotation plan.
+  final bool revealUsesStandings;
 
   Set<String> get effectiveSelectedModuleIds =>
       playbook.effectiveModuleSelection(selectedModuleIds);
@@ -165,6 +172,7 @@ class EventSuccessHostDraft {
           ) &&
           (compatibilityAffectsRanking ||
               profile.compatibilityAffectsRankingByDefault),
+      revealUsesStandings: profile.revealUsesStandings,
     ).normalizedForSelectedModules();
   }
 
@@ -204,6 +212,7 @@ class EventSuccessHostDraft {
     bool? compatibilityAffectsRanking,
     EventSuccessQuestionnaireConfig? questionnaireConfig,
     EventSuccessConversationGraphConsentMode? conversationGraphConsentMode,
+    bool? revealUsesStandings,
   }) {
     final resolvedPlaybook = playbook ?? this.playbook;
     final resolvedIds = selectedModuleIds ?? this.selectedModuleIds;
@@ -240,6 +249,7 @@ class EventSuccessHostDraft {
       questionnaireConfig: questionnaireConfig ?? this.questionnaireConfig,
       conversationGraphConsentMode:
           conversationGraphConsentMode ?? this.conversationGraphConsentMode,
+      revealUsesStandings: revealUsesStandings ?? this.revealUsesStandings,
     );
   }
 
@@ -266,6 +276,7 @@ class EventSuccessHostDraft {
       issues.add('Add a rotation cadence before using guided rotations.');
     }
     if (selectedModuleIds.contains(EventSuccessModuleCatalog.liveReveal.id) &&
+        !revealUsesStandings &&
         !selectedModuleIds.contains(
           EventSuccessModuleCatalog.guidedRotations.id,
         ) &&

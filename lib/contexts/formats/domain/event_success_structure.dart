@@ -261,6 +261,7 @@ class EventSuccessStructureConfig {
         unitSize: 2,
         rotationIntervalMinutes: 15,
       ),
+      EventInteractionModel.routeStops ||
       EventInteractionModel.hostLedProgram ||
       EventInteractionModel.openFormat => EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.wholeGroup,

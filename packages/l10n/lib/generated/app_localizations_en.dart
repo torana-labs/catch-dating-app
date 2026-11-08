@@ -7112,6 +7112,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The host is pacing the room from live mode.';
 
   @override
+  String get eventSuccessEventSuccessCompanionScreenStateBodyPhoneAway =>
+      'Phone away for this part. Catch stays quiet until the next stop or the finish.';
+
+  @override
   String get eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe =>
       'Use it if the room needs an easy next line.';
 
@@ -7555,6 +7559,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd =>
       'A seated format and host cues make the first conversation easier.';
+
+  @override
+  String get eventsEventDetailDesignPrimitivesVisiblecopyAFirstHelloMixes =>
+      'A first hello mixes the group, and the host keeps everyone together between stops.';
 
   @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyHostNudgesKeepThe =>
@@ -8079,7 +8087,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat =>
-      'Expect a seated format with table-level structure and host cues for easier conversation.';
+      'Expect a seated format with table-level structure. Check in and see your seat once, then phones away while the host keeps conversation easy.';
+
+  @override
+  String get eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith =>
+      'Expect a route with stops: meet people at the start, keep your phone away at each stop, and the host makes sure nobody is left behind.';
 
   @override
   String get eventsEventDetailOverviewSectionVisiblecopyExpectALooserSocial =>
@@ -10344,6 +10356,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number}) {
     return 'Leg $number';
+  }
+
+  @override
+  String eventSuccessEventSuccessHostLiveLabelStopNumber({
+    required int number,
+  }) {
+    return 'Stop $number';
   }
 
   @override

@@ -112,15 +112,21 @@ class EventSuccessMomentPresentation {
         headline:
             step?.title ??
             l10n.eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor,
-        body:
-            step?.attendeeExperience ??
-            l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing,
+        body: moment.phoneAway
+            ? l10n.eventSuccessEventSuccessCompanionScreenStateBodyPhoneAway
+            : step?.attendeeExperience ??
+                  l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame,
         icon: CatchIcons.location,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
-        effectKind: EventSuccessLiveEffectKind.stepChange,
+        // Phones are away: no haptic, sound or ambient bed until the next
+        // planned stop or the finish.
+        effectKind: moment.phoneAway
+            ? null
+            : EventSuccessLiveEffectKind.stepChange,
+        ambientBed: moment.phoneAway ? EventSuccessAmbientBed.silent : null,
       ),
       EventSuccessAttendeeMomentKind.socialPrompt => EventSuccessMomentPresentation(
         badgeLabel:

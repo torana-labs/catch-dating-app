@@ -12767,6 +12767,13 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
+  "eventSuccessEventSuccessCompanionScreenStateBodyPhoneAway": "Phone away for this part. Catch stays quiet until the next stop or the finish.",
+  "@eventSuccessEventSuccessCompanionScreenStateBodyPhoneAway": {
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body) while the event keeps guest phones away.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_success_companion_screen_state"
+  },
   "eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": "Use it if the room needs an easy next line.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
@@ -13604,6 +13611,13 @@
   "eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd": "A seated format and host cues make the first conversation easier.",
   "@eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
+  },
+  "eventsEventDetailDesignPrimitivesVisiblecopyAFirstHelloMixes": "A first hello mixes the group, and the host keeps everyone together between stops.",
+  "@eventsEventDetailDesignPrimitivesVisiblecopyAFirstHelloMixes": {
+    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy) for formats that move between stops.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_design_primitives"
@@ -14509,9 +14523,16 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_overview_section"
   },
-  "eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat": "Expect a seated format with table-level structure and host cues for easier conversation.",
+  "eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat": "Expect a seated format with table-level structure. Check in and see your seat once, then phones away while the host keeps conversation easy.",
   "@eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.widgets.event_detail_overview_section"
+  },
+  "eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith": "Expect a route with stops: meet people at the start, keep your phone away at each stop, and the host makes sure nobody is left behind.",
+  "@eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith": {
+    "description": "Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy) for formats that move between stops.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_overview_section"
@@ -18412,6 +18433,14 @@
   "eventSuccessEventSuccessHostLiveLabelLegNumber": "Leg {number}",
   "@eventSuccessEventSuccessHostLiveLabelLegNumber": {
     "description": "Numbered transition label for a segmented run of show.",
+    "placeholders": {"number": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessEventSuccessHostLiveLabelStopNumber": "Stop {number}",
+  "@eventSuccessEventSuccessHostLiveLabelStopNumber": {
+    "description": "Numbered transition label for a run of show that moves between stops.",
     "placeholders": {"number": {"type": "int"}},
     "x-audience": "host",
     "x-owner": "product",

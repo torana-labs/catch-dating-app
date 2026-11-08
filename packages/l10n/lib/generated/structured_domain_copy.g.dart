@@ -103,6 +103,7 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessPromptTeamRotations = 'Find someone on your team and ask what brought them here.';
   static const eventSuccessPromptSeatedTable = 'Ask someone at your table what made them say yes to tonight.';
   static const eventSuccessPromptFreeFormMixer = 'Find someone nearby and ask what answer from tonight surprised them.';
+  static const eventSuccessPromptRouteStops = 'On the way to the next stop, ask someone which stop they would come back to.';
   static const eventSuccessPromptOpenFormat = 'Find someone near you and ask what brought them here.';
   static const eventSuccessSetupNeedsWork = 'Needs work';
   static const eventSuccessSetupReadyForLaunch = 'Ready for launch';

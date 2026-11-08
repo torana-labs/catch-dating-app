@@ -11217,6 +11217,12 @@ abstract class AppLocalizations {
   /// **'The host is pacing the room from live mode.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing;
 
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body) while the event keeps guest phones away.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone away for this part. Catch stays quiet until the next stop or the finish.'**
+  String get eventSuccessEventSuccessCompanionScreenStateBodyPhoneAway;
+
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
@@ -11931,6 +11937,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A seated format and host cues make the first conversation easier.'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd;
+
+  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy) for formats that move between stops.
+  ///
+  /// In en, this message translates to:
+  /// **'A first hello mixes the group, and the host keeps everyone together between stops.'**
+  String get eventsEventDetailDesignPrimitivesVisiblecopyAFirstHelloMixes;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
@@ -12705,8 +12717,14 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Expect a seated format with table-level structure and host cues for easier conversation.'**
+  /// **'Expect a seated format with table-level structure. Check in and see your seat once, then phones away while the host keeps conversation easy.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat;
+
+  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy) for formats that move between stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Expect a route with stops: meet people at the start, keep your phone away at each stop, and the host makes sure nobody is left behind.'**
+  String get eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
@@ -16104,6 +16122,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leg {number}'**
   String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number});
+
+  /// Numbered transition label for a run of show that moves between stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop {number}'**
+  String eventSuccessEventSuccessHostLiveLabelStopNumber({required int number});
 
   /// Kicker above the next live-guide step in Control Room.
   ///

@@ -5,6 +5,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 
 part 'event_success_activity_profile/enums.dart';
+part 'event_success_activity_profile/phone_availability.dart';
 part 'event_success_activity_profile/profile.dart';
 part 'event_success_activity_profile/recommendation.dart';
 part 'event_success_activity_profile/rules.dart';

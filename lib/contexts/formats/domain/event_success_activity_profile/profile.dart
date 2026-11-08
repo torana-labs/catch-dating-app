@@ -69,12 +69,19 @@ class EventSuccessActivityProfile {
       unitOutcome,
     );
     final reasons = _reasonsFor(interactionModel);
+    final phoneAvailability = _phoneAvailabilityFor(format, interactionModel);
+    final phoneNote = eventSuccessPhoneAvailabilityNote(
+      phoneAvailability,
+      durationShape,
+    );
     final recommendations = <EventSuccessModuleRecommendation>[
       for (final module in playbook.modules)
         EventSuccessModuleRecommendation(
           module: module,
           level: levels[module.id] ?? EventSuccessRecommendationLevel.optional,
-          reason: reasons[module.id] ?? module.hostPromise,
+          reason: _guestPhoneModuleIds.contains(module.id)
+              ? '${reasons[module.id] ?? module.hostPromise} $phoneNote'
+              : reasons[module.id] ?? module.hostPromise,
         ),
     ];
 
@@ -85,7 +92,7 @@ class EventSuccessActivityProfile {
       playbook: playbook,
       durationShape: durationShape,
       structureConfig: structureConfig,
-      phoneAvailability: _phoneAvailabilityFor(format, interactionModel),
+      phoneAvailability: phoneAvailability,
       rotationSuitability: _rotationSuitabilityFor(format),
       assignmentAlgorithm: assignmentAlgorithm,
       compatibilityPolicy: compatibilityPolicy,
@@ -131,11 +138,21 @@ class EventSuccessActivityProfile {
         StructuredDomainCopy.eventSuccessPromptSeatedTable,
       EventInteractionModel.freeFormMixer =>
         StructuredDomainCopy.eventSuccessPromptFreeFormMixer,
+      EventInteractionModel.routeStops =>
+        StructuredDomainCopy.eventSuccessPromptRouteStops,
       EventInteractionModel.hostLedProgram ||
       EventInteractionModel.openFormat =>
         StructuredDomainCopy.eventSuccessPromptOpenFormat,
     };
   }
+
+  /// A score reveal, or a rank reveal backed by a real assignment engine,
+  /// shows standings and needs no pod or rotation plan. The live runtime and
+  /// the setup readiness check share this rule.
+  bool get revealUsesStandings =>
+      unitOutcome == EventSuccessUnitOutcome.score ||
+      (unitOutcome == EventSuccessUnitOutcome.rank &&
+          assignmentResolution.supported);
 
   Set<String> get defaultModuleIds => recommendations
       .where((recommendation) => recommendation.selectedByDefault)

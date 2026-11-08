@@ -142,7 +142,7 @@ abstract final class EventSuccessConversationCueLibrary {
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn,
       EventInteractionModel.seatedTable =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou,
-      EventInteractionModel.freeFormMixer =>
+      EventInteractionModel.freeFormMixer || EventInteractionModel.routeStops =>
         l10n.eventSuccessEventSuccessConversationCueCopyBodyILikedOurConversation,
       EventInteractionModel.hostLedProgram ||
       EventInteractionModel.openFormat =>

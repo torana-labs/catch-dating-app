@@ -19,6 +19,10 @@ import {
   eventParticipationPatch,
 } from "../shared/relationshipDocuments";
 import {normalizeMarkEventAttendancePayload} from "./eventPayloadNormalization";
+import {
+  eventSuccessGuestCueAllowed,
+  eventSuccessPrimitivesFor,
+} from "../eventSuccess/formatPrimitives";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
@@ -279,7 +283,9 @@ function companionHasRelevantSurface(params: {
   const eventEndTime = (
     params.event.endTime as FirebaseFirestore.Timestamp
   ).toDate();
-  if (eventEndTime > params.now) return true;
+  if (eventEndTime > params.now) {
+    return companionPushRespectsPhoneAvailability(params.event, params.now);
+  }
 
   return moduleSelected(
     params.plan.selectedModuleIds,
@@ -290,6 +296,26 @@ function companionHasRelevantSurface(params: {
       params.plan.selectedModuleIds,
       CONTEXTUAL_OPENERS_MODULE_ID
     )
+  );
+}
+
+/**
+ * A check-in push is an arrival cue. It may not interrupt a guest whose
+ * phone stays away while the activity runs, such as a runner checked in by
+ * the host after the start.
+ * @param {EventDocument} event Event document.
+ * @param {Date} now Current time.
+ * @return {boolean} Whether the event's phone availability allows the push.
+ */
+export function companionPushRespectsPhoneAvailability(
+  event: EventDocument,
+  now: Date
+): boolean {
+  const startTime = (event.startTime as FirebaseFirestore.Timestamp).toDate();
+  return eventSuccessGuestCueAllowed(
+    eventSuccessPrimitivesFor(event.eventFormat).phoneAvailability,
+    "arrival",
+    startTime <= now
   );
 }
 

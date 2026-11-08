@@ -11,6 +11,7 @@ import type {
   EventAttendeeDocument,
   EventDocument,
   EventLivePositionDocument,
+  EventFormatSnapshot,
   EventRuntimeClaimRequestDocument,
   EventRuntimeParticipantDocument,
   EventSuccessCompatibilityResponseDocument,
@@ -1136,7 +1137,9 @@ function publicRuntimeEventProjection(
     checkedInCount: event.checkedInCount ?? 0,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
-    interactionModel: primitives.interactionModel,
+    interactionModel: publicRuntimeInteractionModel(
+      primitives.interactionModel
+    ),
     itinerary: event.itinerary ?? [],
     routePlan: event.eventFormat.activityDetails?.routePlan ?? null,
     livePositions,
@@ -1145,6 +1148,20 @@ function publicRuntimeEventProjection(
     optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
+}
+
+/**
+ * Projects the interaction model onto the guest web runtime's vocabulary.
+ * The web runtime does not know the route-with-stops model yet, so a crawl
+ * keeps the night-out presentation it had as a free-form mixer until the web
+ * surface accepts routeStops.
+ * @param {string} interactionModel Effective event interaction model.
+ * @return {string} Interaction model the web runtime understands.
+ */
+export function publicRuntimeInteractionModel(
+  interactionModel: EventFormatSnapshot["interactionModel"]
+): GetEventRuntimeBootstrapCallableResponse["event"]["interactionModel"] {
+  return interactionModel === "routeStops" ? "freeFormMixer" : interactionModel;
 }
 
 async function publicLivePositions(

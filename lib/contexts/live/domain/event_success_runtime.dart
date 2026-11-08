@@ -38,6 +38,7 @@ class EventSuccessAttendeeMoment {
     this.assignmentModuleId,
     this.showPostEventOpeners = false,
     this.showFeedback = false,
+    this.phoneAway = false,
   });
 
   const EventSuccessAttendeeMoment.none()
@@ -48,6 +49,10 @@ class EventSuccessAttendeeMoment {
   final String? assignmentModuleId;
   final bool showPostEventOpeners;
   final bool showFeedback;
+
+  /// The event's phone availability keeps guest phones away right now. The
+  /// moment shows the passive step context and must not nudge the guest.
+  final bool phoneAway;
 
   bool get hasVisibleModule => kind != EventSuccessAttendeeMomentKind.none;
 
@@ -99,6 +104,23 @@ class EventSuccessRuntime {
   final DateTime now;
 
   bool moduleEnabled(String moduleId) => plan.hasModule(moduleId);
+
+  EventSuccessActivityProfile get _profile =>
+      EventSuccessActivityProfile.forFormat(event.eventFormat);
+
+  /// The event property that decides when guest cues may reach a phone.
+  EventSuccessPhoneAvailability get phoneAvailability =>
+      _profile.phoneAvailability;
+
+  /// Whether a guest cue with [timing] may interrupt the guest while [step]
+  /// is active.
+  bool allowsGuestCue(
+    EventSuccessGuestCueTiming timing, {
+    EventRunOfShowStep? step,
+  }) => phoneAvailability.allowsGuestCue(
+    timing,
+    activityUnderway: eventSuccessStepIsActivity(step ?? activeRunOfShowStep),
+  );
 
   /// Attendance check-in is an event-platform primitive, not an optional
   /// Event Success module. Old plans may still carry the legacy module id.
@@ -315,6 +337,15 @@ class EventSuccessRuntime {
     }
 
     if (step == null) return const EventSuccessAttendeeMoment.none();
+    if (!allowsGuestCue(EventSuccessGuestCueTiming.stepChange, step: step)) {
+      // Phones are away while the activity runs: no prompt, reveal or nudge
+      // until a planned stop or the finish.
+      return EventSuccessAttendeeMoment(
+        kind: EventSuccessAttendeeMomentKind.liveStepContext,
+        activeStep: step,
+        phoneAway: true,
+      );
+    }
     if (_stepHasModule(step, EventSuccessModuleCatalog.liveReveal.id) &&
         liveRevealEnabled &&
         (plan.revealStatus == EventSuccessRevealStatus.countingDown ||
@@ -369,6 +400,17 @@ class EventSuccessRuntime {
         activeStep: step,
       );
     }
+    if (phoneAvailability == EventSuccessPhoneAvailability.continuous &&
+        canShowLiveConversationCues(
+          attended: attended,
+          eventEnded: eventEnded,
+        )) {
+      // Continuous formats do not tie conversation cards to particular steps.
+      return EventSuccessAttendeeMoment(
+        kind: EventSuccessAttendeeMomentKind.conversationCues,
+        activeStep: step,
+      );
+    }
     return EventSuccessAttendeeMoment(
       kind: EventSuccessAttendeeMomentKind.liveStepContext,
       activeStep: step,
@@ -383,9 +425,7 @@ class EventSuccessRuntime {
     if (steps.isEmpty) return null;
     return EventSuccessLivePlan(
       playbook: plan.playbook,
-      durationShape: EventSuccessActivityProfile.forFormat(
-        event.eventFormat,
-      ).durationShape,
+      durationShape: _profile.durationShape,
       steps: steps,
       activeStepIndex: math.min(
         math.max(plan.activeStepIndex, 0),
@@ -418,12 +458,7 @@ class EventSuccessRuntime {
   bool _stepHasModule(EventRunOfShowStep step, String moduleId) =>
       step.moduleIds.contains(moduleId);
 
-  bool get _usesStandingsReveal {
-    final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
-    return profile.unitOutcome == EventSuccessUnitOutcome.score ||
-        (profile.unitOutcome == EventSuccessUnitOutcome.rank &&
-            profile.assignmentResolution.supported);
-  }
+  bool get _usesStandingsReveal => _profile.revealUsesStandings;
 
   bool _canPrioritizeCompatibilityQuestionnaire(
     EventSuccessAttendeeLifecycle lifecycle,

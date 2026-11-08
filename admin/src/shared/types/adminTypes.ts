@@ -764,6 +764,7 @@ export type AdminEventInteractionModel =
   | "teamRotations"
   | "seatedTable"
   | "freeFormMixer"
+  | "routeStops"
   | "hostLedProgram"
   | "openFormat";
 
