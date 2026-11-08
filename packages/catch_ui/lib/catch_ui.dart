@@ -22,6 +22,7 @@ export 'src/components/catch_button.dart';
 export 'src/components/catch_button_content_row.dart';
 export 'src/components/catch_calendar.dart';
 export 'src/components/catch_chat_bubble.dart';
+export 'src/components/catch_chat_input.dart';
 export 'src/components/catch_checkbox_input.dart';
 export 'src/components/catch_chip.dart';
 export 'src/components/catch_chip_data.dart';
