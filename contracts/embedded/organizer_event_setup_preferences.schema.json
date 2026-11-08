@@ -66,6 +66,67 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 100
+    },
+    "startingPriceMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "description": "Price per place new events start with, in minor units of currency."
+    },
+    "places": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "description": "Places new events start with."
+    },
+    "waitlistEnabled": {
+      "type": "boolean",
+      "description": "Whether new events take a waitlist when full."
+    },
+    "bookingMode": {
+      "type": "string",
+      "enum": [
+        "anyone",
+        "followersFirst",
+        "askFirst"
+      ],
+      "description": "Who can book new events. askFirst: the host approves each guest first."
+    },
+    "refundPolicy": {
+      "type": "string",
+      "enum": [
+        "flexible",
+        "standard",
+        "strict"
+      ],
+      "description": "The cancellation policy paid events start with: flexible refunds up to 24 hours before, standard up to 3 days before, strict never."
+    },
+    "askedAtBooking": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "description": "Ids of the questions guests answer when they book."
+    },
+    "autoMessages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thankYou",
+        "arrival"
+      ],
+      "properties": {
+        "thankYou": {
+          "type": "boolean"
+        },
+        "arrival": {
+          "type": "boolean"
+        }
+      },
+      "description": "Which automatic messages new events send: the thank-you the morning after and the reminder the day before."
     }
   }
 }

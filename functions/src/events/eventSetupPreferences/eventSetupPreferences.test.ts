@@ -235,6 +235,8 @@ test("booking mode is optional, inherits and leaves old hashes alone", () => {
     bookingMode: "askFirst" as const}};
   assert.notEqual(organizerEventDefaultsHash(withDefault),
     organizerEventDefaultsHash(defaults));
+  assert.deepEqual(resolved(intents(), withDefault).bookingMode,
+    {value: "askFirst", source: "organizer"});
   const inherited = resolved({...intents(), bookingMode: {mode: "inherit"}},
     withDefault);
   assert.deepEqual(inherited.bookingMode,

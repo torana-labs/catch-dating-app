@@ -15,6 +15,15 @@ export interface EventSetupPreferences {
   offerMessageTemplate?: string;
   paymentInstructions?: string;
   reusablePaymentPage?: {url: string; reusableForEvents: true};
+  /** The defaults the event boards added. Each is optional and leaves the
+   * preferences hash unchanged while unset. */
+  bookingMode?: "anyone" | "followersFirst" | "askFirst";
+  startingPriceMinor?: number;
+  places?: number;
+  waitlistEnabled?: boolean;
+  refundPolicy?: "flexible" | "standard" | "strict";
+  askedAtBooking?: string[];
+  autoMessages?: {thankYou: boolean; arrival: boolean};
 }
 
 type PreferenceField = keyof EventSetupPreferences;
@@ -64,6 +73,8 @@ const fields = new Set<PreferenceField>([
   "usualDurationMinutes", "preferredVenueId", "offerValidityMinutes",
   "collectionPreference", "currency", "offerMessageTemplate",
   "paymentInstructions", "reusablePaymentPage", "timezone",
+  "bookingMode", "startingPriceMinor", "places", "waitlistEnabled",
+  "refundPolicy", "askedAtBooking", "autoMessages",
 ]);
 
 /** Current-manager read of one public organizer and its private suggestions. */

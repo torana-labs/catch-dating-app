@@ -57,6 +57,7 @@ class CreateController extends _$CreateController {
   late String _requestId;
   String? _submittedSignature;
   bool _hydrated = false;
+  String _refundPolicy = 'standard';
   final _subscriptions = <ProviderSubscription<Object?>>[];
 
   @override
@@ -88,6 +89,7 @@ class CreateController extends _$CreateController {
     if (eventId != null) {
       Future.microtask(() => _follow(eventId));
     }
+    Future.microtask(() => _prefillFromDefaults(fresh: starting == null));
     return CreateFlowState(
       organizer: args.organizer,
       draft: draft,
@@ -95,6 +97,29 @@ class CreateController extends _$CreateController {
       loadingSaved: args.initialSavedEventId != null,
     );
   }
+
+  /// The organizer's event defaults fill an untouched price and places, and
+  /// set the refund policy a paid event starts with. They are a convenience:
+  /// without the defaults view the flow keeps its own starting values.
+  Future<void> _prefillFromDefaults({required bool fresh}) =>
+      Future<ManagerEventSetupDefaultsView>(
+        () => ref.read(
+          managerEventSetupDefaultsViewProvider(args.organizer.id).future,
+        ),
+      ).then<void>((view) {
+        final defaults = view.defaults?.preferences;
+        if (defaults == null || !ref.mounted) return;
+        _refundPolicy = defaults.refundPolicy ?? _refundPolicy;
+        if (!fresh) return;
+        final draft = state.draft;
+        final price = defaults.startingPriceMinor;
+        state = state.copyWith(
+          draft: draft.copyWith(
+            price: draft.price ?? (price == null ? null : '${price ~/ 100}'),
+            capacity: draft.capacity ?? defaults.places?.toString(),
+          ),
+        );
+      }, onError: (Object _) {});
 
   PrivateEventDetailsScope _scope(String eventId) =>
       (userId: args.userId, organizerId: args.organizer.id, eventId: eventId);
@@ -481,7 +506,7 @@ class CreateController extends _$CreateController {
             capacityLimit: int.tryParse(draft.capacity ?? '') ?? 30,
             priceInPaise: price,
             currency: 'INR',
-            cancellationPolicyId: price == 0 ? 'notApplicable' : 'standard',
+            cancellationPolicyId: price == 0 ? 'notApplicable' : _refundPolicy,
           ),
         ),
       );

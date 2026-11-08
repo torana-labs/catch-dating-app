@@ -349,7 +349,7 @@
       }
     },
     "bookingMode": {
-      "description": "Present only when the saving command carried a bookingMode intent.",
+      "description": "Present once the event chose a booking mode or its organizer set a default one.",
       "type": "object",
       "additionalProperties": false,
       "required": [

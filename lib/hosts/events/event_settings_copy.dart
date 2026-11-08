@@ -22,6 +22,10 @@ abstract final class HostEventSettingsCopy {
   static const tickets = 'Tickets';
   static const startingPrice = 'Starting price';
   static const places = 'Places';
+  static const lowerPrice = 'Lower the starting price';
+  static const raisePrice = 'Raise the starting price';
+  static const fewerPlaces = 'Fewer places';
+  static const morePlaces = 'More places';
   static const waitlistWhenFull = 'Waitlist when full';
   static const waitlistWhenFullBody =
       'A place offered to the next person when someone cancels';

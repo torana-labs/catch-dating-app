@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_body.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
@@ -448,6 +449,37 @@ void main() {
         ),
       );
       expect(find.text('Your event defaults could not load'), findsOneWidget);
+    });
+
+    testWidgets('tickets, refunds and messages save on change', (tester) async {
+      final saved = <ManagerEventSetupPreferences>[];
+      await _pump(
+        tester,
+        HostEventDefaultsBody(
+          state: const HostEventDefaultsState(
+            status: HostEventDefaultsStatus.ready,
+            preferences: ManagerEventSetupPreferences(
+              startingPriceMinor: 49900,
+              places: 32,
+              refundPolicy: 'flexible',
+              askedAtBooking: ['food'],
+            ),
+          ),
+          onCollection: (_) {},
+          onChange: saved.add,
+          onEdit: () {},
+          onRetry: () {},
+        ),
+      );
+      expect(find.text('₹499'), findsOneWidget);
+      expect(find.text('1 question'), findsOneWidget);
+      await tester.tap(find.text('No refunds'));
+      await tester.tap(
+        find.byKey(const ValueKey<String>('host-event-defaults-ask')),
+      );
+      expect(saved.map((next) => next.refundPolicy), ['strict', 'flexible']);
+      expect(saved.last.bookingMode, 'askFirst');
+      expect(saved.last.places, 32);
     });
   });
 

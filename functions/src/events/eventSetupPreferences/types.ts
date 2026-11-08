@@ -11,6 +11,10 @@ export type AdmissionPreset =
   "openCapacity" | "inviteOnly" | "balancedSingles" |
   "fixedCohortCaps";
 
+/** The cancellation policy paid events start with: flexible refunds up to
+ * 24 hours before, standard up to 3 days before, strict never. */
+export type RefundPolicy = "flexible" | "standard" | "strict";
+
 /** Who can book. askFirst sends sign-ups to the host for approval. */
 export type BookingMode = "anyone" | "followersFirst" | "askFirst";
 
@@ -38,6 +42,12 @@ export interface OrganizerEventDefaults {
       reusableForEvents: true;
     };
     bookingMode?: BookingMode;
+    startingPriceMinor?: number;
+    places?: number;
+    waitlistEnabled?: boolean;
+    refundPolicy?: RefundPolicy;
+    askedAtBooking?: string[];
+    autoMessages?: {thankYou: boolean; arrival: boolean};
   };
 }
 
