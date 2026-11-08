@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_ticket_code_response.schema.json",
+  "title": "GetEventTicketCodeCallableResponse",
+  "description": "The caller's signed ticket code. Clients show it as the QR payload {kind: catch:event-ticket, v: 1, eventId, ticketCode}. The code is stateless: it names the attendee row and is signed with the event-assistance key ring, so cancelling the row revokes it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "attendeeId", "ticketCode"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "ticketCode": {"type": "string", "minLength": 52, "maxLength": 640, "pattern": "^[A-Za-z0-9_-]{8,596}\\.[A-Za-z0-9_-]{43}$"}
+  }
+}

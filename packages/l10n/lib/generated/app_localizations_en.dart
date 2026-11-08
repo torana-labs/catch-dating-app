@@ -23216,6 +23216,50 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get doorScanCancelled => 'That ticket was cancelled.';
+
+  @override
+  String get doorScanNotBooked =>
+      'That guest does not have a place tonight yet.';
+
+  @override
+  String get doorScanUnavailable => 'Could not read that ticket. Try again.';
+
+  @override
+  String doorTeamWithYou({required String names}) {
+    return 'On the door with you: $names';
+  }
+
+  @override
+  String doorGuestPlaces({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count places',
+      one: '1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorScanPlaces => 'places';
+
+  @override
+  String get hostsOperationalRosterFieldPlaces => 'Places';
+
+  @override
+  String get hostsOperationalRosterPlacesFewer => 'One place fewer';
+
+  @override
+  String get hostsOperationalRosterPlacesMore => 'One more place';
+
+  @override
+  String get eventTicketCodeHint => 'Show this at the door';
+
+  @override
+  String get eventTicketCodeQrLabel => 'Your ticket code';
+
+  @override
   String hostEventsRowMeta({
     required Object time,
     required int booked,

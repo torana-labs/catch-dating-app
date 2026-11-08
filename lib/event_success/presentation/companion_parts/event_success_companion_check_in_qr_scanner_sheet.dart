@@ -118,7 +118,9 @@ class _EventCheckInQrScannerSheetState
     switch (scan.result) {
       case EventCheckInQrScanResult.ignored:
         return;
-      case EventCheckInQrScanResult.invalid:
+      // A guest's own ticket is for the door to scan, not a check-in code.
+      case EventCheckInQrScanResult.invalid ||
+          EventCheckInQrScanResult.matchedTicket:
         setState(
           () => _errorText = context
               .l10n

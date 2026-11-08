@@ -84,6 +84,16 @@ void main() {
     expect(calls.filters, [DoorFilter.asked]);
   });
 
+  testWidgets('the door names who else is on it, and nothing when alone', (
+    tester,
+  ) async {
+    await _pump(tester, doorBoardState(team: const ['Kabir', 'Priya']));
+    expect(find.text('On the door with you: Kabir, Priya'), findsOneWidget);
+
+    await _pump(tester, doorBoardState());
+    expect(find.byKey(const ValueKey<String>('door-team')), findsNothing);
+  });
+
   testWidgets('in shows who came in, with Undo', (tester) async {
     await _pump(tester, doorBoardState(filter: DoorFilter.checkedIn));
 

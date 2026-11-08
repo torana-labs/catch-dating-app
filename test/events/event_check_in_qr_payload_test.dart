@@ -58,4 +58,28 @@ void main() {
     expect(scan.result, EventCheckInQrScanResult.matchedVenueSession);
     expect(scan.venueSessionToken, token);
   });
+
+  test('a guest ticket QR yields its signed code for this event only', () {
+    final code = '${'a' * 40}.${'b' * 43}';
+    final ticket = EventTicketQrPayload(eventId: 'event-1', ticketCode: code);
+
+    final scan = parseEventCheckInQrCode(ticket.encode(), eventId: 'event-1');
+    expect(scan.result, EventCheckInQrScanResult.matchedTicket);
+    expect(scan.ticketCode, code);
+    expect(
+      parseEventCheckInQrCode(ticket.encode(), eventId: 'event-2').result,
+      EventCheckInQrScanResult.wrongEvent,
+    );
+    expect(
+      EventCheckInQrCode.tryParse(ticket.encode()),
+      isA<EventTicketQrPayload>(),
+    );
+    expect(
+      EventTicketQrPayload.tryParse(
+        '{"kind":"catch:event-ticket","v":1,"eventId":"event-1",'
+        '"ticketCode":"not a code"}',
+      ),
+      isNull,
+    );
+  });
 }

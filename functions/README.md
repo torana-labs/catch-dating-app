@@ -168,6 +168,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `confirmEventAssistanceDeparture` / `changeEventAssistanceRoute` | `src/eventSuccess/operations/groupProgressHandlers.ts` | Lead/pacer revision-fenced departure confirmation, and manager-only route recovery against opaque current alternatives; no message sending, event-setup mutation, or attendance mutation |
 | `getEventAssistanceGuestView` / `submitEventAssistanceGuestChoice` | `src/eventSuccess/operations/guestHandlers.ts` | Read current event instructions through a scoped guest grant and atomically record an approved reply with its intention or help-case effect |
 | `getEventRuntimeBootstrap` / `claimEventRuntimeAccess` / `submitEventRuntimeProfile` / `checkInEventRuntime` / `approveEventRuntimeClaim` | `src/eventSuccess/eventRuntime.ts` | Run the no-download attendee bootstrap, verified roster claim or Host approval, event-scoped intake, and check-in workflow |
+| `requestEventRuntimeHostHelp` | `src/eventSuccess/eventRuntimeHostHelp.ts` | Let a ready no-download participant open an event-lead help case the live console reads |
 | `onEventRuntimeParticipantWritten` | `src/eventSuccess/operations/runtimeRequiredDataTrigger.ts` | Create a source-fenced typed request for current missing event-runtime fields; bootstrap/profile submission own guest projection and completion |
 | `createEventRehearsal` / `getEventRehearsalBootstrap` / `updateEventRehearsalSetup` / `controlEventRehearsal` / `controlEventRehearsalSpatial` / `injectEventRehearsalBehavior` / `resetEventRehearsal` / `rotateEventRehearsalGuestLink` / `getEventRehearsalGuestBootstrap` / `submitEventRehearsalGuestAction` / `completeEventRehearsal` / `exportEventRehearsalReproduction` | `src/eventRehearsal/` | Create and operate an isolated, deterministic Host dress rehearsal plus its anonymous synthetic-guest phone view, including source-fenced practice required-data prompts with no stored profile values |
 | `createEventVenueSession` | `src/events/venueSessions.ts` | Create a short-lived signed venue session for attendee self-check-in |
@@ -263,6 +264,8 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `connectOrganizerLumaProvider` / `listOrganizerLumaEvents` / `syncOrganizerProviderEvent` / `disconnectOrganizerProvider` | `src/organizers/organizerProviderSetup.ts` | Configure, synchronize, and disconnect supported external booking providers |
 | `onHostProviderConnectionViewConnectionChanged` / `onHostProviderConnectionViewOrganizerChanged` | `src/hostReadModels/providerConnectionViewTriggers.ts` | Write each organizer's manager-safe provider connection rows (`hostProviderConnectionViews`) ahead of time |
 | `getEventOperatorAccess` / `listEventStaff` / `grantEventStaff` / `revokeEventStaff` | `src/events/eventStaff.ts` | Grant and inspect time-bounded event staff access |
+| `heartbeatEventStaffPresence` | `src/events/eventStaffPresence.ts` | Record that a manager or viewRoster staff member is on the door; rows lapse at `expiresAt` (TTL) and door phones list them |
+| `getEventTicketCode` / `resolveEventTicketCode` | `src/events/eventTicketCodes.ts` | Sign a guest's stateless ticket code with the event-assistance key ring, and resolve a scanned code to its attendee for the door |
 | `createOrganizerProgram` / `updateOrganizerProgram` / `listOrganizerPrograms` / `getOrganizerProgram` | `src/programs/programs.ts` | Manager-owned private program (wedding/offsite) lifecycle and setup overview |
 | `getProgramWorkAccess` / `listProgramStaff` / `grantProgramStaff` / `revokeProgramStaff` | `src/programs/programStaff.ts` | Duty- and station-scoped program staff grants and work-shell bootstrap |
 | `listMyHostAssignments` | `src/hostWork/listMyHostAssignments.ts` | Actor-scoped program staff duty list for the host-work shell |
@@ -483,6 +486,7 @@ enter previews.
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
+
 <!-- fn-inventory:end -->
 
 ## Shared modules

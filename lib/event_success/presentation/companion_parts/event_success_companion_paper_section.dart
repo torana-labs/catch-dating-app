@@ -265,6 +265,41 @@ class CompanionPaperTicket extends StatelessWidget {
                     ],
                   ),
                 ),
+                // The guest's own ticket for the door, once the server signs
+                // it; nothing when they hold no place or codes are off.
+                Consumer(
+                  builder: (context, ref, _) {
+                    final ticket = ref
+                        .watch(eventTicketCodeProvider(event.id))
+                        .value;
+                    return ticket == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: CatchInsets.contentDense,
+                            child: CatchStack(
+                              children: [
+                                Center(
+                                  child: QrImageView(
+                                    key: const ValueKey<String>(
+                                      'event-ticket-code-qr',
+                                    ),
+                                    data: ticket.encode(),
+                                    size: CatchLayout.eventSuccessVenueQrExtent,
+                                    backgroundColor: CatchTokens.editorialWhite,
+                                    semanticsLabel:
+                                        context.l10n.eventTicketCodeQrLabel,
+                                  ),
+                                ),
+                                CatchText(
+                                  context.l10n.eventTicketCodeHint,
+                                  tone: CatchTextTone.secondary,
+                                  align: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          );
+                  },
+                ),
               ],
             ),
           ),

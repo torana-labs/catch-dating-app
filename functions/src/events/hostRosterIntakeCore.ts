@@ -7,7 +7,8 @@ import {canonicalImportPayload, eventAttendeeId, prepareImportRows} from
   "./eventAttendees";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
-type FieldName = Exclude<keyof ImportRow, "rowId">;
+// Intake reviews named columns; party size comes from direct import only.
+type FieldName = Exclude<keyof ImportRow, "rowId" | "partySize">;
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 const HASH = /^[a-f0-9]{64}$/u;
 /** Leaves ample headroom below Firestore's 1 MiB document limit. */
