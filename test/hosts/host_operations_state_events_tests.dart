@@ -138,67 +138,6 @@ void _registerHostOperationsStateEventsTests() {
     },
   );
 
-  test('HostEventsRouteState maps auth and organizer async branches', () {
-    final organizer = buildOrganizer(id: 'owned-club', ownerUserId: _hostUid);
-    final stackTrace = StackTrace.current;
-    final authError = StateError('auth failed');
-    final organizersError = StateError('clubs failed');
-
-    expect(
-      buildHostEventsRouteState(
-        uid: const CatchAsyncState<String?>.data(null),
-      ).status,
-      HostEventsRouteStatus.authRequired,
-    );
-    expect(
-      buildHostEventsRouteState(
-        uid: const CatchAsyncState<String?>.loading(),
-      ).status,
-      HostEventsRouteStatus.loading,
-    );
-
-    final authErrorState = buildHostEventsRouteState(
-      uid: CatchAsyncState<String?>.error(authError, stackTrace),
-    );
-    expect(authErrorState.status, HostEventsRouteStatus.error);
-    expect(authErrorState.error, authError);
-    expect(authErrorState.errorContext, AppErrorContext.auth);
-
-    expect(
-      buildHostEventsRouteState(
-        uid: const CatchAsyncState<String?>.data(_hostUid),
-        organizers: const CatchAsyncState<List<Organizer>>.loading(),
-      ).status,
-      HostEventsRouteStatus.loading,
-    );
-
-    final organizersErrorState = buildHostEventsRouteState(
-      uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: CatchAsyncState<List<Organizer>>.error(
-        organizersError,
-        stackTrace,
-      ),
-    );
-    expect(organizersErrorState.status, HostEventsRouteStatus.error);
-    expect(organizersErrorState.uid, _hostUid);
-    expect(organizersErrorState.error, organizersError);
-    expect(organizersErrorState.errorContext, AppErrorContext.organizer);
-
-    final emptyState = buildHostEventsRouteState(
-      uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: const CatchAsyncState<List<Organizer>>.data([]),
-    );
-    expect(emptyState.status, HostEventsRouteStatus.empty);
-    expect(emptyState.uid, _hostUid);
-
-    final loadedState = buildHostEventsRouteState(
-      uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: CatchAsyncState<List<Organizer>>.data([organizer]),
-    );
-    expect(loadedState.status, HostEventsRouteStatus.loaded);
-    expect(loadedState.organizers, [organizer]);
-  });
-
   testWidgets('Host clubs keeps root primary-rail chrome while uid resolves', (
     tester,
   ) async {

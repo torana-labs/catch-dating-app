@@ -4,11 +4,10 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
@@ -218,13 +217,7 @@ void main() {
 
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
-    await tapCatchButton(tester, 'Create event');
-    await tester.tap(
-      find.descendant(
-        of: find.byType(HostEventEntrySheet),
-        matching: find.text('Create event'),
-      ),
-    );
+    await tapCatchButton(tester, 'New');
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(CreateBasicsScreen), findsOneWidget);
     await tester.enterText(
@@ -262,9 +255,8 @@ void main() {
     );
     expect(find.byType(CreateTicketsScreen), findsOneWidget);
 
-    // Back walks the steps; Close on the first returns to the Events list
-    // kept mounted across the create flow, which re-reads the inventory.
-    final backFrom = backend.functions.calls.length;
+    // Back walks the steps; Close on the first returns to the Events tab,
+    // whose upcoming list listens to the saved event.
     await tester.tap(find.byTooltip('Back'));
     await pumpAppShellFrames(tester);
     await tester.tap(find.byTooltip('Back'));
@@ -272,16 +264,9 @@ void main() {
     await tester.tap(find.byTooltip('Close'));
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(CreateBasicsScreen), findsNothing);
-    expect(
-      backend.functions.calls
-          .skip(backFrom)
-          .where((call) => call.name == 'listPrivateEventSetups')
-          .map((call) => (call.input! as Map)['scope']),
-      contains('upcoming'),
-    );
     expect(find.text('Rooftop supper club'), findsWidgets);
     final reopenFrom = backend.functions.calls.length;
-    await tester.tap(find.byKey(ValueKey('host-event-row-$eventId')));
+    await tester.tap(find.byKey(ValueKey('host-events-draft-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);
 
     expect(find.byType(CreateBasicsScreen), findsOneWidget);
@@ -337,14 +322,10 @@ void main() {
       initialRoute: '/host/events',
     );
 
-    await tester.tap(find.byKey(ValueKey('host-event-row-${event.id}')));
+    await tester.tap(find.byKey(ValueKey('host-events-tonight-${event.id}')));
     await pumpAppShellFrames(tester, frames: 30);
-    await tester.tap(
-      find.descendant(
-        of: find.byType(EventSuccessLiveWorkspaceTabBar),
-        matching: find.text('Guests'),
-      ),
-    );
+    // The event workspace opens the door, which is the guest list.
+    await tester.tap(find.byKey(const ValueKey('host-event-ready-door')));
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
@@ -460,7 +441,7 @@ void main() {
 
 const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
-  'Events': HostEventsScreen,
+  'Events': HostEventsTabScreen,
   'People': HostPeopleScreen,
   'Organizer': OrganizerScreen,
 };

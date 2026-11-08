@@ -1,11 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
-import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -124,93 +121,6 @@ void main() {
     expect(row(anonymizeAt: deadline).canUnarchiveAt(deadline), isFalse);
     expect(row(anonymizedAt: deadline).canUnarchiveAt(beforeDeadline), isFalse);
   });
-
-  for (final status in ['active', 'archived']) {
-    testWidgets('$status setup-only row opens without lifecycle commands', (
-      tester,
-    ) async {
-      var opened = 0;
-      var mutated = 0;
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: ProgramEventsRow(
-              program: OrganizerProgramListRow(
-                programId: 'program',
-                title: 'Wedding weekend',
-                kind: 'wedding',
-                status: status,
-                timezone: 'Asia/Kolkata',
-                revision: 3,
-              ),
-              now: DateTime(2026, 10, 5),
-              onOpen: () => opened++,
-              onLifecycle: (_) => mutated++,
-            ),
-          ),
-        ),
-      );
-      await pumpFeatureUi(tester);
-      expect(
-        find.byWidgetPredicate((widget) => widget is CatchActionMenu<dynamic>),
-        findsNothing,
-      );
-      await tester.tap(find.text('Wedding weekend'));
-      await tester.pump();
-      expect(opened, 1);
-      expect(mutated, 0);
-    });
-  }
-
-  for (final (status, pending) in [
-    ('active', false),
-    ('active', true),
-    ('archived', false),
-    ('archived', true),
-  ]) {
-    testWidgets('creator $status command honors pending=$pending', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: ProgramEventsRow(
-              program: OrganizerProgramListRow(
-                programId: 'program',
-                title: 'Program',
-                kind: 'wedding',
-                status: status,
-                timezone: 'Asia/Kolkata',
-                revision: 3,
-                canArchive: true,
-                canUnarchive: true,
-              ),
-              now: DateTime(2026, 10, 5),
-              pending: pending,
-              onOpen: () {},
-              onLifecycle: (_) {},
-            ),
-          ),
-        ),
-      );
-      await pumpFeatureUi(tester);
-      final menu = tester.widget<CatchActionMenu<dynamic>>(
-        find.byWidgetPredicate((widget) => widget is CatchActionMenu<dynamic>),
-      );
-      expect(
-        menu.items.single.label,
-        status == 'active' ? 'Archive program' : 'Unarchive',
-      );
-      expect(menu.items.single.enabled, !pending);
-      expect(menu.items.single.sublabel, pending ? 'Saving…' : null);
-    });
-  }
 
   for (final duty in [
     ProgramStaffDuty.guestRelations,
@@ -352,41 +262,4 @@ void main() {
       );
     },
   );
-
-  testWidgets('restore menu is disabled after grace expires before sweep', (
-    tester,
-  ) async {
-    final now = DateTime(2026, 10, 5);
-    final program = OrganizerProgramListRow(
-      programId: 'program',
-      title: 'Program',
-      kind: 'wedding',
-      status: 'archived',
-      timezone: 'Asia/Kolkata',
-      revision: 7,
-      canUnarchive: true,
-      anonymizeAt: now.subtract(const Duration(days: 1)),
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: ProgramEventsRow(
-            program: program,
-            now: now,
-            onOpen: () {},
-            onLifecycle: (_) {},
-          ),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    final menu = tester.widget<CatchActionMenu<dynamic>>(
-      find.byWidgetPredicate((widget) => widget is CatchActionMenu<dynamic>),
-    );
-    expect(menu.items.single.enabled, isFalse);
-    expect(menu.items.single.sublabel, 'The restore window has ended.');
-  });
 }

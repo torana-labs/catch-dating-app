@@ -38,11 +38,6 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
 
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventsScreen,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostOrganizerAvatar,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )

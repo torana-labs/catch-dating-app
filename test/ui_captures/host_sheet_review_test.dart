@@ -1,9 +1,6 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -26,30 +23,6 @@ void main() {
   });
   const output = String.fromEnvironment('SHEET_REVIEW_OUTPUT');
   final cases = <String, WidgetBuilder>{
-    'create-event': (_) => HostEventEntrySheet(
-      state: HostEventEntryState.resolve(
-        organizerId: HostOperationsFixtures.primaryOrganizer.id,
-        drafts: [HostOperationsFixtures.eventDraft],
-        repeatSource: HostOperationsFixtures.upcomingEvent,
-      ),
-      onDeleteDraft: (_) async {},
-    ),
-    'draft-picker': (_) => HostEventEntrySheet(
-      state: HostEventEntryState.resolve(
-        organizerId: HostOperationsFixtures.primaryOrganizer.id,
-        drafts: [
-          HostOperationsFixtures.eventDraft,
-          EventDraft(
-            id: 'second-review-draft',
-            organizerId: HostOperationsFixtures.primaryOrganizer.id,
-            savedAt: DateTime.now().subtract(const Duration(hours: 3)),
-            name: 'Saturday community breakfast',
-          ),
-        ],
-        repeatSource: HostOperationsFixtures.upcomingEvent,
-      ),
-      onDeleteDraft: (_) async {},
-    ),
     'organizer-picker': (_) => HostOrganizerSwitcherSheet(
       organizers: [
         HostOperationsFixtures.primaryOrganizer,

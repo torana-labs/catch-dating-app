@@ -47,13 +47,6 @@ Widget _hostOrganizerPreviewFor(String focus) {
       currentUid: widgetbookHostUid,
       isOwner: true,
     ),
-    'HostEventsOrganizerCard' => HostEventsOrganizerCard(
-      organizer: organizer,
-      onEventEntrySelected: (_, _, _) {},
-      onManageEvent: (_, _) {},
-      now: HostOperationsFixtures.now,
-      sessionBoundary: HostOperationsFixtures.now,
-    ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       organizer: organizer,
       eventsLoaded: true,
@@ -200,14 +193,6 @@ Widget hostOrganizerDefaultsEditorStates(BuildContext context) =>
 )
 Widget hostOrganizerReadOnlyEventDefaultsStates(BuildContext context) =>
     hostOrganizerEventDefaultsScreenLoaded(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventsOrganizerCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventsOrganizerCardCatalogStates(BuildContext context) =>
-    _hostOrganizerExactCatalog(context, 'HostEventsOrganizerCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

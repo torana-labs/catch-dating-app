@@ -166,8 +166,6 @@ import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
@@ -178,7 +176,6 @@ import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dar
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -4308,29 +4305,6 @@ class _HostCreateEventMutationCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _InlineDialogCapture extends StatelessWidget {
-  const _InlineDialogCapture({required this.child, required this.dialog});
-
-  final Widget child;
-  final Widget dialog;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Stack(
-      children: [
-        child,
-        Positioned.fill(
-          child: ColoredBox(
-            color: t.ink.withValues(alpha: CatchOpacity.confirmDialogScrim),
-          ),
-        ),
-        Center(child: dialog),
-      ],
-    );
-  }
-}
-
 List<Object> _hostCreateEventProviderOverrides({
   Organizer? organizer,
   AsyncValue<Organizer?>? organizerValue,
@@ -6966,11 +6940,6 @@ List<Object> _marketingHostManageOverrides(
   ).overrideWith((ref) => Stream.value(const <EventSuccessWingmanRequest>[])),
 ];
 
-final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
-  id: 'host-event-setup-capture-draft',
-  organizer: _dashboardHostOrganizer,
-  savedAt: _captureNow,
-);
 final _hostGuestProfiles = _captureFixtures.rosterProfiles(
   count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
 );
@@ -7202,83 +7171,6 @@ final _hostManageReferenceEvent = _hostEvent.copyWith(
     inviteCodeHint: 'BANDRA',
   ),
 );
-final _hostEventsReferenceOrganizer = _hostManageReferenceOrganizer.copyWith(
-  id: 'host-home-reference-bandra-social',
-  name: 'Bandra Social',
-  area: 'Khar',
-  location: 'Mumbai',
-  ownerUserId: HostOperationsFixtures.hostUid,
-  hostUserId: HostOperationsFixtures.hostUid,
-  hostUserIds: const [HostOperationsFixtures.hostUid],
-  hostProfiles: const [
-    OrganizerHostProfile(
-      uid: HostOperationsFixtures.hostUid,
-      displayName: 'Aanya Rao',
-      role: OrganizerHostRole.owner,
-    ),
-  ],
-  hostDefaults: const OrganizerHostDefaults(
-    primaryActivityKind: ActivityKind.pubQuiz,
-    supportedActivityKinds: [ActivityKind.pubQuiz],
-  ),
-);
-final _hostEventsSpotlightEvent = _hostManageReferenceEvent.copyWith(
-  id: 'host-home-reference-trivia',
-  organizerId: _hostEventsReferenceOrganizer.id,
-  eventFormat: const EventFormatSnapshot(
-    activityKind: ActivityKind.pubQuiz,
-    interactionModel: EventInteractionModel.teamRotations,
-    customActivityLabel: 'Trivia Night',
-  ),
-);
-final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
-final _hostEventsReferenceEvents = <Event>[
-  _hostEventsSpotlightEvent.copyWith(
-    id: 'host-events-reference-trivia',
-    startTime: DateTime(2026, 6, 17, 20),
-    endTime: DateTime(2026, 6, 17, 22),
-    bookedCount: 24,
-    waitlistedCount: 2,
-    capacityLimit: 30,
-  ),
-  HostOperationsFixtures.upcomingEvent.copyWith(
-    id: 'host-events-reference-run',
-    organizerId: _hostEventsReferenceOrganizer.id,
-    startTime: DateTime(2026, 6, 21, 6, 30),
-    endTime: DateTime(2026, 6, 21, 8),
-    bookedCount: 6,
-    capacityLimit: 10,
-  ),
-  HostOperationsFixtures.fullEvent.copyWith(
-    id: 'host-events-reference-dinner',
-    organizerId: _hostEventsReferenceOrganizer.id,
-    startTime: DateTime(2026, 6, 27, 20),
-    endTime: DateTime(2026, 6, 27, 22),
-    bookedCount: 10,
-    checkedInCount: 0,
-    waitlistedCount: 0,
-    capacityLimit: 15,
-  ),
-  HostOperationsFixtures.upcomingEvent.copyWith(
-    id: 'host-events-reference-padel',
-    organizerId: _hostEventsReferenceOrganizer.id,
-    startTime: DateTime(2026, 7, 6, 9),
-    endTime: DateTime(2026, 7, 6, 10, 30),
-    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
-    bookedCount: 5,
-    waitlistedCount: 0,
-    capacityLimit: 16,
-  ),
-  _hostEventsSpotlightEvent.copyWith(
-    id: 'host-events-reference-past-trivia',
-    startTime: DateTime(2026, 6, 10, 20),
-    endTime: DateTime(2026, 6, 10, 22),
-    bookedCount: 26,
-    checkedInCount: 26,
-    waitlistedCount: 0,
-    capacityLimit: 26,
-  ),
-];
 final _hostHomeLongNameOwnerOrganizer = HostOperationsFixtures.primaryOrganizer
     .copyWith(
       id: 'host-home-long-owner-club',
@@ -10966,86 +10858,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => organizerSettingsCapture(),
   ),
   ScreenCaptureEntry(
-    id: 'host_home_events_list',
-    routeIds: const <String>['hostEventsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostOperationsProviderOverrides(
-        programRows: [
-          OrganizerProgramListRow(
-            programId: 'reference-program',
-            title: 'Wedding weekend',
-            kind: 'wedding',
-            status: 'draft',
-            timezone: 'Asia/Kolkata',
-            revision: 1,
-            startsAt: _hostEventsReferenceNow,
-            endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),
-            functionCount: 3,
-          ),
-        ],
-        hostedOrganizers: [_hostEventsReferenceOrganizer],
-        ownedOrganizers: [_hostEventsReferenceOrganizer],
-        organizerEvents: {
-          _hostEventsReferenceOrganizer.id: AsyncData<List<Event>>(
-            _hostEventsReferenceEvents,
-          ),
-        },
-      ),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/events',
-      activeIndex: 1,
-      child: HostEventsScreen(
-        initialOrganizerId: _hostEventsReferenceOrganizer.id,
-        now: _hostEventsReferenceNow,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_home_events_past',
-    routeIds: const <String>['hostEventsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostOperationsProviderOverrides(
-        programRows: [
-          OrganizerProgramListRow(
-            programId: 'reference-program',
-            title: 'Wedding weekend',
-            kind: 'wedding',
-            status: 'draft',
-            timezone: 'Asia/Kolkata',
-            revision: 1,
-            startsAt: _hostEventsReferenceNow,
-            endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),
-            functionCount: 3,
-          ),
-        ],
-        hostedOrganizers: [_hostEventsReferenceOrganizer],
-        ownedOrganizers: [_hostEventsReferenceOrganizer],
-        organizerEvents: {
-          _hostEventsReferenceOrganizer.id: AsyncData<List<Event>>(
-            _hostEventsReferenceEvents,
-          ),
-        },
-      ),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/events',
-      activeIndex: 1,
-      child: HostEventsScreen(
-        initialOrganizerId: _hostEventsReferenceOrganizer.id,
-        now: _hostEventsReferenceNow,
-      ),
-    ),
-    drive: (tester) async {
-      await tester.tap(find.text('Past'));
-      await pumpFeatureUi(tester);
-    },
-  ),
-  ScreenCaptureEntry(
     id: 'host_home_switcher_cohost',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
@@ -13084,29 +12896,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => HostCreateEventRouteScreen(
       organizerId: _dashboardHostOrganizer.id,
       initialOrganizer: _dashboardHostOrganizer,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_draft_delete_confirmation',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _InlineDialogCapture(
-      dialog: CatchDialog<bool>.confirmation(
-        title: draftDeleteConfirmationDialogTitle(context.l10n),
-        message: draftDeleteConfirmationDialogMessage(
-          context.l10n,
-          _hostEventSetupDraft,
-        ),
-        actions: draftDeleteConfirmationDialogActions(context.l10n),
-      ),
-      child: HostEventEntrySheet(
-        state: HostEventEntryState.resolve(
-          organizerId: _hostEventSetupDraft.organizerId,
-          drafts: [_hostEventSetupDraft],
-        ),
-        onDeleteDraft: (_) async {},
-      ),
     ),
   ),
   ScreenCaptureEntry(
