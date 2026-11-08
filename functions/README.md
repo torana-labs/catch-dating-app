@@ -500,6 +500,7 @@ enter previews.
 |----------|------|---------|
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
+| `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
