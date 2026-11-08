@@ -327,6 +327,7 @@ import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../hosts/organizer/organizer_captures.dart';
 import '../../hosts/people/people_captures.dart';
+import '../../hosts/programmes/planner/planner_captures.dart';
 import '../../hosts/programmes/staff/staff_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
@@ -9864,6 +9865,69 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
+  ScreenCaptureEntry(
+    id: 'host_programme_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerProgrammeCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_function_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerFunctionCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_guests_phone',
+    routeIds: const <String>['hostProgramGuestsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerGuestsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_guests_desktop',
+    routeIds: const <String>['hostProgramGuestsScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerGuestsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_household_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerHouseholdCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_travel_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerTravelCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_rooms_desktop',
+    routeIds: const <String>['hostProgramLodgingScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerRoomsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_trips_desktop',
+    routeIds: const <String>['hostWorkTripsScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerTripsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_create_phone',
+    routeIds: const <String>['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerCreateCapture(),
+  ),
   ScreenCaptureEntry(
     id: 'host_staff_work_phone',
     routeIds: const <String>['hostWorkScreen'],

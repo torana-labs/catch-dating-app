@@ -49718,6 +49718,1824 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Flight changes, guests reaching a hotel after a function has started, cars waiting too long and help requests from guests. Each one goes to the people whose job it touches.'**
   String get hostStaffAlertsWhatBody;
+
+  /// Segmented control label for the programme views.
+  ///
+  /// In en, this message translates to:
+  /// **'Programme views'**
+  String get hostProgrammeViewsLabel;
+
+  /// Programme view: the schedule of functions.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get hostProgrammeViewSchedule;
+
+  /// Programme view: the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostProgrammeViewGuests;
+
+  /// Programme view: travel and arrivals.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get hostProgrammeViewTravel;
+
+  /// Programme view: the staff team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get hostProgrammeViewTeam;
+
+  /// Reply grid cell: members coming out of members invited.
+  ///
+  /// In en, this message translates to:
+  /// **'{coming}/{invited}'**
+  String hostProgrammeCellCount({required int coming, required int invited});
+
+  /// Reply grid cell: someone is deciding.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get hostProgrammeCellMaybe;
+
+  /// Reply grid cell: no reply yet.
+  ///
+  /// In en, this message translates to:
+  /// **'?'**
+  String get hostProgrammeCellNoReply;
+
+  /// Reply grid cell: not invited to this function.
+  ///
+  /// In en, this message translates to:
+  /// **'–'**
+  String get hostProgrammeCellNotInvited;
+
+  /// Reply key: everyone invited is coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get hostProgrammeKeyEveryone;
+
+  /// Reply key: some of the household are coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Some of them'**
+  String get hostProgrammeKeySome;
+
+  /// Reply key: someone is still deciding.
+  ///
+  /// In en, this message translates to:
+  /// **'Deciding'**
+  String get hostProgrammeKeyMaybe;
+
+  /// Reply key: no reply yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reply'**
+  String get hostProgrammeKeyNoReply;
+
+  /// Reply key: nobody invited is coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Not coming'**
+  String get hostProgrammeKeyNone;
+
+  /// Reply key: not invited to this function.
+  ///
+  /// In en, this message translates to:
+  /// **'Not invited'**
+  String get hostProgrammeKeyNotInvited;
+
+  /// One guest's reply: coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get hostProgrammeReplyYes;
+
+  /// One guest's reply: not coming.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get hostProgrammeReplyNo;
+
+  /// Retry button on programme screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostProgrammeRetry;
+
+  /// Programme read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load this programme'**
+  String get hostProgrammeErrorTitle;
+
+  /// Programme read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostProgrammeErrorBody;
+
+  /// Back label from the programme to Events.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Events'**
+  String get hostProgrammeBack;
+
+  /// Back label to the programme workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the programme'**
+  String get hostProgrammeBackToProgramme;
+
+  /// Programme top bar badge: days until the first day.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Today} =1{Tomorrow} other{{count} days to go}}'**
+  String hostProgrammeDaysToGo({required int count});
+
+  /// Programme dates kicker: first and last day.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} to {to}'**
+  String hostProgrammeDates({required Object from, required Object to});
+
+  /// Programme spotlight kicker: dates and time zone.
+  ///
+  /// In en, this message translates to:
+  /// **'{dates} · {timezone}'**
+  String hostProgrammeKicker({required Object dates, required Object timezone});
+
+  /// Programme kind badge: wedding.
+  ///
+  /// In en, this message translates to:
+  /// **'Wedding'**
+  String get hostProgrammeKindWedding;
+
+  /// Programme kind badge: corporate offsite or conference.
+  ///
+  /// In en, this message translates to:
+  /// **'Offsite'**
+  String get hostProgrammeKindCorporate;
+
+  /// Programme kind badge: social programme.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get hostProgrammeKindSocial;
+
+  /// Programme kind badge: any other programme.
+  ///
+  /// In en, this message translates to:
+  /// **'Programme'**
+  String get hostProgrammeKindOther;
+
+  /// Programme stat: guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostProgrammeStatGuests;
+
+  /// Programme stat: households.
+  ///
+  /// In en, this message translates to:
+  /// **'Households'**
+  String get hostProgrammeStatHouseholds;
+
+  /// Programme stat: inbound travel legs.
+  ///
+  /// In en, this message translates to:
+  /// **'Flying in'**
+  String get hostProgrammeStatFlying;
+
+  /// Programme stat: active staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get hostProgrammeStatStaff;
+
+  /// Workspace tile: households still to reply.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 household hasn’t replied} other{{count} households haven’t replied}}'**
+  String hostProgrammeWaitingTitle({required int count});
+
+  /// Workspace tile body: where to send RSVP links.
+  ///
+  /// In en, this message translates to:
+  /// **'Send their RSVP links from Guests.'**
+  String get hostProgrammeWaitingBody;
+
+  /// Function row subtitle: replies.
+  ///
+  /// In en, this message translates to:
+  /// **'{coming} of {invited} coming · {waiting} not replied'**
+  String hostProgrammeFunctionReplies({
+    required int coming,
+    required int invited,
+    required int waiting,
+  });
+
+  /// Function row progress semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {coming} of {invited} coming'**
+  String hostProgrammeFunctionRepliesLabel({
+    required Object name,
+    required int coming,
+    required int invited,
+  });
+
+  /// Function row status: cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostProgrammeFunctionCancelled;
+
+  /// Workspace button that adds a function.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a function'**
+  String get hostProgrammeAddFunction;
+
+  /// Workspace empty schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions yet. Add the first one.'**
+  String get hostProgrammeScheduleEmpty;
+
+  /// Save button on programme sheets and setup pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get hostProgrammeSave;
+
+  /// Top bar action that edits the record.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get hostProgrammeEdit;
+
+  /// Row value: a setting is on.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get hostProgrammeOn;
+
+  /// Row value: a setting is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostProgrammeOff;
+
+  /// Function sheet title when editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the function'**
+  String get hostProgrammeFunctionEditTitle;
+
+  /// Function sheet field: the function name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostProgrammeFunctionName;
+
+  /// Function sheet name placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Sangeet'**
+  String get hostProgrammeFunctionNamePlaceholder;
+
+  /// Function sheet field: where it is.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get hostProgrammeFunctionVenue;
+
+  /// Function sheet field: which programme day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get hostProgrammeFunctionDay;
+
+  /// Function sheet field: start time.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get hostProgrammeFunctionStarts;
+
+  /// Function sheet field: end time.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get hostProgrammeFunctionEnds;
+
+  /// Notice after a function is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Function saved'**
+  String get hostProgrammeFunctionSaved;
+
+  /// Function page when the function is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This function is no longer on the schedule'**
+  String get hostProgrammeFunctionMissing;
+
+  /// Function replies meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies to the {name}'**
+  String hostProgrammeFunctionMeter({required Object name});
+
+  /// Function stat and meter part: coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming'**
+  String get hostProgrammeFunctionComing;
+
+  /// Function stat and meter part: maybe.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get hostProgrammeFunctionMaybe;
+
+  /// Function stat and meter part: no reply.
+  ///
+  /// In en, this message translates to:
+  /// **'No reply'**
+  String get hostProgrammeFunctionNoReply;
+
+  /// Function section: who is invited.
+  ///
+  /// In en, this message translates to:
+  /// **'Who’s invited'**
+  String get hostProgrammeFunctionInvitedTitle;
+
+  /// Function section note: changing invitations sends no message.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing this sends nothing'**
+  String get hostProgrammeFunctionInvitedNote;
+
+  /// Invitation choice: every guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get hostProgrammeFunctionEveryone;
+
+  /// Invitation choice body: every guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Every guest on the list'**
+  String get hostProgrammeFunctionEveryoneBody;
+
+  /// Invitation choice: chosen guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand-picked'**
+  String get hostProgrammeFunctionHandPicked;
+
+  /// Invitation choice body: keeps the guests invited now.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the guests invited now'**
+  String get hostProgrammeFunctionHandPickedBody;
+
+  /// Function section: dress code.
+  ///
+  /// In en, this message translates to:
+  /// **'What to wear'**
+  String get hostProgrammeFunctionWearTitle;
+
+  /// Function section: the door on the night.
+  ///
+  /// In en, this message translates to:
+  /// **'On the night'**
+  String get hostProgrammeFunctionNightTitle;
+
+  /// Function section action that opens the staff door.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the door'**
+  String get hostProgrammeFunctionOpenDoor;
+
+  /// Function row: door check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check guests in at the door'**
+  String get hostProgrammeFunctionCheckIn;
+
+  /// Function row subtitle: guests checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} checked in'**
+  String hostProgrammeFunctionCheckedIn({required int count});
+
+  /// Function section: the venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get hostProgrammeFunctionWhereTitle;
+
+  /// Function button and dialog title that cancels it.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the {name}'**
+  String hostProgrammeFunctionCancel({required Object name});
+
+  /// Cancel function dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests stay on the list. Their replies to it are kept.'**
+  String get hostProgrammeFunctionCancelBody;
+
+  /// Cancel function dialog confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel it'**
+  String get hostProgrammeFunctionCancelConfirm;
+
+  /// Function spotlight kicker: day and times.
+  ///
+  /// In en, this message translates to:
+  /// **'{day} · {from} to {to}'**
+  String hostProgrammeFunctionWhen({
+    required Object day,
+    required Object from,
+    required Object to,
+  });
+
+  /// Household size.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest} other{{count} guests}}'**
+  String hostProgrammeGuestCount({required int count});
+
+  /// Guests page title: households.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 household} other{{count} households}}'**
+  String hostProgrammeGuestsTitle({required int count});
+
+  /// Guests page line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'{guests} guests · {replied} replied for everyone · {waiting} still to reply'**
+  String hostProgrammeGuestsSummary({
+    required int guests,
+    required int replied,
+    required int waiting,
+  });
+
+  /// Guests button that opens the guest list import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a list'**
+  String get hostProgrammeGuestsImport;
+
+  /// Guests grid section and table title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who comes to what'**
+  String get hostProgrammeGuestsGridTitle;
+
+  /// Guests grid section note.
+  ///
+  /// In en, this message translates to:
+  /// **'People per household'**
+  String get hostProgrammeGuestsGridNote;
+
+  /// Guests grid when there are no households.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests yet. Import the list to start.'**
+  String get hostProgrammeGuestsEmpty;
+
+  /// Guests grid when the filter matches nobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody matches this filter.'**
+  String get hostProgrammeGuestsFilterEmpty;
+
+  /// Guests filter chip: every household.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostProgrammeGuestsAll;
+
+  /// Guests table column: household.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get hostProgrammeGuestsColumnHousehold;
+
+  /// Guests table column: side and groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Side and groups'**
+  String get hostProgrammeGuestsColumnGroups;
+
+  /// Guests table footer count.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {shown} of {total} households'**
+  String hostProgrammeGuestsShowing({required int shown, required int total});
+
+  /// Guests desktop top bar button that opens the counts-only view.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with the family'**
+  String get hostProgrammeShareFamily;
+
+  /// Guests desktop top bar button that opens the import.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guests'**
+  String get hostProgrammeAddGuests;
+
+  /// Household page when it is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This household is no longer on the list'**
+  String get hostProgrammeHouseholdMissing;
+
+  /// Household badge: every member has answered.
+  ///
+  /// In en, this message translates to:
+  /// **'Replied for everyone'**
+  String get hostProgrammeHouseholdReplied;
+
+  /// Household badge: someone has not answered.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to reply'**
+  String get hostProgrammeHouseholdWaiting;
+
+  /// Row action that calls a phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get hostProgrammeCall;
+
+  /// Household button that shares the RSVP link.
+  ///
+  /// In en, this message translates to:
+  /// **'Send their link again'**
+  String get hostProgrammeHouseholdSendLink;
+
+  /// Back label to the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the guests'**
+  String get hostProgrammeBackToGuests;
+
+  /// Share subject for a household RSVP link.
+  ///
+  /// In en, this message translates to:
+  /// **'Your RSVP link, {household}'**
+  String hostProgrammeHouseholdLinkSubject({required Object household});
+
+  /// Section action that adds a record.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostProgrammeAdd;
+
+  /// A count of people.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostProgrammePeople({required int count});
+
+  /// Travel stat: people on inbound legs.
+  ///
+  /// In en, this message translates to:
+  /// **'Flying in'**
+  String get hostProgrammeTravelFlying;
+
+  /// Travel stat: people whose flight number is in.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared a flight'**
+  String get hostProgrammeTravelWithFlight;
+
+  /// Travel stat: people with no flight or landing time.
+  ///
+  /// In en, this message translates to:
+  /// **'Still missing'**
+  String get hostProgrammeTravelMissing;
+
+  /// Travel section: legs that need the planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostProgrammeTravelNeedsYou;
+
+  /// Travel section: the day most people land.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, the busiest day'**
+  String hostProgrammeTravelBusiest({required Object day});
+
+  /// Travel chart spoken label.
+  ///
+  /// In en, this message translates to:
+  /// **'People landing every two hours on {day}'**
+  String hostProgrammeTravelChart({required Object day});
+
+  /// Travel section: people landing per day.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals by day'**
+  String get hostProgrammeTravelByDay;
+
+  /// Travel arrivals by day when no leg has a time.
+  ///
+  /// In en, this message translates to:
+  /// **'No landing times yet.'**
+  String get hostProgrammeTravelByDayEmpty;
+
+  /// Travel day row badge: the busiest day.
+  ///
+  /// In en, this message translates to:
+  /// **'Busiest'**
+  String get hostProgrammeTravelBusiestBadge;
+
+  /// Travel section: airports and stations.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup points'**
+  String get hostProgrammeTravelPickups;
+
+  /// Travel pickup points when there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No pickup points yet.'**
+  String get hostProgrammeTravelPickupsEmpty;
+
+  /// Travel section: the programme hotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels'**
+  String get hostProgrammeTravelHotels;
+
+  /// Travel hotels when there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels yet.'**
+  String get hostProgrammeTravelHotelsEmpty;
+
+  /// Travel row that opens the room board.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get hostProgrammeTravelRooms;
+
+  /// Travel rooms row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is in which room, and who is waiting'**
+  String get hostProgrammeTravelRoomsBody;
+
+  /// Travel section: suggested cars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars'**
+  String get hostProgrammeTravelCars;
+
+  /// Travel section action that adds a car vendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a vendor'**
+  String get hostProgrammeTravelAddVendor;
+
+  /// Travel cars when the plan suggests none.
+  ///
+  /// In en, this message translates to:
+  /// **'No cars suggested yet.'**
+  String get hostProgrammeTravelCarsEmpty;
+
+  /// Travel car row subtitle: destination and first curb time.
+  ///
+  /// In en, this message translates to:
+  /// **'To {hotel} · from {time}'**
+  String hostProgrammeTravelCarLine({
+    required Object hotel,
+    required Object time,
+  });
+
+  /// Travel row that opens the trip ledger.
+  ///
+  /// In en, this message translates to:
+  /// **'Car trips'**
+  String get hostProgrammeTravelTrips;
+
+  /// Travel trips row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No trips yet} =1{1 trip so far} other{{count} trips so far}}'**
+  String hostProgrammeTravelTripsBody({required int count});
+
+  /// Travel button that opens the greeter arrivals desk.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the live airport desk'**
+  String get hostProgrammeTravelDesk;
+
+  /// Travel need line when the flight number is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'No flight yet'**
+  String get hostProgrammeTravelNoFlight;
+
+  /// Travel need line: flight diverted.
+  ///
+  /// In en, this message translates to:
+  /// **'{flight} diverted'**
+  String hostProgrammeTravelDiverted({required Object flight});
+
+  /// Travel need line: flight cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'{flight} cancelled'**
+  String hostProgrammeTravelCancelled({required Object flight});
+
+  /// Travel need line: no landing time.
+  ///
+  /// In en, this message translates to:
+  /// **'{flight} · no landing time'**
+  String hostProgrammeTravelNoTime({required Object flight});
+
+  /// Hotel setup title and name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel'**
+  String get hostProgrammeSetupHotel;
+
+  /// Hotel setup field: address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get hostProgrammeSetupAddress;
+
+  /// Hotel setup field: reception contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Front desk phone'**
+  String get hostProgrammeSetupReception;
+
+  /// Pickup point kind segmented label.
+  ///
+  /// In en, this message translates to:
+  /// **'Kind'**
+  String get hostProgrammeSetupKind;
+
+  /// Pickup point kind: airport.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport'**
+  String get hostProgrammeSetupAirport;
+
+  /// Pickup point kind: railway station.
+  ///
+  /// In en, this message translates to:
+  /// **'Station'**
+  String get hostProgrammeSetupStation;
+
+  /// Pickup point kind: a venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get hostProgrammeSetupVenue;
+
+  /// Pickup point kind: anything else.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get hostProgrammeSetupOther;
+
+  /// Pickup point field: its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get hostProgrammeSetupWhere;
+
+  /// Pickup point field: IATA code.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport code'**
+  String get hostProgrammeSetupCode;
+
+  /// Pickup point field: terminal.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminal'**
+  String get hostProgrammeSetupTerminal;
+
+  /// Pickup point field: meeting zone.
+  ///
+  /// In en, this message translates to:
+  /// **'Where greeters stand'**
+  String get hostProgrammeSetupGreeters;
+
+  /// Pickup point field: instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the greeters'**
+  String get hostProgrammeSetupInstructions;
+
+  /// Vendor setup field: vendor name.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor'**
+  String get hostProgrammeSetupVendor;
+
+  /// Vendor setup field: contact name.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get hostProgrammeSetupContact;
+
+  /// Vendor setup field: phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostProgrammeSetupPhone;
+
+  /// Vendor phone helper.
+  ///
+  /// In en, this message translates to:
+  /// **'With the country code, like +91 98765 43210'**
+  String get hostProgrammeSetupPhoneHelp;
+
+  /// Vendor setup section: vendors already in the directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendors'**
+  String get hostProgrammeSetupVendors;
+
+  /// Vendor setup list when empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendors yet.'**
+  String get hostProgrammeSetupVendorsEmpty;
+
+  /// Vendor row value: bound to this programme.
+  ///
+  /// In en, this message translates to:
+  /// **'On this programme'**
+  String get hostProgrammeSetupVendorHere;
+
+  /// Pickup point setup title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup point'**
+  String get hostProgrammeSetupPickupTitle;
+
+  /// Vendor setup title.
+  ///
+  /// In en, this message translates to:
+  /// **'Car vendor'**
+  String get hostProgrammeSetupVendorTitle;
+
+  /// Notice after a setup page is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get hostProgrammeSetupSaved;
+
+  /// Rooms pane title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get hostProgrammeRoomsTitle;
+
+  /// Rooms pane button that opens the hotel setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel details'**
+  String get hostProgrammeRoomsHotelDetails;
+
+  /// Rooms when the programme has no hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a hotel first, from Travel.'**
+  String get hostProgrammeRoomsNoHotel;
+
+  /// Rooms stat: rooms held in blocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms held'**
+  String get hostProgrammeRoomsHeld;
+
+  /// Rooms stat: rooms with a guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed'**
+  String get hostProgrammeRoomsPlacedStat;
+
+  /// Rooms stat: guests waiting for a room.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get hostProgrammeRoomsWaiting;
+
+  /// Rooms hotel segmented label.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels'**
+  String get hostProgrammeRoomsHotels;
+
+  /// Rooms section: guests with no room.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for a room'**
+  String get hostProgrammeRoomsWaitingTitle;
+
+  /// Rooms waiting list when empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has a room.'**
+  String get hostProgrammeRoomsWaitingEmpty;
+
+  /// Rooms help notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a guest, then a free room in a block to place them.'**
+  String get hostProgrammeRoomsHowTo;
+
+  /// Rooms button that places every suggested guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest for all {count}'**
+  String hostProgrammeRoomsSuggestAll({required int count});
+
+  /// Rooms block meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms in the blocks'**
+  String get hostProgrammeRoomsMeter;
+
+  /// Rooms meter part and tile: a free room.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get hostProgrammeRoomsFree;
+
+  /// Rooms when the hotel has no blocks.
+  ///
+  /// In en, this message translates to:
+  /// **'No room blocks at this hotel yet.'**
+  String get hostProgrammeRoomsNoBlocks;
+
+  /// Rooms notice title: suggested placements.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get hostProgrammeRoomsSuggestion;
+
+  /// Rooms suggestion notice body.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 waiting guest has a block that fits.} other{{count} waiting guests have a block that fits.}}'**
+  String hostProgrammeRoomsSuggestionBody({required int count});
+
+  /// Rooms suggestion notice action.
+  ///
+  /// In en, this message translates to:
+  /// **'Place them'**
+  String get hostProgrammeRoomsPlaceThem;
+
+  /// Room tile meta: the guest has checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get hostProgrammeRoomsCheckedIn;
+
+  /// Room block note.
+  ///
+  /// In en, this message translates to:
+  /// **'{placed} of {total} placed'**
+  String hostProgrammeRoomsBlockNote({required int placed, required int total});
+
+  /// Notice after placing guests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest placed} other{{count} guests placed}}'**
+  String hostProgrammeRoomsPlaced({required int count});
+
+  /// Create programme top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'New programme'**
+  String get hostProgrammeCreateTitle;
+
+  /// Create programme close label.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostProgrammeCreateClose;
+
+  /// Create programme kind question.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you planning?'**
+  String get hostProgrammeCreateWhat;
+
+  /// Create programme kind: corporate.
+  ///
+  /// In en, this message translates to:
+  /// **'Offsite or conference'**
+  String get hostProgrammeCreateOffsite;
+
+  /// Create programme kind: anything else.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get hostProgrammeCreateOther;
+
+  /// Create programme name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostProgrammeCreateName;
+
+  /// Create programme name placeholder for a wedding.
+  ///
+  /// In en, this message translates to:
+  /// **'Aditi and Kabir’s wedding'**
+  String get hostProgrammeCreateNameWedding;
+
+  /// Create programme name placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Bain offsite'**
+  String get hostProgrammeCreateNamePlaceholder;
+
+  /// Create programme row: first day.
+  ///
+  /// In en, this message translates to:
+  /// **'First day'**
+  String get hostProgrammeCreateFirstDay;
+
+  /// Create programme row: last day.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day'**
+  String get hostProgrammeCreateLastDay;
+
+  /// Create programme date row value before a day is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a day'**
+  String get hostProgrammeCreatePick;
+
+  /// Create programme time zone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Time zone'**
+  String get hostProgrammeCreateTimezone;
+
+  /// Create programme time zone helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Every function time is in this zone.'**
+  String get hostProgrammeCreateTimezoneHelp;
+
+  /// Create programme validation: required.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed'**
+  String get hostProgrammeCreateRequired;
+
+  /// Create programme validation: too long.
+  ///
+  /// In en, this message translates to:
+  /// **'That’s too long'**
+  String get hostProgrammeCreateTooLong;
+
+  /// Create programme validation: time zone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a time zone from the list'**
+  String get hostProgrammeCreateTimezoneInvalid;
+
+  /// Create programme validation: date out of range.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a day in range'**
+  String get hostProgrammeCreateDateInvalid;
+
+  /// Create programme validation: end after start.
+  ///
+  /// In en, this message translates to:
+  /// **'The last day comes after the first'**
+  String get hostProgrammeCreateEndAfterStart;
+
+  /// Day sheet button.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {day}'**
+  String hostProgrammeCreateUseDay({required Object day});
+
+  /// Create programme dock button.
+  ///
+  /// In en, this message translates to:
+  /// **'Create the programme'**
+  String get hostProgrammeCreateSubmit;
+
+  /// Create programme dock secondary button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostProgrammeCreateCancel;
+
+  /// Create programme leave dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this programme?'**
+  String get hostProgrammeCreateLeaveTitle;
+
+  /// Create programme leave dialog body for a draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Your draft stays on this phone.'**
+  String get hostProgrammeCreateLeaveDraft;
+
+  /// Create programme leave dialog body while the command is pending.
+  ///
+  /// In en, this message translates to:
+  /// **'It may already be created. Come back to finish confirming it.'**
+  String get hostProgrammeCreateLeavePending;
+
+  /// Create programme leave dialog confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get hostProgrammeCreateLeave;
+
+  /// Create programme notice when the actor changed.
+  ///
+  /// In en, this message translates to:
+  /// **'You switched account or organiser. Start again from Events.'**
+  String get hostProgrammeCreateActorChanged;
+
+  /// A whole percentage.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}%'**
+  String hostProgrammePercent({required int value});
+
+  /// Attendance top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get hostProgrammeAttendanceTopBar;
+
+  /// Attendance page title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who came to what'**
+  String get hostProgrammeAttendanceTitle;
+
+  /// Attendance stat: people checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins'**
+  String get hostProgrammeAttendanceCheckIns;
+
+  /// Attendance stat: share of yes replies who came.
+  ///
+  /// In en, this message translates to:
+  /// **'Of replies came'**
+  String get hostProgrammeAttendanceCame;
+
+  /// Attendance stat: walk-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-ins'**
+  String get hostProgrammeAttendanceWalkIns;
+
+  /// Attendance section: per function.
+  ///
+  /// In en, this message translates to:
+  /// **'By function'**
+  String get hostProgrammeAttendanceByFunction;
+
+  /// Attendance function row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{came} came of {coming} coming · {missed} missed'**
+  String hostProgrammeAttendanceLine({
+    required int came,
+    required int coming,
+    required int missed,
+  });
+
+  /// Attendance section: closing the programme.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrapping up'**
+  String get hostProgrammeAttendanceWrapUp;
+
+  /// Attendance export row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance for every function'**
+  String get hostProgrammeAttendanceExport;
+
+  /// Attendance export row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies against the door, as a spreadsheet'**
+  String get hostProgrammeAttendanceExportBody;
+
+  /// Attendance export row action.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get hostProgrammeAttendanceExportAction;
+
+  /// Attendance export share subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance · {programme}'**
+  String hostProgrammeAttendanceExportSubject({required Object programme});
+
+  /// Attendance archive row title and dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Close and archive the programme'**
+  String get hostProgrammeAttendanceArchive;
+
+  /// Attendance archive row subtitle and dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details are anonymised after the retention window.'**
+  String get hostProgrammeAttendanceArchiveBody;
+
+  /// Attendance archive row action and dialog confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostProgrammeAttendanceArchiveAction;
+
+  /// Notice after archiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Programme archived'**
+  String get hostProgrammeAttendanceArchived;
+
+  /// Share view kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with you'**
+  String get hostProgrammeShareKicker;
+
+  /// Share view badge.
+  ///
+  /// In en, this message translates to:
+  /// **'View only'**
+  String get hostProgrammeShareViewOnly;
+
+  /// Share view spotlight line.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted at {time}. Numbers change as guests reply.'**
+  String hostProgrammeShareUpdated({required Object time});
+
+  /// Share view section: replies per function.
+  ///
+  /// In en, this message translates to:
+  /// **'Who’s coming to what'**
+  String get hostProgrammeShareComing;
+
+  /// Share view function row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{coming} of {invited} coming · {maybe} maybe'**
+  String hostProgrammeShareComingLine({
+    required int coming,
+    required int invited,
+    required int maybe,
+  });
+
+  /// Share view tile: expected heads.
+  ///
+  /// In en, this message translates to:
+  /// **'For the caterer'**
+  String get hostProgrammeShareCaterer;
+
+  /// Share view chip: function and expected heads.
+  ///
+  /// In en, this message translates to:
+  /// **'{function} {count}'**
+  String hostProgrammeShareHeads({
+    required Object function,
+    required int count,
+  });
+
+  /// Share view section: replies still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to hear from'**
+  String get hostProgrammeShareWaiting;
+
+  /// Share view when nobody is still to reply.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has replied.'**
+  String get hostProgrammeShareWaitingEmpty;
+
+  /// Share view hotel row value.
+  ///
+  /// In en, this message translates to:
+  /// **'{arrived} of {total} arrived'**
+  String hostProgrammeShareArrived({required int arrived, required int total});
+
+  /// Trips stat: trips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get hostProgrammeTripsTrips;
+
+  /// Trips stat: passengers on trips that were not voided.
+  ///
+  /// In en, this message translates to:
+  /// **'People moved'**
+  String get hostProgrammeTripsPeople;
+
+  /// Trips stat and filter: voided, cancelled or late trips.
+  ///
+  /// In en, this message translates to:
+  /// **'Need a look'**
+  String get hostProgrammeTripsNeedsLook;
+
+  /// Trips stat note for the trips that need a look.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided or late'**
+  String get hostProgrammeTripsNeedsLookNote;
+
+  /// Trips stat: vendors on the ledger.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendors'**
+  String get hostProgrammeTripsVendors;
+
+  /// Trips button that shares the ledger.
+  ///
+  /// In en, this message translates to:
+  /// **'Export for the vendors'**
+  String get hostProgrammeTripsExport;
+
+  /// Trips export share subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Car trips · {programme}'**
+  String hostProgrammeTripsExportSubject({required Object programme});
+
+  /// Trips table column: trip id.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get hostProgrammeTripsColumnTrip;
+
+  /// Trips table column: departure time.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get hostProgrammeTripsColumnLeft;
+
+  /// Trips table column: vendor and plate.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor'**
+  String get hostProgrammeTripsColumnVendor;
+
+  /// Trips table column: destination.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get hostProgrammeTripsColumnRoute;
+
+  /// Trips table column: passengers.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostProgrammeTripsColumnPeople;
+
+  /// Trips table column: trip state.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get hostProgrammeTripsColumnState;
+
+  /// Trip with no vendor.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendor'**
+  String get hostProgrammeTripsNoVendor;
+
+  /// Trips table when nothing matches.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips match this filter.'**
+  String get hostProgrammeTripsEmpty;
+
+  /// Trip state: arrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get hostProgrammeTripsArrived;
+
+  /// Trip state: voided.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided'**
+  String get hostProgrammeTripsVoided;
+
+  /// Trip state: cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostProgrammeTripsCancelled;
+
+  /// Trip state: still on the road after its expected arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get hostProgrammeTripsLate;
+
+  /// Trip state: on its way.
+  ///
+  /// In en, this message translates to:
+  /// **'On the road'**
+  String get hostProgrammeTripsOnTheRoad;
+
+  /// Trip sheet button.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark arrived'**
+  String get hostProgrammeTripsMarkArrived;
+
+  /// Trip sheet void reason field.
+  ///
+  /// In en, this message translates to:
+  /// **'Why void it?'**
+  String get hostProgrammeTripsVoidReason;
+
+  /// Trip sheet void button.
+  ///
+  /// In en, this message translates to:
+  /// **'Void this trip'**
+  String get hostProgrammeTripsVoid;
+
+  /// Staff duty: programme admin.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs the programme'**
+  String get hostProgrammeDutyAdmin;
+
+  /// Staff duty: programme coordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinator'**
+  String get hostProgrammeDutyCoordinator;
+
+  /// Staff duty: guest relations.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest replies'**
+  String get hostProgrammeDutyGuestRelations;
+
+  /// Staff duty: communications.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostProgrammeDutyCommunications;
+
+  /// Staff duty: function check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get hostProgrammeDutyDoor;
+
+  /// Staff duty: function lead.
+  ///
+  /// In en, this message translates to:
+  /// **'Function lead'**
+  String get hostProgrammeDutyLead;
+
+  /// Staff duty: airport greeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport greeter'**
+  String get hostProgrammeDutyGreeter;
+
+  /// Staff duty: hotel desk.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get hostProgrammeDutyHotelDesk;
+
+  /// Staff duty: transport dispatcher.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostProgrammeDutyDispatcher;
+
+  /// Staff duty: reconciliation viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills and reports'**
+  String get hostProgrammeDutyReconciliation;
+
+  /// Staff duty: stakeholder viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Family view'**
+  String get hostProgrammeDutyFamily;
+
+  /// Team stat: everyone on the team.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostProgrammeTeamPeople;
+
+  /// Team stat: active staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get hostProgrammeTeamJoined;
+
+  /// Team stat: invited, not yet joined.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get hostProgrammeTeamWaiting;
+
+  /// Team access notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff see only the guests their job needs. Their access ends on its own.'**
+  String get hostProgrammeTeamNotice;
+
+  /// Team when empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody on the team yet. Invite the first person.'**
+  String get hostProgrammeTeamEmpty;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Running the programme'**
+  String get hostProgrammeTeamRunning;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests and replies'**
+  String get hostProgrammeTeamGuests;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport and cars'**
+  String get hostProgrammeTeamAirport;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desks'**
+  String get hostProgrammeTeamHotels;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Doors and functions'**
+  String get hostProgrammeTeamDoors;
+
+  /// Team section.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get hostProgrammeTeamFamily;
+
+  /// Team row badge: active.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get hostProgrammeTeamJoinedBadge;
+
+  /// Team row badge: invite not claimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited · not opened'**
+  String get hostProgrammeTeamInvitedBadge;
+
+  /// Team row badge: expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ended'**
+  String get hostProgrammeTeamExpiredBadge;
+
+  /// Team row badge: revoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed'**
+  String get hostProgrammeTeamRemovedBadge;
+
+  /// Team row action and dialog confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostProgrammeTeamRemove;
+
+  /// Team remove dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String hostProgrammeTeamRemoveTitle({required Object name});
+
+  /// Team remove dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'They lose access straight away.'**
+  String get hostProgrammeTeamRemoveBody;
+
+  /// Invite sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite someone'**
+  String get hostProgrammeTeamInvite;
+
+  /// Team top bar button.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get hostProgrammeTeamInviteShort;
+
+  /// Invite sheet button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the invite'**
+  String get hostProgrammeTeamInviteSend;
+
+  /// Invite sheet name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostProgrammeTeamName;
+
+  /// Invite sheet duty field.
+  ///
+  /// In en, this message translates to:
+  /// **'Job'**
+  String get hostProgrammeTeamJob;
+
+  /// Notice after an invite.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is invited'**
+  String hostProgrammeTeamInvited({required Object name});
+
+  /// Import top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the guest list'**
+  String get hostProgrammeImportTitle;
+
+  /// Import file row before a file is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'No file yet'**
+  String get hostProgrammeImportNoFile;
+
+  /// Import file row help.
+  ///
+  /// In en, this message translates to:
+  /// **'A CSV or Excel file, one guest per row'**
+  String get hostProgrammeImportFileHelp;
+
+  /// Import file row: rows in the file.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row} other{{count} rows}}'**
+  String hostProgrammeImportRows({required int count});
+
+  /// Import file row action before a file.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a file'**
+  String get hostProgrammeImportPick;
+
+  /// Import file row action after a file.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostProgrammeImportChange;
+
+  /// Import page title after the check.
+  ///
+  /// In en, this message translates to:
+  /// **'{guests} guests in {households} households'**
+  String hostProgrammeImportFound({
+    required int guests,
+    required int households,
+  });
+
+  /// Import section: column mapping.
+  ///
+  /// In en, this message translates to:
+  /// **'What each column is'**
+  String get hostProgrammeImportColumns;
+
+  /// Import column choice: not used.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip it'**
+  String get hostProgrammeImportSkip;
+
+  /// Import section: rows with problems.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 needs a look} other{{count} need a look}}'**
+  String hostProgrammeImportIssues({required int count});
+
+  /// Import issues note.
+  ///
+  /// In en, this message translates to:
+  /// **'Or fix them later'**
+  String get hostProgrammeImportIssuesNote;
+
+  /// Import issue row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}'**
+  String hostProgrammeImportRow({required int row});
+
+  /// Import field: guest name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostProgrammeImportName;
+
+  /// Import field: groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Side and groups'**
+  String get hostProgrammeImportGroups;
+
+  /// Import field: flight number.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight'**
+  String get hostProgrammeImportFlight;
+
+  /// Import field: scheduled arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Lands at'**
+  String get hostProgrammeImportLands;
+
+  /// Import dock button before the check.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the list'**
+  String get hostProgrammeImportCheck;
+
+  /// Import dock button after the check.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Add 1 guest} other{Add {count} guests}}'**
+  String hostProgrammeImportAdd({required int count});
+
+  /// Import dock button after adding.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the guests'**
+  String get hostProgrammeImportBack;
+
+  /// Import notice title after commit.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list added'**
+  String get hostProgrammeImportDone;
+
+  /// Import notice body after commit.
+  ///
+  /// In en, this message translates to:
+  /// **'{created} new guests, {updated} updated.'**
+  String hostProgrammeImportDoneBody({
+    required int created,
+    required int updated,
+  });
 }
 
 class _AppLocalizationsDelegate
