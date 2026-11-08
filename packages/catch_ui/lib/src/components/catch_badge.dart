@@ -1,5 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_dashed_outline_painter.dart';
 import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +21,9 @@ enum CatchBadgeSize { sm, md, action }
 
 /// [soft] is the pale tint. [solid] is the tone at full strength (ink for
 /// neutral, the event colour for a format); [strong] is the ticket recipe's
-/// dark pill and reads as [solid] on the default constructor.
-enum CatchBadgeEmphasis { soft, strong, solid }
+/// dark pill and reads as [solid] on the default constructor. [outline] has
+/// no fill and a dashed edge, for something still waiting (no reply yet).
+enum CatchBadgeEmphasis { soft, strong, solid, outline }
 
 enum _CatchBadgeRecipe {
   standard,
@@ -42,9 +44,10 @@ enum _CatchBadgeRecipe {
 /// Fixed visual recipes are exposed only through their named constructors.
 class CatchBadge extends StatelessWidget {
   ///
-  /// The system Badge: [tone] with [emphasis] soft or solid, a [format]
-  /// (which wins over [tone] and fills the badge with the event colour) and a
-  /// leading [dot] in the label colour.
+  /// The system Badge: [tone] with [emphasis] soft, solid or outline, a
+  /// [format] (which wins over [tone] and fills the badge with the event
+  /// colour) and a leading [dot] in the label colour. [semanticLabel] is read
+  /// in place of a terse [label]: "No reply yet" for "?".
   const CatchBadge({
     super.key,
     required this.label,
@@ -54,6 +57,7 @@ class CatchBadge extends StatelessWidget {
     this.emphasis = CatchBadgeEmphasis.soft,
     this.format,
     this.dot = false,
+    this.semanticLabel,
     this.accentColor,
     this.backgroundColor,
     this.foregroundColor,
@@ -77,6 +81,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.status;
 
   const CatchBadge.functional({
@@ -93,6 +98,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.standard;
 
   /// Fixed editorial solid treatment for badges on light surfaces.
@@ -110,6 +116,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.solid;
 
   /// Fixed editorial solid treatment for compact functional status.
@@ -127,6 +134,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.solid;
 
   /// Canonical live-status treatment: live fill, status dot, functional copy.
@@ -144,6 +152,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.live;
 
   /// Fixed treatment for compact metadata over dark, media, or art surfaces.
@@ -158,6 +167,7 @@ class CatchBadge extends StatelessWidget {
       emphasis = CatchBadgeEmphasis.soft,
       format = null,
       dot = false,
+      semanticLabel = null,
       _recipe = _CatchBadgeRecipe.onDark;
 
   /// Fixed on-dark chrome with normalized functional-status typography.
@@ -172,6 +182,7 @@ class CatchBadge extends StatelessWidget {
       emphasis = CatchBadgeEmphasis.soft,
       format = null,
       dot = false,
+      semanticLabel = null,
       _recipe = _CatchBadgeRecipe.onDark;
 
   /// Canonical trust/privacy chrome. Domain adapters own localized copy.
@@ -189,6 +200,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.privacy;
 
   /// Uppercase ticket status with a caller-supplied pigment or dark emphasis.
@@ -208,6 +220,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = emphasis == CatchBadgeEmphasis.soft
            ? _CatchBadgeRecipe.ticketSoft
            : _CatchBadgeRecipe.ticketStrong;
@@ -228,6 +241,7 @@ class CatchBadge extends StatelessWidget {
        emphasis = CatchBadgeEmphasis.soft,
        format = null,
        dot = false,
+       semanticLabel = null,
        _recipe = _CatchBadgeRecipe.optional;
 
   final String label;
@@ -241,6 +255,9 @@ class CatchBadge extends StatelessWidget {
 
   /// A leading dot in the label colour: Live, Connected, Taking answers.
   final bool dot;
+
+  /// Read aloud in place of [label]; the default constructor only.
+  final String? semanticLabel;
   final Color? accentColor;
   final Color? backgroundColor;
   final Color? foregroundColor;
@@ -265,8 +282,11 @@ class CatchBadge extends StatelessWidget {
     );
     final displayLabel = _functional ? label.toUpperCase() : label;
     final foreground = foregroundColor ?? palette.foreground;
+    final outline =
+        _recipe == _CatchBadgeRecipe.standard &&
+        emphasis == CatchBadgeEmphasis.outline;
 
-    return LayoutBuilder(
+    final badge = LayoutBuilder(
       builder: (context, constraints) {
         final labelWidget = Text(
           displayLabel,
@@ -320,6 +340,18 @@ class CatchBadge extends StatelessWidget {
         final ticket =
             _recipe == _CatchBadgeRecipe.ticketSoft ||
             _recipe == _CatchBadgeRecipe.ticketStrong;
+        if (outline) {
+          return ConstrainedBox(
+            constraints: BoxConstraints(minHeight: metrics.minHeight),
+            child: CustomPaint(
+              foregroundPainter: CatchDashedOutlinePainter(
+                color: CatchTokens.of(context).ink3,
+                radius: BorderRadius.circular(metrics.radius),
+              ),
+              child: content,
+            ),
+          );
+        }
         return ConstrainedBox(
           constraints: BoxConstraints(minHeight: metrics.minHeight),
           child: ticket
@@ -335,6 +367,14 @@ class CatchBadge extends StatelessWidget {
               : DecoratedBox(decoration: decoration, child: content),
         );
       },
+    );
+    final semanticLabel = this.semanticLabel;
+    if (semanticLabel == null) return badge;
+    return Semantics(
+      container: true,
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: badge,
     );
   }
 }
@@ -622,6 +662,14 @@ class _BadgePalette {
       return _BadgePalette(
         background: t.primary,
         foreground: t.primaryInk,
+        border: Colors.transparent,
+      );
+    }
+    if (emphasis == CatchBadgeEmphasis.outline) {
+      // The system's waiting badge: no fill, ink2, under a dashed ink3 edge.
+      return _BadgePalette(
+        background: Colors.transparent,
+        foreground: t.ink2,
         border: Colors.transparent,
       );
     }

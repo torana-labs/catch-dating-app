@@ -3,6 +3,7 @@ import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_dashed_outline_painter.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
@@ -329,7 +330,10 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
     );
     if (variant == CatchChoiceTileVariant.add) {
       card = CustomPaint(
-        foregroundPainter: _DashedOutline(color: t.controlLine, radius: radius),
+        foregroundPainter: CatchDashedOutlinePainter(
+          color: t.controlLine,
+          radius: radius,
+        ),
         child: card,
       );
     }
@@ -416,37 +420,4 @@ class _Tick extends StatelessWidget {
       ),
     ),
   );
-}
-
-/// The add card's dashed outline.
-class _DashedOutline extends CustomPainter {
-  const _DashedOutline({required this.color, required this.radius});
-
-  final Color color;
-  final BorderRadius radius;
-
-  static const double _dash = CatchSpacing.micro6;
-  static const double _gap = CatchSpacing.s1;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final inset = CatchStroke.control / 2;
-    final rect =
-        Offset(inset, inset) &
-        Size(size.width - inset * 2, size.height - inset * 2);
-    final path = Path()..addRRect(radius.toRRect(rect));
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = CatchStroke.control;
-    for (final metric in path.computeMetrics()) {
-      for (var at = 0.0; at < metric.length; at += _dash + _gap) {
-        canvas.drawPath(metric.extractPath(at, at + _dash), paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_DashedOutline oldDelegate) =>
-      oldDelegate.color != color || oldDelegate.radius != radius;
 }

@@ -244,6 +244,7 @@ export 'src/primitives/catch_code_caret_indicator.dart';
 export 'src/primitives/catch_code_digit_surface.dart';
 export 'src/primitives/catch_code_input_status.dart';
 export 'src/primitives/catch_control_surface.dart';
+export 'src/primitives/catch_dashed_outline_painter.dart';
 export 'src/primitives/catch_divider.dart';
 export 'src/primitives/catch_fractional_viewport.dart';
 export 'src/primitives/catch_gap.dart';
