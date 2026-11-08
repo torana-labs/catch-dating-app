@@ -3931,47 +3931,12 @@
       "priority": "P1",
       "status": "implemented",
       "targetContract": "catch.screen_body.route_scaffold",
-      "qualityReference": "ProgramArrivalsScreen",
+      "qualityReference": "HostEventOperatorScreen",
       "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
       "acceptedVisualDelta": [
         "None. Preserve all current state-specific titles, subtitles, navigation, scrolling and body specifications. A shared per-screen construction function retains the existing async boundary; it does not introduce a new screen API."
       ],
       "members": [
-        {
-          "symbol": "ProgramArrivalsScreen",
-          "disposition": "repair",
-          "target": "ProgramArrivalsScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
-        },
-        {
-          "symbol": "ProgramDispatchScreen",
-          "disposition": "repair",
-          "target": "ProgramDispatchScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
-        },
-        {
-          "symbol": "ProgramHotelDeskScreen",
-          "disposition": "repair",
-          "target": "ProgramHotelDeskScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
-        },
-        {
-          "symbol": "ProgramWorkScreen",
-          "disposition": "repair",
-          "target": "ProgramWorkScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
-        },
-        {
-          "symbol": "ProgramTripsScreen",
-          "disposition": "repair",
-          "target": "ProgramTripsScreen",
-          "preview": "source-only",
-          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
-        },
         {
           "symbol": "HostEventOperatorScreen",
           "disposition": "repair",
@@ -4013,41 +3978,6 @@
           "target": "HostWizardStepHeader",
           "preview": "not-applicable",
           "rationale": "The two domain adapters duplicate the same localized mapping; callers now supply subtitle directly."
-        }
-      ]
-    },
-    {
-      "id": "host-audience-no-organizer",
-      "title": "One Audience no-organizer composition",
-      "intent": "Share the empty Audience destination while preserving the existing People and Forms copy and interaction.",
-      "priority": "P1",
-      "status": "implemented",
-      "targetContract": "host.audience-state",
-      "qualityReference": "HostAudienceNoOrganizerEmptyState",
-      "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
-      "acceptedVisualDelta": [
-        "None. Retain each tab family’s copy, icon, CTA size, page-storage key and Create Club destination."
-      ],
-      "members": [
-        {
-          "symbol": "HostAudienceNoOrganizerEmptyState",
-          "disposition": "canonical",
-          "preview": "required",
-          "rationale": "The existing audience view determines no-organizer content while HostAudienceStateScaffold retains route chrome."
-        },
-        {
-          "symbol": "HostCustomersNoOrganizer",
-          "disposition": "unify",
-          "target": "HostAudienceNoOrganizerEmptyState",
-          "preview": "not-applicable",
-          "rationale": "Retire repeated empty-state composition after caller migration."
-        },
-        {
-          "symbol": "HostFormsNoOrganizer",
-          "disposition": "unify",
-          "target": "HostAudienceNoOrganizerEmptyState",
-          "preview": "not-applicable",
-          "rationale": "Retire repeated empty-state composition after caller migration."
         }
       ]
     },
