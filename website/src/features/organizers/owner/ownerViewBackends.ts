@@ -1,5 +1,5 @@
 import {ownerViewCopy} from "../../../content/ownerView";
-import {listPublicOrganizerReviews, signInForClaim, watchWebsiteAccountAuthState} from "../../../firebase";
+import {listPublicOrganizerReviews, watchWebsiteAccountAuthState} from "../../../firebase";
 import {
   isOwnerViewData,
   type OwnerPageCommand,
@@ -17,8 +17,6 @@ import {
  */
 export interface OwnerViewBackends {
   watchUser: (callback: (uid: string | null) => void) => () => void;
-  /** Today's website sign-in (Google, from the claim flow). */
-  signIn: () => Promise<void>;
   getView: (organizerId: string) => Promise<OwnerViewData>;
   manage: (command: OwnerPageCommand) => Promise<OwnerPageResult>;
   saveAbout: (organizerId: string, description: string) => Promise<void>;
@@ -49,7 +47,6 @@ function tracking(raw: OwnerTrackingSettings): OwnerTrackingSettings {
 
 export const ownerViewBackends: OwnerViewBackends = {
   watchUser: (callback) => watchWebsiteAccountAuthState((user) => callback(user?.uid ?? null)),
-  signIn: () => signInForClaim(),
   getView: async (organizerId) => {
     const data = await invoke<unknown>("getOrganizerOwnerView", {organizerId});
     if (!isOwnerViewData(data)) throw new TypeError(ownerViewCopy.bar.failed);

@@ -63,7 +63,6 @@ export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
     canEdit: true};
   return {
     watchUser: () => () => undefined,
-    signIn: async () => undefined,
     getView: async () => view,
     manage: async (command) => ({action: command.action, idempotentReplay: false, links: null, photoIds: null,
       followerMessages: null}),

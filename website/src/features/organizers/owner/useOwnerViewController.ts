@@ -144,7 +144,6 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
     /** Nothing to show: not a claimed page, or a signed-in visitor who is not on the team. */
     hidden: !claimed || (uid !== null && !data),
     signedOut: claimed && uid === null,
-    signIn: () => void backends.signIn().catch(() => undefined),
     data,
     role: data?.role ?? null,
     can,

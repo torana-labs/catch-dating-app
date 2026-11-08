@@ -1027,7 +1027,7 @@
           "signed-out"
         ]
       },
-      "notes": "One quiet line above a claimed page's footer for a signed-out visitor who may be its organiser; it opens today's website sign-in (signInForClaim) until the P4.8a sign-in sheet replaces it."
+      "notes": "One quiet line above a claimed page's footer for a signed-out visitor who may be its organiser; it opens the website sign-in sheet (SignInButton, P4.8a)."
     },
     {
       "id": "owner_insights_panel",
@@ -5419,6 +5419,173 @@
         ]
       },
       "notes": "Explore's search box for plans and organisers, with its clear button."
+    },
+    {
+      "id": "route_account",
+      "kind": "route",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/AccountPage.tsx",
+      "exportName": "AccountPage",
+      "css": [
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "loading",
+          "plans",
+          "plans-empty",
+          "pass",
+          "following",
+          "following-empty",
+          "reviews",
+          "reviews-empty",
+          "details",
+          "details-add-phone",
+          "messages",
+          "messages-empty",
+          "privacy",
+          "sign-in-sheet"
+        ]
+      },
+      "notes": "/account/ (P4.8a, #1115): the signed-in guest's account, in a private noindex shell; signed out it offers the sign-in sheet."
+    },
+    {
+      "id": "account_page_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/AccountPage.tsx",
+      "exportName": "AccountPageView",
+      "css": [
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchStarRating.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "loading",
+          "plans",
+          "plans-empty",
+          "pass",
+          "following",
+          "following-empty",
+          "reviews",
+          "reviews-empty",
+          "details",
+          "details-add-phone",
+          "messages",
+          "messages-empty",
+          "privacy",
+          "sign-in-sheet"
+        ]
+      },
+      "notes": "The account page's tabs (Plans with passes, Following, Reviews, Details, Messages, Privacy and data) drawn from the system; empty states per tab."
+    },
+    {
+      "id": "sign_in_sheet_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/SignInSheet.tsx",
+      "exportName": "SignInSheetView",
+      "css": [
+        "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "start",
+          "code",
+          "link-sent",
+          "confirm-email"
+        ]
+      },
+      "notes": "The one sign-in sheet: phone code first, then Google and an email link. Opens from the header and inline at the moment of need, never as a gate before browsing."
+    },
+    {
+      "id": "sign_in_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/SignInSheet.tsx",
+      "exportName": "SignInButton",
+      "css": [
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out"
+        ]
+      },
+      "notes": "A button that opens the sign-in sheet and reports the signed-in user."
+    },
+    {
+      "id": "site_account_action",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/SignInSheet.tsx",
+      "exportName": "SiteAccountAction",
+      "css": [
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "signed-in"
+        ]
+      },
+      "notes": "The header's account action through SiteAccountActionProvider: Sign in, or the account link once signed in."
+    },
+    {
+      "id": "sign_in_prompt",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/SignInSheet.tsx",
+      "exportName": "SignInPrompt",
+      "css": [
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "signed-in"
+        ]
+      },
+      "notes": "An inline sign-in line at the moment of need (the organiser review form) that opens the sign-in sheet."
     }
   ]
 }

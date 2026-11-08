@@ -1,5 +1,6 @@
 import {CatchButton, CatchPageTabBar, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {ownerViewCopy} from "../../../content/ownerView";
+import {SignInButton} from "../../account/SignInSheet";
 import type {OrganizerEventView} from "../organizerPageView";
 import {OwnerAudiencePanel} from "./OwnerAudiencePanel";
 import {OwnerInsightsPanel} from "./OwnerInsightsPanel";
@@ -55,14 +56,15 @@ export function OwnerView({controller, displayUrl, events, name, readAt}: {
 
 /**
  * A quiet line at the foot of a claimed page for a signed-out visitor who
- * may be its organiser. It opens today's website sign-in.
+ * may be its organiser. It opens the website sign-in sheet (P4.8a); once
+ * signed in, the controller's auth watch loads the owner view.
  */
 export function OwnerSignInPrompt({controller}: {controller: OwnerViewController}) {
   if (!controller.signedOut) return null;
   return (
     <CatchStack align="center" direction="row" gap={8} justify="center" wrap>
       <CatchText tone="secondary" variant="body-small">{copy.signIn.title}</CatchText>
-      <CatchButton label={copy.signIn.action} onPressed={controller.signIn} size="sm" variant="quiet" />
+      <SignInButton label={copy.signIn.action} />
     </CatchStack>
   );
 }
