@@ -20,7 +20,10 @@ const eventPreferenceFields = <String>{
 /// Intents added after the first ten. A command may leave them out (the
 /// server reads a missing one as inherit), and a saved snapshot carries them
 /// only when the saving command did.
-const optionalEventPreferenceFields = <String>{'bookingMode'};
+const optionalEventPreferenceFields = <String>{
+  'bookingMode',
+  'waitlistEnabled',
+};
 
 /// Who can book: `anyone`, `followersFirst` or `askFirst` (the host approves
 /// each sign-up before the guest books).
@@ -79,6 +82,7 @@ class PrivateEventPreferenceIntents {
     this.admissionPreset = const EventSetupValue.inherit(),
     this.expectedAmountMinor = const EventSetupValue.clear(),
     this.bookingMode,
+    this.waitlistEnabled,
   });
 
   final EventSetupValue<int> usualDurationMinutes;
@@ -95,6 +99,28 @@ class PrivateEventPreferenceIntents {
   /// Null leaves the intent out of the command.
   final EventSetupValue<String>? bookingMode;
 
+  /// Whether the event takes a waitlist when full; null leaves it out.
+  final EventSetupValue<bool>? waitlistEnabled;
+
+  /// A copy with the optional intents replaced; null keeps each.
+  PrivateEventPreferenceIntents withOptional({
+    EventSetupValue<String>? bookingMode,
+    EventSetupValue<bool>? waitlistEnabled,
+  }) => PrivateEventPreferenceIntents(
+    usualDurationMinutes: usualDurationMinutes,
+    preferredVenueId: preferredVenueId,
+    offerValidityMinutes: offerValidityMinutes,
+    collectionPreference: collectionPreference,
+    currency: currency,
+    offerMessageTemplate: offerMessageTemplate,
+    paymentInstructions: paymentInstructions,
+    reusablePaymentPage: reusablePaymentPage,
+    admissionPreset: admissionPreset,
+    expectedAmountMinor: expectedAmountMinor,
+    bookingMode: bookingMode ?? this.bookingMode,
+    waitlistEnabled: waitlistEnabled ?? this.waitlistEnabled,
+  );
+
   /// A copy with [bookingMode] replaced.
   PrivateEventPreferenceIntents withBookingMode(
     EventSetupValue<String> value,
@@ -110,6 +136,7 @@ class PrivateEventPreferenceIntents {
     admissionPreset: admissionPreset,
     expectedAmountMinor: expectedAmountMinor,
     bookingMode: value,
+    waitlistEnabled: waitlistEnabled,
   );
 
   static const _admissionValues = <String>{
@@ -143,6 +170,8 @@ class PrivateEventPreferenceIntents {
       final value = intent['value'];
       if (entry.key == 'admissionPreset') {
         if (value is! String || !_admissionValues.contains(value)) return false;
+      } else if (entry.key == 'waitlistEnabled') {
+        if (value is! bool) return false;
       } else if (entry.key == 'bookingMode') {
         if (value is! String || !eventBookingModes.contains(value)) {
           return false;
@@ -176,6 +205,8 @@ class PrivateEventPreferenceIntents {
     'expectedAmountMinor': expectedAmountMinor.toJson((value) => value),
     if (bookingMode != null)
       'bookingMode': bookingMode!.toJson((value) => value),
+    if (waitlistEnabled != null)
+      'waitlistEnabled': waitlistEnabled!.toJson((value) => value),
   };
 
   factory PrivateEventPreferenceIntents.fromJson(Map<String, Object?> json) {
@@ -208,6 +239,13 @@ class PrivateEventPreferenceIntents {
     int integer(Object? value) {
       if (value is! int) {
         throw const FormatException('Invalid integer preference');
+      }
+      return value;
+    }
+
+    bool boolean(Object? value) {
+      if (value is! bool) {
+        throw const FormatException('Invalid yes or no preference');
       }
       return value;
     }
@@ -248,6 +286,9 @@ class PrivateEventPreferenceIntents {
       expectedAmountMinor: read('expectedAmountMinor', integer),
       bookingMode: json.containsKey('bookingMode')
           ? read('bookingMode', string)
+          : null,
+      waitlistEnabled: json.containsKey('waitlistEnabled')
+          ? read('waitlistEnabled', boolean)
           : null,
     );
     if (!intents.isValid) {

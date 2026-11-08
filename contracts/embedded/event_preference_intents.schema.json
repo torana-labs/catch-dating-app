@@ -566,6 +566,54 @@
           }
         }
       ]
+    },
+    "waitlistEnabled": {
+      "description": "Whether the event takes a waitlist when it is full. Publishing copies it to the event's admission policy. Optional: a command that leaves it out keeps the event's saved choice, and inherits when none is saved.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "value"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "set"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "clear"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "inherit"
+            }
+          }
+        }
+      ]
     }
   }
 }

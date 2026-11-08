@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
-import {joinEventWaitlistHandler, leaveEventWaitlistHandler} from
-  "./joinEventWaitlist";
+import {assertEventTakesWaitlist, joinEventWaitlistHandler,
+  leaveEventWaitlistHandler} from "./joinEventWaitlist";
 
 type Row = Record<string, unknown>;
 
@@ -60,3 +60,14 @@ test("locked migration denies join and leave before waitlist source writes",
     await assert.rejects(() => leaveEventWaitlistHandler(request(), h.deps));
     assert.equal(h.writes(), 0);
   });
+
+test("a turned-off waitlist refuses joins but keeps join requests", () => {
+  const policy = (mode: string, manualApprovalRequired = false) => ({
+    admission: {waitlistPolicy: {mode}, manualApprovalRequired}});
+  assert.throws(() => assertEventTakesWaitlist(policy("disabled")),
+    /does not take a waitlist/);
+  assert.doesNotThrow(() =>
+    assertEventTakesWaitlist(policy("disabled", true)));
+  assert.doesNotThrow(() => assertEventTakesWaitlist(policy("rankedOffer")));
+  assert.doesNotThrow(() => assertEventTakesWaitlist({admission: {}}));
+});

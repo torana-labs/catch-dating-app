@@ -97,6 +97,11 @@ class CreateFlowState {
     this.problems = const <CreateProblem>{},
     this.stillToSet = const <String>[],
     this.published = false,
+    this.waitlist = true,
+    this.approveEach = false,
+    this.planVisible = false,
+    this.repeatWeekly = false,
+    this.seriesEventIds = const <String>[],
     this.error,
   });
 
@@ -123,6 +128,21 @@ class CreateFlowState {
   /// The server's list of what publishing still needs.
   final List<String> stillToSet;
   final bool published;
+
+  /// Waitlist when it's full: the event's waitlist preference.
+  final bool waitlist;
+
+  /// You approve each request: the ask-first booking preference.
+  final bool approveEach;
+
+  /// Guests see the plan on their phones.
+  final bool planVisible;
+
+  /// Every week on the event's weekday: Publish sets up the next eight.
+  final bool repeatWeekly;
+
+  /// The series' events after Publish, the first one included.
+  final List<String> seriesEventIds;
   final Object? error;
 
   CreateFormat? get format => CreateFormat.fromActivityKind(draft.activityKind);
@@ -155,6 +175,11 @@ class CreateFlowState {
     Set<CreateProblem>? problems,
     List<String>? stillToSet,
     bool? published,
+    bool? waitlist,
+    bool? approveEach,
+    bool? planVisible,
+    bool? repeatWeekly,
+    List<String>? seriesEventIds,
     Object? error,
     bool clearError = false,
   }) => CreateFlowState(
@@ -171,6 +196,11 @@ class CreateFlowState {
     problems: problems ?? this.problems,
     stillToSet: stillToSet ?? this.stillToSet,
     published: published ?? this.published,
+    waitlist: waitlist ?? this.waitlist,
+    approveEach: approveEach ?? this.approveEach,
+    planVisible: planVisible ?? this.planVisible,
+    repeatWeekly: repeatWeekly ?? this.repeatWeekly,
+    seriesEventIds: seriesEventIds ?? this.seriesEventIds,
     error: clearError ? null : error ?? this.error,
   );
 }

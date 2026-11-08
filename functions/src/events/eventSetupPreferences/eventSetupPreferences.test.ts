@@ -247,3 +247,14 @@ test("booking mode is optional, inherits and leaves old hashes alone", () => {
   assert.throws(() => resolved({...intents(), bookingMode: {mode: "set",
     value: "everyone" as never}}), EventPreferenceError);
 });
+
+test("the waitlist choice is optional and inherits the default", () => {
+  assert.equal("waitlistEnabled" in resolved(), false);
+  const withDefault = {...defaults, eventSetup: {...defaults.eventSetup,
+    waitlistEnabled: false}};
+  assert.deepEqual(resolved(intents(), withDefault).waitlistEnabled,
+    {value: false, source: "organizer"});
+  assert.deepEqual(resolved({...intents(), waitlistEnabled: {mode: "set",
+    value: true}}, withDefault).waitlistEnabled,
+  {value: true, source: "event"});
+});

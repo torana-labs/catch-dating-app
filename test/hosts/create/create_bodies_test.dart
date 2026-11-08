@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
@@ -206,6 +207,32 @@ void main() {
           findsOneWidget,
         );
       }
+    });
+
+    testWidgets('the waitlist and approval switches report their change', (
+      tester,
+    ) async {
+      final waitlist = <bool>[];
+      final approve = <bool>[];
+      await _pump(
+        tester,
+        CreateTicketsBody(
+          state: _state(draft: _trivia),
+          onSellElsewhere: (_) {},
+          onPrice: (_) {},
+          onPlaces: (_) {},
+          onAdmission: (_) {},
+          onWaitlist: waitlist.add,
+          onApproveEach: approve.add,
+        ),
+      );
+      expect(find.text(CreateSettingsCopy.waitlist), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey<String>('create-waitlist')));
+      await tester.tap(
+        find.byKey(const ValueKey<String>('create-approve-each')),
+      );
+      expect(waitlist, [false]);
+      expect(approve, [true]);
     });
 
     testWidgets('selling elsewhere keeps price and places off', (tester) async {

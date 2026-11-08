@@ -1,0 +1,50 @@
+{
+  "organizerId": "org1",
+  "eventId": "event1",
+  "requestId": "preferences-1",
+  "expectedSetupRevision": 1,
+  "expectedPreferencesRevision": 0,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "intents": {
+    "usualDurationMinutes": {
+      "mode": "clear"
+    },
+    "preferredVenueId": {
+      "mode": "clear"
+    },
+    "offerValidityMinutes": {
+      "mode": "inherit"
+    },
+    "admissionPreset": {
+      "mode": "inherit"
+    },
+    "collectionPreference": {
+      "mode": "set",
+      "value": "manualInstructions"
+    },
+    "currency": {
+      "mode": "inherit"
+    },
+    "offerMessageTemplate": {
+      "mode": "clear"
+    },
+    "paymentInstructions": {
+      "mode": "inherit"
+    },
+    "reusablePaymentPage": {
+      "mode": "clear"
+    },
+    "expectedAmountMinor": {
+      "mode": "set",
+      "value": 25000
+    },
+    "bookingMode": {
+      "mode": "set",
+      "value": "askFirst"
+    },
+    "waitlistEnabled": {
+      "mode": "set",
+      "value": false
+    }
+  }
+}

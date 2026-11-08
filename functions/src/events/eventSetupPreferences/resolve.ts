@@ -96,6 +96,11 @@ export function resolveEventPreferences(input: {
     resolved.bookingMode = resolve(intents.bookingMode ?? {mode: "inherit"},
       setup.bookingMode);
   }
+  if (intents.waitlistEnabled !== undefined ||
+      setup.waitlistEnabled !== undefined) {
+    resolved.waitlistEnabled = resolve(intents.waitlistEnabled ??
+      {mode: "inherit"}, setup.waitlistEnabled);
+  }
   validateResolved(resolved);
   resolved.reusablePaymentPage = {...resolved.reusablePaymentPage,
     value: copyReusablePage(resolved.reusablePaymentPage.value)};
@@ -204,6 +209,10 @@ function validateOrganizerDefaults(defaults: OrganizerEventDefaults): void {
 
 function validateResolved(value: ResolvedEventPreferences): void {
   validateBookingMode(value.bookingMode?.value ?? null);
+  const waitlist = value.waitlistEnabled?.value ?? null;
+  if (waitlist !== null && typeof waitlist !== "boolean") {
+    invalid("Invalid waitlist choice.");
+  }
   validateValues({
     usualDurationMinutes: value.usualDurationMinutes.value,
     preferredVenueId: value.preferredVenueId.value,

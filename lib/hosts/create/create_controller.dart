@@ -111,6 +111,12 @@ class CreateController extends _$CreateController {
         if (defaults == null || !ref.mounted) return;
         _refundPolicy = defaults.refundPolicy ?? _refundPolicy;
         if (!fresh) return;
+        state = state.copyWith(
+          waitlist: defaults.waitlistEnabled,
+          approveEach: defaults.bookingMode == null
+              ? null
+              : defaults.bookingMode == 'askFirst',
+        );
         final draft = state.draft;
         final price = defaults.startingPriceMinor;
         state = state.copyWith(
@@ -188,6 +194,10 @@ class CreateController extends _$CreateController {
       ),
     ),
   );
+
+  void setWaitlist(bool on) => state = state.copyWith(waitlist: on);
+
+  void setApproveEach(bool on) => state = state.copyWith(approveEach: on);
 
   void goTo(CreateStep step) {
     if (state.working || step == CreateStep.share) return;
@@ -519,7 +529,19 @@ class CreateController extends _$CreateController {
     );
     if (current.error != null) throw current.error!;
     final intents = current.intents;
-    if (intents.admissionPreset.value == state.admission.preset) return;
+    final resolved = current.resolvedValues;
+    final booking = state.approveEach ? 'askFirst' : 'anyone';
+    final bookingSaved =
+        resolved['bookingMode'] == booking ||
+        (!state.approveEach && resolved['bookingMode'] == null);
+    final waitlistSaved =
+        resolved['waitlistEnabled'] == state.waitlist ||
+        (state.waitlist && resolved['waitlistEnabled'] == null);
+    if (intents.admissionPreset.value == state.admission.preset &&
+        bookingSaved &&
+        waitlistSaved) {
+      return;
+    }
     await ref
         .read(
           privateEventPreferencesControllerProvider(_scope(eventId)).notifier,
@@ -536,6 +558,8 @@ class CreateController extends _$CreateController {
             reusablePaymentPage: intents.reusablePaymentPage,
             admissionPreset: EventSetupValue.set(state.admission.preset),
             expectedAmountMinor: intents.expectedAmountMinor,
+            bookingMode: EventSetupValue.set(booking),
+            waitlistEnabled: EventSetupValue.set(state.waitlist),
           ),
         );
     current = await _untilPreferences(
@@ -650,6 +674,15 @@ class CreateController extends _$CreateController {
     if (preset != null && state.draft.admissionPreset == null) {
       state = state.copyWith(
         draft: state.draft.copyWith(admissionPreset: preset),
+      );
+    }
+    final resolved = preferences.event?.eventPreferences?.resolvedValues;
+    final booking = resolved?['bookingMode'];
+    final waitlist = resolved?['waitlistEnabled'];
+    if (booking is String || waitlist is bool) {
+      state = state.copyWith(
+        approveEach: booking is String ? booking == 'askFirst' : null,
+        waitlist: waitlist is bool ? waitlist : null,
       );
     }
   }

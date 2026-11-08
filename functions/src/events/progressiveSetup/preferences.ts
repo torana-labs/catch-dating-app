@@ -142,7 +142,8 @@ export async function updatePrivateEventPreferences(params: {
  * out (an older client, or a screen that edits other settings) keeps the
  * event's saved choice instead of resetting it; with none saved it inherits.
  */
-export const optionalPreferenceIntents = ["bookingMode"] as const;
+export const optionalPreferenceIntents =
+  ["bookingMode", "waitlistEnabled"] as const;
 
 export function withSavedOptionalIntents(intents: EventPreferenceIntents,
   saved: Record<string, unknown> | undefined): EventPreferenceIntents {

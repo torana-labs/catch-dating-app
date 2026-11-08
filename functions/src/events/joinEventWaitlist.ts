@@ -173,6 +173,7 @@ export async function joinEventWaitlistHandler(
     );
 
     const policy = eventPolicyFromEvent(event);
+    assertEventTakesWaitlist(policy);
     const submittedInviteCode = normalizeInviteCode(inviteCode);
     const storedInviteCode = normalizeInviteCode(
       privateAccessSnap.data()?.inviteCode
@@ -247,6 +248,18 @@ export async function joinEventWaitlistHandler(
   });
 
   return {waitlisted: true};
+}
+
+/** A host who turned the waitlist off still takes join requests: on an
+ * approval event the waitlist entry is the request itself.
+ */
+export function assertEventTakesWaitlist(policy: {admission: {
+  waitlistPolicy?: {mode: string}; manualApprovalRequired?: boolean}}): void {
+  if (policy.admission.waitlistPolicy?.mode === "disabled" &&
+      policy.admission.manualApprovalRequired !== true) {
+    throw new HttpsError("failed-precondition",
+      "This event does not take a waitlist.");
+  }
 }
 
 export const joinEventWaitlist = onCall(appCheckCallableOptions,

@@ -70,6 +70,8 @@ export interface EventPreferenceIntents {
   expectedAmountMinor: Exclude<PreferenceIntent<number>, {mode: "inherit"}>;
   /** Optional: commands from older clients omit it, and it reads inherit. */
   bookingMode?: PreferenceIntent<BookingMode>;
+  /** Optional, like bookingMode. */
+  waitlistEnabled?: PreferenceIntent<boolean>;
 }
 
 export interface ResolvedPreference<T> {
@@ -92,6 +94,7 @@ export interface ResolvedEventPreferences {
   expectedAmountMinor: ResolvedPreference<number>;
   /** Present only when the saving command carried the intent. */
   bookingMode?: ResolvedPreference<BookingMode>;
+  waitlistEnabled?: ResolvedPreference<boolean>;
 }
 
 export interface EventPaymentTerms {
