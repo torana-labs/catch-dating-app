@@ -77,7 +77,6 @@ final staffFunctions = [
     DateTime(2026, 12, 12, 16),
     const Duration(hours: 3),
     expected: 240,
-    checkedIn: 0,
   ),
   staffFunction(
     staffSangeetId,
@@ -85,7 +84,7 @@ final staffFunctions = [
     'Durbar hall',
     DateTime(2026, 12, 12, 19, 30),
     const Duration(hours: 3, minutes: 30),
-    checkedIn: 0,
+    checkedIn: 184,
   ),
   staffFunction(
     'dinner',
@@ -93,7 +92,6 @@ final staffFunctions = [
     'Durbar lawns',
     DateTime(2026, 12, 12, 21, 15),
     const Duration(hours: 2),
-    expected: 266,
   ),
   staffFunction(
     'reception',

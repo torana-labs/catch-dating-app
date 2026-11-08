@@ -60,8 +60,8 @@ class StaffHotelTrip extends StatelessWidget {
             icon: CatchIcons.route,
             title: trip.plateDisplay,
             subtitle: [?trip.vehicleClassLabel, ?trip.vendorName].join(' · '),
-            status: status,
-            statusTone: tone,
+            meta: status,
+            metaTone: tone,
             density: CatchIndexRowSize.compact,
             onTap: null,
             action: onArrived == null

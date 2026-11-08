@@ -102,6 +102,9 @@ Widget hostStaffLeadCapture() =>
 Widget hostStaffAlertsCapture() =>
     StaffAlertsScreen(programId: staffProgramId, now: () => staffNightNow);
 
+/// No work saved on the phone.
+const hostStaffCaptureOverridesEmptyOutbox = ProgramOperationOutboxSummary([]);
+
 /// Three door changes saved while offline, for the dock badge.
 ProgramOperationOutboxSummary staffOfflineOutbox() =>
     ProgramOperationOutboxSummary([
