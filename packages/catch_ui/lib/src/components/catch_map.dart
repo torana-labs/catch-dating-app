@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_map_pin.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
@@ -13,8 +15,8 @@ import 'package:flutter/material.dart';
 /// [aspect] is width over height. [label] names the map for screen readers.
 /// [onOpen] makes the whole map a button (open the full map). [footer] sits
 /// under the map: the address, a directions button.
-class CatchPinMap extends StatelessWidget {
-  const CatchPinMap({
+class CatchMap extends StatelessWidget {
+  const CatchMap({
     super.key,
     required this.pins,
     required this.label,
@@ -76,73 +78,85 @@ class CatchPinMap extends StatelessWidget {
                       ),
                     ),
                   for (final pin in pins)
+                    // A dot in the event colour inside a ground ring,
+                    // centred on the point, with its label after it.
                     Positioned(
-                      left: size.width * pin.x / 100,
-                      top: size.height * pin.y / 100,
-                      // A dot in the event colour inside a ground ring,
-                      // centred on the point, with its label after it.
-                      child: FractionalTranslation(
-                        translation: const Offset(-0.5, -0.5),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: CatchSpacing.micro6,
-                          children: [
+                      left:
+                          size.width * pin.x / 100 -
+                          _ring -
+                          (pin.status == CatchMapPinStatus.selected
+                                  ? _dotSelected
+                                  : _dot) /
+                              2,
+                      top:
+                          size.height * pin.y / 100 -
+                          math.max(
+                                _ring * 2 +
+                                    (pin.status == CatchMapPinStatus.selected
+                                        ? _dotSelected
+                                        : _dot),
+                                pin.label?.isNotEmpty == true
+                                    ? GeneratedCatchSizeTokens.badgeMd
+                                    : 0,
+                              ) /
+                              2,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: CatchSpacing.micro6,
+                        children: [
+                          Container(
+                            width:
+                                _ring * 2 +
+                                (pin.status == CatchMapPinStatus.selected
+                                    ? _dotSelected
+                                    : _dot),
+                            height:
+                                _ring * 2 +
+                                (pin.status == CatchMapPinStatus.selected
+                                    ? _dotSelected
+                                    : _dot),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: pin.format.accent,
+                              border: Border.all(
+                                color: t.ground,
+                                width: _ring,
+                                strokeAlign: BorderSide.strokeAlignInside,
+                              ),
+                              boxShadow: [shadow],
+                            ),
+                          ),
+                          if (pin.label case final label? when label.isNotEmpty)
                             Container(
-                              width:
-                                  _ring * 2 +
-                                  (pin.status == CatchMapPinStatus.selected
-                                      ? _dotSelected
-                                      : _dot),
-                              height:
-                                  _ring * 2 +
-                                  (pin.status == CatchMapPinStatus.selected
-                                      ? _dotSelected
-                                      : _dot),
+                              height: GeneratedCatchSizeTokens.badgeMd,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: _labelPadding,
+                              ),
+                              alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: pin.format.accent,
-                                border: Border.all(
-                                  color: t.ground,
-                                  width: _ring,
-                                  strokeAlign: BorderSide.strokeAlignInside,
+                                color: pin.status == CatchMapPinStatus.selected
+                                    ? pin.format.accent
+                                    : t.ground,
+                                borderRadius: BorderRadius.circular(
+                                  CatchRadius.pill,
                                 ),
                                 boxShadow: [shadow],
                               ),
-                            ),
-                            if (pin.label case final label?
-                                when label.isNotEmpty)
-                              Container(
-                                height: GeneratedCatchSizeTokens.badgeMd,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: _labelPadding,
-                                ),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
+                              child: DefaultTextStyle.merge(
+                                style: TextStyle(
                                   color:
                                       pin.status == CatchMapPinStatus.selected
-                                      ? pin.format.accent
-                                      : t.ground,
-                                  borderRadius: BorderRadius.circular(
-                                    CatchRadius.pill,
-                                  ),
-                                  boxShadow: [shadow],
+                                      ? pin.format.ink
+                                      : t.ink,
                                 ),
-                                child: DefaultTextStyle.merge(
-                                  style: TextStyle(
-                                    color:
-                                        pin.status == CatchMapPinStatus.selected
-                                        ? pin.format.ink
-                                        : t.ink,
-                                  ),
-                                  child: CatchText(
-                                    label,
-                                    variant: CatchTextVariant.labelBadge,
-                                    maxLines: 1,
-                                  ),
+                                child: CatchText(
+                                  label,
+                                  variant: CatchTextVariant.labelBadge,
+                                  maxLines: 1,
                                 ),
                               ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
                 ],

@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 /// the event colour.
 enum CatchMapPinStatus { regular, selected }
 
-/// A point on a [CatchPinMap], in percent: [x] across and [y] down, each from
+/// A point on a [CatchMap], in percent: [x] across and [y] down, each from
 /// 0 to 100.
 @immutable
 class CatchMapPoint {
@@ -17,7 +17,7 @@ class CatchMapPoint {
   final double y;
 }
 
-/// One pin on a [CatchPinMap]: a dot in the [format] colour at percent [x]
+/// One pin on a [CatchMap]: a dot in the [format] colour at percent [x]
 /// and [y], with an optional [label] beside it.
 @immutable
 class CatchMapPin {
