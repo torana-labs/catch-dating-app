@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_assistant_reply_preview_response.schema.json",
+  "title": "ProgramAssistantReplyPreviewCallableResponse",
+  "description": "What the wedding assistant would do with the question. answer: reply is what the guest would get. passedOn: the message would go to the planner; reply is the holding message the guest would get and reason says why. unavailable: the assistant is switched off for Catch (PROGRAM_ASSISTANT_ENABLED or no pinned key), reply is null. Nothing is sent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "runId",
+    "outcome",
+    "reply",
+    "reason",
+    "language",
+    "inputTokens",
+    "outputTokens",
+    "remainingTokens"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^par_[a-f0-9]{40}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "answer",
+        "passedOn",
+        "unavailable"
+      ]
+    },
+    "reply": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "assistantOff",
+        "plannerHandling",
+        "outsideWindow",
+        "media",
+        "askedForPerson",
+        "distress",
+        "giftsOrMoney",
+        "changeRequest",
+        "notInFacts",
+        "budgetExhausted",
+        "providerError",
+        "unsafeAnswer",
+        "factsUnavailable",
+        "uncertainRetry",
+        null
+      ]
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "hi",
+        "gu",
+        "mr",
+        "ta"
+      ]
+    },
+    "inputTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "outputTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "remainingTokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tokens left on today's programme budget after this preview."
+    }
+  }
+}

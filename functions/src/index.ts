@@ -243,6 +243,7 @@ export {
   setOrganizerNotificationPreference,
   unfollowOrganizer,
 } from "./organizers/follows";
+export {followOrganizerByPhone} from "./organizers/followOrganizerByPhone";
 export {
   addOrganizerManager,
   removeOrganizerManager,
@@ -858,6 +859,7 @@ export {
   upsertProgramHamper,
 } from "./programs/hampers";
 export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
+export {previewProgramAssistantReply} from "./programs/assistant/preview";
 export {getProgramDeparturesRoster} from
   "./transport/programDepartures";
 export {

@@ -159,24 +159,28 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     final generation = _generation;
     if (_busy) return;
     final organizer = widget.organizer;
+    final whatsappAvailable = await _followerWhatsappAvailable(organizer.id);
+    if (!mounted || !_sameScope(generation)) return;
     final sent = await showHostFollowerUpdateComposer(
       context: context,
       organizer: organizer,
       remainingQuota: remainingQuota,
       requestIdFactory: HostOrganizerPostController.generateRequestId,
-      onSubmitPost: ({required requestId, required text}) async {
+      whatsappAvailable: whatsappAvailable,
+      onSubmitPost: ({required requestId, required text, required whatsapp}) async {
         if (!mounted || !_sameScope(generation)) {
           throw StateError('Organizer changed.');
         }
         _setBusy(true);
         try {
           // provider-graph: ownership-widget-async:_HostSendsPageBodySliverState._composeFollowerUpdate:await:hostOrganizerPostControllerProvider.createPost watch CAT156 max=2 -- Existing bounded review signal at _HostSendsPageBodySliverState._composeFollowerUpdate (await:hostOrganizerPostControllerProvider.createPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-          await ref
+          return await ref
               .read(hostOrganizerPostControllerProvider)
               .createPost(
                 organizerId: organizer.id,
                 requestId: requestId,
                 text: text,
+                whatsapp: whatsapp,
               );
         } finally {
           if (mounted && _sameScope(generation)) _setBusy(false);
@@ -186,6 +190,27 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (!mounted || !_sameScope(generation) || !sent) return;
     ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
+  }
+
+  /// The WhatsApp switch needs an active number holding an approved
+  /// organizer_follower_update template with one body variable; the server
+  /// re-checks both. A setup read that fails leaves the switch off.
+  Future<bool> _followerWhatsappAvailable(String organizerId) async {
+    try {
+      final setup = await ref.read(
+        hostMessagingSetupProvider(organizerId).future,
+      );
+      return setup.connection?.isActive == true &&
+          setup.templates.any(
+            (template) =>
+                template.name == 'organizer_follower_update' &&
+                template.isApproved &&
+                !template.hasMediaHeader &&
+                template.variableNames.length == 1,
+          );
+    } on Object {
+      return false;
+    }
   }
 
   Future<void> _composeEventAnnouncement(
@@ -682,6 +707,12 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
               if (update.hasTrackedDelivery)
                 context.l10n.hostSendsRecipients(
                   count: update.activityAvailableCount,
+                ),
+              if (update.whatsapp case final whatsapp?)
+                context.l10n.hostSendsFollowerUpdateWhatsapp(
+                  sent: whatsapp.sentCount,
+                  delivered: whatsapp.deliveredCount,
+                  skipped: whatsapp.skippedCount,
                 ),
             ].join(' · '),
             tone: update.deliveryCompleted

@@ -46194,6 +46194,40 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every {weekday}'**
   String hostCreateRepeatOn({required Object weekday});
+
+  /// Follower update composer: switch that adds the WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Also send on WhatsApp'**
+  String get hostFollowerUpdateWhatsappToggle;
+
+  /// Follower update composer: who the WhatsApp channel reaches.
+  ///
+  /// In en, this message translates to:
+  /// **'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.'**
+  String get hostFollowerUpdateWhatsappToggleBody;
+
+  /// Follower update composer: why the WhatsApp switch is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your WhatsApp number and get the follower update template approved to send there too.'**
+  String get hostFollowerUpdateWhatsappUnavailable;
+
+  /// Notice after a follower update that also went on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Posted to followers. Nobody has ticked WhatsApp updates yet.} =1{Posted to followers. Sending on WhatsApp to 1 follower.} other{Posted to followers. Sending on WhatsApp to {count} followers.}}'**
+  String hostFollowerUpdatePostedWhatsapp({required int count});
+
+  /// Sends: per-channel counts for a follower update's WhatsApp leg.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp: {sent} sent, {delivered} delivered, {skipped} not on WhatsApp'**
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  });
 }
 
 class _AppLocalizationsDelegate

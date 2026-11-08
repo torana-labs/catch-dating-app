@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_assistant_runs.schema.json",
+  "title": "ProgramAssistantRunDocument",
+  "description": "Audit row for one wedding assistant run: a guest's WhatsApp message (live) or a planner's Try it (preview). Written as an intent with the budget reservation before the model call and completed after it, so a retried trigger never calls the model twice. Holds ids, hashes, token counts and the outcome only: never the guest's text, the reply, the fact pack, names or phone numbers. Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAssistantRuns",
+  "x-firestore-path": "programAssistantRuns/{runId}",
+  "x-owner": "programs/assistant (handleProgramWhatsappInbound and previewProgramAssistantReply)",
+  "required": [
+    "runId",
+    "programId",
+    "organizerId",
+    "mode",
+    "threadId",
+    "messageId",
+    "actorUid",
+    "status",
+    "reason",
+    "language",
+    "model",
+    "promptVersion",
+    "factPackVersion",
+    "promptHash",
+    "factPackHash",
+    "budgetDay",
+    "reservedTokens",
+    "inputTokens",
+    "outputTokens",
+    "attempts",
+    "providerStatus",
+    "latencyMillis",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "pattern": "^par_[a-f0-9]{40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "live",
+        "preview"
+      ],
+      "description": "live answers a guest's inbound WhatsApp message; preview is the settings screen's Try it and never sends.",
+      "x-catch-ownership": "server-only"
+    },
+    "threadId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 400,
+      "description": "programWhatsappThreads id for live runs; null for previews.",
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 400,
+      "description": "The inbound programWhatsappMessages id for live runs; null for previews.",
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Staff uid who ran a preview; null for live runs.",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intent",
+        "answered",
+        "escalated",
+        "skipped"
+      ],
+      "description": "intent: reserved and about to call (or calling) the model; answered: a reply was sent (or shown, for previews); escalated: passed to the planner; skipped: nothing to do (the planner is handling the thread).",
+      "x-catch-ownership": "server-only"
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "assistantOff",
+        "plannerHandling",
+        "outsideWindow",
+        "media",
+        "askedForPerson",
+        "distress",
+        "giftsOrMoney",
+        "changeRequest",
+        "notInFacts",
+        "budgetExhausted",
+        "providerError",
+        "unsafeAnswer",
+        "factsUnavailable",
+        "uncertainRetry",
+        null
+      ],
+      "description": "Why the run was escalated or skipped; null when answered or still intent.",
+      "x-catch-ownership": "server-only"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "hi",
+        "gu",
+        "mr",
+        "ta"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "server-only"
+    },
+    "promptVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "server-only"
+    },
+    "factPackVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "server-only"
+    },
+    "promptHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the exact request body; null when no model call was prepared.",
+      "x-catch-ownership": "server-only"
+    },
+    "factPackHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the rendered fact pack; null when none was built.",
+      "x-catch-ownership": "server-only"
+    },
+    "budgetDay": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Programme-local day whose budget the run drew from.",
+      "x-catch-ownership": "server-only"
+    },
+    "reservedTokens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "description": "Tokens reserved on the daily budget while the run was an intent.",
+      "x-catch-ownership": "server-only"
+    },
+    "inputTokens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "server-only"
+    },
+    "outputTokens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "server-only"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "Model requests made: 0 when refused before the model, 2 after one retry.",
+      "x-catch-ownership": "server-only"
+    },
+    "providerStatus": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 999,
+      "description": "Last HTTP status from the model provider; null when none was received.",
+      "x-catch-ownership": "server-only"
+    },
+    "latencyMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 600000,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

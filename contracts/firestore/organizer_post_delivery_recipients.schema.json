@@ -31,6 +31,7 @@
     "errorCode": {"type": ["string", "null"], "minLength": 1, "maxLength": 120, "x-catch-ownership": "server-only"},
     "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only", "x-firestore-ttl": true},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
-    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "whatsappStatus": {"type": ["string", "null"], "enum": ["queued", "skipped", null], "description": "The WhatsApp leg's decision for this follower when the update included WhatsApp: queued froze a campaign recipient; skipped had no follower WhatsApp consent bound to a verified phone (or a STOP or block). Absent on app-only updates.", "x-catch-ownership": "server-only"}
   }
 }

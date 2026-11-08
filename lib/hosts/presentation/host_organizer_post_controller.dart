@@ -36,11 +36,13 @@ class HostOrganizerPostController {
     required String organizerId,
     required String requestId,
     required String text,
+    bool whatsapp = false,
   }) async {
     final response = await _postsRepository.createPost(
       organizerId: organizerId,
       requestId: requestId,
       text: text,
+      whatsapp: whatsapp,
     );
     _analytics.logEvent(
       AnalyticsEvents.organizerPostCreated,

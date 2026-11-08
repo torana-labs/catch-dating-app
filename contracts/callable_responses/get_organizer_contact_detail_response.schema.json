@@ -50,7 +50,7 @@
         "status": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
         "evidenceStatus": {"type": "string", "enum": ["unavailable", "notApplicable", "complete", "incomplete"]},
         "receiptId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
-        "source": {"type": ["string", "null"], "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete"]},
+        "source": {"type": ["string", "null"], "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete", "organizerFollowByPhone"]},
         "sourceFormId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
         "sourceFormTitle": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
         "decisionAtMillis": {"type": ["integer", "null"], "minimum": 0},
