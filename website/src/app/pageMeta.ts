@@ -26,6 +26,7 @@ export type PageKey =
   | "household_rsvp"
   | "programme_link"
   | "account"
+  | "host_billing"
   | "public_form"
   | "claim"
   | "privacy"
@@ -125,6 +126,7 @@ export function getPageKey(
   if (pathname.startsWith("/join/")) return "event_runtime";
   if (pathname === "/offer" || pathname === "/offer/") return "event_offer";
   if (pathname === "/account" || pathname === "/account/") return "account";
+  if (pathname === "/host/billing" || pathname === "/host/billing/") return "host_billing";
   if (pathname.startsWith("/event-update/")) return "event_assistance";
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";

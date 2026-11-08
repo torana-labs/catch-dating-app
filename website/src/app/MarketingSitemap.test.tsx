@@ -72,6 +72,12 @@ describe("consolidated public sitemap", () => {
     expect(pageMeta.account.robots).toBe("noindex, follow");
     expect(getPageKey("/accounts/")).toBe("not_found");
   });
+  it("serves the host billing portal under its own private page key, not the host landing", () => {
+    expect(getPageKey("/host/billing/")).toBe("host_billing");
+    expect(getPageKey("/host/billing")).toBe("host_billing");
+    expect(getPageKey("/host/")).toBe("host");
+    expect(pageMeta.host_billing.robots).toBe("noindex, follow");
+  });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
     for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/afterfly/", "/events/id", "/claim/real-id"]) {
       expect(retiredMarketingDestination({pathname, search: "?token=private", hash: "#credential"})).toBeNull();

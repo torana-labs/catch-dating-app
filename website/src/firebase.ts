@@ -1522,6 +1522,13 @@ export const watchWebsiteAccountAuthState = watchSalesDemoAuthState;
 export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayload): Promise<ManageWebsiteAccountCallableResponse> {
   return invokeWebsiteCallable("manageWebsiteAccount", payload, claimFirebaseConfigured, "Website account");
 }
+/** The host billing portal's owner callables; the feature parses the replies. */
+export type HostBillingCallable = "getOrganizerBillingStatus" |
+  "manageOrganizerBillingPlan" | "listOrganizerBills" | "listMyOrganizerJourneys";
+export function invokeHostBillingCallable(name: HostBillingCallable,
+  payload: Record<string, unknown>): Promise<unknown> {
+  return invokeWebsiteCallable(name, payload, claimFirebaseConfigured, "Host billing");
+}
 export function setWebsiteOrganizerFollow(organizerId: string, following: boolean, expectedUid: string): Promise<{following: boolean}> {
   return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");
 }
