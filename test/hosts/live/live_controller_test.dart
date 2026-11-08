@@ -27,6 +27,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../event_success/event_assistance_cases_fixtures.dart';
 import '../../event_success/event_assistance_deliveries_fixtures.dart';
 import '../../events/events_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 import 'live_fixtures.dart';
 
 class _Cases extends Fake implements EventAssistanceCasesRepository {
@@ -119,7 +120,7 @@ Future<HostLiveState> _settle(ProviderContainer container) async {
   container.listen(provider, (_, _) {});
   for (var i = 0; i < 10; i++) {
     await container.pump();
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue(times: 1);
   }
   return container.read(provider);
 }
@@ -191,7 +192,7 @@ void main() {
     container.listen(provider, (_, _) {});
     for (var i = 0; i < 10; i++) {
       await container.pump();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue(times: 1);
     }
     final state = container.read(provider);
 

@@ -65,38 +65,44 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
       child: CatchStack(
         gap: CatchStackGap.g16,
         children: [
-          CatchField.input(
-            key: ValueKey<String>('create-plan-step-title-${_step.id}'),
-            copy: copy,
-            title: context.l10n.hostCreateStepWhat,
-            initialValue: _step.title,
-            maxLength: 80,
-            onChanged: (value) =>
-                setState(() => _step = _step.copyWith(title: value)),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: ValueKey<String>('create-plan-step-title-${_step.id}'),
+              copy: copy,
+              title: context.l10n.hostCreateStepWhat,
+              initialValue: _step.title,
+              maxLength: 80,
+              onChanged: (value) =>
+                  setState(() => _step = _step.copyWith(title: value)),
+            ),
           ),
-          CatchField.input(
-            key: ValueKey<String>('create-plan-step-note-${_step.id}'),
-            copy: copy,
-            title: context.l10n.hostCreateStepNote,
-            initialValue: _step.description ?? '',
-            maxLength: 160,
-            onChanged: (value) => setState(
-              () => _step = _step.copyWith(
-                description: value.trim().isEmpty ? null : value.trim(),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: ValueKey<String>('create-plan-step-note-${_step.id}'),
+              copy: copy,
+              title: context.l10n.hostCreateStepNote,
+              initialValue: _step.description ?? '',
+              maxLength: 160,
+              onChanged: (value) => setState(
+                () => _step = _step.copyWith(
+                  description: value.trim().isEmpty ? null : value.trim(),
+                ),
               ),
             ),
           ),
-          CatchField.stepper(
-            copy: copy,
-            title: context.l10n.hostCreateMinutes,
-            value: _step.durationMinutes ?? 30,
-            min: 5,
-            max: 600,
-            step: 5,
-            decreaseSemanticLabel: context.l10n.hostCreateShorter,
-            increaseSemanticLabel: context.l10n.hostCreateLonger,
-            onChanged: (value) => setState(
-              () => _step = _step.copyWith(durationMinutes: value.toInt()),
+          CatchFieldLanes.single(
+            child: CatchField.stepper(
+              copy: copy,
+              title: context.l10n.hostCreateMinutes,
+              value: _step.durationMinutes ?? 30,
+              min: 5,
+              max: 600,
+              step: 5,
+              decreaseSemanticLabel: context.l10n.hostCreateShorter,
+              increaseSemanticLabel: context.l10n.hostCreateLonger,
+              onChanged: (value) => setState(
+                () => _step = _step.copyWith(durationMinutes: value.toInt()),
+              ),
             ),
           ),
         ],

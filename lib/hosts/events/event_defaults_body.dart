@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -54,7 +54,7 @@ class HostEventDefaultsBody extends StatelessWidget {
       case HostEventDefaultsStatus.ready:
         break;
     }
-    final preferences = state.defaults!.preferences;
+    final preferences = state.preferences!;
     final notSet = l10n.hostEventsDefaultsNotSet;
     final duration = preferences.usualDurationMinutes;
     final validity = preferences.offerValidityMinutes;

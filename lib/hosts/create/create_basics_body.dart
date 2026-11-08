@@ -86,16 +86,18 @@ class CreateBasicsBody extends StatelessWidget {
               ),
           ],
         ),
-        CatchField.input(
-          key: const ValueKey<String>('create-name'),
-          copy: copy,
-          title: context.l10n.hostCreateName,
-          initialValue: draft.name ?? '',
-          onChanged: onName,
-          textInputAction: TextInputAction.next,
-          errorText: state.problems.contains(CreateProblem.name)
-              ? context.l10n.hostCreateNameNeeded
-              : null,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-name'),
+            copy: copy,
+            title: context.l10n.hostCreateName,
+            initialValue: draft.name ?? '',
+            onChanged: onName,
+            textInputAction: TextInputAction.next,
+            errorText: state.problems.contains(CreateProblem.name)
+                ? context.l10n.hostCreateNameNeeded
+                : null,
+          ),
         ),
         CatchStack(
           children: [
@@ -136,14 +138,18 @@ class CreateBasicsBody extends StatelessWidget {
           ],
         ),
         if (format == CreateFormat.run) ...[
-          CatchField.input(
-            key: const ValueKey<String>('create-distance'),
-            copy: copy,
-            title: context.l10n.hostCreateDistance,
-            initialValue: draft.distance ?? '',
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            suffixText: 'km',
-            onChanged: onDistance,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('create-distance'),
+              copy: copy,
+              title: context.l10n.hostCreateDistance,
+              initialValue: draft.distance ?? '',
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              suffixText: 'km',
+              onChanged: onDistance,
+            ),
           ),
           CatchStack(
             gap: CatchStackGap.g8,
@@ -170,16 +176,18 @@ class CreateBasicsBody extends StatelessWidget {
             ],
           ),
         ],
-        CatchField.input(
-          key: const ValueKey<String>('create-description'),
-          copy: copy,
-          title: context.l10n.hostCreateWhatsItLike,
-          initialValue: draft.description ?? '',
-          onChanged: onDescription,
-          minLines: 3,
-          maxLines: 6,
-          keyboardType: TextInputType.multiline,
-          maxLength: 2000,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-description'),
+            copy: copy,
+            title: context.l10n.hostCreateWhatsItLike,
+            initialValue: draft.description ?? '',
+            onChanged: onDescription,
+            minLines: 3,
+            maxLines: 6,
+            keyboardType: TextInputType.multiline,
+            maxLength: 2000,
+          ),
         ),
       ],
     );

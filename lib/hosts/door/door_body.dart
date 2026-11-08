@@ -134,128 +134,123 @@ class DoorBody extends StatelessWidget {
       ],
     );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth <
-            CatchPaneLayout.splitWidthOf(CatchPaneLayoutMode.operations)) {
-          return CatchPageBody.screen(
+    if (CatchRootScope.sizeClassOf(context) != CatchWindowSize.expanded) {
+      return CatchPageBody.screen(
+        child: CatchStack(
+          gap: CatchStackGap.g20,
+          children: [
+            CatchStack(
+              gap: CatchStackGap.g8,
+              children: [headline, meter, sentence],
+            ),
+            CatchStack(
+              direction: CatchStackDirection.row,
+              gap: CatchStackGap.g8,
+              align: CatchStackAlign.center,
+              children: [
+                Expanded(child: search),
+                CatchIconAction.icon(
+                  key: const ValueKey<String>('door-scan'),
+                  icon: CatchIcons.scanQr,
+                  tooltip: l10n.doorScanTicket,
+                  onPressed: onScan,
+                ),
+              ],
+            ),
+            ?refused,
+            filters,
+            guests,
+          ],
+        ),
+      );
+    }
+    final latest = state.guests
+        .where(
+          (guest) =>
+              guest.status == HostDoorGuestStatus.checkedIn &&
+              guest.checkedInAt != null,
+        )
+        .firstOrNull;
+    return CatchPageBody.screen(
+      variant: CatchPageBodyVariant.fixed,
+      child: CatchPaneLayout(
+        pattern: CatchPaneLayoutMode.operations,
+        children: [
+          CatchPageBody.screen(
+            gutter: false,
             child: CatchStack(
-              gap: CatchStackGap.g20,
+              gap: CatchStackGap.g16,
               children: [
                 CatchStack(
-                  gap: CatchStackGap.g8,
-                  children: [headline, meter, sentence],
+                  gap: CatchStackGap.g4,
+                  children: [headline, sentence],
                 ),
-                CatchStack(
-                  direction: CatchStackDirection.row,
-                  gap: CatchStackGap.g8,
-                  align: CatchStackAlign.center,
-                  children: [
-                    Expanded(child: search),
-                    CatchIconAction.icon(
-                      key: const ValueKey<String>('door-scan'),
-                      icon: CatchIcons.scanQr,
-                      tooltip: l10n.doorScanTicket,
-                      onPressed: onScan,
-                    ),
-                  ],
-                ),
+                meter,
+                search,
                 ?refused,
                 filters,
                 guests,
               ],
             ),
-          );
-        }
-        final latest = state.guests
-            .where(
-              (guest) =>
-                  guest.status == HostDoorGuestStatus.checkedIn &&
-                  guest.checkedInAt != null,
-            )
-            .firstOrNull;
-        return CatchPageBody.screen(
-          variant: CatchPageBodyVariant.fixed,
-          child: CatchPaneLayout(
-            pattern: CatchPaneLayoutMode.operations,
-            children: [
-              CatchPageBody.screen(
-                gutter: false,
-                child: CatchStack(
-                  gap: CatchStackGap.g16,
-                  children: [
-                    CatchStack(
-                      gap: CatchStackGap.g4,
-                      children: [headline, sentence],
-                    ),
-                    meter,
-                    search,
-                    ?refused,
-                    filters,
-                    guests,
-                  ],
-                ),
-              ),
-              CatchPageBody.screen(
-                gutter: false,
-                child: CatchStack(
-                  gap: CatchStackGap.g16,
-                  children: [
-                    CatchSurface(
-                      key: const ValueKey<String>('door-scan'),
-                      onPress: onScan,
-                      semanticLabel: l10n.doorScanTicket,
-                      child: CatchStack(
-                        gap: CatchStackGap.g8,
-                        align: CatchStackAlign.center,
-                        children: [
-                          CatchIcon(CatchIcons.scanQr, size: CatchIconSize.lg),
-                          CatchText(
-                            l10n.doorScannerTileTitle,
-                            variant: CatchTextVariant.titleRow,
-                            align: TextAlign.center,
-                          ),
-                          CatchText(
-                            l10n.doorScannerTileBody,
-                            variant: CatchTextVariant.bodySmall,
-                            tone: CatchTextTone.secondary,
-                            align: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (latest != null)
-                      CatchNotice.inline(
-                        tone: CatchNoticeTone.success,
-                        icon: CatchIcons.checkIn,
-                        title: l10n.doorLatestTitle(name: latest.name),
-                        body: hostDoorGuestMeta(context, latest),
-                      ),
-                    CatchStack(
-                      direction: CatchStackDirection.row,
-                      equal: true,
-                      children: [
-                        CatchMetricTile.stat(
-                          label: l10n.doorStatToCome,
-                          value: '${state.countOf(DoorFilter.arriving)}',
-                        ),
-                        CatchMetricTile.stat(
-                          label: l10n.doorStatAsked,
-                          value: '${state.countOf(DoorFilter.asked)}',
-                        ),
-                        CatchMetricTile.stat(
-                          label: l10n.doorStatWaiting,
-                          value: '${state.countOf(DoorFilter.waitlist)}',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
-        );
-      },
+          CatchPageBody.screen(
+            gutter: false,
+            child: CatchStack(
+              gap: CatchStackGap.g16,
+              children: [
+                CatchSurface(
+                  key: const ValueKey<String>('door-scan'),
+                  onPress: onScan,
+                  semanticLabel: l10n.doorScanTicket,
+                  child: CatchStack(
+                    gap: CatchStackGap.g8,
+                    align: CatchStackAlign.center,
+                    children: [
+                      CatchIcon(CatchIcons.scanQr, size: CatchIconSize.lg),
+                      CatchText(
+                        l10n.doorScannerTileTitle,
+                        variant: CatchTextVariant.titleRow,
+                        align: TextAlign.center,
+                      ),
+                      CatchText(
+                        l10n.doorScannerTileBody,
+                        variant: CatchTextVariant.bodySmall,
+                        tone: CatchTextTone.secondary,
+                        align: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                if (latest != null)
+                  CatchNotice.inline(
+                    tone: CatchNoticeTone.success,
+                    icon: CatchIcons.checkIn,
+                    title: l10n.doorLatestTitle(name: latest.name),
+                    body: hostDoorGuestMeta(context, latest),
+                  ),
+                CatchStack(
+                  direction: CatchStackDirection.row,
+                  equal: true,
+                  children: [
+                    CatchMetricTile.stat(
+                      label: l10n.doorStatToCome,
+                      value: '${state.countOf(DoorFilter.arriving)}',
+                    ),
+                    CatchMetricTile.stat(
+                      label: l10n.doorStatAsked,
+                      value: '${state.countOf(DoorFilter.asked)}',
+                    ),
+                    CatchMetricTile.stat(
+                      label: l10n.doorStatWaiting,
+                      value: '${state.countOf(DoorFilter.waitlist)}',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';

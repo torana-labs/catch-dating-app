@@ -66,18 +66,20 @@ class CreateTicketsBody extends StatelessWidget {
             equal: true,
             align: CatchStackAlign.end,
             children: [
-              CatchField.input(
-                key: const ValueKey<String>('create-price'),
-                copy: copy,
-                title: context.l10n.hostCreatePricePerPlace,
-                initialValue: draft.price ?? '',
-                prefixText: '₹',
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: onPrice,
-                errorText: state.problems.contains(CreateProblem.price)
-                    ? context.l10n.hostCreatePriceNeeded
-                    : null,
+              CatchFieldLanes.single(
+                child: CatchField.input(
+                  key: const ValueKey<String>('create-price'),
+                  copy: copy,
+                  title: context.l10n.hostCreatePricePerPlace,
+                  initialValue: draft.price ?? '',
+                  prefixText: '₹',
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: onPrice,
+                  errorText: state.problems.contains(CreateProblem.price)
+                      ? context.l10n.hostCreatePriceNeeded
+                      : null,
+                ),
               ),
               CatchStack(
                 gap: CatchStackGap.g8,

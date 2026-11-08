@@ -107,7 +107,12 @@ void main() {
       ),
       findsOneWidget,
     );
-    await tester.tap(find.byTooltip('More points for Quizzy Rascals').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey<String>('host-live-scores-qr')),
+        matching: find.byTooltip('More points for Quizzy Rascals'),
+      ),
+    );
     await tester.tap(find.text('Save round 2'));
     await tester.tap(find.text('Reveal to everyone'));
     expect(entered, [('qr', 1)]);

@@ -31,4 +31,3 @@ class HostFormsDirectoryState {
         : loadMoreError ?? this.loadMoreError,
   );
 }
-

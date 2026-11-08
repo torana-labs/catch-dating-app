@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -22,7 +22,7 @@ class HostEventsProgrammeTile extends StatelessWidget {
     final startsAt = programme.startsAt;
     final endsAt = programme.endsAt;
     String day(DateTime value) =>
-        '${value.day} ${EventFormatters.longMonth(value)}';
+        '${value.day} ${AppTimeFormatters.longMonth(value)}';
     final dates = startsAt == null
         ? null
         : endsAt == null || endsAt == startsAt

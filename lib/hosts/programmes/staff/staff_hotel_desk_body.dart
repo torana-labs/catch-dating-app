@@ -110,6 +110,7 @@ class StaffHotelDeskBody extends StatelessWidget {
           children: [
             for (final trip in state.onTheWay)
               StaffHotelTripCard(
+                key: ValueKey<String>('staff-hotel-trip-${trip.tripId}'),
                 trip: trip,
                 now: now,
                 rooms: state.rooms,

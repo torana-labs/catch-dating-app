@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repo
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -75,12 +76,14 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
   final session = ref.watch(authenticatedSessionProvider).value;
   final timeline = session == null
       ? null
-      : ref.watch(
-          hostEventsTimelineControllerProvider(
-            HostEventsTimelineRequest(
-              organizerId: request.organizerId,
-              sessionBoundary: request.day,
-              session: session,
+      : catchAsyncStateFromAsyncValue(
+          ref.watch(
+            hostEventsTimelineControllerProvider(
+              HostEventsTimelineRequest(
+                organizerId: request.organizerId,
+                sessionBoundary: request.day,
+                session: session,
+              ),
             ),
           ),
         );
@@ -97,9 +100,9 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
     past: List<Event>.unmodifiable(past),
     programmes: programmes,
     historyLoading:
-        history == null && !(timeline?.hasError ?? false) ||
+        history == null && timeline?.error == null ||
         (history?.loadingMorePast ?? false),
-    historyFailed: (timeline?.hasError ?? false) || history?.pastError != null,
+    historyFailed: timeline?.error != null || history?.pastError != null,
   );
 }
 

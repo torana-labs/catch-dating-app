@@ -130,22 +130,26 @@ class CreateWhenBody extends StatelessWidget {
           direction: CatchStackDirection.row,
           equal: true,
           children: [
-            CatchField.action(
-              key: const ValueKey<String>('create-starts'),
-              copy: copy,
-              title: context.l10n.hostCreateStarts,
-              valueText: start,
-              onTap: onStart,
-              errorText: state.problems.contains(CreateProblem.start)
-                  ? context.l10n.hostCreateStartNeeded
-                  : null,
+            CatchFieldLanes.single(
+              child: CatchField.action(
+                key: const ValueKey<String>('create-starts'),
+                copy: copy,
+                title: context.l10n.hostCreateStarts,
+                valueText: start,
+                onTap: onStart,
+                errorText: state.problems.contains(CreateProblem.start)
+                    ? context.l10n.hostCreateStartNeeded
+                    : null,
+              ),
             ),
-            CatchField.action(
-              key: const ValueKey<String>('create-ends'),
-              copy: copy,
-              title: context.l10n.hostCreateEnds,
-              valueText: end,
-              onTap: start == null ? null : onEnd,
+            CatchFieldLanes.single(
+              child: CatchField.action(
+                key: const ValueKey<String>('create-ends'),
+                copy: copy,
+                title: context.l10n.hostCreateEnds,
+                valueText: end,
+                onTap: start == null ? null : onEnd,
+              ),
             ),
           ],
         ),
@@ -177,24 +181,28 @@ class CreateWhenBody extends StatelessWidget {
                 ),
               ),
             ] else
-              CatchField.action(
-                key: const ValueKey<String>('create-place'),
-                copy: copy,
-                title: context.l10n.hostCreatePickPlace,
-                icon: CatchIcons.location,
-                onTap: onPlace,
-                errorText: state.problems.contains(CreateProblem.place)
-                    ? context.l10n.hostCreatePlaceNeeded
-                    : null,
+              CatchFieldLanes.single(
+                child: CatchField.action(
+                  key: const ValueKey<String>('create-place'),
+                  copy: copy,
+                  title: context.l10n.hostCreatePickPlace,
+                  icon: CatchIcons.location,
+                  onTap: onPlace,
+                  errorText: state.problems.contains(CreateProblem.place)
+                      ? context.l10n.hostCreatePlaceNeeded
+                      : null,
+                ),
               ),
           ],
         ),
-        CatchField.input(
-          key: const ValueKey<String>('create-directions'),
-          copy: copy,
-          title: context.l10n.hostCreateHowToFindYou,
-          initialValue: draft.locationDetails ?? '',
-          onChanged: onDirections,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-directions'),
+            copy: copy,
+            title: context.l10n.hostCreateHowToFindYou,
+            initialValue: draft.locationDetails ?? '',
+            onChanged: onDirections,
+          ),
         ),
       ],
     );

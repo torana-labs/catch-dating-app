@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:flutter/foundation.dart';
 
 /// Where event defaults are: reading, showing them, not written by the
@@ -10,7 +10,7 @@ enum HostEventDefaultsStatus { loading, ready, missing, error }
 class HostEventDefaultsState {
   const HostEventDefaultsState({
     required this.status,
-    this.defaults,
+    this.preferences,
     this.error,
   });
 
@@ -19,8 +19,9 @@ class HostEventDefaultsState {
 
   final HostEventDefaultsStatus status;
 
-  /// The organizer's defaults with the hashes and revision the next save
-  /// is fenced on.
-  final ManagerEventSetupDefaults? defaults;
+  /// The organizer's defaults for every new event. The hashes and revision
+  /// a save is fenced on stay with the screen, which reads them from the
+  /// defaults view when it saves.
+  final ManagerEventSetupPreferences? preferences;
   final Object? error;
 }

@@ -117,7 +117,12 @@ void main() {
       expect(find.text('7 at the curb'), findsOneWidget);
       expect(find.text('The Sharma family, 5 people'), findsOneWidget);
       await tester.tap(find.text('Let go'));
-      await tester.tap(find.text('Claim').at(1));
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey<String>('staff-arrival-kapoor')),
+          matching: find.text('Claim'),
+        ),
+      );
       expect(moves, [
         ('mehra', StaffArrivalMove.release),
         ('kapoor', StaffArrivalMove.claim),
@@ -200,8 +205,18 @@ void main() {
       expect(find.text('38'), findsOneWidget);
       expect(find.text('214'), findsOneWidget);
       expect(find.text('About 25 min'), findsOneWidget);
-      await tester.tap(find.text('Arrived').first);
-      await tester.tap(find.text('Give keys').first);
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey<String>('staff-hotel-trip-t1')),
+          matching: find.text('Arrived'),
+        ),
+      );
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey<String>('staff-hotel-stay-bansal')),
+          matching: find.text('Give keys'),
+        ),
+      );
       expect(arrived, ['t1']);
       expect(keys, ['bansal']);
     });

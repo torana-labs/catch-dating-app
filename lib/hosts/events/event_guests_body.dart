@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/audience/parts/host_event_guest_row.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
-import 'package:catch_dating_app/contexts/events/parts/host_event_guest_row.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
