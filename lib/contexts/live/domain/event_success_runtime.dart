@@ -150,9 +150,19 @@ class EventSuccessRuntime {
   bool get hasParticipantPostEventSurface =>
       contextualOpenersConfigured || decomposedFeedbackEnabled;
 
-  List<EventRunOfShowStep> get runOfShowSteps => plan.playbook.runOfShow
-      .where(_runOfShowStepEnabled)
-      .toList(growable: false);
+  /// The host's edited run of show when there is one, otherwise the
+  /// playbook's steps for the modules tonight uses.
+  List<EventRunOfShowStep> get runOfShowSteps {
+    final overrides = plan.stepOverrides;
+    if (overrides != null && overrides.isNotEmpty) {
+      return [
+        for (final step in overrides) step.runOfShowStep,
+      ].toList(growable: false);
+    }
+    return plan.playbook.runOfShow
+        .where(_runOfShowStepEnabled)
+        .toList(growable: false);
+  }
 
   EventRunOfShowStep? get activeRunOfShowStep {
     final steps = runOfShowSteps;

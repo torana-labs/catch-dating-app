@@ -36,6 +36,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         EventSuccessLiveActionCallableRequest,
         HeartbeatEventSuccessPresenceCallableRequest,
         ResolveEventSuccessLateArrivalCallableRequest,
+        SaveEventPlanStepCallableRequest,
         SetEventSuccessAccountabilityResolutionCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest,
@@ -59,6 +60,10 @@ part 'event_success_repository/standings.dart';
 part 'event_success_repository/wingman.dart';
 
 const _plansPath = 'eventSuccessPlans';
+
+/// What one run-of-show edit does.
+enum EventSuccessPlanStepOp { add, edit, remove, reorder }
+
 const _feedbackPath = 'eventSuccessFeedback';
 const _assignmentsPath = 'eventSuccessAssignments';
 const _assignmentDraftsPath = 'eventSuccessAssignmentDrafts';
@@ -78,6 +83,7 @@ Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
   data.remove('assignmentDraftRevision');
   data.remove('publishedRotationRoundIndex');
   data.remove('publishedRevealRoundIndex');
+  data.remove('stepOverrides');
   return data;
 }
 

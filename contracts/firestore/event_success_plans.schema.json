@@ -141,6 +141,11 @@
       "maximum": 100,
       "x-catch-ownership": "callable-owned"
     },
+    "stepOverrides": {
+      "$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planSteps",
+      "description": "The host's run of show once a step was added, edited, removed or reordered through saveEventPlanStep. Missing on older plans: the run of show derives from the playbook.",
+      "x-catch-ownership": "callable-owned"
+    },
     "liveControlRevision": {
       "type": "integer",
       "minimum": 0,

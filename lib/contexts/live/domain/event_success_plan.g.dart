@@ -40,6 +40,9 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
       ) ??
       EventSuccessConversationGraphConsentMode.optIn,
   activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
+  stepOverrides: (json['stepOverrides'] as List<dynamic>?)
+      ?.map((e) => EventSuccessPlanStep.fromJson(e as Map<String, dynamic>))
+      .toList(),
   liveControlRevision: (json['liveControlRevision'] as num?)?.toInt() ?? 0,
   assignmentDraftRevision:
       (json['assignmentDraftRevision'] as num?)?.toInt() ?? 0,
@@ -86,6 +89,7 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
           _$EventSuccessConversationGraphConsentModeEnumMap[instance
               .conversationGraphConsentMode]!,
       'activeStepIndex': instance.activeStepIndex,
+      'stepOverrides': instance.stepOverrides?.map((e) => e.toJson()).toList(),
       'liveControlRevision': instance.liveControlRevision,
       'assignmentDraftRevision': instance.assignmentDraftRevision,
       'publishedRotationRoundIndex': instance.publishedRotationRoundIndex,
@@ -120,6 +124,49 @@ const _$EventSuccessRevealStatusEnumMap = {
   EventSuccessRevealStatus.idle: 'idle',
   EventSuccessRevealStatus.countingDown: 'countingDown',
   EventSuccessRevealStatus.revealed: 'revealed',
+};
+
+_EventSuccessPlanStep _$EventSuccessPlanStepFromJson(
+  Map<String, dynamic> json,
+) => _EventSuccessPlanStep(
+  stepId: json['stepId'] as String,
+  title: json['title'] as String,
+  durationMinutes: (json['durationMinutes'] as num).toInt(),
+  hostInstruction: json['hostInstruction'] as String? ?? '',
+  attendeeExperience: json['attendeeExperience'] as String? ?? '',
+  stage:
+      $enumDecodeNullable(
+        _$EventSuccessStageEnumMap,
+        json['stage'],
+        unknownValue: EventSuccessStage.activity,
+      ) ??
+      EventSuccessStage.activity,
+  moduleIds:
+      (json['moduleIds'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const <String>[],
+);
+
+Map<String, dynamic> _$EventSuccessPlanStepToJson(
+  _EventSuccessPlanStep instance,
+) => <String, dynamic>{
+  'stepId': instance.stepId,
+  'title': instance.title,
+  'durationMinutes': instance.durationMinutes,
+  'hostInstruction': instance.hostInstruction,
+  'attendeeExperience': instance.attendeeExperience,
+  'stage': _$EventSuccessStageEnumMap[instance.stage]!,
+  'moduleIds': instance.moduleIds,
+};
+
+const _$EventSuccessStageEnumMap = {
+  EventSuccessStage.before: 'before',
+  EventSuccessStage.arrival: 'arrival',
+  EventSuccessStage.opening: 'opening',
+  EventSuccessStage.activity: 'activity',
+  EventSuccessStage.mixing: 'mixing',
+  EventSuccessStage.closing: 'closing',
+  EventSuccessStage.after: 'after',
+  EventSuccessStage.hostDebrief: 'hostDebrief',
 };
 
 _EventSuccessFeedback _$EventSuccessFeedbackFromJson(

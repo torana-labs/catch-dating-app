@@ -579,7 +579,8 @@ export const publishEventSuccessRotationRound = onCall(
   (request) => publishEventSuccessRotationRoundHandler(request)
 );
 
-async function requireEventManager(
+/** Loads the event and requires the caller to manage its organizer. */
+export async function requireEventManager(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   uid: string
@@ -694,7 +695,8 @@ function assertPlanIdentity(plan: LivePlanDocument, eventId: string): void {
   }
 }
 
-function nextRevision(current: number): number {
+/** The next live-control revision, bounded like the stored field. */
+export function nextRevision(current: number): number {
   if (current >= 2147483647) {
     throw new HttpsError("resource-exhausted",
       "The live-control revision limit has been reached.");

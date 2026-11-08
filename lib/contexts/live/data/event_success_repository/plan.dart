@@ -89,6 +89,52 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// Adds, edits, removes or reorders one run-of-show step through
+  /// `saveEventPlanStep`, fenced on the plan's live-control revision. The
+  /// first edit of a plan still on its playbook sends [baseSteps], the
+  /// steps the host is looking at. A retry with the same [requestId]
+  /// replays.
+  Future<void> saveEventPlanStep({
+    required String eventId,
+    required String requestId,
+    required int expectedLiveControlRevision,
+    required EventSuccessPlanStepOp op,
+    EventSuccessPlanStep? step,
+    String? stepId,
+    int? atIndex,
+    List<String>? orderedStepIds,
+    List<EventSuccessPlanStep>? baseSteps,
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      await functions
+          .httpsCallable('saveEventPlanStep')
+          .call<Object?>(
+            SaveEventPlanStepCallableRequest(
+              eventId: eventId,
+              requestId: requestId,
+              expectedLiveControlRevision: expectedLiveControlRevision,
+              op: op.name,
+              step: step?.toCommandJson(),
+              stepId: stepId,
+              atIndex: atIndex,
+              orderedStepIds: orderedStepIds,
+              baseSteps: baseSteps
+                  ?.map((step) => step.toCommandJson())
+                  .toList(growable: false),
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'save run of show step',
+      resource: _plansPath,
+    ),
+  );
+
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
