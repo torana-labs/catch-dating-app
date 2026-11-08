@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_departures_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 
 import 'staff_fixtures.dart';
@@ -108,5 +109,59 @@ ProgramLiveBoard staffLiveBoard() {
       ),
     ],
     'truncated': false,
+  });
+}
+
+/// The Taj's Tuesday departures: one late, one checked out, one gone.
+ProgramDeparturesRoster staffDepartures() {
+  Map<String, Object?> row(
+    String id,
+    String name,
+    String state,
+    DateTime leaveBy, {
+    String? room,
+    String? party,
+  }) => {
+    'legId': id,
+    'guestId': 'g-$id',
+    'guestDisplayName': name,
+    'partyLabel': party,
+    'passengers': 2,
+    'luggageUnits': 3,
+    'flightNumber': 'AI 472',
+    'flightAtMillis': leaveBy
+        .add(const Duration(hours: 3))
+        .millisecondsSinceEpoch,
+    'leaveByMillis': leaveBy.millisecondsSinceEpoch,
+    'roomLabel': room,
+    'state': state,
+    'revision': 1,
+  };
+  return ProgramDeparturesRoster.fromCallableData({
+    'programId': staffProgramId,
+    'hotelId': staffHotelId,
+    'hotelName': 'Taj Fateh Prakash',
+    'generatedAtMillis': DateTime(2026, 12, 15, 9, 40).millisecondsSinceEpoch,
+    'rows': [
+      row(
+        'a',
+        'Neha Mehra',
+        'inRoom',
+        DateTime(2026, 12, 15, 9, 30),
+        room: '216',
+        party: 'The Mehra family',
+      ),
+      row(
+        'b',
+        'Ravi Iyer',
+        'checkedOut',
+        DateTime(2026, 12, 15, 10, 15),
+        room: '301',
+      ),
+      row('c', 'Sana Khan', 'left', DateTime(2026, 12, 15, 8)),
+    ],
+    'checkedOut': 41,
+    'leavingSoon': 14,
+    'lateCheckouts': 3,
   });
 }

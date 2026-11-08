@@ -65,6 +65,10 @@ List<Override> hostStaffCaptureOverrides({
   programLiveBoardViewProvider(
     staffProgramId,
   ).overrideWithValue(AsyncData(_live(staffLiveBoard()))),
+  programDeparturesRosterViewProvider(
+    staffProgramId,
+    staffHotelId,
+  ).overrideWithValue(AsyncData(_live(staffDepartures()))),
 ];
 
 Widget hostStaffWorkCapture() => const StaffAssignmentsScreen();
@@ -122,3 +126,9 @@ ProgramOperationOutboxSummary staffOfflineOutbox() =>
 
 /// The access a test needs when it overrides only the jobs read.
 ProgramWorkAccess hostStaffAccess() => staffAccess();
+
+Widget hostStaffDeparturesCapture() => StaffDeparturesScreen(
+  programId: staffProgramId,
+  hotelId: staffHotelId,
+  now: () => DateTime(2026, 12, 15, 9, 40),
+);

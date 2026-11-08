@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/programmes/parts/staff_arrival_row.dar
 import 'package:catch_dating_app/hosts/programmes/staff/staff_alerts_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_state.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_departures_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_door_body.dart';
@@ -335,6 +336,25 @@ void main() {
       await tester.tap(find.text('Reopen'));
       expect(actions.last, 'r2_transportDispatcher:reopen');
       expect(find.text('What raises an alert'), findsOneWidget);
+    });
+
+    testWidgets('departures list who leaves next and who is late', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        StaffDeparturesBody(
+          status: StaffDeparturesStatus.content,
+          roster: staffDepartures(),
+          now: DateTime(2026, 12, 15, 9, 40),
+          onRetry: () {},
+        ),
+      );
+      expect(find.text('14 leave in the next 3 hours'), findsOneWidget);
+      expect(find.text('The Mehra family'), findsNWidgets(2));
+      expect(find.text('Still in room'), findsOneWidget);
+      expect(find.text('Sana Khan'), findsNothing);
+      expect(find.text('Next car · 9:30 AM'), findsOneWidget);
     });
   });
 }

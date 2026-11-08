@@ -40,6 +40,55 @@ extension ProgramLiveRepositoryApi on ProgramWorkRepository {
   );
 }
 
+/// One hotel's departures, saved for offline cold starts.
+extension ProgramDeparturesRepositoryApi on ProgramWorkRepository {
+  Future<ProgramDeparturesRoster> getDeparturesRoster({
+    required String programId,
+    required String hotelId,
+    String? snapshotAccountId,
+  }) => _call(
+    name: 'getProgramDeparturesRoster',
+    authorityScopedRead: true,
+    payload: GetProgramDeparturesRosterCallableRequest(
+      programId: programId,
+      hotelId: hotelId,
+    ).toJson(),
+    action: 'load the departures',
+    parse: ProgramDeparturesRoster.fromCallableData,
+    snapshotScope: programSnapshotScope('departures', programId, hotelId),
+    snapshotAccountId: snapshotAccountId,
+  );
+}
+
+/// The departures desk, from the live read or a bounded offline snapshot.
+@riverpod
+Future<ProgramReadView<ProgramDeparturesRoster>> programDeparturesRosterView(
+  Ref ref,
+  String programId,
+  String hotelId,
+) async {
+  final accountId = _watchWorkAccount(ref);
+  final result = await _readView(
+    ref,
+    accountId,
+    programId,
+    programSnapshotScope('departures', programId, hotelId),
+    () => ref
+        .read(programWorkRepositoryProvider)
+        .getDeparturesRoster(
+          programId: programId,
+          hotelId: hotelId,
+          snapshotAccountId: accountId,
+        ),
+    ProgramDeparturesRoster.fromCallableData,
+  );
+  retainProgramProjection(
+    ref,
+    programProjectionDeadline(null, result.snapshotExpiresAt),
+  );
+  return result;
+}
+
 /// The live board, from the live read or a bounded offline snapshot.
 @riverpod
 Future<ProgramReadView<ProgramLiveBoard>> programLiveBoardView(

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_departures_roster_payload.schema.json",
+  "title": "GetProgramDeparturesRosterCallablePayload",
+  "description": "Read one hotel's departures desk: guests whose outbound journey leaves from this hotel.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}
