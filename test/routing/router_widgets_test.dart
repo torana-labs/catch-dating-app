@@ -14,10 +14,10 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/hosts/create/create_screen.dart';
 import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
 import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
@@ -419,9 +419,9 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.byType(PrivateEventCreateScreen), findsOneWidget);
+      expect(find.byType(CreateScreen), findsOneWidget);
       expect(find.text('Club not found.'), findsNothing);
-      // The private create flow schedules draft timers; unmount to settle them.
+      // The create flow schedules draft timers; unmount to settle them.
       await tester.pumpWidget(const SizedBox.shrink());
       await pumpFeatureUiFor(tester, const Duration(seconds: 5));
     },
