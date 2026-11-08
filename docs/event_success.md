@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.154.0
-updated: 2026-09-23
+version: 1.155.0
+updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -1947,7 +1947,7 @@ sheet described below. Checkpoint entry points remain integration work.
 An explicit optional `checkpoint` scope names a recorded departure revision
 and its actual checkpoint destination. It permits the same observed `returned`,
 `departed` or `unresolved` visit result for that departure member, including a
-bar crawl whose event-wide accountability setting is `none`. It never changes
+format whose event-wide accountability setting is `none`. It never changes
 that setting or enables sweep completion gates. `departed` means the person
 has left the event; it does not mean the group left its last stop. `returned`
 is the event-visit disposition and never means arrival at this checkpoint.
@@ -3433,7 +3433,8 @@ The founding packs are:
 | Social run | Pace pods plus a composable route plan | Timed legs | Completion plus finish sweep | Static route operations only; no live GPS tracking |
 | Pickleball/padel/racket | Pair assignments and bounded resources | Timed rounds | Ranked outcomes | Existing pair-rotation engine; no bracket/tournament engine |
 | Pub quiz | Host/imported teams | Quiz rounds | Numeric points and standings reveal | Not a question authoring, answer validation, or buzzer system |
-| Dinner | Tables | Courses | No competitive outcome | True table-seating optimization remains unsupported |
+| Dinner | Tables | Courses | No competitive outcome | True table-seating optimization remains unsupported; phones are continuous but kept away by norm |
+| Bar crawl | One moving group on a route with stops | Stops | No outcome; departure marking plus end-of-night sweep | No partner rotations or reveal by default; uses the movement layer |
 | Mixer/open | Social groups or whole group | Rounds or continuous beats | Optional reveal or no outcome | Uses only saved interaction primitives |
 
 Format-specific language belongs at the edges. The generic Host route remains
@@ -3541,20 +3542,64 @@ an explicit saved value wins. The Functions resolver enumerates this axis with
 the other primitives rather than branching on an event name.
 
 `accountability` is another saved, format-neutral primitive with `none`,
-`rollCall`, and `sweep`. `pacePods` defaults to `sweep`; every other interaction
-model defaults to `none`, and an explicit event-format value wins. Runtime code
+`rollCall`, and `sweep`. `pacePods` and `routeStops` default to `sweep`; every
+other interaction model defaults to `none`, and an explicit event-format value
+wins. `createEvent` and `updateEvent` keep a saved `accountability` override like
+every other primitive, so any format can enable a sweep. Runtime code
 branches on that primitive only, never on `activityKind`. T11 implements the
 end-of-event `sweep`; `rollCall` remains a distinct value and does not silently
 inherit sweep completion behavior.
 
 `durationShape` gives the existing flat run-of-show list format-owned grouping
-and transition vocabulary without creating a second schedule model. The four
-values are `continuous`, `rounds`, `courses`, and `segments`; saved format
-primitives may override the playbook default. Pace-pod formats default to
-segments, paired/team/free-form formats to rounds, seated-table formats to
-courses, and host-led/open formats to continuous. The Host control room labels
-the same next-step transition as a Beat, Round, course, or Leg from this
-primitive. Screens do not branch on `activityKind` to choose that language.
+and transition vocabulary without creating a second schedule model. The five
+values are `continuous`, `rounds`, `courses`, `segments`, and `stops`; saved
+format primitives may override the playbook default. Pace-pod formats default
+to segments, paired/team/free-form formats to rounds, seated-table formats to
+courses, route-with-stops formats to stops, and host-led/open formats to
+continuous. The Host control room labels the same next-step transition as a
+Beat, Round, course, Leg, or Stop from this primitive. Screens do not branch on
+`activityKind` to choose that language.
+
+#### Phone availability
+
+`phoneAvailability` is the switch that decides when a guest-facing cue (a live
+prompt, a step-change haptic or sound, or a pushed moment) may reach a guest's
+phone. One policy, `allowsGuestCue` in Dart and `eventSuccessGuestCueAllowed`
+in Functions, takes the cue's timing (`arrival`, `stepChange`, `midStep`,
+`postEvent`) and whether the core activity is underway:
+
+| Value | Default for | Guest cues |
+|---|---|---|
+| `continuous` | Seated tables (dinner) | Any time, including host-initiated mid-step cues |
+| `plannedPauses` | Paired and team rotations, free-form mixers, routes with stops, non-moving host-led programs | Only at step changes (between rounds, courses or stops), arrival and after the finish; never mid-step |
+| `arrivalAndPostEventOnly` | Pace pods (runs) | Only at check-in, planned stops and after the finish; nothing while an activity step runs |
+| `hostOnlyLive`, `noneDuringActivity` | Moving host-led programs, open formats | As `arrivalAndPostEventOnly` for guests |
+
+An activity step (`EventSuccessStage.activity`) is "activity underway"; any
+other step is a planned stop or pause. While cues are closed the companion shows
+the passive step context with no prompt, haptic, sound or ambient bed. The
+host check-in push uses the event window instead of a step: it is held when the
+check-in lands after the start of an arrival-only format. The policy never
+blocks something the guest opens themselves, such as self check-in, and does
+not gate operational or safety messages from the movement layer.
+
+Dinner is `continuous` but phone-light by design: guests check in and see their
+seat once, conversation cards are a host opt-in, and dinner moments are not
+gated to steps. Setup appends the resolved phone rule to the reason beside each
+guest-facing module.
+
+#### Routes with stops
+
+`routeStops` is the interaction model for crawls: one group moving between
+venues. It selects no assignment algorithm, no unit outcome, `stops` duration,
+`plannedPauses` phones and `sweep` accountability. The `bar_crawl_route`
+playbook turns on the first hello so the first group mixes, keeps partner
+rotations unavailable and the reveal off, and puts its one social prompt on the
+walk between stops. Departure marking and the end-of-night sweep use the
+existing movement layer. The guest web runtime does not know `routeStops` yet,
+so `getEventRuntimeBootstrap` projects it to `freeFormMixer`, which keeps the
+night-out presentation crawls already had there, until the web surface accepts
+the new model.
 
 V1 supports set-based pair rotations and generic micro-pods, plus
 capacity-aware `sequence` scheduling for pair rotations. Sequence scheduling
