@@ -38,6 +38,10 @@ import {recheckAssignmentFeatureSnapshots} from
   "./assignmentFeatureConsent";
 import {buildAssignmentFeatureAudit} from "./assignmentFeatureAudit";
 import {recordCompletedEventMeetings} from "./organizerMeetingHistory";
+import {
+  deferredCuesReleasedBy,
+  releaseDeferredGuestCues,
+} from "./deferredGuestCues";
 import {validateAssignmentFeatureRules} from
   "./assignmentFeatureScoring";
 import type {AssignmentFeatureRule, EventAssignmentFeatureSnapshot} from
@@ -51,6 +55,7 @@ interface EventSuccessLiveControlDeps {
   nowMillis: () => number;
   checkRateLimit?: typeof defaultCheckRateLimit;
   recordMeetings?: typeof recordCompletedEventMeetings;
+  releaseDeferredCues?: typeof releaseDeferredGuestCues;
 }
 
 interface LivePlanDocument {
@@ -448,6 +453,19 @@ export async function controlEventSuccessLiveHandler(
       revision: resolution.update.liveControlRevision!,
     };
   });
+  if (!result.replayed && deferredCuesReleasedBy(payload)) {
+    try {
+      await (deps.releaseDeferredCues ?? releaseDeferredGuestCues)(db, {
+        eventId: payload.eventId,
+        event,
+      });
+    } catch (error) {
+      logger.warn("Could not send held guest cues", {
+        eventId: payload.eventId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
   if (completedPublishedRoundIndex !== null && event.organizerId) {
     // Best effort after the guide completes: a weekly event then avoids
     // tonight's pairs. Completion never fails because history could not
