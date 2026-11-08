@@ -352,3 +352,41 @@ test("publishing with followers first sets when everyone can book",
     assert.equal(validateEventDocument(event), true,
       JSON.stringify(validateEventDocument.errors));
   });
+
+test("a published event changes who can book under the revision fence",
+  async () => {
+    const h = setup();
+    Object.assign(h.store.get("events/event1")!, {bookedCount: 0,
+      checkedInCount: 0, waitlistedCount: 0, genderCounts: {},
+      cohortCounts: {}, waitlistedCohortCounts: {}});
+    // Unpublished events keep the choice as a preference.
+    await assert.rejects(h.run({...h.command, publicationState: "private",
+      requestId: "book-private", bookingMode: "askFirst"}),
+    errorCode("failed-precondition"));
+    await h.run();
+    await assert.rejects(h.run({...h.command, requestId: "book-stale",
+      expectedSetupRevision: 1, bookingMode: "askFirst"}),
+    errorCode("aborted"));
+    await h.run({...h.command, requestId: "book-ask",
+      expectedSetupRevision: 2, bookingMode: "askFirst"});
+    let event = h.store.get("events/event1")!;
+    assert.equal((event.eventPolicy as {admission: {
+      manualApprovalRequired: boolean}}).admission.manualApprovalRequired,
+    true);
+    assert.equal(event.discoveryManualApprovalRequired, true);
+    assert.equal(projectPrivateEventSetupSummary !== undefined, true);
+    await h.run({...h.command, requestId: "book-followers",
+      expectedSetupRevision: 3, bookingMode: "followersFirst"});
+    event = h.store.get("events/event1")!;
+    assert.equal((event.eventPolicy as {admission: {
+      manualApprovalRequired: boolean}}).admission.manualApprovalRequired,
+    false);
+    assert.equal(event.followersFirstUntilMs,
+      1_900_000_000_000 - 24 * 60 * 60 * 1000);
+    assert.equal(validateEventDocument(event), true,
+      JSON.stringify(validateEventDocument.errors));
+    // The same choice again is no change.
+    await assert.rejects(h.run({...h.command, requestId: "book-again",
+      expectedSetupRevision: 4, bookingMode: "followersFirst"}),
+    errorCode("failed-precondition"));
+  });

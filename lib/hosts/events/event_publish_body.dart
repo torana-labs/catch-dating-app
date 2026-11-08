@@ -127,14 +127,12 @@ class HostEventPublishBody extends StatelessWidget {
                 key: const ValueKey<String>('host-event-publish-book-anyone'),
                 variant: CatchChoiceTileVariant.row,
                 title: HostEventSettingsCopy.anyone,
-                subtitle: state.canChangeBooking
-                    ? HostEventSettingsCopy.anyoneBody
-                    : HostEventSettingsCopy.bookingLocked,
+                subtitle: HostEventSettingsCopy.anyoneBody,
                 selected:
                     state.bookingMode == null ||
                     state.bookingMode == HostEventBookingMode.anyone,
                 contractExemption:
-                    'A booking choice committed by the preferences command.',
+                    'A booking choice committed by its own command.',
                 onTap: book(HostEventBookingMode.anyone),
               ),
               CatchChoiceTile(
@@ -147,7 +145,7 @@ class HostEventPublishBody extends StatelessWidget {
                 selected:
                     state.bookingMode == HostEventBookingMode.followersFirst,
                 contractExemption:
-                    'A booking choice committed by the preferences command.',
+                    'A booking choice committed by its own command.',
                 onTap: book(HostEventBookingMode.followersFirst),
               ),
               CatchChoiceTile(
@@ -157,7 +155,7 @@ class HostEventPublishBody extends StatelessWidget {
                 subtitle: HostEventSettingsCopy.askFirstBody,
                 selected: state.bookingMode == HostEventBookingMode.askFirst,
                 contractExemption:
-                    'A booking choice committed by the preferences command.',
+                    'A booking choice committed by its own command.',
                 onTap: book(HostEventBookingMode.askFirst),
               ),
             ],

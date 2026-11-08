@@ -52,7 +52,8 @@ class HostEventPublishState {
   /// The saved booking choice; null when none is saved.
   final HostEventBookingMode? bookingMode;
 
-  /// Booking is an event preference, which only an unpublished event edits.
+  /// Who can book changes while the event is active: a published event
+  /// through its admission, an unpublished one as its booking preference.
   final bool canChangeBooking;
   final Object? error;
 

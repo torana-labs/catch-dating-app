@@ -205,6 +205,7 @@ class PrivateEventSettings {
     this.priceHiddenUntilBookingOpens = false,
     this.planVisibleToGuests = true,
     this.externalBookingUrl,
+    this.publishedBookingMode,
   });
 
   /// `listed` (on the organizer's page, Explore and search) or `link` (only
@@ -219,6 +220,11 @@ class PrivateEventSettings {
   /// The booking page when tickets are sold elsewhere.
   final String? externalBookingUrl;
 
+  /// Who can book a published event, read from its admission: `anyone`,
+  /// `followersFirst` or `askFirst`. Null while unpublished, when the choice
+  /// is the event's booking preference.
+  final String? publishedBookingMode;
+
   bool get linkOnly => listing == 'link';
 
   factory PrivateEventSettings.fromView(Object? raw) {
@@ -230,6 +236,11 @@ class PrivateEventSettings {
     final priceHidden = data['priceHiddenUntilBookingOpens'];
     final planVisible = data['planVisibleToGuests'] ?? true;
     final external = data['externalBooking'];
+    final booking = data['publishedBookingMode'];
+    if (booking != null &&
+        !const {'anyone', 'followersFirst', 'askFirst'}.contains(booking)) {
+      throw const FormatException('Invalid event settings');
+    }
     if (external != null && (external is! Map || external['url'] is! String)) {
       throw const FormatException('Invalid event settings');
     }
@@ -247,6 +258,7 @@ class PrivateEventSettings {
       externalBookingUrl: external == null
           ? null
           : (external as Map)['url'] as String,
+      publishedBookingMode: booking as String?,
     );
   }
 }

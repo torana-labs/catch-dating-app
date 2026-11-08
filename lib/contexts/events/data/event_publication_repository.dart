@@ -19,6 +19,7 @@ class EventPublicationRequest {
     this.listing,
     this.showGuestList,
     this.priceHiddenUntilBookingOpens,
+    this.bookingMode,
   });
   final String organizerId;
   final String eventId;
@@ -31,10 +32,15 @@ class EventPublicationRequest {
   final bool? showGuestList;
   final bool? priceHiddenUntilBookingOpens;
 
+  /// Who can book a published event: `anyone`, `followersFirst` or
+  /// `askFirst`; null leaves it as it is.
+  final String? bookingMode;
+
   static const _settingKeys = {
     'listing',
     'showGuestList',
     'priceHiddenUntilBookingOpens',
+    'bookingMode',
   };
 
   bool get isValid =>
@@ -44,7 +50,9 @@ class EventPublicationRequest {
       expectedSetupRevision >= 1 &&
       expectedSetupRevision < 1000000000 &&
       const {'private', 'published'}.contains(publicationState) &&
-      (listing == null || const {'listed', 'link'}.contains(listing));
+      (listing == null || const {'listed', 'link'}.contains(listing)) &&
+      (bookingMode == null ||
+          const {'anyone', 'followersFirst', 'askFirst'}.contains(bookingMode));
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'eventId': eventId,
@@ -55,6 +63,7 @@ class EventPublicationRequest {
     if (showGuestList != null) 'showGuestList': showGuestList,
     if (priceHiddenUntilBookingOpens != null)
       'priceHiddenUntilBookingOpens': priceHiddenUntilBookingOpens,
+    if (bookingMode != null) 'bookingMode': bookingMode,
   };
   factory EventPublicationRequest.fromJson(Map<String, dynamic> raw) {
     final settings = raw.keys.where(_settingKeys.contains).length;
@@ -67,7 +76,8 @@ class EventPublicationRequest {
         (raw['listing'] != null && raw['listing'] is! String) ||
         (raw['showGuestList'] != null && raw['showGuestList'] is! bool) ||
         (raw['priceHiddenUntilBookingOpens'] != null &&
-            raw['priceHiddenUntilBookingOpens'] is! bool)) {
+            raw['priceHiddenUntilBookingOpens'] is! bool) ||
+        (raw['bookingMode'] != null && raw['bookingMode'] is! String)) {
       throw const FormatException('Invalid publication request');
     }
     final request = EventPublicationRequest(
@@ -80,6 +90,7 @@ class EventPublicationRequest {
       showGuestList: raw['showGuestList'] as bool?,
       priceHiddenUntilBookingOpens:
           raw['priceHiddenUntilBookingOpens'] as bool?,
+      bookingMode: raw['bookingMode'] as String?,
     );
     if (!request.isValid) {
       throw const FormatException('Invalid publication request');

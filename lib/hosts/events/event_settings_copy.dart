@@ -15,7 +15,6 @@ abstract final class HostEventSettingsCopy {
       'Your followers can book first; everyone else from the day before';
   static const askFirst = 'Ask first';
   static const askFirstBody = 'You approve each guest first';
-  static const bookingLocked = 'Unpublish the event to change who can book';
   static const showGuestList = 'Show who else is going';
   static const showGuestListBody =
       'Guests see a count; friends see names in the app';

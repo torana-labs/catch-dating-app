@@ -2,6 +2,7 @@ import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {HttpsError} from "firebase-functions/v2/https";
 import {FieldValue} from "firebase-admin/firestore";
 import {followersFirstChoice} from "../followersFirst";
+import {publishedBookingModePatch} from "./publishedEdit";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {SetEventPublicationCallablePayload as Command} from
@@ -108,7 +109,18 @@ export async function setEventPublication(params: {
     }
     const settings = guestAccessSettingsPatch(event, command);
     const settingsOnly = event.publicationState === command.publicationState;
-    if (settingsOnly && Object.keys(settings).length === 0) {
+    // Who can book on a published event follows the published-edit rules.
+    let booking: ReturnType<typeof publishedBookingModePatch> = null;
+    if (command.bookingMode !== undefined) {
+      if (!settingsOnly || command.publicationState !== "published") {
+        throw new HttpsError("failed-precondition",
+          "Save who can book in the event's preferences until it is " +
+          "published.");
+      }
+      booking = publishedBookingModePatch(event as EventDocument,
+        command.bookingMode);
+    }
+    if (settingsOnly && Object.keys(settings).length === 0 && !booking) {
       throw new HttpsError("failed-precondition",
         "This publication change has already been made. Refresh the event.");
     }
@@ -121,6 +133,13 @@ export async function setEventPublication(params: {
     let admission: ReturnType<typeof admissionChoicesPatch> = null;
     // Fields the write removes; validation reads the event without them.
     const removals: string[] = [];
+    if (booking) {
+      Object.assign(patch, booking.patch);
+      removals.push(...booking.remove);
+      if (booking.admissionChanged) {
+        admission = {eventPolicy: booking.patch.eventPolicy!};
+      }
+    }
     if (!settingsOnly) {
       patch.publicationState = command.publicationState;
       Object.assign(patch,
