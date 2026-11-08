@@ -1338,3 +1338,43 @@ test("source adapter preserves admitted replay without cancelling its seat",
     assert.deepEqual(h.firestore.entries("eventSeatReservations"),
       reservations);
   });
+
+test("roster rows carry an optional party size that re-imports keep",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const firestore = new FakeFirestore({
+      "events/event-1": {organizerId: "organizer-1", status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+    });
+    const deps = {firestore: () => firestore as unknown as
+      FirebaseFirestore.Firestore, checkRateLimit: async () => undefined,
+    timestamp: () => now};
+    const row = {rowId: "1", displayName: "Asha Shah",
+      phone: "+919876543210", email: null, externalReference: null,
+      arrivalGroup: null, ticketType: null, status: "registered" as const};
+    const single = {rowId: "2", displayName: "Dev Rao",
+      phone: "+919876543211", email: null, externalReference: null,
+      arrivalGroup: null, ticketType: null, status: "registered" as const};
+    await importEventAttendeesForHost({hostUid: "host-1", payload: {
+      eventId: "event-1", importKey: "party-import-1", fileName: "a.csv",
+      format: "csv", rows: [{...row, partySize: 3}, single]}}, deps);
+    const asha = `eventAttendees/${eventAttendeeId("event-1",
+      "phone:+919876543210")}`;
+    const dev = `eventAttendees/${eventAttendeeId("event-1",
+      "phone:+919876543211")}`;
+    assert.equal(firestore.get(asha)?.partySize, 3);
+    // A row that never carried a party size has none: it reads as one.
+    assert.equal("partySize" in (firestore.get(dev) ?? {}), false);
+
+    await importEventAttendeesForHost({hostUid: "host-1", payload: {
+      eventId: "event-1", importKey: "party-import-2", fileName: "b.csv",
+      format: "csv", rows: [{...row, displayName: "Asha S"}]}}, deps);
+    assert.equal(firestore.get(asha)?.displayName, "Asha S");
+    assert.equal(firestore.get(asha)?.partySize, 3);
+
+    const prepared = prepareImportRows({eventId: "event-1",
+      importKey: "party-import-3", format: "csv",
+      rows: [{...row, partySize: 2}]});
+    assert.equal(prepared.prepared[0].partySize, 2);
+  });

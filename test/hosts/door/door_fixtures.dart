@@ -16,6 +16,7 @@ EventAttendee doorAttendee(
   DateTime? checkedInAt,
   int? paidMinor,
   int revision = 0,
+  int partySize = 1,
 }) => EventAttendee(
   id: id,
   eventId: doorEventId,
@@ -31,6 +32,7 @@ EventAttendee doorAttendee(
   revenueAmountMinor: paidMinor,
   revenueCurrency: paidMinor == null ? null : 'INR',
   attendanceRevision: revision,
+  partySize: partySize,
   createdAt: doorNow.subtract(const Duration(days: 2)),
   updatedAt: doorNow.subtract(const Duration(days: 2)),
 );
@@ -92,11 +94,13 @@ DoorState doorBoardState({
   DoorFilter filter = DoorFilter.arriving,
   String query = '',
   int needsReview = 0,
+  List<String> team = const <String>[],
 }) => DoorState(
   status: DoorStatus.content,
   filter: filter,
   query: query,
   needsReview: needsReview,
+  team: team,
   guests: [
     const HostDoorGuest(
       attendeeId: 'dp',

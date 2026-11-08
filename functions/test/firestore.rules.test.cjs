@@ -2669,6 +2669,49 @@ describe("firestore.rules", () => {
       ), eventStaffGrant({eventId: "event-2"})));
     });
 
+    it("lets an event's managers and roster staff list who is on the door", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event());
+      await seed(["events", "event-2"], event());
+      await seed(
+        ["eventStaffGrants", "event-1__operator-1"],
+        eventStaffGrant(),
+      );
+      const presence = (eventId, uid) => ({
+        schemaVersion: 1,
+        eventId,
+        organizerId: "club-1",
+        uid,
+        displayName: "Kabir",
+        role: "operator",
+        lastSeenAt: Timestamp.now(),
+        expiresAt: Timestamp.fromMillis(Date.now() + 120_000),
+      });
+      await seed(["eventStaffPresence", "event-1_operator-1"],
+        presence("event-1", "operator-1"));
+      await seed(["eventStaffPresence", "event-2_host-1"],
+        presence("event-2", "host-1"));
+
+      for (const uid of ["host-1", "operator-1"]) {
+        await assertSucceeds(getDocs(query(
+          collection(authedDb(uid), "eventStaffPresence"),
+          where("eventId", "==", "event-1"),
+        )));
+      }
+      await assertFails(getDocs(query(
+        collection(authedDb("operator-1"), "eventStaffPresence"),
+        where("eventId", "==", "event-2"),
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "eventStaffPresence"),
+        where("eventId", "==", "event-1"),
+      )));
+      for (const uid of ["host-1", "operator-1"]) {
+        await assertFails(setDoc(doc(authedDb(uid), "eventStaffPresence",
+          `event-1_${uid}`), presence("event-1", uid)));
+      }
+    });
+
     it("fails closed for revoked, expired, and wrong-organizer staff grants", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());

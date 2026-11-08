@@ -11,6 +11,7 @@ const checkInEventRuntime = vi.hoisted(() => vi.fn());
 const heartbeatEventRuntimePresence = vi.hoisted(() => vi.fn());
 const createEventRuntimeAttendeeInviteLink = vi.hoisted(() => vi.fn());
 const recordEventRuntimeShareIntent = vi.hoisted(() => vi.fn());
+const requestEventRuntimeHostHelp = vi.hoisted(() => vi.fn());
 const watchEventRuntimeAuthState = vi.hoisted(() => vi.fn(
   (callback: (user: typeof runtime.user) => void) => {
     callback(runtime.user);
@@ -31,6 +32,7 @@ vi.mock("../../firebase", () => ({
   heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen: vi.fn(),
   recordEventRuntimeShareIntent,
+  requestEventRuntimeHostHelp,
   saveEventRuntimeCompatibilityAnswers: vi.fn(),
   saveEventRuntimeFeedback: vi.fn(),
   startEventRuntimeFirstHello: vi.fn(),
@@ -148,6 +150,50 @@ describe("useEventRuntimeController", () => {
     expect(watchEventRuntimeLiveState).toHaveBeenCalled();
     await waitFor(() => expect(heartbeatEventRuntimePresence)
       .toHaveBeenCalledWith("event-1"));
+  });
+
+  it("asks the host for help once per request, retrying with the same id", async () => {
+    runtime.user = {uid: "guest-1"};
+    getEventRuntimeBootstrap.mockResolvedValue(bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "checkedIn",
+      eventId: "event-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    }));
+    requestEventRuntimeHostHelp
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValue({caseId: "case:abc", status: "open", replayed: false});
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+    await waitFor(() => expect(result.current.stage).toBe("runtime"));
+
+    await act(() => result.current.requestHostHelp());
+    await act(() => result.current.requestHostHelp());
+    await act(() => result.current.requestHostHelp());
+
+    const ids = requestEventRuntimeHostHelp.mock.calls.map(([payload]) => payload.requestId);
+    expect(ids[0]).toBe(ids[1]);
+    expect(ids[2]).not.toBe(ids[1]);
+    expect(requestEventRuntimeHostHelp.mock.calls[0][0]).toEqual({
+      publicRuntimeId: "runtime_123456789012345678901234",
+      requestId: ids[0],
+      category: "other",
+    });
+    expect(result.current.status).toEqual({
+      message: "The host knows you need a hand. Someone will find you.",
+      tone: "is-success",
+    });
   });
 
   it("does not grant attendance from a static runtime link", async () => {

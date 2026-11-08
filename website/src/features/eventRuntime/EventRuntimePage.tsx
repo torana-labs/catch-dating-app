@@ -412,7 +412,10 @@ function LiveRuntime({controller, format}: {controller: EventRuntimeController; 
           <ArrivalGuidance event={event} />
           <ShareTile controller={controller} />
           <AfterTheNight controller={controller} />
-          <HelpButton />
+          <CatchStack gap={8}>
+            <AskHostButton controller={controller} />
+            <SafetyButton />
+          </CatchStack>
           <CatchText align="center" tone="secondary" variant="body-small">{copy.noAppNote}</CatchText>
         </>
       )}
@@ -434,6 +437,18 @@ function yourUnitLabels(controller: EventRuntimeController): ReadonlySet<string>
 
 function HelpButton() {
   return <CatchButton fill href="/help/" label={copy.helpAction} leadingIcon="help" variant="secondary" />;
+}
+
+/** Opens a case the host's live console sees; safety concerns keep their own route. */
+function AskHostButton({controller}: {controller: EventRuntimeController}) {
+  return (
+    <CatchButton fill label={copy.hostHelpAction} leadingIcon="help" onPressed={() => void controller.requestHostHelp()}
+      status={controller.pending ? "loading" : "idle"} variant="secondary" />
+  );
+}
+
+function SafetyButton() {
+  return <CatchButton fill href="/help/" label={copy.safetyAction} variant="quiet" />;
 }
 
 /** The step happening now, in the night's colour: where it sits in the run of show, the host's note and the time left. */

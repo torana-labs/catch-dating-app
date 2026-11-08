@@ -1041,7 +1041,8 @@ function requireRuntimeSeatSnapshot(
   }
 }
 
-async function resolveRuntimeEvent(
+/** The one enabled, uncancelled event a public runtime id names. */
+export async function resolveRuntimeEvent(
   db: FirebaseFirestore.Firestore,
   publicRuntimeId: string
 ): Promise<{eventId: string; event: RuntimeVenueEventDocument}> {
@@ -1091,7 +1092,8 @@ function requireRuntimeTerms(event: EventDocument, termsVersion: string): void {
   }
 }
 
-function requireRuntimeParticipant(
+/** The caller's own runtime participant row for the event. */
+export function requireRuntimeParticipant(
   snapshot: FirebaseFirestore.DocumentSnapshot,
   eventId: string,
   uid: string
@@ -1445,7 +1447,7 @@ function isSensitiveRuntimeField(field: RuntimeFieldId): boolean {
   return field !== "displayName";
 }
 
-function normalizeRuntimeIdPayload(data: unknown): unknown {
+export function normalizeRuntimeIdPayload(data: unknown): unknown {
   return normalizeStringFields(data, ["publicRuntimeId"]);
 }
 

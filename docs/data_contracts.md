@@ -2739,6 +2739,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
+| Door staff presence | `eventStaffPresence/{eventId}_{uid}`, readable by the event's managers and `viewRoster` staff, written only by `heartbeatEventStaffPresence` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -4429,6 +4430,15 @@ orders reaches its currency's threshold; `member` is always stored and the
 phone hides it when it does not show membership. A missing view, or one
 recorded as `invalidSource`, shows the roster's unavailable state; check-in
 never depends on it.
+
+`eventAttendees.partySize` is optional (1 to 20): the places a guest-list row
+holds at the door. Only Host roster import and walk-ins write it; a missing value
+reads as 1, and Catch bookings hold one place each. Guest ticket codes are not
+stored: `getEventTicketCode` signs the attendee row id with the event-assistance
+key ring and `resolveEventTicketCode` verifies it, so cancelling the row revokes
+the code. `eventStaffPresence/{eventId}_{uid}` holds `displayName`, `role`
+(`manager` or `operator`), `lastSeenAt` and `expiresAt`; a row is current only
+while `expiresAt` is in the future.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.

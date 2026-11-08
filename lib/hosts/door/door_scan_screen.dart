@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_body.dart';
@@ -11,9 +13,10 @@ import 'package:flutter/widgets.dart';
 /// running count, the camera in its finder and, after a check-in, the
 /// floating success sheet.
 ///
-/// The camera is [EventCheckInQrScanner], which reads Catch event codes. No
-/// guest ticket code exists yet, so a scan can only say what it read; the
-/// success sheet shows once the door hands it a [result].
+/// The camera is [EventCheckInQrScanner], which reads Catch event codes. A
+/// guest's ticket goes to [onTicket], which checks them in; the success sheet
+/// shows once the door hands back the guest as [result]. Any other code only
+/// says what it was.
 class DoorScanScreen extends StatefulWidget {
   const DoorScanScreen({
     super.key,
@@ -24,6 +27,7 @@ class DoorScanScreen extends StatefulWidget {
     this.result,
     this.onNext,
     this.onUndo,
+    this.onTicket,
     this.camera,
   });
 
@@ -36,6 +40,10 @@ class DoorScanScreen extends StatefulWidget {
   final HostDoorGuest? result;
   final VoidCallback? onNext;
   final VoidCallback? onUndo;
+
+  /// Checks in the guest a scanned ticket names; resolves to why nobody was
+  /// checked in, or null when [result] now shows them.
+  final Future<DoorScanNotice?> Function(String ticketCode)? onTicket;
 
   /// Replaces the live camera in previews and tests.
   final Widget? camera;
@@ -84,7 +92,10 @@ class _DoorScanScreenState extends State<DoorScanScreen> {
           state: state,
           camera:
               widget.camera ??
-              EventCheckInQrScanner(eventId: widget.eventId, onResult: _read),
+              EventCheckInQrScanner(
+                eventId: widget.eventId,
+                onResult: (scan) => unawaited(_read(scan)),
+              ),
         ),
         overlay: result == null
             ? null
@@ -97,17 +108,27 @@ class _DoorScanScreenState extends State<DoorScanScreen> {
     );
   }
 
-  void _read(EventCheckInQrScan scan) {
+  Future<void> _read(EventCheckInQrScan scan) async {
+    final ticketCode = scan.ticketCode;
+    final onTicket = widget.onTicket;
+    if (scan.result == EventCheckInQrScanResult.matchedTicket &&
+        ticketCode != null &&
+        onTicket != null) {
+      final notice = await onTicket(ticketCode);
+      if (mounted && notice != _notice) setState(() => _notice = notice);
+      return;
+    }
     final notice = doorScanNoticeFor(scan.result);
     if (notice != null && notice != _notice) setState(() => _notice = notice);
   }
 }
 
 /// What the scanner says about a code that checked nobody in; null for a
-/// frame with no code.
+/// frame with no code or a ticket, which the door resolves.
 DoorScanNotice? doorScanNoticeFor(EventCheckInQrScanResult result) =>
     switch (result) {
-      EventCheckInQrScanResult.ignored => null,
+      EventCheckInQrScanResult.ignored ||
+      EventCheckInQrScanResult.matchedTicket => null,
       EventCheckInQrScanResult.invalid => DoorScanNotice.notATicket,
       EventCheckInQrScanResult.wrongEvent => DoorScanNotice.otherEvent,
       EventCheckInQrScanResult.printableJoinOnly ||
