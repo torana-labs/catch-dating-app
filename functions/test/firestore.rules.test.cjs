@@ -4829,6 +4829,23 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps the plan to hosts when guests are not to see it", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event({planVisibleToGuests: false}));
+      await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventSuccessPlans", "event-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "eventSuccessPlans", "event-1")),
+      );
+    });
+
     it("grants Event Success to a ready external runtime identity", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());

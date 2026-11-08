@@ -204,6 +204,7 @@ class HostShellBackend {
         'refreshAfterMillis': now + const Duration(minutes: 5).inMilliseconds,
       },
       'createPrivateEventSetup' => _createPrivateEvent(request),
+      'createPrivateEventSeries' => _createPrivateEventSeries(request),
       'updatePrivateEventDetails' => _updatePrivateEventDetails(request),
       'listPrivateEventSetups' => {
         'events': [
@@ -359,6 +360,34 @@ class HostShellBackend {
 
   /// Stores the setup and, as the backend's setup view trigger does, writes
   /// the event's `hostEventSetupViews` document the steps listen to.
+  /// A weekly series, as `createPrivateEventSeries` makes it: one private
+  /// event per week from the template's date, each created like a single
+  /// event.
+  Future<Map<String, Object?>> _createPrivateEventSeries(
+    Map<String, Object?> request,
+  ) async {
+    final template = Map<String, Object?>.from(request['template']! as Map);
+    final first = DateTime.parse('${template['localDate']}T00:00:00Z');
+    final cadence = Map<String, Object?>.from(request['cadence']! as Map);
+    final eventIds = <String>[];
+    for (var index = 0; index < (cadence['count']! as int); index++) {
+      final date = first.add(Duration(days: 7 * index));
+      final created = await _createPrivateEvent({
+        'organizerId': request['organizerId'],
+        'basics': {
+          ...template,
+          'localDate': date.toIso8601String().substring(0, 10),
+        },
+      });
+      eventIds.add(created['eventId']! as String);
+    }
+    return {
+      'seriesId': 'host-journey-series',
+      'eventIds': eventIds,
+      'replayed': false,
+    };
+  }
+
   Future<Map<String, Object?>> _createPrivateEvent(
     Map<String, Object?> request,
   ) async {

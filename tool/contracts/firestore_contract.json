@@ -1207,7 +1207,8 @@
         "onHostEventSetupViewWaitlistOfferChanged",
         "onHostEventSetupViewEventOfferChanged",
         "onHostEventSetupViewPaymentChanged",
-        "onHostEventSetupViewPendingOrderChanged"
+        "onHostEventSetupViewPendingOrderChanged",
+        "onHostEventSetupViewMomentChanged"
       ],
       "migrationNotes": [
         "Publication readiness checks every requirement as if the event started one millisecond from now; the phone applies the clock, so the view needs no sweep.",
@@ -4255,6 +4256,7 @@
       "read": "server only; manager callable operation result",
       "write": "server only",
       "exportedFunctions": [
+        "createPrivateEventSeries",
         "createPrivateEventSetup",
         "updatePrivateEventBasics",
         "updatePrivateEventDetails",
