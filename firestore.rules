@@ -2226,6 +2226,24 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Guest IDs, hampers, function photos and vendor bills: server-only,
+    // read through the programme callables (files via signed URLs).
+    match /programGuestIds/{programGuestIdId} {
+      allow read, write: if false;
+    }
+
+    match /programHampers/{programHamperId} {
+      allow read, write: if false;
+    }
+
+    match /programPhotos/{programPhotoId} {
+      allow read, write: if false;
+    }
+
+    match /programVendorBills/{programVendorBillId} {
+      allow read, write: if false;
+    }
+
     match /programTravelLegs/{legId} {
       allow read, write: if false;
     }

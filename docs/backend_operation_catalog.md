@@ -513,6 +513,25 @@ board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
 
+## Programme guest IDs, hampers, photos and vendor bills
+
+`createProgramAssetUpload` signs one upload of a programme file (guest ID,
+hamper photo, function photo, guest page cover) into private Storage; it
+writes nothing. `submitProgramGuestId` (household RSVP token) stores one
+member's ID after verifying the uploaded objects; `decideProgramGuestId`
+accepts it or asks again (guest relations, revision fence, `requestId`
+replay); `listProgramIdTracker` lists staying guests with ID status and
+signed image URLs; `getProgramHotelHandover` (a `hotelHandover` web link
+from `issueProgramWebLink`) gives the front desk its rooming list with
+accepted IDs and records each look. `reconcileProgramVendorBill` reviews,
+checks, questions or approves one vendor's bill against its recorded trips
+(writes are manager-only). `upsertProgramHamper` marks a room's hamper
+placed, by a porter through a `hamperPorter` link or by hotel desk staff;
+`getProgramHamperWebView` is the porters' list. `upsertProgramPhoto` adds or
+changes a function photo; `listProgramPhotos` returns albums, photos and the
+cover as signed URLs. Every command keeps a `requestId` receipt on its
+document. The guest ID, hotel and porter web pages are P4.10.
+
 ## Paid host membership operations
 
 Paid host memberships ([spec](plans/host_memberships_spec.md)) are entirely

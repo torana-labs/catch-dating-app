@@ -27992,10 +27992,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostProgrammeBrandingHasCover => 'Cover photo added';
 
   @override
-  String get hostProgrammeBrandingCoverNote =>
-      'Photo uploads arrive with programme photos.';
-
-  @override
   String get hostProgrammeBrandingPreview => 'What guests see';
 
   @override
@@ -28094,4 +28090,397 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$name: $percent% replied';
   }
+
+  @override
+  String get hostProgrammeIdsTitle => 'IDs for the hotels';
+
+  @override
+  String get hostProgrammeIdsSend => 'Send to the hotels';
+
+  @override
+  String get hostProgrammeIdsStaying => 'Staying';
+
+  @override
+  String get hostProgrammeIdsIn => 'IDs in';
+
+  @override
+  String get hostProgrammeIdsToCheck => 'To check';
+
+  @override
+  String get hostProgrammeIdsMissing => 'Missing';
+
+  @override
+  String get hostProgrammeIdsPassports => 'Passports';
+
+  @override
+  String hostProgrammeIdsRemind({required int count}) {
+    return 'Remind the $count missing';
+  }
+
+  @override
+  String hostProgrammeIdsHotelCount({
+    required Object name,
+    required int count,
+  }) {
+    return '$name $count';
+  }
+
+  @override
+  String get hostProgrammeIdsEmpty => 'No one here yet.';
+
+  @override
+  String get hostProgrammeIdsPick => 'Pick a guest to see their ID.';
+
+  @override
+  String get hostProgrammeIdsAccept => 'Accept';
+
+  @override
+  String get hostProgrammeIdsAskAgain => 'Ask for a clearer photo';
+
+  @override
+  String hostProgrammeIdsRoom({required Object room}) {
+    return 'Room $room';
+  }
+
+  @override
+  String hostProgrammeIdsKindMasked({required Object kind}) {
+    return '$kind · masked';
+  }
+
+  @override
+  String hostProgrammeIdsMasked({required Object last4}) {
+    return 'XXXX XXXX $last4';
+  }
+
+  @override
+  String hostProgrammeIdsImage({required Object name}) {
+    return '$name’s ID';
+  }
+
+  @override
+  String get hostProgrammeIdsChecks => 'Checks';
+
+  @override
+  String get hostProgrammeIdsNotSent => 'Not sent yet';
+
+  @override
+  String hostProgrammeIdsSentAt({required Object when}) {
+    return 'Sent $when';
+  }
+
+  @override
+  String get hostProgrammeIdsAskedAgainRow => 'Asked for a clearer photo';
+
+  @override
+  String get hostProgrammeIdsAcceptedRow => 'Accepted for the hotel';
+
+  @override
+  String get hostProgrammeIdsNoVisa => 'No visa page yet';
+
+  @override
+  String get hostProgrammeIdsVisaIn => 'Visa page in';
+
+  @override
+  String get hostProgrammeIdsSeenBy => 'Who has seen it';
+
+  @override
+  String get hostProgrammeIdsSeenByEmpty =>
+      'No one yet. The hotel sees it once you accept it.';
+
+  @override
+  String get hostProgrammeIdsFrontDesk => 'Front desk';
+
+  @override
+  String get hostProgrammeIdsPrivacy =>
+      'Only the last four digits are kept. The hotel sees accepted IDs through its own link, and every ID is deleted when the programme’s data is cleared.';
+
+  @override
+  String get hostProgrammeIdsAccepted => 'Accepted';
+
+  @override
+  String get hostProgrammeIdsAskedAgain => 'Asked again';
+
+  @override
+  String get hostProgrammeIdsPassportVisa => 'Passport and visa';
+
+  @override
+  String get hostProgrammeIdsAadhaar => 'Aadhaar';
+
+  @override
+  String get hostProgrammeIdsPassport => 'Passport';
+
+  @override
+  String get hostProgrammeIdsLicence => 'Licence';
+
+  @override
+  String get hostProgrammeIdsVoterId => 'Voter ID';
+
+  @override
+  String get hostProgrammeIdsDecisionFailed =>
+      'That wasn’t saved. Someone may have changed this ID; try again.';
+
+  @override
+  String get hostProgrammeIdsSendFailed =>
+      'The hotel link couldn’t be made. Try again.';
+
+  @override
+  String hostProgrammeIdsLinkSubject({required Object hotel}) {
+    return 'Rooming list and guest IDs for $hotel';
+  }
+
+  @override
+  String get hostProgrammeBillTitle => 'Checking a bill';
+
+  @override
+  String hostProgrammeBillOpen({required Object vendor}) {
+    return 'Check $vendor’s bill';
+  }
+
+  @override
+  String hostProgrammeBillHeading({
+    required Object vendor,
+    required Object invoice,
+  }) {
+    return '$vendor · invoice $invoice';
+  }
+
+  @override
+  String hostProgrammeBillReceived({required Object date}) {
+    return 'Received $date';
+  }
+
+  @override
+  String hostProgrammeBillCounts({required int billed, required int recorded}) {
+    return '$billed trips billed, $recorded recorded';
+  }
+
+  @override
+  String get hostProgrammeBillTable => 'Bill lines against recorded trips';
+
+  @override
+  String get hostProgrammeBillOnTheBill => 'On the bill';
+
+  @override
+  String get hostProgrammeBillBilled => 'Billed';
+
+  @override
+  String get hostProgrammeBillRecorded => 'Recorded';
+
+  @override
+  String get hostProgrammeBillCheck => 'Check';
+
+  @override
+  String get hostProgrammeBillToQuestion => 'To question';
+
+  @override
+  String get hostProgrammeBillToQuestionNote => 'More than recorded';
+
+  @override
+  String hostProgrammeBillQuestionsTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'The $count trips to question',
+      one: 'The trip to question',
+      zero: 'Nothing to question',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeBillQuestionsEmpty =>
+      'Every line matches a recorded trip.';
+
+  @override
+  String hostProgrammeBillNote({required Object vendor}) {
+    return 'Note to $vendor';
+  }
+
+  @override
+  String hostProgrammeBillSendQuestions({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Send the $count questions',
+      one: 'Send the question',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostProgrammeBillApprove({required Object amount}) {
+    return 'Approve $amount';
+  }
+
+  @override
+  String hostProgrammeBillApproved({required Object amount}) {
+    return 'Approved $amount.';
+  }
+
+  @override
+  String get hostProgrammeBillNew => 'Check a new bill';
+
+  @override
+  String get hostProgrammeBillUnbilled => 'Recorded, not billed';
+
+  @override
+  String get hostProgrammeBillUnbilledEmpty =>
+      'Every recorded trip is on the bill.';
+
+  @override
+  String hostProgrammeBillRecordedSummary({
+    required int count,
+    required Object amount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count trips recorded',
+      one: '1 trip recorded',
+    );
+    return '$_temp0 · $amount';
+  }
+
+  @override
+  String get hostProgrammeBillInvoice => 'Invoice number';
+
+  @override
+  String get hostProgrammeBillLines => 'The bill’s lines';
+
+  @override
+  String get hostProgrammeBillLinesHelp =>
+      'One trip per line: what the bill says, a comma, then the amount. For example: T-041, 2000';
+
+  @override
+  String get hostProgrammeBillCheckButton => 'Check the bill';
+
+  @override
+  String get hostProgrammeBillLinesEmpty =>
+      'Paste at least one line with an amount.';
+
+  @override
+  String get hostProgrammeBillNoteEmpty =>
+      'Write the note to the vendor first.';
+
+  @override
+  String get hostProgrammeBillFailed =>
+      'That wasn’t saved. Someone may have changed this bill; try again.';
+
+  @override
+  String hostProgrammeBillShareSubject({required Object vendor}) {
+    return 'Questions on your bill from $vendor';
+  }
+
+  @override
+  String get hostProgrammeBillMatches => 'Matches';
+
+  @override
+  String get hostProgrammeBillDiffers => 'Amount differs';
+
+  @override
+  String get hostProgrammeBillNoRate => 'No rate';
+
+  @override
+  String get hostProgrammeBillNoTrip => 'Not recorded';
+
+  @override
+  String get hostProgrammeBillVoided => 'Voided';
+
+  @override
+  String get hostProgrammeBillDuplicate => 'Billed twice';
+
+  @override
+  String hostProgrammeBillReasonDiffers({
+    required Object billed,
+    required Object recorded,
+  }) {
+    return 'Billed $billed, recorded $recorded';
+  }
+
+  @override
+  String hostProgrammeBillReasonNoRate({required Object billed}) {
+    return 'Billed $billed; no rate was agreed for this trip';
+  }
+
+  @override
+  String hostProgrammeBillReasonNoTrip({required Object billed}) {
+    return 'Billed $billed; we have no record of this trip';
+  }
+
+  @override
+  String hostProgrammeBillReasonVoided({required Object billed}) {
+    return 'Billed $billed; this trip was voided';
+  }
+
+  @override
+  String hostProgrammeBillReasonDuplicate({required Object billed}) {
+    return 'Billed $billed; this trip is already on the bill';
+  }
+
+  @override
+  String get hostProgrammePhotosTitle => 'Photos';
+
+  @override
+  String get hostProgrammePhotosNoAlbums => 'Add a function to start an album.';
+
+  @override
+  String get hostProgrammePhotosAll => 'All photos';
+
+  @override
+  String get hostProgrammePhotosAdd => 'Add photos';
+
+  @override
+  String get hostProgrammePhotosAddShort => 'Add';
+
+  @override
+  String get hostProgrammePhotosEmpty => 'No photos here yet.';
+
+  @override
+  String get hostProgrammePhotosPhoto => 'Programme photo';
+
+  @override
+  String get hostProgrammePhotosSources => 'Where photos come from';
+
+  @override
+  String get hostProgrammePhotosFromPhone => 'From this phone';
+
+  @override
+  String get hostProgrammePhotosFromPhoneAll =>
+      'Pick an album first to file them under a function';
+
+  @override
+  String hostProgrammePhotosFromPhoneAlbum({required Object name}) {
+    return 'Added to $name';
+  }
+
+  @override
+  String get hostProgrammePhotosPrivacy =>
+      'Photos stay private to your team. They are deleted when the programme’s data is cleared.';
+
+  @override
+  String hostProgrammePhotosCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammePhotosNone => 'No photos yet';
+
+  @override
+  String get hostProgrammePhotosOther => 'Other photos';
+
+  @override
+  String get hostProgrammePhotosFailed => 'That photo wasn’t added. Try again.';
+
+  @override
+  String get hostProgrammeBrandingChangeCover => 'Change the photo';
+
+  @override
+  String get hostProgrammeBrandingCoverFailed =>
+      'That photo couldn’t be uploaded. Try again.';
 }

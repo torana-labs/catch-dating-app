@@ -1,0 +1,20 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "householdId": "house-1",
+  "guestId": "guest-1",
+  "idKind": "aadhaar",
+  "numberLast4": "4821",
+  "frontPath": "programs/program-1/guestIds/guestId_0123456789abcdef0123456789abcdef01234567",
+  "backPath": null,
+  "visaPath": null,
+  "status": "accepted",
+  "submittedAtMillis": 1800000000000,
+  "decidedAtMillis": 1800000060000,
+  "decidedByUid": "manager-1",
+  "askAgainNote": null,
+  "hotelViews": [{"hotelId": "hotel-1", "atMillis": 1800000120000}],
+  "revision": 2,
+  "lastRequestId": "decide-request-1",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}
