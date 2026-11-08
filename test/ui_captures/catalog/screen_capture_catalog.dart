@@ -10586,7 +10586,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       CreateShareScreen(
         state: _createState(CreateStep.share),
         handlers: _createHandlers,
-        link: 'https://catchdates.com/lantern-lane/trivia',
+        link: '${Brand.webOrigin}/lantern-lane/trivia',
       ),
     ),
   ),

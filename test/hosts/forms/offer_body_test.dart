@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/forms/offer_body.dart';
 import 'package:catch_dating_app/hosts/forms/offer_state.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -142,7 +143,7 @@ void main() {
           expiresAt: formsNow.add(const Duration(days: 2)),
           message:
               'Hi Tara! There is a place for you on the Sunday run. Book '
-              'here: catchdates.com/o/4fk2',
+              'here: ${Brand.webDomain}/o/4fk2',
           canOpenWhatsapp: true,
           admission: const HostOfferAdmission(
             phase: HostOfferAdmissionPhase.check,
