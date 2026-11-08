@@ -28718,4 +28718,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostCreateRepeatOn({required Object weekday}) {
     return 'Every $weekday';
   }
+
+  @override
+  String get hostFollowerUpdateWhatsappToggle => 'Also send on WhatsApp';
+
+  @override
+  String get hostFollowerUpdateWhatsappToggleBody =>
+      'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.';
+
+  @override
+  String get hostFollowerUpdateWhatsappUnavailable =>
+      'Connect your WhatsApp number and get the follower update template approved to send there too.';
+
+  @override
+  String hostFollowerUpdatePostedWhatsapp({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Posted to followers. Sending on WhatsApp to $count followers.',
+      one: 'Posted to followers. Sending on WhatsApp to 1 follower.',
+      zero: 'Posted to followers. Nobody has ticked WhatsApp updates yet.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  }) {
+    return 'WhatsApp: $sent sent, $delivered delivered, $skipped not on WhatsApp';
+  }
 }

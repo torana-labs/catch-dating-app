@@ -32281,5 +32281,15 @@
   "hostEventSettingsTicketsSold": "{count, plural, =1{1 ticket sold} other{{count} tickets sold}}",
   "@hostEventSettingsTicketsSold": {"description": "Workspace ticket sales: tickets sold.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostCreateRepeatOn": "Every {weekday}",
-  "@hostCreateRepeatOn": {"description": "Create when switch: repeat on the event's weekday.", "placeholders": {"weekday": {}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"}
+  "@hostCreateRepeatOn": {"description": "Create when switch: repeat on the event's weekday.", "placeholders": {"weekday": {}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
+  "hostFollowerUpdateWhatsappToggle": "Also send on WhatsApp",
+  "@hostFollowerUpdateWhatsappToggle": {"description": "Follower update composer: switch that adds the WhatsApp channel.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostFollowerUpdateWhatsappToggleBody": "To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.",
+  "@hostFollowerUpdateWhatsappToggleBody": {"description": "Follower update composer: who the WhatsApp channel reaches.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostFollowerUpdateWhatsappUnavailable": "Connect your WhatsApp number and get the follower update template approved to send there too.",
+  "@hostFollowerUpdateWhatsappUnavailable": {"description": "Follower update composer: why the WhatsApp switch is off.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostFollowerUpdatePostedWhatsapp": "{count, plural, =0{Posted to followers. Nobody has ticked WhatsApp updates yet.} =1{Posted to followers. Sending on WhatsApp to 1 follower.} other{Posted to followers. Sending on WhatsApp to {count} followers.}}",
+  "@hostFollowerUpdatePostedWhatsapp": {"description": "Notice after a follower update that also went on WhatsApp.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostSendsFollowerUpdateWhatsapp": "WhatsApp: {sent} sent, {delivered} delivered, {skipped} not on WhatsApp",
+  "@hostSendsFollowerUpdateWhatsapp": {"description": "Sends: per-channel counts for a follower update's WhatsApp leg.", "placeholders": {"sent": {"type": "int"}, "delivered": {"type": "int"}, "skipped": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

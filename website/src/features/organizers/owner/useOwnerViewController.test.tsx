@@ -74,6 +74,33 @@ describe("useOwnerViewController", () => {
     await waitFor(() => expect(result.current.notice).toMatchObject({panel: "links", text: "saved"}));
   });
 
+  it("sends to followers on WhatsApp too when ticked, and shows both counts", async () => {
+    const view = ownerViewFixture("owner");
+    const backends = {...ownerViewStoryBackends(view), manage: vi.fn(ownerViewStoryBackends(view).manage)};
+    const {result} = render({backends});
+    await waitFor(() => expect(result.current.followers.whatsappAvailable).toBe(true));
+    act(() => result.current.followers.change("New date on Saturday"));
+    act(() => result.current.followers.setWhatsapp(true));
+    act(() => result.current.followers.send());
+    await waitFor(() => expect(result.current.followers.delivery).not.toBeNull());
+    expect(backends.manage.mock.calls[0][0]).toMatchObject({action: "sendFollowerMessage", text: "New date on Saturday",
+      channels: ["app", "whatsapp"]});
+    expect(result.current.followers.delivery).toMatchObject({appRecipientCount: 214, whatsapp: {queuedCount: 61}});
+  });
+
+  it("keeps WhatsApp off when the organiser's number is not ready", async () => {
+    const view = ownerViewFixture("owner", {whatsapp: false});
+    const backends = {...ownerViewStoryBackends(view), manage: vi.fn(ownerViewStoryBackends(view).manage)};
+    const {result} = render({backends});
+    await waitFor(() => expect(result.current.data).not.toBeNull());
+    act(() => result.current.followers.setWhatsapp(true));
+    act(() => result.current.followers.change("Hello"));
+    act(() => result.current.followers.send());
+    await waitFor(() => expect(backends.manage).toHaveBeenCalled());
+    expect(result.current.followers.whatsapp).toBe(false);
+    expect("channels" in backends.manage.mock.calls[0][0]).toBe(false);
+  });
+
   it("reports the follower allowance and a used-up month", async () => {
     const {result} = render({backends: ownerViewStoryBackends(ownerViewFixture("owner", {messagesUsed: 2}))});
     await waitFor(() => expect(result.current.data).not.toBeNull());

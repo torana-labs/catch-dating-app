@@ -33,7 +33,7 @@ export const organizerPageCopy = {
     doneTitle: (name: string) => `You’re following ${name}.`,
     doneBody: (whatsapp: boolean) => (whatsapp ?
       "We’ll message you on WhatsApp when a new plan opens, at most a few times a month." :
-      "Their new plans will show in Catch when you sign in with this number."),
+      `Their new plans will show in ${brand.name} when you sign in with this number.`),
     /** Must match the reviewed consent copy follower-whatsapp-v1 on the server. */
     whatsappTick: "Send me this organiser’s updates on WhatsApp. Reply STOP to stop.",
     invalidPhone: "Enter a 10-digit mobile number",

@@ -129,6 +129,7 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
     required this.pushUnknownCount,
     required this.createdAt,
     required super.activityAt,
+    this.whatsapp,
   });
 
   factory HostFollowerUpdateSendSummary.fromMap(Map<Object?, Object?> map) =>
@@ -147,6 +148,7 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
         pushUnknownCount: crmRequiredInt(map, 'pushUnknownCount'),
         createdAt: crmRequiredDateTimeFromMillis(map, 'createdAtMillis'),
         activityAt: crmRequiredDateTimeFromMillis(map, 'activityAtMillis'),
+        whatsapp: HostFollowerUpdateWhatsapp.fromMap(map['whatsapp']),
       );
 
   final String postId;
@@ -161,6 +163,9 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
   final int pushAcceptedCount;
   final int pushFailedCount;
   final int pushUnknownCount;
+
+  /// The update's WhatsApp leg; null when it went to the app only.
+  final HostFollowerUpdateWhatsapp? whatsapp;
   final DateTime createdAt;
 
   bool get hasTrackedDelivery => deliveryStatus != 'unknown';
@@ -193,4 +198,37 @@ class HostSendsPage {
   final String organizerId;
   final List<HostSendSummary> sends;
   final String? nextCursor;
+}
+
+/// A follower update's WhatsApp leg (route organizerFollowerWhatsapp).
+final class HostFollowerUpdateWhatsapp {
+  const HostFollowerUpdateWhatsapp({
+    required this.status,
+    required this.queuedCount,
+    required this.skippedCount,
+    required this.sentCount,
+    required this.deliveredCount,
+    required this.failedCount,
+  });
+
+  /// Null when the row carries no WhatsApp leg.
+  static HostFollowerUpdateWhatsapp? fromMap(Object? value) {
+    if (value == null) return null;
+    final map = crmRequiredMap(value, 'follower update WhatsApp counts');
+    return HostFollowerUpdateWhatsapp(
+      status: crmRequiredString(map, 'status'),
+      queuedCount: crmRequiredInt(map, 'queuedCount'),
+      skippedCount: crmRequiredInt(map, 'skippedCount'),
+      sentCount: crmRequiredInt(map, 'sentCount'),
+      deliveredCount: crmRequiredInt(map, 'deliveredCount'),
+      failedCount: crmRequiredInt(map, 'failedCount'),
+    );
+  }
+
+  final String status;
+  final int queuedCount;
+  final int skippedCount;
+  final int sentCount;
+  final int deliveredCount;
+  final int failedCount;
 }
