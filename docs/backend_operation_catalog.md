@@ -520,7 +520,9 @@ hamper photo, function photo, guest page cover) into private Storage; it
 writes nothing. `submitProgramGuestId` (household RSVP token) stores one
 member's ID after verifying the uploaded objects; `decideProgramGuestId`
 accepts it or asks again (guest relations, revision fence, `requestId`
-replay); `listProgramIdTracker` lists staying guests with ID status and
+replay); `getProgramGuestIdStatus` (household RSVP token) returns each
+member's name and ID status for the household's own ID page, and nothing
+else about the ID; `listProgramIdTracker` lists staying guests with ID status and
 signed image URLs; `getProgramHotelHandover` (a `hotelHandover` web link
 from `issueProgramWebLink`) gives the front desk its rooming list with
 accepted IDs and records each look. `reconcileProgramVendorBill` reviews,

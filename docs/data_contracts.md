@@ -4347,7 +4347,8 @@ that uses the file verifies that binding and deletes a mismatching object.
 Images leave the server only as signed URLs that expire within ten minutes.
 
 Privacy: guest ID images are personal data collected for hotel check-in only.
-Households submit them through their own RSVP link; guest relations (or a
+Households submit them through their own RSVP link and see only each
+member's name and status back (`getProgramGuestIdStatus`); guest relations (or a
 manager) see them in the ID tracker; a hotel sees accepted IDs only, through
 a `hotelHandover` link scoped to that hotel, and every look is recorded on
 the ID. Hamper links (`hamperPorter`) show room labels and counts, never

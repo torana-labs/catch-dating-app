@@ -31,6 +31,7 @@ import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBann
 import {publishedLegalContent} from "../content/legal";
 import {assistanceCredential} from "../features/eventAssistance/eventAssistanceModel";
 import {householdRsvpCredential} from "../features/householdRsvp/householdRsvpModel";
+import {programmeLinkCredential, type ProgrammeLinkCredential} from "../features/programmes/programmeLinkModel";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
   buildPublicEventDetailRecords,
@@ -61,6 +62,12 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/eventRehearsal/EventRehearsalPage.tsx",
   "../features/events/EventInvitePage.tsx",
   "../features/householdRsvp/HouseholdRsvpPage.tsx",
+  "../features/programmes/ProgrammeItineraryPage.tsx",
+  "../features/programmes/ProgrammeGuestIdsPage.tsx",
+  "../features/programmes/ProgrammeHotelHandoverPage.tsx",
+  "../features/programmes/ProgrammeDriverTripPage.tsx",
+  "../features/programmes/ProgrammeRunSheetPage.tsx",
+  "../features/programmes/ProgrammeHampersPage.tsx",
   "../features/forms/PublicFormPage.tsx",
   "../features/organizers/HostListingPage.tsx",
   "../features/host/HostApplicationPage.tsx",
@@ -121,6 +128,24 @@ const HouseholdRsvpPage = route(async () => ({
   default: (await import("../features/householdRsvp/HouseholdRsvpPage"))
     .HouseholdRsvpPage,
 }), "../features/householdRsvp/HouseholdRsvpPage", "HouseholdRsvpPage");
+const ProgrammeItineraryPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeItineraryPage")).ProgrammeItineraryPage,
+}), "../features/programmes/ProgrammeItineraryPage", "ProgrammeItineraryPage");
+const ProgrammeGuestIdsPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeGuestIdsPage")).ProgrammeGuestIdsPage,
+}), "../features/programmes/ProgrammeGuestIdsPage", "ProgrammeGuestIdsPage");
+const ProgrammeHotelHandoverPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeHotelHandoverPage")).ProgrammeHotelHandoverPage,
+}), "../features/programmes/ProgrammeHotelHandoverPage", "ProgrammeHotelHandoverPage");
+const ProgrammeDriverTripPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeDriverTripPage")).ProgrammeDriverTripPage,
+}), "../features/programmes/ProgrammeDriverTripPage", "ProgrammeDriverTripPage");
+const ProgrammeRunSheetPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeRunSheetPage")).ProgrammeRunSheetPage,
+}), "../features/programmes/ProgrammeRunSheetPage", "ProgrammeRunSheetPage");
+const ProgrammeHampersPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeHampersPage")).ProgrammeHampersPage,
+}), "../features/programmes/ProgrammeHampersPage", "ProgrammeHampersPage");
 const PublicFormPage = route(async () => ({
   default: (await import("../features/forms/PublicFormPage")).PublicFormPage,
 }), "../features/forms/PublicFormPage", "PublicFormPage");
@@ -192,7 +217,7 @@ function CanonicalMarketingRouteShell() {
       cityPlansFromListings(listings, city, activeMarket.cities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
   }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
-      page === "household_rsvp" ? page :
+      page === "household_rsvp" || page === "programme_link" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
     ? pageMetaForEvent(event)
@@ -212,8 +237,8 @@ function CanonicalMarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ?
-            "" : location.hash}
+          hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ||
+            page === "programme_link" ? "" : location.hash}
         />
         <Routes>
           <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
@@ -277,6 +302,30 @@ function CanonicalMarketingRouteShell() {
           <Route
             path={marketingRoutePaths.household_rsvp}
             element={<HouseholdRsvpRoute />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_itinerary}
+            element={<ProgrammeLinkRoute page={ProgrammeItineraryPage} param="householdToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_ids}
+            element={<ProgrammeLinkRoute page={ProgrammeGuestIdsPage} param="householdToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_hotel}
+            element={<ProgrammeLinkRoute page={ProgrammeHotelHandoverPage} param="linkToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_trip}
+            element={<ProgrammeLinkRoute page={ProgrammeDriverTripPage} param="linkToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_runsheet}
+            element={<ProgrammeLinkRoute page={ProgrammeRunSheetPage} param="linkToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_hampers}
+            element={<ProgrammeLinkRoute page={ProgrammeHampersPage} param="linkToken" />}
           />
           <Route
             path={marketingRoutePaths.public_form}
@@ -354,7 +403,7 @@ function CanonicalMarketingRouteShell() {
       {page === "event_runtime" || page === "event_rehearsal" ||
        page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
-       page === "household_rsvp" ||
+       page === "household_rsvp" || page === "programme_link" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>
@@ -395,6 +444,16 @@ function HouseholdRsvpRoute() {
   const {householdToken = ""} = useParams<{householdToken: string}>();
   return <HouseholdRsvpPage key={location.key}
     credential={householdRsvpCredential(householdToken)} />;
+}
+
+/** A programme link: the token comes from the path only, and each visit is its own page instance. */
+function ProgrammeLinkRoute({page: Page, param}: {
+  page: ComponentType<{credential: ProgrammeLinkCredential | null}>;
+  param: "householdToken" | "linkToken";
+}) {
+  const location = useLocation();
+  const params = useParams();
+  return <Page credential={programmeLinkCredential(params[param])} key={location.key} />;
 }
 
 function ClaimRoute() {

@@ -35,6 +35,12 @@ export const websiteQueryKeys = {
     submit: (instanceId: string) =>
       [...websiteQueryKeys.all, "household-rsvp", "submit", instanceId] as const,
   },
+  programmeLinks: {
+    read: (kind: string, instanceId: string) =>
+      [...websiteQueryKeys.all, "programme-links", "read", kind, instanceId] as const,
+    write: (kind: string, instanceId: string) =>
+      [...websiteQueryKeys.all, "programme-links", "write", kind, instanceId] as const,
+  },
   eventRehearsal: {
     guest: (publicRehearsalId: string) =>
       [...websiteQueryKeys.all, "event-rehearsal", "guest",

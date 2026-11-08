@@ -42,6 +42,10 @@ import type {GetProgramHotelHandoverCallablePayload} from
   "../shared/generated/getProgramHotelHandoverCallablePayload";
 import type {ProgramHotelHandoverCallableResponse} from
   "../shared/generated/programHotelHandoverCallableResponse";
+import type {GetProgramGuestIdStatusCallablePayload} from
+  "../shared/generated/getProgramGuestIdStatusCallablePayload";
+import type {ProgramGuestIdStatusCallableResponse} from
+  "../shared/generated/programGuestIdStatusCallableResponse";
 import {validateSubmitProgramGuestIdCallablePayload} from
   "../shared/generated/validators/submitProgramGuestIdInput";
 import {validateDecideProgramGuestIdCallablePayload} from
@@ -50,6 +54,8 @@ import {validateListProgramIdTrackerCallablePayload} from
   "../shared/generated/validators/listProgramIdTrackerInput";
 import {validateGetProgramHotelHandoverCallablePayload} from
   "../shared/generated/validators/getProgramHotelHandoverInput";
+import {validateGetProgramGuestIdStatusCallablePayload} from
+  "../shared/generated/validators/getProgramGuestIdStatusInput";
 
 import {validateProgramGuestIdCallableResponse} from
   "../shared/generated/validators/programGuestIdOutput";
@@ -59,6 +65,8 @@ import {validateProgramIdTrackerCallableResponse} from
   "../shared/generated/validators/programIdTrackerOutput";
 import {validateProgramHotelHandoverCallableResponse} from
   "../shared/generated/validators/programHotelHandoverOutput";
+import {validateProgramGuestIdStatusCallableResponse} from
+  "../shared/generated/validators/programGuestIdStatusOutput";
 // Guest IDs for the hotels (#1582 item 3). The household submits through
 // its RSVP link; guest relations check each one; the hotel front desk
 // reads accepted IDs through a hotelHandover link. Only the last four
@@ -184,6 +192,70 @@ export async function submitProgramGuestIdHandler(
   });
   await deleteProgramFiles(bucket, replaced);
   return result;
+}
+
+/**
+ * The household's own ID page: each member's name and where their ID
+ * stands, through the household RSVP link. Nothing else about the ID (kind,
+ * number, images, the planner's note) leaves the server.
+ */
+export async function getProgramGuestIdStatusHandler(
+  request: CallableRequest<unknown>,
+  deps: GuestIdDeps = defaultProgramAssetDeps,
+): Promise<ProgramGuestIdStatusCallableResponse> {
+  const data = validateCallableWithAjv<GetProgramGuestIdStatusCallablePayload>(
+    request, validateGetProgramGuestIdStatusCallablePayload);
+  const verified = verifyHouseholdToken(data.token, deps.secret(),
+    deps.now().toMillis());
+  if (!verified.ok) {
+    throw new HttpsError("unauthenticated",
+      "This link is invalid or has expired.");
+  }
+  const {programId, householdId} = verified.payload;
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, `household:${householdId}`,
+    "getProgramGuestIdStatus", {maxRequests: 120, windowMs: 60 * 1000});
+  const [programSnap, householdSnap] = await Promise.all([
+    db.collection("organizerPrograms").doc(programId).get(),
+    db.collection("programHouseholds").doc(householdId).get(),
+  ]);
+  const program = programSnap.data() as Record<string, unknown> | undefined;
+  const household = householdSnap.data() as Record<string, unknown> |
+    undefined;
+  if (!program || program.status === "archived" || !household ||
+      household.programId !== programId ||
+      household.organizerId !== program.organizerId) {
+    throw new HttpsError("not-found", "This page is no longer available.");
+  }
+  const memberIds = (Array.isArray(household.memberGuestIds) ?
+    household.memberGuestIds : []).filter((id): id is string =>
+    typeof id === "string" && id !== "").slice(0, 50);
+  const [guestSnaps, idSnaps] = await Promise.all([
+    Promise.all(memberIds.map((guestId) =>
+      db.collection("programGuests").doc(guestId).get())),
+    Promise.all(memberIds.map((guestId) =>
+      db.collection(PROGRAM_GUEST_IDS_COLLECTION)
+        .doc(programGuestIdDocId(programId, guestId)).get())),
+  ]);
+  const members: ProgramGuestIdStatusCallableResponse["members"] = [];
+  memberIds.forEach((guestId, index) => {
+    const guest = guestSnaps[index].data() as Record<string, unknown> |
+      undefined;
+    if (!guest || guest.programId !== programId ||
+        guest.organizerId !== program.organizerId || guest.anonymizedAt) {
+      return;
+    }
+    const id = idSnaps[index].data() as ProgramGuestIdDocument | undefined;
+    const own = id?.programId === programId && id.householdId === householdId;
+    members.push({guestId, displayName: String(guest.displayName ?? ""),
+      status: own ? id.status : "missing"});
+  });
+  return requireValid(validateProgramGuestIdStatusCallableResponse, {
+    programId,
+    programTitle: String(program.title ?? ""),
+    householdLabel: String(household.label ?? ""),
+    members,
+  }, "guest ID status");
 }
 
 /** Guest relations accept an ID or ask the household again. */
@@ -481,6 +553,10 @@ const guestIdLimits = {timeoutSeconds: 60, maxInstances: 20};
 export const submitProgramGuestId = onCall(
   appCheckCallableOptionsWithSecrets([householdRsvpSecret], guestIdLimits),
   (request) => submitProgramGuestIdHandler(request),
+);
+export const getProgramGuestIdStatus = onCall(
+  appCheckCallableOptionsWithSecrets([householdRsvpSecret], guestIdLimits),
+  (request) => getProgramGuestIdStatusHandler(request),
 );
 export const decideProgramGuestId = onCall(
   appCheckCallableOptionsWithLimits(guestIdLimits),

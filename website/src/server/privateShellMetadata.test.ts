@@ -15,6 +15,9 @@ it("treats only the shell route itself as the terminal rewrite target", () => {
 it("maps credential routes to a public family enum only", () => {
   expect(privateShellFamily("/f/secret-token/")).toBe("f");
   expect(privateShellFamily("/rsvp/abc/")).toBe("rsvp");
+  for (const family of ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers"]) {
+    expect(privateShellFamily(`/${family}/signed.token/`)).toBe(family);
+  }
   expect(privateShellFamily("/offer/")).toBe("offer");
   expect(privateShellFamily("/offer/abc/")).toBeNull();
   expect(privateShellFamily("/private-shell/")).toBeNull();
@@ -26,6 +29,9 @@ it("writes family metadata and falls back to the bare title for unknown families
   expect(form).toMatch(new RegExp(`<meta property="og:image" content="${origin}/assets/og/form\\.png\\?v=[0-9a-f]{12}">`));
   expect(form).toContain('<meta name="twitter:card" content="summary_large_image">');
   expect(privateShellHead("rsvp")).toMatch(new RegExp(`og:image" content="${origin}/assets/og/default\\.png`));
+  // Every programme link shares one family title; no token or guest detail enters it.
+  expect(privateShellHead("hotel")).toBe(privateShellHead("trip"));
+  expect(privateShellHead("hotel").startsWith("<title>Your wedding link | Catch</title>")).toBe(true);
   expect(privateShellHead(null)).toBe("<title>Catch</title>");
   expect(privateShellHead("constructor")).toBe("<title>Catch</title>");
 });

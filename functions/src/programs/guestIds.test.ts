@@ -11,6 +11,7 @@ import {createProgramAssetUploadHandler} from "./programAssets";
 import {FakeProgramBucket} from "./programAssetFixture";
 import {
   decideProgramGuestIdHandler,
+  getProgramGuestIdStatusHandler,
   getProgramHotelHandoverHandler,
   listProgramIdTrackerHandler,
   submitProgramGuestIdHandler,
@@ -22,6 +23,8 @@ const validateTracker =
   contractValidator("ProgramIdTrackerCallableResponse");
 const validateHandover =
   contractValidator("ProgramHotelHandoverCallableResponse");
+const validateStatus =
+  contractValidator("ProgramGuestIdStatusCallableResponse");
 
 const SECRET = "test-secret";
 const code = (expected: string) => (err: unknown) =>
@@ -229,4 +232,57 @@ test("only guest relations mint the hotel link; hotel desk mints porters",
     await assert.rejects(issueProgramWebLinkHandler(request({
       programId: "program-1", kind: "hamperPorter", subjectId: "hotel-x"},
     "manager-1"), ctx.assetDeps), code("not-found"));
+  });
+
+test("the household sees each member's ID status, names and status only",
+  async () => {
+    const ctx = setup();
+    const before = await getProgramGuestIdStatusHandler(
+      request({token: ctx.token}, "anyone"), ctx.assetDeps);
+    assert.equal(validateStatus(before), true,
+      JSON.stringify(validateStatus.errors));
+    assert.equal(before.householdLabel, "Mehra family");
+    assert.deepEqual(before.members.map((member) => member.status),
+      ["missing", "missing"]);
+
+    const front = await upload(ctx, "front-request-8");
+    const saved = await submitProgramGuestIdHandler(request({
+      token: ctx.token, guestId: "guest-1", idKind: "aadhaar",
+      numberLast4: "4821", frontAssetId: front.assetId,
+      requestId: "submit-request-8"}, "anyone"), ctx.assetDeps);
+    const submitted = await getProgramGuestIdStatusHandler(
+      request({token: ctx.token}, "anyone"), ctx.assetDeps);
+    assert.deepEqual(submitted.members.map((member) =>
+      [member.guestId, member.status]), [["guest-1", "submitted"],
+      ["guest-2", "missing"]]);
+    // Nothing about the ID itself is in the reply.
+    assert.equal(JSON.stringify(submitted).includes("4821"), false);
+    assert.deepEqual(Object.keys(submitted.members[0]).sort(),
+      ["displayName", "guestId", "status"]);
+
+    await decideProgramGuestIdHandler(request({programId: "program-1",
+      guestId: "guest-1", decision: "askAgain", note: "Too dark",
+      expectedRevision: saved.revision, requestId: "decide-request-8"},
+    "manager-1"), ctx.assetDeps);
+    const asked = await getProgramGuestIdStatusHandler(
+      request({token: ctx.token}, "anyone"), ctx.assetDeps);
+    assert.equal(asked.members[0].status, "askedAgain");
+    assert.equal(JSON.stringify(asked).includes("Too dark"), false);
+  });
+
+test("the ID status read refuses other links and other households",
+  async () => {
+    const ctx = setup();
+    const porter = mintWebLinkToken({kind: "hamperPorter",
+      programId: "program-1", subjectId: "hotel-1",
+      expiresAtMillis: now.toMillis() + 1000}, SECRET);
+    await assert.rejects(getProgramGuestIdStatusHandler(
+      request({token: porter}, "anyone"), ctx.assetDeps),
+    code("unauthenticated"));
+    const stranger = mintHouseholdToken({programId: "program-1",
+      householdId: "house-9", expiresAtMillis: now.toMillis() + 1000},
+    SECRET);
+    await assert.rejects(getProgramGuestIdStatusHandler(
+      request({token: stranger}, "anyone"), ctx.assetDeps),
+    code("not-found"));
   });

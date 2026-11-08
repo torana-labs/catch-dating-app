@@ -344,6 +344,200 @@
       }
     },
     {
+      "id": "programme_itinerary",
+      "kind": "clientDynamic",
+      "pathPattern": "/itinerary/:householdToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeItineraryPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "A household's weekend (RbProgItinerary): the functions they said yes or maybe to, by day, the journeys they sent, where they stay, Add to calendar and Change our reply. Reads the household RSVP view by the household's signed path token. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "loading",
+            "ready",
+            "empty",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "programme_ids",
+      "kind": "clientDynamic",
+      "pathPattern": "/ids/:householdToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeGuestIdsPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The household's IDs for the hotel (RbProgIdGuest): each member with Added or Add (getProgramGuestIdStatus, names and status only), and one member's kind of ID with front and back photos, uploaded through createProgramAssetUpload's signed POST and saved with submitProgramGuestId. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "saving",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "saving",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "programme_hotel",
+      "kind": "clientDynamic",
+      "pathPattern": "/hotel/:linkToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeHotelHandoverPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The hotel front desk's rooming list with ID status (RbProgHotelHandover, 1280) by a hotelHandover link: four figures, the rooms table with accepted ID photos signed for minutes, Download the rooming list (CSV made in the browser) and the privacy notice. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "programme_trip",
+      "kind": "clientDynamic",
+      "pathPattern": "/trip/:linkToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeDriverTripPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "A driver's trip (RbProgDriver) by a driverTrip link: trip, car and plate, pickup and drop, passengers with party sizes and bags, Directions by place names. No phone numbers or flights in the read. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "programme_runsheet",
+      "kind": "clientDynamic",
+      "pathPattern": "/runsheet/:linkToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeRunSheetPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "A vendor's view-only run sheet (RbProgRunSheet) by a vendorRunSheet link: the programme's functions by day marked done, now, next and later, and a car vendor's trips. No guest names or contacts in the read. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "programme_hampers",
+      "kind": "clientDynamic",
+      "pathPattern": "/hampers/:linkToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeHampersPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The porters' welcome hampers (RbProgHampers) by a hamperPorter link: rooms done over a meter, a row per room with Done or Placed, the photos, and Placed · take a photo, saved through upsertProgramHamper with a signed photo upload. Room labels and guest counts only. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "picked",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "picked",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "public_form",
       "kind": "clientDynamic",
       "pathPattern": "/f/:publicFormId/",
