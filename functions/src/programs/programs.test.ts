@@ -171,6 +171,32 @@ test("branding is set, read back and cleared through the update", async () => {
   assert.equal(cleared.program.branding, undefined);
 });
 
+test("a wedding binds its own WhatsApp number of the same organiser",
+  async () => {
+    const db = new FakeFirestore({...baseSeed(),
+      "organizerSenderConnections/conn-own": {organizerId: "org-1",
+        channel: "whatsapp", status: "pending"},
+      "organizerSenderConnections/conn-other": {organizerId: "org-2",
+        channel: "whatsapp", status: "active"},
+    });
+    await assert.rejects(updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3,
+      whatsappSenderConnectionId: "conn-other",
+    }, "manager-1"), deps(db)), code("failed-precondition"));
+    const bound = await updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3,
+      whatsappSenderConnectionId: "conn-own",
+    }, "manager-1"), deps(db));
+    assert.equal(db.getDoc("organizerPrograms/program-1")!
+      .whatsappSenderConnectionId, "conn-own");
+    await updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: bound.revision,
+      whatsappSenderConnectionId: null,
+    }, "manager-1"), deps(db));
+    assert.equal(db.getDoc("organizerPrograms/program-1")!
+      .whatsappSenderConnectionId, null);
+  });
+
 test("organizer-only managers keep setup but have no archive or restore action",
   async () => {
     const db = new FakeFirestore(baseSeed());
