@@ -693,6 +693,62 @@ final class CatchField<T> extends StatefulWidget
     errorText: errorText,
   );
 
+  /// A disclosure holding one CatchSliderInput: [valueLabelBuilder] writes
+  /// the value in the collapsed row and over the track ("4 rounds").
+  factory CatchField.slider({
+    required CatchFieldCopy copy,
+    Key? key,
+    required String title,
+    CatchContractFieldConstraints? contract,
+    required double value,
+    required ValueChanged<double>? onChanged,
+    ValueChanged<double>? onChangeEnd,
+    double min = 0,
+    double max = 100,
+    int? divisions,
+    String Function(double value)? valueLabelBuilder,
+    SemanticFormatterCallback? semanticValueBuilder,
+    CatchFieldMode disclosureMode = CatchFieldMode.localCollapsed,
+    ValueChanged<bool>? onOpenChanged,
+    VoidCallback? onCancel,
+    VoidCallback? onSubmit,
+    CatchFieldStatus status = CatchFieldStatus.idle,
+    Set<WidgetState> states = const <WidgetState>{},
+    IconData? icon,
+    Color? iconColor,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    String? error,
+    String? errorText,
+  }) => CatchField<T>.control(
+    copy: copy,
+    key: key,
+    title: title,
+    contract: contract,
+    body: valueLabelBuilder?.call(value),
+    disclosureMode: disclosureMode,
+    onOpenChanged: onOpenChanged,
+    onCancel: onCancel,
+    onSubmit: onSubmit,
+    status: status,
+    states: states,
+    icon: icon,
+    iconColor: iconColor,
+    tone: tone,
+    error: error,
+    errorText: errorText,
+    child: CatchSliderInput(
+      value: value,
+      onChanged: status == CatchFieldStatus.saving ? null : onChanged,
+      onChangeEnd: onChangeEnd,
+      min: min,
+      max: max,
+      divisions: divisions,
+      label: title,
+      valueLabelBuilder: valueLabelBuilder,
+      semanticValueBuilder: semanticValueBuilder,
+    ),
+  );
+
   /// An explicit-save row with a stable label/value lane and animated content.
   /// This primitive owns edit affordances, focus, typography, and actions.
   /// Content and commit actions animate below the row.
