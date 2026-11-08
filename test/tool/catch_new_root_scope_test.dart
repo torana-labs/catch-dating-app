@@ -39,6 +39,8 @@ void main() {
       'lib/hosts/create/create_basics_body.dart',
       'lib/hosts/onboarding/sign_in_body.dart',
       'lib/hosts/door/door_body.dart',
+      'lib/hosts/insights/host_insights_body.dart',
+      'lib/hosts/live/live_body.dart',
       'tool/catch_ui_lints_probe/run.x/1/apps/host/lib/a.dart',
       'tool/catch_ui_lints_probe/run.x/1/arch/lib/pages/a/a.dart',
     ]) {
@@ -84,6 +86,7 @@ void main() {
     expect(zero('lib/hosts/onboarding/onboarding_controller.g.dart'), isFalse);
     expect(zero('lib/hosts/door/door_screen.dart'), isTrue);
     expect(zero('lib/hosts/door/door_controller.g.dart'), isFalse);
+    expect(zero('lib/hosts/insights/host_event_report_screen.dart'), isTrue);
     for (final file in newRootLegacyFiles) {
       expect(zero(file), isFalse, reason: file);
       expect(listed(file), isTrue, reason: file);

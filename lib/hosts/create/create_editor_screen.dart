@@ -5,7 +5,7 @@ import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
-import 'package:catch_dating_app/hosts/create/widgets/create_editor_panes.dart';
+import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -97,7 +97,7 @@ class CreateEditorScreen extends StatelessWidget {
           pattern: CatchPaneLayoutMode.editor,
           children: [
             form,
-            CreatePreviewPane(state: state, stillToSet: stillToSet),
+            CreateEditorPreview(state: state, stillToSet: stillToSet),
             CreateStepRail(state: state, onStep: handlers.onStep),
           ],
         ),

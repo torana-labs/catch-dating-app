@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
-import 'package:catch_dating_app/hosts/create/widgets/create_step_frame.dart';
+import 'package:catch_dating_app/hosts/create/widgets/create_step_layout.dart';
 import 'package:flutter/widgets.dart';
 
 /// Step four on a phone: Plan the night, with Publish, and the step sheet
@@ -32,7 +32,7 @@ class CreatePlanScreen extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => CreateStepFrame(
+  Widget build(BuildContext context) => CreateStepLayout(
     state: state,
     handlers: handlers,
     body: bodyFor(state, handlers),

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
-import 'package:catch_dating_app/hosts/create/widgets/create_step_frame.dart';
+import 'package:catch_dating_app/hosts/create/widgets/create_step_layout.dart';
 import 'package:flutter/widgets.dart';
 
 /// Step two on a phone: When and where, with the calendar sheet over it
@@ -46,7 +46,7 @@ class CreateWhenScreen extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => CreateStepFrame(
+  Widget build(BuildContext context) => CreateStepLayout(
     state: state,
     handlers: handlers,
     body: bodyFor(
