@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.2.3
-updated: 2026-11-02
+version: 3.3.0
+updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -2353,6 +2353,132 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   host cancellation refund behavior.
 - [ ] Record the smoke evidence in the release notes before enabling production
   host-created international paid events.
+
+## Host Self-Serve Billing Go-Live
+
+Every production step the owner must take before a new host can onboard, run
+the free trial, connect Razorpay, sell paid events, and pay Catch, with nothing
+bought inside the Host app. The code is in the self-serve billing PRs
+(trial status, rolling cycles, tools-only, bill delivery, revoked Razorpay
+access, store-safe Host app, web billing portal). None of these steps can be
+done by code or an agent: each changes deployed configuration, a secret or a
+provider account. Do them per environment, `staging` before `prod`, and record
+the evidence in the release ticket.
+
+### 1. Razorpay partner application (OAuth: hosts collect ticket money)
+
+- [ ] In Razorpay → Partners → Applications → the Catch application, switch
+  to **live** credentials once Razorpay approves the Technology Partnership
+  (#1039, #1125).
+- [ ] Store a new version of the `FORM_RAZORPAY_PARTNER_CONFIG` secret with
+  schema `catch.form-razorpay-partner/v2`:
+  `{schema, clientId, clientSecret, mode: "live", credentialSecretId,
+  webhookSecret}`. The newest version is read at runtime (60 s cache); no
+  deploy is needed. A v1 version (no `webhookSecret`) still works for OAuth and
+  checkout, but the revocation webhook then answers 503.
+- [ ] On the same application, "Manage Live Webhook": URL
+  `https://asia-south1-<project>.cloudfunctions.net/organizerRazorpayPartnerWebhook`,
+  event `account.app.authorization_revoked`, secret = the `webhookSecret` above
+  (#1255). Enter the secret only in Razorpay and Secret Manager, never in chat
+  or a ticket.
+- [ ] Confirm the OAuth redirect URI registered on the application is
+  `https://asia-south1-<project>.cloudfunctions.net/organizerFormPaymentOauthCallback`.
+
+### 2. Payment routing policy
+
+- [ ] Admin → Settings → Payments → routing: set `eventAdmission`, `formFee`
+  and `hostMembership` to `razorpayOAuth` in **live** mode, with a reason.
+  Route (`razorpayRoute`) is not pursued (#1125); leave it unselected.
+- [ ] Verify with a test organizer: Host app → Organizer → Payments → Connect
+  Razorpay completes, the tile shows Connected, and a paid event's checkout key
+  is the organizer's OAuth public token.
+
+### 3. Commercial terms
+
+- [ ] Admin → Settings → Payments → commercial terms: review the preview of the
+  owner's 30 Oct decision (5% net of refunds, ₹10,000 cap per 30-day cycle
+  before GST, 30-day trial from the first event, ₹5,000 tools-only fee, host
+  bears gateway fees, `cycleAnchor: trialEnd`) and **save** it with a reason,
+  creating `commercialTerms/platform`. Until then payments carry no terms
+  snapshot, the trial reads "unconfigured" and cycle bills are not made.
+- [ ] Check `moneySettings/platform` (Admin → Settings → Payments → money):
+  `gstRegistered` stays **off** until Torana holds a GSTIN (#1088). Turning it
+  on adds GST to new bills only; Razorpay Invoices then need tax lines before
+  they are issued (a follow-up).
+
+### 4. Catch's own Razorpay account (Catch is paid)
+
+- [ ] Replace the test-mode `RAZORPAY_PUBLIC_KEY_ID` parameter and
+  `RAZORPAY_KEY_SECRET` secret with Catch's **live** keys per project (see
+  One-Time Environment Setup above: non-prod/prod still reuse test keys).
+- [ ] Enable Invoices and Payment Links on Catch's account. Bills are Razorpay
+  Invoices (payment link as fallback); tools-only purchases are payment links.
+- [ ] Add a webhook on Catch's account to
+  `https://asia-south1-<project>.cloudfunctions.net/razorpayWebhook` with events
+  `invoice.paid`, `payment_link.paid` (and the existing `payment.captured`,
+  `payment.failed`), and replace the placeholder `RAZORPAY_WEBHOOK_SECRET`
+  version (One-Time Environment Setup above) with that webhook's secret.
+- [ ] Test mode first: send one bill, pay its invoice with a Razorpay test card,
+  and confirm Admin → Money shows it paid; buy tools-only on the billing
+  website, pay the link, and confirm the plan reads active.
+
+### 5. Getting bills to hosts
+
+- [ ] Create a Resend (or existing transactional email) API key for the bills
+  sender, store it as a Secret Manager secret in the
+  `catch.transactional-email-credential/v1` shape (`schema`, `provider:
+  "resend"`, `accountId`, `apiKey`), and note its exact version resource.
+- [ ] Write `billingNoticeSettings/platform`:
+  `{schemaVersion: 1, email: {provider: "resend", accountId, from:
+  "billing@notify.catchdates.com", credentialVersion: "projects/<project>/secrets/<name>/versions/<n>"},
+  updatedAtMillis}`. Without it, bill emails are recorded `notConfigured` and
+  only the push goes out.
+- [ ] Verify the sender domain in Resend. Send one test bill to a test
+  organizer whose owner has a verified email, and confirm the email (invoice
+  link, amount, "No GST is charged"), the Host app push ("Catch bill issued",
+  no amount) and `organizerBillNotices/{billId}_issued` reading `accepted` and
+  `sent`.
+- [ ] Owner decision: Catch→host WhatsApp is not active (`docs/host_product.md`);
+  bills do not go by WhatsApp until its first purpose, sender and consent scope
+  are decided.
+
+### 6. Billing cycles and the switch from monthly bills
+
+- [ ] Before the deploy that removes `generateOrganizerBillsMonthly`, confirm
+  October 2026's calendar-month bills exist (Admin → Money → Bills → October).
+  Cycle bills never count a payment before the end of an organizer's last month
+  bill or 1 Nov 2026 IST, so nothing is billed twice.
+- [ ] After deploy, confirm `generateOrganizerCycleBillsDaily` runs at 06:15
+  IST and that the first cycle bills appear as "To send" under the month their
+  cycle ends. Review and send them in Admin → Money; sending issues the invoice
+  and the email.
+
+### 7. Store-safe Host app
+
+- [ ] Release a Host app build from a commit that includes the store-safe
+  Payments screen (no prices, no Pay, no "Compare plans"). Keep the review
+  notes in `docs/store/catch_host/review_notes.md` in step with App Store
+  Connect.
+
+### 8. Acceptance runs still missing (#1125)
+
+These need real devices and test-mode merchants; record each with build,
+environment and outcome:
+
+- [ ] Host onboarding on iOS and Android: sign up, create the organizer,
+  connect Razorpay (test), first event, trial status reads "Free trial · 30 days
+  left" after the first event.
+- [ ] Guest paid booking on iOS, Android and the website against a test
+  organizer: success, cancel, refund; Razorpay dashboard shows the organizer as
+  merchant.
+- [ ] Revocation: in the test merchant's Razorpay dashboard, revoke the Catch
+  app; the connection reads "Needs reconnecting" in the Host app, the owner gets
+  the push, and a guest checkout says paid booking is unavailable with nothing
+  charged. Reconnect restores checkout.
+- [ ] Billing: a test organizer past its trial gets a cycle bill, the email and
+  push, pays the invoice, and the bill reads Paid in Admin and the Host app.
+- [ ] Tools-only: buy on the billing website, pay, confirm the next cycle bills
+  ₹5,000 and no commission; cancel and confirm the following cycle is ticketing.
 
 ## Firebase Backend Delivery Order
 
