@@ -1,3 +1,4 @@
+import {loadOrganizerMeetingHistory} from "./organizerMeetingHistory";
 import {
   DOUBLES_BENCH_NOTE,
   doublesRoundsFromPlannedRounds,
@@ -371,7 +372,14 @@ export async function prepareEventSuccessRotationDraft(
     event.organizerId,
     plan
   );
+  const history = await loadOrganizerMeetingHistory(
+    db,
+    event.organizerId,
+    participants.map((participant) => participant.uid),
+    deps.nowMillis?.() ?? Date.now()
+  );
   const rounds = buildRotationRounds({
+    history,
     participants,
     blockedPairs,
     eventStartMillis: event.startTime.toMillis(),
@@ -1029,6 +1037,9 @@ function buildRotationRounds(params: {
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
     softFeatures: params.softFeatures,
+    // Only when someone here met before at this organiser's events; the
+    // engine routes a request with history to the shape planner.
+    ...(params.history === undefined ? {} : {history: params.history}),
   }).rotationRounds.map((round) => ({
     roundIndex: round.roundIndex,
     pairs: round.pairs.map(toRotationPair),

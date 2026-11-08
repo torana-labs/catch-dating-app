@@ -698,6 +698,57 @@ test("does not prepare a phantom round after the schedule ends", async () => {
   );
 });
 
+test("a recurring event avoids pairs from the organizer's recent events",
+  async () => {
+    const recent = Date.parse("2026-05-14T08:30:00.000Z");
+    const {firestore, deps} = harness({
+      "eventSuccessPlans/event-1": {
+        eventId: "event-1",
+        organizerId: "club-1",
+        selectedModuleIds: ["guided_rotations"],
+        liveControlRevision: 0,
+        assignmentDraftRevision: 0,
+        publishedRotationRoundIndex: -1,
+        structureConfig: {
+          unitKind: "pairs",
+          unitSize: 2,
+          rotationIntervalMinutes: 15,
+          revealCountdownSeconds: 10,
+        },
+      },
+      // Without history, man-1 partners man-2 in the first round.
+      "organizerMeetingHistory/club-1_man-1": {organizerId: "club-1",
+        uid: "man-1", peers: {"man-2": {meetings: 1,
+          lastMetAtMs: recent}}},
+      "organizerMeetingHistory/club-1_man-2": {organizerId: "club-1",
+        uid: "man-2", peers: {"man-1": {meetings: 1,
+          lastMetAtMs: recent}}},
+      ...participation("man-1"),
+      ...participation("man-2"),
+      ...participation("woman-1"),
+      ...participation("woman-2"),
+      "users/man-1": user("man", ["woman"]),
+      "users/man-2": user("man", ["woman"]),
+      "users/woman-1": user("woman", ["man"]),
+      "users/woman-2": user("woman", ["man"]),
+    });
+    deps.nowMillis = () => Date.parse("2026-05-21T07:00:00.000Z");
+
+    await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
+
+    const manOne = firestore.get(
+      "eventSuccessAssignments/event-1_guided_rotations_man-1"
+    ) as FakeData;
+    const slots = manOne.rotationSlots as Array<Record<string, unknown>>;
+    const first = slots.find((slot) => slot.roundIndex === 0);
+    assert.ok(first);
+    assert.notEqual(first.peerUid, "man-2",
+      "last week's pair does not meet again in the first round");
+  });
+
 test("uses the saved event-structure rotation cadence", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {

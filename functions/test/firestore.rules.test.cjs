@@ -2222,6 +2222,25 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps organizer meeting history server-only", async () => {
+      await seed(["organizerMeetingHistory", "organizer-1_guest-1"], {
+        organizerId: "organizer-1", uid: "guest-1",
+        peers: {"guest-2": {meetings: 1, lastMetAtMs: 1}},
+      });
+      for (const db of [authedDb("guest-1"), authedDb("owner-1"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        const ref = doc(db, "organizerMeetingHistory", "organizer-1_guest-1");
+        await assertFails(getDoc(ref));
+        await assertFails(updateDoc(ref, {peers: {}}));
+        await assertFails(deleteDoc(ref));
+        await assertFails(setDoc(
+          doc(db, "organizerMeetingHistory", "organizer-1_forged"),
+          {organizerId: "organizer-1", uid: "forged", peers: {}}
+        ));
+        await assertFails(getDocs(collection(db, "organizerMeetingHistory")));
+      }
+    });
+
     it("keeps organizer insights and follower message quotas server-only", async () => {
       for (const [collectionName, documentId] of [
         ["organizerInsights", "organizer-1_20261107"],

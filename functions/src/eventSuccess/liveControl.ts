@@ -1,6 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import type {
   EventAttendeeDocument,
   EventDocument,
@@ -36,6 +37,7 @@ import {
 import {recheckAssignmentFeatureSnapshots} from
   "./assignmentFeatureConsent";
 import {buildAssignmentFeatureAudit} from "./assignmentFeatureAudit";
+import {recordCompletedEventMeetings} from "./organizerMeetingHistory";
 import {validateAssignmentFeatureRules} from
   "./assignmentFeatureScoring";
 import type {AssignmentFeatureRule, EventAssignmentFeatureSnapshot} from
@@ -48,6 +50,7 @@ interface EventSuccessLiveControlDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
   checkRateLimit?: typeof defaultCheckRateLimit;
+  recordMeetings?: typeof recordCompletedEventMeetings;
 }
 
 interface LivePlanDocument {
@@ -406,7 +409,9 @@ export async function controlEventSuccessLiveHandler(
   }
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
 
-  return db.runTransaction(async (transaction) => {
+  let completedPublishedRoundIndex: number | null = null;
+  const result = await db.runTransaction(async (transaction) => {
+    completedPublishedRoundIndex = null;
     const planSnap = await transaction.get(planRef);
     if (!planSnap.exists) {
       throw new HttpsError("failed-precondition",
@@ -433,6 +438,8 @@ export async function controlEventSuccessLiveHandler(
     }
     if (payload.action === "complete") {
       update.completedAt = deps.serverTimestamp();
+      completedPublishedRoundIndex =
+        integerOr(plan.publishedRotationRoundIndex, -1);
     }
     update.updatedAt = deps.serverTimestamp();
     transaction.update(planRef, update);
@@ -441,6 +448,25 @@ export async function controlEventSuccessLiveHandler(
       revision: resolution.update.liveControlRevision!,
     };
   });
+  if (completedPublishedRoundIndex !== null && event.organizerId) {
+    // Best effort after the guide completes: a weekly event then avoids
+    // tonight's pairs. Completion never fails because history could not
+    // be written.
+    try {
+      await (deps.recordMeetings ?? recordCompletedEventMeetings)(db, {
+        eventId: payload.eventId,
+        organizerId: event.organizerId,
+        publishedRoundIndex: completedPublishedRoundIndex,
+        nowMillis: deps.nowMillis(),
+      });
+    } catch (error) {
+      logger.warn("Could not record organizer meeting history", {
+        eventId: payload.eventId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return result;
 }
 
 export const controlEventSuccessLive = onCall(

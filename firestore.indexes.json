@@ -7262,6 +7262,17 @@
       "indexes": []
     },
     {
+      "collectionGroup": "organizerMeetingHistory",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "organizerMeetingHistory",
+      "fieldPath": "peers",
+      "indexes": []
+    },
+    {
       "collectionGroup": "organizerFormAggregateEvents",
       "fieldPath": "expiresAt",
       "ttl": true,

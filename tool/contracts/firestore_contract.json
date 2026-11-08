@@ -4546,6 +4546,27 @@
       "exportedFunctions": []
     },
     {
+      "id": "organizerMeetingHistory",
+      "path": "organizerMeetingHistory/{historyId}",
+      "rulesMatch": "/organizerMeetingHistory/{historyId}",
+      "typescriptInterface": "OrganizerMeetingHistoryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer meeting history server-only"
+      ],
+      "owner": "Event Success live control and rotation callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "controlEventSuccessLive",
+        "generateEventSuccessRotations"
+      ],
+      "migrationNotes": [
+        "Private per organiser and guest: peer uids with meeting counts and the last meeting time. Entries older than 90 days are ignored; expiresAt drives TTL deletion."
+      ]
+    },
+    {
       "id": "organizerTrackingSettings",
       "path": "organizerTrackingSettings/{organizerId}",
       "rulesMatch": "/organizerTrackingSettings/{organizerId}",
