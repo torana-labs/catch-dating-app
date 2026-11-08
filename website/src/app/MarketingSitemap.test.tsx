@@ -57,6 +57,14 @@ describe("consolidated public sitemap", () => {
     expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=partner", hash: "#features"})).toBeNull();
     expect(getPageKey("/host/unknown/")).toBe("not_found");
   });
+  it("routes the programme's token links under one noindex page key", () => {
+    for (const pathname of ["/itinerary/t.s/", "/ids/t.s/", "/hotel/t.s/", "/trip/t.s/", "/runsheet/t.s/", "/hampers/t.s/"]) {
+      expect(getPageKey(pathname)).toBe("programme_link");
+      expect(retiredMarketingDestination({pathname, search: "", hash: ""})).toBeNull();
+    }
+    expect(pageMeta.programme_link.robots).toBe("noindex, follow");
+    expect(getPageKey("/hotels/")).toBe("not_found");
+  });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
     for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/afterfly/", "/events/id", "/claim/real-id"]) {
       expect(retiredMarketingDestination({pathname, search: "?token=private", hash: "#credential"})).toBeNull();
