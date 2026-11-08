@@ -264,6 +264,17 @@ class HostShellBackend {
         ...crmEmptyAudiencePageData(),
         'organizerId': organizerId,
       },
+      // People's saved groups and Messages' automations: none yet.
+      'listOrganizerSavedAudiences' => {
+        'organizerId': organizerId,
+        'audiences': const <Object?>[],
+        'nextCursor': null,
+      },
+      'listOrganizerFormAutomationRuns' => {
+        'rules': const <Object?>[],
+        'runs': const <Object?>[],
+        'nextCursor': null,
+      },
       'listOrganizerWhatsappThreads' => {
         'organizerId': organizerId,
         'threads': const <Object?>[],
