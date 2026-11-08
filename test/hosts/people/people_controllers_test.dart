@@ -29,6 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 import 'people_fixtures.dart';
 
 const _org = 'organizer-1';
@@ -118,11 +119,7 @@ HostSavedAudienceSummary _summary(String id, String status) =>
       updatedAt: DateTime(2026, 10),
     );
 
-Future<void> _settle(ProviderContainer container) async {
-  for (var i = 0; i < 6; i++) {
-    await Future<void>.delayed(Duration.zero);
-  }
-}
+Future<void> _settle(ProviderContainer container) => flushTestEventQueue();
 
 HostWhatsappThreadSummary _whatsapp(
   String id, {

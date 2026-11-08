@@ -11,6 +11,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
 import 'people_fixtures.dart';
 import 'people_test_pump.dart';
 
@@ -101,9 +102,9 @@ void main() {
     expect(find.text('Event'), findsOneWidget);
 
     await tester.tap(find.text('Change'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Booked and waitlist'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(audiences, [HostComposeAudience.everyone]);
   });
 
