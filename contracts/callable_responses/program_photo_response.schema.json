@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_photo_response.schema.json",
+  "title": "ProgramPhotoCallableResponse",
+  "description": "A programme photo after an add or a change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "photoId",
+    "functionId",
+    "status",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "photoId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z]+_[a-f0-9]{40}$"
+    },
+    "functionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "hidden"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

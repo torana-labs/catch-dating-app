@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_photos_response.schema.json",
+  "title": "ProgramPhotosCallableResponse",
+  "description": "Photo albums per function in schedule order, the photos of the asked album (newest first, 60 at most) and the guest page cover. Image URLs are signed for a few minutes and expire at urlsExpireAtMillis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "coverUrl",
+    "albums",
+    "photos",
+    "urlsExpireAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "coverUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 4096
+    },
+    "albums": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "startsAtMillis",
+          "photoCount",
+          "coverUrl"
+        ],
+        "properties": {
+          "functionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "startsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "photoCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "coverUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          }
+        }
+      }
+    },
+    "photos": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "photoId",
+          "functionId",
+          "caption",
+          "status",
+          "url",
+          "createdAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z]+_[a-f0-9]{40}$"
+          },
+          "functionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "caption": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "visible",
+              "hidden"
+            ]
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "urlsExpireAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

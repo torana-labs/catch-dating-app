@@ -3,9 +3,12 @@ import 'package:catch_dating_app/contexts/programmes/data/program_projection_lif
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_departures_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_photo_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -15,6 +18,10 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_work_repository.g.dart';
+part 'program_bills_repository.dart';
+part 'program_hampers_repository.dart';
+part 'program_ids_repository.dart';
+part 'program_photos_repository.dart';
 part 'program_work_repository_door.dart';
 part 'program_work_repository_live.dart';
 part 'program_work_repository_reports.dart';

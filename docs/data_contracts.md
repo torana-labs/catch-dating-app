@@ -4323,6 +4323,40 @@ never guest data. `organizerPrograms.branding` (colour, cover photo path in
 optional: older documents read as the default look (rani, no cover, no
 credit) and as the anchor their initiation implies.
 
+### Programme Guest IDs, Hampers, Photos And Vendor Bills
+
+Four server-only collections hold programme records that clients reach only
+through callables. `programGuestIds/{programId}_{guestId}` holds one guest's
+ID for the hotels: the kind, the last four characters of the number (never
+the full number), private image paths, a check status (`submitted`,
+`accepted`, `askedAgain`) and `hotelViews`, the last 20 front-desk looks.
+`programHampers/{programId}_{hotelId}_{roomKey}` holds one welcome hamper per
+hotel room (room label, placed or pending, who placed it, an optional photo).
+`programPhotos/{programId}_{photoId}` holds one function photo.
+`programVendorBills/{programId}_{vendorId}` holds one transport vendor's bill
+lines, each checked against the rate frozen on its recorded trip, with the
+note to the vendor and the approval. All four are new collections; no
+existing document gains a field.
+
+Files live at `programs/{programId}/{assetKind}/{assetId}` (`guestIds`,
+`hampers`, `photos`, `branding`). Storage rules deny every direct client read
+and write. `createProgramAssetUpload` signs one short-lived POST policy whose
+metadata binds the object to its programme, kind and subject (the household
+for an ID, the hotel for a hamper photo, the planner otherwise); the command
+that uses the file verifies that binding and deletes a mismatching object.
+Images leave the server only as signed URLs that expire within ten minutes.
+
+Privacy: guest ID images are personal data collected for hotel check-in only.
+Households submit them through their own RSVP link; guest relations (or a
+manager) see them in the ID tracker; a hotel sees accepted IDs only, through
+a `hotelHandover` link scoped to that hotel, and every look is recorded on
+the ID. Hamper links (`hamperPorter`) show room labels and counts, never
+guest names. When an archived programme's grace window closes, the
+retention sweep deletes `programGuestIds`, `programHampers`, `programPhotos`
+and `programAlerts`, clears vendor bill notes and line references (keeping
+the totals), and deletes every file under `programs/{programId}/`; a failed
+file delete leaves the run unfinished so the next pass retries.
+
 ### Program Room Occupancy
 
 `programStays` remains the per-guest lodging record. `roomOccupancyId` is a
@@ -5345,7 +5379,7 @@ Released-client paths such as `organizers/{organizerId}/photos/{position}_{time}
 their six-slot filename bound is not the canonical gallery policy. Private form
 assets remain separate: `organizerForms/...` and `organizer-form-exports/...`
 deny direct SDK access and are exposed only through short-lived backend-signed
-requests.
+requests. Programme files (`programs/{programId}/...`) follow the same pattern.
 
 Remote organizer backfill completed in staging and production on 2026-07-22
 (`docs/migrations/clubs_to_organizers.md`). Legacy data goes with the

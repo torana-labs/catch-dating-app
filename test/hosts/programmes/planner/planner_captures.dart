@@ -8,9 +8,12 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_create_scree
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_screen.dart';
@@ -29,6 +32,7 @@ import 'package:riverpod/misc.dart' show Override;
 import '../staff/staff_live_fixtures.dart';
 import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';
+import 'planner_storage_fixtures.dart';
 
 /// The window the desktop boards are drawn for.
 const plannerDesktopSize = Size(1440, 900);
@@ -82,6 +86,18 @@ List<Override> plannerCaptureOverrides() => [
     (ref) async =>
         (value: staffLiveBoard(), snapshotAt: null, snapshotExpiresAt: null),
   ),
+  programIdTrackerProvider(
+    plannerProgramId,
+    null,
+  ).overrideWith((ref) async => plannerIdTracker),
+  programVendorBillViewProvider(plannerProgramId, 'shree').overrideWith(
+    (ref) async =>
+        (value: plannerVendorBill, snapshotAt: null, snapshotExpiresAt: null),
+  ),
+  programPhotosViewProvider(plannerProgramId, null).overrideWith(
+    (ref) async =>
+        (value: plannerPhotos, snapshotAt: null, snapshotExpiresAt: null),
+  ),
   programCreateControllerProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
@@ -130,3 +146,16 @@ Widget plannerBrandingCapture() =>
 
 Widget plannerHomeCapture() =>
     const HostProgrammesHomeScreen(organizerId: plannerOrganizerId);
+
+Widget plannerIdTrackerCapture() => const HostProgrammeIdTrackerScreen(
+  programId: plannerProgramId,
+  initialGuestId: 'kamla',
+);
+
+Widget plannerReconcileCapture() => const HostProgrammeReconcileScreen(
+  programId: plannerProgramId,
+  vendorId: 'shree',
+);
+
+Widget plannerPhotosCapture() =>
+    const HostProgrammePhotosScreen(programId: plannerProgramId);

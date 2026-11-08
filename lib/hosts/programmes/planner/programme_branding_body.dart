@@ -26,6 +26,9 @@ class HostProgrammeBrandingBody extends StatelessWidget {
     required this.showCredit,
     required this.onChanged,
     required this.onShowCredit,
+    required this.onChangeCover,
+    this.coverUrl,
+    this.uploadingCover = false,
     this.error,
   });
 
@@ -34,6 +37,14 @@ class HostProgrammeBrandingBody extends StatelessWidget {
   final bool showCredit;
   final ValueChanged<ProgramBranding> onChanged;
   final ValueChanged<bool> onShowCredit;
+
+  /// Picks and uploads a new cover photo.
+  final VoidCallback onChangeCover;
+
+  /// The saved cover, signed for a few minutes; null before one is saved
+  /// or while a new one waits to be saved.
+  final String? coverUrl;
+  final bool uploadingCover;
   final String? error;
 
   @override
@@ -90,14 +101,27 @@ class HostProgrammeBrandingBody extends StatelessWidget {
         ),
         CatchSection(
           title: l10n.hostProgrammeBrandingCover,
+          dividers: CatchSectionPlacement.none,
           children: [
-            CatchIndexRow(
-              icon: CatchIcons.addPhoto,
-              title: branding.coverImagePath == null
+            CatchNetworkImage(
+              coverUrl ?? '',
+              aspect: 16 / 9,
+              corner: CatchNetworkImageSize.lg,
+              placeholder: CatchNetworkImageColor.tile,
+              semanticLabel: branding.coverImagePath == null
                   ? l10n.hostProgrammeBrandingNoCover
                   : l10n.hostProgrammeBrandingHasCover,
-              subtitle: l10n.hostProgrammeBrandingCoverNote,
-              onTap: null,
+            ),
+            CatchButton(
+              key: const ValueKey<String>('host-programme-branding-cover'),
+              label: l10n.hostProgrammeBrandingChangeCover,
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+              leading: CatchIcon(CatchIcons.addPhoto),
+              status: uploadingCover
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
+              onPressed: uploadingCover ? null : onChangeCover,
             ),
           ],
         ),

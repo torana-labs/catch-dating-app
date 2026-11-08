@@ -1,0 +1,43 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "vendorId": "vendor-1",
+  "invoiceNumber": "2026-118",
+  "receivedAtMillis": 1800000000000,
+  "currency": "INR",
+  "lines": [
+    {
+      "lineId": "line-1",
+      "reference": "T-041 airport to Taj",
+      "tripId": "trip-41",
+      "billedMinor": 200000,
+      "recordedMinor": 200000,
+      "check": "matches"
+    },
+    {
+      "lineId": "line-2",
+      "reference": "T-099 airport run",
+      "tripId": null,
+      "billedMinor": 90000,
+      "recordedMinor": null,
+      "check": "noTrip"
+    }
+  ],
+  "totals": {
+    "billedMinor": 290000,
+    "recordedMinor": 200000,
+    "questionMinor": 90000,
+    "billedTrips": 2,
+    "recordedTrips": 1,
+    "unbilledTrips": 0
+  },
+  "status": "paid",
+  "note": "One trip is not in our records.",
+  "approvedMinor": null,
+  "approvedAtMillis": null,
+  "approvedByUid": null,
+  "updatedAtMillis": 1800000060000,
+  "revision": 2,
+  "lastRequestId": "bill-request-2",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

@@ -201,6 +201,7 @@ void main() {
   testWidgets('branding picks a colour and hides the credit', (tester) async {
     ProgramBranding? changed;
     bool? shown;
+    var cover = false;
     await pumpPlannerBody(
       tester,
       HostProgrammeBrandingBody(
@@ -209,6 +210,7 @@ void main() {
         showCredit: true,
         onChanged: (value) => changed = value,
         onShowCredit: (value) => shown = value,
+        onChangeCover: () => cover = true,
       ),
     );
     expect(find.text('Planned by Meher Shah Weddings'), findsOneWidget);
@@ -218,6 +220,10 @@ void main() {
       find.byKey(const ValueKey('host-programme-branding-show')),
     );
     expect(shown, isFalse);
+    await tester.tap(
+      find.byKey(const ValueKey('host-programme-branding-cover')),
+    );
+    expect(cover, isTrue);
   });
 
   testWidgets('the planner home totals guests and opens a programme', (

@@ -15,7 +15,9 @@
       "type": "string",
       "enum": [
         "driverTrip",
-        "vendorRunSheet"
+        "vendorRunSheet",
+        "hotelHandover",
+        "hamperPorter"
       ]
     },
     "token": {

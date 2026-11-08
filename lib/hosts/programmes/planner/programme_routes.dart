@@ -2,9 +2,12 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_scr
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_state.dart';
@@ -28,6 +31,9 @@ enum HostProgrammePage {
   message,
   liveBoard,
   branding,
+  idTracker,
+  reconcile,
+  photos,
 }
 
 /// The workspace route's screen for [uri]: the workspace itself, or the
@@ -75,6 +81,15 @@ Widget hostProgrammeScreenForUri(String programId, Uri uri) {
     ),
     HostProgrammePage.branding => HostProgrammeBrandingScreen(
       programId: programId,
+    ),
+    HostProgrammePage.reconcile when id != null => HostProgrammeReconcileScreen(
+      programId: programId,
+      vendorId: id,
+    ),
+    HostProgrammePage.photos => HostProgrammePhotosScreen(programId: programId),
+    HostProgrammePage.idTracker => HostProgrammeIdTrackerScreen(
+      programId: programId,
+      initialGuestId: id,
     ),
     _ => HostProgrammeScreen(programId: programId),
   };

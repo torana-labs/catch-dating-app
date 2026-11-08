@@ -48,7 +48,8 @@ import {validateGetProgramVendorRunSheetCallablePayload} from
 // shape (kind + subjectId, no householdId) never verifies as a household
 // token or the other way round. Tokens carry ids and an expiry only.
 
-export type WebLinkKind = "driverTrip" | "vendorRunSheet";
+export type WebLinkKind = "driverTrip" | "vendorRunSheet" |
+  "hotelHandover" | "hamperPorter";
 
 export interface WebLinkPayload {
   v: 1;
@@ -63,6 +64,8 @@ const DAY = 24 * 60 * 60 * 1000;
  *  programme, two weeks at most. */
 const DRIVER_LINK_MILLIS = DAY;
 const VENDOR_LINK_MAX_MILLIS = 14 * DAY;
+/** A porter's hamper link covers the arrival rush. */
+const PORTER_LINK_MILLIS = 2 * DAY;
 
 function sign(kind: WebLinkKind, encoded: string, secret: string): string {
   return createHmac("sha256", secret)
@@ -177,6 +180,22 @@ export async function issueProgramWebLinkHandler(
       throw new HttpsError("not-found", "Trip not found in this programme.");
     }
     expiresAtMillis = now + DRIVER_LINK_MILLIS;
+  } else if (data.kind === "hotelHandover" || data.kind === "hamperPorter") {
+    // Hotel links: the front desk's rooming list and guest IDs (guest
+    // relations), or the porters' hamper list (hotel desk).
+    requireProgramDuty(access, data.kind === "hotelHandover" ?
+      "guestRelations" : "hotelDesk");
+    const hotel = (await db.collection("programHotels")
+      .doc(data.subjectId).get()).data() as Record<string, unknown> |
+      undefined;
+    if (!hotel || hotel.programId !== data.programId ||
+        hotel.organizerId !== organizerId) {
+      throw new HttpsError("not-found", "Hotel not found in this programme.");
+    }
+    const programEnd = staffTimestampMillis(access.program.endsAt) + DAY;
+    expiresAtMillis = data.kind === "hamperPorter" ?
+      now + PORTER_LINK_MILLIS :
+      Math.min(Math.max(programEnd, now + DAY), now + VENDOR_LINK_MAX_MILLIS);
   } else {
     if (access.role !== "manager") {
       throw new HttpsError("permission-denied",

@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_guest_id_response.schema.json",
+  "title": "ProgramGuestIdCallableResponse",
+  "description": "Where one guest's ID stands after a submit or a decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guestId",
+    "status",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "accepted",
+        "askedAgain"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}
