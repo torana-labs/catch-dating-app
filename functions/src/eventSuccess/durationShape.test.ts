@@ -12,6 +12,7 @@ test("duration shape defaults cover the reviewed format vocabulary", () => {
   assert.equal(defaultDurationShapeFor("teamRotations"), "rounds");
   assert.equal(defaultDurationShapeFor("seatedTable"), "courses");
   assert.equal(defaultDurationShapeFor("freeFormMixer"), "rounds");
+  assert.equal(defaultDurationShapeFor("routeStops"), "stops");
   assert.equal(defaultDurationShapeFor("hostLedProgram"), "continuous");
   assert.equal(defaultDurationShapeFor("openFormat"), "continuous");
 });

@@ -208,6 +208,7 @@
         "teamRotations",
         "seatedTable",
         "freeFormMixer",
+        "routeStops",
         "hostLedProgram",
         "openFormat"
       ]
@@ -313,7 +314,7 @@
     },
     "eventSuccessDurationShape": {
       "type": "string",
-      "enum": ["continuous", "rounds", "courses", "segments"]
+      "enum": ["continuous", "rounds", "courses", "segments", "stops"]
     },
     "eventSuccessFormatPrimitives": {
       "type": "object",

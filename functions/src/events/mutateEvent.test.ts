@@ -2114,3 +2114,86 @@ test("guest notes survive create and edit, can be cleared, and are bounded",
       (error) => assertHttpsCode(error, "invalid-argument"));
     }
   });
+
+test("a saved sweep survives create and edit for any format", async () => {
+  const eventFormat = {version: 1, activityKind: "dinner",
+    interactionModel: "seatedTable",
+    eventSuccessPrimitives: {accountability: "sweep"}};
+  const h = harness({"organizers/club-1": organizer()});
+  await createEventHandler(request("host-1", payload({eventFormat})), h.deps);
+  assert.deepEqual(
+    (h.firestore.get("events/event-1")?.eventFormat as
+      typeof eventFormat).eventSuccessPrimitives,
+    {accountability: "sweep"}
+  );
+
+  const rollCall = {...eventFormat,
+    eventSuccessPrimitives: {accountability: "rollCall",
+      phoneAvailability: "plannedPauses"}};
+  await updateEventHandler(request("host-1", {eventId: "event-1",
+    expectedSetupRevision: 1, fields: {eventFormat: rollCall}}), h.deps);
+  assert.deepEqual(
+    (h.firestore.get("events/event-1")?.eventFormat as
+      typeof rollCall).eventSuccessPrimitives,
+    {accountability: "rollCall", phoneAvailability: "plannedPauses"}
+  );
+});
+
+test("createEventHandler defaults crawls to a route with stops", async () => {
+  const h = harness({"organizers/club-1": organizer()});
+
+  await createEventHandler(
+    request("host-1", payload({
+      capacityLimit: 24,
+      distanceKm: 0,
+      eventFormat: {version: 1, activityKind: "barCrawl",
+        interactionModel: "routeStops"},
+      eventSuccessDefaults: {enabled: true, hostGoal: "Nobody left behind."},
+    })),
+    h.deps
+  );
+
+  const eventDoc = h.firestore.get("events/event-1");
+  const plan = h.firestore.get("eventSuccessPlans/event-1");
+  assert.equal(
+    (eventDoc?.eventFormat as {interactionModel: string}).interactionModel,
+    "routeStops"
+  );
+  assert.equal(plan?.playbookId, "bar_crawl_route");
+  assert.deepEqual(plan?.selectedModuleIds, [
+    "contextual_openers",
+    "decomposed_feedback",
+    "first_hello_check_in",
+    "host_analytics",
+    "host_script",
+    "social_missions",
+    "wingman_requests",
+  ]);
+  assert.equal(
+    (plan?.structureConfig as {unitKind: string}).unitKind,
+    "wholeGroup"
+  );
+});
+
+test("createEventHandler keeps dinner phone-light by default", async () => {
+  const h = harness({"organizers/club-1": organizer()});
+
+  await createEventHandler(
+    request("host-1", payload({
+      capacityLimit: 24,
+      distanceKm: 0,
+      eventFormat: {version: 1, activityKind: "dinner",
+        interactionModel: "seatedTable"},
+      eventSuccessDefaults: {enabled: true, hostGoal: "Easy tables."},
+    })),
+    h.deps
+  );
+
+  const plan = h.firestore.get("eventSuccessPlans/event-1");
+  assert.equal(plan?.playbookId, "dinner_table_mixer");
+  assert.ok(Array.isArray(plan?.selectedModuleIds));
+  assert.equal(
+    (plan?.selectedModuleIds as string[]).includes("social_missions"),
+    false
+  );
+});

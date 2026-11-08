@@ -40,6 +40,7 @@ export function preEventRuntimeFieldId(
     return "questionnaireAnswerIds";
   case "teamRotations":
     return "teamName";
+  case "routeStops":
   case "hostLedProgram":
   case "openFormat":
     return null;

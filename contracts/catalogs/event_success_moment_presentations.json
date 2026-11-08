@@ -225,6 +225,14 @@
       ]
     },
     {
+      "interactionModel": "routeStops",
+      "prompts": [
+        {"promptId": "hostLedProgram.light", "disclosureLevel": "light"},
+        {"promptId": "shared.personal", "disclosureLevel": "personal"},
+        {"promptId": "shared.reflective", "disclosureLevel": "reflective"}
+      ]
+    },
+    {
       "interactionModel": "hostLedProgram",
       "prompts": [
         {"promptId": "hostLedProgram.light", "disclosureLevel": "light"},

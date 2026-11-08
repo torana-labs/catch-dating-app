@@ -206,6 +206,7 @@
     "eventSuccessPromptTeamRotations": {"value": "Find someone on your team and ask what brought them here.", "description": "Default Event Success attendee prompt."},
     "eventSuccessPromptSeatedTable": {"value": "Ask someone at your table what made them say yes to tonight.", "description": "Default Event Success attendee prompt."},
     "eventSuccessPromptFreeFormMixer": {"value": "Find someone nearby and ask what answer from tonight surprised them.", "description": "Default Event Success attendee prompt."},
+    "eventSuccessPromptRouteStops": {"value": "On the way to the next stop, ask someone which stop they would come back to.", "description": "Default Event Success attendee prompt."},
     "eventSuccessPromptOpenFormat": {"value": "Find someone near you and ask what brought them here.", "description": "Default Event Success attendee prompt."},
     "eventSuccessSetupNeedsWork": {"value": "Needs work", "description": "Event Success setup-status label."},
     "eventSuccessSetupReadyForLaunch": {"value": "Ready for launch", "description": "Event Success setup-status label."},
@@ -518,7 +519,7 @@
       "description": "Event Success library copy for dinner.attendeePromise."
     },
     "library.dinner.hostPromise.1": {
-      "value": "Balance tables, reveal seating moments, and keep conversation moving without over-facilitating dinner.",
+      "value": "Balance tables, reveal seating once, and keep phones away so dinner carries the conversation without over-facilitating.",
       "description": "Event Success library copy for dinner.hostPromise."
     },
     "library.dinner.rationale.1": {
@@ -585,6 +586,10 @@
       "value": "Do not make the table plan feel like a verdict on chemistry.",
       "description": "Event Success library copy for dinner.antiPatterns."
     },
+    "library.dinner.antiPatterns.4": {
+      "value": "Do not ask guests to keep checking their phones at the table: check in and see the seat once, then phones away.",
+      "description": "Event Success library copy for dinner.antiPatterns."
+    },
     "library.dinner.iterationQuestions.1": {
       "value": "Did the seating plan create balanced conversation?",
       "description": "Event Success library copy for dinner.iterationQuestions."
@@ -601,12 +606,120 @@
       "value": "Tables, and course-by-course table changes, come from the shared assignment engine through the group assignment tool.",
       "description": "Event Success library copy for dinner.wiringNotes."
     },
+    "library.barCrawl.title.1": {
+      "value": "Bar Crawl Route",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.summary.1": {
+      "value": "A route with stops: a first hello mixes the group, phones come out only between stops, and the host knows who returned or departed at every departure.",
+      "description": "Event Success library copy for barCrawl.summary."
+    },
+    "library.barCrawl.attendeePromise.1": {
+      "value": "You meet people at the start, keep your phone away at each stop, and never get left behind.",
+      "description": "Event Success library copy for barCrawl.attendeePromise."
+    },
+    "library.barCrawl.hostPromise.1": {
+      "value": "Mix the first group, move between stops without rotations, and close with a sweep so nobody is lost.",
+      "description": "Event Success library copy for barCrawl.hostPromise."
+    },
+    "library.barCrawl.rationale.1": {
+      "value": "A moving group stays manageable for one host and a few stops.",
+      "description": "Event Success library copy for barCrawl.rationale."
+    },
+    "library.barCrawl.title.2": {
+      "value": "Meet up and first hello",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.hostInstruction.1": {
+      "value": "Check guests in and send each one to say hello to someone they have not met.",
+      "description": "Event Success library copy for barCrawl.hostInstruction."
+    },
+    "library.barCrawl.attendeeExperience.1": {
+      "value": "Meet one person, check each other in, and start the night in a mixed group.",
+      "description": "Event Success library copy for barCrawl.attendeeExperience."
+    },
+    "library.barCrawl.title.3": {
+      "value": "Welcome and the route",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.hostInstruction.2": {
+      "value": "Share the stops, the meeting point if anyone falls behind, and safety expectations.",
+      "description": "Event Success library copy for barCrawl.hostInstruction."
+    },
+    "library.barCrawl.attendeeExperience.2": {
+      "value": "Know the route and how to find the group.",
+      "description": "Event Success library copy for barCrawl.attendeeExperience."
+    },
+    "library.barCrawl.title.4": {
+      "value": "At a stop",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.hostInstruction.3": {
+      "value": "Let the venue carry the conversation; keep phones away.",
+      "description": "Event Success library copy for barCrawl.hostInstruction."
+    },
+    "library.barCrawl.attendeeExperience.3": {
+      "value": "Talk with the group without checking your phone.",
+      "description": "Event Success library copy for barCrawl.attendeeExperience."
+    },
+    "library.barCrawl.title.5": {
+      "value": "Head to the next stop",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.hostInstruction.4": {
+      "value": "Mark who left with the group and who departed, then move on.",
+      "description": "Event Success library copy for barCrawl.hostInstruction."
+    },
+    "library.barCrawl.attendeeExperience.4": {
+      "value": "Get one easy prompt for the walk to the next stop.",
+      "description": "Event Success library copy for barCrawl.attendeeExperience."
+    },
+    "library.barCrawl.title.6": {
+      "value": "Last stop and sweep",
+      "description": "Event Success library copy for barCrawl.title."
+    },
+    "library.barCrawl.hostInstruction.5": {
+      "value": "Offer one introduction, then mark every guest returned or departed before the group scatters.",
+      "description": "Event Success library copy for barCrawl.hostInstruction."
+    },
+    "library.barCrawl.attendeeExperience.5": {
+      "value": "Ask the host for help with one introduction before the night ends.",
+      "description": "Event Success library copy for barCrawl.attendeeExperience."
+    },
+    "library.barCrawl.antiPatterns.1": {
+      "value": "Do not run timed partner rotations on a moving group.",
+      "description": "Event Success library copy for barCrawl.antiPatterns."
+    },
+    "library.barCrawl.antiPatterns.2": {
+      "value": "Do not ask guests to use their phones at a stop; prompts belong to the walk between stops.",
+      "description": "Event Success library copy for barCrawl.antiPatterns."
+    },
+    "library.barCrawl.antiPatterns.3": {
+      "value": "Do not leave a stop without knowing who departed.",
+      "description": "Event Success library copy for barCrawl.antiPatterns."
+    },
+    "library.barCrawl.iterationQuestions.1": {
+      "value": "Did the first hello mix the group before the first stop?",
+      "description": "Event Success library copy for barCrawl.iterationQuestions."
+    },
+    "library.barCrawl.iterationQuestions.2": {
+      "value": "Did anyone get left behind at a departure?",
+      "description": "Event Success library copy for barCrawl.iterationQuestions."
+    },
+    "library.barCrawl.iterationQuestions.3": {
+      "value": "Did the prompts between stops feel natural?",
+      "description": "Event Success library copy for barCrawl.iterationQuestions."
+    },
+    "library.barCrawl.wiringNotes.1": {
+      "value": "Departures, returned and departed marking and the end-of-night sweep use the movement layer and the event itinerary.",
+      "description": "Event Success library copy for barCrawl.wiringNotes."
+    },
     "library.hostLedSocial.title.1": {
       "value": "Host-led Social",
       "description": "Event Success library copy for hostLedSocial.title."
     },
     "library.hostLedSocial.summary.1": {
-      "value": "A simple wrapper for classes, bar crawls, open activities, and host-led formats where the activity stays primary.",
+      "value": "A simple wrapper for classes, open activities, and host-led formats where the activity stays primary.",
       "description": "Event Success library copy for hostLedSocial.summary."
     },
     "library.hostLedSocial.attendeePromise.1": {

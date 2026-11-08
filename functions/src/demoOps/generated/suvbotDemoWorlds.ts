@@ -1467,8 +1467,7 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
             "admissionPreset": "balancedSingles",
             "playbookId": "dinner_table_mixer",
             "selectedModuleIds": [
-              "host_script",
-              "social_missions"
+              "host_script"
             ],
             "hostGoal": "Help attendees meet at least two new people."
           },
