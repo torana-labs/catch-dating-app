@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
@@ -59,19 +60,22 @@ class HostProgrammeBrandingBody extends StatelessWidget {
             icon: CatchIcons.error,
             body: error!,
           ),
-        CatchField.input(
-          key: const ValueKey<String>('host-programme-branding-credit'),
-          copy: catchFieldCopy(l10n),
-          title: l10n.hostProgrammeBrandingShownAs,
-          helperText: l10n.hostProgrammeBrandingShownAsHelp,
-          contractExemption: 'Planner credit line on guest pages.',
-          initialValue: credit ?? '',
-          maxLength: 120,
-          textCapitalization: TextCapitalization.words,
-          onChanged: (value) => onChanged(
-            value.trim().isEmpty
-                ? branding.copyWith(clearCredit: true)
-                : branding.copyWith(creditLine: value.trim()),
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('host-programme-branding-credit'),
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostProgrammeBrandingShownAs,
+            helperText: l10n.hostProgrammeBrandingShownAsHelp,
+            contract: CatchContractConstraints
+                .updateOrganizerProgramCallablePayloadBrandingCreditLine,
+            initialValue: credit ?? '',
+            maxLength: 120,
+            textCapitalization: TextCapitalization.words,
+            onChanged: (value) => onChanged(
+              value.trim().isEmpty
+                  ? branding.copyWith(clearCredit: true)
+                  : branding.copyWith(creditLine: value.trim()),
+            ),
           ),
         ),
         CatchSection(
@@ -163,6 +167,8 @@ class HostProgrammeBrandingBody extends StatelessWidget {
                 key: const ValueKey<String>('host-programme-branding-show'),
                 value: showCredit,
                 semanticLabel: l10n.hostProgrammeBrandingShowCredit,
+                contractExemption:
+                    'Controls presence of the optional branding.creditLine string; it is not a persisted boolean.',
                 onChanged: onShowCredit,
               ),
             ),

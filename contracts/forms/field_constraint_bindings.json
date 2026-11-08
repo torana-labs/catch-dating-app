@@ -450,6 +450,9 @@
       "fields.phoneNumber",
       "fields.publicListingEnabled"
     ],
+    "updateOrganizerProgramCallablePayload": [
+      "branding.creditLine"
+    ],
     "updatePrivateEventDetailsCallablePayload": [
       "details.admissionTerms.cancellationPolicyId",
       "details.admissionTerms.capacityLimit",
