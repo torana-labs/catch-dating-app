@@ -39,6 +39,7 @@ export 'src/components/catch_contract_field_constraints.dart';
 export 'src/components/catch_contract_field_policy.dart';
 export 'src/components/catch_count_badge.dart';
 export 'src/components/catch_count_text.dart';
+export 'src/components/catch_countdown_indicator.dart';
 export 'src/components/catch_data_quality_metric_tile.dart';
 export 'src/components/catch_day_section_header.dart';
 export 'src/components/catch_dialog.dart';
