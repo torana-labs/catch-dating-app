@@ -16,7 +16,7 @@ final _probeRun = RegExp(r'^tool/catch_ui_lints_probe/[^/]+/\d+/(?:arch/)?');
 // are host destinations redrawn in place until the host router moves into
 // apps/host; they hold the same rules as an app package.
 final _newRoot = RegExp(
-  r'^(?:apps/[^/]+/lib|lib/pages|lib/hosts/(?:today|create|insights|live|onboarding|door|organizer|forms|people))/',
+  r'^(?:apps/[^/]+/lib|lib/pages|lib/hosts/(?:today|create|insights|live|onboarding|door|organizer|forms|people|programmes))/',
 );
 
 /// These two predate D24 and are redrawn in P6, so they keep what the rest of
