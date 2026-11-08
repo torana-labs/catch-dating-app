@@ -1,3 +1,8 @@
+/* firestore-index: organizerSenderConnections (
+  organizerId:ASCENDING,
+  channel:ASCENDING,
+  status:ASCENDING
+) */
 import type {
   OrganizerMessagingWebhookEventDocument,
   OrganizerProgramDocument,

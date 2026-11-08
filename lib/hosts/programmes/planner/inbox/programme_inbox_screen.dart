@@ -4,10 +4,12 @@ import 'dart:math';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -88,7 +90,7 @@ class _HostProgrammeInboxScreenState
     unawaited(
       _run(() async {
         await ref
-            .read(programWorkRepositoryProvider)
+            .read(programmeInboxCommandsProvider)
             .sendWhatsappReply(
               programId: widget.programId,
               threadId: thread.summary.threadId,
@@ -110,7 +112,7 @@ class _HostProgrammeInboxScreenState
   ) => unawaited(
     _run(
       () => ref
-          .read(programWorkRepositoryProvider)
+          .read(programmeInboxCommandsProvider)
           .setWhatsappThreadHandling(
             programId: widget.programId,
             thread: thread,
@@ -131,20 +133,23 @@ class _HostProgrammeInboxScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final read = ref.watch(
-      programWhatsappInboxProvider(widget.programId, _filter),
+    final read = catchAsyncStateFromAsyncValue(
+      ref.watch(programWhatsappInboxProvider(widget.programId, _filter)),
     );
     final inbox = read.value?.value;
     final threadId = _threadId;
     final threadRead = threadId == null
         ? null
-        : ref.watch(programWhatsappThreadProvider(widget.programId, threadId));
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(
+              programWhatsappThreadProvider(widget.programId, threadId),
+            ),
+          );
     final thread = threadRead?.value?.value;
     final canned =
-        ref
-            .watch(programCannedRepliesProvider(widget.programId))
-            .value
-            ?.value ??
+        catchAsyncStateFromAsyncValue(
+          ref.watch(programCannedRepliesProvider(widget.programId)),
+        ).value?.value ??
         const <ProgramCannedReply>[];
     return CatchRoot(
       format: CatchFormat.nightsOut,

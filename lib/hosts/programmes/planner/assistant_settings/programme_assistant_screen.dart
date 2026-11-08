@@ -4,8 +4,10 @@ import 'dart:math';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,7 +43,7 @@ class _HostProgrammeAssistantScreenState
     var ok = true;
     try {
       await ref
-          .read(programWorkRepositoryProvider)
+          .read(programmeInboxCommandsProvider)
           .updateAssistantSettings(
             programId: widget.programId,
             change: change,
@@ -68,7 +70,9 @@ class _HostProgrammeAssistantScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final read = ref.watch(programAssistantSettingsProvider(widget.programId));
+    final read = catchAsyncStateFromAsyncValue(
+      ref.watch(programAssistantSettingsProvider(widget.programId)),
+    );
     final settings = read.value?.value;
     return CatchRoot(
       format: CatchFormat.nightsOut,

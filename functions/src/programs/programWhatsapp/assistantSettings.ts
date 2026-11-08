@@ -1,3 +1,12 @@
+/* firestore-index: organizerSenderConnections (
+  organizerId:ASCENDING,
+  channel:ASCENDING,
+  status:ASCENDING
+) */
+/* firestore-index: programStaffGrants (
+  programId:ASCENDING,
+  status:ASCENDING
+) */
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {validateCallableWithAjv} from "../../shared/validation";
