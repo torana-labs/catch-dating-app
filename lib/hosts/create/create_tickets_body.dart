@@ -22,6 +22,7 @@ class CreateTicketsBody extends StatelessWidget {
     required this.onAdmission,
     this.onWaitlist,
     this.onApproveEach,
+    this.onBookingLink,
     this.showTitle = false,
   });
 
@@ -32,6 +33,9 @@ class CreateTicketsBody extends StatelessWidget {
   final ValueChanged<CreateAdmission> onAdmission;
   final ValueChanged<bool>? onWaitlist;
   final ValueChanged<bool>? onApproveEach;
+
+  /// The page where guests buy tickets when they are sold elsewhere.
+  final ValueChanged<String>? onBookingLink;
   final bool showTitle;
 
   @override
@@ -64,6 +68,18 @@ class CreateTicketsBody extends StatelessWidget {
           selected: elsewhere,
           onChanged: onSellElsewhere,
         ),
+        if (elsewhere && onBookingLink != null)
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('create-booking-link'),
+              copy: copy,
+              title: CreateSettingsCopy.bookingLink,
+              initialValue: draft.externalEventUrl ?? '',
+              placeholder: CreateSettingsCopy.bookingLinkHint,
+              keyboardType: TextInputType.url,
+              onChanged: onBookingLink!,
+            ),
+          ),
         if (!elsewhere)
           CatchStack(
             direction: CatchStackDirection.row,

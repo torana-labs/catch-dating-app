@@ -83,12 +83,18 @@
       "description": "Who can see and book the event and how guests experience it, with each field's read-time default applied (listing listed, showGuestList true, priceHiddenUntilBookingOpens false, planVisibleToGuests true).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["listing", "showGuestList", "priceHiddenUntilBookingOpens", "planVisibleToGuests"],
+      "required": ["listing", "showGuestList", "priceHiddenUntilBookingOpens", "planVisibleToGuests", "externalBooking"],
       "properties": {
         "listing": {"type": "string", "enum": ["listed", "link"]},
         "showGuestList": {"type": "boolean"},
         "priceHiddenUntilBookingOpens": {"type": "boolean"},
-        "planVisibleToGuests": {"type": "boolean"}
+        "planVisibleToGuests": {"type": "boolean"},
+        "externalBooking": {
+          "anyOf": [
+            {"$ref": "../embedded/event_external_booking.schema.json"},
+            {"type": "null"}
+          ]
+        }
       }
     },
     "publicationReadinessWhenFuture": {

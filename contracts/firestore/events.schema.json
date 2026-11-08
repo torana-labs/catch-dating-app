@@ -505,6 +505,11 @@
       "type": "boolean",
       "description": "Whether booked guests see the plan for the night (eventSuccessPlans) on their phones. Missing reads as true, so events from before the choice keep their live guide; false shows it to the event's managers only.",
       "x-catch-ownership": "callable-owned"
+    },
+    "externalBooking": {
+      "$ref": "../embedded/event_external_booking.schema.json",
+      "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [

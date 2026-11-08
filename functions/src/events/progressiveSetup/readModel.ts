@@ -168,6 +168,8 @@ export function projectEventSettings(
     showGuestList: event.showGuestList !== false,
     priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens === true,
     planVisibleToGuests: event.planVisibleToGuests !== false,
+    externalBooking: (event.externalBooking ?? null) as NonNullable<
+      PrivateEventSetupSummary["eventSettings"]>["externalBooking"],
   };
 }
 

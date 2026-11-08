@@ -111,5 +111,9 @@
   "listing": "link",
   "showGuestList": false,
   "priceHiddenUntilBookingOpens": true,
-  "planVisibleToGuests": false
+  "planVisibleToGuests": false,
+  "externalBooking": {
+    "provider": "luma",
+    "url": "https://lu.ma/tuesday-trivia"
+  }
 }

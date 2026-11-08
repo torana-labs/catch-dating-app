@@ -28,6 +28,7 @@ class CreateTicketsScreen extends StatelessWidget {
     onAdmission: handlers.onAdmission,
     onWaitlist: handlers.onWaitlist,
     onApproveEach: handlers.onApproveEach,
+    onBookingLink: handlers.onBookingLink,
   );
 
   @override

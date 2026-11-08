@@ -173,6 +173,7 @@ class PrivateEventSettings {
     this.showGuestList = true,
     this.priceHiddenUntilBookingOpens = false,
     this.planVisibleToGuests = true,
+    this.externalBookingUrl,
   });
 
   /// `listed` (on the organizer's page, Explore and search) or `link` (only
@@ -184,6 +185,9 @@ class PrivateEventSettings {
   /// Whether booked guests see the plan for the night.
   final bool planVisibleToGuests;
 
+  /// The booking page when tickets are sold elsewhere.
+  final String? externalBookingUrl;
+
   bool get linkOnly => listing == 'link';
 
   factory PrivateEventSettings.fromView(Object? raw) {
@@ -194,6 +198,10 @@ class PrivateEventSettings {
     final showGuestList = data['showGuestList'];
     final priceHidden = data['priceHiddenUntilBookingOpens'];
     final planVisible = data['planVisibleToGuests'] ?? true;
+    final external = data['externalBooking'];
+    if (external != null && (external is! Map || external['url'] is! String)) {
+      throw const FormatException('Invalid event settings');
+    }
     if (!const {'listed', 'link'}.contains(listing) ||
         showGuestList is! bool ||
         priceHidden is! bool ||
@@ -205,6 +213,9 @@ class PrivateEventSettings {
       showGuestList: showGuestList,
       priceHiddenUntilBookingOpens: priceHidden,
       planVisibleToGuests: planVisible,
+      externalBookingUrl: external == null
+          ? null
+          : (external as Map)['url'] as String,
     );
   }
 }

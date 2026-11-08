@@ -40,6 +40,7 @@ class CreateHandlers {
     this.onApproveEach,
     this.onPlanVisible,
     this.onRepeat,
+    this.onBookingLink,
   });
 
   /// Back a step, or close on the first.
@@ -80,4 +81,5 @@ class CreateHandlers {
   final ValueChanged<bool>? onApproveEach;
   final ValueChanged<bool>? onPlanVisible;
   final ValueChanged<bool>? onRepeat;
+  final ValueChanged<String>? onBookingLink;
 }

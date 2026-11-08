@@ -319,3 +319,19 @@ test("publishing without booking choices leaves the policy alone",
       assert.equal(JSON.stringify(event.eventPolicy), before);
     }
   });
+
+test("tickets sold elsewhere publish without Catch admission terms",
+  async () => {
+    const h = setup();
+    const event = h.store.get("events/event1")!;
+    for (const key of ["capacityLimit", "priceInPaise", "eventPolicy",
+      "currency"]) delete event[key];
+    event.externalBooking = {provider: "luma",
+      url: "https://lu.ma/tuesday-trivia"};
+    await h.run();
+    const published = h.store.get("events/event1")!;
+    assert.equal(published.publicationState, "published");
+    assert.equal(published.publicRegistrationEnabled, false);
+    assert.equal(validateEventDocument(published), true,
+      JSON.stringify(validateEventDocument.errors));
+  });

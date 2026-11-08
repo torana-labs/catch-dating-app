@@ -4,6 +4,8 @@
 /// lane holds the ARB while this one runs. Move these into `hostCreate…`
 /// messages when it frees.
 abstract final class CreateSettingsCopy {
+  static const bookingLink = 'Where guests buy tickets';
+  static const bookingLinkHint = 'https://';
   static const waitlist = "Waitlist when it's full";
   static const waitlistBody = 'You offer freed places in order';
   static const approveEach = 'You approve each request';

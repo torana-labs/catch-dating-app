@@ -496,6 +496,7 @@ class CreateController extends _$CreateController {
         itinerary: patch.itinerary,
         admissionTerms: patch.admissionTerms,
         planVisibleToGuests: patch.planVisibleToGuests,
+        externalBooking: patch.externalBooking,
       );
       if (!patch.isValid) return;
     }
@@ -511,6 +512,7 @@ class CreateController extends _$CreateController {
 
   Future<void> _saveTickets() async {
     final draft = state.draft;
+    await _saveExternalBooking(draft);
     if (!draft.externalBookingMode) {
       final price = _pricePaise(draft.price)!;
       await _saveDetails(
@@ -570,6 +572,34 @@ class CreateController extends _$CreateController {
       (s) => (!s.hasPending && !s.saving) || s.error != null,
     );
     if (current.error != null) throw current.error!;
+  }
+
+  /// Selling elsewhere saves the booking page on the event; selling on Catch
+  /// again clears a saved one.
+  Future<void> _saveExternalBooking(EventDraft draft) async {
+    final eventId = state.eventId;
+    if (eventId == null) return;
+    final url = (draft.externalEventUrl ?? '').trim();
+    if (draft.externalBookingMode) {
+      final booking = PrivateEventExternalBooking.forUrl(url);
+      if (!booking.isValid) return;
+      await _saveDetails(
+        PrivateEventDetailsPatch(externalBooking: EventSetupValue.set(booking)),
+      );
+      return;
+    }
+    final saved = ref
+        .read(privateEventDetailsControllerProvider(_scope(eventId)))
+        .event
+        ?.eventSettings
+        .externalBookingUrl;
+    if (saved != null) {
+      await _saveDetails(
+        const PrivateEventDetailsPatch(
+          externalBooking: EventSetupValue.clear(),
+        ),
+      );
+    }
   }
 
   Future<void> _publish() async {
