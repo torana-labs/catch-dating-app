@@ -334,3 +334,24 @@ test("a weekly series creates each event once with its place", async () => {
     deps: h.deps}), (error) => code(error) === "invalid-argument");
   assert.equal(addLocalDays("2026-12-29", 7), "2027-01-05");
 });
+
+test("a new event starts with the organizer's default booking questions",
+  async () => {
+    const h = setup();
+    h.store.seed("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 1, eventSetup: {askedAtBooking: ["dietary", "tshirtSize"]}});
+    const created = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "request-questions", basics},
+      deps: h.deps});
+    const saved = h.store.read(`events/${created.eventId}`)!;
+    assert.deepEqual(saved.bookingQuestionIds, ["dietary", "tshirtSize"]);
+    assert.equal(validateEventDocument(saved), true,
+      JSON.stringify(validateEventDocument.errors));
+    h.store.seed("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 2, eventSetup: {askedAtBooking: []}});
+    const bare = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "request-noquestions",
+        basics}, deps: h.deps});
+    assert.equal(Object.hasOwn(h.store.read(`events/${bare.eventId}`)!,
+      "bookingQuestionIds"), false);
+  });

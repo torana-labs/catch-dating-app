@@ -511,6 +511,17 @@
       "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
       "x-catch-ownership": "callable-owned"
     },
+    "bookingQuestionIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "description": "Ids of the questions guests answer when they book, seeded from the organizer's askedAtBooking default when the event is created. Missing means no booking questions.",
+      "x-catch-ownership": "callable-owned"
+    },
     "followersFirstUntilMs": {
       "type": "integer",
       "minimum": 0,
