@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
-import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
+import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/forms/offer_body.dart';
 import 'package:catch_dating_app/hosts/forms/offer_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
@@ -96,8 +95,8 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
       initialTargetId: null,
       initialTargetRevision: null,
     );
-    final functions = ref.read(firebaseFunctionsProvider);
-    final gateway = CallableHostEventOfferGateway(functions);
+    final gateways = ref.read(hostOfferGatewaysProvider);
+    final gateway = gateways.offers;
     return _HostOfferScope(
       scope: scope,
       recipient: widget.recipientLabel,
@@ -113,10 +112,7 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
             ref.read(clipboardControllerProvider).copyText(text),
         openHandoff: (uri) =>
             ref.read(externalLinkControllerProvider).openExternal(uri),
-        targets: CallableHostOfferEventTargetsGateway(
-          functions,
-          configurations: ref.read(eventOfferConfigurationReadsProvider),
-        ),
+        targets: gateways.targets,
         getResponseDetail: (id) => ref.refresh(
           hostFormResponseDetailProvider(
             organizerId: widget.organizerId,

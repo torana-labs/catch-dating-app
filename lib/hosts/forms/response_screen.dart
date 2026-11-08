@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/forms/data/host_application_repository
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dart';
+import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/forms/response_body.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -58,7 +59,6 @@ class HostResponseScreen extends ConsumerStatefulWidget {
 class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
   final _note = TextEditingController();
   int? _noteRevision;
-  bool _busy = false;
 
   HostResponseReviewKey get _key => (
     organizerId: widget.organizerId,
@@ -80,13 +80,16 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     );
     final detail = value.value;
     final application = detail?.application;
+    final busy =
+        ref.watch(hostFormReviewMutation(_reviewKey(detail))).isPending ||
+        ref.watch(hostFormConversionMutation(_conversionKey(detail))).isPending;
     if (application != null && _noteRevision != application.revision) {
       _noteRevision = application.revision;
       _note.text = application.reviewNote ?? '';
     }
     final state = detail == null
         ? const HostResponseState.loading()
-        : _state(l10n, detail);
+        : _state(l10n, detail, busy: busy);
     final body = value.hasError && detail == null
         ? CatchLocalizedErrorState(
             value.error!,
@@ -127,13 +130,13 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
                     HostResponsePrimary.continueOffer =>
                       l10n.hostFormsResponseContinueOffer,
                   },
-                  loading: _busy,
-                  onPressed: _busy ? null : () => _primary(primary, detail),
+                  loading: busy,
+                  onPressed: busy ? null : () => _primary(primary, detail),
                 ),
                 secondary: state.canDecline
                     ? CatchDockAction(
                         label: l10n.hostFormsReviewNotNow,
-                        onPressed: _busy
+                        onPressed: busy
                             ? null
                             : () => _review(
                                 detail.application!,
@@ -148,8 +151,9 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
 
   HostResponseState _state(
     AppLocalizations l10n,
-    HostResponseReviewDetail detail,
-  ) {
+    HostResponseReviewDetail detail, {
+    required bool busy,
+  }) {
     final response = detail.response;
     final application = detail.application;
     final identity = response?.response.identity;
@@ -225,7 +229,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
           detail.canReview &&
           application!.reviewStatus != HostApplicationReviewStatus.declined,
       canMessage: email != null || phone != null,
-      busy: _busy,
+      busy: busy,
     );
   }
 
@@ -292,17 +296,20 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     HostApplicationDetail application,
     HostApplicationReviewStatus status,
   ) async {
-    setState(() => _busy = true);
+    final note = _note.text;
     try {
-      await ref
-          .read(hostApplicationsControllerProvider)
-          .reviewApplication(
-            organizerId: widget.organizerId,
-            applicationId: application.applicationId,
-            expectedRevision: application.revision,
-            reviewStatus: status,
-            reviewNote: _note.text,
-          );
+      await hostFormReviewMutation(application.applicationId).run(
+        ref,
+        (tx) => tx
+            .get(hostApplicationsControllerProvider)
+            .reviewApplication(
+              organizerId: widget.organizerId,
+              applicationId: application.applicationId,
+              expectedRevision: application.revision,
+              reviewStatus: status,
+              reviewNote: note,
+            ),
+      );
       _reload();
       if (mounted) {
         showCatchNotice(context, context.l10n.hostFormsResponseReviewed);
@@ -317,43 +324,46 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
         );
       }
       return false;
-    } finally {
-      if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _addToPeople(HostFormResponseDetail response) async {
-    setState(() => _busy = true);
+    final responseId = response.response.responseId;
+    final blocked = context.l10n.hostFormsResponseAddBlocked;
     try {
-      final controller = ref.read(hostFormsControllerProvider);
-      final responseId = response.response.responseId;
-      final preview = await controller.previewConversion(
-        organizerId: widget.organizerId,
-        responseId: responseId,
-        kind: HostFormConversionKind.crmContact,
-      );
-      if (!preview.allowed) {
-        throw StateError(
-          preview.warnings.firstOrNull ??
-              (mounted ? context.l10n.hostFormsResponseAddBlocked : ''),
+      await hostFormConversionMutation(responseId).run(ref, (tx) async {
+        final controller = tx.get(hostFormsControllerProvider);
+        final preview = await controller.previewConversion(
+          organizerId: widget.organizerId,
+          responseId: responseId,
+          kind: HostFormConversionKind.crmContact,
         );
-      }
-      await controller.convertResponse(
-        organizerId: widget.organizerId,
-        responseId: responseId,
-        kind: HostFormConversionKind.crmContact,
-        requestId: 'conversion_${DateTime.now().microsecondsSinceEpoch}',
-      );
+        if (!preview.allowed) {
+          throw StateError(preview.warnings.firstOrNull ?? blocked);
+        }
+        await controller.convertResponse(
+          organizerId: widget.organizerId,
+          responseId: responseId,
+          kind: HostFormConversionKind.crmContact,
+          requestId: 'conversion_${DateTime.now().microsecondsSinceEpoch}',
+        );
+      });
       _reload();
       if (mounted) {
         showCatchNotice(context, context.l10n.hostFormsResponseAdded);
       }
     } on Object catch (error) {
       if (mounted) showCatchNoticeError(context, error);
-    } finally {
-      if (mounted) setState(() => _busy = false);
     }
   }
+
+  /// The review mutation key of this answer: its application.
+  String? _reviewKey(HostResponseReviewDetail? detail) =>
+      detail?.application?.applicationId ?? widget.applicationId;
+
+  /// The conversion mutation key of this answer: its response.
+  String? _conversionKey(HostResponseReviewDetail? detail) =>
+      detail?.response?.response.responseId ?? widget.responseId;
 
   Future<void> _message(HostResponseReviewDetail detail) async {
     final identity = detail.response?.response.identity;

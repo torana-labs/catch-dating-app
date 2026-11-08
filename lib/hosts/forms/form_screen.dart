@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/forms/form_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_state.dart';
+import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -43,8 +44,6 @@ class HostFormScreen extends ConsumerStatefulWidget {
 }
 
 class _HostFormScreenState extends ConsumerState<HostFormScreen> {
-  final Set<String> _lettingIn = {};
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -100,7 +99,13 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   entry,
             ],
             waitingPending: waitingValue?.value == null,
-            lettingIn: _lettingIn,
+            lettingIn: {
+              for (final entry
+                  in waitingValue?.value?.inboxEntries ??
+                      const <HostFormInboxEntry>[])
+                if (entry.application?.applicationId case final id?)
+                  if (ref.watch(hostFormReviewMutation(id)).isPending) id,
+            },
             busy: editor.operationInProgress,
           );
     final body = editorValue.hasError && editor == null
@@ -179,16 +184,18 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   Future<void> _letIn(String? uid, HostFormInboxEntry entry) async {
     final application = entry.application;
     if (uid == null || application == null) return;
-    setState(() => _lettingIn.add(application.applicationId));
     try {
-      await ref
-          .read(hostApplicationsControllerProvider)
-          .reviewApplication(
-            organizerId: widget.organizerId,
-            applicationId: application.applicationId,
-            expectedRevision: application.revision,
-            reviewStatus: HostApplicationReviewStatus.approved,
-          );
+      await hostFormReviewMutation(application.applicationId).run(
+        ref,
+        (tx) => tx
+            .get(hostApplicationsControllerProvider)
+            .reviewApplication(
+              organizerId: widget.organizerId,
+              applicationId: application.applicationId,
+              expectedRevision: application.revision,
+              reviewStatus: HostApplicationReviewStatus.approved,
+            ),
+      );
       ref.invalidate(hostFormResponsesControllerProvider(_waiting(uid)));
       if (mounted) {
         showCatchNotice(context, context.l10n.hostFormsLetInDone);
@@ -200,10 +207,6 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           error,
           errorContext: AppErrorContext.applications,
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _lettingIn.remove(application.applicationId));
       }
     }
   }

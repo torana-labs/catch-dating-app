@@ -33,11 +33,15 @@ class HostResponsesScreen extends ConsumerStatefulWidget {
     super.key,
     required this.organizerId,
     this.formId,
+    this.initialView = HostResponsesView.responses,
     this.now,
   });
 
   final String organizerId;
   final String? formId;
+
+  /// The view to open on: the answers, or the results counted.
+  final HostResponsesView initialView;
 
   /// A fixed clock for previews and tests; null reads the device clock.
   final DateTime? now;
@@ -49,7 +53,7 @@ class HostResponsesScreen extends ConsumerStatefulWidget {
 
 class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
   HostApplicationReviewStatus _filter = HostApplicationReviewStatus.submitted;
-  HostResponsesView _view = HostResponsesView.responses;
+  late HostResponsesView _view = widget.initialView;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +101,14 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
     );
     final Widget body;
     final error = value?.error;
-    if (error != null && page == null) {
+    if (actor.isSettledData && uid == null) {
+      body = CatchErrorState(
+        title: l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+        message: l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+        retryLabel: l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+        onRetry: () => context.go(Routes.authScreen.path),
+      );
+    } else if (error != null && page == null) {
       body = CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
+import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -31,11 +32,11 @@ class HostFormNewScreen extends ConsumerStatefulWidget {
 class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
   bool _templates = false;
   String? _selected;
-  bool _creating = false;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final creating = ref.watch(hostFormCreateMutation).isPending;
     final provider = hostFormTemplatesProvider(widget.organizerId);
     final value = catchAsyncStateFromAsyncValue(ref.watch(provider));
     final all = value.value;
@@ -54,7 +55,7 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
       choices: choices,
       templates: _templates,
       selectedTemplateId: selected,
-      creating: _creating,
+      creating: creating,
     );
     final body = value.hasError && all == null
         ? CatchLocalizedErrorState(
@@ -82,8 +83,8 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
         dock: CatchDock(
           primary: CatchDockAction(
             label: l10n.hostFormsNewNext,
-            loading: _creating,
-            onPressed: selected == null || _creating
+            loading: creating,
+            onPressed: selected == null || creating
                 ? null
                 : () => _create(selected),
           ),
@@ -91,7 +92,7 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
             label: _templates
                 ? l10n.hostFormsNewKinds
                 : l10n.hostFormsNewTemplates,
-            onPressed: _creating
+            onPressed: creating
                 ? null
                 : () => setState(() => _templates = !_templates),
           ),
@@ -101,16 +102,18 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
   }
 
   Future<void> _create(String templateId) async {
-    setState(() => _creating = true);
     try {
-      final editor = await ref
-          .read(hostFormsControllerProvider)
-          .create(
-            organizerId: widget.organizerId,
-            templateId: templateId,
-            requestId:
-                'create_${templateId}_${DateTime.now().microsecondsSinceEpoch}',
-          );
+      final editor = await hostFormCreateMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostFormsControllerProvider)
+            .create(
+              organizerId: widget.organizerId,
+              templateId: templateId,
+              requestId:
+                  'create_${templateId}_${DateTime.now().microsecondsSinceEpoch}',
+            ),
+      );
       if (!mounted) return;
       ref.invalidate(hostFormsDirectoryControllerProvider);
       context.pushReplacementNamed(
@@ -124,7 +127,6 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
     } on Object catch (error) {
       if (!mounted) return;
       showCatchNoticeError(context, error, errorContext: AppErrorContext.forms);
-      setState(() => _creating = false);
     }
   }
 }
