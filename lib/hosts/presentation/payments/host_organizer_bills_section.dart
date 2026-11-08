@@ -1,22 +1,20 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_organizer_bills_controller.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-/// Payments spoke: Catch's monthly bills to this organizer, newest first. A
-/// month opens its statement, which pays an unpaid bill from its Razorpay link.
+/// Payments spoke: Catch's bills to this organizer, newest first, as status
+/// only. A period opens its statement: the sales it was on and where the bill
+/// stands. Catch's charges and paying stay off the app (App Store guideline
+/// 3.1.3(f)); the bill and its invoice reach the host by email.
 class HostOrganizerBillsSection extends ConsumerWidget {
   const HostOrganizerBillsSection({super.key, required this.organizerId});
 
@@ -94,10 +92,7 @@ class HostOrganizerBillList extends StatelessWidget {
     final month = _monthLabel(l10n, bill);
     return bill.status == HostOrganizerBillStatus.free
         ? l10n.hostBillsRowTitleFree(month: month)
-        : l10n.hostBillsRowTitle(
-            month: month,
-            amount: formatMinorCurrency(bill.totalMinor),
-          );
+        : month;
   }
 
   String _rowBody(AppLocalizations l10n, HostOrganizerBill bill) {
@@ -109,51 +104,21 @@ class HostOrganizerBillList extends StatelessWidget {
   }
 }
 
-/// One month's statement: the bill line by line, then what the organizer kept.
-class HostOrganizerBillSheet extends ConsumerWidget {
+/// One period's statement as status: the sales it was on and where the bill
+/// stands. No Catch charge and no way to pay in the app.
+class HostOrganizerBillSheet extends StatelessWidget {
   const HostOrganizerBillSheet({super.key, required this.bill});
 
   final HostOrganizerBill bill;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    final paymentUrl = bill.paymentUrl;
-    final pay = ref.watch(HostOrganizerBillsController.payMutation);
-    listenToCatchMutationErrors(
-      context,
-      ref,
-      mutations: [HostOrganizerBillsController.payMutation],
-      errorContext: AppErrorContext.payments,
-    );
     final invoice = bill.invoiceNumber;
     return CatchSheet.standard(
       title: _monthLabel(l10n, bill),
       subtitle: invoice == null ? null : l10n.hostBillsInvoice(number: invoice),
-      pinFooter: true,
-      footer: bill.canPay && paymentUrl != null
-          ? CatchButton.sheet(
-              role: CatchButtonEmphasis.commit,
-              key: const ValueKey('host-bill-pay'),
-              label: l10n.hostBillsPay(
-                amount: formatMinorCurrency(bill.totalMinor),
-              ),
-              status: pay.isPending
-                  ? CatchButtonStatus.loading
-                  : CatchButtonStatus.idle,
-              onPressed: pay.isPending
-                  ? null
-                  : () => unawaited(
-                      HostOrganizerBillsController.payMutation.run(
-                        ref,
-                        (tx) => tx
-                            .get(hostOrganizerBillsControllerProvider)
-                            .openPaymentLink(paymentUrl),
-                      ),
-                    ),
-            )
-          : null,
       child: CatchSectionList(
         emptyStateOmitted: true,
         children: [
@@ -168,52 +133,9 @@ class HostOrganizerBillSheet extends ConsumerWidget {
               ),
               CatchField.content(
                 copy: copy,
-                title: l10n.hostBillsCommission,
-                body: _commissionBody(l10n),
-                valueText: formatMinorCurrency(bill.commissionMinor),
-              ),
-              if (bill.gstRegistered)
-                CatchField.content(
-                  copy: copy,
-                  title: l10n.hostBillsGst,
-                  body: l10n.hostBillsGstBody,
-                  valueText: formatMinorCurrency(bill.gstMinor),
-                ),
-              CatchField.content(
-                copy: copy,
-                title: l10n.hostBillsTotal,
-                body: _totalBody(l10n),
-                valueText: formatMinorCurrency(bill.totalMinor),
-              ),
-            ],
-          ),
-          CatchSection.fieldRows(
-            title: l10n.hostBillsSectionKept,
-            children: [
-              CatchField.content(
-                copy: copy,
-                title: l10n.hostBillsTicketSales,
-                body: l10n.hostBillsSalesAfterRefunds,
-                valueText: formatMinorCurrency(bill.salesMinor),
-              ),
-              CatchField.content(
-                copy: copy,
-                title: l10n.hostBillsRazorpayFees,
-                body: l10n.hostBillsRazorpayFeesBody,
-                bodyMaxLines: 4,
-                valueText: formatMinorCurrency(-bill.providerFeeMinor),
-              ),
-              CatchField.content(
-                copy: copy,
-                title: l10n.hostBillsCatchBill,
-                body: _totalBody(l10n),
-                valueText: formatMinorCurrency(-bill.billMinor),
-              ),
-              CatchField.content(
-                copy: copy,
-                title: l10n.hostBillsKept,
-                body: l10n.hostBillsKeptBody,
-                valueText: formatMinorCurrency(bill.keptMinor),
+                key: const ValueKey('host-bill-status'),
+                title: l10n.hostBillsStatusTitle,
+                body: _statusBody(l10n),
               ),
             ],
           ),
@@ -235,19 +157,7 @@ class HostOrganizerBillSheet extends ConsumerWidget {
         : counts;
   }
 
-  String _commissionBody(AppLocalizations l10n) {
-    final cap = bill.capMinor;
-    if (bill.capped && cap != null) {
-      return l10n.hostBillsCommissionCapped(cap: formatMinorCurrency(cap));
-    }
-    return bill.trialWaivedMinor > 0
-        ? l10n.hostBillsCommissionWaived(
-            amount: formatMinorCurrency(bill.trialWaivedMinor),
-          )
-        : l10n.hostBillsCommissionBody;
-  }
-
-  String _totalBody(AppLocalizations l10n) {
+  String _statusBody(AppLocalizations l10n) {
     final dueAt = bill.dueAt;
     final paidAt = bill.paidAt;
     return switch (bill.status) {

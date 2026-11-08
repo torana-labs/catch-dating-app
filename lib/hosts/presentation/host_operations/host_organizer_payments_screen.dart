@@ -14,13 +14,9 @@ class HostOrganizerPaymentsScreen extends StatelessWidget {
           ? CatchSectionList(
               emptyStateOmitted: true,
               children: [
-                HostRazorpayConnectionCard(
-                  organizerId: organizer.id,
-                  // Route's Catch-collected payout form appears only when the
-                  // routing policy explicitly selects razorpayRoute.
-                  routeAccountSetup: (_) =>
-                      HostPaymentAccountControllerCard(organizer: organizer),
-                ),
+                // Route's Catch-collected payout (KYC) card stays hidden
+                // (#1125); only the organizer's own Razorpay is set up here.
+                HostRazorpayConnectionCard(organizerId: organizer.id),
                 HostOrganizerBillsSection(organizerId: organizer.id),
               ],
             )

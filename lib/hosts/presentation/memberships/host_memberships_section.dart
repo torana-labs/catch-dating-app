@@ -5,7 +5,6 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -71,12 +70,13 @@ class HostMembershipsCard extends ConsumerWidget {
               ),
             ),
           ),
-          // Each mode sets up its own account: the organizer's Razorpay
-          // connection, or the Route payout account for a split.
-          if (!state.program.routeAccountReady && isOwner)
-            state.program.collectsOnOwnAccount
-                ? HostRazorpayConnectionCard(organizerId: organizer.id)
-                : HostPaymentAccountControllerCard(organizer: organizer),
+          // The organizer's own Razorpay connection is set up here. Route's
+          // Catch-collected payout (KYC) card stays hidden: that flow is not
+          // pursued (#1125) and its precondition fails for new hosts.
+          if (!state.program.routeAccountReady &&
+              isOwner &&
+              state.program.collectsOnOwnAccount)
+            HostRazorpayConnectionCard(organizerId: organizer.id),
         ],
       ),
     );

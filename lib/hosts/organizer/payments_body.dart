@@ -8,24 +8,19 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-/// Payments and billing in board order: the Razorpay tile, this month's
-/// Catch bill, the plan, the bills and what to set up.
+/// Payments and billing in board order: the Razorpay tile, the latest Catch
+/// bill's status, the plan, the bills and what to set up. Status only: the
+/// app shows no Catch prices and no way to pay Catch or buy a plan (App Store
+/// guideline 3.1.3(f)); bills and plans are handled on the web.
 class OrganizerPaymentsBody extends StatelessWidget {
   const OrganizerPaymentsBody({
     super.key,
     required this.state,
     required this.onAction,
-    required this.onPay,
-    this.footer,
   });
 
   final OrganizerPaymentsState state;
   final ValueChanged<OrganizerPaymentsAction> onAction;
-  final ValueChanged<HostOrganizerBill> onPay;
-
-  /// Shown under the Razorpay tile: the payout account form, for
-  /// organizers whose payments run through Catch.
-  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +38,6 @@ class OrganizerPaymentsBody extends StatelessWidget {
         ],
       );
     }
-    final footer = this.footer;
     final bills = state.bills;
     final ready = state.connection == HostRazorpayConnectionState.ready;
     return CatchPageBody.screen(
@@ -51,7 +45,6 @@ class OrganizerPaymentsBody extends StatelessWidget {
       gap: CatchPageBodyGap.tight,
       children: [
         _RazorpayTile(state: state, onAction: onAction),
-        ?footer,
         if (state.billsError != null && bills == null)
           CatchNotice.inline(
             body: l10n.hostOrganizerBillsFailed,
@@ -66,46 +59,25 @@ class OrganizerPaymentsBody extends StatelessWidget {
             child: _BillSpotlight(
               bill: null,
               currencyCode: state.currencyCode,
-              onPay: null,
+              now: state.now,
             ),
           )
         else
           _BillSpotlight(
             bill: state.currentBill,
             currencyCode: state.currencyCode,
-            onPay: onPay,
+            now: state.now,
           ),
         CatchSurface(
+          key: const ValueKey<String>('payments-plan'),
           child: CatchStack(
             children: [
-              CatchStack(
-                direction: CatchStackDirection.row,
-                justify: CatchStackJustify.between,
-                align: CatchStackAlign.center,
-                children: [
-                  Flexible(
-                    child: CatchText(
-                      l10n.hostOrganizerPlanTitle,
-                      variant: CatchTextVariant.titleRow,
-                    ),
-                  ),
-                  CatchButton(
-                    key: const ValueKey<String>('payments-compare-plans'),
-                    label: l10n.hostOrganizerPlanCompare,
-                    variant: CatchButtonVariant.quiet,
-                    size: CatchButtonSize.sm,
-                    trailing: CatchIcon(CatchIcons.openExternal),
-                    onPressed: () =>
-                        onAction(OrganizerPaymentsAction.comparePlans),
-                  ),
-                ],
+              CatchText(
+                l10n.hostOrganizerPlanTitle,
+                variant: CatchTextVariant.titleRow,
               ),
               ?_TrialStatusLine.of(state.trial),
-              CatchText(
-                l10n.hostOrganizerPlanBody,
-                variant: CatchTextVariant.bodySmall,
-                tone: CatchTextTone.secondary,
-              ),
+              _PlanStatusLine(plan: state.plan),
             ],
           ),
         ),
@@ -118,7 +90,6 @@ class OrganizerPaymentsBody extends StatelessWidget {
                 bill: bill,
                 currencyCode: state.currencyCode,
                 now: state.now,
-                onPay: () => onPay(bill),
               ),
           ],
         ),
@@ -345,18 +316,54 @@ class _TrialStatusLine extends StatelessWidget {
   }
 }
 
-/// The newest Catch bill in the courts spotlight: its amount, what it was
-/// on, how close it came to the cap, and Pay when it is due.
+/// Which plan the organizer is on, as neutral status. Tools-only is chosen and
+/// paid on the web; the app never shows its price or a way to buy it (App
+/// Store guideline 3.1.3(f)).
+class _PlanStatusLine extends StatelessWidget {
+  const _PlanStatusLine({required this.plan});
+
+  final HostPlanStatus plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String day(DateTime? date) =>
+        date == null ? '' : DateFormat.yMMMd(locale).format(date);
+    final toolsOnly =
+        plan.kind == HostPlanKind.toolsOnly &&
+        plan.state == HostPlanState.active;
+    final endsAt = plan.endsAt;
+    final text = !toolsOnly
+        ? l10n.hostOrganizerPlanTicketing
+        : endsAt != null
+        ? l10n.hostOrganizerPlanToolsOnlyUntil(date: day(endsAt))
+        : plan.startsAt != null && plan.startsAt!.isAfter(DateTime.now())
+        ? l10n.hostOrganizerPlanToolsOnlyFrom(date: day(plan.startsAt))
+        : l10n.hostOrganizerPlanToolsOnly;
+    return CatchText(
+      text,
+      key: const ValueKey<String>('payments-plan-status'),
+      variant: CatchTextVariant.bodySmall,
+      tone: CatchTextTone.secondary,
+    );
+  }
+}
+
+/// The newest Catch bill in the courts spotlight, as status only: the period,
+/// whether it is due, overdue or settled, and the sales it was on. Catch's
+/// charges, the cap and paying stay off the app (App Store guideline
+/// 3.1.3(f)); the bill and its invoice reach the host by email.
 class _BillSpotlight extends StatelessWidget {
   const _BillSpotlight({
     required this.bill,
     required this.currencyCode,
-    required this.onPay,
+    required this.now,
   });
 
   final HostOrganizerBill? bill;
   final String currencyCode;
-  final ValueChanged<HostOrganizerBill>? onPay;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -364,9 +371,20 @@ class _BillSpotlight extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final money = hostOrganizerMoney(locale, currencyCode);
     final bill = this.bill;
-    final onPay = this.onPay;
-    final cap = bill?.capMinor;
     final dueAt = bill?.dueAt;
+    final day = DateFormat.MMMMd(locale);
+    final status = switch (bill?.status) {
+      null => l10n.hostOrganizerBillSpotlightNone,
+      HostOrganizerBillStatus.sent
+          when bill!.isOverdueAt(now) && dueAt != null =>
+        l10n.hostOrganizerBillSpotlightOverdue(date: day.format(dueAt)),
+      HostOrganizerBillStatus.sent when dueAt != null =>
+        l10n.hostOrganizerBillSpotlightDue(date: day.format(dueAt)),
+      HostOrganizerBillStatus.sent => l10n.hostOrganizerBillDue,
+      HostOrganizerBillStatus.paid => l10n.hostOrganizerBillPaid,
+      HostOrganizerBillStatus.writtenOff ||
+      HostOrganizerBillStatus.free => l10n.hostOrganizerBillSpotlightSettled,
+    };
     return CatchSurface(
       block: CatchSurfaceBlock.spotlight,
       color: CatchSurfaceColor.courts,
@@ -381,60 +399,22 @@ class _BillSpotlight extends StatelessWidget {
             variant: CatchTextVariant.labelKicker,
           ),
           CatchText(
-            money.format((bill?.billMinor ?? 0) / 100),
-            variant: CatchTextVariant.displayTitle,
-            numeric: true,
+            status,
+            key: const ValueKey<String>('payments-bill-status'),
+            variant: CatchTextVariant.displaySection,
           ),
           CatchText(
             bill == null
                 ? l10n.hostOrganizerBillNoneBody
-                : dueAt != null && bill.status == HostOrganizerBillStatus.sent
-                ? l10n.hostOrganizerBillBodyDue(
+                : bill.status == HostOrganizerBillStatus.sent
+                ? l10n.hostOrganizerBillEmailedBody(
                     sales: money.format(bill.salesMinor / 100),
-                    date: DateFormat.MMMMd(locale).format(dueAt),
                   )
                 : l10n.hostOrganizerBillBody(
                     sales: money.format(bill.salesMinor / 100),
                   ),
             variant: CatchTextVariant.bodySmall,
           ),
-          if (bill != null && cap != null && cap > 0) ...[
-            CatchMeter(
-              value: bill.commissionMinor.toDouble(),
-              max: cap * 1.2,
-              limit: cap.toDouble(),
-              variant: CatchMeterVariant.cap,
-              size: CatchMeterSize.lg,
-              label: l10n.hostOrganizerBillMeter,
-            ),
-            CatchText(
-              bill.capped || bill.commissionMinor >= cap
-                  ? l10n.hostOrganizerBillCapReached(
-                      cap: money.format(cap / 100),
-                    )
-                  : l10n.hostOrganizerBillCapLeft(
-                      remaining: money.format(
-                        (cap - bill.commissionMinor) / 100,
-                      ),
-                      cap: money.format(cap / 100),
-                    ),
-              variant: CatchTextVariant.labelKicker,
-            ),
-          ],
-          if (bill != null && bill.canPay && onPay != null)
-            CatchStack(
-              direction: CatchStackDirection.row,
-              children: [
-                CatchButton(
-                  key: const ValueKey<String>('payments-pay-bill'),
-                  label: l10n.hostOrganizerBillPay,
-                  size: CatchButtonSize.sm,
-                  variant: CatchButtonVariant.light,
-                  trailing: CatchIcon(CatchIcons.openExternal),
-                  onPressed: () => onPay(bill),
-                ),
-              ],
-            ),
         ],
       ),
     );

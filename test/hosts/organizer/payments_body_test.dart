@@ -9,25 +9,22 @@ import 'organizer_fixtures.dart';
 
 class _Calls {
   final actions = <OrganizerPaymentsAction>[];
-  final paid = <HostOrganizerBill>[];
 }
 
 Future<_Calls> _pump(WidgetTester tester, OrganizerPaymentsState state) async {
   final calls = _Calls();
   await pumpOrganizerBody(
     tester,
-    OrganizerPaymentsBody(
-      state: state,
-      onAction: calls.actions.add,
-      onPay: calls.paid.add,
-    ),
+    OrganizerPaymentsBody(state: state, onAction: calls.actions.add),
   );
   return calls;
 }
 
 void main() {
-  testWidgets('an owner sees Razorpay, the bill and its cap, the plan, the '
-      'bills and set-up', (tester) async {
+  testWidgets('an owner sees Razorpay, the bill status, the plan, the bills '
+      'and set-up, with no Catch price and no way to pay or buy', (
+    tester,
+  ) async {
     final current = organizerBill();
     final calls = await _pump(
       tester,
@@ -58,29 +55,50 @@ void main() {
     expect(find.text('Guests pay you directly'), findsOneWidget);
     expect(find.text('Connected'), findsWidgets);
     expect(find.text('Your Catch bill · October 2026'), findsOneWidget);
-    expect(find.text('₹7,400'), findsWidgets);
-    expect(
-      find.text(
-        '₹2,600 to the ₹10,000 cap. After that, nothing more this cycle.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Due November 15'), findsOneWidget);
+    expect(find.textContaining('Catch emailed you this bill.'), findsOneWidget);
     expect(find.text('Your plan'), findsOneWidget);
+    expect(find.text('Ticketing plan'), findsOneWidget);
     expect(find.text('Due'), findsOneWidget);
     expect(find.text('Paid'), findsOneWidget);
     expect(find.text('Free'), findsOneWidget);
     expect(find.text('Your first 30 days'), findsOneWidget);
+    // App Store guideline 3.1.3(f): no Catch price, cap, Pay or plan link.
+    expect(find.text('₹7,400'), findsNothing);
+    expect(find.textContaining('cap.'), findsNothing);
+    expect(find.text('Compare plans'), findsNothing);
+    expect(find.byKey(const ValueKey('payments-pay-bill')), findsNothing);
+    expect(find.byKey(const ValueKey('payments-compare-plans')), findsNothing);
 
-    await tester.tap(find.text('Compare plans'));
-    await tester.tap(find.byKey(const ValueKey('payments-pay-bill')));
     await tester.tap(find.byKey(const ValueKey('payments-row-razorpay')));
     await tester.tap(find.text('Refunds'));
     expect(calls.actions, [
-      OrganizerPaymentsAction.comparePlans,
       OrganizerPaymentsAction.disconnect,
       OrganizerPaymentsAction.refunds,
     ]);
-    expect(calls.paid, [current]);
+  });
+
+  testWidgets('the plan shows tools-only as status, never its price', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      OrganizerPaymentsState(
+        isOwner: true,
+        currencyCode: 'INR',
+        now: organizerNow,
+        setup: razorpaySetup(),
+        bills: const [],
+        plan: HostPlanStatus(
+          kind: HostPlanKind.toolsOnly,
+          state: HostPlanState.active,
+          startsAt: DateTime(2026, 10),
+          endsAt: DateTime(2027, 1, 8),
+        ),
+      ),
+    );
+    expect(find.text('Tools-only plan until Jan 8, 2027'), findsOneWidget);
+    expect(find.text('No bills yet'), findsOneWidget);
   });
 
   testWidgets('without a connection the tile offers Connect Razorpay', (

@@ -359,7 +359,8 @@ abstract final class EventSuccessPlaybookLibrary {
     capacity: EventCapacityGuidance(
       min: 8,
       max: 40,
-      rationale: 'A moving group stays manageable for one host and a few stops.',
+      rationale:
+          'A moving group stays manageable for one host and a few stops.',
     ),
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
@@ -384,7 +385,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 15,
         hostInstruction:
             'Check guests in and send each one to say hello to someone they have not met.',
-        attendeeExperience: 'Meet one person, check each other in, and start the night in a mixed group.',
+        attendeeExperience:
+            'Meet one person, check each other in, and start the night in a mixed group.',
         moduleIds: ['qr_check_in'],
       ),
       EventRunOfShowStep(
@@ -410,7 +412,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 10,
         hostInstruction:
             'Mark who left with the group and who departed, then move on.',
-        attendeeExperience: 'Get one easy prompt for the walk to the next stop.',
+        attendeeExperience:
+            'Get one easy prompt for the walk to the next stop.',
         moduleIds: ['social_missions'],
       ),
       EventRunOfShowStep(
