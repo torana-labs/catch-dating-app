@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -95,6 +96,7 @@ HostInsightsState hostInsightsStateFor(
     String id,
     HostInsightsStatKind kind, {
     String? currencyCode,
+    HostAnalyticsFigure? figure,
   }) {
     final card = cards[id];
     if (card == null || card.status == HostAnalyticsMetricStatus.missing) {
@@ -105,6 +107,7 @@ HostInsightsState hostInsightsStateFor(
       value: card.value,
       previousValue: card.previousValue,
       currencyCode: currencyCode,
+      figure: figure,
     );
   }
 
@@ -126,6 +129,12 @@ HostInsightsState hostInsightsStateFor(
         HostInsightsStatKind.ticketSales,
         currencyCode: currencyCode,
       ),
+      ?stat(
+        HostAnalyticsMetricIds.cameBackRate,
+        HostInsightsStatKind.cameBack,
+        figure: HostAnalyticsFigure.percent,
+      ),
+      ?stat(HostAnalyticsMetricIds.followers, HostInsightsStatKind.followers),
     ]),
     bars: List.unmodifiable([
       for (final point in report.trend)

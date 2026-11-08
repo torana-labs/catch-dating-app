@@ -16,6 +16,9 @@ enum HostAnalyticsFigure {
 
   /// A rating out of five to one decimal: "4.8".
   rating,
+
+  /// A whole percentage: "42%".
+  percent,
 }
 
 /// One analytics figure as a system stat: the caller's [label], the value,
@@ -80,6 +83,9 @@ class HostAnalyticsMetricTile extends StatelessWidget {
                 '0.0',
                 locale,
               ).format(value),
+              HostAnalyticsFigure.percent => NumberFormat.percentPattern(
+                locale,
+              ).format(value / 100),
             },
       note:
           note ??
