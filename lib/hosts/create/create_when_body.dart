@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
-import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -133,15 +132,15 @@ class CreateWhenBody extends StatelessWidget {
         ),
         if (onRepeat != null && picked != null && state.eventId != null)
           CatchIndexRow(
-            title: CreateSettingsCopy.repeatOn(
-              DateFormat.EEEE(locale).format(picked),
+            title: context.l10n.hostCreateRepeatOn(
+              weekday: DateFormat.EEEE(locale).format(picked),
             ),
-            subtitle: CreateSettingsCopy.repeatBody,
+            subtitle: context.l10n.hostCreateRepeatBody,
             onTap: null,
             trailing: CatchToggleInput(
               key: const ValueKey<String>('create-repeat-weekly'),
               value: state.repeatWeekly,
-              semanticLabel: CreateSettingsCopy.repeat,
+              semanticLabel: context.l10n.hostCreateRepeat,
               contractExemption:
                   'Sets up the weekly series when the event publishes.',
               onChanged: onRepeat,

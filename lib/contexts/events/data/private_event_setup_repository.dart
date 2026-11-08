@@ -58,12 +58,15 @@ class PrivateEventSetupRepository {
   /// Creates a weekly series from one set of basics: [basics]' date is the
   /// first event, each later one a week after the one before. Each event has
   /// its own receipt under `$requestId-<index>`, so retrying the same
-  /// [requestId] replays the events already made.
+  /// [requestId] replays the events already made. [sourceEventId], the
+  /// event the series repeats, is tagged as its first (index 0) and the new
+  /// events count on from 1.
   Future<PrivateEventSeriesReceipt> createSeries({
     required String organizerId,
     required String requestId,
     required PrivateEventBasics basics,
     required int count,
+    String? sourceEventId,
   }) {
     if (!basics.isValid || count < 2 || count > 8 || requestId.length > 124) {
       throw ArgumentError.value(basics, 'basics', 'Invalid series');
@@ -85,6 +88,7 @@ class PrivateEventSetupRepository {
             .call<Object?>({
               'organizerId': organizerId,
               'requestId': requestId,
+              'sourceEventId': ?sourceEventId,
               'template': basics.toJson(),
               'cadence': {
                 'kind': 'weekly',

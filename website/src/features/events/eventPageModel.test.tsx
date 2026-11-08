@@ -136,4 +136,18 @@ describe("buildEventPageView", () => {
     expect(page.moments).toBeNull();
     expect(page.goodToKnow.map((item) => item.key)).not.toContain("cancellation");
   });
+
+  it("honours the host's guest settings: hidden guest list, hidden price, tickets sold elsewhere", () => {
+    const withSettings = (settings: Record<string, unknown>) => {
+      const event = {...fullEventPage.item.event, ...settings};
+      return view({...fullEventPage, item: {...fullEventPage.item, event} as EventPageData["item"]});
+    };
+    expect(withSettings({showGuestList: false}).going).toBeNull();
+    const hidden = withSettings({priceHidden: true});
+    expect(hidden.priceLabel).toBe("Price when booking opens");
+    expect(hidden.facts.price).toEqual({label: "Price", value: "Price when booking opens", note: undefined});
+    const elsewhere = withSettings({externalBooking: {provider: "luma", url: "https://lu.ma/salt-air"}});
+    expect(elsewhere.booking).toEqual({kind: "external", url: "https://lu.ma/salt-air", label: "Luma", open: true});
+    expect(elsewhere.facts.price.note).toBe("Tickets on Luma");
+  });
 });

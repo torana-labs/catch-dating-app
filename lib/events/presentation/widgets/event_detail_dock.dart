@@ -18,7 +18,9 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
@@ -413,6 +415,30 @@ class EventDetailDock extends ConsumerWidget {
           return;
         case EventDetailBookingDockAction.acceptWaitlistOffer:
           runAcceptWaitlistOfferAction(context);
+          return;
+        case EventDetailBookingDockAction.openExternalBooking:
+          final uri = event.externalBookingUri;
+          if (uri == null) return;
+          // Tracked as Explore tracks an imported event's outbound link.
+          final platform = event.externalBooking!.provider;
+          ref
+              .read(appAnalyticsProvider)
+              .logEvent(
+                AnalyticsEvents.exploreEventOpened,
+                parameters: {
+                  AnalyticsParameters.eventId: event.id,
+                  AnalyticsParameters.exploreSource: context
+                      .l10n
+                      .exploreExploreScreenVisiblecopyExternalSupply,
+                  AnalyticsParameters.activityKind: event.activityKind.name,
+                  AnalyticsParameters.availabilityStatus: context
+                      .l10n
+                      .exploreExploreScreenVisiblecopyExternalOutbound,
+                  context.l10n.exploreExploreScreenVisiblecopyExternalPlatform:
+                      externalBookingProviderToJson(platform),
+                },
+              );
+          unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
           return;
         case EventDetailBookingDockAction.declineWaitlistOffer:
           EventBookingController.declineWaitlistOfferMutation.run(

@@ -50,6 +50,7 @@ import {validateOfferEventTargetListCallableResponse} from
   "../../shared/generated/validators/offerEventTargetListOutput";
 
 import {setEventPublication as setPublication} from "./publication";
+import {armDefaultMomentsOnPublish} from "./publishMoments";
 import {validateSetEventPublicationCallablePayload} from
   "../../shared/generated/validators/setEventPublicationInput";
 import {validateEventPublicationCallableResponse} from
@@ -223,6 +224,13 @@ export async function setEventPublicationHandler(
     deps: deps.service(db)});
   if (!validateEventPublicationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event publication result.");
+  }
+  // The organizer's automatic-message defaults arm their moments once the
+  // event is public; each is create-only, so settings saves change nothing.
+  if (!result.replayed && result.publicationState === "published") {
+    await armDefaultMomentsOnPublish({db, eventId: command.eventId,
+      organizerId: command.organizerId, actorUid,
+      nowMillis: (deps.nowMillis ?? Date.now)()});
   }
   return result;
 }

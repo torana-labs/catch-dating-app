@@ -34,6 +34,9 @@ enum EventDetailBookingDockAction {
   leaveWaitlist,
   acceptWaitlistOffer,
   declineWaitlistOffer,
+
+  /// Tickets are sold elsewhere: open the organiser's booking page.
+  openExternalBooking,
 }
 
 enum EventDetailBookingDockButtonKey { book, cancelBooking, joinWaitlist }
@@ -336,6 +339,21 @@ EventDetailBookingDockState _baseBookingDockState({
       label: l10n.eventsEventDetailCtaLabelYouReIn,
       primaryAction: EventDetailBookingDockAction.none,
       leadingKind: EventDetailBookingDockLeadingKind.booked,
+      error: mutationState.error,
+    );
+  }
+  // Tickets sold elsewhere: Catch registration stays closed, so the dock
+  // links out to where guests buy them.
+  if (event.externalBookingUri != null) {
+    final platform = event.externalBooking!.provider.platformName;
+    return EventDetailBookingDockState(
+      label: platform == null
+          ? l10n.eventsEventDetailExternalBookingGetTickets
+          : l10n.eventsEventDetailExternalBookingGetTicketsOn(
+              platform: platform,
+            ),
+      primaryAction: EventDetailBookingDockAction.openExternalBooking,
+      buttonKey: EventDetailBookingDockButtonKey.book,
       error: mutationState.error,
     );
   }

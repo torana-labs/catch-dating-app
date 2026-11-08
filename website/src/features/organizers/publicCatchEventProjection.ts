@@ -90,6 +90,7 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
       ...(matchesJsonSchema(data.itinerary, displaySchemas.itinerary)
         ? {itinerary: data.itinerary as PublicCatchEvent["itinerary"]} : {}),
       ...publicGuestDetails(data, format, admission, constraints),
+      ...publicGuestSettings(data, mode),
       registrationAccess: restricted ? "restricted" : mode === "closed" ? "app" : "open",
       bookedCount: data.bookedCount,
       checkedInCount: count(data.checkedInCount) ? data.checkedInCount : 0,
@@ -114,7 +115,10 @@ export function projectPublicCatchEventSnapshot(snapshot: {
 }): LivePublicCatchEvent[] | null {
   if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites || snapshot.size > 400) return null;
   return snapshot.docs.flatMap((document) => {
-    const projected = projectLivePublicCatchEvent(document.id, document.data());
+    const data = document.data();
+    // The live listing feed leaves out link-only events, as the server lists do.
+    if (record(data)?.listing === "link") return [];
+    const projected = projectLivePublicCatchEvent(document.id, data);
     // A live listing arranges events for a page, as the server repositories do.
     return projected ? [{...projected, event: withoutDatingFraming(projected.event)}] : [];
   });
@@ -160,5 +164,31 @@ function publicGuestDetails(data: Record<string, unknown>, format: Record<string
       ? {waitlistAvailable: waitlist !== "disabled"} : {}),
     ...(["notApplicable", "flexible", "standard", "strict"].includes(String(cancellation))
       ? {cancellationPolicy: cancellation as PublicCatchEvent["cancellationPolicy"]} : {}),
+  };
+}
+
+const externalProviders = new Set(["generic", "luma", "eventbrite", "partiful", "posh",
+  "bookmyshow", "district", "sortmyscene", "airbnb"]);
+
+/** The host's guest settings: hidden guest list, price hidden until Catch
+ * registration opens, and tickets sold elsewhere. Each is left out at its
+ * default, so events without them project as before. */
+function publicGuestSettings(data: Record<string, unknown>, mode: string): Partial<PublicCatchEvent> {
+  const booking = record(data.externalBooking);
+  const provider = text(booking?.provider);
+  const url = text(booking?.url);
+  let external: PublicCatchEvent["externalBooking"] | undefined;
+  if (externalProviders.has(provider) && url.startsWith("https://") && url.length <= 2048) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === "https:" && !parsed.username && !parsed.password) {
+        external = {provider: provider as NonNullable<PublicCatchEvent["externalBooking"]>["provider"], url};
+      }
+    } catch { /* Omit a malformed ticket link. */ }
+  }
+  return {
+    ...(data.showGuestList === false ? {showGuestList: false as const} : {}),
+    ...(data.priceHiddenUntilBookingOpens === true && mode === "closed" ? {priceHidden: true as const} : {}),
+    ...(external ? {externalBooking: external} : {}),
   };
 }

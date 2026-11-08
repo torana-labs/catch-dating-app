@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_poster.dart';
-import 'package:catch_dating_app/hosts/events/event_settings_copy.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
 import 'package:catch_kernel/country_markets.dart';
@@ -123,8 +122,8 @@ class HostEventWorkspaceBody extends StatelessWidget {
           CatchIndexRow(
             key: const ValueKey<String>('host-event-ready-arrival'),
             title: state.arrivalReady!
-                ? HostEventSettingsCopy.arrivalReady
-                : HostEventSettingsCopy.arrivalNotReady,
+                ? context.l10n.hostEventSettingsArrivalReady
+                : context.l10n.hostEventSettingsArrivalNotReady,
             leading: state.arrivalReady! ? done : todo,
             onTap: null,
           ),
@@ -162,7 +161,7 @@ class HostEventWorkspaceBody extends StatelessWidget {
             subtitle: event.effectiveEventPolicy.usesInviteOnly
                 ? l10n.hostEventsPublishInvite
                 : event.listing == EventListing.link
-                ? HostEventSettingsCopy.linkTitle
+                ? context.l10n.hostEventSettingsLinkTitle
                 : l10n.hostEventsPublishEveryone,
             chevron: true,
             onTap: () => onAction(HostEventWorkspaceAction.publish),
@@ -198,7 +197,9 @@ class HostEventWorkspaceBody extends StatelessWidget {
             ),
             note: state.ticketsSold == null
                 ? null
-                : HostEventSettingsCopy.ticketsSold(state.ticketsSold!),
+                : context.l10n.hostEventSettingsTicketsSold(
+                    count: state.ticketsSold!,
+                  ),
           ),
       ],
     );

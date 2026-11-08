@@ -53,6 +53,7 @@ import {
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
+import {assertFollowersFirstAllows} from "./followersFirst";
 import {
   incrementInviteLinkCounterInTransaction,
   inviteAttributionWriteFields,
@@ -385,6 +386,13 @@ export async function signUpUserForEvent(
       admissionMode: pairHold ? "crossPathsPair" : "general",
       hasActiveCommunityMembership: membership?.state === "active",
     });
+    // Followers first: a paid booking was checked before payment, so its
+    // fulfilment never strands a captured payment here.
+    await assertFollowersFirstAllows({db, tx, event, userId,
+      nowMillis: Date.now(),
+      bypass: Boolean(options.paidBooking || pairHold || guestLink ||
+        options.hasValidInvite ||
+        hasHostApprovedJoinRequest(participationSnap.data()))});
 
     const scheduleClaim = await prepareUserEventScheduleClaimInTransaction(
       tx, db, {

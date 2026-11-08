@@ -14,6 +14,21 @@ extension ExternalBookingProviderX on ExternalBookingProvider {
     ExternalBookingProvider.catchPlatform => 'catch-native',
   };
 
+  /// The platform's own name, for "Get tickets on …"; null for a generic
+  /// link and for Catch itself.
+  String? get platformName => switch (this) {
+    ExternalBookingProvider.luma => 'Luma',
+    ExternalBookingProvider.eventbrite => 'Eventbrite',
+    ExternalBookingProvider.partiful => 'Partiful',
+    ExternalBookingProvider.posh => 'Posh',
+    ExternalBookingProvider.bookmyshow => 'BookMyShow',
+    ExternalBookingProvider.district => 'District',
+    ExternalBookingProvider.sortmyscene => 'Sort My Scene',
+    ExternalBookingProvider.airbnb => 'Airbnb',
+    ExternalBookingProvider.generic ||
+    ExternalBookingProvider.catchPlatform => null,
+  };
+
   static const externalValues = <ExternalBookingProvider>[
     ExternalBookingProvider.luma,
     ExternalBookingProvider.eventbrite,

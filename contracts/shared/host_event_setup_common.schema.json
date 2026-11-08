@@ -94,6 +94,11 @@
             {"$ref": "../embedded/event_external_booking.schema.json"},
             {"type": "null"}
           ]
+        },
+        "publishedBookingMode": {
+          "type": "string",
+          "enum": ["anyone", "followersFirst", "askFirst"],
+          "description": "Who can book, read from a published event's admission (askFirst when hosts approve each guest, followersFirst while followersFirstUntilMs is set). Left out for an unpublished event, whose choice is its booking preference."
         }
       }
     },

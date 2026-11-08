@@ -592,6 +592,7 @@ class CreateController extends _$CreateController {
           organizerId: args.organizer.id,
           requestId: '$_requestId-series',
           count: 8,
+          sourceEventId: state.eventId,
           basics: PrivateEventBasics(
             name: basics.name,
             city: basics.city,

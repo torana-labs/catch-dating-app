@@ -8,8 +8,9 @@ enum HostEventPublishStatus { loading, ready, missing, error }
 /// only the organizer's team while it is unpublished.
 enum HostEventVisibility { everyone, link, team }
 
-/// Who can book: first come first served, or the host approves each guest.
-enum HostEventBookingMode { anyone, askFirst }
+/// Who can book: first come first served, the organiser's followers before
+/// everyone else, or the host approves each guest.
+enum HostEventBookingMode { anyone, followersFirst, askFirst }
 
 /// Everything the publication screen shows, as plain values.
 @immutable
@@ -51,7 +52,8 @@ class HostEventPublishState {
   /// The saved booking choice; null when none is saved.
   final HostEventBookingMode? bookingMode;
 
-  /// Booking is an event preference, which only an unpublished event edits.
+  /// Who can book changes while the event is active: a published event
+  /// through its admission, an unpublished one as its booking preference.
   final bool canChangeBooking;
   final Object? error;
 

@@ -6,8 +6,8 @@ import type {PrivateEventSeriesCallableResponse as Result} from
   "../../shared/generated/privateEventSeriesCallableResponse";
 import {validateCreatePrivateEventSeriesCallablePayload} from
   "../../shared/generated/validators/createPrivateEventSeriesInput";
-import {createPrivateEventSetup, ProgressiveSetupDependencies} from
-  "./service";
+import {authorizeSetupManager, createPrivateEventSetup,
+  ProgressiveSetupDependencies} from "./service";
 
 const weekdays = ["sunday", "monday", "tuesday", "wednesday", "thursday",
   "friday", "saturday"] as const;
@@ -49,11 +49,17 @@ export async function createPrivateEventSeries(params: {
   }
   const seriesId = seriesIdFor(actorUid, command.organizerId,
     command.requestId);
+  // The event the series repeats is its first; the new ones count on.
+  const offset = command.sourceEventId === undefined ? 0 : 1;
+  if (command.sourceEventId !== undefined) {
+    await tagSeriesSource({actorUid, deps, seriesId,
+      organizerId: command.organizerId, eventId: command.sourceEventId});
+  }
   const eventIds: string[] = [];
   let replayed = true;
   for (let index = 0; index < command.cadence.count; index++) {
     const result = await createPrivateEventSetup({actorUid, deps,
-      series: {seriesId, seriesIndex: index},
+      series: {seriesId, seriesIndex: index + offset},
       command: {organizerId: command.organizerId,
         requestId: `${command.requestId}-${index}`,
         basics: {...command.template,
@@ -62,4 +68,45 @@ export async function createPrivateEventSeries(params: {
     replayed = replayed && result.replayed;
   }
   return {seriesId, eventIds, replayed};
+}
+
+/** Tags the event a series repeats with the series and index 0, under the
+ * current manager's authority. A retry finds it already tagged; an event
+ * already in another series is refused. The tag is series metadata, not a
+ * setup change, so the setup revision (which a publish in flight is fenced
+ * by) stays as it is.
+ */
+async function tagSeriesSource(params: {
+  actorUid: string;
+  deps: ProgressiveSetupDependencies;
+  seriesId: string;
+  organizerId: string;
+  eventId: string;
+}): Promise<void> {
+  const {actorUid, deps, seriesId, organizerId, eventId} = params;
+  const {db} = deps;
+  await db.runTransaction(async (tx) => {
+    const eventRef = db.collection("events").doc(eventId);
+    const [organizerSnap, deletedSnap, eventSnap] = await Promise.all([
+      tx.get(db.collection("organizers").doc(organizerId)),
+      tx.get(db.collection("deletedUsers").doc(actorUid)),
+      tx.get(eventRef),
+    ]);
+    authorizeSetupManager(organizerSnap, deletedSnap, actorUid);
+    const event = eventSnap.data();
+    if (!event || event.organizerId !== organizerId) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    if (event.seriesId === seriesId && event.seriesIndex === 0) return;
+    if (event.seriesId !== undefined) {
+      throw new HttpsError("failed-precondition",
+        "This event is already part of a series.");
+    }
+    if (event.status !== "active") {
+      throw new HttpsError("failed-precondition",
+        "Only an active event can start a series.");
+    }
+    tx.update(eventRef, {seriesId, seriesIndex: 0,
+      updatedAt: deps.serverTimestamp()});
+  });
 }

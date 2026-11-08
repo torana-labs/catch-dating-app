@@ -342,11 +342,12 @@ void main() {
       expect(calls, [HostEventVisibility.link, HostEventVisibility.team]);
     });
 
-    testWidgets('who can book saves only while the event is unpublished', (
+    testWidgets('who can book saves on published and unpublished events', (
       tester,
     ) async {
       final modes = <HostEventBookingMode>[];
       final switches = <bool>[];
+      // Without canChangeBooking (a cancelled event) the choice is inert.
       await _pump(
         tester,
         HostEventPublishBody(
@@ -357,10 +358,6 @@ void main() {
           onRetry: () {},
         ),
       );
-      expect(
-        find.text('Unpublish the event to change who can book'),
-        findsOneWidget,
-      );
       await tester.tap(find.text('Ask first'));
       expect(modes, isEmpty);
       await tester.tap(
@@ -368,22 +365,30 @@ void main() {
       );
       expect(switches, [false]);
 
-      await _pump(
-        tester,
-        HostEventPublishBody(
-          state: const HostEventPublishState(
-            status: HostEventPublishStatus.ready,
-            canPublish: true,
-            setupRevision: 2,
-            canChangeBooking: true,
+      for (final published in [true, false]) {
+        modes.clear();
+        await _pump(
+          tester,
+          HostEventPublishBody(
+            state: HostEventPublishState(
+              status: HostEventPublishStatus.ready,
+              published: published,
+              canPublish: true,
+              setupRevision: 2,
+              canChangeBooking: true,
+            ),
+            onVisibility: (_) {},
+            onBookingMode: modes.add,
+            onRetry: () {},
           ),
-          onVisibility: (_) {},
-          onBookingMode: modes.add,
-          onRetry: () {},
-        ),
-      );
-      await tester.tap(find.text('Ask first'));
-      expect(modes, [HostEventBookingMode.askFirst]);
+        );
+        await tester.tap(find.text('Ask first'));
+        await tester.tap(find.text('Followers first'));
+        expect(modes, [
+          HostEventBookingMode.askFirst,
+          HostEventBookingMode.followersFirst,
+        ]);
+      }
     });
 
     testWidgets('not written yet', (tester) async {

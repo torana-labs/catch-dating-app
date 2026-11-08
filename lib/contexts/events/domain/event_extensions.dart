@@ -25,6 +25,20 @@ extension EventX on Event {
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
   bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
   bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
+
+  /// The host hides the price until Catch registration opens.
+  bool get priceHiddenForGuests =>
+      priceHiddenUntilBookingOpens && !publicRegistrationEnabled;
+
+  /// Where guests buy tickets when the event sells them elsewhere; null for
+  /// events sold on Catch, or a link that is not https.
+  Uri? get externalBookingUri {
+    final uri = Uri.tryParse(externalBooking?.url.trim() ?? '');
+    return uri != null && uri.isScheme('https') && uri.host.isNotEmpty
+        ? uri
+        : null;
+  }
+
   // The path parameters of the event detail routes.
   Map<String, String> get detailRouteParameters => {
     'organizerId': organizerId,

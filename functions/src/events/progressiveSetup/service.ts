@@ -127,6 +127,7 @@ export async function createPrivateEventSetup(params: {
       waitlistedCohortCounts: {},
       ...(params.series ? {seriesId: params.series.seriesId,
         seriesIndex: params.series.seriesIndex} : {}),
+      ...defaultBookingQuestions(defaultsSnap.data()),
     };
     tx.create(eventRef, event);
     tx.create(receiptRef, {
@@ -373,4 +374,23 @@ export function organizerDefaults(organizerId: string,
     ...(projected.organizerDefaultsRevision === null ? {} :
       {revision: projected.organizerDefaultsRevision}),
   };
+}
+
+const questionId = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
+
+/** A new event starts with the organizer's default booking questions
+ * (`eventSetup.askedAtBooking`). Defaults that are missing, empty or not the
+ * validated shape seed nothing.
+ */
+export function defaultBookingQuestions(
+  raw: FirebaseFirestore.DocumentData | undefined
+): {bookingQuestionIds?: string[]} {
+  const ids = (raw?.eventSetup as {askedAtBooking?: unknown} | undefined)
+    ?.askedAtBooking;
+  if (!Array.isArray(ids) || ids.length < 1 || ids.length > 20 ||
+      new Set(ids).size !== ids.length ||
+      !ids.every((id) => typeof id === "string" && questionId.test(id))) {
+    return {};
+  }
+  return {bookingQuestionIds: [...ids] as string[]};
 }

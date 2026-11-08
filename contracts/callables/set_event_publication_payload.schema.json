@@ -46,7 +46,16 @@
     },
     "priceHiddenUntilBookingOpens": {
       "type": "boolean"
+    },
+    "bookingMode": {
+      "type": "string",
+      "enum": [
+        "anyone",
+        "followersFirst",
+        "askFirst"
+      ],
+      "description": "Who can book a published event, saved under the published-edit rules (setup-revision fence; admission cannot change while places are reserved). An unpublished event saves it as a booking preference instead."
     }
   },
-  "description": "Changes who can see and book an event. publicationState is the publication boundary; listing, showGuestList and priceHiddenUntilBookingOpens are optional settings saved with it. Sending the current publicationState with at least one changed setting saves only the settings and leaves registration as it is."
+  "description": "Changes who can see and book an event. publicationState is the publication boundary; listing, showGuestList and priceHiddenUntilBookingOpens are optional settings saved with it. Sending the current publicationState with at least one changed setting saves only the settings and leaves registration as it is. bookingMode is accepted only while the event is and stays published."
 }

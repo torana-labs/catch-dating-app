@@ -117,6 +117,7 @@ abstract class Event with _$Event {
     @Default(true) bool showGuestList,
     @Default(false) bool priceHiddenUntilBookingOpens,
     @Default(true) bool planVisibleToGuests,
+    @JsonKey(includeIfNull: false) EventExternalBooking? externalBooking,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,
@@ -154,6 +155,21 @@ abstract class EventOrigin with _$EventOrigin {
 
   factory EventOrigin.fromJson(Map<String, dynamic> json) =>
       _$EventOriginFromJson(json);
+}
+
+@freezed
+abstract class EventExternalBooking with _$EventExternalBooking {
+  const factory EventExternalBooking({
+    @JsonKey(
+      fromJson: externalBookingProviderFromJson,
+      toJson: externalBookingProviderToJson,
+    )
+    required ExternalBookingProvider provider,
+    required String url,
+  }) = _EventExternalBooking;
+
+  factory EventExternalBooking.fromJson(Map<String, dynamic> json) =>
+      _$EventExternalBookingFromJson(json);
 }
 
 @freezed

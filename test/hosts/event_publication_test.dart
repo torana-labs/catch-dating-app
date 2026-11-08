@@ -334,6 +334,34 @@ void main() {
       () => PrivateEventSettings.fromView({'listing': 'invite'}),
       throwsFormatException,
     );
+    const booking = EventPublicationRequest(
+      organizerId: 'org1',
+      eventId: 'event1',
+      requestId: 'publication-booking',
+      expectedSetupRevision: 3,
+      publicationState: 'published',
+      bookingMode: 'followersFirst',
+    );
+    expect(
+      EventPublicationRequest.fromJson(booking.toJson()).bookingMode,
+      'followersFirst',
+    );
+    expect(
+      () => EventPublicationRequest.fromJson({
+        ...booking.toJson(),
+        'bookingMode': 'everyone',
+      }),
+      throwsFormatException,
+    );
+    expect(
+      PrivateEventSettings.fromView({
+        'listing': 'listed',
+        'showGuestList': true,
+        'priceHiddenUntilBookingOpens': false,
+        'publishedBookingMode': 'askFirst',
+      }).publishedBookingMode,
+      'askFirst',
+    );
   });
 
   test('publication request journal rejects unknown authority fields', () {
