@@ -43650,6 +43650,783 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Members'**
   String get hostMembershipsRosterMembers;
+
+  /// People tab title and pane title.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostPeopleTitle;
+
+  /// People top bar button that adds a person.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostPeopleAdd;
+
+  /// People, Messages and Forms segmented control label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'People views'**
+  String get hostPeopleViewsLabel;
+
+  /// People tab view: the directory.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostPeopleViewPeople;
+
+  /// People tab view: conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostPeopleViewMessages;
+
+  /// People tab view: forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms'**
+  String get hostPeopleViewForms;
+
+  /// Label of the People filter rail.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get hostPeopleShowLabel;
+
+  /// People filter: everyone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get hostPeopleFilterEveryone;
+
+  /// People filter: regulars.
+  ///
+  /// In en, this message translates to:
+  /// **'Regulars'**
+  String get hostPeopleFilterRegulars;
+
+  /// People filter: new to the organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostPeopleFilterNew;
+
+  /// People filter: regulars who stopped coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Drifting'**
+  String get hostPeopleFilterDrifting;
+
+  /// Person row badge: a regular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get hostPeopleBadgeRegular;
+
+  /// Person row badge: new to the organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostPeopleBadgeNew;
+
+  /// Person row badge: a regular who stopped coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Drifting'**
+  String get hostPeopleBadgeDrifting;
+
+  /// Kicker over the People list with the filter and how many it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{filter} · {count}, most recent first'**
+  String hostPeopleKicker({required String filter, required String count});
+
+  /// Kicker over the People list with the filter.
+  ///
+  /// In en, this message translates to:
+  /// **'{filter}, most recent first'**
+  String hostPeopleKickerPlain({required String filter});
+
+  /// Kicker over the People list while searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching “{query}”, most recent first'**
+  String hostPeopleKickerSearch({required String query});
+
+  /// A count that is a lower bound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+'**
+  String hostPeopleCountAtLeast({required String count});
+
+  /// Person row: nights they came and their last night.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night} other{{count} nights}} · last on {date}'**
+  String hostPeopleRowNightsLast({required int count, required String date});
+
+  /// Person row: nights they came.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night} other{{count} nights}}'**
+  String hostPeopleRowNights({required int count});
+
+  /// Person row: they have not come to a night.
+  ///
+  /// In en, this message translates to:
+  /// **'No nights yet'**
+  String get hostPeopleRowNoNights;
+
+  /// People list empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody here yet.'**
+  String get hostPeopleEmpty;
+
+  /// People list empty state while searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody matches that search.'**
+  String get hostPeopleEmptySearch;
+
+  /// People read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your people'**
+  String get hostPeopleErrorTitle;
+
+  /// People read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleErrorBody;
+
+  /// Retry button on People screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostPeopleRetry;
+
+  /// Loads the next page of people.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get hostPeopleShowMore;
+
+  /// Button that opens a message or conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostPeopleMessage;
+
+  /// Search placeholder with the directory size.
+  ///
+  /// In en, this message translates to:
+  /// **'Search {count} people'**
+  String hostPeopleSearch({required String count});
+
+  /// Search placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people'**
+  String get hostPeopleSearchPlain;
+
+  /// Search field label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people'**
+  String get hostPeopleSearchLabel;
+
+  /// Detail pane before a person is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick someone to see them here.'**
+  String get hostPeopleNobodySelected;
+
+  /// People tab when the host runs no organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'No organiser yet'**
+  String get hostPeopleNoOrganizerTitle;
+
+  /// People tab when the host runs no organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an organiser to see the people who come to your nights.'**
+  String get hostPeopleNoOrganizerBody;
+
+  /// Back button to the People list.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to People'**
+  String get hostPeopleBackToPeople;
+
+  /// Back button.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostPeopleBack;
+
+  /// Close button.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostPeopleClose;
+
+  /// Person menu label.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get hostPeopleMoreActions;
+
+  /// Person menu action and sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note'**
+  String get hostPeopleAddNote;
+
+  /// Saves a note on a person.
+  ///
+  /// In en, this message translates to:
+  /// **'Save note'**
+  String get hostPeopleAddNoteSave;
+
+  /// Note field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get hostPeopleNoteField;
+
+  /// Chip and sheet title that adds a tag to a person.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a tag'**
+  String get hostPeopleAddTag;
+
+  /// Saves a tag on a person.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tag'**
+  String get hostPeopleAddTagSave;
+
+  /// Tag field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag'**
+  String get hostPeopleTagField;
+
+  /// Notice when a person already has the most tags.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tags is the most one person can have.'**
+  String hostPeopleTagLimit({required int count});
+
+  /// Person line: the month of their first night.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming since {month}'**
+  String hostPeoplePersonSince({required String month});
+
+  /// Person line when they have no nights.
+  ///
+  /// In en, this message translates to:
+  /// **'No nights with you yet'**
+  String get hostPeoplePersonNoNights;
+
+  /// Person read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load this person'**
+  String get hostPeoplePersonErrorTitle;
+
+  /// Person read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeoplePersonErrorBody;
+
+  /// Person stat: nights they came.
+  ///
+  /// In en, this message translates to:
+  /// **'Nights'**
+  String get hostPeopleStatNights;
+
+  /// Person stat note: the month of their first night.
+  ///
+  /// In en, this message translates to:
+  /// **'since {month}'**
+  String hostPeopleStatNightsSince({required String month});
+
+  /// Person stat: what they spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get hostPeopleStatSpent;
+
+  /// Person stat note for Spent.
+  ///
+  /// In en, this message translates to:
+  /// **'on tickets'**
+  String get hostPeopleStatSpentNote;
+
+  /// Person stat: nights they booked and missed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get hostPeopleStatMissed;
+
+  /// Person stat note when they never missed a night.
+  ///
+  /// In en, this message translates to:
+  /// **'never a no-show'**
+  String get hostPeopleStatMissedNever;
+
+  /// Person section: the team notes and tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes and tags'**
+  String get hostPeopleNotesTitle;
+
+  /// Person section note: notes and tags are private.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your team sees these'**
+  String get hostPeopleNotesNote;
+
+  /// Person section: their nights.
+  ///
+  /// In en, this message translates to:
+  /// **'Nights with you'**
+  String get hostPeopleNightsTitle;
+
+  /// Person nights empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No nights yet.'**
+  String get hostPeopleNightsEmpty;
+
+  /// Night outcome: booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostPeopleNightBooked;
+
+  /// Night outcome: came.
+  ///
+  /// In en, this message translates to:
+  /// **'Came'**
+  String get hostPeopleNightCame;
+
+  /// Night outcome: cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostPeopleNightCancelled;
+
+  /// Night outcome: did not come.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get hostPeopleNightMissed;
+
+  /// Messages chip: every conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostPeopleMessagesAll;
+
+  /// Messages chip: conversations waiting on the host.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get hostPeopleMessagesUnread;
+
+  /// Messages chip and badge: conversations about tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostPeopleMessagesTonight;
+
+  /// Automatic messages row note.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} on · {sent} sent this month'**
+  String hostPeopleMessagesAutomationsNote({
+    required String on,
+    required String sent,
+  });
+
+  /// Messages empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet.'**
+  String get hostPeopleMessagesEmpty;
+
+  /// Messages empty state for Unread.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing waiting on you.'**
+  String get hostPeopleMessagesEmptyUnread;
+
+  /// Messages empty state for Tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages about tonight.'**
+  String get hostPeopleMessagesEmptyTonight;
+
+  /// Messages read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your messages'**
+  String get hostPeopleMessagesErrorTitle;
+
+  /// Messages read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleMessagesErrorBody;
+
+  /// Automatic messages title and Messages row.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic messages'**
+  String get hostPeopleAutomationsTitle;
+
+  /// Automatic messages top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'On Catch and WhatsApp'**
+  String get hostPeopleAutomationsKicker;
+
+  /// Switch row: the WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages on WhatsApp'**
+  String get hostPeopleAutomationsWhatsapp;
+
+  /// Switch row note for the WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. You pay what WhatsApp charges, nothing added, on your Catch bill.'**
+  String get hostPeopleAutomationsWhatsappNote;
+
+  /// Automatic messages stat: runs this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent this month'**
+  String get hostPeopleAutomationsSent;
+
+  /// Automatic messages section: rules that run around a night.
+  ///
+  /// In en, this message translates to:
+  /// **'Around each event'**
+  String get hostPeopleAutomationsAroundTitle;
+
+  /// Automatic messages section kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'For every event.'**
+  String get hostPeopleAutomationsAroundKicker;
+
+  /// Automatic messages section: rules that run on form answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping people coming'**
+  String get hostPeopleAutomationsKeepingTitle;
+
+  /// Automatic messages section kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone answers one of your forms.'**
+  String get hostPeopleAutomationsKeepingKicker;
+
+  /// Automatic messages section empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'None yet.'**
+  String get hostPeopleAutomationsEmpty;
+
+  /// Button that starts a new message.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an automatic message'**
+  String get hostPeopleAutomationsAdd;
+
+  /// When a rule runs: attendance.
+  ///
+  /// In en, this message translates to:
+  /// **'After someone comes to a night'**
+  String get hostPeopleAutomationsWhenAttended;
+
+  /// When a rule runs: an application accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'When you let someone in'**
+  String get hostPeopleAutomationsWhenAccepted;
+
+  /// When a rule runs: a form answer.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone answers a form'**
+  String get hostPeopleAutomationsWhenAnswered;
+
+  /// When a rule runs: a withdrawn answer.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone takes back an answer'**
+  String get hostPeopleAutomationsWhenWithdrawn;
+
+  /// When a rule runs: a matching answer.
+  ///
+  /// In en, this message translates to:
+  /// **'When an answer matches'**
+  String get hostPeopleAutomationsWhenMatches;
+
+  /// Automatic messages read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your automatic messages'**
+  String get hostPeopleAutomationsErrorTitle;
+
+  /// Automatic messages read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleAutomationsErrorBody;
+
+  /// Compose kicker: who the message is from.
+  ///
+  /// In en, this message translates to:
+  /// **'From {name} on Catch'**
+  String hostPeopleComposeFrom({required String name});
+
+  /// Compose title.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get hostPeopleComposeTitle;
+
+  /// Compose audience: booked guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostPeopleComposeBooked;
+
+  /// Compose audience: the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get hostPeopleComposeWaitlist;
+
+  /// Compose audience: booked guests and the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked and waitlist'**
+  String get hostPeopleComposeEveryone;
+
+  /// Compose audience size.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nobody yet} =1{1 person} other{{count} people}}'**
+  String hostPeopleComposePeople({required int count});
+
+  /// Row action that changes a choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostPeopleChange;
+
+  /// Compose message field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostPeopleComposeMessage;
+
+  /// Compose message placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Write what everyone needs to know'**
+  String get hostPeopleComposePlaceholder;
+
+  /// Compose label over the event the message goes to.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostPeopleComposeEvent;
+
+  /// Compose dock button.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Send} =1{Send to 1} other{Send to {count}}}'**
+  String hostPeopleComposeSend({required int count});
+
+  /// Notice after a message is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Sent to 1 person} other{Sent to {count} people}}'**
+  String hostPeopleComposeSent({required int count});
+
+  /// Compose when there is no upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'No event to message about'**
+  String get hostPeopleComposeNoEventTitle;
+
+  /// Compose when there is no upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages go to the guests of an event. Make one first.'**
+  String get hostPeopleComposeNoEventBody;
+
+  /// Compose read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your events'**
+  String get hostPeopleComposeErrorTitle;
+
+  /// Compose read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleComposeErrorBody;
+
+  /// Saved group top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved group'**
+  String get hostPeopleGroupKicker;
+
+  /// Saved group title while it is new.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get hostPeopleGroupNew;
+
+  /// Saved group rule tile kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'People who'**
+  String get hostPeopleGroupPeopleWho;
+
+  /// Saved group rule: the event they went to.
+  ///
+  /// In en, this message translates to:
+  /// **'Went to'**
+  String get hostPeopleGroupWentTo;
+
+  /// Saved group rule value when the event is not read.
+  ///
+  /// In en, this message translates to:
+  /// **'An event'**
+  String get hostPeopleGroupAnEvent;
+
+  /// Saved group rule: at least N nights.
+  ///
+  /// In en, this message translates to:
+  /// **'At least'**
+  String get hostPeopleGroupAtLeast;
+
+  /// Stepper decrease label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer times'**
+  String get hostPeopleGroupFewer;
+
+  /// Stepper increase label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'More times'**
+  String get hostPeopleGroupMore;
+
+  /// Stepper value: how many times.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{once} other{{count} times}}'**
+  String hostPeopleGroupTimes({required int count});
+
+  /// Saved group rule: last seen within.
+  ///
+  /// In en, this message translates to:
+  /// **'In the last'**
+  String get hostPeopleGroupInTheLast;
+
+  /// Saved group rule value: days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String hostPeopleGroupDays({required int count});
+
+  /// Saved group that is a hand-picked list.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked by hand'**
+  String get hostPeopleGroupHandPicked;
+
+  /// Saved group rules this screen does not show.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{And 1 more rule} other{And {count} more rules}}'**
+  String hostPeopleGroupOtherRules({required int count});
+
+  /// Saved group section title: how many match.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person matches} other{{people} people match}}'**
+  String hostPeopleGroupMatch({required int count, required String people});
+
+  /// Saved group empty match.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody matches yet.'**
+  String get hostPeopleGroupMatchEmpty;
+
+  /// Saved group preview failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t count this group'**
+  String get hostPeopleGroupCountError;
+
+  /// Saved group preview failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleGroupCountErrorBody;
+
+  /// Saved group name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostPeopleGroupName;
+
+  /// Saved group name placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Trivia regulars'**
+  String get hostPeopleGroupNamePlaceholder;
+
+  /// Saved group dock button.
+  ///
+  /// In en, this message translates to:
+  /// **'Save group'**
+  String get hostPeopleGroupSave;
+
+  /// Saved group dock secondary button.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get hostPeopleGroupDelete;
+
+  /// Saved group read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load this group'**
+  String get hostPeopleGroupErrorTitle;
+
+  /// Saved group read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleGroupErrorBody;
 }
 
 class _AppLocalizationsDelegate

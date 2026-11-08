@@ -324,6 +324,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
+import '../../hosts/people/people_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
@@ -9419,6 +9420,55 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
+  ScreenCaptureEntry(
+    id: 'host_people_phone',
+    routeIds: const <String>['hostAudienceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostPeopleCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_people_desktop',
+    routeIds: const <String>['hostAudienceScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostPeopleDesktopCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_person_phone',
+    routeIds: const <String>['hostCustomerDetailScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostPersonCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_messages_phone',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostMessagesCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_compose_phone',
+    routeIds: const <String>['hostNewMessageScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostComposeCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_automations_phone',
+    routeIds: const <String>['hostAudienceAutomationsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostAutomationsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_saved_group_phone',
+    routeIds: const <String>['hostSavedAudienceDetailScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostPeopleCaptureOverrides(),
+    builder: (context) => hostSavedGroupCapture(),
+  ),
   ScreenCaptureEntry(
     id: 'program_create_draft',
     routeIds: const ['hostCreateProgramScreen'],

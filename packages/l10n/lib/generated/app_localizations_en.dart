@@ -27089,4 +27089,495 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsRosterMembers => 'Members';
+
+  @override
+  String get hostPeopleTitle => 'People';
+
+  @override
+  String get hostPeopleAdd => 'Add';
+
+  @override
+  String get hostPeopleViewsLabel => 'People views';
+
+  @override
+  String get hostPeopleViewPeople => 'People';
+
+  @override
+  String get hostPeopleViewMessages => 'Messages';
+
+  @override
+  String get hostPeopleViewForms => 'Forms';
+
+  @override
+  String get hostPeopleShowLabel => 'Show';
+
+  @override
+  String get hostPeopleFilterEveryone => 'Everyone';
+
+  @override
+  String get hostPeopleFilterRegulars => 'Regulars';
+
+  @override
+  String get hostPeopleFilterNew => 'New';
+
+  @override
+  String get hostPeopleFilterDrifting => 'Drifting';
+
+  @override
+  String get hostPeopleBadgeRegular => 'Regular';
+
+  @override
+  String get hostPeopleBadgeNew => 'New';
+
+  @override
+  String get hostPeopleBadgeDrifting => 'Drifting';
+
+  @override
+  String hostPeopleKicker({required String filter, required String count}) {
+    return '$filter · $count, most recent first';
+  }
+
+  @override
+  String hostPeopleKickerPlain({required String filter}) {
+    return '$filter, most recent first';
+  }
+
+  @override
+  String hostPeopleKickerSearch({required String query}) {
+    return 'Matching “$query”, most recent first';
+  }
+
+  @override
+  String hostPeopleCountAtLeast({required String count}) {
+    return '$count+';
+  }
+
+  @override
+  String hostPeopleRowNightsLast({required int count, required String date}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nights',
+      one: '1 night',
+    );
+    return '$_temp0 · last on $date';
+  }
+
+  @override
+  String hostPeopleRowNights({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nights',
+      one: '1 night',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleRowNoNights => 'No nights yet';
+
+  @override
+  String get hostPeopleEmpty => 'Nobody here yet.';
+
+  @override
+  String get hostPeopleEmptySearch => 'Nobody matches that search.';
+
+  @override
+  String get hostPeopleErrorTitle => 'We couldn’t load your people';
+
+  @override
+  String get hostPeopleErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostPeopleRetry => 'Try again';
+
+  @override
+  String get hostPeopleShowMore => 'Show more';
+
+  @override
+  String get hostPeopleMessage => 'Message';
+
+  @override
+  String hostPeopleSearch({required String count}) {
+    return 'Search $count people';
+  }
+
+  @override
+  String get hostPeopleSearchPlain => 'Search people';
+
+  @override
+  String get hostPeopleSearchLabel => 'Search people';
+
+  @override
+  String get hostPeopleNobodySelected => 'Pick someone to see them here.';
+
+  @override
+  String get hostPeopleNoOrganizerTitle => 'No organiser yet';
+
+  @override
+  String get hostPeopleNoOrganizerBody =>
+      'Create an organiser to see the people who come to your nights.';
+
+  @override
+  String get hostPeopleBackToPeople => 'Back to People';
+
+  @override
+  String get hostPeopleBack => 'Back';
+
+  @override
+  String get hostPeopleClose => 'Close';
+
+  @override
+  String get hostPeopleMoreActions => 'More actions';
+
+  @override
+  String get hostPeopleAddNote => 'Add a note';
+
+  @override
+  String get hostPeopleAddNoteSave => 'Save note';
+
+  @override
+  String get hostPeopleNoteField => 'Note';
+
+  @override
+  String get hostPeopleAddTag => 'Add a tag';
+
+  @override
+  String get hostPeopleAddTagSave => 'Add tag';
+
+  @override
+  String get hostPeopleTagField => 'Tag';
+
+  @override
+  String hostPeopleTagLimit({required int count}) {
+    return '$count tags is the most one person can have.';
+  }
+
+  @override
+  String hostPeoplePersonSince({required String month}) {
+    return 'Coming since $month';
+  }
+
+  @override
+  String get hostPeoplePersonNoNights => 'No nights with you yet';
+
+  @override
+  String get hostPeoplePersonErrorTitle => 'We couldn’t load this person';
+
+  @override
+  String get hostPeoplePersonErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get hostPeopleStatNights => 'Nights';
+
+  @override
+  String hostPeopleStatNightsSince({required String month}) {
+    return 'since $month';
+  }
+
+  @override
+  String get hostPeopleStatSpent => 'Spent';
+
+  @override
+  String get hostPeopleStatSpentNote => 'on tickets';
+
+  @override
+  String get hostPeopleStatMissed => 'Missed';
+
+  @override
+  String get hostPeopleStatMissedNever => 'never a no-show';
+
+  @override
+  String get hostPeopleNotesTitle => 'Notes and tags';
+
+  @override
+  String get hostPeopleNotesNote => 'Only your team sees these';
+
+  @override
+  String get hostPeopleNightsTitle => 'Nights with you';
+
+  @override
+  String get hostPeopleNightsEmpty => 'No nights yet.';
+
+  @override
+  String get hostPeopleNightBooked => 'Booked';
+
+  @override
+  String get hostPeopleNightCame => 'Came';
+
+  @override
+  String get hostPeopleNightCancelled => 'Cancelled';
+
+  @override
+  String get hostPeopleNightMissed => 'Missed';
+
+  @override
+  String get hostPeopleMessagesAll => 'All';
+
+  @override
+  String get hostPeopleMessagesUnread => 'Unread';
+
+  @override
+  String get hostPeopleMessagesTonight => 'Tonight';
+
+  @override
+  String hostPeopleMessagesAutomationsNote({
+    required String on,
+    required String sent,
+  }) {
+    return '$on on · $sent sent this month';
+  }
+
+  @override
+  String get hostPeopleMessagesEmpty => 'No messages yet.';
+
+  @override
+  String get hostPeopleMessagesEmptyUnread => 'Nothing waiting on you.';
+
+  @override
+  String get hostPeopleMessagesEmptyTonight => 'No messages about tonight.';
+
+  @override
+  String get hostPeopleMessagesErrorTitle => 'We couldn’t load your messages';
+
+  @override
+  String get hostPeopleMessagesErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get hostPeopleAutomationsTitle => 'Automatic messages';
+
+  @override
+  String get hostPeopleAutomationsKicker => 'On Catch and WhatsApp';
+
+  @override
+  String get hostPeopleAutomationsWhatsapp => 'Messages on WhatsApp';
+
+  @override
+  String get hostPeopleAutomationsWhatsappNote =>
+      'Optional. You pay what WhatsApp charges, nothing added, on your Catch bill.';
+
+  @override
+  String get hostPeopleAutomationsSent => 'Sent this month';
+
+  @override
+  String get hostPeopleAutomationsAroundTitle => 'Around each event';
+
+  @override
+  String get hostPeopleAutomationsAroundKicker => 'For every event.';
+
+  @override
+  String get hostPeopleAutomationsKeepingTitle => 'Keeping people coming';
+
+  @override
+  String get hostPeopleAutomationsKeepingKicker =>
+      'When someone answers one of your forms.';
+
+  @override
+  String get hostPeopleAutomationsEmpty => 'None yet.';
+
+  @override
+  String get hostPeopleAutomationsAdd => 'Add an automatic message';
+
+  @override
+  String get hostPeopleAutomationsWhenAttended =>
+      'After someone comes to a night';
+
+  @override
+  String get hostPeopleAutomationsWhenAccepted => 'When you let someone in';
+
+  @override
+  String get hostPeopleAutomationsWhenAnswered => 'When someone answers a form';
+
+  @override
+  String get hostPeopleAutomationsWhenWithdrawn =>
+      'When someone takes back an answer';
+
+  @override
+  String get hostPeopleAutomationsWhenMatches => 'When an answer matches';
+
+  @override
+  String get hostPeopleAutomationsErrorTitle =>
+      'We couldn’t load your automatic messages';
+
+  @override
+  String get hostPeopleAutomationsErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String hostPeopleComposeFrom({required String name}) {
+    return 'From $name on Catch';
+  }
+
+  @override
+  String get hostPeopleComposeTitle => 'New message';
+
+  @override
+  String get hostPeopleComposeBooked => 'Booked';
+
+  @override
+  String get hostPeopleComposeWaitlist => 'Waitlist';
+
+  @override
+  String get hostPeopleComposeEveryone => 'Booked and waitlist';
+
+  @override
+  String hostPeopleComposePeople({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+      zero: 'Nobody yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleChange => 'Change';
+
+  @override
+  String get hostPeopleComposeMessage => 'Message';
+
+  @override
+  String get hostPeopleComposePlaceholder =>
+      'Write what everyone needs to know';
+
+  @override
+  String get hostPeopleComposeEvent => 'Event';
+
+  @override
+  String hostPeopleComposeSend({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Send to $count',
+      one: 'Send to 1',
+      zero: 'Send',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostPeopleComposeSent({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Sent to $count people',
+      one: 'Sent to 1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleComposeNoEventTitle => 'No event to message about';
+
+  @override
+  String get hostPeopleComposeNoEventBody =>
+      'Messages go to the guests of an event. Make one first.';
+
+  @override
+  String get hostPeopleComposeErrorTitle => 'We couldn’t load your events';
+
+  @override
+  String get hostPeopleComposeErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get hostPeopleGroupKicker => 'Saved group';
+
+  @override
+  String get hostPeopleGroupNew => 'New group';
+
+  @override
+  String get hostPeopleGroupPeopleWho => 'People who';
+
+  @override
+  String get hostPeopleGroupWentTo => 'Went to';
+
+  @override
+  String get hostPeopleGroupAnEvent => 'An event';
+
+  @override
+  String get hostPeopleGroupAtLeast => 'At least';
+
+  @override
+  String get hostPeopleGroupFewer => 'Fewer times';
+
+  @override
+  String get hostPeopleGroupMore => 'More times';
+
+  @override
+  String hostPeopleGroupTimes({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times',
+      one: 'once',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleGroupInTheLast => 'In the last';
+
+  @override
+  String hostPeopleGroupDays({required int count}) {
+    return '$count days';
+  }
+
+  @override
+  String get hostPeopleGroupHandPicked => 'Picked by hand';
+
+  @override
+  String hostPeopleGroupOtherRules({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'And $count more rules',
+      one: 'And 1 more rule',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostPeopleGroupMatch({required int count, required String people}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$people people match',
+      one: '1 person matches',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleGroupMatchEmpty => 'Nobody matches yet.';
+
+  @override
+  String get hostPeopleGroupCountError => 'We couldn’t count this group';
+
+  @override
+  String get hostPeopleGroupCountErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get hostPeopleGroupName => 'Name';
+
+  @override
+  String get hostPeopleGroupNamePlaceholder => 'Trivia regulars';
+
+  @override
+  String get hostPeopleGroupSave => 'Save group';
+
+  @override
+  String get hostPeopleGroupDelete => 'Delete';
+
+  @override
+  String get hostPeopleGroupErrorTitle => 'We couldn’t load this group';
+
+  @override
+  String get hostPeopleGroupErrorBody => 'Check your connection and try again.';
 }

@@ -7,7 +7,6 @@ import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -34,9 +33,14 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
+import 'package:catch_dating_app/hosts/people/automations_screen.dart';
+import 'package:catch_dating_app/hosts/people/compose_screen.dart';
+import 'package:catch_dating_app/hosts/people/messages_screen.dart';
+import 'package:catch_dating_app/hosts/people/people_screen.dart';
+import 'package:catch_dating_app/hosts/people/person_screen.dart';
+import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
@@ -59,7 +63,6 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/requests/host_requests_screen.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
@@ -549,8 +552,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.people,
     path: Routes.hostNewMessageScreen.path,
     name: Routes.hostNewMessageScreen.name,
-    builder: (context, state) => HostNewMessageScreen(
-      organizerId: state.uri.queryParameters['organizerId']!,
+    builder: (context, state) => HostComposeScreen(
+      organizerId: state.uri.queryParameters['organizerId'],
+      eventId: state.uri.queryParameters['eventId'],
     ),
   ),
   HostWorkspaceDestination(
@@ -1107,7 +1111,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.audiences,
     path: Routes.hostCreateSavedAudienceScreen.path,
     name: Routes.hostCreateSavedAudienceScreen.name,
-    builder: (context, state) => HostSavedAudienceEditorScreen(
+    builder: (context, state) => HostSavedGroupScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -1116,10 +1120,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.audiences,
     path: Routes.hostSavedAudienceDetailScreen.path,
     name: Routes.hostSavedAudienceDetailScreen.name,
-    builder: (context, state) => HostSavedAudienceEditorScreen(
+    builder: (context, state) => HostSavedGroupScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       audienceId: state.pathParameters['audienceId'],
-      initialAudience: _routeAudienceExtra(state),
     ),
   ),
   HostWorkspaceDestination(
@@ -1184,7 +1187,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.people,
     path: Routes.hostAudienceAutomationsScreen.path,
     name: Routes.hostAudienceAutomationsScreen.name,
-    builder: (context, state) => HostFormAutomationsScreen(
+    builder: (context, state) => HostAutomationsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -1219,10 +1222,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
         : null,
     path: Routes.hostCustomerDetailScreen.path,
     name: Routes.hostCustomerDetailScreen.name,
-    builder: (context, state) => HostCustomerDetailScreen(
+    builder: (context, state) => HostPersonScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       contactId: state.pathParameters['contactId']!,
-      initialDisplayName: _routeContactNameExtra(state),
     ),
   ),
   HostWorkspaceDestination(
