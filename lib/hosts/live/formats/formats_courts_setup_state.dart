@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/formats/domain/event_success_court_time_estimate.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:flutter/foundation.dart';
 
@@ -57,6 +58,7 @@ class HostFormatsCourtsSetupState {
     ),
     this.eventMinutes = 0,
     this.players = 0,
+    this.seatsPerCourt = 2,
     this.previewed = false,
     this.newPartners = 0,
     this.roundsPlayed = 0,
@@ -82,6 +84,9 @@ class HostFormatsCourtsSetupState {
   /// Everyone booked.
   final int players;
 
+  /// People on one court: two for singles, four for doubles.
+  final int seatsPerCourt;
+
   /// Rotations have been made, so the preview reads from them.
   final bool previewed;
   final int newPartners;
@@ -95,9 +100,20 @@ class HostFormatsCourtsSetupState {
   /// The rounds that fit the event at [minutes] a game.
   int roundsFor(int minutes) => minutes <= 0 ? 0 : eventMinutes ~/ minutes;
 
-  /// People playing each round on [courts] courts, two to a court.
+  /// People playing each round on [courts] courts. A court runs only
+  /// full, as the assignment engine plans it.
   int playingFor(int courts) {
-    final places = courts * 2;
-    return players < places ? players - players % 2 : places;
+    final full = players ~/ seatsPerCourt;
+    return (full < courts ? full : courts) * seatsPerCourt;
   }
+
+  /// How court time is shared with [draft], before rotations are made.
+  EventSuccessCourtTimeEstimate? courtTimeFor(HostFormatsCourtsDraft draft) =>
+      estimateEventSuccessCourtTime(
+        players: players,
+        courts: draft.courts,
+        seatsPerCourt: seatsPerCourt,
+        minutesPerGame: draft.minutes,
+        eventMinutes: eventMinutes,
+      );
 }

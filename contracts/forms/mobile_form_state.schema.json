@@ -33,6 +33,11 @@
       "type": "boolean",
       "description": "Whether the event form reveals and emits demand-pricing rules."
     },
+    "eventSuccessAttributeObjective": {
+      "type": "string",
+      "enum": ["none", "balance", "cluster", "cover"],
+      "description": "Presentation choice that places one activity attribute in at most one of the structure's balance, cluster or cover lists."
+    },
     "eventSuccessLiveCardIncluded": {
       "type": "boolean",
       "description": "Whether a host includes an optional live event-success card."
