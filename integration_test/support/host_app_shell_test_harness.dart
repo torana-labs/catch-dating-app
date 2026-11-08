@@ -180,6 +180,8 @@ class HostShellBackend {
       'setEventAttendeeAttendance' => _setAttendance(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
+      // The Organiser tab and Payments read the Catch bills: none yet.
+      'listOrganizerBills' => {'bills': const <Object?>[]},
       // Setup's Getting paid step: Razorpay is open and nothing is connected.
       'manageOrganizerFormPaymentConnection' => {
         'available': true,

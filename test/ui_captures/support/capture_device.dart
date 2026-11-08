@@ -48,6 +48,13 @@ class CaptureDevice {
     safeArea: EdgeInsets.only(top: 24, bottom: 20),
   );
 
+  /// An 11-inch tablet held landscape: the door's operations layout.
+  static const auditTabletLandscape = CaptureDevice(
+    id: 'audit-tablet-landscape-1194x834',
+    size: Size(1194, 834),
+    safeArea: EdgeInsets.only(top: 24, bottom: 20),
+  );
+
   static const auditMedium = CaptureDevice(
     id: 'audit-medium-700x1000',
     size: Size(700, 1000),
@@ -68,6 +75,7 @@ class CaptureDevice {
     iphone17Pro,
     auditMedium,
     auditTablet,
+    auditTabletLandscape,
     auditDesktop,
   ];
 

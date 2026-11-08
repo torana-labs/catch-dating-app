@@ -32,6 +32,7 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
+import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
@@ -564,11 +565,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostAppEventManageScreen,
     path: Routes.hostEventRosterScreen.path,
     name: Routes.hostEventRosterScreen.name,
-    builder: (context, state) => HostEventManageRouteScreen(
+    builder: (context, state) => DoorScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
-      initialSection: HostEventManageSection.guests,
     ),
   ),
   HostWorkspaceDestination(

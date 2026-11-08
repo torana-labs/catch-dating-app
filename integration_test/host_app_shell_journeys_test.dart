@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -132,19 +133,26 @@ void main() {
     expect(find.text('Create your first organizer'), findsOneWidget);
 
     await tapCatchButton(tester, 'Create organizer');
-    await _enterField(tester, 'Organizer name', 'Lodhi Garden Socials');
-    await _enterField(tester, 'Area / neighbourhood', 'Lodhi Colony');
-    await tester.ensureVisible(_field('City'));
-    await tester.tap(_field('City'));
-    await pumpAppShellFrames(tester);
+    expect(find.text('Start your page'), findsOneWidget);
+    await _enterKeyed(tester, 'host-setup-name', 'Lodhi Garden Socials');
+    await tester.ensureVisible(_chip('Mumbai'));
     await tester.tap(_chip('Mumbai'));
     await pumpAppShellFrames(tester);
+    await _enterKeyed(tester, 'host-setup-area', 'Lodhi Colony');
     await tapCatchButton(tester, 'Next');
-    await _enterField(tester, 'Description', 'Sunday walks, long lunches.');
+
+    expect(find.text('Check your details'), findsOneWidget);
+    await _enterKeyed(
+      tester,
+      'host-setup-description',
+      'Sunday walks, long lunches.',
+    );
+    // Next on Details creates the page.
     await tapCatchButton(tester, 'Next');
-    await tapCatchButton(tester, 'Next');
-    await tapCatchButton(tester, 'Review organizer');
-    await tapCatchButton(tester, 'Create organizer');
+    await pumpAppShellFrames(tester, frames: 30);
+    await tapCatchButton(tester, 'Skip for now');
+    await pumpAppShellFrames(tester, frames: 30);
+    await tester.tap(find.byTooltip('Close'));
     await pumpAppShellFrames(tester, frames: 30);
 
     final create = backend.functions.calls.singleWhere(
@@ -363,22 +371,86 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
-  testWidgets('Host account menu offers Delete account', (tester) async {
+  testWidgets('Host opens the door and checks a guest in', (tester) async {
+    final backend = HostShellBackend(uid: _hostUid);
+    final now = DateTime.now();
+    final event = event_helpers.buildEvent(
+      id: 'host-journey-door-event',
+      organizerId: _saketRunClub.id,
+      name: 'Door social run',
+      startTime: now.subtract(const Duration(minutes: 10)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    await backend.seedPublishedEvent(event);
+    for (final (id, name) in const [
+      ('door-asha', 'Asha Rao'),
+      ('door-dev', 'Dev Mehta'),
+    ]) {
+      await backend.seedAttendee(
+        EventAttendee(
+          id: id,
+          eventId: event.id,
+          organizerId: _saketRunClub.id,
+          displayName: name,
+          searchName: name.toLowerCase(),
+          source: EventAttendeeSource.hostImport,
+          status: EventAttendeeStatus.registered,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    }
+    await _pumpHost(
+      tester,
+      backend,
+      organizers: [_saketRunClub],
+      initialRoute:
+          '/host/organizers/${_saketRunClub.id}/events/${event.id}/guests',
+    );
+    await pumpAppShellFrames(tester, frames: 30);
+
+    expect(find.text('0 of 2 in'), findsOneWidget);
+    expect(find.text('Asha Rao'), findsOneWidget);
+    expect(find.text('Dev Mehta'), findsOneWidget);
+
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('door-guest-door-asha')),
+        matching: find.text('Check in'),
+      ),
+    );
+    await pumpAppShellFrames(tester, frames: 30);
+
+    final checkIn = backend.functions.calls.singleWhere(
+      (call) => call.name == 'setEventAttendeeAttendance',
+    );
+    expect(checkIn.input, containsPair('attendeeId', 'door-asha'));
+    expect(checkIn.input, containsPair('desiredCheckedIn', true));
+    expect(find.text('1 of 2 in'), findsOneWidget);
+    expect(find.text('Asha Rao'), findsNothing);
+    expectHostSurfaceLoaded(tester, backend, surface: 'door');
+    await unmountHostAppShell(tester);
+  });
+
+  testWidgets('Host settings offer Delete your account', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
 
     await openHostTab(tester, 'Organizer');
     await pumpAppShellFrames(tester, frames: 20);
-    await tester.tap(find.byKey(const ValueKey('host-account-menu')));
-    await pumpSheet(tester);
-    expect(find.text('Delete account'), findsOneWidget);
-
-    await tester.tap(find.text('Delete account'));
+    final settings = find.byKey(const ValueKey('organizer-row-settings'));
+    await tester.ensureVisible(settings);
+    await pumpAppShellFrames(tester);
+    await tester.tap(settings);
+    await pumpAppShellFrames(tester, frames: 20);
+    final delete = find.byKey(const ValueKey('settings-row-delete'));
+    await tester.ensureVisible(delete);
+    await tester.tap(delete);
     await pumpSheet(tester);
     expect(find.textContaining('Shared business records'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await pumpSheet(tester);
-    expect(find.byKey(const ValueKey('host-account-menu')), findsOneWidget);
+    expect(delete, findsOneWidget);
     await unmountHostAppShell(tester);
   });
 }
@@ -387,7 +459,7 @@ const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
   'Events': HostEventsScreen,
   'People': HostCustomersScreen,
-  'Organizer': HostOrganizersScreen,
+  'Organizer': OrganizerScreen,
 };
 
 /// A Host who already dismissed the first-run Today focus prompt.
@@ -421,19 +493,17 @@ String? _selectedOrganizerId(WidgetTester tester) => ProviderScope.containerOf(
   tester.element(find.byType(HostShellScreen)),
 ).read(hostOrganizerSelectionProvider(_hostUid));
 
-Finder _field(String title) => find.byWidgetPredicate(
-  (widget) => widget is CatchField && widget.title == title,
-);
-
 Finder _chip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchChip && widget.label == label,
 );
 
-Future<void> _enterField(WidgetTester tester, String title, String text) async {
-  await tester.enterText(
-    find.descendant(of: _field(title), matching: find.byType(EditableText)),
-    text,
+Future<void> _enterKeyed(WidgetTester tester, String key, String text) async {
+  final field = find.descendant(
+    of: find.byKey(ValueKey<String>(key)),
+    matching: find.byType(EditableText),
   );
+  await tester.ensureVisible(field);
+  await tester.enterText(field, text);
   tester.testTextInput.hide();
   await tester.pump();
 }

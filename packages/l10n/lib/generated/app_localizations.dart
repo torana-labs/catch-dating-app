@@ -44622,6 +44622,346 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Members'**
   String get hostMembershipsRosterMembers;
+
+  /// Door top bar title before the event loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get doorTitle;
+
+  /// Door top bar kicker: when the event starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Doors open · {time}'**
+  String doorKicker({required String time});
+
+  /// Door top bar back button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Today'**
+  String get doorBack;
+
+  /// Door top bar live badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get doorLiveTag;
+
+  /// Door headline and scanner badge: guests checked in out of everyone booked.
+  ///
+  /// In en, this message translates to:
+  /// **'{checkedIn} of {expected} in'**
+  String doorHeadline({required int checkedIn, required int expected});
+
+  /// Door meter screen-reader label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get doorMeterLabel;
+
+  /// Door sentence under the meter: guests still to come, join requests and the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'{toCome} still to come · {asked} asked to join · {waiting} waiting'**
+  String doorSummary({
+    required int toCome,
+    required int asked,
+    required int waiting,
+  });
+
+  /// Door search field placeholder with the number of guests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Search 1 guest} other{Search {count} guests}}'**
+  String doorSearchPlaceholder({required int count});
+
+  /// Door segmented control screen-reader label.
+  ///
+  /// In en, this message translates to:
+  /// **'Show guests'**
+  String get doorFiltersLabel;
+
+  /// Door filter: booked guests still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving'**
+  String get doorFilterArriving;
+
+  /// Door filter: guests checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get doorFilterIn;
+
+  /// Door filter: guests on the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get doorFilterWaitlist;
+
+  /// Door filter: guests asking to join.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked'**
+  String get doorFilterAsked;
+
+  /// Door list when the filter has no guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody here right now.'**
+  String get doorEmpty;
+
+  /// Door dock action and scan button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a ticket'**
+  String get doorScanTicket;
+
+  /// Door dock secondary action: add a guest at the door.
+  ///
+  /// In en, this message translates to:
+  /// **'Add walk-in'**
+  String get doorAddWalkIn;
+
+  /// Door notice after a walk-in is added.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is on the list'**
+  String doorWalkInAdded({required String name});
+
+  /// Door notice when the walk-in could not be added.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add {name}'**
+  String doorWalkInFailed({required String name});
+
+  /// Door notice title for attendance changes the server refused.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change did not save} other{{count} changes did not save}}'**
+  String doorRefusedTitle({required int count});
+
+  /// Door notice body for refused attendance changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else changed these guests first. Try again or drop your changes.'**
+  String get doorRefusedBody;
+
+  /// Door button: send refused attendance changes again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get doorRefusedRetry;
+
+  /// Door button: drop refused attendance changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop them'**
+  String get doorRefusedDiscard;
+
+  /// Door tablet scanner tile title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanner'**
+  String get doorScannerTileTitle;
+
+  /// Door tablet scanner tile body.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold a ticket up to the camera'**
+  String get doorScannerTileBody;
+
+  /// Door tablet notice for the latest arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is in'**
+  String doorLatestTitle({required String name});
+
+  /// Door tablet stat label: guests still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'still to come'**
+  String get doorStatToCome;
+
+  /// Door tablet stat label: join requests.
+  ///
+  /// In en, this message translates to:
+  /// **'asked to join'**
+  String get doorStatAsked;
+
+  /// Door tablet stat label: waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'waiting'**
+  String get doorStatWaiting;
+
+  /// Door row badge for a first-timer.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get doorGuestNew;
+
+  /// Door row action for a guest still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get doorGuestCheckIn;
+
+  /// Door row action to undo a check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get doorGuestUndo;
+
+  /// Door row action to approve a join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Let in'**
+  String get doorGuestLetIn;
+
+  /// Door row action to offer a waitlisted guest a place.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer'**
+  String get doorGuestOffer;
+
+  /// Door row meta for a first-timer.
+  ///
+  /// In en, this message translates to:
+  /// **'first time'**
+  String get doorGuestFirstTime;
+
+  /// Door row meta: earlier nights with the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night with you} other{{count} nights with you}}'**
+  String doorGuestNightsBefore({required int count});
+
+  /// Door row meta: what the guest paid.
+  ///
+  /// In en, this message translates to:
+  /// **'paid {amount}'**
+  String doorGuestPaid({required String amount});
+
+  /// Door row meta: when the guest checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'In at {time}'**
+  String doorGuestInAt({required String time});
+
+  /// Door row meta: a check-in not yet confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'In just now'**
+  String get doorGuestInJustNow;
+
+  /// Door row meta: when the guest asked to join.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked at {time}'**
+  String doorGuestAskedAt({required String time});
+
+  /// Door row meta: a waitlist offer is out.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered a place · waiting to pay'**
+  String get doorGuestOffered;
+
+  /// Door row meta: the first waitlisted guest.
+  ///
+  /// In en, this message translates to:
+  /// **'First on the waitlist'**
+  String get doorGuestFirstOnWaitlist;
+
+  /// Door row meta: a waitlist position.
+  ///
+  /// In en, this message translates to:
+  /// **'Number {position} on the waitlist'**
+  String doorGuestWaitlistPosition({required int position});
+
+  /// Door row meta: a change still on this phone.
+  ///
+  /// In en, this message translates to:
+  /// **'not synced yet'**
+  String get doorGuestNotSynced;
+
+  /// Scanner top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan tickets'**
+  String get doorScanTitle;
+
+  /// Scanner close button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the scanner'**
+  String get doorScanClose;
+
+  /// Scanner finder screen-reader label.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get doorScanFinderLabel;
+
+  /// Scanner line under the finder.
+  ///
+  /// In en, this message translates to:
+  /// **'Point at the ticket on their phone'**
+  String get doorScanHint;
+
+  /// Scanner notice for a code that is not Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'That code is not a Catch ticket.'**
+  String get doorScanNotATicket;
+
+  /// Scanner notice for another event code.
+  ///
+  /// In en, this message translates to:
+  /// **'That ticket is for another event.'**
+  String get doorScanOtherEvent;
+
+  /// Scanner notice for the event own door code.
+  ///
+  /// In en, this message translates to:
+  /// **'That is the event code guests scan, not a ticket.'**
+  String get doorScanEventCode;
+
+  /// Scanner success sheet kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get doorScanCheckedIn;
+
+  /// Scanner success sheet primary button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next ticket'**
+  String get doorScanNext;
+
+  /// Scanner success sheet stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'paid on Catch'**
+  String get doorScanPaidOnCatch;
+
+  /// Scanner success sheet stat when nothing was paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get doorScanNothingPaid;
+
+  /// Scanner success sheet stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'first night'**
+  String get doorScanFirstNight;
+
+  /// Scanner success sheet stat value: which night with the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Night {count}'**
+  String doorScanNights({required int count});
 }
 
 class _AppLocalizationsDelegate
