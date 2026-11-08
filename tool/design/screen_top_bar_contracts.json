@@ -59,7 +59,7 @@
         {
           "path": "lib/hosts/today/host_today_screen.dart",
           "symbol": "_HostTodayScreenState",
-          "owner": "CatchTopBar.tabHome"
+          "owner": "CatchTopBar"
         }
       ]
     },

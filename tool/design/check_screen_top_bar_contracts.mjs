@@ -22,11 +22,13 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchLegacyTopBar(?:\.(?:route|identity))?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchLegacyTopBar(?:\.(?:route|identity))?|CatchTopBar|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+// `CatchTopBar` is the design system's top bar, which CatchScreen roots take.
 const canonicalRootOwners = new Set([
   "CatchLegacyTopBar.primaryRail",
   "CatchLegacyTopBar.screen",
   "CatchRootScreenHeader.title",
+  "CatchTopBar",
 ]);
 const topBarActionOwnerPattern =
   /\b(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchLegacyTopBar(?:\.(?:route|identity))?)\s*\(/gu;
@@ -1511,7 +1513,10 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
   }
   rootTextScaleOverridePattern.lastIndex = 0;
 
-  const geometryPattern = /\b(?:padding|contentPadding|height|titleMaxLines|titleStyle|rowCrossAxisAlignment|eyebrow|kicker)\s*:/u;
+  // The system top bar takes `kicker` as a content slot, not a geometry knob.
+  const geometryPattern = surface.owner === "CatchTopBar" ?
+    /\b(?:padding|contentPadding|height|titleMaxLines|titleStyle|rowCrossAxisAlignment|eyebrow)\s*:/u :
+    /\b(?:padding|contentPadding|height|titleMaxLines|titleStyle|rowCrossAxisAlignment|eyebrow|kicker)\s*:/u;
   if (ownerCalls.some((call) => geometryPattern.test(call))) {
     findings.push({
       code: "root-header-geometry-override",
