@@ -1,9 +1,14 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/forms/form_body.dart';
+import 'package:catch_dating_app/hosts/forms/form_new_body.dart';
+import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_state.dart';
+import 'package:catch_dating_app/hosts/forms/form_share_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_state.dart';
 import 'package:catch_dating_app/hosts/forms/forms_body.dart';
 import 'package:catch_dating_app/hosts/forms/forms_state.dart';
@@ -311,10 +316,73 @@ Widget hostOfferCapture() {
   );
 }
 
-/// The six captures by id, as the catalog and the capture test name them.
+Widget hostFormNewCapture() {
+  HostFormTemplateSummary template(String id, HostFormPurpose purpose) =>
+      HostFormTemplateSummary(
+        templateId: id,
+        version: 1,
+        title: id,
+        description: null,
+        purpose: purpose,
+        identityPolicy: HostFormIdentityPolicy.phoneVerified,
+        sectionCount: 1,
+        questionCount: 3,
+      );
+  final choices = HostFormNewState.kinds([
+    template('application', HostFormPurpose.application),
+    template('interest', HostFormPurpose.registration),
+    template('enquiry', HostFormPurpose.intake),
+    template('feedback', HostFormPurpose.feedback),
+  ]);
+  return _frame(
+    topBar: (l10n) => CatchTopBar(
+      variant: CatchTopBarVariant.tool,
+      title: l10n.hostFormsNewTitle,
+      kicker: l10n.hostFormsNewKicker,
+      back: CatchTopBarBack(
+        label: l10n.hostFormsClose,
+        close: true,
+        onPressed: () {},
+      ),
+    ),
+    body: HostFormNewBody(
+      state: HostFormNewState(
+        status: HostFormNewStatus.content,
+        choices: choices,
+        selectedTemplateId: 'application',
+      ),
+      onSelect: (_) {},
+    ),
+    dock: (l10n) => CatchDock(
+      primary: CatchDockAction(label: l10n.hostFormsNewNext, onPressed: () {}),
+      secondary: CatchDockAction(
+        label: l10n.hostFormsNewTemplates,
+        onPressed: () {},
+      ),
+    ),
+  );
+}
+
+Widget hostFormShareCapture() => _frame(
+  topBar: (l10n) => CatchTopBar(
+    variant: CatchTopBarVariant.tool,
+    title: l10n.hostFormsShareTitle,
+    kicker: 'Join the Sunday run',
+    back: CatchTopBarBack(label: l10n.hostFormsBack, onPressed: () {}),
+  ),
+  body: HostFormShareBody(
+    url: 'https://catchdates.com/lanternlane/join-the-run/',
+    onCopy: () {},
+    onShare: (_) {},
+  ),
+);
+
+/// The captures by id, as the catalog and the capture test name them.
 final hostFormsCaptures = <String, Widget Function()>{
   'host_forms_phone': hostFormsCapture,
   'host_form_phone': hostFormCapture,
+  'host_form_new_phone': hostFormNewCapture,
+  'host_form_share_phone': hostFormShareCapture,
   'host_form_builder_phone': hostFormBuilderCapture,
   'host_responses_phone': hostResponsesCapture,
   'host_response_phone': hostResponseCapture,
