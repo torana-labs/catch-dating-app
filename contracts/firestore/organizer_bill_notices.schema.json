@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_bill_notices.schema.json",
+  "title": "OrganizerBillNoticeDocument",
+  "description": "One notice to an organizer's owner that Catch issued them a bill or reminded them of it, delivered outside the app. Email goes only to the owner's verified Firebase Auth address, through the transactional email credential named in billingNoticeSettings/platform; it is an operational account notice, so no marketing consent applies. Push says only that a bill was issued, with no amount, so the native Host app stays within App Store guideline 3.1.3(f). WhatsApp from Catch to hosts is not active (docs/host_product.md) and is not sent. Each channel is attempted once per notice; a deferred email is retried by the hourly sweep. Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBillNotices",
+  "x-firestore-path": "organizerBillNotices/{noticeId}",
+  "x-document-id-field": "noticeId",
+  "x-owner": "Functions organizer billing (adminManageOrganizerBills send/remind, bill notice delivery)",
+  "required": ["schemaVersion", "noticeId", "billId", "organizerId", "kind", "email", "push", "createdAtMillis",
+    "updatedAtMillis"],
+  "definitions": {
+    "millis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "nullableMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991}
+  },
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "noticeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,220}$"},
+    "billId": {"type": "string", "minLength": 1, "maxLength": 200},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "kind": {"enum": ["issued", "reminder"]},
+    "email": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "attempts", "providerMessageId", "nextAttemptAtMillis", "atMillis"],
+      "properties": {
+        "state": {
+          "description": "pending: not tried yet. accepted: the provider took it. deferred: throttled; the sweep retries. noAddress: the owner has no verified email. notConfigured: billingNoticeSettings has no email credential. rejected, withheld, unknown: not retried (an unknown outcome may have been delivered).",
+          "enum": ["pending", "accepted", "deferred", "noAddress", "notConfigured", "rejected", "withheld", "unknown"]
+        },
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 10},
+        "providerMessageId": {"type": ["string", "null"], "maxLength": 200},
+        "nextAttemptAtMillis": {"$ref": "#/definitions/nullableMillis"},
+        "atMillis": {"$ref": "#/definitions/nullableMillis"}
+      }
+    },
+    "push": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "sentCount", "atMillis"],
+      "properties": {
+        "state": {"enum": ["pending", "sent", "noDevices", "failed"]},
+        "sentCount": {"type": "integer", "minimum": 0, "maximum": 50},
+        "atMillis": {"$ref": "#/definitions/nullableMillis"}
+      }
+    },
+    "createdAtMillis": {"$ref": "#/definitions/millis"},
+    "updatedAtMillis": {"$ref": "#/definitions/millis"}
+  }
+}

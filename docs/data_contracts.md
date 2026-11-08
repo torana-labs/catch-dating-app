@@ -5019,6 +5019,17 @@ later of the trial end, the end of the organizer's last calendar-month bill and
 cycle billed may straddle that instant; its cap is reduced to the share of the
 cycle still billed.
 
+A sent bill is paid from a Razorpay Invoice on Catch's account
+(`razorpayInvoice`), a numbered invoice document with its own page, as #1124
+prefers over bare payment links; bills sent before invoices keep
+`paymentLink`, and a payment link is the fallback when Razorpay refuses an
+invoice. GST stays off while Catch is not GST registered (#1088). Each send and
+reminder queues one `organizerBillNotices/{billId}_issued` or
+`{billId}_reminder{n}` row: email to the owner's verified Firebase Auth address
+through the credential named in `billingNoticeSettings/platform` (pinned Secret
+Manager version; never the key itself), and a Host app push that says only that
+a bill was issued. Both are server-only.
+
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent
 bills and everything only staff need (reminders, history, terms revisions).

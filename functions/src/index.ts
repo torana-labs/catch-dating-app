@@ -1144,6 +1144,10 @@ export {
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
 export {adminManageOrganizerBills} from "./money/organizerBills";
 export {generateOrganizerCycleBillsDaily} from "./money/organizerCycleBills";
+export {
+  deliverOrganizerBillNotice,
+  retryOrganizerBillNoticesHourly,
+} from "./money/billNotices";
 export {listMyOrganizerJourneys} from "./organizers/organizerJourney";
 export {listOrganizerBills} from "./money/organizerOwnBills";
 export {getOrganizerBillingStatus} from "./money/organizerBillingStatus";

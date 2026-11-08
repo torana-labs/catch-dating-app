@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/billing_notice_settings.schema.json",
+  "title": "BillingNoticeSettingsDocument",
+  "description": "How Catch emails organizers about their bills. email names the sender and a pinned Secret Manager version of a catch.transactional-email-credential/v1 secret (provider, accountId, apiKey), the same credential shape event approval emails use; the key itself is never stored here. Without this document, or with email null, bill emails are recorded as notConfigured and only push is sent. Server-only; set by the owner during production setup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "billingNoticeSettings",
+  "x-firestore-path": "billingNoticeSettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "Catch owner (production setup); read by Functions bill notice delivery",
+  "required": ["schemaVersion", "email", "updatedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "email": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "accountId", "from", "credentialVersion"],
+          "properties": {
+            "provider": {"const": "resend"},
+            "accountId": {"type": "string", "minLength": 1, "maxLength": 120},
+            "from": {"type": "string", "pattern": "^[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+$", "maxLength": 254},
+            "credentialVersion": {"type": "string", "pattern": "^projects/[A-Za-z0-9:-]+/secrets/[A-Za-z0-9_-]+/versions/[0-9]+$", "maxLength": 400}
+          }
+        }
+      ]
+    },
+    "updatedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+  }
+}
