@@ -192,6 +192,14 @@ class HostFormPaymentSetup {
         : HostRazorpayConnectionState.needsReconnect;
   }
 
+  /// The organizer revoked Catch's access from Razorpay's side (#1255) and
+  /// nothing ready has replaced it.
+  bool get authorizationRevoked =>
+      razorpayConnectionState == HostRazorpayConnectionState.needsReconnect &&
+      liveConnections.any(
+        (connection) => connection.lastErrorCode == 'authorizationRevoked',
+      );
+
   /// Live connections that cannot take payments. Reconnecting disconnects
   /// these first, so the organizer keeps a single account.
   List<String> get staleConnectionIds => [

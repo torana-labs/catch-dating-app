@@ -151,4 +151,31 @@ void main() {
     expect(find.text('Only the owner sees money'), findsOneWidget);
     expect(find.text('Guests pay you directly'), findsNothing);
   });
+
+  testWidgets('revoked Razorpay access says so and offers Reconnect', (
+    tester,
+  ) async {
+    final calls = await _pump(
+      tester,
+      OrganizerPaymentsState(
+        isOwner: true,
+        currencyCode: 'INR',
+        now: organizerNow,
+        setup: razorpaySetup(
+          ready: false,
+          lastErrorCode: 'authorizationRevoked',
+        ),
+        bills: const [],
+      ),
+    );
+    expect(find.text('Needs reconnecting'), findsWidgets);
+    expect(
+      find.textContaining(
+        "Catch's access to your Razorpay account was removed",
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('payments-razorpay-reconnect')));
+    expect(calls.actions, [OrganizerPaymentsAction.reconnect]);
+  });
 }

@@ -1,3 +1,4 @@
+import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,31 @@ void main() {
           'type': 'eventReminder',
           'organizerId': 'club-1',
           'eventId': 'event-7',
+        }),
+        isNull,
+      );
+    });
+  });
+
+  group('hostOrganizerPaymentsRouteFromMessageData', () {
+    tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+    test('a revoked Razorpay notice opens Payments in the Host app', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      expect(
+        routeFromMessageData({
+          'type': 'organizerRazorpayRevoked',
+          'organizerId': 'club-1',
+        }),
+        '/host/organizers/payments?organizerId=club-1',
+      );
+    });
+
+    test('the consumer app ignores host payment notices', () {
+      expect(
+        hostOrganizerPaymentsRouteFromMessageData({
+          'type': 'organizerRazorpayRevoked',
+          'organizerId': 'club-1',
         }),
         isNull,
       );

@@ -10779,7 +10779,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady =>
-      'Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.';
+      'Paid booking is unavailable until the organiser connects their Razorpay account. You have not been charged.';
 
   @override
   String get coreAppErrorMessageVisiblecopyPaidBookingNotInApp =>
@@ -19156,6 +19156,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostOrganizerRazorpayConnectBody =>
       'Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.';
+
+  @override
+  String get hostOrganizerRazorpayRevokedBody =>
+      'Catch\'s access to your Razorpay account was removed, so guests can\'t pay for bookings. Reconnect Razorpay to take payments again.';
 
   @override
   String get hostOrganizerRazorpayUnavailable =>

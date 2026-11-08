@@ -161,6 +161,8 @@ export const publicCheckoutCopy = {
   reviewTitle: "Review your booking",
   reviewBody: `Check the price and cancellation policy before reserving your seat. Your place is confirmed after ${brand.name} verifies payment.`,
   unavailable: "Registration is unavailable right now. Try again or contact the organizer.",
+  organizerPaymentsNotReady:
+    "Paid booking is unavailable until the organiser connects their Razorpay account. You have not been charged.",
   nameError: "Enter the name you want on the guest list.",
   alreadyRegistered: "You’re already on the guest list. No new payment is needed.",
   admissionUnavailable: "Your payment was recorded, but we couldn’t confirm your current place. Contact your host before paying again.",

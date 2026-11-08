@@ -61,8 +61,8 @@ export const ORGANIZER_PAYMENTS_NOT_READY = "organizerPaymentsNotReady";
 export function organizerPaymentsNotReady(): never {
   throw new HttpsError(
     "failed-precondition",
-    "Paid booking is unavailable until this organiser finishes " +
-      "connecting their Razorpay account.",
+    "Paid booking is unavailable until this organiser connects their " +
+      "Razorpay account. You have not been charged.",
     {reason: ORGANIZER_PAYMENTS_NOT_READY},
   );
 }

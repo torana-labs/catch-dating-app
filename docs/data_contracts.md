@@ -3773,6 +3773,18 @@ process is retried on the next run. When the current token still has more than
 two minutes left, such a failure leaves the connection ready; otherwise it sets
 `refreshNotSent`, which blocks checkout until a refresh succeeds.
 
+An organizer can revoke Catch's access from Razorpay's side (#1255). The partner
+app's `account.app.authorization_revoked` webhook (`organizerRazorpayPartnerWebhook`,
+signed with `webhookSecret` from a `catch.form-razorpay-partner/v2` partner config)
+and any 401 from the organizer's token during event, offer or form checkout mark
+every live connection on that account `needsAttention` with `lastErrorCode:
+authorizationRevoked`; the status is reused because older Host apps reject
+unknown statuses. Checkout then finds no ready merchant and refuses with
+`organizerPaymentsNotReady` (guests are told nothing was charged), the Host app
+shows Reconnect with a revoked explanation, and the owner gets one push. A
+replayed webhook changes and notifies nothing. Without a v2 config the partner
+webhook answers 503 and only 401s are detected.
+
 `organizerFormPayments` freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's
 `paymentAttemptId` prevents editing; `organizerForms.pendingPaymentCount`

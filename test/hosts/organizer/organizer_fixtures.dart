@@ -85,6 +85,7 @@ HostOrganizerBill organizerBill({
 HostFormPaymentSetup razorpaySetup({
   bool ready = true,
   bool connected = true,
+  String? lastErrorCode,
 }) => HostFormPaymentSetup(
   available: true,
   connections: [
@@ -97,6 +98,7 @@ HostFormPaymentSetup razorpaySetup({
         mode: HostFormPaymentMode.live,
         accountId: 'acc_LanternLane',
         webhookVerified: true,
+        lastErrorCode: lastErrorCode,
       ),
   ],
 );
