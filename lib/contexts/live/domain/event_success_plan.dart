@@ -41,6 +41,14 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
 
     /// The host's edited run of show; null while it follows the playbook.
     List<EventSuccessPlanStep>? stepOverrides,
+
+    /// Server milliseconds the active step started, moved later by paused
+    /// spans; null on plans that predate it, whose time follows the
+    /// schedule.
+    int? stepStartedAtMs,
+
+    /// Server milliseconds the active step was paused; null while it runs.
+    int? pausedAtMs,
     @Default(0) int liveControlRevision,
     @Default(0) int assignmentDraftRevision,
     @Default(-1) int publishedRotationRoundIndex,

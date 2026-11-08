@@ -1,0 +1,5 @@
+{
+  "eventId": "event_123",
+  "expectedRevision": 4,
+  "action": "pauseActiveStep"
+}

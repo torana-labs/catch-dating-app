@@ -272,3 +272,42 @@ test("revoked answer blocks publishing a prepared round", async () => {
     error instanceof HttpsError && error.code === "aborted");
   assert.equal(store.docs[assignmentPath], undefined);
 });
+
+test("pause freezes the step clock and resume moves its start", () => {
+  const running = baseState({stepStartedAtMs: 10_000, pausedAtMs: null});
+  const pause = resolveEventSuccessLiveAction(running, {
+    eventId: "event-1", expectedRevision: 4, action: "pauseActiveStep",
+  }, 70_000);
+  assert.equal(pause.replayed, false);
+  assert.equal(pause.update.pausedAtMs, 70_000);
+  assert.equal(pause.update.liveControlRevision, 5);
+
+  const paused = baseState({liveControlRevision: 5, stepStartedAtMs: 10_000,
+    pausedAtMs: 70_000});
+  assert.deepEqual(resolveEventSuccessLiveAction(paused, {
+    eventId: "event-1", expectedRevision: 4, action: "pauseActiveStep",
+  }, 80_000), {replayed: true, update: {}});
+  const resume = resolveEventSuccessLiveAction(paused, {
+    eventId: "event-1", expectedRevision: 5, action: "resumeActiveStep",
+  }, 130_000);
+  assert.equal(resume.update.pausedAtMs, null);
+  assert.equal(resume.update.stepStartedAtMs, 70_000);
+  assert.deepEqual(resolveEventSuccessLiveAction(running, {
+    eventId: "event-1", expectedRevision: 4, action: "resumeActiveStep",
+  }, 130_000), {replayed: true, update: {}});
+});
+
+test("a new step starts its clock and ends any pause", () => {
+  const resolution = resolveEventSuccessLiveAction(
+    baseState({pausedAtMs: 5_000, stepStartedAtMs: 1_000}),
+    {eventId: "event-1", expectedRevision: 4, action: "setActiveStep",
+      activeStepIndex: 1},
+    9_000);
+  assert.equal(resolution.update.stepStartedAtMs, 9_000);
+  assert.equal(resolution.update.pausedAtMs, null);
+  assert.throws(() => resolveEventSuccessLiveAction(
+    baseState({status: "setup"}),
+    {eventId: "event-1", expectedRevision: 4, action: "pauseActiveStep"},
+    9_000), (error: unknown) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
+});

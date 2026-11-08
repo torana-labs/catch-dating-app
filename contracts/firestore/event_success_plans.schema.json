@@ -146,6 +146,20 @@
       "description": "The host's run of show once a step was added, edited, removed or reordered through saveEventPlanStep. Missing on older plans: the run of show derives from the playbook.",
       "x-catch-ownership": "callable-owned"
     },
+    "stepStartedAtMs": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Server time the active step started, moved later by any paused span on resume. Missing or null on older plans: time left follows the schedule.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "pausedAtMs": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Server time the active step was paused; missing or null while it runs.",
+      "x-catch-ownership": "callable-owned"
+    },
     "liveControlRevision": {
       "type": "integer",
       "minimum": 0,

@@ -155,6 +155,45 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// Freezes the active step's clock. Pausing a paused step replays.
+  Future<void> pauseActiveStep({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'pauseActiveStep',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'pause live event step',
+      resource: _plansPath,
+    ),
+  );
+
+  /// Restarts the active step's clock where it stopped. Resuming a running
+  /// step replays.
+  Future<void> resumeActiveStep({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'resumeActiveStep',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'resume live event step',
+      resource: _plansPath,
+    ),
+  );
+
   Future<void> startLiveRevealCountdown({
     required String eventId,
     required int roundIndex,

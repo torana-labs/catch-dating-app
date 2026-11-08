@@ -84,6 +84,8 @@ Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
   data.remove('publishedRotationRoundIndex');
   data.remove('publishedRevealRoundIndex');
   data.remove('stepOverrides');
+  data.remove('stepStartedAtMs');
+  data.remove('pausedAtMs');
   return data;
 }
 

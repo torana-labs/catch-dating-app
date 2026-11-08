@@ -43,6 +43,8 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
   stepOverrides: (json['stepOverrides'] as List<dynamic>?)
       ?.map((e) => EventSuccessPlanStep.fromJson(e as Map<String, dynamic>))
       .toList(),
+  stepStartedAtMs: (json['stepStartedAtMs'] as num?)?.toInt(),
+  pausedAtMs: (json['pausedAtMs'] as num?)?.toInt(),
   liveControlRevision: (json['liveControlRevision'] as num?)?.toInt() ?? 0,
   assignmentDraftRevision:
       (json['assignmentDraftRevision'] as num?)?.toInt() ?? 0,
@@ -90,6 +92,8 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
               .conversationGraphConsentMode]!,
       'activeStepIndex': instance.activeStepIndex,
       'stepOverrides': instance.stepOverrides?.map((e) => e.toJson()).toList(),
+      'stepStartedAtMs': instance.stepStartedAtMs,
+      'pausedAtMs': instance.pausedAtMs,
       'liveControlRevision': instance.liveControlRevision,
       'assignmentDraftRevision': instance.assignmentDraftRevision,
       'publishedRotationRoundIndex': instance.publishedRotationRoundIndex,

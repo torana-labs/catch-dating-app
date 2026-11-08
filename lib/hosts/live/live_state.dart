@@ -104,6 +104,8 @@ class HostLiveState {
     this.units = const <HostLiveUnit>[],
     this.presenceRevision = 0,
     this.formatView,
+    this.stepStartedAt,
+    this.pausedAt,
     this.error,
   });
 
@@ -150,7 +152,29 @@ class HostLiveState {
 
   /// The formats board this night has; null when it has none.
   final HostLiveFormatView? formatView;
+
+  /// When the active step started by the server's clock, moved later by
+  /// any pause; null when the plan predates it, so time left follows the
+  /// schedule.
+  final DateTime? stepStartedAt;
+
+  /// When the active step was paused; null while it runs.
+  final DateTime? pausedAt;
   final Object? error;
+
+  /// The active step's clock is stopped.
+  bool get paused => pausedAt != null;
+
+  /// When the active step ends: its start plus its minutes when the plan
+  /// knows the start, otherwise its place on the schedule.
+  DateTime? get activeStepEndsAt {
+    final step = activeStep;
+    if (step == null) return null;
+    final started = stepStartedAt;
+    return started == null
+        ? step.endsAt
+        : started.add(Duration(minutes: step.step.durationMinutes));
+  }
 
   /// Guests sit in teams or at tables, so the tablet offers the room.
   bool get room => units.isNotEmpty;
