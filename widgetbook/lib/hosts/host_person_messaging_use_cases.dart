@@ -15,7 +15,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
@@ -25,22 +24,6 @@ import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
-
-@widgetbook.UseCase(
-  name: 'Choose a person',
-  type: HostNewMessageScreen,
-  path: '[P1 product surfaces]/Host/Inbox/Person',
-)
-Widget newMessagePersonPreview(BuildContext context) =>
-    const _MessageFixture(view: _View.directory);
-
-@widgetbook.UseCase(
-  name: 'Explicit available route',
-  type: HostNewMessageRouteSection,
-  path: '[P1 product surfaces]/Host/Inbox/Person',
-)
-Widget newMessageRoutePreview(BuildContext context) =>
-    const _MessageFixture(view: _View.routes);
 
 @widgetbook.UseCase(
   name: 'Catch and WhatsApp in one history',
@@ -66,7 +49,7 @@ Widget selectedPersonPreview(BuildContext context) =>
 Widget personConversationMenuPreview(BuildContext context) =>
     const _MessageFixture(view: _View.conversation);
 
-enum _View { directory, routes, conversation, selected }
+enum _View { conversation, selected }
 
 class _MessageFixture extends StatefulWidget {
   const _MessageFixture({required this.view});
@@ -235,18 +218,6 @@ class _MessageFixtureState extends State<_MessageFixture> {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: switch (widget.view) {
-            _View.directory => const HostNewMessageScreen(organizerId: 'org'),
-            _View.routes => Scaffold(
-              body: SafeArea(
-                child: HostNewMessageRouteSection(
-                  organizerId: 'org',
-                  contactId: 'contact',
-                  name: 'Riya Mehta',
-                  opening: false,
-                  onStartCatch: () {},
-                ),
-              ),
-            ),
             _View.conversation => Scaffold(
               body: SafeArea(
                 child: HostPersonConversationPageBody(

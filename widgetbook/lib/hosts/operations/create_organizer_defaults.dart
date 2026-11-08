@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_kernel/city_catalog.dart';
@@ -45,26 +44,6 @@ Widget organizerPolicyDefaultsCardCatalogStates(BuildContext context) {
         label: 'editable',
         child: WidgetbookHostDeviceFrame(
           child: _OrganizerPolicyDefaultsCardFrame(),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Event success defaults states',
-  type: OrganizerEventSuccessDefaultsStep,
-  path: '[P1 product surfaces]/Host create club',
-)
-Widget organizerEventSuccessDefaultsStepCatalogStates(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'OrganizerEventSuccessDefaultsStep',
-    contractId: 'component.host.club.event_success_defaults_step',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'activity-aware defaults',
-        child: WidgetbookHostDeviceFrame(
-          child: _OrganizerEventSuccessDefaultsStepFrame(),
         ),
       ),
     ],
@@ -143,29 +122,6 @@ class _OrganizerPolicyDefaultsCardFrameState
         currencyCode: currencyCodeForCityName(widgetbookOrganizer.location),
         onChanged: (update) => setState(() => _defaults = update(_defaults)),
       ),
-    );
-  }
-}
-
-class _OrganizerEventSuccessDefaultsStepFrame extends StatefulWidget {
-  const _OrganizerEventSuccessDefaultsStepFrame();
-
-  @override
-  State<_OrganizerEventSuccessDefaultsStepFrame> createState() =>
-      _OrganizerEventSuccessDefaultsStepFrameState();
-}
-
-class _OrganizerEventSuccessDefaultsStepFrameState
-    extends State<_OrganizerEventSuccessDefaultsStepFrame> {
-  final _formKey = GlobalKey<FormState>();
-  var _defaults = widgetbookOrganizer.hostDefaults;
-
-  @override
-  Widget build(BuildContext context) {
-    return OrganizerEventSuccessDefaultsStep(
-      formKey: _formKey,
-      defaults: _defaults,
-      onChanged: (defaults) => setState(() => _defaults = defaults),
     );
   }
 }

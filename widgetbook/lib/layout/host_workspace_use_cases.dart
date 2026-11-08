@@ -1,6 +1,4 @@
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
@@ -9,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
-import '../hosts/operations/manage_fixture.dart';
 import '../hosts/operations/shell_fixture.dart';
 
 @widgetbook.UseCase(
@@ -273,28 +270,4 @@ Widget hostOfferPreferencesRoute(BuildContext context) =>
         eventId: 'event',
         onBack: () {},
       ),
-    );
-
-@widgetbook.UseCase(
-  name: 'Signed-out publication boundary',
-  type: HostEventPublicationRouteScreen,
-  path: '[Host]/Layout',
-)
-Widget hostPublicationRoute(BuildContext context) =>
-    WidgetbookHostManageRouteScope(
-      uid: null,
-      child: HostEventPublicationRouteScreen(
-        organizerId: HostOperationsFixtures.primaryOrganizer.id,
-        eventId: HostOperationsFixtures.privateEvent.id,
-      ),
-    );
-
-@widgetbook.UseCase(
-  name: 'Publication loading chrome',
-  type: HostEventPublicationStateScaffold,
-  path: '[Host]/Layout',
-)
-Widget hostPublicationState(BuildContext context) =>
-    const HostEventPublicationStateScaffold(
-      child: CatchStateViewport.loading(accountForBottomOverlay: false),
     );

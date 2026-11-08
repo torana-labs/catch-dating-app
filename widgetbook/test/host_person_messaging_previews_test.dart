@@ -10,8 +10,6 @@ import '../../test/test_pump_helpers.dart';
 
 void main() {
   final cases = <String, WidgetBuilder>{
-    'new-message': newMessagePersonPreview,
-    'choose-route': newMessageRoutePreview,
     'person-conversation': personConversationPreview,
     'selected-person': selectedPersonPreview,
   };

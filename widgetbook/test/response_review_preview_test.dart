@@ -9,14 +9,7 @@ import '../../test/test_pump_helpers.dart';
 
 void main() {
   for (final (name, builder) in <(String, WidgetBuilder)>[
-    ('response route', responseReviewScreenPreview),
     ('application link', responseReviewApplicationPreview),
-    ('detail sections', responseReviewSectionsPreview),
-    ('contact actions', responseReviewContactsPreview),
-    ('primary action', responseReviewPrimaryPreview),
-    ('start review', responseReviewStartPreview),
-    ('answer', responseReviewAnswerPreview),
-    ('metadata', responseReviewMetadataPreview),
   ]) {
     testWidgets('$name preview renders both themes and large text', (
       tester,

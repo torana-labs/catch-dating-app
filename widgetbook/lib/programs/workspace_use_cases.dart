@@ -8,9 +8,6 @@ import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_workspace_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -318,23 +315,6 @@ final _staff = ProgramStaffList(
   ],
 );
 
-const _importResult = ProgramManifestImportResult(
-  mode: 'commit',
-  totalRows: 12,
-  guestsCreated: 9,
-  guestsUpdated: 3,
-  legsCreated: 4,
-  legsUpdated: 1,
-  householdsCreated: 2,
-  partiesCreated: 1,
-  groupsCreated: 2,
-  rowErrors: [
-    (index: 7, message: 'missing displayName'),
-    (index: 10, message: 'unparseable arrival time'),
-  ],
-  alreadyApplied: false,
-);
-
 List<Override> _workspaceOverrides() => [
   uidProvider.overrideWithValue(const AsyncData<String?>('uid_org')),
   hostOperableOrganizersProvider(
@@ -366,96 +346,6 @@ class _DialogFrame extends StatelessWidget {
       ),
     );
   }
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramWorkspaceScreen,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programWorkspaceScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramWorkspaceScreen',
-    contractId: 'screen.programs.workspace',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'multi-day program',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: const ProgramWorkspaceScreen(programId: _programId),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Body states',
-  type: ProgramWorkspacePageBody,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programWorkspacePageBodyStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramWorkspacePageBody',
-    contractId: 'screen.programs.workspace',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'day rail + functions',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: ProgramWorkspacePageBody(programDetail: _detail),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Function tile',
-  type: ProgramWorkspaceFunctionTile,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programWorkspaceFunctionTileStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramWorkspaceFunctionTile',
-    catalogId: 'screen.programs.workspace',
-    children: [
-      ProgramWorkspaceFunctionTile(
-        function: _functions[0],
-        onEdit: () {},
-        onInvitations: () {},
-      ),
-      ProgramWorkspaceFunctionTile(
-        function: _functions[1],
-        onEdit: () {},
-        onInvitations: () {},
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Function edit dialog',
-  type: ProgramFunctionEditDialog,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programFunctionEditDialogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramFunctionEditDialog',
-    contractId: 'screen.programs.workspace',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'edit existing',
-        child: _DialogFrame(
-          child: ProgramFunctionEditDialog(existing: _functions[0]),
-        ),
-      ),
-    ],
-  );
 }
 
 @widgetbook.UseCase(
@@ -652,106 +542,5 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
         ),
       ),
     ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramTeamScreen,
-  path: '[P1 product surfaces]/Program team',
-)
-Widget programTeamScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramTeamScreen',
-    contractId: 'screen.programs.team',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'staff roster',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: const ProgramTeamScreen(programId: _programId),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Body states',
-  type: ProgramTeamPageBody,
-  path: '[P1 product surfaces]/Program team',
-)
-Widget programTeamPageBodyStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramTeamPageBody',
-    contractId: 'screen.programs.team',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'two members',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: ProgramTeamPageBody(programId: _programId, staff: _staff),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Access dialog',
-  type: ProgramStaffAccessDialog,
-  path: '[P1 product surfaces]/Program team',
-)
-Widget programStaffAccessDialogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramStaffAccessDialog',
-    contractId: 'screen.programs.team',
-    children: const [
-      WidgetbookPageStateCard(
-        label: 'grant access',
-        child: _DialogFrame(child: ProgramStaffAccessDialog(invite: false)),
-      ),
-      WidgetbookPageStateCard(
-        label: 'invite',
-        child: _DialogFrame(child: ProgramStaffAccessDialog(invite: true)),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramImportScreen,
-  path: '[P1 product surfaces]/Program import',
-)
-Widget programImportScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramImportScreen',
-    contractId: 'screen.programs.import',
-    children: const [
-      WidgetbookPageStateCard(
-        label: 'empty picker',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProgramImportScreen(programId: _programId),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Result section',
-  type: ProgramImportResultSection,
-  path: '[P1 product surfaces]/Program import',
-)
-Widget programImportResultSectionStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramImportResultSection',
-    catalogId: 'screen.programs.import',
-    children: const [ProgramImportResultSection(result: _importResult)],
   );
 }

@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools_rail.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -70,64 +68,6 @@ Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
             ),
           ],
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolsRail,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolsPageIndicator,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolCard,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-Widget hostToolCardCatalogStates(BuildContext context) {
-  final tools = [
-    HostEventToolItem(
-      event: HostOperationsFixtures.upcomingEvent,
-      attendanceState: HostEventAttendanceState.open,
-    ),
-    HostEventToolItem(
-      event: HostOperationsFixtures.privateEvent,
-      attendanceState: HostEventAttendanceState.closed,
-    ),
-  ];
-  return WidgetbookPageCatalogFrame(
-    title: 'Host tool cards',
-    contractId: 'component.host.tool_cards',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'event tools carousel',
-        child: HostEventToolsRail(
-          tools: tools,
-          onManageEvent: (_) {},
-          onTakeAttendance: (_) {},
-          onViewReport: (_) {},
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'event tool card',
-        child: HostEventToolCard(
-          item: tools.first,
-          cardIndex: 0,
-          cardCount: tools.length,
-          onManageEvent: (_) {},
-          onTakeAttendance: (_) {},
-          onViewReport: (_) {},
-        ),
-      ),
-      const WidgetbookPageStateCard(
-        label: 'page indicator',
-        child: HostEventToolsPageIndicator(selectedIndex: 0, itemCount: 2),
       ),
     ],
   );
@@ -237,31 +177,6 @@ Widget hostStrictCatchRosterActionCellCatalogStates(BuildContext context) =>
 )
 Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
     hostRosterPrimitiveCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventToolCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventToolCardCatalogStates(BuildContext context) =>
-    hostToolCardCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventToolsRail,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventToolsCarouselCatalogStates(BuildContext context) =>
-    hostToolCardCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventToolsPageIndicator,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventToolsPageIndicatorCatalogStates(
-  BuildContext context,
-) => hostToolCardCatalogStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
