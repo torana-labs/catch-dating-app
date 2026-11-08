@@ -1434,6 +1434,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchFormat?",
+            "tsType": "CatchFormat",
             "values": [
               "run",
               "dinner",
@@ -1448,6 +1449,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "default": false,
             "notes": "CatchChip.choice: a selected chip fills with the dot's colour."
           },
@@ -1456,6 +1458,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchChipSize",
+            "tsType": "CatchChipSize",
             "values": [
               "md",
               "sm"
@@ -2711,6 +2714,7 @@
             "type": "string",
             "required": false,
             "dartType": "String",
+            "tsType": "string",
             "notes": "CatchNotice.inline only."
           },
           {
@@ -2718,6 +2722,7 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "CatchNotice.inline only."
           },
           {
@@ -2725,6 +2730,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchNoticeTone",
+            "tsType": "CatchNoticeTone",
             "values": [
               "status",
               "success",
@@ -2741,6 +2747,7 @@
             "type": "object",
             "required": false,
             "dartType": "IconData?",
+            "tsType": "ReactNode",
             "notes": "CatchNotice.inline only."
           },
           {
@@ -8115,6 +8122,7 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "CatchSheet.contained only."
           },
           {
@@ -8122,6 +8130,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchSheetTone",
+            "tsType": "CatchSheetTone",
             "values": [
               "standard",
               "success"
@@ -8134,6 +8143,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "default": true,
             "notes": "CatchSheet.contained only: dims the screen and docks to the edge; without it the sheet floats."
           }
@@ -10442,6 +10452,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchChoiceTileVariant?",
+            "tsType": "CatchChoiceTileVariant",
             "values": [
               "row",
               "tile",
@@ -10455,6 +10466,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchFormat?",
+            "tsType": "CatchFormat",
             "values": [
               "run",
               "dinner",
@@ -10467,13 +10479,15 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "meta",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "emphasis",
@@ -19909,19 +19923,22 @@
             "name": "time",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "CatchIconName"
           },
           {
             "name": "iconTone",
             "type": "enum",
             "required": false,
             "dartType": "CatchIndexRowTone",
+            "tsType": "CatchIndexRowTone",
             "values": [
               "neutral",
               "success",
@@ -19935,26 +19952,30 @@
             "name": "rank",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "badge",
             "type": "object",
             "required": false,
             "dartType": "CatchIndexRowBadge?",
+            "tsType": "CatchBadgeProps",
             "notes": "CatchIndexRowBadge: label, tone, format, icon, emphasis and dot, drawn by the default CatchBadge."
           },
           {
             "name": "body",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "metaTone",
             "type": "enum",
             "required": false,
             "dartType": "CatchIndexRowTone",
+            "tsType": "CatchIndexRowTone",
             "values": [
               "neutral",
               "success",
@@ -19968,13 +19989,15 @@
             "name": "value",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "emphasis",
             "type": "enum",
             "required": false,
             "dartType": "CatchIndexRowEmphasis",
+            "tsType": "CatchIndexRowEmphasis",
             "values": [
               "regular",
               "unread",
@@ -19988,6 +20011,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "default": false,
             "notes": "Off by default in Flutter: callers ask for the chevron on rows that open something."
           }
@@ -23662,6 +23686,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMarkerVariant",
+          "tsType": "CatchMarkerVariant",
           "values": [
             "dot",
             "ring",
@@ -23676,6 +23701,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMarkerSize",
+          "tsType": "CatchMarkerSize",
           "values": [
             "sm",
             "md",
@@ -23689,6 +23715,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMarkerTone",
+          "tsType": "CatchMarkerTone",
           "values": [
             "ink",
             "muted",
@@ -23705,6 +23732,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchFormat?",
+          "tsType": "CatchFormat",
           "values": [
             "run",
             "dinner",
@@ -23718,13 +23746,15 @@
           "type": "bool",
           "required": false,
           "dartType": "bool",
+          "tsType": "boolean",
           "default": false
         },
           {
           "name": "value",
           "type": "number",
           "required": false,
-          "dartType": "int?"
+          "dartType": "int?",
+          "tsType": "number"
         }
         ],
         "states": ["dot", "ring", "check", "number", "tones", "format", "live"],
@@ -23936,37 +23966,43 @@
           "name": "month",
           "type": "object",
           "required": true,
-          "dartType": "DateTime"
+          "dartType": "DateTime",
+          "tsType": "string"
         },
           {
           "name": "label",
           "type": "string",
           "required": true,
-          "dartType": "String"
+          "dartType": "String",
+          "tsType": "string"
         },
           {
           "name": "value",
           "type": "object",
           "required": false,
-          "dartType": "DateTime?"
+          "dartType": "DateTime?",
+          "tsType": "string"
         },
           {
           "name": "onChanged",
           "type": "callback",
           "required": false,
-          "dartType": "ValueChanged<DateTime>?"
+          "dartType": "ValueChanged<DateTime>?",
+          "tsType": "(day: string) => void"
         },
           {
           "name": "min",
           "type": "object",
           "required": false,
-          "dartType": "DateTime?"
+          "dartType": "DateTime?",
+          "tsType": "string"
         },
           {
           "name": "marked",
           "type": "list",
           "required": false,
           "dartType": "List<DateTime>",
+          "tsType": "string[]",
           "default": "const []"
         },
           {
@@ -23974,19 +24010,22 @@
           "type": "list",
           "required": false,
           "dartType": "List<DateTime>",
+          "tsType": "string[]",
           "default": "const []"
         },
           {
           "name": "markedLabel",
           "type": "string",
           "required": false,
-          "dartType": "String?"
+          "dartType": "String?",
+          "tsType": "string"
         },
           {
           "name": "repeatsLabel",
           "type": "string",
           "required": false,
-          "dartType": "String?"
+          "dartType": "String?",
+          "tsType": "string"
         }
         ],
         "states": ["month", "selected", "min", "marked", "repeats", "legend", "night"],
@@ -24094,19 +24133,22 @@
           "name": "value",
           "type": "number",
           "required": true,
-          "dartType": "num"
+          "dartType": "num",
+          "tsType": "number"
         },
           {
           "name": "label",
           "type": "string",
           "required": true,
-          "dartType": "String"
+          "dartType": "String",
+          "tsType": "string"
         },
           {
           "name": "max",
           "type": "number",
           "required": false,
           "dartType": "num",
+          "tsType": "number",
           "default": 100
         },
           {
@@ -24114,6 +24156,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMeterVariant",
+          "tsType": "CatchMeterVariant",
           "values": [
             "progress",
             "cap",
@@ -24128,6 +24171,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMeterSize",
+          "tsType": "CatchMeterSize",
           "values": [
             "sm",
             "md",
@@ -24141,6 +24185,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchMeterColor",
+          "tsType": "CatchMeterColor",
           "values": [
             "ink",
             "format",
@@ -24156,6 +24201,7 @@
           "type": "enum",
           "required": false,
           "dartType": "CatchFormat?",
+          "tsType": "CatchFormat",
           "values": [
             "run",
             "dinner",
@@ -24169,19 +24215,22 @@
           "type": "bool",
           "required": false,
           "dartType": "bool",
+          "tsType": "boolean",
           "default": false
         },
           {
           "name": "limit",
           "type": "number",
           "required": false,
-          "dartType": "num?"
+          "dartType": "num?",
+          "tsType": "number"
         },
           {
           "name": "parts",
           "type": "list",
           "required": false,
           "dartType": "List<CatchMeterPart>",
+          "tsType": "readonly CatchMeterPart[]",
           "default": "const []"
         }
         ],

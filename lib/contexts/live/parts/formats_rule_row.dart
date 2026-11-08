@@ -32,6 +32,7 @@ String formatsRuleModeLabel(BuildContext context, String mode) {
   return switch (mode) {
     'preferDifferent' => l10n.hostFormatsRuleDifferent,
     'balanceAcrossGroups' => l10n.hostFormatsRuleSpread,
+    'coverAcrossGroups' => l10n.hostFormatsRuleCover,
     _ => l10n.hostFormatsRuleSimilar,
   };
 }

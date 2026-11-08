@@ -276,8 +276,8 @@ abstract final class EventSuccessPlaybookLibrary {
       EventSuccessModuleCatalog.checkIn,
       EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
-      EventSuccessModuleCatalog.guidedRotations,
       EventSuccessModuleCatalog.liveReveal,
       EventSuccessModuleCatalog.socialMissions,
       EventSuccessModuleCatalog.wingmanRequests,
@@ -311,7 +311,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             {{library.dinner.hostInstruction.3}},
         attendeeExperience: {{library.dinner.attendeeExperience.3}},
-        moduleIds: ['guided_rotations', 'live_reveal'],
+        moduleIds: ['micro_pods', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.closing,

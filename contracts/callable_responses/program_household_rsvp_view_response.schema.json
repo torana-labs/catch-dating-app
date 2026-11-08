@@ -255,6 +255,13 @@
           }
         }
       }
+    },
+    "collectsGuestIds": {
+      "type": "boolean",
+      "description": "Whether the programme collects guest IDs for its hotels (it plans accommodation), so the page links to the household's ID page. Absent reads as false."
+    },
+    "branding": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
     }
   }
 }

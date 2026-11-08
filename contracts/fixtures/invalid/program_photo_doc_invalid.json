@@ -1,0 +1,17 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "photoId": "photo_0123456789abcdef0123456789abcdef01234567",
+  "functionId": "mehendi",
+  "storagePath": "programs/program-1/photos/photo_0123456789abcdef0123456789abcdef01234567",
+  "contentType": "application/pdf",
+  "sizeBytes": 204800,
+  "caption": null,
+  "status": "visible",
+  "uploadedByUid": "manager-1",
+  "createdAtMillis": 1800000000000,
+  "updatedAtMillis": 1800000000000,
+  "revision": 1,
+  "lastRequestId": "photo-cmd-1",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

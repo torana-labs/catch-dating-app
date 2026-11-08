@@ -3,11 +3,11 @@ import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
-import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -226,7 +226,7 @@ void main() {
           onApproveEach: approve.add,
         ),
       );
-      expect(find.text(CreateSettingsCopy.waitlist), findsOneWidget);
+      expect(find.text("Waitlist when it's full"), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey<String>('create-waitlist')));
       await tester.tap(
         find.byKey(const ValueKey<String>('create-approve-each')),
@@ -276,7 +276,7 @@ void main() {
         tester,
         CreateShareBody(
           state: _state(draft: _trivia, eventId: 'event-1', published: true),
-          link: 'https://catchdates.com/e/event-1',
+          link: '${Brand.webOrigin}/e/event-1',
           onCopyLink: () => copied++,
           onPrint: () {},
           onShareStory: () {},
@@ -285,7 +285,7 @@ void main() {
       );
       expect(find.text(l10n.hostCreatePublished), findsOneWidget);
       expect(find.text('Tuesday Trivia Night'), findsOneWidget);
-      expect(find.text('https://catchdates.com/e/event-1'), findsOneWidget);
+      expect(find.text('${Brand.webOrigin}/e/event-1'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('create-copy-link')));
       expect(copied, 1);
     });

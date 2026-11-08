@@ -46,8 +46,12 @@ HostEventPublishState hostEventPublishController(
   }
   final summary = view.summary!;
   final settings = summary.eventSettings;
-  final booking = summary.eventPreferences?.resolvedValues['bookingMode'];
   final published = summary.publicationState == 'published';
+  // A published event books as its admission says; before that, the choice
+  // is the event's booking preference.
+  final booking = published
+      ? settings.publishedBookingMode
+      : summary.eventPreferences?.resolvedValues['bookingMode'];
   return HostEventPublishState(
     status: HostEventPublishStatus.ready,
     eventTitle: summary.name,
@@ -59,11 +63,12 @@ HostEventPublishState hostEventPublishController(
     priceHiddenUntilBookingOpens: settings.priceHiddenUntilBookingOpens,
     bookingMode: switch (booking) {
       'askFirst' => HostEventBookingMode.askFirst,
-      'anyone' || 'followersFirst' => HostEventBookingMode.anyone,
+      'followersFirst' => HostEventBookingMode.followersFirst,
+      'anyone' => HostEventBookingMode.anyone,
       _ => null,
     },
     canChangeBooking:
-        !published && summary.status == 'active' && defaults != null,
+        summary.status == 'active' && (published || defaults != null),
   );
 }
 
@@ -106,20 +111,40 @@ class HostEventPublishCommands extends _$HostEventPublishCommands {
         );
   }
 
-  /// Saves who can book as the event's booking preference, keeping every
-  /// other preference as it is. Publishing applies it to admission: ask
-  /// first makes each sign-up a request the host lets in.
+  /// Saves who can book. A published event changes its admission through
+  /// the publication command, fenced by the setup revision; an unpublished
+  /// one saves the choice as its booking preference, keeping every other
+  /// preference, and publishing applies it. Ask first makes each sign-up a
+  /// request the host lets in; followers first lets only followers book
+  /// until the day before.
   Future<void> saveBookingMode({
     required HostEventRequest request,
     required HostEventBookingMode mode,
   }) async {
     final uid = requireSignedInUid(ref, action: 'change who can book');
-    final summary = (await ref.read(
+    final view = await ref.read(
       privateEventSetupViewProvider(
         organizerId: request.organizerId,
         eventId: request.eventId,
       ).future,
-    )).requireSummary();
+    );
+    final summary = view.requireSummary();
+    if (summary.publicationState == 'published') {
+      await ref
+          .read(eventPublicationRepositoryProvider)
+          .set(
+            EventPublicationRequest(
+              organizerId: request.organizerId,
+              eventId: request.eventId,
+              requestId: hostEventRequestId(),
+              expectedSetupRevision:
+                  view.setupRevision ?? summary.setupRevision,
+              publicationState: 'published',
+              bookingMode: mode.name,
+            ),
+          );
+      return;
+    }
     final defaults = (await ref.read(
       managerEventSetupDefaultsViewProvider(request.organizerId).future,
     )).requireDefaults();

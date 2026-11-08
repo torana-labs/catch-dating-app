@@ -93,6 +93,12 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessAttributePaceTogether = 'Pace together';
   static const eventSuccessAttributeSkillTogether = 'Skill together';
   static const eventSuccessAttributeRoleTogether = 'Role together';
+  static const eventSuccessAttributeGender = 'Gender (opt-in)';
+  static const eventSuccessAttributeAgeBand = 'Age band (opt-in)';
+  static const eventSuccessAttributeSpreadGender = 'Mix genders (opt-in)';
+  static const eventSuccessAttributeSpreadAgeBand = 'Spread ages (opt-in)';
+  static const eventSuccessAttributeGenderTogether = 'Gender together (opt-in)';
+  static const eventSuccessAttributeAgeBandTogether = 'Similar ages together (opt-in)';
   static const eventSuccessRecommendationDefaultOn = 'Default on';
   static const eventSuccessRecommendationRecommended = 'Recommended';
   static const eventSuccessRecommendationOptional = 'Optional';

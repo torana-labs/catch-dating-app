@@ -3117,6 +3117,62 @@
       ]
     },
     {
+      "id": "programGuestIds",
+      "path": "programGuestIds/{programGuestIdId}",
+      "rulesMatch": "/programGuestIds/{programGuestIdId}",
+      "typescriptInterface": "ProgramGuestIdDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "submitProgramGuestId and decideProgramGuestId callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One guest's ID for the hotels; images live in private Storage under programs/{programId}/guestIds/.",
+        "Only the last four characters of an ID number are stored; the archive retention sweep deletes the documents and files."
+      ]
+    },
+    {
+      "id": "programHampers",
+      "path": "programHampers/{programHamperId}",
+      "rulesMatch": "/programHampers/{programHamperId}",
+      "typescriptInterface": "ProgramHamperDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "upsertProgramHamper callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One welcome hamper per hotel room; the photo lives in private Storage under programs/{programId}/hampers/.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programPhotos",
+      "path": "programPhotos/{programPhotoId}",
+      "rulesMatch": "/programPhotos/{programPhotoId}",
+      "typescriptInterface": "ProgramPhotoDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "upsertProgramPhoto callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One function photo; the file lives in private Storage under programs/{programId}/photos/.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programVendorBills",
+      "path": "programVendorBills/{programVendorBillId}",
+      "rulesMatch": "/programVendorBills/{programVendorBillId}",
+      "typescriptInterface": "ProgramVendorBillDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "reconcileProgramVendorBill callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One vendor's bill for a programme, checked line by line against recorded trips.",
+        "Commercial record without guest data; the retention sweep clears its notes."
+      ]
+    },
+    {
       "id": "programTravelLegs",
       "path": "programTravelLegs/{legId}",
       "rulesMatch": "/programTravelLegs/{legId}",

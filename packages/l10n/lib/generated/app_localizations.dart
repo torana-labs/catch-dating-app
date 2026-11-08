@@ -17676,6 +17676,26 @@ abstract class AppLocalizations {
   /// **'From {price}'**
   String eventsEventPriceCopyFromPrice({required Object price});
 
+  /// Price label while the host hides the price until booking opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Price when booking opens'**
+  String get eventsEventPriceCopyHiddenUntilBookingOpens;
+
+  /// Event page booking button when tickets are sold on the organiser's own site.
+  ///
+  /// In en, this message translates to:
+  /// **'Get tickets'**
+  String get eventsEventDetailExternalBookingGetTickets;
+
+  /// Event page booking button when tickets are sold on another platform, such as Luma.
+  ///
+  /// In en, this message translates to:
+  /// **'Get tickets on {platform}'**
+  String eventsEventDetailExternalBookingGetTicketsOn({
+    required Object platform,
+  });
+
   /// Fallback price label for external events whose source has no parsed price.
   ///
   /// In en, this message translates to:
@@ -33569,6 +33589,12 @@ abstract class AppLocalizations {
   /// **'Balance answers across groups'**
   String get eventMatchingHostBalance;
 
+  /// Group-level cross-section preference: each group holds as many different answers as it can.
+  ///
+  /// In en, this message translates to:
+  /// **'Give every group a mix of answers'**
+  String get eventMatchingHostCover;
+
   /// Soft feature weight control.
   ///
   /// In en, this message translates to:
@@ -43725,6 +43751,18 @@ abstract class AppLocalizations {
   /// **'Same share of each answer in every group'**
   String get hostFormatsRuleSpreadNote;
 
+  /// Rule use: each group holds a cross-section of the answers.
+  ///
+  /// In en, this message translates to:
+  /// **'One of each'**
+  String get hostFormatsRuleCover;
+
+  /// Rule use note for the cross-section mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Every group gets as many different answers as it can'**
+  String get hostFormatsRuleCoverNote;
+
   /// Rule strength.
   ///
   /// In en, this message translates to:
@@ -45039,12 +45077,6 @@ abstract class AppLocalizations {
   /// **'Cover photo added'**
   String get hostProgrammeBrandingHasCover;
 
-  /// Branding cover row note: uploads are not built yet.
-  ///
-  /// In en, this message translates to:
-  /// **'Photo uploads arrive with programme photos.'**
-  String get hostProgrammeBrandingCoverNote;
-
   /// Branding preview section.
   ///
   /// In en, this message translates to:
@@ -45179,6 +45211,921 @@ abstract class AppLocalizations {
     required Object name,
     required int percent,
   });
+
+  /// ID tracker pane title.
+  ///
+  /// In en, this message translates to:
+  /// **'IDs for the hotels'**
+  String get hostProgrammeIdsTitle;
+
+  /// ID tracker: share the hotel front-desk link.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to the hotels'**
+  String get hostProgrammeIdsSend;
+
+  /// ID tracker stat: guests with a stay.
+  ///
+  /// In en, this message translates to:
+  /// **'Staying'**
+  String get hostProgrammeIdsStaying;
+
+  /// ID tracker stat: IDs sent.
+  ///
+  /// In en, this message translates to:
+  /// **'IDs in'**
+  String get hostProgrammeIdsIn;
+
+  /// ID tracker stat, filter and badge: IDs waiting for a check.
+  ///
+  /// In en, this message translates to:
+  /// **'To check'**
+  String get hostProgrammeIdsToCheck;
+
+  /// ID tracker stat, filter and badge: no ID sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get hostProgrammeIdsMissing;
+
+  /// ID tracker filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Passports'**
+  String get hostProgrammeIdsPassports;
+
+  /// ID tracker button opening a reminder message.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind the {count} missing'**
+  String hostProgrammeIdsRemind({required int count});
+
+  /// ID tracker hotel switcher option.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} {count}'**
+  String hostProgrammeIdsHotelCount({required Object name, required int count});
+
+  /// ID tracker list empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No one here yet.'**
+  String get hostProgrammeIdsEmpty;
+
+  /// ID tracker detail before a pick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a guest to see their ID.'**
+  String get hostProgrammeIdsPick;
+
+  /// ID tracker action.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get hostProgrammeIdsAccept;
+
+  /// ID tracker action: ask the household again.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a clearer photo'**
+  String get hostProgrammeIdsAskAgain;
+
+  /// ID tracker detail room line.
+  ///
+  /// In en, this message translates to:
+  /// **'Room {room}'**
+  String hostProgrammeIdsRoom({required Object room});
+
+  /// ID tracker detail label over the masked number.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} · masked'**
+  String hostProgrammeIdsKindMasked({required Object kind});
+
+  /// ID tracker masked ID number.
+  ///
+  /// In en, this message translates to:
+  /// **'XXXX XXXX {last4}'**
+  String hostProgrammeIdsMasked({required Object last4});
+
+  /// ID image semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}’s ID'**
+  String hostProgrammeIdsImage({required Object name});
+
+  /// ID tracker detail section.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks'**
+  String get hostProgrammeIdsChecks;
+
+  /// ID tracker check row.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent yet'**
+  String get hostProgrammeIdsNotSent;
+
+  /// ID tracker check row.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {when}'**
+  String hostProgrammeIdsSentAt({required Object when});
+
+  /// ID tracker check row.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked for a clearer photo'**
+  String get hostProgrammeIdsAskedAgainRow;
+
+  /// ID tracker check row.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted for the hotel'**
+  String get hostProgrammeIdsAcceptedRow;
+
+  /// ID tracker check row for a passport.
+  ///
+  /// In en, this message translates to:
+  /// **'No visa page yet'**
+  String get hostProgrammeIdsNoVisa;
+
+  /// ID tracker check row for a passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa page in'**
+  String get hostProgrammeIdsVisaIn;
+
+  /// ID tracker detail section.
+  ///
+  /// In en, this message translates to:
+  /// **'Who has seen it'**
+  String get hostProgrammeIdsSeenBy;
+
+  /// ID tracker: no hotel views.
+  ///
+  /// In en, this message translates to:
+  /// **'No one yet. The hotel sees it once you accept it.'**
+  String get hostProgrammeIdsSeenByEmpty;
+
+  /// ID tracker: who looked.
+  ///
+  /// In en, this message translates to:
+  /// **'Front desk'**
+  String get hostProgrammeIdsFrontDesk;
+
+  /// ID tracker privacy note.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the last four digits are kept. The hotel sees accepted IDs through its own link, and every ID is deleted when the programme’s data is cleared.'**
+  String get hostProgrammeIdsPrivacy;
+
+  /// ID tracker badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get hostProgrammeIdsAccepted;
+
+  /// ID tracker badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked again'**
+  String get hostProgrammeIdsAskedAgain;
+
+  /// ID tracker badge for a passport to check.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport and visa'**
+  String get hostProgrammeIdsPassportVisa;
+
+  /// ID kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Aadhaar'**
+  String get hostProgrammeIdsAadhaar;
+
+  /// ID kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get hostProgrammeIdsPassport;
+
+  /// ID kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Licence'**
+  String get hostProgrammeIdsLicence;
+
+  /// ID kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Voter ID'**
+  String get hostProgrammeIdsVoterId;
+
+  /// ID tracker decision error.
+  ///
+  /// In en, this message translates to:
+  /// **'That wasn’t saved. Someone may have changed this ID; try again.'**
+  String get hostProgrammeIdsDecisionFailed;
+
+  /// ID tracker share error.
+  ///
+  /// In en, this message translates to:
+  /// **'The hotel link couldn’t be made. Try again.'**
+  String get hostProgrammeIdsSendFailed;
+
+  /// Share subject for the hotel link.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooming list and guest IDs for {hotel}'**
+  String hostProgrammeIdsLinkSubject({required Object hotel});
+
+  /// Share subject for the family's view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'{programme} · numbers for the family'**
+  String hostProgrammeFamilyLinkSubject({required Object programme});
+
+  /// Guest list: Share with the family error.
+  ///
+  /// In en, this message translates to:
+  /// **'The family link couldn’t be made. Try again.'**
+  String get hostProgrammeFamilySendFailed;
+
+  /// Reconcile top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking a bill'**
+  String get hostProgrammeBillTitle;
+
+  /// Trips top bar: open the vendor's bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Check {vendor}’s bill'**
+  String hostProgrammeBillOpen({required Object vendor});
+
+  /// Reconcile heading.
+  ///
+  /// In en, this message translates to:
+  /// **'{vendor} · invoice {invoice}'**
+  String hostProgrammeBillHeading({
+    required Object vendor,
+    required Object invoice,
+  });
+
+  /// Reconcile: when the bill came in.
+  ///
+  /// In en, this message translates to:
+  /// **'Received {date}'**
+  String hostProgrammeBillReceived({required Object date});
+
+  /// Reconcile: trip counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{billed} trips billed, {recorded} recorded'**
+  String hostProgrammeBillCounts({required int billed, required int recorded});
+
+  /// Reconcile table label.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill lines against recorded trips'**
+  String get hostProgrammeBillTable;
+
+  /// Reconcile column.
+  ///
+  /// In en, this message translates to:
+  /// **'On the bill'**
+  String get hostProgrammeBillOnTheBill;
+
+  /// Reconcile column and stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed'**
+  String get hostProgrammeBillBilled;
+
+  /// Reconcile column and stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get hostProgrammeBillRecorded;
+
+  /// Reconcile column.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get hostProgrammeBillCheck;
+
+  /// Reconcile stat.
+  ///
+  /// In en, this message translates to:
+  /// **'To question'**
+  String get hostProgrammeBillToQuestion;
+
+  /// Reconcile stat note.
+  ///
+  /// In en, this message translates to:
+  /// **'More than recorded'**
+  String get hostProgrammeBillToQuestionNote;
+
+  /// Reconcile aside title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing to question} =1{The trip to question} other{The {count} trips to question}}'**
+  String hostProgrammeBillQuestionsTitle({required int count});
+
+  /// Reconcile: nothing to question.
+  ///
+  /// In en, this message translates to:
+  /// **'Every line matches a recorded trip.'**
+  String get hostProgrammeBillQuestionsEmpty;
+
+  /// Reconcile note field.
+  ///
+  /// In en, this message translates to:
+  /// **'Note to {vendor}'**
+  String hostProgrammeBillNote({required Object vendor});
+
+  /// Reconcile: question the bill and share the note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Send the question} other{Send the {count} questions}}'**
+  String hostProgrammeBillSendQuestions({required int count});
+
+  /// Reconcile: approve the recorded total.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve {amount}'**
+  String hostProgrammeBillApprove({required Object amount});
+
+  /// Reconcile: approved notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved {amount}.'**
+  String hostProgrammeBillApproved({required Object amount});
+
+  /// Reconcile: replace the bill lines.
+  ///
+  /// In en, this message translates to:
+  /// **'Check a new bill'**
+  String get hostProgrammeBillNew;
+
+  /// Reconcile aside section.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded, not billed'**
+  String get hostProgrammeBillUnbilled;
+
+  /// Reconcile: no unbilled trips.
+  ///
+  /// In en, this message translates to:
+  /// **'Every recorded trip is on the bill.'**
+  String get hostProgrammeBillUnbilledEmpty;
+
+  /// Reconcile form summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 trip recorded} other{{count} trips recorded}} · {amount}'**
+  String hostProgrammeBillRecordedSummary({
+    required int count,
+    required Object amount,
+  });
+
+  /// Reconcile form field.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice number'**
+  String get hostProgrammeBillInvoice;
+
+  /// Reconcile form field.
+  ///
+  /// In en, this message translates to:
+  /// **'The bill’s lines'**
+  String get hostProgrammeBillLines;
+
+  /// Reconcile form helper.
+  ///
+  /// In en, this message translates to:
+  /// **'One trip per line: what the bill says, a comma, then the amount. For example: T-041, 2000'**
+  String get hostProgrammeBillLinesHelp;
+
+  /// Reconcile form button.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the bill'**
+  String get hostProgrammeBillCheckButton;
+
+  /// Reconcile form error.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste at least one line with an amount.'**
+  String get hostProgrammeBillLinesEmpty;
+
+  /// Reconcile: note missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the note to the vendor first.'**
+  String get hostProgrammeBillNoteEmpty;
+
+  /// Reconcile error.
+  ///
+  /// In en, this message translates to:
+  /// **'That wasn’t saved. Someone may have changed this bill; try again.'**
+  String get hostProgrammeBillFailed;
+
+  /// Reconcile share subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions on your bill from {vendor}'**
+  String hostProgrammeBillShareSubject({required Object vendor});
+
+  /// Reconcile check badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches'**
+  String get hostProgrammeBillMatches;
+
+  /// Reconcile check badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount differs'**
+  String get hostProgrammeBillDiffers;
+
+  /// Reconcile check badge: trip has no agreed rate.
+  ///
+  /// In en, this message translates to:
+  /// **'No rate'**
+  String get hostProgrammeBillNoRate;
+
+  /// Reconcile check badge: no such trip.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded'**
+  String get hostProgrammeBillNoTrip;
+
+  /// Reconcile check badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided'**
+  String get hostProgrammeBillVoided;
+
+  /// Reconcile check badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed twice'**
+  String get hostProgrammeBillDuplicate;
+
+  /// Reconcile question reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {billed}, recorded {recorded}'**
+  String hostProgrammeBillReasonDiffers({
+    required Object billed,
+    required Object recorded,
+  });
+
+  /// Reconcile question reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {billed}; no rate was agreed for this trip'**
+  String hostProgrammeBillReasonNoRate({required Object billed});
+
+  /// Reconcile question reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {billed}; we have no record of this trip'**
+  String hostProgrammeBillReasonNoTrip({required Object billed});
+
+  /// Reconcile question reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {billed}; this trip was voided'**
+  String hostProgrammeBillReasonVoided({required Object billed});
+
+  /// Reconcile question reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {billed}; this trip is already on the bill'**
+  String hostProgrammeBillReasonDuplicate({required Object billed});
+
+  /// Photos top bar and page title.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get hostProgrammePhotosTitle;
+
+  /// Photos: no functions yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a function to start an album.'**
+  String get hostProgrammePhotosNoAlbums;
+
+  /// Photos: the album section when none is open.
+  ///
+  /// In en, this message translates to:
+  /// **'All photos'**
+  String get hostProgrammePhotosAll;
+
+  /// Photos section action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos'**
+  String get hostProgrammePhotosAdd;
+
+  /// Photos source row action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostProgrammePhotosAddShort;
+
+  /// Photos: empty album.
+  ///
+  /// In en, this message translates to:
+  /// **'No photos here yet.'**
+  String get hostProgrammePhotosEmpty;
+
+  /// Photo semantic label without a caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Programme photo'**
+  String get hostProgrammePhotosPhoto;
+
+  /// Photos section.
+  ///
+  /// In en, this message translates to:
+  /// **'Where photos come from'**
+  String get hostProgrammePhotosSources;
+
+  /// Photos source row.
+  ///
+  /// In en, this message translates to:
+  /// **'From this phone'**
+  String get hostProgrammePhotosFromPhone;
+
+  /// Photos source row subtitle with no album open.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an album first to file them under a function'**
+  String get hostProgrammePhotosFromPhoneAll;
+
+  /// Photos source row subtitle with an album open.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to {name}'**
+  String hostProgrammePhotosFromPhoneAlbum({required Object name});
+
+  /// Photos privacy note.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos stay private to your team. They are deleted when the programme’s data is cleared.'**
+  String get hostProgrammePhotosPrivacy;
+
+  /// Photos album tile count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String hostProgrammePhotosCount({required int count});
+
+  /// Photos album tile without photos.
+  ///
+  /// In en, this message translates to:
+  /// **'No photos yet'**
+  String get hostProgrammePhotosNone;
+
+  /// Photos album for photos filed under no function.
+  ///
+  /// In en, this message translates to:
+  /// **'Other photos'**
+  String get hostProgrammePhotosOther;
+
+  /// Photos upload error.
+  ///
+  /// In en, this message translates to:
+  /// **'That photo wasn’t added. Try again.'**
+  String get hostProgrammePhotosFailed;
+
+  /// Branding cover button.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the photo'**
+  String get hostProgrammeBrandingChangeCover;
+
+  /// Branding cover upload error.
+  ///
+  /// In en, this message translates to:
+  /// **'That photo couldn’t be uploaded. Try again.'**
+  String get hostProgrammeBrandingCoverFailed;
+
+  /// Publication choice: people with the link only.
+  ///
+  /// In en, this message translates to:
+  /// **'People with the link'**
+  String get hostEventSettingsLinkTitle;
+
+  /// Publication choice subtitle: not listed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not listed anywhere'**
+  String get hostEventSettingsLinkBody;
+
+  /// Who can book choice group label.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can book'**
+  String get hostEventSettingsWhoCanBook;
+
+  /// Who can book choice: anyone.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get hostEventSettingsAnyone;
+
+  /// Who can book choice subtitle: anyone.
+  ///
+  /// In en, this message translates to:
+  /// **'First come, first served'**
+  String get hostEventSettingsAnyoneBody;
+
+  /// Who can book choice: followers before everyone else.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers first'**
+  String get hostEventSettingsFollowersFirst;
+
+  /// Who can book choice subtitle: followers first.
+  ///
+  /// In en, this message translates to:
+  /// **'Your followers can book first; everyone else from the day before'**
+  String get hostEventSettingsFollowersFirstBody;
+
+  /// Who can book choice: the host approves each guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask first'**
+  String get hostEventSettingsAskFirst;
+
+  /// Who can book choice subtitle: ask first.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each guest first'**
+  String get hostEventSettingsAskFirstBody;
+
+  /// Event setting switch: show the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Show who else is going'**
+  String get hostEventSettingsShowGuestList;
+
+  /// Event setting subtitle: what guests see of the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see a count; friends see names in the app'**
+  String get hostEventSettingsShowGuestListBody;
+
+  /// Event setting switch: hide the price until booking opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the price until booking opens'**
+  String get hostEventSettingsHidePrice;
+
+  /// Event defaults section title: tickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets'**
+  String get hostEventSettingsTickets;
+
+  /// Event defaults stepper: starting price.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting price'**
+  String get hostEventSettingsStartingPrice;
+
+  /// Event defaults stepper: places.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hostEventSettingsPlaces;
+
+  /// Stepper semantic label: lower the price.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower the starting price'**
+  String get hostEventSettingsLowerPrice;
+
+  /// Stepper semantic label: raise the price.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise the starting price'**
+  String get hostEventSettingsRaisePrice;
+
+  /// Stepper semantic label: fewer places.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer places'**
+  String get hostEventSettingsFewerPlaces;
+
+  /// Stepper semantic label: more places.
+  ///
+  /// In en, this message translates to:
+  /// **'More places'**
+  String get hostEventSettingsMorePlaces;
+
+  /// Event defaults switch: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist when full'**
+  String get hostEventSettingsWaitlistWhenFull;
+
+  /// Event defaults subtitle: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'A place offered to the next person when someone cancels'**
+  String get hostEventSettingsWaitlistWhenFullBody;
+
+  /// Event defaults switch: ask to join.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to join instead of booking'**
+  String get hostEventSettingsAskToJoin;
+
+  /// Event defaults subtitle: ask to join.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each guest first'**
+  String get hostEventSettingsAskToJoinBody;
+
+  /// Event defaults section title: refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get hostEventSettingsRefunds;
+
+  /// Event defaults refunds explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see this before they pay and on their ticket.'**
+  String get hostEventSettingsRefundsBody;
+
+  /// Refund choice: up to 24 hours before.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 24 hours before'**
+  String get hostEventSettingsRefund24h;
+
+  /// Refund choice subtitle: 24 hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Most guests expect this'**
+  String get hostEventSettingsRefund24hBody;
+
+  /// Refund choice: up to 3 days before.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 3 days before'**
+  String get hostEventSettingsRefund3d;
+
+  /// Refund choice subtitle: 3 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Good for suppers, where you buy food ahead'**
+  String get hostEventSettingsRefund3dBody;
+
+  /// Refund choice: no refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'No refunds'**
+  String get hostEventSettingsRefundNone;
+
+  /// Refund choice subtitle: no refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can still pass a ticket to a friend'**
+  String get hostEventSettingsRefundNoneBody;
+
+  /// Event defaults row: questions asked at booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked at booking'**
+  String get hostEventSettingsAskedAtBooking;
+
+  /// Event defaults section title: messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostEventSettingsMessages;
+
+  /// Event defaults switch: thank-you message.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks the morning after'**
+  String get hostEventSettingsThankYou;
+
+  /// Event defaults subtitle: thank-you message.
+  ///
+  /// In en, this message translates to:
+  /// **'With photos and a rating'**
+  String get hostEventSettingsThankYouBody;
+
+  /// Event defaults switch: arrival reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder the day before'**
+  String get hostEventSettingsArrival;
+
+  /// Event defaults subtitle: arrival reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'On WhatsApp, billed at cost · with the plan and the door'**
+  String get hostEventSettingsArrivalBody;
+
+  /// Workspace checklist: the arrival message is armed.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival message is ready'**
+  String get hostEventSettingsArrivalReady;
+
+  /// Workspace checklist: the arrival message is not armed.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival message is not set up'**
+  String get hostEventSettingsArrivalNotReady;
+
+  /// Create tickets field: where guests buy tickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Where guests buy tickets'**
+  String get hostCreateBookingLink;
+
+  /// Create tickets field placeholder for the booking link.
+  ///
+  /// In en, this message translates to:
+  /// **'https://'**
+  String get hostCreateBookingLinkHint;
+
+  /// Create tickets subtitle: waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'You offer freed places in order'**
+  String get hostCreateWaitlistBody;
+
+  /// Create tickets switch: approve each request.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each request'**
+  String get hostCreateApproveEach;
+
+  /// Create tickets subtitle: approve each request.
+  ///
+  /// In en, this message translates to:
+  /// **'People ask to join; you let them in'**
+  String get hostCreateApproveEachBody;
+
+  /// Create plan switch: guests see the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see the plan'**
+  String get hostCreatePlanVisible;
+
+  /// Create when switch semantic label: repeat weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Every week'**
+  String get hostCreateRepeat;
+
+  /// Create tickets switch: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist when it\'\'s full'**
+  String get hostCreateWaitlist;
+
+  /// Create plan subtitle: guests see the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'On their phones, with the step that\'\'s on now'**
+  String get hostCreatePlanVisibleBody;
+
+  /// Create when subtitle: the series it sets up.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'\'ll set up the next 8 for you to edit'**
+  String get hostCreateRepeatBody;
+
+  /// Event defaults: how many questions guests answer at booking.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 question} other{{count} questions}}'**
+  String hostEventSettingsAskedAtBookingCount({required int count});
+
+  /// Workspace ticket sales: tickets sold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 ticket sold} other{{count} tickets sold}}'**
+  String hostEventSettingsTicketsSold({required int count});
+
+  /// Create when switch: repeat on the event's weekday.
+  ///
+  /// In en, this message translates to:
+  /// **'Every {weekday}'**
+  String hostCreateRepeatOn({required Object weekday});
 }
 
 class _AppLocalizationsDelegate

@@ -19,6 +19,10 @@
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,123}$"
     },
+    "sourceEventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "Optional: the organizer's event the series repeats. It is tagged with the seriesId and seriesIndex 0, and the new events count on from 1."
+    },
     "template": {
       "$ref": "../embedded/event_setup_defaults.schema.json#/definitions/basicsInput"
     },

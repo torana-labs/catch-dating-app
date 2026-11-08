@@ -299,6 +299,7 @@ function validatePageKey(route) {
     "event_booking",
     "event_invite",
     "household_rsvp",
+    "programme_link",
     "public_form",
     "claim",
     "privacy",

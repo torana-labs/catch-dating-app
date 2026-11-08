@@ -1,4 +1,4 @@
-// Copy for Catch for weddings (/weddings/ and /weddings/apply/), from the
+// Copy for the weddings product (/weddings/ and /weddings/apply/), from the
 // owner's RbWebWeddings, RbWebWeddingsPhone and RbWebWeddingsApply boards
 // (catch-design-source gen/rebuild16.py, page() and apply_step2()). Copy is
 // the owner's: change it on the board first. Every example is fictional.

@@ -580,6 +580,281 @@ final class ProgramTripListFamily extends $Family
   String toString() => r'programTripListProvider';
 }
 
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+@ProviderFor(programVendorBillView)
+final programVendorBillViewProvider = ProgramVendorBillViewFamily._();
+
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+final class ProgramVendorBillViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramVendorBillView>>,
+          ProgramReadView<ProgramVendorBillView>,
+          FutureOr<ProgramReadView<ProgramVendorBillView>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramVendorBillView>>,
+        $FutureProvider<ProgramReadView<ProgramVendorBillView>> {
+  /// One vendor's bill, from the live read or a bounded offline snapshot.
+  ProgramVendorBillViewProvider._({
+    required ProgramVendorBillViewFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programVendorBillViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programVendorBillViewHash();
+
+  @override
+  String toString() {
+    return r'programVendorBillViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramVendorBillView>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramVendorBillView>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programVendorBillView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramVendorBillViewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programVendorBillViewHash() =>
+    r'fb1d66cdd73fd720bdfc3b232c247a91eb09dcc6';
+
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+final class ProgramVendorBillViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramVendorBillView>>,
+          (String, String)
+        > {
+  ProgramVendorBillViewFamily._()
+    : super(
+        retry: null,
+        name: r'programVendorBillViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One vendor's bill, from the live read or a bounded offline snapshot.
+
+  ProgramVendorBillViewProvider call(String programId, String vendorId) =>
+      ProgramVendorBillViewProvider._(
+        argument: (programId, vendorId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programVendorBillViewProvider';
+}
+
+/// The ID tracker for one programme, optionally one hotel.
+
+@ProviderFor(programIdTracker)
+final programIdTrackerProvider = ProgramIdTrackerFamily._();
+
+/// The ID tracker for one programme, optionally one hotel.
+
+final class ProgramIdTrackerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramIdTracker>,
+          ProgramIdTracker,
+          FutureOr<ProgramIdTracker>
+        >
+    with $FutureModifier<ProgramIdTracker>, $FutureProvider<ProgramIdTracker> {
+  /// The ID tracker for one programme, optionally one hotel.
+  ProgramIdTrackerProvider._({
+    required ProgramIdTrackerFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programIdTrackerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programIdTrackerHash();
+
+  @override
+  String toString() {
+    return r'programIdTrackerProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramIdTracker> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramIdTracker> create(Ref ref) {
+    final argument = this.argument as (String, String?);
+    return programIdTracker(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramIdTrackerProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programIdTrackerHash() => r'240f05d8e86df313042b7f14c4253dd396bfbccb';
+
+/// The ID tracker for one programme, optionally one hotel.
+
+final class ProgramIdTrackerFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramIdTracker>,
+          (String, String?)
+        > {
+  ProgramIdTrackerFamily._()
+    : super(
+        retry: null,
+        name: r'programIdTrackerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The ID tracker for one programme, optionally one hotel.
+
+  ProgramIdTrackerProvider call(String programId, String? hotelId) =>
+      ProgramIdTrackerProvider._(argument: (programId, hotelId), from: this);
+
+  @override
+  String toString() => r'programIdTrackerProvider';
+}
+
+/// One album (or every photo), from the live read or a bounded snapshot.
+
+@ProviderFor(programPhotosView)
+final programPhotosViewProvider = ProgramPhotosViewFamily._();
+
+/// One album (or every photo), from the live read or a bounded snapshot.
+
+final class ProgramPhotosViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramPhotos>>,
+          ProgramReadView<ProgramPhotos>,
+          FutureOr<ProgramReadView<ProgramPhotos>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramPhotos>>,
+        $FutureProvider<ProgramReadView<ProgramPhotos>> {
+  /// One album (or every photo), from the live read or a bounded snapshot.
+  ProgramPhotosViewProvider._({
+    required ProgramPhotosViewFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programPhotosViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programPhotosViewHash();
+
+  @override
+  String toString() {
+    return r'programPhotosViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramPhotos>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramPhotos>> create(Ref ref) {
+    final argument = this.argument as (String, String?);
+    return programPhotosView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramPhotosViewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programPhotosViewHash() => r'fd06a615b640a3b0a789b1f6d1e6cd1a46d14251';
+
+/// One album (or every photo), from the live read or a bounded snapshot.
+
+final class ProgramPhotosViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramPhotos>>,
+          (String, String?)
+        > {
+  ProgramPhotosViewFamily._()
+    : super(
+        retry: null,
+        name: r'programPhotosViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One album (or every photo), from the live read or a bounded snapshot.
+
+  ProgramPhotosViewProvider call(String programId, String? functionId) =>
+      ProgramPhotosViewProvider._(
+        argument: (programId, functionId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programPhotosViewProvider';
+}
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
 

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/organizer/organizer_body.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,7 +9,7 @@ import 'organizer_fixtures.dart';
 
 OrganizerState _state({
   bool live = true,
-  String? link = 'catchdates.com/lanternlane',
+  String? link = '${Brand.webDomain}/lanternlane',
   bool statsPending = false,
   bool isOwner = true,
 }) => OrganizerState(
@@ -56,7 +57,7 @@ void main() {
     final actions = await _pump(tester, _state());
 
     expect(find.text('Live'), findsOneWidget);
-    expect(find.text('catchdates.com/lanternlane'), findsOneWidget);
+    expect(find.text('${Brand.webDomain}/lanternlane'), findsOneWidget);
     expect(find.text('The link in your Instagram bio.'), findsOneWidget);
     expect(find.text('312'), findsOneWidget);
     expect(find.text('Up 18%'), findsOneWidget);
@@ -124,8 +125,8 @@ void main() {
 
   test('the page address drops its scheme and trailing slash', () {
     expect(
-      organizerPageLink(Uri.parse('https://catchdates.com/lanternlane/')),
-      'catchdates.com/lanternlane',
+      organizerPageLink(Uri.parse('${Brand.webOrigin}/lanternlane/')),
+      '${Brand.webDomain}/lanternlane',
     );
   });
 }

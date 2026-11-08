@@ -61,6 +61,13 @@ writeRoute("/event-update/", staticRouteMeta(websiteMeta, "event_assistance", ba
 writeRoute("/rehearse/", staticRouteMeta(websiteMeta, "event_rehearsal", baseUrl));
 writeRoute("/invite/", staticRouteMeta(websiteMeta, "event_invite", baseUrl));
 writeRoute("/rsvp/", staticRouteMeta(websiteMeta, "household_rsvp", baseUrl));
+writeRoute("/itinerary/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/ids/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/hotel/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/trip/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/runsheet/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/hampers/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/family/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
 writeRoute("/f/", staticRouteMeta(websiteMeta, "public_form", baseUrl));
 writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
 writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));

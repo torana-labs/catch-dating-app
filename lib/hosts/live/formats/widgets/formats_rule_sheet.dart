@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_f
 import 'package:catch_dating_app/contexts/live/parts/formats_rule_row.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -154,6 +155,8 @@ class _HostFormatsRuleSheetState extends State<HostFormatsRuleSheet> {
               CatchField<FormatsQuestionChoice>.select(
                 copy: catchFieldCopy(l10n),
                 title: l10n.hostFormatsRuleQuestion,
+                contract: CatchContractConstraints
+                    .configureEventAssignmentFeaturesCallablePayloadRulesItemsQuestionId,
                 values: _choices,
                 itemLabelBuilder: (c) => c.question.label,
                 value: choice,
@@ -178,10 +181,11 @@ class _HostFormatsRuleSheetState extends State<HostFormatsRuleSheet> {
             title: l10n.hostFormatsRuleHow,
             dividers: CatchSectionPlacement.none,
             children: [
-              for (final mode in const [
+              for (final mode in [
                 'preferSimilar',
                 'preferDifferent',
                 'balanceAcrossGroups',
+                if (_choice?.question.kind != 'number') 'coverAcrossGroups',
               ])
                 CatchChoiceTile(
                   key: ValueKey<String>('formats-rule-mode-$mode'),
@@ -190,8 +194,12 @@ class _HostFormatsRuleSheetState extends State<HostFormatsRuleSheet> {
                   subtitle: switch (mode) {
                     'preferDifferent' => l10n.hostFormatsRuleDifferentNote,
                     'balanceAcrossGroups' => l10n.hostFormatsRuleSpreadNote,
+                    'coverAcrossGroups' => l10n.hostFormatsRuleCoverNote,
                     _ => l10n.hostFormatsRuleSimilarNote,
                   },
+                  contract: CatchContractConstraints
+                      .configureEventAssignmentFeaturesCallablePayloadRulesItemsMode,
+                  contractValue: mode,
                   selected: _mode == mode,
                   onTap: () => setState(() => _mode = mode),
                 ),

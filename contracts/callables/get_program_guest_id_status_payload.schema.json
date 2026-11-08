@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_guest_id_status_payload.schema.json",
+  "title": "GetProgramGuestIdStatusCallablePayload",
+  "description": "Token-authenticated read of where each member of one household stands with their hotel ID, through the household RSVP link token. No sign-in.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    }
+  }
+}

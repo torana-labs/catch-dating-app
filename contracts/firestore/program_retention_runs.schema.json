@@ -42,7 +42,7 @@
   },
   "phases": {
    "type": "array",
-   "maxItems": 23,
+   "maxItems": 40,
    "description": "Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.",
    "items": {
     "type": "object",

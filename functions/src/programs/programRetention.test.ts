@@ -63,6 +63,7 @@ function retentionDeps(
     ...(fixtureDeps(db) as Record<string, unknown>),
     loadFlightApiKey: async () => "flight-key",
     deleteFlightSubscription: async () => undefined,
+    deleteProgramFiles: async () => undefined,
     ...overrides,
   } as RetentionDeps;
 }
@@ -676,6 +677,73 @@ test("anonymizeProgram is idempotent and skipped once marked", async () => {
   assert.equal(db.getDoc("programGuests/guest-1")!.displayName, tombstone);
 });
 
+test("retention deletes guest IDs, alerts and files and clears bill notes",
+  async () => {
+    const db = new FakeFirestore({
+      ...retentionSeed(),
+      "programGuestIds/program-1_guest-1": {programId: "program-1",
+        organizerId: "org-1", householdId: "house-1", guestId: "guest-1",
+        idKind: "aadhaar", numberLast4: "4821",
+        frontPath: "programs/program-1/guestIds/guestId_a", backPath: null,
+        visaPath: null, status: "accepted", submittedAtMillis: T0,
+        decidedAtMillis: T0, decidedByUid: "manager-1", askAgainNote: null,
+        hotelViews: [], revision: 2, lastRequestId: "request-0001",
+        lastRequestHash: "a".repeat(64)},
+      "programGuestIds/program-2_guest-9": {programId: "program-2",
+        organizerId: "org-1", guestId: "guest-9"},
+      "programAlerts/program-1_staff:1": {programId: "program-1",
+        organizerId: "org-1", alertId: "staff:1", state: "done",
+        assigneeUid: "greeter-1", assigneeName: "Asha"},
+      "programPhotos/program-1_photo_a": {programId: "program-1",
+        organizerId: "org-1", photoId: "photo_a"},
+      "programHampers/program-1_hotel-1_214": {programId: "program-1",
+        organizerId: "org-1", roomKey: "214"},
+      "programVendorBills/program-1_vendor-1": {programId: "program-1",
+        organizerId: "org-1", vendorId: "vendor-1", note: "Mehra family",
+        revision: 2, totals: {billedMinor: 100},
+        lines: [{lineId: "line-1", reference: "Mehra family airport run",
+          tripId: null, billedMinor: 100, recordedMinor: null,
+          check: "noTrip"}]},
+    });
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const deletedPrefixes: string[] = [];
+    const deps = retentionDeps(db, {now: () => pastGrace,
+      deleteProgramFiles: async (programId) => {
+        deletedPrefixes.push(programId);
+      }});
+    assert.equal(await anonymizeProgram(
+      db as never, "program-1", deps, T_GRACE + 10_000 + 60_000),
+    "completed");
+    assert.equal(db.getDoc("programGuestIds/program-1_guest-1"), undefined);
+    assert.equal(db.getDoc("programAlerts/program-1_staff:1"), undefined);
+    assert.equal(db.getDoc("programPhotos/program-1_photo_a"), undefined);
+    assert.equal(db.getDoc("programHampers/program-1_hotel-1_214"),
+      undefined);
+    assert.ok(db.getDoc("programGuestIds/program-2_guest-9"));
+    const bill = db.getDoc("programVendorBills/program-1_vendor-1")!;
+    assert.equal(bill.note, null);
+    assert.deepEqual((bill.lines as {reference: string}[])
+      .map((line) => line.reference), ["line-1"]);
+    assert.deepEqual(bill.totals, {billedMinor: 100});
+    assert.deepEqual(deletedPrefixes, ["program-1"]);
+  });
+
+test("a failed file delete leaves the run unfinished for the next pass",
+  async () => {
+    const db = new FakeFirestore(retentionSeed());
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const deps = retentionDeps(db, {now: () => pastGrace,
+      deleteProgramFiles: async () => {
+        throw new Error("storage unavailable");
+      }});
+    assert.equal(await anonymizeProgram(
+      db as never, "program-1", deps, T_GRACE + 10_000 + 60_000), "failed");
+    assert.equal(db.getDoc("organizerPrograms/program-1")!.anonymizedAt,
+      null);
+  });
+
 test("a failed subscription cancel leaves the leg marked for retry",
   async () => {
     const db = new FakeFirestore(retentionSeed());
@@ -837,7 +905,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 23);
+      Array<{collection: string}>).length, 28);
   });
 
 test("mismatched evidence scope blocks retention completion",

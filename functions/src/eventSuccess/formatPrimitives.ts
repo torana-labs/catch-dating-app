@@ -117,7 +117,9 @@ export const EVENT_SUCCESS_TOPOLOGIES: readonly EventSuccessTopology[] =
   ["set", "sequence", "adjacency"];
 
 /**
- * Closed resolution table for every implemented variable axis through T7.
+ * Closed resolution table for every implemented variable axis. Team
+ * balancing and table seating run through the shape planner
+ * (docs/assignment_engine.md).
  */
 export const EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE:
   readonly EventSuccessVariableResolution[] =
@@ -536,10 +538,10 @@ function assignmentAlgorithmResolution(
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm,
   topology: EventSuccessTopology
 ): Pick<EventSuccessVariableResolution, "status" | "reason"> {
-  if (topology === "adjacency") {
+  if (topology === "adjacency" && assignmentAlgorithm !== "tableSeating") {
     return {
       status: "unsupported",
-      reason: "Seat adjacency and table seating are not implemented yet.",
+      reason: "Seat adjacency applies only to table seating.",
     };
   }
   if (topology === "sequence" && assignmentAlgorithm !== "pairRotations") {
@@ -569,13 +571,15 @@ function assignmentAlgorithmResolution(
     };
   case "teamBalancer":
     return {
-      status: "unsupported",
-      reason: "Team balancing is not implemented yet.",
+      status: "supported",
+      reason: "Teams use the shape planner: balanced, solo arrivals spread.",
     };
   case "tableSeating":
     return {
-      status: "unsupported",
-      reason: "Table seating and seat adjacency are not implemented yet.",
+      status: "supported",
+      reason: topology === "adjacency" ?
+        "Tables use the shape planner with seat order." :
+        "Tables use the shape planner.",
     };
   }
 }

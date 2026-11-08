@@ -1327,8 +1327,10 @@ function defaultEventSuccessModuleIdsFor(
   case "teamRotations":
     return [...base, "micro_pods", "live_reveal"];
   case "seatedTable":
+    // Tables and course changes come from the group assignment tool.
     // Phone-light: conversation cards are a host opt-in at dinner.
-    return base.filter((moduleId) => moduleId !== "social_missions");
+    return [...base.filter((moduleId) => moduleId !== "social_missions"),
+      "micro_pods"];
   case "routeStops":
     return [...base, "first_hello_check_in"];
   case "freeFormMixer":

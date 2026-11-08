@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_trip_sheet.dart';
 import 'package:catch_dating_app/programs/presentation/program_trip_actions_controller.dart';
@@ -45,6 +46,14 @@ class _HostProgrammeTripsScreenState
       hostProgrammeTripsControllerProvider(widget.programId),
     );
     final program = state.programme.program;
+    final vendor = _filter.vendor;
+    final vendorId = vendor == null
+        ? null
+        : state.value?.trips
+              .where((trip) => trip.vendorName == vendor)
+              .map((trip) => trip.vendorId)
+              .nonNulls
+              .firstOrNull;
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
@@ -55,6 +64,20 @@ class _HostProgrammeTripsScreenState
           back: CatchTopBarBack(label: l10n.hostProgrammeBackToProgramme),
           kicker: program?.title,
           title: l10n.hostProgrammeTravelTrips,
+          actions: [
+            if (vendor != null && vendorId != null)
+              CatchButton(
+                key: const ValueKey<String>('host-programme-trips-bill'),
+                label: l10n.hostProgrammeBillOpen(vendor: vendor),
+                size: CatchButtonSize.sm,
+                onPressed: () => openHostProgrammePage(
+                  context,
+                  widget.programId,
+                  HostProgrammePage.reconcile,
+                  id: vendorId,
+                ),
+              ),
+          ],
         ),
         body: HostProgrammeTripsBody(
           state: state,

@@ -60,7 +60,8 @@ class OrganizerState {
   final bool isOwner;
 
   /// The public page address without its scheme, such as
-  /// `catchdates.com/lanternlane`; null until the page has a route.
+  /// `<web domain>/lanternlane` (see `Brand.webDomain`); null until the page
+  /// has a route.
   final String? pageLink;
 
   /// The public page is published on the website.

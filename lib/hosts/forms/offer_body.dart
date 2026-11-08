@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.da
 import 'package:catch_dating_app/hosts/forms/offer_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -91,6 +92,8 @@ class HostOfferBody extends StatelessWidget {
                   title: l10n.hostFormsOfferWhichEvent,
                   subtitle: l10n.hostFormsOfferLoading,
                   variant: CatchChoiceTileVariant.row,
+                  contractExemption:
+                      'A loading skeleton: it has no tap and writes no field.',
                 ),
               )
             else if (state.events.isEmpty)
@@ -106,6 +109,8 @@ class HostOfferBody extends StatelessWidget {
                     ? option.name!.trim()
                     : l10n.hostFormsOfferUntitledEvent,
                 subtitle: hostOfferTime(option.startsAt),
+                contract: CatchContractConstraints
+                    .commitEventOffersCallablePayloadEventId,
                 selected: option.id == event?.id,
                 onTap: state.busy
                     ? null

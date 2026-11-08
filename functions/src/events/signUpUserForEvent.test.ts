@@ -1000,3 +1000,33 @@ for (const constraints of [
       );
     });
 }
+
+test("followers first refuses a non-follower until everyone can book",
+  async () => {
+    const open = {followersFirstUntilMs: Date.now() + 60 * 60 * 1000};
+    const refused = firestore({
+      "events/event-1": event(open),
+      "users/runner-1": user(),
+    });
+    await assert.rejects(signUpUserForEvent(refused, "event-1", "runner-1"),
+      (error: unknown) => (error as {code?: string}).code ===
+        "failed-precondition" &&
+        (error as {details?: {reason?: string}}).details?.reason ===
+          "followersFirst");
+
+    const follower = firestore({
+      "events/event-1": event(open),
+      "users/runner-1": user(),
+      "organizerFollows/club-1_runner-1": {organizerId: "club-1",
+        uid: "runner-1", status: "active"},
+    });
+    await signUpUserForEvent(follower, "event-1", "runner-1");
+    assert.equal((follower as unknown as FakeFirestore)
+      .get("eventParticipations/event-1_runner-1")?.status, "signedUp");
+
+    const later = firestore({
+      "events/event-1": event({followersFirstUntilMs: Date.now() - 1000}),
+      "users/runner-1": user(),
+    });
+    await signUpUserForEvent(later, "event-1", "runner-1");
+  });

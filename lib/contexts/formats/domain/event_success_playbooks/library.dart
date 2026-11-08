@@ -253,7 +253,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Were people willing to follow up across tables?',
     ],
     wiringNotes: [
-      'Can launch as a host-only playbook before full team assignment automation.',
+      'Teams come from the shared assignment engine: arrival groups stay together and solo arrivals are spread.',
     ],
   );
 
@@ -279,8 +279,8 @@ abstract final class EventSuccessPlaybookLibrary {
       EventSuccessModuleCatalog.checkIn,
       EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
-      EventSuccessModuleCatalog.guidedRotations,
       EventSuccessModuleCatalog.liveReveal,
       EventSuccessModuleCatalog.socialMissions,
       EventSuccessModuleCatalog.wingmanRequests,
@@ -314,7 +314,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             'Only rotate when the dinner format has a planned course or seat-change moment.',
         attendeeExperience: 'Meet a new table without managing logistics.',
-        moduleIds: ['guided_rotations', 'live_reveal'],
+        moduleIds: ['micro_pods', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.closing,
@@ -340,7 +340,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Did attendees follow up after the dinner?',
     ],
     wiringNotes: [
-      'Table assignment generation should eventually become a dedicated assignment engine; V1 can use host-reviewed structure and reveal controls.',
+      'Tables, and course-by-course table changes, come from the shared assignment engine through the group assignment tool.',
     ],
   );
 

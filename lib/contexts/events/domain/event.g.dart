@@ -87,6 +87,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   priceHiddenUntilBookingOpens:
       json['priceHiddenUntilBookingOpens'] as bool? ?? false,
   planVisibleToGuests: json['planVisibleToGuests'] as bool? ?? true,
+  externalBooking: json['externalBooking'] == null
+      ? null
+      : EventExternalBooking.fromJson(
+          json['externalBooking'] as Map<String, dynamic>,
+        ),
   constraints: json['constraints'] == null
       ? const EventConstraints()
       : EventConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -161,6 +166,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'showGuestList': instance.showGuestList,
   'priceHiddenUntilBookingOpens': instance.priceHiddenUntilBookingOpens,
   'planVisibleToGuests': instance.planVisibleToGuests,
+  'externalBooking': ?instance.externalBooking?.toJson(),
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'eventOrigin': ?instance.eventOrigin?.toJson(),
@@ -237,6 +243,20 @@ const _$EventRosterAuthorityEnumMap = {
   EventRosterAuthority.catchProjection: 'catchProjection',
   EventRosterAuthority.hostImport: 'hostImport',
   EventRosterAuthority.providerSync: 'providerSync',
+};
+
+_EventExternalBooking _$EventExternalBookingFromJson(
+  Map<String, dynamic> json,
+) => _EventExternalBooking(
+  provider: externalBookingProviderFromJson(json['provider'] as String),
+  url: json['url'] as String,
+);
+
+Map<String, dynamic> _$EventExternalBookingToJson(
+  _EventExternalBooking instance,
+) => <String, dynamic>{
+  'provider': externalBookingProviderToJson(instance.provider),
+  'url': instance.url,
 };
 
 _EventRuntimeAccess _$EventRuntimeAccessFromJson(Map<String, dynamic> json) =>

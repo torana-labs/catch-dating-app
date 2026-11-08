@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_hamper_payload.schema.json",
+  "title": "UpsertProgramHamperCallablePayload",
+  "description": "Mark a room's welcome hamper placed (or not yet), optionally with a photo uploaded first with createProgramAssetUpload (kind hamper). A porter authenticates with a hamperPorter link token; hotel desk staff sign in and pass programId. The room is the one the stay is in. Replays of the same requestId return the stored result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stayId",
+    "status",
+    "requestId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "token": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 2048,
+      "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"
+    },
+    "stayId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "placed"
+      ]
+    },
+    "photoAssetId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z]+_[a-f0-9]{40}$"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    }
+  }
+}

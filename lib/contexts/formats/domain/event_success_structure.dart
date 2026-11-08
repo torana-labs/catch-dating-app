@@ -142,12 +142,30 @@ enum EventSuccessRotationRepeatStrategy implements Labelled {
 enum EventSuccessActivityAssignmentAttribute implements Labelled {
   paceBand(StructuredDomainCopy.eventSuccessAttributePace),
   skillBand(StructuredDomainCopy.eventSuccessAttributeSkill),
-  roleBand(StructuredDomainCopy.eventSuccessAttributeRole);
+  roleBand(StructuredDomainCopy.eventSuccessAttributeRole),
 
-  const EventSuccessActivityAssignmentAttribute(this.label);
+  /// Sensitive profile signal. The server reads it only for an event whose
+  /// saved structure names it, so selecting it is the per-event opt-in.
+  gender(StructuredDomainCopy.eventSuccessAttributeGender, sensitive: true),
+
+  /// Sensitive profile signal (a coarse band, never a birth date).
+  ageBand(StructuredDomainCopy.eventSuccessAttributeAgeBand, sensitive: true);
+
+  const EventSuccessActivityAssignmentAttribute(
+    this.label, {
+    this.sensitive = false,
+  });
 
   @override
   final String label;
+
+  /// Whether this signal comes from a dating profile and needs an explicit
+  /// per-event opt-in. Never selected by a default.
+  final bool sensitive;
+
+  /// Activity signals every format may offer.
+  static List<EventSuccessActivityAssignmentAttribute> get activitySignals =>
+      values.where((attribute) => !attribute.sensitive).toList();
 
   String get balanceLabel => switch (this) {
     EventSuccessActivityAssignmentAttribute.paceBand =>
@@ -156,6 +174,10 @@ enum EventSuccessActivityAssignmentAttribute implements Labelled {
       StructuredDomainCopy.eventSuccessAttributeSpreadSkill,
     EventSuccessActivityAssignmentAttribute.roleBand =>
       StructuredDomainCopy.eventSuccessAttributeSpreadRoles,
+    EventSuccessActivityAssignmentAttribute.gender =>
+      StructuredDomainCopy.eventSuccessAttributeSpreadGender,
+    EventSuccessActivityAssignmentAttribute.ageBand =>
+      StructuredDomainCopy.eventSuccessAttributeSpreadAgeBand,
   };
 
   String get clusterLabel => switch (this) {
@@ -165,8 +187,16 @@ enum EventSuccessActivityAssignmentAttribute implements Labelled {
       StructuredDomainCopy.eventSuccessAttributeSkillTogether,
     EventSuccessActivityAssignmentAttribute.roleBand =>
       StructuredDomainCopy.eventSuccessAttributeRoleTogether,
+    EventSuccessActivityAssignmentAttribute.gender =>
+      StructuredDomainCopy.eventSuccessAttributeGenderTogether,
+    EventSuccessActivityAssignmentAttribute.ageBand =>
+      StructuredDomainCopy.eventSuccessAttributeAgeBandTogether,
   };
 }
+
+/// How guests who share an arrival group (a booking, friends, a couple)
+/// are placed. Null on the structure means the unit-kind default.
+enum EventSuccessArrivalGroupPolicy { keepTogether, spread, ignore }
 
 class EventSuccessStructureConfig {
   const EventSuccessStructureConfig({
@@ -181,6 +211,8 @@ class EventSuccessStructureConfig {
     this.maxPairMeetings = 2,
     this.balanceActivityAttributes = const [],
     this.clusterActivityAttributes = const [],
+    this.coverActivityAttributes = const [],
+    this.arrivalGroupPolicy,
   }) : assert(unitSize > 0),
        assert(unitCount == null || unitCount > 0),
        assert(rotationIntervalMinutes == null || rotationIntervalMinutes >= 5),
@@ -319,6 +351,12 @@ class EventSuccessStructureConfig {
       clusterActivityAttributes: _activityAttributesFromJson(
         json['clusterActivityAttributes'],
       ),
+      coverActivityAttributes: _activityAttributesFromJson(
+        json['coverActivityAttributes'],
+      ),
+      arrivalGroupPolicy: _arrivalGroupPolicyFromJson(
+        json['arrivalGroupPolicy'],
+      ),
     );
   }
 
@@ -334,6 +372,10 @@ class EventSuccessStructureConfig {
   final List<EventSuccessActivityAssignmentAttribute> balanceActivityAttributes;
   final List<EventSuccessActivityAssignmentAttribute> clusterActivityAttributes;
 
+  /// Attributes every unit should hold a cross-section of.
+  final List<EventSuccessActivityAssignmentAttribute> coverActivityAttributes;
+  final EventSuccessArrivalGroupPolicy? arrivalGroupPolicy;
+
   bool get rotates => rotationIntervalMinutes != null;
 
   bool get isLegacyDefault =>
@@ -347,7 +389,9 @@ class EventSuccessStructureConfig {
       rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
       maxPairMeetings == 2 &&
       balanceActivityAttributes.isEmpty &&
-      clusterActivityAttributes.isEmpty;
+      clusterActivityAttributes.isEmpty &&
+      coverActivityAttributes.isEmpty &&
+      arrivalGroupPolicy == null;
 
   bool get isDeprecatedTeamRotationDefault =>
       unitKind == EventSuccessUnitKind.teams &&
@@ -360,7 +404,9 @@ class EventSuccessStructureConfig {
       rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
       maxPairMeetings == 2 &&
       balanceActivityAttributes.isEmpty &&
-      clusterActivityAttributes.isEmpty;
+      clusterActivityAttributes.isEmpty &&
+      coverActivityAttributes.isEmpty &&
+      arrivalGroupPolicy == null;
 
   int estimatedUnitCount(int attendeeCount) {
     return estimateForAttendance(attendeeCount).unitCount;
@@ -410,6 +456,8 @@ class EventSuccessStructureConfig {
     int? maxPairMeetings,
     List<EventSuccessActivityAssignmentAttribute>? balanceActivityAttributes,
     List<EventSuccessActivityAssignmentAttribute>? clusterActivityAttributes,
+    List<EventSuccessActivityAssignmentAttribute>? coverActivityAttributes,
+    Object? arrivalGroupPolicy = unsetSentinel,
   }) {
     return EventSuccessStructureConfig(
       unitKind: unitKind ?? this.unitKind,
@@ -433,6 +481,11 @@ class EventSuccessStructureConfig {
           balanceActivityAttributes ?? this.balanceActivityAttributes,
       clusterActivityAttributes:
           clusterActivityAttributes ?? this.clusterActivityAttributes,
+      coverActivityAttributes:
+          coverActivityAttributes ?? this.coverActivityAttributes,
+      arrivalGroupPolicy: identical(arrivalGroupPolicy, unsetSentinel)
+          ? this.arrivalGroupPolicy
+          : arrivalGroupPolicy as EventSuccessArrivalGroupPolicy?,
     );
   }
 
@@ -456,6 +509,12 @@ class EventSuccessStructureConfig {
       'clusterActivityAttributes': _activityAttributesToJson(
         clusterActivityAttributes,
       ),
+    if (coverActivityAttributes.isNotEmpty)
+      'coverActivityAttributes': _activityAttributesToJson(
+        coverActivityAttributes,
+      ),
+    if (arrivalGroupPolicy != null)
+      'arrivalGroupPolicy': arrivalGroupPolicy!.name,
   };
 
   @override
@@ -478,7 +537,12 @@ class EventSuccessStructureConfig {
             _activityAttributeListsEqual(
               other.clusterActivityAttributes,
               clusterActivityAttributes,
-            );
+            ) &&
+            _activityAttributeListsEqual(
+              other.coverActivityAttributes,
+              coverActivityAttributes,
+            ) &&
+            other.arrivalGroupPolicy == arrivalGroupPolicy;
   }
 
   @override
@@ -494,6 +558,8 @@ class EventSuccessStructureConfig {
     maxPairMeetings,
     Object.hashAll(balanceActivityAttributes),
     Object.hashAll(clusterActivityAttributes),
+    Object.hashAll(coverActivityAttributes),
+    arrivalGroupPolicy,
   );
 }
 
@@ -559,6 +625,13 @@ List<EventSuccessActivityAssignmentAttribute> _activityAttributesFromJson(
     attributes.add(attribute);
   }
   return List.unmodifiable(attributes);
+}
+
+EventSuccessArrivalGroupPolicy? _arrivalGroupPolicyFromJson(Object? value) {
+  for (final policy in EventSuccessArrivalGroupPolicy.values) {
+    if (policy.name == value) return policy;
+  }
+  return null;
 }
 
 List<String> _activityAttributesToJson(

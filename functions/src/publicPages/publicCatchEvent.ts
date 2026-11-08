@@ -141,6 +141,7 @@ export function projectLivePublicCatchEvent(
       ...(matchesJsonSchema(data.itinerary, displaySchemas.itinerary) ?
         {itinerary: data.itinerary as PublicCatchEvent["itinerary"]} : {}),
       ...publicGuestDetails(data, format, admission, constraints),
+      ...publicGuestSettings(data, mode),
       registrationAccess: restricted ? "restricted" :
         mode === "closed" ? "app" : "open",
       bookedCount: data.bookedCount,
@@ -225,5 +226,39 @@ function publicGuestDetails(data: Raw, format: Raw | null,
     ...(["notApplicable", "flexible", "standard", "strict"]
       .includes(String(cancellation)) ? {cancellationPolicy:
         cancellation as PublicCatchEvent["cancellationPolicy"]} : {}),
+  };
+}
+
+const externalProviders = new Set(["generic", "luma", "eventbrite",
+  "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb"]);
+type ExternalBooking = NonNullable<PublicCatchEvent["externalBooking"]>;
+
+/** The host's guest settings: hidden guest list, price hidden until Catch
+ * registration opens, and tickets sold elsewhere. Each is left out at its
+ * default, so events without them project as before.
+ */
+function publicGuestSettings(data: Raw, mode: string
+): Partial<PublicCatchEvent> {
+  const booking = record(data.externalBooking);
+  const provider = text(booking?.provider);
+  const url = text(booking?.url);
+  let external: ExternalBooking | undefined;
+  if (externalProviders.has(provider) && url.startsWith("https://") &&
+      url.length <= 2048) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === "https:" && !parsed.username &&
+          !parsed.password) {
+        external = {provider: provider as ExternalBooking["provider"], url};
+      }
+    } catch {
+      // Omit a malformed ticket link.
+    }
+  }
+  return {
+    ...(data.showGuestList === false ? {showGuestList: false as const} : {}),
+    ...(data.priceHiddenUntilBookingOpens === true && mode === "closed" ?
+      {priceHidden: true as const} : {}),
+    ...(external ? {externalBooking: external} : {}),
   };
 }

@@ -43,24 +43,26 @@ class EventDetailSocialSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.divided(
-          title: context.l10n.eventsEventDetailSocialSectionTitleWhoSGoing,
-          count: event.signedUpCount,
-          dividerColor: surfaceStyle?.dividerColor,
-          titleColor: surfaceStyle?.headingColor,
-          child: canShowMemberContext
-              ? WhoIsGoingSection(
-                  event: event,
-                  surfaceStyle: surfaceStyle,
-                  showHeader: false,
-                  showCatchWindowStatus: false,
-                  now: now,
-                )
-              : GuestWhoIsGoingCard(
-                  surfaceStyle: surfaceStyle,
-                  showHeader: false,
-                ),
-        ),
+        // The host can hide who else is going.
+        if (event.showGuestList)
+          CatchSection.divided(
+            title: context.l10n.eventsEventDetailSocialSectionTitleWhoSGoing,
+            count: event.signedUpCount,
+            dividerColor: surfaceStyle?.dividerColor,
+            titleColor: surfaceStyle?.headingColor,
+            child: canShowMemberContext
+                ? WhoIsGoingSection(
+                    event: event,
+                    surfaceStyle: surfaceStyle,
+                    showHeader: false,
+                    showCatchWindowStatus: false,
+                    now: now,
+                  )
+                : GuestWhoIsGoingCard(
+                    surfaceStyle: surfaceStyle,
+                    showHeader: false,
+                  ),
+          ),
         if (canShowMemberContext && state.reviews.visible) ...[
           CatchSection.divided(
             title: context.l10n.eventsEventDetailSocialSectionTitleReviews,

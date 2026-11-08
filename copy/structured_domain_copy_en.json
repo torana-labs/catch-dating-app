@@ -190,6 +190,12 @@
     "eventSuccessAttributePaceTogether": {"value": "Pace together", "description": "Event Success assignment clustering label."},
     "eventSuccessAttributeSkillTogether": {"value": "Skill together", "description": "Event Success assignment clustering label."},
     "eventSuccessAttributeRoleTogether": {"value": "Role together", "description": "Event Success assignment clustering label."},
+    "eventSuccessAttributeGender": {"value": "Gender (opt-in)", "description": "Event Success sensitive assignment attribute label; selecting it is the event's opt-in."},
+    "eventSuccessAttributeAgeBand": {"value": "Age band (opt-in)", "description": "Event Success sensitive assignment attribute label; selecting it is the event's opt-in."},
+    "eventSuccessAttributeSpreadGender": {"value": "Mix genders (opt-in)", "description": "Event Success assignment balancing label for an opted-in sensitive signal."},
+    "eventSuccessAttributeSpreadAgeBand": {"value": "Spread ages (opt-in)", "description": "Event Success assignment balancing label for an opted-in sensitive signal."},
+    "eventSuccessAttributeGenderTogether": {"value": "Gender together (opt-in)", "description": "Event Success assignment clustering label for an opted-in sensitive signal."},
+    "eventSuccessAttributeAgeBandTogether": {"value": "Similar ages together (opt-in)", "description": "Event Success assignment clustering label for an opted-in sensitive signal."},
     "eventSuccessRecommendationDefaultOn": {"value": "Default on", "description": "Event Success recommendation-level label."},
     "eventSuccessRecommendationRecommended": {"value": "Recommended", "description": "Event Success recommendation-level label."},
     "eventSuccessRecommendationOptional": {"value": "Optional", "description": "Event Success recommendation-level label."},
@@ -497,7 +503,7 @@
       "description": "Event Success library copy for pubQuiz.iterationQuestions."
     },
     "library.pubQuiz.wiringNotes.1": {
-      "value": "Can launch as a host-only playbook before full team assignment automation.",
+      "value": "Teams come from the shared assignment engine: arrival groups stay together and solo arrivals are spread.",
       "description": "Event Success library copy for pubQuiz.wiringNotes."
     },
     "library.dinner.title.1": {
@@ -597,7 +603,7 @@
       "description": "Event Success library copy for dinner.iterationQuestions."
     },
     "library.dinner.wiringNotes.1": {
-      "value": "Table assignment generation should eventually become a dedicated assignment engine; V1 can use host-reviewed structure and reveal controls.",
+      "value": "Tables, and course-by-course table changes, come from the shared assignment engine through the group assignment tool.",
       "description": "Event Success library copy for dinner.wiringNotes."
     },
     "library.barCrawl.title.1": {

@@ -254,6 +254,34 @@
         {
           "source": "/f/**",
           "destination": "/f/index.html"
+        },
+        {
+          "source": "/itinerary/**",
+          "destination": "/itinerary/index.html"
+        },
+        {
+          "source": "/ids/**",
+          "destination": "/ids/index.html"
+        },
+        {
+          "source": "/hotel/**",
+          "destination": "/hotel/index.html"
+        },
+        {
+          "source": "/trip/**",
+          "destination": "/trip/index.html"
+        },
+        {
+          "source": "/runsheet/**",
+          "destination": "/runsheet/index.html"
+        },
+        {
+          "source": "/hampers/**",
+          "destination": "/hampers/index.html"
+        },
+        {
+          "source": "/family/**",
+          "destination": "/family/index.html"
         }
       ]
     },

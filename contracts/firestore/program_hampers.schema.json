@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_hampers.schema.json",
+  "title": "ProgramHamperDocument",
+  "description": "One welcome hamper per hotel room, at programHampers/{programId}_{hotelId}_{roomKey} (roomKey is the room label made lowercase and dashed, or stay-{stayId} for a stay without a room). Porters mark it placed through their hamper link or hotel desk staff in the app; the optional photo lives in private Storage under programs/{programId}/hampers/. Server-only; deleted with its photo by the archive retention sweep.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHampers",
+  "x-firestore-path": "programHampers/{programHamperId}",
+  "x-owner": "upsertProgramHamper callable",
+  "required": [
+    "programId",
+    "organizerId",
+    "hotelId",
+    "roomKey",
+    "roomLabel",
+    "status",
+    "placedAtMillis",
+    "placedBy",
+    "photoPath",
+    "note",
+    "updatedAtMillis",
+    "revision",
+    "lastRequestId",
+    "lastRequestHash"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hotelId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "roomKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "roomLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "placed"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "placedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "placedBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "uid"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "staff",
+                "porter"
+              ]
+            },
+            "uid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "photoPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 400,
+      "pattern": "^programs/[^/]+/[A-Za-z]+/[A-Za-z0-9_-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

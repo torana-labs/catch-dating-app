@@ -433,6 +433,10 @@ class HeroTimeChip extends StatelessWidget {
 }
 
 String _heroSubtitle(Event event) {
+  // A price the host hides until booking opens is left out.
+  if (event.priceHiddenForGuests) {
+    return '${event.locationName} - ${event.activitySummaryLabel}';
+  }
   final price = event.priceInPaise <= 0
       ? 'Free'
       : EventFormatters.priceInPaise(

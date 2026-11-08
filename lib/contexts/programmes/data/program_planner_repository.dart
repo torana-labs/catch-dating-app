@@ -92,9 +92,11 @@ class ProgramPlannerRepository {
     parse: (data) => ProgramMutationResult.fromCallableData(data).revision,
   );
 
-  /// Mints a driver (`driverTrip`, subject = trip id) or vendor
-  /// (`vendorRunSheet`, subject = vendor id) web link token. The website
-  /// pages that open it are P4.10.
+  /// Mints a driver (`driverTrip`, subject = trip id), vendor
+  /// (`vendorRunSheet`, subject = vendor id), hotel front desk
+  /// (`hotelHandover`, subject = hotel id) or hotel porter (`hamperPorter`,
+  /// subject = hotel id) web link token. The website pages that open it
+  /// are P4.10.
   Future<({String token, DateTime expiresAt})> issueWebLink({
     required String programId,
     required ProgramWebLinkKind kind,
@@ -146,7 +148,15 @@ class ProgramPlannerRepository {
 }
 
 /// Who a programme web link is for.
-enum ProgramWebLinkKind { driverTrip, vendorRunSheet }
+enum ProgramWebLinkKind {
+  driverTrip,
+  vendorRunSheet,
+  hotelHandover,
+  hamperPorter,
+
+  /// The family's counts-only page; its subject is the programme itself.
+  family,
+}
 
 // keepalive: one stateless callable facade shared by the planner screens.
 @Riverpod(keepAlive: true)

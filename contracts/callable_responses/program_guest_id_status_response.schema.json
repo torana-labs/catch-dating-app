@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_guest_id_status_response.schema.json",
+  "title": "ProgramGuestIdStatusCallableResponse",
+  "description": "One household's members, each with where their hotel ID stands. Names and status only: no ID kind, number, image or note leaves the server.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "programTitle",
+    "householdLabel",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "householdLabel": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "members": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "status"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "status": {
+            "description": "missing: nothing sent yet; submitted: sent, waiting for the planner's check; accepted: checked; askedAgain: the planner asked for a new photo.",
+            "type": "string",
+            "enum": [
+              "missing",
+              "submitted",
+              "accepted",
+              "askedAgain"
+            ]
+          }
+        }
+      }
+    },
+    "branding": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
+    }
+  }
+}

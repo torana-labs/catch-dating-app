@@ -1,0 +1,19 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "hotelId": "hotel-1",
+  "roomKey": "214",
+  "roomLabel": "214",
+  "status": "placed",
+  "placedAtMillis": 1800000000000,
+  "placedBy": {
+    "kind": "porter",
+    "uid": null
+  },
+  "photoPath": "programs/program-1/hampers/hamper_0123456789abcdef0123456789abcdef01234567",
+  "note": null,
+  "updatedAtMillis": 1800000000000,
+  "revision": 1,
+  "lastRequestId": "hamper-request-1",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

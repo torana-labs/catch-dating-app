@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/program_assets.schema.json",
+  "title": "ProgramAssetsStoragePath",
+  "description": "Private programme files at programs/{programId}/{assetKind}/{assetId}: guest IDs (guestIds), hamper photos (hampers), function photos (photos) and the guest page cover (branding). Clients upload through one short-lived backend-signed POST policy (createProgramAssetUpload) whose metadata binds the object to its programme, kind and subject; reads are short-lived signed URLs minted by the reads allowed to show them. The archive retention sweep deletes the whole programs/{programId}/ prefix.",
+  "type": "object",
+  "x-storage-rules-match": "match /programs/{programId}/{assetKind}/{assetId}",
+  "x-storage-read": "server-signed access only; direct client reads denied",
+  "x-storage-write": "server-signed upload only; direct client writes denied",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "programGuestIds",
+  "x-storage-known-consumers": [
+    "functions/src/programs/programAssets.ts",
+    "functions/src/programs/guestIds.ts",
+    "functions/src/programs/hampers.ts",
+    "functions/src/programs/photos.ts",
+    "functions/src/programs/programRetention.ts"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string"
+    },
+    "assetKind": {
+      "type": "string",
+      "enum": [
+        "guestIds",
+        "hampers",
+        "photos",
+        "branding"
+      ]
+    },
+    "assetId": {
+      "type": "string"
+    }
+  }
+}

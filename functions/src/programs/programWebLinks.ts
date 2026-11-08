@@ -13,6 +13,7 @@ import {
   requireProgramMutable,
 } from "../shared/programAuthority";
 import {householdRsvpSecret} from "../programRsvp/householdRsvp";
+import {programGuestBrandingField} from "./programBranding";
 import {projectTripManifest, readTripDispatchSnapshot} from
   "../transport/tripManifestProjection";
 import type {ProgramGuestDocument, ProgramTravelLegDocument,
@@ -48,7 +49,8 @@ import {validateGetProgramVendorRunSheetCallablePayload} from
 // shape (kind + subjectId, no householdId) never verifies as a household
 // token or the other way round. Tokens carry ids and an expiry only.
 
-export type WebLinkKind = "driverTrip" | "vendorRunSheet";
+export type WebLinkKind = "driverTrip" | "vendorRunSheet" |
+  "hotelHandover" | "hamperPorter" | "family";
 
 export interface WebLinkPayload {
   v: 1;
@@ -63,6 +65,11 @@ const DAY = 24 * 60 * 60 * 1000;
  *  programme, two weeks at most. */
 const DRIVER_LINK_MILLIS = DAY;
 const VENDOR_LINK_MAX_MILLIS = 14 * DAY;
+/** A porter's hamper link covers the arrival rush. */
+const PORTER_LINK_MILLIS = 2 * DAY;
+/** The family's link is shared weeks ahead: it lasts to the day after the
+ *  programme, four months at most. */
+const FAMILY_LINK_MAX_MILLIS = 120 * DAY;
 
 function sign(kind: WebLinkKind, encoded: string, secret: string): string {
   return createHmac("sha256", secret)
@@ -124,14 +131,14 @@ export interface WebLinkDeps {
   secret: () => string;
 }
 
-const defaultDeps: WebLinkDeps = {
+export const defaultWebLinkDeps: WebLinkDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
   now: () => admin.firestore.Timestamp.now(),
   secret: () => householdRsvpSecret.value(),
 };
 
-function verifyOrThrow(token: string, kind: WebLinkKind,
+export function verifyWebLinkOrThrow(token: string, kind: WebLinkKind,
   deps: WebLinkDeps): WebLinkPayload {
   const result = verifyWebLinkToken(token, kind, deps.secret(),
     deps.now().toMillis());
@@ -145,13 +152,14 @@ function verifyOrThrow(token: string, kind: WebLinkKind,
 }
 
 /**
- * Mints a driver or vendor link. Dispatchers (and managers) mint driver
- * links for a trip of this programme; managers mint vendor links for a
- * vendor bound to this programme.
+ * Mints a driver, vendor, hotel or family link. Dispatchers (and managers)
+ * mint driver links for a trip of this programme; managers mint vendor
+ * links for a vendor bound to this programme, and the family link for the
+ * programme itself (subjectId = programId).
  */
 export async function issueProgramWebLinkHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramWebLinkCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<IssueProgramWebLinkCallablePayload>(
@@ -177,6 +185,34 @@ export async function issueProgramWebLinkHandler(
       throw new HttpsError("not-found", "Trip not found in this programme.");
     }
     expiresAtMillis = now + DRIVER_LINK_MILLIS;
+  } else if (data.kind === "hotelHandover" || data.kind === "hamperPorter") {
+    // Hotel links: the front desk's rooming list and guest IDs (guest
+    // relations), or the porters' hamper list (hotel desk).
+    requireProgramDuty(access, data.kind === "hotelHandover" ?
+      "guestRelations" : "hotelDesk");
+    const hotel = (await db.collection("programHotels")
+      .doc(data.subjectId).get()).data() as Record<string, unknown> |
+      undefined;
+    if (!hotel || hotel.programId !== data.programId ||
+        hotel.organizerId !== organizerId) {
+      throw new HttpsError("not-found", "Hotel not found in this programme.");
+    }
+    const programEnd = staffTimestampMillis(access.program.endsAt) + DAY;
+    expiresAtMillis = data.kind === "hamperPorter" ?
+      now + PORTER_LINK_MILLIS :
+      Math.min(Math.max(programEnd, now + DAY), now + VENDOR_LINK_MAX_MILLIS);
+  } else if (data.kind === "family") {
+    if (access.role !== "manager") {
+      throw new HttpsError("permission-denied",
+        "Only a programme manager can share the family link.");
+    }
+    if (data.subjectId !== data.programId) {
+      throw new HttpsError("invalid-argument",
+        "A family link is for the programme itself.");
+    }
+    const programEnd = staffTimestampMillis(access.program.endsAt) + DAY;
+    expiresAtMillis = Math.min(Math.max(programEnd, now + DAY),
+      now + FAMILY_LINK_MAX_MILLIS);
   } else {
     if (access.role !== "manager") {
       throw new HttpsError("permission-denied",
@@ -207,11 +243,11 @@ export async function issueProgramWebLinkHandler(
 /** A driver's trip through their link: route, car and passengers. */
 export async function getProgramDriverTripHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramDriverTripCallableResponse> {
   const data = validateCallableWithAjv<GetProgramDriverTripCallablePayload>(
     request, validateGetProgramDriverTripCallablePayload);
-  const link = verifyOrThrow(data.token, "driverTrip", deps);
+  const link = verifyWebLinkOrThrow(data.token, "driverTrip", deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `driverTrip:${link.subjectId}`,
     "getProgramDriverTrip", {maxRequests: 120, windowMs: 60 * 1000});
@@ -275,6 +311,7 @@ export async function getProgramDriverTripHandler(
         passengers: entry.passengers, luggageUnits: entry.luggageUnits})) :
       manifest.guestNames.map((name) => ({name, passengers: 1,
         luggageUnits: 0})),
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.expiresAtMillis,
   };
 }
@@ -282,12 +319,12 @@ export async function getProgramDriverTripHandler(
 /** A vendor's run sheet: the functions in order and their trips. */
 export async function getProgramVendorRunSheetHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramVendorRunSheetCallableResponse> {
   const data =
     validateCallableWithAjv<GetProgramVendorRunSheetCallablePayload>(
       request, validateGetProgramVendorRunSheetCallablePayload);
-  const link = verifyOrThrow(data.token, "vendorRunSheet", deps);
+  const link = verifyWebLinkOrThrow(data.token, "vendorRunSheet", deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `vendorRunSheet:${link.subjectId}`,
     "getProgramVendorRunSheet", {maxRequests: 120, windowMs: 60 * 1000});
@@ -359,6 +396,7 @@ export async function getProgramVendorRunSheetHandler(
           staffTimestampMillis(trip.arrivedAt) : null,
         passengerCount: trip.passengerCount}];
     }).sort((a, b) => (a.departedAtMillis ?? 0) - (b.departedAtMillis ?? 0)),
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.expiresAtMillis,
   };
 }

@@ -123,6 +123,35 @@ export function thankYouMoment(
   };
 }
 
+/** The local time the thank-you goes when a default arms it; the close-out
+ * screen offers the same time.
+ */
+export const DEFAULT_THANK_YOU_AT_LOCAL = "10:00";
+
+/**
+ * Arms the thank-you the morning after the event, unless the event already
+ * has one (armed, paused or sent), so a later close-out choice is never
+ * overridden. Publishing calls it when the organizer's defaults ask for the
+ * thank-you. Returns whether it armed one.
+ */
+export async function armDefaultThankYou(params: {
+  db: Firestore;
+  eventId: string;
+  actorUid: string;
+  eventEndMillis: number;
+  nowMillis: number;
+  replan?: CloseOutDeps["replan"];
+}): Promise<boolean> {
+  const {db, eventId, actorUid, eventEndMillis, nowMillis} = params;
+  const ref = db.collection(MOMENTS_COLLECTION).doc(thankYouMomentId(eventId));
+  if ((await ref.get()).exists) return false;
+  await applyThankYouMoment(db, {...defaultDeps, firestore: () => db,
+    replan: params.replan ?? defaultDeps.replan}, eventId, actorUid,
+  thankYouSendAtMillis(eventEndMillis, DEFAULT_THANK_YOU_AT_LOCAL,
+    nowMillis), nowMillis);
+  return true;
+}
+
 /** Handles one revision-fenced, replay-safe close-out save. */
 export async function setEventCloseOutHandler(
   request: CallableRequest<unknown>,

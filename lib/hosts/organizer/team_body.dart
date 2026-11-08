@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/organizers/parts/organizer_team_member
 import 'package:catch_dating_app/hosts/organizer/team_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -67,6 +68,8 @@ class OrganizerTeamBody extends StatelessWidget {
                     ),
                     copy: catchFieldCopy(l10n),
                     title: l10n.hostOrganizerInvitePhone,
+                    contract: CatchContractConstraints
+                        .addOrganizerHostCallablePayloadPhoneNumber,
                     placeholder: l10n.hostOrganizerInvitePhonePlaceholder,
                     prefixText: state.dialCode,
                     keyboardType: TextInputType.phone,

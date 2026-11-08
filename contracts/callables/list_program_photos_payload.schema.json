@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_photos_payload.schema.json",
+  "title": "ListProgramPhotosCallablePayload",
+  "description": "The programme's photo albums (one per function, plus photos filed under none) and the photos of one album (functionId, or the newest across all without it). Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}

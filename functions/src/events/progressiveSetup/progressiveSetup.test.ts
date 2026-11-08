@@ -334,3 +334,54 @@ test("a weekly series creates each event once with its place", async () => {
     deps: h.deps}), (error) => code(error) === "invalid-argument");
   assert.equal(addLocalDays("2026-12-29", 7), "2027-01-05");
 });
+
+test("a new event starts with the organizer's default booking questions",
+  async () => {
+    const h = setup();
+    h.store.seed("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 1, eventSetup: {askedAtBooking: ["dietary", "tshirtSize"]}});
+    const created = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "request-questions", basics},
+      deps: h.deps});
+    const saved = h.store.read(`events/${created.eventId}`)!;
+    assert.deepEqual(saved.bookingQuestionIds, ["dietary", "tshirtSize"]);
+    assert.equal(validateEventDocument(saved), true,
+      JSON.stringify(validateEventDocument.errors));
+    h.store.seed("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 2, eventSetup: {askedAtBooking: []}});
+    const bare = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "request-noquestions",
+        basics}, deps: h.deps});
+    assert.equal(Object.hasOwn(h.store.read(`events/${bare.eventId}`)!,
+      "bookingQuestionIds"), false);
+  });
+
+test("a series created from an event tags it first and counts on",
+  async () => {
+    const h = setup();
+    const source = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "series-source-1", basics:
+        {...basics, localDate: "2026-10-13"}}, deps: h.deps});
+    const command = {organizerId: "org1", requestId: "series-request-src",
+      sourceEventId: source.eventId,
+      template: {...basics, localDate: "2026-10-20"},
+      cadence: {kind: "weekly" as const, weekday: "tuesday" as const,
+        count: 8}};
+    const series = await createPrivateEventSeries({actorUid: "host1",
+      command, deps: h.deps});
+    const original = h.store.read(`events/${source.eventId}`)!;
+    assert.equal(original.seriesId, series.seriesId);
+    assert.equal(original.seriesIndex, 0);
+    assert.equal(original.setupRevision, 1);
+    assert.equal(validateEventDocument(original), true,
+      JSON.stringify(validateEventDocument.errors));
+    const indexes = series.eventIds.map((id) =>
+      h.store.read(`events/${id}`)!.seriesIndex);
+    assert.deepEqual(indexes, [1, 2, 3, 4, 5, 6, 7, 8]);
+    // A retry finds the original already tagged; another series is refused.
+    await createPrivateEventSeries({actorUid: "host1", command,
+      deps: h.deps});
+    await assert.rejects(createPrivateEventSeries({actorUid: "host1",
+      command: {...command, requestId: "series-request-other"},
+      deps: h.deps}), (error) => code(error) === "failed-precondition");
+  });

@@ -96,8 +96,16 @@ export function assertPairRotationTopology(
   if (topology === "adjacency") {
     throw new HttpsError(
       "failed-precondition",
-      "Seat adjacency and table seating are not implemented yet."
+      "Seat adjacency belongs to table seating. " +
+        "Use group assignments for tables."
     );
+  }
+  const seats = resolveEventSuccessResourceCapacity(plan)?.seatsPerUnit;
+  if (seats !== null && seats !== undefined && seats > 2) {
+    throw new HttpsError("failed-precondition",
+      "Doubles courts are planned by the assignment engine, but rotation " +
+        "slots still hold one partner. Publishing doubles is not " +
+        "available yet.");
   }
   const unitKind = normalizedUnitKind(plan);
   const configuredSize = boundedInteger(

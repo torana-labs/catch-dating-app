@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/onboarding/setup_find_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_payments_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_body.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -283,14 +284,11 @@ void main() {
     testWidgets('a published page shows Live, its link and Copy', (
       tester,
     ) async {
-      final calls = await pump(
-        tester,
-        link: 'https://catchdates.com/lanternlane',
-      );
+      final calls = await pump(tester, link: '${Brand.webOrigin}/lanternlane');
 
       expect(find.text('Live'), findsOneWidget);
       expect(find.text('Lantern Lane Social is yours.'), findsOneWidget);
-      expect(find.text('https://catchdates.com/lanternlane'), findsOneWidget);
+      expect(find.text('${Brand.webOrigin}/lanternlane'), findsOneWidget);
 
       await tester.tap(find.text('Copy'));
       await tester.tap(find.text('Add your team'));

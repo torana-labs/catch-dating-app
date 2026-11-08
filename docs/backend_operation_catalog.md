@@ -276,7 +276,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `commitOrganizerFormAdmission` | Callable | Host response admission | Current form/CRM provenance or approved native application, issued offer, payment evidence and canonical seat authority; atomic attendee, ownership and request receipt | App Check, authenticated current manager in transaction, 20/min actor limit, strict input/output contracts. Missing or unreconciled seat authority fails closed; no client-supplied payment or capacity facts. |
 | `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `configureEventOfferPreferences` / `previewEventOfferPreferences` | Callable | Host forms and CRM | `organizerEventOffers`, operation receipts/audits and current source/manager/event/payment authority | App Check, bounded 25-person atomic batches, rate limits and current-transaction authority. Manual attestation is not provider proof or admission. Current offer settings are read directly: managers get `eventSetupPreferences/{eventId}` under rules and the phone combines it with the event's `setupRevision` and start, computing the suggested expiry with the server's rule. |
 | `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `setEventPublication` | Callable | Progressive Host setup | `events`, `eventSetupReceipts`, `eventSetupPreferences`, current organizer and deleted-account authority | App Check and per-actor rate limits; exact request/revision receipts and transaction-bound manager checks. The steps read the event through `hostEventSetupViews`. Mutations remain server-disabled until canonical schema, rules and public readers are migrated. |
-| `createPrivateEventSeries` | Callable | Progressive Host setup: a weekly series from one set of basics | `events`, `eventSetupReceipts`, current organizer and deleted-account authority | App Check and its own per-actor bucket (5 per 10 minutes); each event is a `createPrivateEventSetup` with its own receipt under `requestId-index`, so a retry replays the events already made. Events carry `seriesId` and `seriesIndex`. |
+| `createPrivateEventSeries` | Callable | Progressive Host setup: a weekly series from one set of basics | `events`, `eventSetupReceipts`, current organizer and deleted-account authority | App Check and its own per-actor bucket (5 per 10 minutes); each event is a `createPrivateEventSetup` with its own receipt under `requestId-index`, so a retry replays the events already made. Events carry `seriesId` and `seriesIndex`; an optional `sourceEventId` is tagged as index 0 under the current manager's authority. |
 | `onHostEventSetupView*Changed` (10 triggers) | Firestore triggers on `events`, `eventSetupPreferences`, `organizers` and the seven commitment collections (`eventAttendees`, `eventAttendeeImports`, `eventParticipations`, `eventWaitlistOffers`, `organizerEventOffers`, `payments`, `razorpayPendingOrders`) writes | Backend | `hostEventSetupViews/{eventId}` | Resolves the affected events from the old and new document (an organizer through every event of it with a `setupRevision`, in pages of 100) and re-evaluates each in one transaction that rereads the event, organizer, preferences and, while basics are still editable, one witness per commitment collection, writing only when the projection changed. Publication readiness checks everything but time, which the phone applies, so there is no sweep. A source that fails validation records `invalidSource` and keeps the previous summary; it never throws, so a retry cannot loop. Event updates always evaluate; commitment updates never do (an update cannot change whether a witness exists). Managers of an active organizer read the view through a listener under rules. |
 | `onHostEventSetupDefaultViewDefaultsChanged` / `onHostEventSetupDefaultViewOrganizerChanged` | Firestore triggers on `organizerEventSetupDefaults` and `organizers` writes | Backend | `hostEventSetupDefaultViews/{organizerId}` | Re-evaluates the organizer's defaults projection, hashes included, in one transaction that rereads the organizer and its defaults document, writing only on change; organizer updates evaluate only when city, market, `hostDefaults`, status or archived changed. A projection that fails validation records `invalidSource` and keeps the previous view. Managers of an active organizer read the view through a listener under rules; the defaults update and first-save basics stay fenced by its `reviewedDefaultsHash`. |
 | `reconcilePrivateEventSeats` | Callable | Host admission settings in progressive setup | Existing roster sources, staged migration pages, canonical seat ledger/fence, event terms and exact details receipt | App Check; 30/min actor limit; three page steps per request; current manager/deleted-account/event authority in every transaction. Missing reviewed terms apply only at ready activation; configured terms and offers are preserved. Cleanup and lost responses resume the same journaled command. Pre-apply discard cleans staged copies before releasing the fence with an exact rejected receipt; it cannot remove applied output or undo an acknowledged save. Production privacy and seat-writer gates remain closed. |
@@ -507,11 +507,38 @@ alerts for duties they hold; managers and coordinators see every alert.
 journeys from one hotel (hotel desk duty scoped). `issueProgramWebLink`
 mints expiring signed links that `getProgramDriverTrip` and
 `getProgramVendorRunSheet` read without sign-in; they reuse the household
-RSVP secret with a kind-separated HMAC and return no contact data.
+RSVP secret with a kind-separated HMAC and return no contact data. A
+manager's `family` link (subject = the programme) opens
+`getProgramFamilyView`: the stakeholder counts with function names, heads
+per function and households replied, with no guest or household names.
+The household RSVP view and every web link read return the programme's
+optional `branding`; the RSVP view also says whether the programme
+collects guest IDs (`collectsGuestIds`, from the accommodation capability).
 `listOrganizerMoments` adds per-moment plans (anchor, sent count, next run,
 board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
+
+## Programme guest IDs, hampers, photos and vendor bills
+
+`createProgramAssetUpload` signs one upload of a programme file (guest ID,
+hamper photo, function photo, guest page cover) into private Storage; it
+writes nothing. `submitProgramGuestId` (household RSVP token) stores one
+member's ID after verifying the uploaded objects; `decideProgramGuestId`
+accepts it or asks again (guest relations, revision fence, `requestId`
+replay); `getProgramGuestIdStatus` (household RSVP token) returns each
+member's name and ID status for the household's own ID page, and nothing
+else about the ID; `listProgramIdTracker` lists staying guests with ID status and
+signed image URLs; `getProgramHotelHandover` (a `hotelHandover` web link
+from `issueProgramWebLink`) gives the front desk its rooming list with
+accepted IDs and records each look. `reconcileProgramVendorBill` reviews,
+checks, questions or approves one vendor's bill against its recorded trips
+(writes are manager-only). `upsertProgramHamper` marks a room's hamper
+placed, by a porter through a `hamperPorter` link or by hotel desk staff;
+`getProgramHamperWebView` is the porters' list. `upsertProgramPhoto` adds or
+changes a function photo; `listProgramPhotos` returns albums, photos and the
+cover as signed URLs. Every command keeps a `requestId` receipt on its
+document. The guest ID, hotel and porter web pages are P4.10.
 
 ## Paid host membership operations
 

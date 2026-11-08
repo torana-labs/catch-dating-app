@@ -111,13 +111,15 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.discouraged;
     case EventInteractionModel.seatedTable:
+      // Tables, and their course-by-course changes, come from the group
+      // assignment tool. Guided rotations are two-person pairs only.
       base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
           EventSuccessRecommendationLevel.recommended;
-      base[EventSuccessModuleCatalog.guidedRotations.id] =
-          EventSuccessRecommendationLevel.recommended;
+      base[EventSuccessModuleCatalog.microPods.id] =
+          EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.liveReveal.id] =
           EventSuccessRecommendationLevel.recommended;
-      base[EventSuccessModuleCatalog.microPods.id] =
+      base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.discouraged;
       // Phone-light by design: guests check in and see their seat once, and
       // conversation cards stay a host opt-in.
@@ -378,20 +380,20 @@ EventSuccessAssignmentResolution _assignmentResolutionFor(
         support: EventSuccessAssignmentSupport.supported,
         reason: 'This assignment algorithm is implemented.',
       ),
+    EventSuccessAssignmentAlgorithm.teamBalancer =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.supported,
+        reason: 'Teams are balanced and solo arrivals are spread.',
+      ),
+    EventSuccessAssignmentAlgorithm.tableSeating =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.supported,
+        reason: 'Tables are seated by the shared assignment engine.',
+      ),
     EventSuccessAssignmentAlgorithm.none =>
       const EventSuccessAssignmentResolution(
         support: EventSuccessAssignmentSupport.unsupported,
         reason: 'This format does not select an assignment algorithm.',
-      ),
-    EventSuccessAssignmentAlgorithm.teamBalancer =>
-      const EventSuccessAssignmentResolution(
-        support: EventSuccessAssignmentSupport.unsupported,
-        reason: 'Team balancing is not implemented yet.',
-      ),
-    EventSuccessAssignmentAlgorithm.tableSeating =>
-      const EventSuccessAssignmentResolution(
-        support: EventSuccessAssignmentSupport.unsupported,
-        reason: 'Table seating and seat adjacency are not implemented yet.',
       ),
   };
 }

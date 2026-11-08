@@ -10138,10 +10138,6 @@
             "symbol": "hostTodayController"
           },
           {
-            "file": "lib/hosts/events/presentation/host_events_state.dart",
-            "symbol": "HostEventsRouteState"
-          },
-          {
             "file": "lib/contexts/organizers/data/organizers_repository.dart",
             "symbol": "watchOrganizersHostedBy"
           },
@@ -10189,16 +10185,6 @@
           "id": "host_home_dashboard",
           "status": "captured",
           "notes": "Canonical deterministic Today capture. It exercises the independent command centre with minute-refreshing temporal status, source-backed metrics, event-identified attention, a seven-day horizon, typed event and rehearsal handoffs, and the preserved adaptive Host shell."
-        },
-        {
-          "id": "host_home_events_list",
-          "status": "captured",
-          "notes": "Canonical full-shell Upcoming capture: sticky Upcoming/Past navigation, day groups, natural-height activity-led record rows, meaningful time/place and registration facts, and New/exact-policy-gated Repeat actions. Floating navigation is preserved. This is the approved option-one row family with option-two upcoming grouping; it does not duplicate Today's operational spotlight."
-        },
-        {
-          "id": "host_home_events_past",
-          "status": "captured",
-          "notes": "The same production Events route after selecting Past. Month/year groups and date/time/place/attendance facts reuse CatchRecordRow and preserve full-shell navigation."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -10416,18 +10402,14 @@
           "status": "captured",
           "source": "HostEventsWorkspaceState excludes cancelled events, groups Upcoming by day and Past by month/year, and feeds HostEventLifecycleRow. CatchRootScreenScaffold owns the sticky Upcoming/Past rail; CatchRecordRow owns natural-height activity-led rows and semantic facts.",
           "tests": [
-            "test/hosts/host_operations_screen_test.dart",
-            "test/hosts/host_events_screen_state_test.dart",
-            "test/hosts/host_events_layout_test.dart"
+            "test/hosts/host_operations_screen_test.dart"
           ],
           "nextAction": "Re-baseline the deliberately consolidated Events composition through an approved design-parity change, then remove the applicable visual-drift debt. Pending approval, offer, draft, and guest-inquiry sources remain future truthful attention inputs rather than fabricated UI.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
           "captureIds": [
-            "host_home_dashboard",
-            "host_home_events_list",
-            "host_home_events_past"
+            "host_home_dashboard"
           ]
         },
         {
@@ -10520,9 +10502,6 @@
           "kind": "populated",
           "status": "implemented",
           "source": "Events renders identifiable program date-range/count rows opening the existing workspace, with bounded paging, exact saved-ID anchors and scoped read retry.",
-          "tests": [
-            "test/hosts/host_events_layout_test.dart"
-          ],
           "nextAction": "Verify unified inventory and old-link redirect regressions and captures.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -10585,37 +10564,6 @@
         "currentLayout": "HostTodayScreen is the direct Today route edge: a CatchRoot and CatchScreen with the tab-home top bar, and the provider-free HostTodayBody below it. Compact and medium windows stack tonight's poster and its actions, Needs you, This week and Last 30 days; expanded windows use the feed pane layout with the poster, actions and week beside Needs you and the stats. HostAttentionPolicy derives supported work from backend facts, while Events exclusively owns create, repeat, import, draft-resume, schedule, and history inventory. No speculative recent-activity feed is rendered without an authoritative source.",
         "targetLayout": "Complete. Keep Today as the independent time-sensitive command centre and Events as the durable lifecycle inventory. Preserve their separate route, state, view-model, and controller boundaries, shared repository-owned event facts, and the original adaptive Catch navigation chrome.",
         "sections": [
-          {
-            "id": "section.host.home_screen_adapter",
-            "name": "Host home route state adapter",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "HostHomeScreenState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/events/presentation/host_events_screen.dart",
-              "symbol": "HostEventsScreen"
-            },
-            "currentOwner": "HostTodayScreen + HostEventsScreen with independent route state",
-            "targetOwner": "independent top-level destination adapters",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.surface"
-            ],
-            "states": [
-              "auth_required",
-              "clubs_loading",
-              "clubs_error",
-              "empty_clubs",
-              "loaded_club",
-              "event_loading"
-            ],
-            "migration": "Complete. Today owns HostTodayScreen, HostTodayBody, HostTodayState, hostTodayController, and HostAttentionPolicy. Events owns HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController. The combined Home adapter and surface enum are removed.",
-            "previewIds": [
-              "hostHomeRouteStates"
-            ]
-          },
           {
             "id": "section.host.today_command_centre",
             "name": "Host Today command centre",
@@ -10683,75 +10631,6 @@
             ]
           },
           {
-            "id": "section.host.home_upcoming_events",
-            "name": "Host upcoming events section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostUpcomingEvents",
-              "EventManagementList"
-            ],
-            "flutter": {
-              "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-              "symbol": "HostEventsOrganizerSection"
-            },
-            "currentOwner": "HostEventsOrganizerCard adapter + HostEventsWorkspaceState + HostEventsOrganizerSection",
-            "targetOwner": "provider-free Host Events lifecycle workspace",
-            "dependencies": [
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "loading",
-              "error",
-              "offline",
-              "empty",
-              "one_event",
-              "multiple_events",
-              "schedule_paginating",
-              "history_paginating",
-              "history_error",
-              "cancelled_filtered",
-              "long_titles"
-            ],
-            "migration": "HostEventsOrganizerCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsOrganizerSection supplies a canonical sticky rail and typed page owners. HostEventsTimelineBody selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
-            "previewIds": [
-              "hostHomeRouteStates",
-              "hostHomeEventSectionStates"
-            ]
-          },
-          {
-            "id": "section.host.home_event_row",
-            "name": "Host event management row",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "HostEventLifecycleRow",
-              "ManageEventRow"
-            ],
-            "flutter": {
-              "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-              "symbol": "HostEventsTimelineBody"
-            },
-            "currentOwner": "HostEventsTimelineBody + hostEventRecordLayout",
-            "targetOwner": "CatchSection.sliverRows -> CatchField -> CatchRecordLayout",
-            "dependencies": [
-              "catch.field"
-            ],
-            "states": [
-              "upcoming",
-              "live",
-              "past",
-              "long_title",
-              "divider"
-            ],
-            "migration": "Event-owned projection formats activity, schedule, location and attendance facts as passive RecordLayout values. Section owns month headers and sibling rules; Field owns navigation and interaction.",
-            "previewIds": [
-              "hostHomeRouteStates",
-              "HostEventsTimelineBody/Exact catalog"
-            ]
-          },
-          {
             "id": "section.host.home_empty",
             "name": "Host home empty state",
             "status": "implemented_local",
@@ -10778,36 +10657,6 @@
             "previewIds": [
               "hostHomeRouteStates",
               "CatchEmptyState/Action card states"
-            ]
-          },
-          {
-            "id": "section.host.home_access_loading_error",
-            "name": "Host home access loading and error states",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostAccessState",
-              "HostLoadingState",
-              "HostErrorState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/events/presentation/host_events_screen.dart",
-              "symbol": "HostEventsScreen"
-            },
-            "currentOwner": "HostTodayScreen + HostEventsScreen",
-            "targetOwner": "provider-free host route state sections",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "auth_required",
-              "loading",
-              "error",
-              "offline"
-            ],
-            "migration": "Keep retry/navigation intents in the adapter and add deterministic access/loading/error/offline captures.",
-            "previewIds": [
-              "hostHomeRouteStates"
             ]
           }
         ]
@@ -13562,11 +13411,6 @@
           "id": "host_create_map_picker_offline",
           "status": "captured",
           "notes": "Deterministic Host Create Event map-picker capture for offline Places search copy with map tiles disabled."
-        },
-        {
-          "id": "host_create_draft_delete_confirmation",
-          "status": "captured",
-          "notes": "Deterministic capture renders the destructive delete-draft confirmation over the draft picker."
         }
       ],
       "states": [
@@ -13654,17 +13498,14 @@
         {
           "id": "draft_delete",
           "kind": "mutation",
-          "status": "captured",
+          "status": "tested",
           "source": "Draft picker and submit cleanup delete drafts through CreateEventDraftController.deleteDraftMutation.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Draft picker destructive confirmation now has deterministic capture coverage. Add delete pending/error previews if design requires them.",
+          "nextAction": "The draft picker's delete confirmation capture retired with the legacy Create screens (#1599); capture the system Create draft delete if design requires it.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
-          ],
-          "captureIds": [
-            "host_create_draft_delete_confirmation"
           ]
         },
         {
@@ -13755,40 +13596,6 @@
               "long_club_name"
             ],
             "migration": "Feed title, club name, step count, and back intent from wizard state; add text-scale previews.",
-            "previewIds": [
-              "HostCreateEventRouteScreen/Route and wizard states"
-            ]
-          },
-          {
-            "id": "section.host.event_create_drafts",
-            "name": "Create event combined entry and draft save states",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostEventEntrySheet",
-              "DraftSaveState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/events/presentation/host_event_entry_sheet.dart",
-              "symbol": "showHostEventEntrySheet"
-            },
-            "currentOwner": "CreateEventScreen",
-            "targetOwner": "CreateEventDraftController plus shared HostEventEntrySheet",
-            "dependencies": [
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "no_drafts",
-              "multiple_drafts",
-              "restore",
-              "save_pending",
-              "save_error",
-              "delete_pending",
-              "delete_error"
-            ],
-            "migration": "CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule/date/time text, location restore state, policy restore state, and Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. Save/update success feedback uses the shared Catch snackbar primitive; actual persistence remains in CreateEventDraftController.",
-            "evidence": "Draft serialization, dirty/save policy, restore mapping, and load/delete intent policy are all provider-free and covered by host_create_event_state_test.dart. CreateEventScreen only executes the controller/Navigator side effects.",
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]

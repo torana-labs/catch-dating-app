@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.185.3
-updated: 2026-11-02
+version: 1.186.0
+updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -1828,16 +1828,24 @@ link, and later venue edits or archival never rewrite existing events.
 (`set`, `sequence`, `adjacency`) and the optional `resourceCapacity` object.
 `concurrentUnits` is a configurable simultaneous-resource limit; null means
 unconstrained. `resourceLabelId` is one of `court`, `table`, `lane`, or `board`.
-`seatsPerUnit` may be non-null only for `adjacency` and does not enable the
-deferred table-seating engine.
+`seatsPerUnit` may be non-null only for `adjacency` (table seats) or for
+`unitKind: pairs` (a doubles court holds four players as two partner pairs).
 
 `sequence` is implemented only with `pairRotations`. The server scheduler
 produces ordered, capacity-bounded rounds, explicit sit-out slots, and stable
 `resourceUnitId` values on rotation slots. It consumes the same cumulative
 exclusion totals used by T3 and the derived `unitProximity` graph from T5.
-`adjacency`, `tableSeating`, and other sequence-algorithm combinations remain
-explicitly unsupported in the exhaustive resolution table; no neighbouring
-engine fallback is permitted.
+`adjacency` is supported only for `tableSeating`, and `sequence` only for
+`pairRotations`; every other combination stays explicitly unsupported in the
+exhaustive resolution table, with no neighbouring engine fallback.
+
+`structureConfig` also carries `coverActivityAttributes` (units hold a
+cross-section of the attribute) and `arrivalGroupPolicy` (`keepTogether`,
+`spread`, `ignore`; absent means the unit-kind default). The activity attribute
+enum adds the sensitive `gender` and `ageBand`; the server resolves them only
+for an event whose saved structure names them. Host feature rules accept the
+`coverAcrossGroups` mode for category and multi-select answers. The engine
+contract is [assignment_engine.md](assignment_engine.md).
 
 ### Event Success Unit Outcomes And Standings
 
@@ -2254,7 +2262,15 @@ reads false), `planVisibleToGuests` (missing reads true) and
 `publicationState` with a changed setting saves only the setting and leaves
 registration as it is. Link-only events keep their own event page but are left
 out of Explore (client filter: a list rule cannot exclude them without a
-field on every event), Algolia and the organizer page lists. The details
+field on every event), Algolia, the organizer page lists, and the website's
+live readers (server lists, sitemap and the live listing feed). Guests see
+the settings: the app and website event pages hide "Who's going" when
+`showGuestList` is false, show no price while `priceHiddenUntilBookingOpens`
+is set and Catch registration is closed (the public projection carries
+`priceHidden`), and link out where `externalBooking` sells the tickets,
+tracked as an imported event's outbound link. The public catch-event
+projection carries `showGuestList: false`, `priceHidden: true` and
+`externalBooking` only when they differ from the defaults. The details
 command sets `planVisibleToGuests`, which the `eventSuccessPlans` read rule
 enforces for guests, and `externalBooking`, which keeps Catch registration
 closed and lets publishing skip Catch admission terms. Event preferences take
@@ -2264,14 +2280,27 @@ a resolved one appears only once chosen or set as an organizer default.
 Publishing applies them to the admission policy with the seat ledger: askFirst
 is the existing host-approval path (`manualApprovalRequired`), and a disabled
 waitlist makes `joinEventWaitlist` refuse joins except join requests on an
-askFirst event. `followersFirst` is stored but not enforced yet. Organizer
+askFirst event. Publishing with `followersFirst` sets the event's
+`followersFirstUntilMs` (start less 24 hours); until then
+`signUpUserForEvent`, the free website RSVP and the public checkout refuse
+non-followers with `failed-precondition` and `details.reason`
+`followersFirst` (a paid native fulfilment was checked before payment).
+`setEventPublication` also takes `bookingMode` on a published event and
+applies it under the published-edit rules (setup-revision fence, the seat
+ledger refusing while places are reserved); the setup view's
+`eventSettings.publishedBookingMode` reports it. Organizer
 defaults add `startingPriceMinor`, `places`, `waitlistEnabled`,
 `bookingMode`, `refundPolicy` (`flexible` 24 h, `standard` 3 days, `strict`
 none), `askedAtBooking` question ids and `autoMessages {thankYou, arrival}`;
-unset keys leave the defaults hash unchanged. `createPrivateEventSeries`
-creates a weekly series (2 to 8 events) through `createPrivateEventSetup`,
-one receipt per event under `requestId-index`, writing `seriesId` and
-`seriesIndex`. The setup view's trigger-owned `facts` state `ticketsSold`,
+unset keys leave the defaults hash unchanged. `createPrivateEventSetup` copies
+`askedAtBooking` onto the new event as `bookingQuestionIds`, and publishing
+arms the close-out thank-you (10:00 the morning after) and the event-start
+reminder when `autoMessages` asks for them, each create-only.
+`createPrivateEventSeries` creates a weekly series (2 to 8 events) through
+`createPrivateEventSetup`, one receipt per event under `requestId-index`,
+writing `seriesId` and `seriesIndex`; an optional `sourceEventId` tags that
+event as index 0 (setup revision untouched) and the new events count on from
+1. The setup view's trigger-owned `facts` state `ticketsSold`,
 `grossMinor` and `arrivalMessage.ready` (the event-start reminder moment is
 armed).
 
@@ -4322,6 +4351,45 @@ never guest data. `organizerPrograms.branding` (colour, cover photo path in
 `organizerMoments.anchor` (`function | flight | date` with an id) are
 optional: older documents read as the default look (rani, no cover, no
 credit) and as the anchor their initiation implies.
+The guest, vendor, hotel and family web link reads carry the branding as an
+optional `branding` field (absent when unset). The family link
+(`getProgramFamilyView`) is counts only: function names and headcounts,
+never guest or household names, phone numbers, rooms or notes.
+
+### Programme Guest IDs, Hampers, Photos And Vendor Bills
+
+Four server-only collections hold programme records that clients reach only
+through callables. `programGuestIds/{programId}_{guestId}` holds one guest's
+ID for the hotels: the kind, the last four characters of the number (never
+the full number), private image paths, a check status (`submitted`,
+`accepted`, `askedAgain`) and `hotelViews`, the last 20 front-desk looks.
+`programHampers/{programId}_{hotelId}_{roomKey}` holds one welcome hamper per
+hotel room (room label, placed or pending, who placed it, an optional photo).
+`programPhotos/{programId}_{photoId}` holds one function photo.
+`programVendorBills/{programId}_{vendorId}` holds one transport vendor's bill
+lines, each checked against the rate frozen on its recorded trip, with the
+note to the vendor and the approval. All four are new collections; no
+existing document gains a field.
+
+Files live at `programs/{programId}/{assetKind}/{assetId}` (`guestIds`,
+`hampers`, `photos`, `branding`). Storage rules deny every direct client read
+and write. `createProgramAssetUpload` signs one short-lived POST policy whose
+metadata binds the object to its programme, kind and subject (the household
+for an ID, the hotel for a hamper photo, the planner otherwise); the command
+that uses the file verifies that binding and deletes a mismatching object.
+Images leave the server only as signed URLs that expire within ten minutes.
+
+Privacy: guest ID images are personal data collected for hotel check-in only.
+Households submit them through their own RSVP link and see only each
+member's name and status back (`getProgramGuestIdStatus`); guest relations (or a
+manager) see them in the ID tracker; a hotel sees accepted IDs only, through
+a `hotelHandover` link scoped to that hotel, and every look is recorded on
+the ID. Hamper links (`hamperPorter`) show room labels and counts, never
+guest names. When an archived programme's grace window closes, the
+retention sweep deletes `programGuestIds`, `programHampers`, `programPhotos`
+and `programAlerts`, clears vendor bill notes and line references (keeping
+the totals), and deletes every file under `programs/{programId}/`; a failed
+file delete leaves the run unfinished so the next pass retries.
 
 ### Program Room Occupancy
 
@@ -5345,7 +5413,7 @@ Released-client paths such as `organizers/{organizerId}/photos/{position}_{time}
 their six-slot filename bound is not the canonical gallery policy. Private form
 assets remain separate: `organizerForms/...` and `organizer-form-exports/...`
 deny direct SDK access and are exposed only through short-lived backend-signed
-requests.
+requests. Programme files (`programs/{programId}/...`) follow the same pattern.
 
 Remote organizer backfill completed in staging and production on 2026-07-22
 (`docs/migrations/clubs_to_organizers.md`). Legacy data goes with the

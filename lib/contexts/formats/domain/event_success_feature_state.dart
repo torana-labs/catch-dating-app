@@ -32,7 +32,7 @@ class EventSuccessHostDraft {
         const EventSuccessQuestionnaireConfig.defaultTemplate(),
     this.conversationGraphConsentMode =
         EventSuccessConversationGraphConsentMode.optIn,
-    this.revealUsesStandings = false,
+    this.revealShowsStandings = false,
   }) : assert(targetAttendeeCount > 0);
 
   factory EventSuccessHostDraft.fromPlaybook(
@@ -54,7 +54,7 @@ class EventSuccessHostDraft {
       targetAttendeeCount: target,
       structureConfig: profile.structureConfig,
       compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
-      revealUsesStandings: profile.revealUsesStandings,
+      revealShowsStandings: profile.revealShowsStandings,
     );
   }
 
@@ -85,7 +85,7 @@ class EventSuccessHostDraft {
               .round(),
       structureConfig: profile.structureConfig,
       compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
-      revealUsesStandings: profile.revealUsesStandings,
+      revealShowsStandings: profile.revealShowsStandings,
     );
   }
 
@@ -100,9 +100,10 @@ class EventSuccessHostDraft {
   final EventSuccessQuestionnaireConfig questionnaireConfig;
   final EventSuccessConversationGraphConsentMode conversationGraphConsentMode;
 
-  /// The format's reveal shows score or rank standings, so it needs no pod or
-  /// rotation plan.
-  final bool revealUsesStandings;
+  /// Whether the live reveal can show score or rank standings on its own,
+  /// without a pod or rotation assignment to reveal. Mirrors the runtime's
+  /// standings-reveal gate.
+  final bool revealShowsStandings;
 
   Set<String> get effectiveSelectedModuleIds =>
       playbook.effectiveModuleSelection(selectedModuleIds);
@@ -172,7 +173,7 @@ class EventSuccessHostDraft {
           ) &&
           (compatibilityAffectsRanking ||
               profile.compatibilityAffectsRankingByDefault),
-      revealUsesStandings: profile.revealUsesStandings,
+      revealShowsStandings: profile.revealShowsStandings,
     ).normalizedForSelectedModules();
   }
 
@@ -212,7 +213,7 @@ class EventSuccessHostDraft {
     bool? compatibilityAffectsRanking,
     EventSuccessQuestionnaireConfig? questionnaireConfig,
     EventSuccessConversationGraphConsentMode? conversationGraphConsentMode,
-    bool? revealUsesStandings,
+    bool? revealShowsStandings,
   }) {
     final resolvedPlaybook = playbook ?? this.playbook;
     final resolvedIds = selectedModuleIds ?? this.selectedModuleIds;
@@ -249,7 +250,7 @@ class EventSuccessHostDraft {
       questionnaireConfig: questionnaireConfig ?? this.questionnaireConfig,
       conversationGraphConsentMode:
           conversationGraphConsentMode ?? this.conversationGraphConsentMode,
-      revealUsesStandings: revealUsesStandings ?? this.revealUsesStandings,
+      revealShowsStandings: revealShowsStandings ?? this.revealShowsStandings,
     );
   }
 
@@ -276,7 +277,7 @@ class EventSuccessHostDraft {
       issues.add('Add a rotation cadence before using guided rotations.');
     }
     if (selectedModuleIds.contains(EventSuccessModuleCatalog.liveReveal.id) &&
-        !revealUsesStandings &&
+        !revealShowsStandings &&
         !selectedModuleIds.contains(
           EventSuccessModuleCatalog.guidedRotations.id,
         ) &&

@@ -498,12 +498,24 @@ enter previews.
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
+| `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `getProgramFamilyView` | `src/programs/familyView.ts` | The family's counts-only programme view (no names) by a family link. |
+| `getProgramGuestIdStatus` | `src/programs/guestIds.ts` | A household's members with their ID status (names and status only) by its RSVP link. |
+| `getProgramHamperWebView` | `src/programs/hampers.ts` | Porters' hamper list for one hotel by hamperPorter link. |
+| `getProgramHotelHandover` | `src/programs/guestIds.ts` | Hotel front desk rooming list with accepted IDs by hotelHandover link. |
 | `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
+| `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
+| `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
+| `submitProgramGuestId` | `src/programs/guestIds.ts` | A household saves a member's ID through its RSVP link. |
+| `upsertProgramHamper` | `src/programs/hampers.ts` | Marks a room's welcome hamper placed (porter link or hotel desk). |
+| `upsertProgramPhoto` | `src/programs/photos.ts` | Adds or changes a programme photo. |
 <!-- fn-inventory:end -->
 
 ## Shared modules

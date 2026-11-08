@@ -1,3 +1,4 @@
+import {publishedBookingMode} from "./publishedEdit";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
@@ -170,6 +171,8 @@ export function projectEventSettings(
     planVisibleToGuests: event.planVisibleToGuests !== false,
     externalBooking: (event.externalBooking ?? null) as NonNullable<
       PrivateEventSetupSummary["eventSettings"]>["externalBooking"],
+    ...(event.publicationState === "published" ? {publishedBookingMode:
+      publishedBookingMode(event as unknown as EventDocument)} : {}),
   };
 }
 

@@ -468,7 +468,7 @@ class EventSuccessRuntime {
   bool _stepHasModule(EventRunOfShowStep step, String moduleId) =>
       step.moduleIds.contains(moduleId);
 
-  bool get _usesStandingsReveal => _profile.revealUsesStandings;
+  bool get _usesStandingsReveal => _profile.revealShowsStandings;
 
   bool _canPrioritizeCompatibilityQuestionnaire(
     EventSuccessAttendeeLifecycle lifecycle,

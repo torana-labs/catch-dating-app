@@ -122,6 +122,13 @@ class EventSuccessActivityProfile {
   final EventSuccessUnitOutcome unitOutcome;
   final EventSuccessAccountability accountability;
   final EventSuccessAssignmentResolution assignmentResolution;
+
+  /// Whether a live reveal can show score or rank standings without an
+  /// assignment. The runtime and host live surface use the same rule.
+  bool get revealShowsStandings =>
+      unitOutcome == EventSuccessUnitOutcome.score ||
+      (unitOutcome == EventSuccessUnitOutcome.rank &&
+          assignmentResolution.supported);
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;
   final bool compatibilityAffectsRankingByDefault;
@@ -145,14 +152,6 @@ class EventSuccessActivityProfile {
         StructuredDomainCopy.eventSuccessPromptOpenFormat,
     };
   }
-
-  /// A score reveal, or a rank reveal backed by a real assignment engine,
-  /// shows standings and needs no pod or rotation plan. The live runtime and
-  /// the setup readiness check share this rule.
-  bool get revealUsesStandings =>
-      unitOutcome == EventSuccessUnitOutcome.score ||
-      (unitOutcome == EventSuccessUnitOutcome.rank &&
-          assignmentResolution.supported);
 
   Set<String> get defaultModuleIds => recommendations
       .where((recommendation) => recommendation.selectedByDefault)

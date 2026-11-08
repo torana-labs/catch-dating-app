@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_plan_step_row.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
-import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -105,17 +105,19 @@ class CreatePlanBody extends StatelessWidget {
           key: const ValueKey<String>('create-plan-add'),
           variant: CatchChoiceTileVariant.add,
           title: context.l10n.hostCreateAddStep,
+          contract: CatchContractConstraints
+              .updatePrivateEventDetailsCallablePayloadDetailsItinerary,
           onTap: onAdd,
         ),
         if (onPlanVisible != null)
           CatchIndexRow(
-            title: CreateSettingsCopy.planVisible,
-            subtitle: CreateSettingsCopy.planVisibleBody,
+            title: context.l10n.hostCreatePlanVisible,
+            subtitle: context.l10n.hostCreatePlanVisibleBody,
             onTap: null,
             trailing: CatchToggleInput(
               key: const ValueKey<String>('create-plan-visible'),
               value: state.planVisible,
-              semanticLabel: CreateSettingsCopy.planVisible,
+              semanticLabel: context.l10n.hostCreatePlanVisible,
               contractExemption: 'An event detail saved when it publishes.',
               onChanged: onPlanVisible,
             ),

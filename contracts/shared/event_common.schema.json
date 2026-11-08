@@ -251,7 +251,13 @@
     },
     "eventSuccessActivityAssignmentAttribute": {
       "type": "string",
-      "enum": ["paceBand", "skillBand", "roleBand"]
+      "description": "paceBand, skillBand and roleBand are activity signals. gender and ageBand are sensitive profile signals: the server resolves them only for an event whose saved structure names them, so naming one is the per-event opt-in.",
+      "enum": ["paceBand", "skillBand", "roleBand", "gender", "ageBand"]
+    },
+    "eventSuccessArrivalGroupPolicy": {
+      "type": "string",
+      "description": "How guests sharing an arrival group (booking, friends, couple) are placed. Absent means keepTogether for teams and tables and ignore otherwise.",
+      "enum": ["keepTogether", "spread", "ignore"]
     },
     "eventSuccessPhoneAvailability": {
       "type": "string",
@@ -401,6 +407,17 @@
           "items": {
             "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
           }
+        },
+        "coverActivityAttributes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
+          }
+        },
+        "arrivalGroupPolicy": {
+          "$ref": "#/definitions/eventSuccessArrivalGroupPolicy"
         }
       },
       "allOf": [
@@ -418,10 +435,19 @@
             }
           },
           "then": {
-            "required": ["topology"],
-            "properties": {
-              "topology": {"const": "adjacency"}
-            }
+            "anyOf": [
+              {
+                "required": ["topology"],
+                "properties": {
+                  "topology": {"const": "adjacency"}
+                }
+              },
+              {
+                "properties": {
+                  "unitKind": {"const": "pairs"}
+                }
+              }
+            ]
           }
         }
       ]

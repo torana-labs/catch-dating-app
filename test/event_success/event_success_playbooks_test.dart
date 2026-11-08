@@ -582,9 +582,10 @@ void main() {
         racket.isSelectable(EventSuccessModuleCatalog.microPods.id),
         isFalse,
       );
+      // Team balancing runs through the group assignment tool.
       expect(
-        quiz.isSelectable(EventSuccessModuleCatalog.microPods.id),
-        isFalse,
+        quiz.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.microPods.id),
       );
       expect(
         quiz.defaultModuleIds,
@@ -623,14 +624,15 @@ void main() {
       expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
       expect(
         profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
-        isFalse,
+        isTrue,
       );
       expect(
         profile.isSelectable(EventSuccessModuleCatalog.liveReveal.id),
         isTrue,
       );
-      expect(profile.assignmentResolution.supported, isFalse);
-      expect(profile.assignmentResolution.reason, contains('not implemented'));
+      expect(profile.assignmentResolution.supported, isTrue);
+      expect(profile.assignmentResolution.reason, contains('solo arrivals'));
+      expect(profile.revealShowsStandings, isTrue);
     });
 
     test(
@@ -677,12 +679,12 @@ void main() {
         expect(profile.matchingObjective, EventSuccessMatchingObjective.spread);
         expect(profile.unitOutcome, EventSuccessUnitOutcome.score);
         expect(profile.accountability, EventSuccessAccountability.rollCall);
-        expect(profile.assignmentResolution.supported, isFalse);
+        expect(profile.assignmentResolution.supported, isTrue);
         expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
         expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
         expect(
           profile.isSelectable(EventSuccessModuleCatalog.microPods.id),
-          isFalse,
+          isTrue,
         );
       },
     );
@@ -738,13 +740,13 @@ void main() {
         EventSuccessActivityProfile.forActivity(
           ActivityKind.pubQuiz,
         ).assignmentResolution.supported,
-        isFalse,
+        isTrue,
       );
       expect(
         EventSuccessActivityProfile.forActivity(
           ActivityKind.dinner,
         ).assignmentResolution.supported,
-        isFalse,
+        isTrue,
       );
     });
 
@@ -896,9 +898,93 @@ void main() {
         expect(plan.structureConfig.estimatedUnitCount(42), 9);
         expect(
           plan.selectedModuleIds,
-          isNot(contains(EventSuccessModuleCatalog.microPods.id)),
+          contains(EventSuccessModuleCatalog.microPods.id),
         );
       }
+    });
+
+    test('a score reveal is ready without a pod or rotation tool', () {
+      final quiz = EventSuccessHostDraft.fromActivity(ActivityKind.pubQuiz);
+      const issue = 'Live reveal needs a pod or rotation tool selected.';
+
+      expect(quiz.revealShowsStandings, isTrue);
+      expect(quiz.readinessIssues, isNot(contains(issue)));
+      final standingsOnly = quiz.withModuleSelection(
+        EventSuccessModuleCatalog.microPods.id,
+        false,
+      );
+      expect(
+        standingsOnly.selectedModuleIds,
+        contains(EventSuccessModuleCatalog.liveReveal.id),
+      );
+      expect(standingsOnly.readinessIssues, isNot(contains(issue)));
+
+      final mixer = EventSuccessHostDraft.fromActivity(
+        ActivityKind.singlesMixer,
+      );
+      expect(mixer.revealShowsStandings, isFalse);
+      final revealOnly = mixer.withModuleSelection(
+        EventSuccessModuleCatalog.guidedRotations.id,
+        false,
+      );
+      expect(revealOnly.readinessIssues, contains(issue));
+    });
+
+    test('structure keeps cover, arrival policy and opt-in signals', () {
+      final config = EventSuccessStructureConfig.fromJson(const {
+        'unitKind': 'pairs',
+        'unitSize': 2,
+        'balanceActivityAttributes': ['gender'],
+        'coverActivityAttributes': ['roleBand'],
+        'arrivalGroupPolicy': 'spread',
+      });
+
+      expect(config.coverActivityAttributes, [
+        EventSuccessActivityAssignmentAttribute.roleBand,
+      ]);
+      expect(config.arrivalGroupPolicy, EventSuccessArrivalGroupPolicy.spread);
+      expect(EventSuccessStructureConfig.fromJson(config.toJson()), config);
+      expect(config.toJson()['arrivalGroupPolicy'], 'spread');
+      expect(
+        EventSuccessActivityAssignmentAttribute.activitySignals,
+        isNot(contains(EventSuccessActivityAssignmentAttribute.gender)),
+      );
+      expect(EventSuccessActivityAssignmentAttribute.gender.sensitive, isTrue);
+      for (final activity in ActivityKind.values) {
+        final structure = EventSuccessActivityProfile.forActivity(
+          activity,
+        ).structureConfig;
+        expect(
+          [
+            ...structure.balanceActivityAttributes,
+            ...structure.clusterActivityAttributes,
+            ...structure.coverActivityAttributes,
+          ].where((attribute) => attribute.sensitive),
+          isEmpty,
+          reason: 'no format selects a sensitive signal by default',
+        );
+      }
+    });
+
+    test('dinner seats tables through the group assignment tool', () {
+      final dinner = EventSuccessActivityProfile.forActivity(
+        ActivityKind.dinner,
+      );
+
+      expect(
+        dinner.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.microPods.id),
+      );
+      expect(
+        dinner.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isTrue,
+      );
+      expect(
+        dinner.defaultModuleIds,
+        isNot(contains(EventSuccessModuleCatalog.guidedRotations.id)),
+      );
+      expect(dinner.structureConfig.unitKind, EventSuccessUnitKind.tables);
+      expect(dinner.structureConfig.topology, EventSuccessTopology.adjacency);
     });
 
     test('activity normalization replaces legacy structure defaults', () {

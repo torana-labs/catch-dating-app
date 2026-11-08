@@ -24,6 +24,7 @@ export type PageKey =
   | "event_rehearsal"
   | "event_invite"
   | "household_rsvp"
+  | "programme_link"
   | "public_form"
   | "claim"
   | "privacy"
@@ -101,6 +102,13 @@ export function pageMetaForEvent(event: EventDetailRecord): PageMeta {
   };
 }
 
+/** The programme's token links: guests, hotels, drivers, vendors and porters. */
+export const programmeLinkRoots = ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers", "family"] as const;
+
+export function isProgrammeLinkPath(pathname: string): boolean {
+  return programmeLinkRoots.some((root) => pathname.startsWith(`/${root}/`));
+}
+
 export function getPageKey(
   pathname: string = window.location.pathname
 ): Exclude<PageKey, "listing" | "event_detail"> {
@@ -119,6 +127,7 @@ export function getPageKey(
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";
   if (pathname.startsWith("/rsvp/")) return "household_rsvp";
+  if (isProgrammeLinkPath(pathname)) return "programme_link";
   if (pathname.startsWith("/f/")) return "public_form";
   if (["/host", "/host/", "/host/apply", "/host/apply/"].includes(pathname)) return "host";
   if (["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"].includes(pathname)) return "weddings";
@@ -136,6 +145,7 @@ export function pageClassFor(page: PageKey) {
       page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "event_invite" ||
       page === "household_rsvp" ||
+      page === "programme_link" ||
       page === "public_form") {
     return "event-runtime-page";
   }

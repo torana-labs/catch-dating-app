@@ -9256,6 +9256,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => plannerBrandingCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_programme_id_tracker_desktop',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerIdTrackerCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_reconcile_desktop',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerReconcileCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_photos_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerPhotosCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_programmes_home_phone',
     routeIds: const <String>['hostProgramsScreen'],
     device: CaptureDevice.claudePhone390,
@@ -10565,7 +10586,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       CreateShareScreen(
         state: _createState(CreateStep.share),
         handlers: _createHandlers,
-        link: 'https://catchdates.com/lantern-lane/trivia',
+        link: '${Brand.webOrigin}/lantern-lane/trivia',
       ),
     ),
   ),

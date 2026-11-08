@@ -35,6 +35,18 @@ void main() {
       (_) => plannerLiveBoardCapture(),
       phone,
     ),
+    (
+      'host_programme_id_tracker_desktop',
+      (_) => plannerIdTrackerCapture(),
+      desktop,
+    ),
+    (
+      'host_programme_reconcile_desktop',
+      (_) => plannerReconcileCapture(),
+      desktop,
+    ),
+    ('host_programme_photos_phone', (_) => plannerPhotosCapture(), phone),
+    ('host_programme_branding_phone', (_) => plannerBrandingCapture(), phone),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

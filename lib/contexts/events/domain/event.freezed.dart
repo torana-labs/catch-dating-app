@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
-@JsonKey(includeToJson: false) String get id;@JsonKey(includeToJson: false) bool get synthetic;@JsonKey(includeToJson: false) String? get seedPrefix; String get organizerId;@JsonKey(includeIfNull: false) String? get sourceVenueId; String get name;@TimestampConverter() DateTime get startTime;@JsonKey(includeIfNull: false) String? get eventTimezone;@TimestampConverter() DateTime get endTime; String get meetingPoint;@JsonKey(includeIfNull: false) EventMeetingLocation? get meetingLocation; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; List<EventItineraryItem> get itinerary;@JsonKey(includeIfNull: false) String? get photoUrl; List<UploadedPhoto> get eventPhotos; EventFormatSnapshot get eventFormat; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; String get currency;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; int get crossPathsPairHeldCount; int get crossPathsPairConfirmedCount; Map<String, int> get crossPathsPairHeldCohortCounts; bool get crossPathsDiscoveryEnabled; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason;@JsonKey(includeIfNull: false) int? get setupRevision; bool get publicRegistrationEnabled;@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? get publicRegistrationMode; int get publicRegistrationRevision;@JsonKey(unknownEnumValue: EventListing.listed) EventListing get listing; bool get showGuestList; bool get priceHiddenUntilBookingOpens; bool get planVisibleToGuests; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy;@JsonKey(includeIfNull: false) EventOrigin? get eventOrigin;@JsonKey(includeIfNull: false) EventRuntimeAccess? get runtimeAccess; Map<String, int> get genderCounts; Map<String, int> get cohortCounts; Map<String, int> get waitlistedCohortCounts;
+@JsonKey(includeToJson: false) String get id;@JsonKey(includeToJson: false) bool get synthetic;@JsonKey(includeToJson: false) String? get seedPrefix; String get organizerId;@JsonKey(includeIfNull: false) String? get sourceVenueId; String get name;@TimestampConverter() DateTime get startTime;@JsonKey(includeIfNull: false) String? get eventTimezone;@TimestampConverter() DateTime get endTime; String get meetingPoint;@JsonKey(includeIfNull: false) EventMeetingLocation? get meetingLocation; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; List<EventItineraryItem> get itinerary;@JsonKey(includeIfNull: false) String? get photoUrl; List<UploadedPhoto> get eventPhotos; EventFormatSnapshot get eventFormat; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; String get currency;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; int get crossPathsPairHeldCount; int get crossPathsPairConfirmedCount; Map<String, int> get crossPathsPairHeldCohortCounts; bool get crossPathsDiscoveryEnabled; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason;@JsonKey(includeIfNull: false) int? get setupRevision; bool get publicRegistrationEnabled;@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? get publicRegistrationMode; int get publicRegistrationRevision;@JsonKey(unknownEnumValue: EventListing.listed) EventListing get listing; bool get showGuestList; bool get priceHiddenUntilBookingOpens; bool get planVisibleToGuests;@JsonKey(includeIfNull: false) EventExternalBooking? get externalBooking; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy;@JsonKey(includeIfNull: false) EventOrigin? get eventOrigin;@JsonKey(includeIfNull: false) EventRuntimeAccess? get runtimeAccess; Map<String, int> get genderCounts; Map<String, int> get cohortCounts; Map<String, int> get waitlistedCohortCounts;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventCopyWith<Event> get copyWith => _$EventCopyWithImpl<Event>(this as Event, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other.itinerary, itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other.eventPhotos, eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other.crossPathsPairHeldCohortCounts, crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, waitlistedCohortCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other.itinerary, itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other.eventPhotos, eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other.crossPathsPairHeldCohortCounts, crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.externalBooking, externalBooking) || other.externalBooking == externalBooking)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(itinerary),photoUrl,const DeepCollectionEquality().hash(eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(genderCounts),const DeepCollectionEquality().hash(cohortCounts),const DeepCollectionEquality().hash(waitlistedCohortCounts)]);
+int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(itinerary),photoUrl,const DeepCollectionEquality().hash(eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,externalBooking,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(genderCounts),const DeepCollectionEquality().hash(cohortCounts),const DeepCollectionEquality().hash(waitlistedCohortCounts)]);
 
 @override
 String toString() {
-  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
+  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, externalBooking: $externalBooking, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id,@JsonKey(includeToJson: false) bool synthetic,@JsonKey(includeToJson: false) String? seedPrefix, String organizerId,@JsonKey(includeIfNull: false) String? sourceVenueId, String name,@TimestampConverter() DateTime startTime,@JsonKey(includeIfNull: false) String? eventTimezone,@TimestampConverter() DateTime endTime, String meetingPoint,@JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation, double? startingPointLat, double? startingPointLng, String? locationDetails, List<EventItineraryItem> itinerary,@JsonKey(includeIfNull: false) String? photoUrl, List<UploadedPhoto> eventPhotos, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, String currency,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, int crossPathsPairHeldCount, int crossPathsPairConfirmedCount, Map<String, int> crossPathsPairHeldCohortCounts, bool crossPathsDiscoveryEnabled, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason,@JsonKey(includeIfNull: false) int? setupRevision, bool publicRegistrationEnabled,@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? publicRegistrationMode, int publicRegistrationRevision,@JsonKey(unknownEnumValue: EventListing.listed) EventListing listing, bool showGuestList, bool priceHiddenUntilBookingOpens, bool planVisibleToGuests, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,@JsonKey(includeIfNull: false) EventOrigin? eventOrigin,@JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
+@JsonKey(includeToJson: false) String id,@JsonKey(includeToJson: false) bool synthetic,@JsonKey(includeToJson: false) String? seedPrefix, String organizerId,@JsonKey(includeIfNull: false) String? sourceVenueId, String name,@TimestampConverter() DateTime startTime,@JsonKey(includeIfNull: false) String? eventTimezone,@TimestampConverter() DateTime endTime, String meetingPoint,@JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation, double? startingPointLat, double? startingPointLng, String? locationDetails, List<EventItineraryItem> itinerary,@JsonKey(includeIfNull: false) String? photoUrl, List<UploadedPhoto> eventPhotos, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, String currency,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, int crossPathsPairHeldCount, int crossPathsPairConfirmedCount, Map<String, int> crossPathsPairHeldCohortCounts, bool crossPathsDiscoveryEnabled, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason,@JsonKey(includeIfNull: false) int? setupRevision, bool publicRegistrationEnabled,@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? publicRegistrationMode, int publicRegistrationRevision,@JsonKey(unknownEnumValue: EventListing.listed) EventListing listing, bool showGuestList, bool priceHiddenUntilBookingOpens, bool planVisibleToGuests,@JsonKey(includeIfNull: false) EventExternalBooking? externalBooking, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,@JsonKey(includeIfNull: false) EventOrigin? eventOrigin,@JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
 });
 
 
-$EventMeetingLocationCopyWith<$Res>? get meetingLocation;$EventConstraintsCopyWith<$Res> get constraints;$EventOriginCopyWith<$Res>? get eventOrigin;$EventRuntimeAccessCopyWith<$Res>? get runtimeAccess;
+$EventMeetingLocationCopyWith<$Res>? get meetingLocation;$EventExternalBookingCopyWith<$Res>? get externalBooking;$EventConstraintsCopyWith<$Res> get constraints;$EventOriginCopyWith<$Res>? get eventOrigin;$EventRuntimeAccessCopyWith<$Res>? get runtimeAccess;
 
 }
 /// @nodoc
@@ -65,7 +65,7 @@ class _$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? organizerId = null,Object? sourceVenueId = freezed,Object? name = null,Object? startTime = null,Object? eventTimezone = freezed,Object? endTime = null,Object? meetingPoint = null,Object? meetingLocation = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? itinerary = null,Object? photoUrl = freezed,Object? eventPhotos = null,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? currency = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? crossPathsPairHeldCount = null,Object? crossPathsPairConfirmedCount = null,Object? crossPathsPairHeldCohortCounts = null,Object? crossPathsDiscoveryEnabled = null,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? setupRevision = freezed,Object? publicRegistrationEnabled = null,Object? publicRegistrationMode = freezed,Object? publicRegistrationRevision = null,Object? listing = null,Object? showGuestList = null,Object? priceHiddenUntilBookingOpens = null,Object? planVisibleToGuests = null,Object? constraints = null,Object? eventPolicy = freezed,Object? eventOrigin = freezed,Object? runtimeAccess = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? organizerId = null,Object? sourceVenueId = freezed,Object? name = null,Object? startTime = null,Object? eventTimezone = freezed,Object? endTime = null,Object? meetingPoint = null,Object? meetingLocation = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? itinerary = null,Object? photoUrl = freezed,Object? eventPhotos = null,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? currency = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? crossPathsPairHeldCount = null,Object? crossPathsPairConfirmedCount = null,Object? crossPathsPairHeldCohortCounts = null,Object? crossPathsDiscoveryEnabled = null,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? setupRevision = freezed,Object? publicRegistrationEnabled = null,Object? publicRegistrationMode = freezed,Object? publicRegistrationRevision = null,Object? listing = null,Object? showGuestList = null,Object? priceHiddenUntilBookingOpens = null,Object? planVisibleToGuests = null,Object? externalBooking = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? eventOrigin = freezed,Object? runtimeAccess = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,synthetic: null == synthetic ? _self.synthetic : synthetic // ignore: cast_nullable_to_non_nullable
@@ -109,7 +109,8 @@ as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullab
 as EventListing,showGuestList: null == showGuestList ? _self.showGuestList : showGuestList // ignore: cast_nullable_to_non_nullable
 as bool,priceHiddenUntilBookingOpens: null == priceHiddenUntilBookingOpens ? _self.priceHiddenUntilBookingOpens : priceHiddenUntilBookingOpens // ignore: cast_nullable_to_non_nullable
 as bool,planVisibleToGuests: null == planVisibleToGuests ? _self.planVisibleToGuests : planVisibleToGuests // ignore: cast_nullable_to_non_nullable
-as bool,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
+as bool,externalBooking: freezed == externalBooking ? _self.externalBooking : externalBooking // ignore: cast_nullable_to_non_nullable
+as EventExternalBooking?,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
 as EventConstraints,eventPolicy: freezed == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyBundle?,eventOrigin: freezed == eventOrigin ? _self.eventOrigin : eventOrigin // ignore: cast_nullable_to_non_nullable
 as EventOrigin?,runtimeAccess: freezed == runtimeAccess ? _self.runtimeAccess : runtimeAccess // ignore: cast_nullable_to_non_nullable
@@ -130,6 +131,18 @@ $EventMeetingLocationCopyWith<$Res>? get meetingLocation {
 
   return $EventMeetingLocationCopyWith<$Res>(_self.meetingLocation!, (value) {
     return _then(_self.copyWith(meetingLocation: value));
+  });
+}/// Create a copy of Event
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventExternalBookingCopyWith<$Res>? get externalBooking {
+    if (_self.externalBooking == null) {
+    return null;
+  }
+
+  return $EventExternalBookingCopyWith<$Res>(_self.externalBooking!, (value) {
+    return _then(_self.copyWith(externalBooking: value));
   });
 }/// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -246,10 +259,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests, @JsonKey(includeIfNull: false)  EventExternalBooking? externalBooking,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
+return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.externalBooking,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   return orElse();
 
 }
@@ -267,10 +280,10 @@ return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests, @JsonKey(includeIfNull: false)  EventExternalBooking? externalBooking,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
-return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
+return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.externalBooking,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -287,10 +300,10 @@ return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id, @JsonKey(includeToJson: false)  bool synthetic, @JsonKey(includeToJson: false)  String? seedPrefix,  String organizerId, @JsonKey(includeIfNull: false)  String? sourceVenueId,  String name, @TimestampConverter()  DateTime startTime, @JsonKey(includeIfNull: false)  String? eventTimezone, @TimestampConverter()  DateTime endTime,  String meetingPoint, @JsonKey(includeIfNull: false)  EventMeetingLocation? meetingLocation,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  List<EventItineraryItem> itinerary, @JsonKey(includeIfNull: false)  String? photoUrl,  List<UploadedPhoto> eventPhotos,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  String currency, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  int crossPathsPairHeldCount,  int crossPathsPairConfirmedCount,  Map<String, int> crossPathsPairHeldCohortCounts,  bool crossPathsDiscoveryEnabled,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason, @JsonKey(includeIfNull: false)  int? setupRevision,  bool publicRegistrationEnabled, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed)  EventPublicRegistrationMode? publicRegistrationMode,  int publicRegistrationRevision, @JsonKey(unknownEnumValue: EventListing.listed)  EventListing listing,  bool showGuestList,  bool priceHiddenUntilBookingOpens,  bool planVisibleToGuests, @JsonKey(includeIfNull: false)  EventExternalBooking? externalBooking,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy, @JsonKey(includeIfNull: false)  EventOrigin? eventOrigin, @JsonKey(includeIfNull: false)  EventRuntimeAccess? runtimeAccess,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
+return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_that.sourceVenueId,_that.name,_that.startTime,_that.eventTimezone,_that.endTime,_that.meetingPoint,_that.meetingLocation,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.itinerary,_that.photoUrl,_that.eventPhotos,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.currency,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.crossPathsPairHeldCount,_that.crossPathsPairConfirmedCount,_that.crossPathsPairHeldCohortCounts,_that.crossPathsDiscoveryEnabled,_that.status,_that.cancelledAt,_that.cancellationReason,_that.setupRevision,_that.publicRegistrationEnabled,_that.publicRegistrationMode,_that.publicRegistrationRevision,_that.listing,_that.showGuestList,_that.priceHiddenUntilBookingOpens,_that.planVisibleToGuests,_that.externalBooking,_that.constraints,_that.eventPolicy,_that.eventOrigin,_that.runtimeAccess,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   return null;
 
 }
@@ -302,7 +315,7 @@ return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_tha
 @JsonSerializable()
 
 class _Event implements Event {
-  const _Event({@JsonKey(includeToJson: false) required this.id, @JsonKey(includeToJson: false) this.synthetic = false, @JsonKey(includeToJson: false) this.seedPrefix, required this.organizerId, @JsonKey(includeIfNull: false) this.sourceVenueId, this.name = '', @TimestampConverter() required this.startTime, @JsonKey(includeIfNull: false) this.eventTimezone, @TimestampConverter() required this.endTime, required this.meetingPoint, @JsonKey(includeIfNull: false) this.meetingLocation, this.startingPointLat, this.startingPointLng, this.locationDetails, final  List<EventItineraryItem> itinerary = const [], @JsonKey(includeIfNull: false) this.photoUrl, final  List<UploadedPhoto> eventPhotos = const [], this.eventFormat = const EventFormatSnapshot.socialRun(), required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, this.currency = defaultCurrencyCode, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.crossPathsPairHeldCount = 0, this.crossPathsPairConfirmedCount = 0, final  Map<String, int> crossPathsPairHeldCohortCounts = const {}, this.crossPathsDiscoveryEnabled = false, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, @JsonKey(includeIfNull: false) this.setupRevision, this.publicRegistrationEnabled = false, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) this.publicRegistrationMode, this.publicRegistrationRevision = 0, @JsonKey(unknownEnumValue: EventListing.listed) this.listing = EventListing.listed, this.showGuestList = true, this.priceHiddenUntilBookingOpens = false, this.planVisibleToGuests = true, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, @JsonKey(includeIfNull: false) this.eventOrigin, @JsonKey(includeIfNull: false) this.runtimeAccess, final  Map<String, int> genderCounts = const {}, final  Map<String, int> cohortCounts = const {}, final  Map<String, int> waitlistedCohortCounts = const {}}): _itinerary = itinerary,_eventPhotos = eventPhotos,_crossPathsPairHeldCohortCounts = crossPathsPairHeldCohortCounts,_genderCounts = genderCounts,_cohortCounts = cohortCounts,_waitlistedCohortCounts = waitlistedCohortCounts;
+  const _Event({@JsonKey(includeToJson: false) required this.id, @JsonKey(includeToJson: false) this.synthetic = false, @JsonKey(includeToJson: false) this.seedPrefix, required this.organizerId, @JsonKey(includeIfNull: false) this.sourceVenueId, this.name = '', @TimestampConverter() required this.startTime, @JsonKey(includeIfNull: false) this.eventTimezone, @TimestampConverter() required this.endTime, required this.meetingPoint, @JsonKey(includeIfNull: false) this.meetingLocation, this.startingPointLat, this.startingPointLng, this.locationDetails, final  List<EventItineraryItem> itinerary = const [], @JsonKey(includeIfNull: false) this.photoUrl, final  List<UploadedPhoto> eventPhotos = const [], this.eventFormat = const EventFormatSnapshot.socialRun(), required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, this.currency = defaultCurrencyCode, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.crossPathsPairHeldCount = 0, this.crossPathsPairConfirmedCount = 0, final  Map<String, int> crossPathsPairHeldCohortCounts = const {}, this.crossPathsDiscoveryEnabled = false, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, @JsonKey(includeIfNull: false) this.setupRevision, this.publicRegistrationEnabled = false, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) this.publicRegistrationMode, this.publicRegistrationRevision = 0, @JsonKey(unknownEnumValue: EventListing.listed) this.listing = EventListing.listed, this.showGuestList = true, this.priceHiddenUntilBookingOpens = false, this.planVisibleToGuests = true, @JsonKey(includeIfNull: false) this.externalBooking, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, @JsonKey(includeIfNull: false) this.eventOrigin, @JsonKey(includeIfNull: false) this.runtimeAccess, final  Map<String, int> genderCounts = const {}, final  Map<String, int> cohortCounts = const {}, final  Map<String, int> waitlistedCohortCounts = const {}}): _itinerary = itinerary,_eventPhotos = eventPhotos,_crossPathsPairHeldCohortCounts = crossPathsPairHeldCohortCounts,_genderCounts = genderCounts,_cohortCounts = cohortCounts,_waitlistedCohortCounts = waitlistedCohortCounts;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -365,6 +378,7 @@ class _Event implements Event {
 @override@JsonKey() final  bool showGuestList;
 @override@JsonKey() final  bool priceHiddenUntilBookingOpens;
 @override@JsonKey() final  bool planVisibleToGuests;
+@override@JsonKey(includeIfNull: false) final  EventExternalBooking? externalBooking;
 @override@JsonKey() final  EventConstraints constraints;
 @override@JsonKey(includeIfNull: false) final  EventPolicyBundle? eventPolicy;
 @override@JsonKey(includeIfNull: false) final  EventOrigin? eventOrigin;
@@ -404,16 +418,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other._itinerary, _itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other._eventPhotos, _eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other._crossPathsPairHeldCohortCounts, _crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other._cohortCounts, _cohortCounts)&&const DeepCollectionEquality().equals(other._waitlistedCohortCounts, _waitlistedCohortCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other._itinerary, _itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other._eventPhotos, _eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other._crossPathsPairHeldCohortCounts, _crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.externalBooking, externalBooking) || other.externalBooking == externalBooking)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other._cohortCounts, _cohortCounts)&&const DeepCollectionEquality().equals(other._waitlistedCohortCounts, _waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(_itinerary),photoUrl,const DeepCollectionEquality().hash(_eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(_crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts),const DeepCollectionEquality().hash(_waitlistedCohortCounts)]);
+int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(_itinerary),photoUrl,const DeepCollectionEquality().hash(_eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(_crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,externalBooking,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts),const DeepCollectionEquality().hash(_waitlistedCohortCounts)]);
 
 @override
 String toString() {
-  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
+  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, externalBooking: $externalBooking, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
 }
 
 
@@ -424,11 +438,11 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id,@JsonKey(includeToJson: false) bool synthetic,@JsonKey(includeToJson: false) String? seedPrefix, String organizerId,@JsonKey(includeIfNull: false) String? sourceVenueId, String name,@TimestampConverter() DateTime startTime,@JsonKey(includeIfNull: false) String? eventTimezone,@TimestampConverter() DateTime endTime, String meetingPoint,@JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation, double? startingPointLat, double? startingPointLng, String? locationDetails, List<EventItineraryItem> itinerary,@JsonKey(includeIfNull: false) String? photoUrl, List<UploadedPhoto> eventPhotos, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, String currency,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, int crossPathsPairHeldCount, int crossPathsPairConfirmedCount, Map<String, int> crossPathsPairHeldCohortCounts, bool crossPathsDiscoveryEnabled, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason,@JsonKey(includeIfNull: false) int? setupRevision, bool publicRegistrationEnabled,@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? publicRegistrationMode, int publicRegistrationRevision,@JsonKey(unknownEnumValue: EventListing.listed) EventListing listing, bool showGuestList, bool priceHiddenUntilBookingOpens, bool planVisibleToGuests, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,@JsonKey(includeIfNull: false) EventOrigin? eventOrigin,@JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
+@JsonKey(includeToJson: false) String id,@JsonKey(includeToJson: false) bool synthetic,@JsonKey(includeToJson: false) String? seedPrefix, String organizerId,@JsonKey(includeIfNull: false) String? sourceVenueId, String name,@TimestampConverter() DateTime startTime,@JsonKey(includeIfNull: false) String? eventTimezone,@TimestampConverter() DateTime endTime, String meetingPoint,@JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation, double? startingPointLat, double? startingPointLng, String? locationDetails, List<EventItineraryItem> itinerary,@JsonKey(includeIfNull: false) String? photoUrl, List<UploadedPhoto> eventPhotos, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, String currency,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, int crossPathsPairHeldCount, int crossPathsPairConfirmedCount, Map<String, int> crossPathsPairHeldCohortCounts, bool crossPathsDiscoveryEnabled, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason,@JsonKey(includeIfNull: false) int? setupRevision, bool publicRegistrationEnabled,@JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) EventPublicRegistrationMode? publicRegistrationMode, int publicRegistrationRevision,@JsonKey(unknownEnumValue: EventListing.listed) EventListing listing, bool showGuestList, bool priceHiddenUntilBookingOpens, bool planVisibleToGuests,@JsonKey(includeIfNull: false) EventExternalBooking? externalBooking, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,@JsonKey(includeIfNull: false) EventOrigin? eventOrigin,@JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
 });
 
 
-@override $EventMeetingLocationCopyWith<$Res>? get meetingLocation;@override $EventConstraintsCopyWith<$Res> get constraints;@override $EventOriginCopyWith<$Res>? get eventOrigin;@override $EventRuntimeAccessCopyWith<$Res>? get runtimeAccess;
+@override $EventMeetingLocationCopyWith<$Res>? get meetingLocation;@override $EventExternalBookingCopyWith<$Res>? get externalBooking;@override $EventConstraintsCopyWith<$Res> get constraints;@override $EventOriginCopyWith<$Res>? get eventOrigin;@override $EventRuntimeAccessCopyWith<$Res>? get runtimeAccess;
 
 }
 /// @nodoc
@@ -441,7 +455,7 @@ class __$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? organizerId = null,Object? sourceVenueId = freezed,Object? name = null,Object? startTime = null,Object? eventTimezone = freezed,Object? endTime = null,Object? meetingPoint = null,Object? meetingLocation = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? itinerary = null,Object? photoUrl = freezed,Object? eventPhotos = null,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? currency = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? crossPathsPairHeldCount = null,Object? crossPathsPairConfirmedCount = null,Object? crossPathsPairHeldCohortCounts = null,Object? crossPathsDiscoveryEnabled = null,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? setupRevision = freezed,Object? publicRegistrationEnabled = null,Object? publicRegistrationMode = freezed,Object? publicRegistrationRevision = null,Object? listing = null,Object? showGuestList = null,Object? priceHiddenUntilBookingOpens = null,Object? planVisibleToGuests = null,Object? constraints = null,Object? eventPolicy = freezed,Object? eventOrigin = freezed,Object? runtimeAccess = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? organizerId = null,Object? sourceVenueId = freezed,Object? name = null,Object? startTime = null,Object? eventTimezone = freezed,Object? endTime = null,Object? meetingPoint = null,Object? meetingLocation = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? itinerary = null,Object? photoUrl = freezed,Object? eventPhotos = null,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? currency = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? crossPathsPairHeldCount = null,Object? crossPathsPairConfirmedCount = null,Object? crossPathsPairHeldCohortCounts = null,Object? crossPathsDiscoveryEnabled = null,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? setupRevision = freezed,Object? publicRegistrationEnabled = null,Object? publicRegistrationMode = freezed,Object? publicRegistrationRevision = null,Object? listing = null,Object? showGuestList = null,Object? priceHiddenUntilBookingOpens = null,Object? planVisibleToGuests = null,Object? externalBooking = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? eventOrigin = freezed,Object? runtimeAccess = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
   return _then(_Event(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,synthetic: null == synthetic ? _self.synthetic : synthetic // ignore: cast_nullable_to_non_nullable
@@ -485,7 +499,8 @@ as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullab
 as EventListing,showGuestList: null == showGuestList ? _self.showGuestList : showGuestList // ignore: cast_nullable_to_non_nullable
 as bool,priceHiddenUntilBookingOpens: null == priceHiddenUntilBookingOpens ? _self.priceHiddenUntilBookingOpens : priceHiddenUntilBookingOpens // ignore: cast_nullable_to_non_nullable
 as bool,planVisibleToGuests: null == planVisibleToGuests ? _self.planVisibleToGuests : planVisibleToGuests // ignore: cast_nullable_to_non_nullable
-as bool,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
+as bool,externalBooking: freezed == externalBooking ? _self.externalBooking : externalBooking // ignore: cast_nullable_to_non_nullable
+as EventExternalBooking?,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
 as EventConstraints,eventPolicy: freezed == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyBundle?,eventOrigin: freezed == eventOrigin ? _self.eventOrigin : eventOrigin // ignore: cast_nullable_to_non_nullable
 as EventOrigin?,runtimeAccess: freezed == runtimeAccess ? _self.runtimeAccess : runtimeAccess // ignore: cast_nullable_to_non_nullable
@@ -507,6 +522,18 @@ $EventMeetingLocationCopyWith<$Res>? get meetingLocation {
 
   return $EventMeetingLocationCopyWith<$Res>(_self.meetingLocation!, (value) {
     return _then(_self.copyWith(meetingLocation: value));
+  });
+}/// Create a copy of Event
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventExternalBookingCopyWith<$Res>? get externalBooking {
+    if (_self.externalBooking == null) {
+    return null;
+  }
+
+  return $EventExternalBookingCopyWith<$Res>(_self.externalBooking!, (value) {
+    return _then(_self.copyWith(externalBooking: value));
   });
 }/// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -828,6 +855,272 @@ as String?,adapterVersion: freezed == adapterVersion ? _self.adapterVersion : ad
 as String?,connectedAt: freezed == connectedAt ? _self.connectedAt : connectedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,connectedBy: freezed == connectedBy ? _self.connectedBy : connectedBy // ignore: cast_nullable_to_non_nullable
 as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$EventExternalBooking {
+
+@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson) ExternalBookingProvider get provider; String get url;
+/// Create a copy of EventExternalBooking
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EventExternalBookingCopyWith<EventExternalBooking> get copyWith => _$EventExternalBookingCopyWithImpl<EventExternalBooking>(this as EventExternalBooking, _$identity);
+
+  /// Serializes this EventExternalBooking to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventExternalBooking&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.url, url) || other.url == url));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,provider,url);
+
+@override
+String toString() {
+  return 'EventExternalBooking(provider: $provider, url: $url)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EventExternalBookingCopyWith<$Res>  {
+  factory $EventExternalBookingCopyWith(EventExternalBooking value, $Res Function(EventExternalBooking) _then) = _$EventExternalBookingCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson) ExternalBookingProvider provider, String url
+});
+
+
+
+
+}
+/// @nodoc
+class _$EventExternalBookingCopyWithImpl<$Res>
+    implements $EventExternalBookingCopyWith<$Res> {
+  _$EventExternalBookingCopyWithImpl(this._self, this._then);
+
+  final EventExternalBooking _self;
+  final $Res Function(EventExternalBooking) _then;
+
+/// Create a copy of EventExternalBooking
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? provider = null,Object? url = null,}) {
+  return _then(_self.copyWith(
+provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as ExternalBookingProvider,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EventExternalBooking].
+extension EventExternalBookingPatterns on EventExternalBooking {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EventExternalBooking value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EventExternalBooking() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EventExternalBooking value)  $default,){
+final _that = this;
+switch (_that) {
+case _EventExternalBooking():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EventExternalBooking value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EventExternalBooking() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson)  ExternalBookingProvider provider,  String url)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EventExternalBooking() when $default != null:
+return $default(_that.provider,_that.url);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson)  ExternalBookingProvider provider,  String url)  $default,) {final _that = this;
+switch (_that) {
+case _EventExternalBooking():
+return $default(_that.provider,_that.url);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson)  ExternalBookingProvider provider,  String url)?  $default,) {final _that = this;
+switch (_that) {
+case _EventExternalBooking() when $default != null:
+return $default(_that.provider,_that.url);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EventExternalBooking implements EventExternalBooking {
+  const _EventExternalBooking({@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson) required this.provider, required this.url});
+  factory _EventExternalBooking.fromJson(Map<String, dynamic> json) => _$EventExternalBookingFromJson(json);
+
+@override@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson) final  ExternalBookingProvider provider;
+@override final  String url;
+
+/// Create a copy of EventExternalBooking
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EventExternalBookingCopyWith<_EventExternalBooking> get copyWith => __$EventExternalBookingCopyWithImpl<_EventExternalBooking>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$EventExternalBookingToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventExternalBooking&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.url, url) || other.url == url));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,provider,url);
+
+@override
+String toString() {
+  return 'EventExternalBooking(provider: $provider, url: $url)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EventExternalBookingCopyWith<$Res> implements $EventExternalBookingCopyWith<$Res> {
+  factory _$EventExternalBookingCopyWith(_EventExternalBooking value, $Res Function(_EventExternalBooking) _then) = __$EventExternalBookingCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(fromJson: externalBookingProviderFromJson, toJson: externalBookingProviderToJson) ExternalBookingProvider provider, String url
+});
+
+
+
+
+}
+/// @nodoc
+class __$EventExternalBookingCopyWithImpl<$Res>
+    implements _$EventExternalBookingCopyWith<$Res> {
+  __$EventExternalBookingCopyWithImpl(this._self, this._then);
+
+  final _EventExternalBooking _self;
+  final $Res Function(_EventExternalBooking) _then;
+
+/// Create a copy of EventExternalBooking
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? provider = null,Object? url = null,}) {
+  return _then(_EventExternalBooking(
+provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as ExternalBookingProvider,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

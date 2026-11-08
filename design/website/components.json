@@ -2731,7 +2731,8 @@
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -2766,7 +2767,8 @@
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2780,6 +2782,565 @@
         ]
       },
       "notes": "The private household RSVP page on the RbProgRsvp board: the programme's top bar, the spotlight with the dates and greeting, a tile per function with each member's reply, getting there, the WhatsApp consent tile and Send our reply. Messaging consent is an explicit checkbox."
+    },
+    {
+      "id": "route_programme_itinerary",
+      "kind": "route",
+      "routeIds": [
+        "programme_itinerary"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeItineraryPage.tsx",
+      "exportName": "ProgrammeItineraryPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchMarker.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "Itinerary",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "unavailable"
+        ]
+      },
+      "notes": "The household itinerary on the RbProgItinerary board: the kicker and greeting, Add to calendar and Change our reply, getting there, where they stay, a timeline per day of the functions someone said yes or maybe to, and going home, from the household RSVP view."
+    },
+    {
+      "id": "programme_itinerary_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_itinerary"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeItineraryPage.tsx",
+      "exportName": "ProgrammeItineraryView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchMarker.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "ItineraryReady",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "unavailable"
+        ]
+      },
+      "notes": "The household itinerary on the RbProgItinerary board: the kicker and greeting, Add to calendar and Change our reply, getting there, where they stay, a timeline per day of the functions someone said yes or maybe to, and going home, from the household RSVP view."
+    },
+    {
+      "id": "route_programme_ids",
+      "kind": "route",
+      "routeIds": [
+        "programme_ids"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeGuestIdsPage.tsx",
+      "exportName": "ProgrammeGuestIdsPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "GuestIds",
+        "states": [
+          "ready",
+          "saving",
+          "unavailable"
+        ]
+      },
+      "notes": "The household's IDs for the hotel on the RbProgIdGuest board: who sees them and for how long, a tile per member with Added or Add (names and status only), and the open member's kind of ID, front and back photos and Save, through a signed upload."
+    },
+    {
+      "id": "programme_ids_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_ids"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeGuestIdsPage.tsx",
+      "exportName": "ProgrammeGuestIdsView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "GuestIdsReady",
+        "states": [
+          "ready",
+          "saving",
+          "unavailable"
+        ]
+      },
+      "notes": "The household's IDs for the hotel on the RbProgIdGuest board: who sees them and for how long, a tile per member with Added or Add (names and status only), and the open member's kind of ID, front and back photos and Save, through a signed upload."
+    },
+    {
+      "id": "route_programme_hotel",
+      "kind": "route",
+      "routeIds": [
+        "programme_hotel"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeHotelHandoverPage.tsx",
+      "exportName": "ProgrammeHotelHandoverPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchTable.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "HotelHandover",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "The hotel front desk's rooming list on the RbProgHotelHandover board (1280): who it is from, the title and lead, Download the rooming list, four figures, the floating rooms table with ID status and the accepted ID photos to open, and the privacy notice."
+    },
+    {
+      "id": "programme_hotel_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_hotel"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeHotelHandoverPage.tsx",
+      "exportName": "ProgrammeHotelHandoverView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchTable.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "HotelHandoverReady",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "The hotel front desk's rooming list on the RbProgHotelHandover board (1280): who it is from, the title and lead, Download the rooming list, four figures, the floating rooms table with ID status and the accepted ID photos to open, and the privacy notice."
+    },
+    {
+      "id": "route_programme_trip",
+      "kind": "route",
+      "routeIds": [
+        "programme_trip"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeDriverTripPage.tsx",
+      "exportName": "ProgrammeDriverTripPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "DriverTrip",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "A driver's trip on the RbProgDriver board: trip, car and plate, the route, the pickup and drop tile, passengers with party sizes and bags, and Directions. No phone numbers or flights."
+    },
+    {
+      "id": "programme_trip_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_trip"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeDriverTripPage.tsx",
+      "exportName": "ProgrammeDriverTripView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "DriverTripReady",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "A driver's trip on the RbProgDriver board: trip, car and plate, the route, the pickup and drop tile, passengers with party sizes and bags, and Directions. No phone numbers or flights."
+    },
+    {
+      "id": "route_programme_runsheet",
+      "kind": "route",
+      "routeIds": [
+        "programme_runsheet"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeRunSheetPage.tsx",
+      "exportName": "ProgrammeRunSheetPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchMarker.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "RunSheet",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "A vendor's view-only run sheet on the RbProgRunSheet board: View only in the site bar, a timeline per day of the functions marked done, now, next and later, and a car vendor's trips."
+    },
+    {
+      "id": "programme_runsheet_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_runsheet"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeRunSheetPage.tsx",
+      "exportName": "ProgrammeRunSheetView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchMarker.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "RunSheetReady",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "A vendor's view-only run sheet on the RbProgRunSheet board: View only in the site bar, a timeline per day of the functions marked done, now, next and later, and a car vendor's trips."
+    },
+    {
+      "id": "route_programme_hampers",
+      "kind": "route",
+      "routeIds": [
+        "programme_hampers"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeHampersPage.tsx",
+      "exportName": "ProgrammeHampersPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchPhotoTile.module.css",
+        "packages/web-ui/src/components/CatchDock.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "Hampers",
+        "states": [
+          "ready",
+          "picked",
+          "unavailable"
+        ]
+      },
+      "notes": "The porters' welcome hampers on the RbProgHampers board: rooms done over a meter, a row per room with Done or Placed, the photos, and the dock's Placed · take a photo for the picked room. Room labels and guest counts only."
+    },
+    {
+      "id": "route_programme_family",
+      "kind": "route",
+      "routeIds": [
+        "programme_family"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeFamilyPage.tsx",
+      "exportName": "ProgrammeFamilyPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "Family",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "The family's view-only link on the RbHostProgramShare board: Shared by your planner and View only, the spotlight in the programme's colour, guests and households replied, who is coming to each function, heads for the caterer and how many households have still to reply. Counts and function names only."
+    },
+    {
+      "id": "programme_hampers_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_hampers"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeHampersPage.tsx",
+      "exportName": "ProgrammeHampersView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchPhotoTile.module.css",
+        "packages/web-ui/src/components/CatchDock.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "HampersReady",
+        "states": [
+          "ready",
+          "picked",
+          "unavailable"
+        ]
+      },
+      "notes": "The porters' welcome hampers on the RbProgHampers board: rooms done over a meter, a row per room with Done or Placed, the photos, and the dock's Placed · take a photo for the picked room. Room labels and guest counts only."
+    },
+    {
+      "id": "programme_family_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_family"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeFamilyPage.tsx",
+      "exportName": "ProgrammeFamilyView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/Programmes.stories.tsx",
+        "exportName": "FamilyReady",
+        "states": [
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "The family's view-only link on the RbHostProgramShare board: Shared by your planner and View only, the spotlight in the programme's colour, guests and households replied, who is coming to each function, heads for the caterer and how many households have still to reply. Counts and function names only."
+    },
+    {
+      "id": "programme_link_frame",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_itinerary",
+        "programme_ids",
+        "programme_hotel",
+        "programme_trip",
+        "programme_runsheet",
+        "programme_hampers",
+        "programme_family"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeLinkFrame.tsx",
+      "exportName": "ProgrammeLinkFrame",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "loading",
+          "ready",
+          "unavailable"
+        ]
+      },
+      "notes": "The frame every programme link shares: the site top bar, one reading column (the hotel's wide table), the loading and unavailable states and the made-with line. Drawn through each page's stories."
+    },
+    {
+      "id": "programme_privacy_note",
+      "kind": "supporting-component",
+      "routeIds": [
+        "programme_ids",
+        "programme_hotel"
+      ],
+      "owner": "features/programmes",
+      "source": "website/src/features/programmes/ProgrammeLinkFrame.tsx",
+      "exportName": "ProgrammePrivacyNote",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The boards' neutral notice with the protected mark: who sees the IDs and when they are deleted. Drawn through the IDs and hotel stories."
     },
     {
       "id": "event_sms_preference_panel",
@@ -4208,7 +4769,8 @@
       "id": "shared_photo_tile",
       "kind": "supporting-component",
       "routeIds": [
-        "organizer_listing_canonical"
+        "organizer_listing_canonical",
+        "programme_hampers"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPhotoTile.tsx",
@@ -4229,7 +4791,12 @@
           "placeholder"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
+      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style."
     },
     {
       "id": "shared_preview_card",
@@ -4604,7 +5171,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery"
+        "visitor_discovery",
+        "programme_ids"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChoiceInput.tsx",
@@ -4618,13 +5186,8 @@
           "default"
         ]
       },
-      "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices.",
-      "comparedWith": [
-        "catch.chip",
-        "catch.option_card",
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchChoiceTile for its described choices, CatchChip for its filter chips and CatchText for its legend; it is a choice group that arranges those parts, not an option card, a chip or a text style."
+      "notes": "Implements catch.chip.field: the library's choice group (Flutter's CatchChoiceInput), which arranges CatchChip filter chips, CatchChoiceTile described choices and a CatchText legend. The homepage's format filter, Explore's view, format and date choices and the guest ID page's kind of ID.",
+      "componentId": "catch.chip.field"
     },
     {
       "id": "web_ui_catch_search_field",
