@@ -4222,14 +4222,14 @@
   },
   "hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide": "Live event guide",
   "@hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (title).",
+    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_event_success_defaults_step"
   },
   "hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity": "New events start with a ready-to-run plan for this activity. You can adjust any event''s plan later.",
   "@hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity": {
-    "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (subtitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_event_success_defaults_step"
@@ -4691,21 +4691,21 @@
   },
   "hostsEventDetailsStepTitleEventName": "Event name",
   "@hostsEventDetailsStepTitleEventName": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).",
+    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
   "hostsEventDetailsStepPlaceholderEventName": "Friday night social",
   "@hostsEventDetailsStepPlaceholderEventName": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (placeholder).",
+    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
   "hostsEventDetailsStepTitleDescription": "Description",
   "@hostsEventDetailsStepTitleDescription": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).",
+    "description": "Product copy used by lib/hosts/create/create_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
@@ -7767,14 +7767,14 @@
   },
   "hostsEventDetailsStepLabelPaceLevel": "Pace level",
   "@hostsEventDetailsStepLabelPaceLevel": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
   "hostsWhereStepLabelMeetingLocation": "Meeting location",
   "@hostsWhereStepLabelMeetingLocation": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/where_step.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.where_step"

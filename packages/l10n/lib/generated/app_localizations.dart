@@ -3845,13 +3845,13 @@ abstract class AppLocalizations {
   /// **'Brand'**
   String get hostsOrganizerTypeBrand;
 
-  /// Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (title).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Live event guide'**
   String get hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide;
 
-  /// Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (subtitle).
+  /// Product copy used by lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'New events start with a ready-to-run plan for this activity. You can adjust any event\'\'s plan later.'**
@@ -4248,19 +4248,19 @@ abstract class AppLocalizations {
   /// **'Delete draft'**
   String get hostsDraftPickerSheetMessageDeleteDraft;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
+  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Event name'**
   String get hostsEventDetailsStepTitleEventName;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (placeholder).
+  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (placeholder).
   ///
   /// In en, this message translates to:
   /// **'Friday night social'**
   String get hostsEventDetailsStepPlaceholderEventName;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
+  /// Product copy used by lib/hosts/create/create_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Description'**
@@ -7001,13 +7001,13 @@ abstract class AppLocalizations {
   /// **'Photographer'**
   String get hostsRouteEventPlanRolePhotographer;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).
+  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Pace level'**
   String get hostsEventDetailsStepLabelPaceLevel;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/where_step.dart (label).
+  /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Meeting location'**
