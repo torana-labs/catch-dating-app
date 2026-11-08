@@ -180,6 +180,8 @@ HostLiveState hostLiveController(Ref ref, Event event) {
     units: units,
     presenceRevision: summary?.liveControlRevision ?? plan.liveControlRevision,
     formatView: hostLiveFormatView(event),
+    stepStartedAt: _millis(plan.stepStartedAtMs),
+    pausedAt: finished ? null : _millis(plan.pausedAtMs),
   );
 }
 
@@ -331,3 +333,6 @@ List<HostLiveUnit> _units(
       ),
   ]);
 }
+
+DateTime? _millis(int? value) =>
+    value == null ? null : DateTime.fromMillisecondsSinceEpoch(value);

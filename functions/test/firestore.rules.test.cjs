@@ -4798,6 +4798,85 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps run-of-show steps, pause and crawl changes callable-owned", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event({
+        startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
+        endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
+      }));
+      const planRef = doc(authedDb("host-1"), "eventSuccessPlans", "event-1");
+      const step = {stepId: "host-1", title: "Quiz", durationMinutes: 10};
+
+      await assertFails(setDoc(planRef, eventSuccessPlan({
+        stepOverrides: [step],
+      })));
+      await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan({
+        stepOverrides: [step],
+        stepStartedAtMs: null,
+        pausedAtMs: null,
+        crawlStopChanges: [],
+      }));
+      // A plan the server edited still takes the host's setup saves.
+      await assertSucceeds(updateDoc(planRef, {
+        hostGoal: "Keep the event welcoming.",
+        updatedAt: serverTimestamp(),
+      }));
+      for (const field of [
+        {stepOverrides: [{...step, title: "Forged"}]},
+        {pausedAtMs: 1},
+        {stepStartedAtMs: 1},
+        {crawlStopChanges: [{stopId: "s", title: "T", address: null,
+          changedAtMs: 1}]},
+      ]) {
+        await assertFails(updateDoc(planRef, {
+          ...field,
+          updatedAt: serverTimestamp(),
+        }));
+      }
+    });
+
+    it("keeps close-out, live receipts and guest history server-written", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event());
+      await seed(["eventCloseOuts", "event-1"], {
+        eventId: "event-1", organizerId: "club-1", revision: 1,
+        thankYou: null, openStayInTouchPicks: true, noShowNote: false,
+        updatedByUid: "host-1", updatedAtMs: 1,
+      });
+      await seed(["eventLiveCommandReceipts", "receipt-1"], {
+        eventId: "event-1", actorUid: "host-1", command: "setEventCloseOut",
+      });
+      await seed(["eventSuccessGuestHistory", "event-1_runner-1"], {
+        eventId: "event-1", organizerId: "club-1", uid: "runner-1",
+        unitOutcome: "score", standingsRevision: 1, rounds: [],
+        finalStanding: null, updatedAtMs: 1,
+      });
+
+      const host = authedDb("host-1");
+      await assertSucceeds(getDoc(doc(host, "eventCloseOuts", "event-1")));
+      await seed(["events", "event-3"], event());
+      await assertSucceeds(getDoc(doc(host, "eventCloseOuts", "event-3")));
+      await assertFails(getDoc(doc(authedDb("runner-1"), "eventCloseOuts",
+        "event-1")));
+      await assertFails(updateDoc(doc(host, "eventCloseOuts", "event-1"), {
+        noShowNote: true,
+      }));
+      await assertFails(getDocs(collection(host, "eventCloseOuts")));
+      await assertFails(getDoc(doc(host, "eventLiveCommandReceipts",
+        "receipt-1")));
+      await assertFails(setDoc(doc(host, "eventLiveCommandReceipts",
+        "forged"), {eventId: "event-1"}));
+
+      await assertSucceeds(getDoc(doc(authedDb("runner-1"),
+        "eventSuccessGuestHistory", "event-1_runner-1")));
+      await assertFails(getDoc(doc(authedDb("runner-2"),
+        "eventSuccessGuestHistory", "event-1_runner-1")));
+      await assertFails(getDoc(doc(host, "eventSuccessGuestHistory",
+        "event-1_runner-1")));
+      await assertFails(setDoc(doc(authedDb("runner-1"),
+        "eventSuccessGuestHistory", "event-1_runner-1"), {uid: "runner-1"}));
+    });
+
     it("allows hosts and active participants to read event success plans", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());

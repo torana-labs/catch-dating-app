@@ -2456,7 +2456,8 @@ service cloud.firestore {
           'publishedRevealRoundIndex', 'status',
           'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
-          'completedAt'
+          'completedAt', 'stepOverrides', 'stepStartedAtMs', 'pausedAtMs',
+          'crawlStopChanges'
         ])
         && data.keys().hasAll([
           'eventId', 'organizerId', 'playbookId', 'selectedModuleIds',
@@ -2670,7 +2671,8 @@ service cloud.firestore {
         && request.resource.data.activeStepIndex == 0
         && !request.resource.data.keys().hasAny([
           'liveControlRevision', 'assignmentDraftRevision',
-          'publishedRotationRoundIndex', 'publishedRevealRoundIndex'
+          'publishedRotationRoundIndex', 'publishedRevealRoundIndex',
+          'stepOverrides', 'stepStartedAtMs', 'pausedAtMs', 'crawlStopChanges'
         ])
         && (
           !request.resource.data.keys().hasAny(['revealStatus'])
@@ -2798,6 +2800,28 @@ service cloud.firestore {
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
+    }
+
+    // Run-of-show edits, close-out and crawl changes replay through these
+    // receipts; only their callables touch them.
+    match /eventLiveCommandReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // The night's close-out, written only by setEventCloseOut. The event's
+    // organizer hosts get it by listener; a night not closed out reads as
+    // missing.
+    match /eventCloseOuts/{eventId} {
+      allow get: if isAuthed() && isOrganizerHostForEvent(eventId);
+      allow list, write: if false;
+    }
+
+    // One guest's game history, projected from the standings by trigger.
+    match /eventSuccessGuestHistory/{historyId} {
+      allow get: if isAuthed()
+        && resource != null
+        && resource.data.uid == request.auth.uid;
+      allow list, write: if false;
     }
 
     match /eventSuccessFeedback/{feedbackId} {

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_close_outs.schema.json",
+  "title": "EventCloseOutDocument",
+  "description": "The host's after-the-night choices for one event, written only by setEventCloseOut. Organizer managers read it by listener. Missing until the first close-out: every switch reads as off.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventCloseOuts",
+  "x-firestore-path": "eventCloseOuts/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "setEventCloseOut callable; organizer managers read",
+  "required": ["eventId", "organizerId", "revision", "thankYou", "openStayInTouchPicks", "noShowNote", "updatedByUid", "updatedAtMs"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 2147483647, "x-catch-ownership": "callable-owned"},
+    "thankYou": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sendAtLocal", "sendAtMs", "momentId"],
+          "properties": {
+            "sendAtLocal": {"type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"},
+            "sendAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+            "momentId": {"type": "string", "minLength": 1, "maxLength": 200}
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "openStayInTouchPicks": {"type": "boolean", "description": "Recorded only: no stay-in-touch picks backend reads it yet.", "x-catch-ownership": "callable-owned"},
+    "noShowNote": {"type": "boolean", "description": "Recorded only: moments have no no-show audience yet.", "x-catch-ownership": "callable-owned"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "updatedAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "x-catch-ownership": "callable-owned"}
+  }
+}

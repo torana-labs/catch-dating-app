@@ -170,8 +170,12 @@ class EventRunOfShowStep {
     required this.attendeeExperience,
     required this.durationMinutes,
     this.moduleIds = const [],
+    this.id,
   }) : assert(durationMinutes > 0);
 
+  /// The step's id in the host's edited run of show; null for a step read
+  /// straight from the playbook.
+  final String? id;
   final EventSuccessStage stage;
   final String title;
   final String hostInstruction;

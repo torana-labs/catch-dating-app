@@ -1700,6 +1700,34 @@ carries an expected revision, and reveal or rotation publication also carries
 explicit confirmation. The asynchronous draft trigger's bounded retry count is
 deployment configuration, not a persisted plan constant.
 
+The plan also carries four optional, callable-owned fields, each with a
+read-time default so older plans stay valid (legal hold: no backfill):
+`stepOverrides` (the host's run of show from `saveEventPlanStep`, shared
+`contracts/shared/event_success_run_of_show.schema.json`; missing means the
+playbook's steps), `stepStartedAtMs` and `pausedAtMs` (written by the
+`controlEventSuccessLive` step, pause and resume actions; missing means time
+left follows the schedule and the step runs), and `crawlStopChanges` (stops
+changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
+missing means the published route). Rules keep all four out of client
+creates and setup updates. Their replay receipts live in server-only
+`eventLiveCommandReceipts/{receiptId}`.
+
+### Event Close-Out And Guest Game History
+
+`contracts/firestore/event_close_outs.schema.json` declares
+`eventCloseOuts/{eventId}`, written only by `setEventCloseOut` (revision
+fenced, replay receipt) and read by the event's organizer hosts through a
+listener; a night not closed out reads as missing, every switch off. The
+thank-you is not stored here as a schedule: it is the event-scope moment
+`organizerMoments/{eventId}_close_out_thank_you`, armed or paused by the same
+call. Stay-in-touch picks and the no-show note are recorded flags only.
+
+`contracts/firestore/event_success_guest_history.schema.json` declares
+`eventSuccessGuestHistory/{eventId}_{uid}`, written only by the
+`onEventSuccessStandingsWritten` trigger from `eventSuccessStandings` and the
+guest's assignments or arrival group (the Host scoreboard's unit ids). Each
+guest gets only their own document.
+
 ### Event Success Presence And Late-Arrival Boundary
 
 `contracts/firestore/event_success_presence.schema.json` owns the server-written

@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_live_command_receipts.schema.json",
+  "title": "EventLiveCommandReceiptDocument",
+  "description": "Server-only replay receipt for the live run-of-show, close-out and crawl commands, keyed by a hash of command, actor, event and requestId. A replay with the same request returns the stored result; a different request under the same id is rejected.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventLiveCommandReceipts",
+  "x-firestore-path": "eventLiveCommandReceipts/{receiptId}",
+  "x-owner": "saveEventPlanStep, setEventCloseOut and changeEventCrawlStop callables",
+  "required": [
+    "receiptId",
+    "command",
+    "eventId",
+    "actorUid",
+    "requestHash",
+    "appliedRevision",
+    "createdAtMs"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "command": {
+      "type": "string",
+      "enum": [
+        "saveEventPlanStep",
+        "setEventCloseOut",
+        "changeEventCrawlStop"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What a replay returns beside appliedRevision.",
+      "properties": {
+        "stepCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40
+        },
+        "broadcastRequestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAtMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "TTL: thirty days after apply.",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

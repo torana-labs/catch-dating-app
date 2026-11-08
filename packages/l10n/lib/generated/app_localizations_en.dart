@@ -12689,6 +12689,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostLiveBackStep => 'Back a step';
 
   @override
+  String get hostLivePause => 'Pause';
+
+  @override
+  String get hostLiveResume => 'Resume';
+
+  @override
+  String hostLivePausedKicker({required int index, required int total}) {
+    return 'Paused · step $index of $total';
+  }
+
+  @override
   String get hostLiveFinish => 'Finish the night';
 
   @override
@@ -23601,7 +23612,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventsPlanNoteEditable =>
-      'The steps come from the format. The night\'s options stay yours to change until doors open.';
+      'Tap a step to change it. The night\'s options stay yours to change until doors open.';
 
   @override
   String get hostEventsPlanNoteLocked =>
@@ -23668,6 +23679,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventsPlanSaved => 'Plan saved';
 
   @override
+  String get hostEventsPlanNoteStepsOnly =>
+      'The night\'s options are locked now that it has started. You can still change the steps.';
+
+  @override
+  String get hostEventsPlanAddStep => 'Add a step';
+
+  @override
+  String get hostEventsPlanEditStep => 'Edit step';
+
+  @override
+  String get hostEventsPlanNewStep => 'New step';
+
+  @override
+  String get hostEventsPlanStepTitle => 'What happens';
+
+  @override
+  String get hostEventsPlanStepNote => 'Your note';
+
+  @override
+  String get hostEventsPlanStepMinutes => 'Minutes';
+
+  @override
+  String get hostEventsPlanStepFewerMinutes => 'Fewer minutes';
+
+  @override
+  String get hostEventsPlanStepMoreMinutes => 'More minutes';
+
+  @override
+  String get hostEventsPlanStepSave => 'Save step';
+
+  @override
+  String get hostEventsPlanStepRemove => 'Remove step';
+
+  @override
+  String get hostEventsPlanStepSaved => 'Plan updated';
+
+  @override
   String get hostEventsCloseOutTitle => 'Close out the night';
 
   @override
@@ -23703,6 +23751,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventsCloseOutEmpty => 'Everyone who booked was checked in.';
+
+  @override
+  String get hostEventsCloseOutAfterTitle => 'After closing';
+
+  @override
+  String get hostEventsCloseOutThankYou => 'Send the thank-you at 10 AM';
+
+  @override
+  String get hostEventsCloseOutThankYouBody =>
+      'Everyone who booked gets it the morning after';
+
+  @override
+  String get hostEventsCloseOutPicks => 'Open stay-in-touch picks';
+
+  @override
+  String get hostEventsCloseOutPicksBody =>
+      'Guests choose who they would like to see again';
+
+  @override
+  String get hostEventsCloseOutNoShows => 'Tell no-shows about next week';
+
+  @override
+  String get hostEventsCloseOutNoShowsBody => 'A note about your next night';
+
+  @override
+  String get hostEventsCloseOutConfirm => 'Close out';
+
+  @override
+  String get hostEventsCloseOutLater => 'Later';
+
+  @override
+  String get hostEventsCloseOutSaved => 'Night closed out';
 
   @override
   String get hostEventsGuestFirstTime => 'First time';
@@ -26862,6 +26942,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostFormatsMoveMessage({required String place, required String when}) {
     return 'Next stop: $place. $when';
+  }
+
+  @override
+  String get hostFormatsStopChange => 'Change';
+
+  @override
+  String hostFormatsStopChanged({required int number, required Object stop}) {
+    return 'Stop $number changed: $stop';
+  }
+
+  @override
+  String hostFormatsStopChangeTitle({required int number}) {
+    return 'Change stop $number';
+  }
+
+  @override
+  String get hostFormatsStopChangePlace => 'Where';
+
+  @override
+  String get hostFormatsStopChangeAddress => 'Address';
+
+  @override
+  String get hostFormatsStopChangeSend => 'Change and tell everyone';
+
+  @override
+  String get hostFormatsStopChangeSent => 'Everyone has the new stop';
+
+  @override
+  String hostFormatsStopChangedMessage({
+    required int number,
+    required Object place,
+  }) {
+    return 'Change of plan: stop $number is now $place.';
   }
 
   @override

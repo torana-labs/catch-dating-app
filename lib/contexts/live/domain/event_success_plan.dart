@@ -38,6 +38,21 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     @Default(EventSuccessConversationGraphConsentMode.optIn)
     EventSuccessConversationGraphConsentMode conversationGraphConsentMode,
     @Default(0) int activeStepIndex,
+
+    /// The host's edited run of show; null while it follows the playbook.
+    List<EventSuccessPlanStep>? stepOverrides,
+
+    /// Server milliseconds the active step started, moved later by paused
+    /// spans; null on plans that predate it, whose time follows the
+    /// schedule.
+    int? stepStartedAtMs,
+
+    /// Server milliseconds the active step was paused; null while it runs.
+    int? pausedAtMs,
+
+    /// Crawl stops the host changed on the night, by itinerary item id;
+    /// null while the route is the itinerary as published.
+    List<EventSuccessCrawlStopChange>? crawlStopChanges,
     @Default(0) int liveControlRevision,
     @Default(0) int assignmentDraftRevision,
     @Default(-1) int publishedRotationRoundIndex,
@@ -336,6 +351,78 @@ Set<String> _assignmentParticipantUids(
     uids.addAll(assignment.allPeerUids);
   }
   return uids;
+}
+
+/// A crawl stop the host changed on the night through
+/// `changeEventCrawlStop`.
+@freezed
+abstract class EventSuccessCrawlStopChange with _$EventSuccessCrawlStopChange {
+  const factory EventSuccessCrawlStopChange({
+    required String stopId,
+    required String title,
+    String? address,
+    required int changedAtMs,
+  }) = _EventSuccessCrawlStopChange;
+
+  factory EventSuccessCrawlStopChange.fromJson(Map<String, dynamic> json) =>
+      _$EventSuccessCrawlStopChangeFromJson(json);
+}
+
+/// One step of the host's edited run of show, as `saveEventPlanStep`
+/// stores it on the plan.
+@freezed
+abstract class EventSuccessPlanStep with _$EventSuccessPlanStep {
+  const EventSuccessPlanStep._();
+
+  const factory EventSuccessPlanStep({
+    required String stepId,
+    required String title,
+    required int durationMinutes,
+    @Default('') String hostInstruction,
+    @Default('') String attendeeExperience,
+    @JsonKey(unknownEnumValue: EventSuccessStage.activity)
+    @Default(EventSuccessStage.activity)
+    EventSuccessStage stage,
+    @Default(<String>[]) List<String> moduleIds,
+  }) = _EventSuccessPlanStep;
+
+  factory EventSuccessPlanStep.fromJson(Map<String, dynamic> json) =>
+      _$EventSuccessPlanStepFromJson(json);
+
+  /// A playbook step as the first edit sends it, with its derived id.
+  factory EventSuccessPlanStep.fromRunOfShow(
+    EventRunOfShowStep step, {
+    required int index,
+  }) => EventSuccessPlanStep(
+    stepId: step.id ?? 'playbook-$index',
+    title: step.title,
+    durationMinutes: step.durationMinutes,
+    hostInstruction: step.hostInstruction,
+    attendeeExperience: step.attendeeExperience,
+    stage: step.stage,
+    moduleIds: step.moduleIds,
+  );
+
+  EventRunOfShowStep get runOfShowStep => EventRunOfShowStep(
+    id: stepId,
+    stage: stage,
+    title: title,
+    hostInstruction: hostInstruction,
+    attendeeExperience: attendeeExperience,
+    durationMinutes: durationMinutes < 1 ? 1 : durationMinutes,
+    moduleIds: moduleIds,
+  );
+
+  /// The callable's wire shape: empty text and lists are left out.
+  Map<String, Object?> toCommandJson() => {
+    'stepId': stepId,
+    'title': title,
+    'durationMinutes': durationMinutes,
+    if (hostInstruction.isNotEmpty) 'hostInstruction': hostInstruction,
+    if (attendeeExperience.isNotEmpty) 'attendeeExperience': attendeeExperience,
+    'stage': stage.name,
+    if (moduleIds.isNotEmpty) 'moduleIds': moduleIds,
+  };
 }
 
 @freezed
