@@ -2,6 +2,8 @@ import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repositor
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/data/event_close_out_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_close_out.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -9,8 +11,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_close_out_controller.g.dart';
 
-/// Close-out, composed from the event and its attendee listeners: who
-/// came, who was booked and who nobody checked in.
+/// Close-out, composed from the event, its attendee listeners and the
+/// close-out listener: who came, who was booked, who nobody checked in and
+/// the after-closing choices already saved.
 @riverpod
 HostEventCloseOutState hostEventCloseOutController(
   Ref ref,
@@ -47,9 +50,15 @@ HostEventCloseOutState hostEventCloseOutController(
           )
           .toList()
         ..sort(byName);
+  // A close-out not read yet, or unreadable, shows every switch off.
+  final closeOut =
+      ref.watch(watchEventCloseOutProvider(request.eventId)).value ??
+      EventCloseOut.none;
   return HostEventCloseOutState(
     status: HostEventCloseOutStatus.ready,
     eventTitle: eventValue.value?.title,
+    organizerId: request.organizerId,
+    closeOut: closeOut,
     came: checked.length,
     booked: checked.length + unchecked.length,
     unchecked: List<EventAttendee>.unmodifiable(unchecked),

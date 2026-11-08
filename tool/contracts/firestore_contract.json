@@ -2143,6 +2143,68 @@
       ]
     },
     {
+      "id": "eventLiveCommandReceipts",
+      "path": "eventLiveCommandReceipts/{receiptId}",
+      "rulesMatch": "/eventLiveCommandReceipts/{receiptId}",
+      "typescriptInterface": "EventLiveCommandReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "saveEventPlanStep, setEventCloseOut and changeEventCrawlStop callables",
+      "read": "server only; replay result is returned by the callable",
+      "write": "server only",
+      "exportedFunctions": [
+        "saveEventPlanStep",
+        "setEventCloseOut",
+        "changeEventCrawlStop"
+      ],
+      "migrationNotes": [
+        "Thirty-day TTL receipts keyed by command, actor, event and requestId make run-of-show, close-out and crawl retries idempotent."
+      ]
+    },
+    {
+      "id": "eventCloseOuts",
+      "path": "eventCloseOuts/{eventId}",
+      "rulesMatch": "/eventCloseOuts/{eventId}",
+      "typescriptInterface": "EventCloseOutDocument",
+      "dartModel": "lib/contexts/live/domain/event_close_out.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "setEventCloseOut callable",
+      "read": "the event's organizer hosts get it by listener; a night not closed out reads as missing",
+      "write": "server only",
+      "exportedFunctions": [
+        "setEventCloseOut"
+      ],
+      "migrationNotes": [
+        "New collection, optional per event: a missing document reads as every switch off, so no backfill is needed. The thank-you is an event-scope organizerMoments document; stay-in-touch picks and the no-show note are recorded only."
+      ]
+    },
+    {
+      "id": "eventSuccessGuestHistory",
+      "path": "eventSuccessGuestHistory/{historyId}",
+      "rulesMatch": "/eventSuccessGuestHistory/{historyId}",
+      "typescriptInterface": "EventSuccessGuestHistoryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "onEventSuccessStandingsWritten trigger",
+      "read": "the guest whose uid it carries gets their own eventId_uid document",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventSuccessStandingsWritten"
+      ],
+      "migrationNotes": [
+        "Projected from eventSuccessStandings on every standings write; nights scored before the trigger deploys have no history until their standings are written again."
+      ]
+    },
+    {
       "id": "eventLivePositions",
       "path": "eventLivePositions/{positionId}",
       "rulesMatch": "/eventLivePositions/{positionId}",

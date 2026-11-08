@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/save_event_plan_step_response.schema.json",
+  "title": "SaveEventPlanStepCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "liveControlRevision", "stepCount", "replayed"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "liveControlRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "stepCount": {"type": "integer", "minimum": 1, "maximum": 40},
+    "replayed": {"type": "boolean"}
+  }
+}

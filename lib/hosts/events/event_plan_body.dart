@@ -2,13 +2,15 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The plan for the night in board order: the format spotlight with its
 /// numbers, the run of show, teams and tables, and the night's options.
-/// The steps come from the format and are read here, not edited.
+/// Until the night is over each step opens its editor and Add a step adds
+/// one; the screen commits each edit.
 class HostEventPlanBody extends StatelessWidget {
   const HostEventPlanBody({
     super.key,
@@ -16,6 +18,8 @@ class HostEventPlanBody extends StatelessWidget {
     required this.options,
     required this.onOption,
     required this.onRetry,
+    this.onEditStep,
+    this.onAddStep,
   });
 
   final HostEventPlanState state;
@@ -24,6 +28,13 @@ class HostEventPlanBody extends StatelessWidget {
   final Map<HostEventPlanOption, bool> options;
   final void Function(HostEventPlanOption option, bool on) onOption;
   final VoidCallback onRetry;
+
+  /// Opens the editor for the step at an index; null while steps are
+  /// locked.
+  final ValueChanged<int>? onEditStep;
+
+  /// Opens the editor for a new last step; null while steps are locked.
+  final VoidCallback? onAddStep;
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +109,8 @@ class HostEventPlanBody extends StatelessWidget {
                 CatchText(
                   state.editable
                       ? l10n.hostEventsPlanNoteEditable
+                      : state.stepsEditable
+                      ? l10n.hostEventsPlanNoteStepsOnly
                       : l10n.hostEventsPlanNoteLocked,
                   variant: CatchTextVariant.bodySmall,
                 ),
@@ -109,10 +122,35 @@ class HostEventPlanBody extends StatelessWidget {
             empty: l10n.hostEventsPlanRunOfShowEmpty,
             children: [
               for (final (index, step) in state.steps.indexed)
-                HostEventStepRow.plan(
-                  key: ValueKey<String>('host-event-plan-step-$index'),
-                  step: step.step,
-                  startsAt: step.startsAt,
+                if (state.stepsEditable && onEditStep != null)
+                  CatchIndexRow(
+                    key: ValueKey<String>('host-event-plan-step-$index'),
+                    title: step.step.title,
+                    subtitle: step.step.attendeeExperience.trim().isEmpty
+                        ? null
+                        : l10n.hostEventsStepGuestsSee(
+                            what: step.step.attendeeExperience,
+                          ),
+                    time: EventFormatters.time(step.startsAt),
+                    density: CatchIndexRowSize.compact,
+                    trailing: CatchIcon(
+                      CatchIcons.edit,
+                      label: l10n.hostEventsPlanEditStep,
+                    ),
+                    onTap: () => onEditStep!(index),
+                  )
+                else
+                  HostEventStepRow.plan(
+                    key: ValueKey<String>('host-event-plan-step-$index'),
+                    step: step.step,
+                    startsAt: step.startsAt,
+                  ),
+              if (state.stepsEditable && onAddStep != null)
+                CatchField.add(
+                  key: const ValueKey<String>('host-event-plan-add-step'),
+                  copy: catchFieldCopy(l10n),
+                  title: l10n.hostEventsPlanAddStep,
+                  onTap: onAddStep,
                 ),
             ],
           ),

@@ -1,0 +1,17 @@
+{
+  "eventId": "event_123",
+  "requestId": "plan-step-0001",
+  "expectedLiveControlRevision": 0,
+  "op": "add",
+  "atIndex": 2,
+  "step": {
+    "stepId": "host-quiz-break",
+    "title": "Quiz break",
+    "durationMinutes": 10,
+    "hostInstruction": "Hand out the score cards."
+  },
+  "baseSteps": [
+    {"stepId": "playbook-0", "title": "Arrivals", "durationMinutes": 15, "stage": "arrival"},
+    {"stepId": "playbook-1", "title": "First round", "durationMinutes": 20, "stage": "activity"}
+  ]
+}

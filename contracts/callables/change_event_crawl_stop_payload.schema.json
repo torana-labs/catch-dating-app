@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/change_event_crawl_stop_payload.schema.json",
+  "title": "ChangeEventCrawlStopCallablePayload",
+  "description": "Changes one stop of a crawl on the night and, when message is set, tells everyone booked in one event broadcast, under one requestId. Fenced on the plan's liveControlRevision.",
+  "x-callable-aliases": ["changeEventCrawlStop"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "requestId", "expectedLiveControlRevision", "stopId", "stop", "message"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,100}$"},
+    "expectedLiveControlRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "stopId": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[A-Za-z0-9_-]+$"},
+    "stop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "address"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 80},
+        "address": {"type": ["string", "null"], "maxLength": 200}
+      }
+    },
+    "message": {"type": ["string", "null"], "minLength": 1, "maxLength": 500}
+  }
+}

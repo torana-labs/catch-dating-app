@@ -19716,6 +19716,24 @@ abstract class AppLocalizations {
   /// **'Back a step'**
   String get hostLiveBackStep;
 
+  /// Live console: stops the active step clock.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get hostLivePause;
+
+  /// Live console: restarts a paused step clock.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get hostLiveResume;
+
+  /// Live spotlight kicker while the step is paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · step {index} of {total}'**
+  String hostLivePausedKicker({required int index, required int total});
+
   /// Live console primary button on the last step: mark the plan complete.
   ///
   /// In en, this message translates to:
@@ -38099,7 +38117,7 @@ abstract class AppLocalizations {
   /// Plan spotlight note while the plan can change.
   ///
   /// In en, this message translates to:
-  /// **'The steps come from the format. The night\'\'s options stay yours to change until doors open.'**
+  /// **'Tap a step to change it. The night\'\'s options stay yours to change until doors open.'**
   String get hostEventsPlanNoteEditable;
 
   /// Plan spotlight note once the plan is locked.
@@ -38208,6 +38226,78 @@ abstract class AppLocalizations {
   /// **'Plan saved'**
   String get hostEventsPlanSaved;
 
+  /// Plan spotlight note once the night has started but is not over.
+  ///
+  /// In en, this message translates to:
+  /// **'The night\'\'s options are locked now that it has started. You can still change the steps.'**
+  String get hostEventsPlanNoteStepsOnly;
+
+  /// Plan: adds a run-of-show step.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a step'**
+  String get hostEventsPlanAddStep;
+
+  /// Plan: step editor title and the edit icon label.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit step'**
+  String get hostEventsPlanEditStep;
+
+  /// Plan: step editor title for a new step.
+  ///
+  /// In en, this message translates to:
+  /// **'New step'**
+  String get hostEventsPlanNewStep;
+
+  /// Plan step editor: the step title field.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens'**
+  String get hostEventsPlanStepTitle;
+
+  /// Plan step editor: the host instruction field.
+  ///
+  /// In en, this message translates to:
+  /// **'Your note'**
+  String get hostEventsPlanStepNote;
+
+  /// Plan step editor: the step length.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get hostEventsPlanStepMinutes;
+
+  /// Plan step editor: stepper decrease label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer minutes'**
+  String get hostEventsPlanStepFewerMinutes;
+
+  /// Plan step editor: stepper increase label.
+  ///
+  /// In en, this message translates to:
+  /// **'More minutes'**
+  String get hostEventsPlanStepMoreMinutes;
+
+  /// Plan step editor: saves the step.
+  ///
+  /// In en, this message translates to:
+  /// **'Save step'**
+  String get hostEventsPlanStepSave;
+
+  /// Plan step editor: removes the step.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove step'**
+  String get hostEventsPlanStepRemove;
+
+  /// Notice after a step edit is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan updated'**
+  String get hostEventsPlanStepSaved;
+
   /// Close-out screen title.
   ///
   /// In en, this message translates to:
@@ -38267,6 +38357,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everyone who booked was checked in.'**
   String get hostEventsCloseOutEmpty;
+
+  /// Close out: the after-closing switches section.
+  ///
+  /// In en, this message translates to:
+  /// **'After closing'**
+  String get hostEventsCloseOutAfterTitle;
+
+  /// Close out switch: the thank-you message the morning after.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the thank-you at 10 AM'**
+  String get hostEventsCloseOutThankYou;
+
+  /// Close out switch subtitle: who gets the thank-you.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who booked gets it the morning after'**
+  String get hostEventsCloseOutThankYouBody;
+
+  /// Close out switch: stay-in-touch picks.
+  ///
+  /// In en, this message translates to:
+  /// **'Open stay-in-touch picks'**
+  String get hostEventsCloseOutPicks;
+
+  /// Close out switch subtitle: what stay-in-touch picks are.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests choose who they would like to see again'**
+  String get hostEventsCloseOutPicksBody;
+
+  /// Close out switch: a note to no-shows.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell no-shows about next week'**
+  String get hostEventsCloseOutNoShows;
+
+  /// Close out switch subtitle: what no-shows hear.
+  ///
+  /// In en, this message translates to:
+  /// **'A note about your next night'**
+  String get hostEventsCloseOutNoShowsBody;
+
+  /// Close out dock: saves the after-closing choices.
+  ///
+  /// In en, this message translates to:
+  /// **'Close out'**
+  String get hostEventsCloseOutConfirm;
+
+  /// Close out dock: leaves without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get hostEventsCloseOutLater;
+
+  /// Notice after closing out.
+  ///
+  /// In en, this message translates to:
+  /// **'Night closed out'**
+  String get hostEventsCloseOutSaved;
 
   /// Guest row subtitle: their first night with the organizer.
   ///
@@ -43285,6 +43435,57 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next stop: {place}. {when}'**
   String hostFormatsMoveMessage({required String place, required String when});
+
+  /// Crawl move sheet: changes the next stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostFormatsStopChange;
+
+  /// Crawl move sheet notice: the next stop was changed tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop {number} changed: {stop}'**
+  String hostFormatsStopChanged({required int number, required Object stop});
+
+  /// Crawl stop editor title.
+  ///
+  /// In en, this message translates to:
+  /// **'Change stop {number}'**
+  String hostFormatsStopChangeTitle({required int number});
+
+  /// Crawl stop editor: the new place.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get hostFormatsStopChangePlace;
+
+  /// Crawl stop editor: the new address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get hostFormatsStopChangeAddress;
+
+  /// Crawl stop editor: saves the stop and messages everyone booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Change and tell everyone'**
+  String get hostFormatsStopChangeSend;
+
+  /// Notice after a crawl stop change.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has the new stop'**
+  String get hostFormatsStopChangeSent;
+
+  /// The message everyone booked gets when a crawl stop changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Change of plan: stop {number} is now {place}.'**
+  String hostFormatsStopChangedMessage({
+    required int number,
+    required Object place,
+  });
 
   /// Pace pods title.
   ///
