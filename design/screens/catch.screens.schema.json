@@ -76,7 +76,8 @@
         "CatchRouteScaffold",
         "CatchScaffold.standalone",
         "CatchScaffold.stepFlow",
-        "CatchScaffold.workspace"
+        "CatchScaffold.workspace",
+        "CatchScreen"
       ]
     },
     "layoutContract": {
