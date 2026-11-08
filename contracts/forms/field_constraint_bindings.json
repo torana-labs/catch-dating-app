@@ -18,9 +18,6 @@
     "addOrganizerHostCallablePayload": [
       "phoneNumber"
     ],
-    "applyProgramFunctionInvitationsCallablePayload": [
-      "invitationMode"
-    ],
     "configureEventAssignmentFeaturesCallablePayload": [
       "rules.items.kind",
       "rules.items.maximum",
@@ -49,13 +46,8 @@
       "data.text"
     ],
     "createEventCallablePayload": [
-      "capacityLimit",
       "constraints.maxAge",
-      "constraints.maxMen",
-      "constraints.maxWomen",
       "constraints.minAge",
-      "description",
-      "distanceKm",
       "eventFormat.activityDetails.publicDetails.accessibility",
       "eventFormat.activityDetails.publicDetails.included",
       "eventFormat.activityDetails.routePlan.groupStrategy",
@@ -66,31 +58,12 @@
       "eventFormat.activityDetails.routePlan.routeShape",
       "eventFormat.activityDetails.routePlan.stopCadence",
       "eventFormat.activityDetails.routePlan.stopKinds",
-      "eventFormat.activityKind",
-      "eventFormat.customActivityLabel",
-      "eventFormat.interactionModel",
-      "eventPolicy.admission.crossPathsPairInventory.enabled",
-      "eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity",
-      "eventPolicy.admission.format",
-      "eventPolicy.cancellation.policyId",
-      "eventPolicy.pricing.demandPricingRules.items.maxAdjustmentInPaise",
-      "eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise",
-      "externalOrigin.externalEventId",
-      "externalOrigin.externalEventUrl",
-      "externalOrigin.provider",
       "itinerary.items.description",
       "itinerary.items.durationMinutes",
       "itinerary.items.kind",
       "itinerary.items.offsetMinutes",
       "itinerary.items.routeDistanceMeters",
-      "itinerary.items.title",
-      "locationDetails",
-      "meetingPoint",
-      "name",
-      "pace",
-      "priceInPaise",
-      "privateAccess.inviteCode",
-      "runtimeWalkInPolicy"
+      "itinerary.items.title"
     ],
     "createEventInviteLinkCallablePayload": [
       "label",
@@ -105,7 +78,6 @@
     "createOrganizerCallablePayload": [
       "area",
       "description",
-      "email",
       "hostDefaults.eventPolicy.admissionPreset",
       "hostDefaults.eventPolicy.cancellationPolicyId",
       "hostDefaults.eventPolicy.dynamicPricingEnabled",
@@ -117,20 +89,13 @@
       "hostDefaults.eventPolicy.minAge",
       "hostDefaults.eventSuccess.enabled",
       "hostDefaults.primaryActivityKind",
-      "instagramHandle",
-      "location",
-      "name",
-      "organizerType",
-      "phoneNumber"
+      "name"
     ],
     "createOrganizerContactCallablePayload": [
       "displayName",
       "email",
       "initialNote",
       "phoneE164"
-    ],
-    "createOrganizerContactNoteCallablePayload": [
-      "body"
     ],
     "createOrganizerFormAutomationCallablePayload": [
       "actions.items.campaignId",
@@ -142,15 +107,10 @@
       "name",
       "trigger"
     ],
-    "createOrganizerFormShareLinkCallablePayload": [
-      "label",
-      "source"
-    ],
     "createOrganizerPostCallablePayload": [
       "text"
     ],
     "createOrganizerProgramCallablePayload": [
-      "kind",
       "startsAtMillis",
       "timezone",
       "title"
@@ -159,8 +119,7 @@
       "data.comment"
     ],
     "createProgramWalkInCallablePayload": [
-      "displayName",
-      "partySize"
+      "displayName"
     ],
     "createRazorpayHostPaymentAccountCallablePayload": [
       "bankAccountNumber",
@@ -240,12 +199,6 @@
     "grantEventStaffCallablePayload": [
       "phoneNumber"
     ],
-    "grantProgramStaffCallablePayload": [
-      "phoneNumber"
-    ],
-    "hostAnalyticsQueryCallablePayload": [
-      "rangePreset"
-    ],
     "hostProfileDocument": [
       "bio",
       "displayName",
@@ -256,25 +209,12 @@
       "rows.items.email",
       "rows.items.phone"
     ],
-    "inviteProgramStaffCallablePayload": [
-      "displayName"
-    ],
-    "listOrganizerContactsCallablePayload": [
-      "query"
-    ],
     "listOrganizerFormResponsesCallablePayload": [
       "answerFilters",
-      "answerFilters.items.values",
-      "query"
-    ],
-    "listOrganizerFormsCallablePayload": [
-      "query"
+      "answerFilters.items.values"
     ],
     "listOrganizerLumaEventsCallablePayload": [
       "apiKey"
-    ],
-    "listPrivateEventSetupsCallablePayload": [
-      "scope"
     ],
     "manageEventMembershipRulesCallablePayload": [
       "earlyAccessHours",
@@ -320,12 +260,7 @@
     "mutateOrganizerContactCallablePayload": [
       "displayNameOverride",
       "email",
-      "manualTags.items",
-      "phoneE164",
-      "whatsappAdminSuppressed"
-    ],
-    "mutateOrganizerContactNoteCallablePayload": [
-      "body"
+      "phoneE164"
     ],
     "onboardingDraftDocument": [
       "firstName",
@@ -398,35 +333,6 @@
       "expectedLegs.items.readiness",
       "trips.items.manifestSource"
     ],
-    "programLodgingConfigDocument": [
-      "demand.items.beds",
-      "demand.items.guestId",
-      "demand.items.requiredFeatures.items",
-      "groupParents.items.id",
-      "groupParents.items.parentIds",
-      "inventory.items.availability.items.arrival",
-      "inventory.items.availability.items.departure",
-      "inventory.items.contractId",
-      "inventory.items.id",
-      "labels.items.roomLabel",
-      "parties.items.confirmed",
-      "parties.items.guestIds",
-      "parties.items.id",
-      "parties.items.pin.hotelId",
-      "parties.items.pin.inventoryId",
-      "parties.items.pin.zoneId",
-      "parties.items.priority",
-      "parties.items.requiredRoomType",
-      "rooms.items.beds",
-      "rooms.items.building",
-      "rooms.items.floor",
-      "rooms.items.maxOccupants",
-      "rooms.items.resourceIds",
-      "rooms.items.roomType",
-      "rooms.items.verifiedFeatures.items",
-      "rooms.items.wing",
-      "rooms.items.zoneId"
-    ],
     "programStaffListCallableResponse": [
       "members.items.status"
     ],
@@ -448,20 +354,11 @@
       "entries.items.rank",
       "entries.items.score"
     ],
-    "recordOrganizerContactOutreachCallablePayload": [
-      "note"
-    ],
-    "recordProgramDoorJournalCallablePayload": [
-      "operations.items.partySize"
-    ],
     "recordProgramFunctionRsvpCallablePayload": [
       "rsvpStatus"
     ],
     "resolveEventAssistanceCaseCallablePayload": [
       "command.payload.owner"
-    ],
-    "reviewOrganizerApplicationCallablePayload": [
-      "reviewNote"
     ],
     "sendEventBroadcastCallablePayload": [
       "audience",
@@ -469,9 +366,6 @@
     ],
     "sendEventChatMessageCallablePayload": [
       "text"
-    ],
-    "sendOrganizerWhatsappReplyCallablePayload": [
-      "body"
     ],
     "sendOrganizerWhatsappTestCallablePayload": [
       "toE164"
@@ -633,54 +527,15 @@
       "name",
       "sense"
     ],
-    "upsertOrganizerSavedAudienceCallablePayload": [
-      "definition.join",
-      "definition.predicates.items.currency",
-      "definition.predicates.items.days",
-      "definition.predicates.items.eventCount",
-      "definition.predicates.items.eventId",
-      "definition.predicates.items.formId",
-      "definition.predicates.items.kind",
-      "definition.predicates.items.manualTagId",
-      "definition.predicates.items.operator",
-      "definition.predicates.items.questionId",
-      "definition.predicates.items.reviewStatus",
-      "definition.predicates.items.segmentId",
-      "name"
-    ],
-    "upsertProgramFunctionCallablePayload": [
-      "name",
-      "status",
-      "venueName",
-      "venueNotes"
-    ],
     "upsertProgramGuestCallablePayload": [
       "displayName",
       "email",
-      "groupIds",
-      "guestId",
       "phoneE164"
     ],
     "upsertProgramGuestGroupCallablePayload": [
       "dimension",
       "hotelId",
       "label"
-    ],
-    "upsertProgramHotelCallablePayload": [
-      "active",
-      "address",
-      "name",
-      "notes",
-      "receptionContact"
-    ],
-    "upsertProgramPickupPointCallablePayload": [
-      "active",
-      "iataCode",
-      "instructions",
-      "kind",
-      "label",
-      "meetingZone",
-      "terminal"
     ],
     "upsertProgramStayCallablePayload": [
       "roomLabel"
