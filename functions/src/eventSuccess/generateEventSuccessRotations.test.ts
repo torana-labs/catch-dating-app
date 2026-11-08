@@ -384,6 +384,8 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
     sitOutRoundCount: 0,
     uniquePeerCount: 3,
     repeatPeerCount: 0,
+    assignedMinutes: 45,
+    benchMinutes: 0,
   });
 });
 
@@ -541,6 +543,92 @@ test("sequence topology uses configured court capacity", async () => {
   }
 });
 
+test("doubles courts publish partnerships with opponents and a bench",
+  async () => {
+    const uids = Array.from({length: 10}, (_, index) => `player-${index}`);
+    const docs: Record<string, FakeData> = {};
+    for (const uid of uids) {
+      Object.assign(docs, participation(uid));
+      docs[`users/${uid}`] = user(
+        uids.indexOf(uid) % 2 === 0 ? "man" : "woman",
+        []
+      );
+    }
+    const {firestore, deps} = harness({
+      "eventSuccessPlans/event-1": {
+        eventId: "event-1",
+        organizerId: "club-1",
+        selectedModuleIds: ["guided_rotations"],
+        liveControlRevision: 0,
+        assignmentDraftRevision: 0,
+        publishedRotationRoundIndex: -1,
+        structureConfig: {
+          unitKind: "pairs",
+          unitSize: 2,
+          rotationIntervalMinutes: 15,
+          topology: "sequence",
+          resourceCapacity: {
+            concurrentUnits: 2,
+            resourceLabelId: "court",
+            seatsPerUnit: 4,
+          },
+          revealCountdownSeconds: 10,
+        },
+      },
+      ...docs,
+    });
+
+    const result = await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
+
+    assert.ok(result.roundCount > 0);
+    const assignments = uids.map((uid) => firestore.get(
+      `eventSuccessAssignments/event-1_guided_rotations_${uid}`
+    ) as FakeData);
+    const slotsByRound = new Map<number, Array<Record<string, unknown>>>();
+    for (const [index, assignment] of assignments.entries()) {
+      const slots = (assignment.rotationSlots ?? []) as
+        Array<Record<string, unknown>>;
+      for (const slot of slots) {
+        assert.equal(slot.partnerUid, slot.peerUid);
+        const opponents = slot.opponentUids as string[];
+        assert.equal(opponents.length, 2);
+        assert.ok(!opponents.includes(uids[index]));
+        assert.ok(!opponents.includes(slot.partnerUid as string));
+        assert.equal(typeof slot.courtIndex, "number");
+        assert.equal(slot.peerCount, 3);
+        const round = slot.roundIndex as number;
+        slotsByRound.set(round, [...(slotsByRound.get(round) ?? []),
+          {...slot, uid: uids[index]}]);
+      }
+      for (const sitOut of (assignment.sitOutSlots ?? []) as
+        Array<Record<string, unknown>>) {
+        assert.equal(sitOut.benchNote, "commonArea");
+      }
+      const fairness = assignment.rotationFairness as Record<string, number>;
+      assert.equal(fairness.assignedMinutes, slots.length * 15);
+      assert.equal(
+        fairness.benchMinutes,
+        ((assignment.sitOutSlots as unknown[] | undefined)?.length ?? 0) * 15
+      );
+    }
+    for (const slots of slotsByRound.values()) {
+      // Two full courts: eight on court, two on the bench.
+      assert.equal(slots.length, 8);
+      for (const slot of slots) {
+        const partner = slots.find((other) => other.uid === slot.partnerUid);
+        assert.equal(partner?.partnerUid, slot.uid, "partners are mutual");
+        assert.equal(partner?.courtIndex, slot.courtIndex);
+      }
+    }
+    const minutes = assignments.map((assignment) =>
+      (assignment.rotationFairness as Record<string, number>).assignedMinutes);
+    assert.ok(Math.max(...minutes) - Math.min(...minutes) <= 15,
+      "court time differs by at most one game");
+  });
+
 test("adjacency topology fails instead of using pair rotations", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
@@ -609,6 +697,57 @@ test("does not prepare a phantom round after the schedule ends", async () => {
     0
   );
 });
+
+test("a recurring event avoids pairs from the organizer's recent events",
+  async () => {
+    const recent = Date.parse("2026-05-14T08:30:00.000Z");
+    const {firestore, deps} = harness({
+      "eventSuccessPlans/event-1": {
+        eventId: "event-1",
+        organizerId: "club-1",
+        selectedModuleIds: ["guided_rotations"],
+        liveControlRevision: 0,
+        assignmentDraftRevision: 0,
+        publishedRotationRoundIndex: -1,
+        structureConfig: {
+          unitKind: "pairs",
+          unitSize: 2,
+          rotationIntervalMinutes: 15,
+          revealCountdownSeconds: 10,
+        },
+      },
+      // Without history, man-1 partners man-2 in the first round.
+      "organizerMeetingHistory/club-1_man-1": {organizerId: "club-1",
+        uid: "man-1", peers: {"man-2": {meetings: 1,
+          lastMetAtMs: recent}}},
+      "organizerMeetingHistory/club-1_man-2": {organizerId: "club-1",
+        uid: "man-2", peers: {"man-1": {meetings: 1,
+          lastMetAtMs: recent}}},
+      ...participation("man-1"),
+      ...participation("man-2"),
+      ...participation("woman-1"),
+      ...participation("woman-2"),
+      "users/man-1": user("man", ["woman"]),
+      "users/man-2": user("man", ["woman"]),
+      "users/woman-1": user("woman", ["man"]),
+      "users/woman-2": user("woman", ["man"]),
+    });
+    deps.nowMillis = () => Date.parse("2026-05-21T07:00:00.000Z");
+
+    await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
+
+    const manOne = firestore.get(
+      "eventSuccessAssignments/event-1_guided_rotations_man-1"
+    ) as FakeData;
+    const slots = manOne.rotationSlots as Array<Record<string, unknown>>;
+    const first = slots.find((slot) => slot.roundIndex === 0);
+    assert.ok(first);
+    assert.notEqual(first.peerUid, "man-2",
+      "last week's pair does not meet again in the first round");
+  });
 
 test("uses the saved event-structure rotation cadence", async () => {
   const {firestore, deps} = harness({
@@ -696,6 +835,8 @@ test("honors saved allow-exhausted rotation repeat policy", async () => {
     sitOutRoundCount: 0,
     uniquePeerCount: 1,
     repeatPeerCount: 1,
+    assignedMinutes: 30,
+    benchMinutes: 0,
   });
   const slots = assignment?.rotationSlots as Array<Record<string, unknown>>;
   assert.equal(slots[1].peerUid, "woman-1");
@@ -1013,6 +1154,8 @@ test(
       sitOutRoundCount: 2,
       uniquePeerCount: 1,
       repeatPeerCount: 0,
+      assignedMinutes: 15,
+      benchMinutes: 30,
     });
   }
 );

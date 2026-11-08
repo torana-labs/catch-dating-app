@@ -41,6 +41,7 @@ import {
   NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
+import {deferCompanionReadyCue} from "../eventSuccess/deferredGuestCues";
 
 interface MarkEventAttendanceDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -232,7 +233,22 @@ async function notifyCompanionReadyBestEffort(params: {
     if (!planSnap.exists) return;
 
     const plan = planSnap.data() as EventSuccessPlanLike | undefined;
-    if (!plan || !companionHasRelevantSurface({
+    if (!plan) return;
+    const now = params.deps.now();
+    const endTime = (params.event.endTime as FirebaseFirestore.Timestamp)
+      .toDate();
+    if (endTime > now &&
+        !companionPushRespectsPhoneAvailability(params.event, now)) {
+      // Phones are away while the activity runs: hold the push for the
+      // next planned stop or the finish instead of dropping it.
+      await deferCompanionReadyCue(params.db, {
+        eventId: params.eventId,
+        organizerId: params.event.organizerId,
+        uid: params.userId,
+      });
+      return;
+    }
+    if (!companionHasRelevantSurface({
       event: params.event,
       plan,
       now: params.deps.now(),
