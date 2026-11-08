@@ -80,7 +80,7 @@ final class HostLiveControllerProvider
 }
 
 String _$hostLiveControllerHash() =>
-    r'3c999669b4909e8bdf13a56c51e37485bd40d6c7';
+    r'd267a25c875f29ec7b2a60f48bedd83453f2f383';
 
 /// The live console, composed from listeners only: the plan, the roster,
 /// presence and late arrivals, open help requests, deliveries waiting on the
@@ -183,7 +183,7 @@ final class HostLiveScoresControllerProvider
 }
 
 String _$hostLiveScoresControllerHash() =>
-    r'c8012baaffc0f0b9e0d2b0cc287bb5bd6cd51da9';
+    r'6d7a8f9a7d3bfc4dd12b98bc4e8be51777524f18';
 
 /// The scores screen, composed from the plan, the scoreboard, the teams and
 /// the checked-in guests (whose arrival groups are teams too).

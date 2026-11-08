@@ -66,6 +66,10 @@ final class HostLiveDeliveryNeed extends HostLiveNeed {
   String get id => 'delivery-${delivery.scope.messageId}';
 }
 
+/// The formats board tonight's format runs on, opened from the console's
+/// views: the court board for court rotations, team mixing for teams.
+enum HostLiveFormatView { courts, mix }
+
 /// One team or table and how many of its places are taken.
 @immutable
 class HostLiveUnit {
@@ -99,6 +103,7 @@ class HostLiveState {
     this.scores = false,
     this.units = const <HostLiveUnit>[],
     this.presenceRevision = 0,
+    this.formatView,
     this.error,
   });
 
@@ -142,6 +147,9 @@ class HostLiveState {
 
   /// The presence summary's fence for placing a late arrival.
   final int presenceRevision;
+
+  /// The formats board this night has; null when it has none.
+  final HostLiveFormatView? formatView;
   final Object? error;
 
   /// Guests sit in teams or at tables, so the tablet offers the room.

@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_presen
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_outcome_units_state.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_state.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -178,8 +179,18 @@ HostLiveState hostLiveController(Ref ref, Event event) {
     scores: scores,
     units: units,
     presenceRevision: summary?.liveControlRevision ?? plan.liveControlRevision,
+    formatView: hostLiveFormatView(event),
   );
 }
+
+/// The formats board a night runs on: court rotations get the court
+/// board, team nights get team mixing.
+HostLiveFormatView? hostLiveFormatView(Event event) =>
+    switch (event.eventFormat.interactionModel) {
+      EventInteractionModel.pairedRotations => HostLiveFormatView.courts,
+      EventInteractionModel.teamRotations => HostLiveFormatView.mix,
+      _ => null,
+    };
 
 /// The scores screen, composed from the plan, the scoreboard, the teams and
 /// the checked-in guests (whose arrival groups are teams too).

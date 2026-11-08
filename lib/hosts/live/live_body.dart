@@ -9,9 +9,9 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-/// The live console's views: the night now, the door, the scoreboard and,
-/// on a tablet, the room.
-enum HostLiveView { now, guests, scores, room }
+/// The live console's views: the night now, the door, the scoreboard, the
+/// format's own board (courts or team mixing) and, on a tablet, the room.
+enum HostLiveView { now, guests, scores, format, room }
 
 /// The live console in board order. On a phone one column: the views, the
 /// step spotlight, its actions, the room and team stats, Needs you now,
@@ -94,6 +94,7 @@ class HostLiveBody extends StatelessWidget {
     final views = HostLiveViewTabBar(
       scores: state.scores && !expanded,
       room: state.room && expanded,
+      format: state.formatView,
       onView: onView,
     );
     final spotlight = _HostLiveSpotlight(
@@ -212,7 +213,8 @@ class HostLiveBody extends StatelessWidget {
   }
 }
 
-/// Now, Guests and Scores on a phone; Now, Guests and Room on a tablet.
+/// Now, Guests and Scores on a phone; Now, Guests and Room on a tablet;
+/// Courts or Teams when the format has its own board.
 class HostLiveViewTabBar extends StatelessWidget {
   const HostLiveViewTabBar({
     super.key,
@@ -220,11 +222,15 @@ class HostLiveViewTabBar extends StatelessWidget {
     this.selected = HostLiveView.now,
     this.scores = false,
     this.room = false,
+    this.format,
   });
 
   final HostLiveView selected;
   final bool scores;
   final bool room;
+
+  /// The format's own board, when it has one.
+  final HostLiveFormatView? format;
   final ValueChanged<HostLiveView> onView;
 
   @override
@@ -240,6 +246,14 @@ class HostLiveViewTabBar extends StatelessWidget {
           CatchOption(
             value: HostLiveView.scores,
             label: l10n.hostLiveViewScores,
+          ),
+        if (format case final format?)
+          CatchOption(
+            value: HostLiveView.format,
+            label: switch (format) {
+              HostLiveFormatView.courts => l10n.hostFormatsViewCourts,
+              HostLiveFormatView.mix => l10n.hostFormatsViewTeams,
+            },
           ),
         if (room)
           CatchOption(value: HostLiveView.room, label: l10n.hostLiveViewRoom),
