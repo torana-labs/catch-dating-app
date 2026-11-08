@@ -1,47 +1,84 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_table_cell.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
+import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
 /// Where a [CatchTable] column places its label and cells.
 enum CatchTablePlacement { start, end }
 
-/// One column of a [CatchTable]: header label, share of the width and
-/// placement of its label and cells.
+/// What a [CatchTable] column holds, as the system Table column kind: [text],
+/// a two-line [title], right-aligned [number] figures or a [badge]. A
+/// [number] column places its label and cells at the end unless told
+/// otherwise.
+enum CatchTableColumnVariant { text, title, number, badge }
+
+/// One column of a [CatchTable]: header label, what it holds, its share of
+/// the width (or a fixed [width]) and the placement of its label and cells.
 @immutable
 class CatchTableColumn {
   const CatchTableColumn({
     required this.label,
     this.flex = 1,
-    this.placement = CatchTablePlacement.start,
+    this.width,
+    this.placement,
+    this.variant = CatchTableColumnVariant.text,
     this.labelInset = 0,
   });
 
   final String label;
+
+  /// The share of the width left after the fixed columns.
   final int flex;
-  final CatchTablePlacement placement;
+
+  /// A fixed width in logical pixels; wins over [flex].
+  final double? width;
+
+  /// Null places a [CatchTableColumnVariant.number] column at the end and
+  /// every other column at the start.
+  final CatchTablePlacement? placement;
+  final CatchTableColumnVariant variant;
 
   /// Leading inset for the header label, for example to align it with cell
   /// text that follows an avatar.
   final double labelInset;
+
+  /// [placement], or the one [variant] implies.
+  CatchTablePlacement get resolvedPlacement =>
+      placement ??
+      (variant == CatchTableColumnVariant.number
+          ? CatchTablePlacement.end
+          : CatchTablePlacement.start);
 }
 
 /// Bordered data table with an uppercase header row and divided rows.
 ///
 /// Columns are published through [CatchTableScope], so each [CatchTableRow]
 /// lays its cells out against the same widths. [emptyBuilder] replaces the
-/// rows below the header when there is nothing to list.
+/// rows below the header when there is nothing to list. [label] names the
+/// table for screen readers.
+///
+/// The system Table passes data: columns with a [CatchTableColumnVariant]
+/// and rows built with [CatchTableRow.cells]. Widget rows in [children]
+/// still work for older callers.
 class CatchTable extends StatelessWidget {
   const CatchTable({
     super.key,
     required this.columns,
     this.children = const [],
     this.emptyBuilder,
+    this.label,
   });
 
   final List<CatchTableColumn> columns;
   final List<Widget> children;
   final WidgetBuilder? emptyBuilder;
+
+  /// The table caption read aloud: "Guests by household".
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +88,7 @@ class CatchTable extends StatelessWidget {
       color: t.ink3,
     ).copyWith(fontSize: 8.5);
 
-    return CatchTableScope(
+    final table = CatchTableScope(
       columns: columns,
       child: CatchLegacySurface(
         radius: CatchRadius.md,
@@ -68,21 +105,39 @@ class CatchTable extends StatelessWidget {
                 children: [
                   for (final (index, column) in columns.indexed) ...[
                     if (index > 0) const SizedBox(width: CatchSpacing.s2),
-                    Expanded(
-                      flex: column.flex,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: column.labelInset),
+                    if (column.width case final width?)
+                      SizedBox(
+                        width: width,
                         child: Text(
                           column.label.toUpperCase(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          textAlign: column.placement == CatchTablePlacement.end
+                          textAlign:
+                              column.resolvedPlacement ==
+                                  CatchTablePlacement.end
                               ? TextAlign.right
                               : null,
                           style: headerStyle,
                         ),
+                      )
+                    else
+                      Expanded(
+                        flex: column.flex,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: column.labelInset),
+                          child: Text(
+                            column.label.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign:
+                                column.resolvedPlacement ==
+                                    CatchTablePlacement.end
+                                ? TextAlign.right
+                                : null,
+                            style: headerStyle,
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ],
               ),
@@ -103,21 +158,84 @@ class CatchTable extends StatelessWidget {
         ),
       ),
     );
+    final label = this.label;
+    if (label == null) return table;
+    return Semantics(container: true, label: label, child: table);
   }
 }
 
 /// One divided row of a [CatchTable]; each cell takes its column's width and
 /// placement.
 class CatchTableRow extends StatelessWidget {
-  const CatchTableRow({super.key, required this.children});
+  const CatchTableRow({super.key, required this.children})
+    : cells = null,
+      onTap = null;
+
+  /// The system Table row as data: one [CatchTableCell] per column. An
+  /// [onTap] makes the whole row pressable (open it in the inspector).
+  const CatchTableRow.cells({
+    super.key,
+    required List<CatchTableCell> this.cells,
+    this.onTap,
+  }) : children = const [];
 
   final List<Widget> children;
+
+  /// The data cells, in column order.
+  final List<CatchTableCell>? cells;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final columns = CatchTableScope.columnsOf(context);
-    return DecoratedBox(
+    final cells = this.cells;
+    final children = cells == null
+        ? this.children
+        : [
+            for (final (index, cell) in cells.indexed)
+              if (cell.badge case final badge?)
+                badge
+              else if (cell.variant == CatchTableCellVariant.title)
+                Column(
+                  crossAxisAlignment:
+                      index < columns.length &&
+                          columns[index].resolvedPlacement ==
+                              CatchTablePlacement.end
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CatchText(
+                      cell.text,
+                      variant: CatchTextVariant.titleRow,
+                      maxLines: 1,
+                    ),
+                    if (cell.subtitle case final subtitle?)
+                      CatchText(
+                        subtitle,
+                        variant: CatchTextVariant.bodyMeta,
+                        tone: CatchTextTone.secondary,
+                        maxLines: 1,
+                      ),
+                  ],
+                )
+              else
+                CatchText(
+                  cell.text,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: switch (cell.tone) {
+                    null => CatchTextTone.primary,
+                    CatchTableCellTone.secondary => CatchTextTone.secondary,
+                    CatchTableCellTone.success => CatchTextTone.success,
+                    CatchTableCellTone.warning => CatchTextTone.warning,
+                    CatchTableCellTone.danger => CatchTextTone.danger,
+                  },
+                  numeric: cell.variant == CatchTableCellVariant.number,
+                  maxLines: 2,
+                ),
+          ];
+    final row = DecoratedBox(
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: t.line)),
       ),
@@ -127,22 +245,39 @@ class CatchTableRow extends StatelessWidget {
           children: [
             for (final (index, cell) in children.indexed) ...[
               if (index > 0) const SizedBox(width: CatchSpacing.s2),
-              Expanded(
-                flex: index < columns.length ? columns[index].flex : 1,
-                child: Align(
-                  alignment:
-                      index < columns.length &&
-                          columns[index].placement == CatchTablePlacement.end
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: cell,
+              if (index < columns.length && columns[index].width != null)
+                SizedBox(
+                  width: columns[index].width,
+                  child: Align(
+                    alignment:
+                        columns[index].resolvedPlacement ==
+                            CatchTablePlacement.end
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: cell,
+                  ),
+                )
+              else
+                Expanded(
+                  flex: index < columns.length ? columns[index].flex : 1,
+                  child: Align(
+                    alignment:
+                        index < columns.length &&
+                            columns[index].resolvedPlacement ==
+                                CatchTablePlacement.end
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: cell,
+                  ),
                 ),
-              ),
             ],
           ],
         ),
       ),
     );
+    final onTap = this.onTap;
+    if (onTap == null) return row;
+    return CatchRowPressSurface(onTap: onTap, child: row);
   }
 }
 

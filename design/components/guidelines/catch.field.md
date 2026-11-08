@@ -31,6 +31,7 @@ Rest, focus (2 px ink ring), filled, error (coral ring and message), disabled.
 - `CatchField.choices`
 - `CatchField.optionCards`
 - `CatchField.stepper`
+- `CatchField.slider`
 - `CatchField.add`
 - `CatchField.select`
 `catch.search_field`:

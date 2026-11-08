@@ -367,9 +367,10 @@
             "values": [
               "soft",
               "strong",
-              "solid"
+              "solid",
+              "outline"
             ],
-            "notes": "The default constructor: soft is the pale tint, solid (or strong) the tone at full strength, ink for neutral. CatchBadge.ticketStatus keeps its soft pigment and strong dark recipes."
+            "notes": "The default constructor: soft is the pale tint, solid (or strong) the tone at full strength, ink for neutral, outline no fill under a dashed ink3 edge (no reply yet). CatchBadge.ticketStatus keeps its soft pigment and strong dark recipes."
           },
           {
             "name": "color",
@@ -411,6 +412,14 @@
             "default": false,
             "notes": "The default constructor: a leading dot in the label colour (Live, Connected).",
             "tsType": "boolean"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "The default constructor: read aloud in place of a terse label (\"No reply yet\" for \"?\").",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -428,7 +437,8 @@
           "system-tones",
           "system-solid",
           "system-format",
-          "system-dot"
+          "system-dot",
+          "system-outline"
         ],
         "slots": [],
         "tokens": [
@@ -463,7 +473,8 @@
         "goldens": [
           "badge_recipe_family@1.0",
           "badge_recipe_family@2.0",
-          "wave2_board_family"
+          "wave2_board_family",
+          "wave3_board_family"
         ],
         "members": [
           {
@@ -582,7 +593,8 @@
           "Use activity accent overrides only when the badge meaning is activity-scoped.",
           "Use the named solid, live, and on-dark constructors; those fixed recipes are not generic tone values.",
           "CatchCountBadge owns numeric overlays, while CatchStatusRow owns quiet unboxed status.",
-          "The default CatchBadge is the system Badge: tone (with info and social), emphasis soft or solid, a format that wins over tone, and a dot. CatchIndexRowBadge carries the same fields."
+          "The default CatchBadge is the system Badge: tone (with info and social), emphasis soft or solid, a format that wins over tone, and a dot. CatchIndexRowBadge carries the same fields.",
+          "Outline is the waiting badge of the reply grid: no fill, ink2 on a dashed ink3 edge, whatever the tone. Give a terse label a semanticLabel."
         ]
       },
       "governance": {
@@ -2738,6 +2750,14 @@
             "dartType": "CatchNoticeAction?",
             "notes": "CatchNotice.inline only: a quiet small button under the copy (label, onPressed).",
             "tsType": "CatchNoticeAction"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "CatchNotice.inline only: a row of buttons under the copy, in place of the single action.",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
@@ -2754,7 +2774,8 @@
           "inline-info",
           "inline-success",
           "inline-neutral",
-          "inline-action"
+          "inline-action",
+          "inline-footer"
         ],
         "slots": [],
         "tokens": [
@@ -2784,7 +2805,7 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting"
         ],
-        "goldens": ["sheet_scan_result_board", "wave2_board_family"],
+        "goldens": ["sheet_scan_result_board", "wave2_board_family", "wave3_board_family"],
         "members": [
           {
             "id": "catch.notice.host",
@@ -3704,7 +3725,8 @@
           "navigable",
           "multiline",
           "facts",
-          "edit-counter-always"
+          "edit-counter-always",
+          "slider"
         ],
         "slots": [
           {
@@ -4876,6 +4898,7 @@
           "CatchField.choices",
           "CatchField.optionCards",
           "CatchField.stepper",
+          "CatchField.slider",
           "CatchField.add",
           "CatchField.select"
         ]
@@ -10451,6 +10474,20 @@
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChoiceTileEmphasis",
+            "values": [
+              "regular",
+              "attention",
+              "vacant"
+            ],
+            "default": "regular",
+            "notes": "A system card at rest: attention draws the games yellow ring (needs the host), vacant a dashed edge (a free slot). The selected outline and focus ring win.",
+            "tsType": "CatchChoiceTileEmphasis"
           }
         ],
         "states": [
@@ -10462,7 +10499,9 @@
           "tile",
           "day",
           "add",
-          "format"
+          "format",
+          "attention",
+          "vacant"
         ],
         "slots": [],
         "tokens": [
@@ -10484,7 +10523,7 @@
           "CatchTextStyles.supporting",
           "CatchIconSize.lg"
         ],
-        "goldens": ["choice_board_family"],
+        "goldens": ["choice_board_family", "wave3_board_family"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -14857,7 +14896,8 @@
           "with-endpoint-labels",
           "disabled",
           "divided-tickless",
-          "semantic-values"
+          "semantic-values",
+          "single-value"
         ],
         "slots": [],
         "tokens": [
@@ -14873,7 +14913,39 @@
           "RoundRangeSliderThumbShape",
           "CatchTextStyles.supporting"
         ],
-        "goldens": [],
+        "goldens": [
+          "wave3_board_family"
+        ],
+        "members": [
+          {
+            "id": "catch.range_slider.single",
+            "symbol": "CatchSliderInput",
+            "file": "packages/catch_ui/lib/src/components/catch_slider_input.dart",
+            "summary": "The system Slider with one value: a thumb on the shared Catch track, optional divisions, a label and a value label over the track.",
+            "states": [
+              "single-value",
+              "divided",
+              "value-label",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.range_slider",
+              "parentConceptId": "catch.range_slider",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.range_slider"
+            },
+            "level": "L3",
+            "roleNoun": "Input",
+            "naming": {
+              "useCase": "Slider",
+              "comparedWith": [
+                "catch.range_slider"
+              ],
+              "reason": "Edits one number where CatchRangeInput edits an interval with two ends; both draw the track CatchSliderInput.themeOf returns."
+            }
+          }
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -15781,7 +15853,8 @@
               "compact",
               "note",
               "switcher"
-            ],
+            ,
+              "leading-avatar"],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.tab_bar",
@@ -18843,7 +18916,7 @@
             "required": true,
             "dartType": "CatchDockAction",
             "tsType": "CatchDockAction",
-            "notes": "label, onPressed (null disables), icon, loading."
+            "notes": "label, onPressed (null disables), icon, loading, emphasis (CatchDockActionEmphasis primary or accent: the event colour of the nearest CatchRoot)."
           },
           {
             "name": "secondary",
@@ -18898,13 +18971,23 @@
             "dartType": "Widget?",
             "tsType": "ReactNode",
             "notes": "pane: what happens after the decision, in place of the summary."
+          },
+          {
+            "name": "header",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Above the actions in every placement: an offline notice, upload progress.",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
           "auto",
           "bar",
           "card",
-          "pane"
+          "pane",
+          "header",
+          "accent-primary"
         ],
         "slots": [
           {
@@ -18939,10 +19022,12 @@
           "CatchDockNote",
           "CatchButton",
           "CatchSurface",
-          "CatchTextInput"
+          "CatchTextInput",
+          "CatchDockActionEmphasis"
         ],
         "goldens": [
-          "dock_family"
+          "dock_family",
+          "wave3_board_family"
         ],
         "members": [
           {
@@ -22478,7 +22563,7 @@
             "required": true,
             "dartType": "List<CatchTableColumn>",
             "tsType": "CatchTableColumn[]",
-            "notes": "Header label, flex share, start or end placement and optional label inset per column."
+            "notes": "CatchTableColumn: header label, variant (CatchTableColumnVariant text, title, number, badge), flex share or fixed width, placement (null puts a number column at the end) and optional label inset."
           },
           {
             "name": "children",
@@ -22487,7 +22572,7 @@
             "dartType": "List<Widget>",
             "tsType": "ReactNode",
             "default": "[]",
-            "notes": "CatchTableRow children laid out against the published columns."
+            "notes": "CatchTableRow children laid out against the published columns; CatchTableRow.cells takes CatchTableCell data (text with a tone, title with a subtitle, number, badge) and an onTap."
           },
           {
             "name": "emptyBuilder",
@@ -22581,7 +22666,9 @@
           "partial-columns",
           "long-copy",
           "end-placement",
-          "large-text"
+          "large-text",
+          "data-cells",
+          "number-column"
         ],
         "slots": [
           "children"
@@ -22593,9 +22680,15 @@
         ],
         "dartRoles": [
           "CatchTableColumn",
-          "CatchTablePlacement"
+          "CatchTablePlacement",
+          "CatchTableColumnVariant",
+          "CatchTableCell",
+          "CatchTableCellVariant",
+          "CatchTableCellTone"
         ],
-        "goldens": [],
+        "goldens": [
+          "wave3_board_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -22619,7 +22712,9 @@
               "default",
               "end-placement",
               "fewer-cells"
-            ],
+            ,
+              "cells",
+              "pressable"],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.table",
@@ -22682,7 +22777,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Feature tables bind this material: map each record to a CatchTableRow of cells, and keep any compact (narrow-width) representation in the feature. ParticipantTable is the reference binding."
+          "Feature tables bind this material: map each record to a CatchTableRow of cells, and keep any compact (narrow-width) representation in the feature. ParticipantTable is the reference binding.",
+          "The system Table as data: give each CatchTableColumn a variant and build rows with CatchTableRow.cells. label is the caption read aloud. Widget rows in children stay for older callers."
         ]
       },
       "level": "L3",
@@ -24293,6 +24389,20 @@
             ],
             "default": "games",
             "notes": "The colour of a host bubble."
+          },
+          {
+            "name": "author",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchChatAuthor?",
+            "notes": "Who wrote it (name, note such as host, imageUrl, initials, color): named over the first bubble of a run and drawn as the avatar when there is no leading."
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Under the bubble: an attachment, a card, buttons."
           }
         ],
         "states": [
@@ -24301,12 +24411,18 @@
           "host",
           "system",
           "status",
-          "continued"
+          "continued",
+          "author",
+          "footer"
         ],
         "slots": [
           {
             "name": "leading",
             "kind": "optional-leading-widget"
+          },
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
           }
         ],
         "tokens": [
@@ -24320,10 +24436,13 @@
           "CatchChatBubbleVariant",
           "CatchChatBubbleStatus",
           "CatchTimestampedMessageText",
-          "CatchFormat"
+          "CatchFormat",
+          "CatchChatAuthor",
+          "CatchAvatar"
         ],
         "goldens": [
-          "chat_bubble_family"
+          "chat_bubble_family",
+          "map_chat_family"
         ],
         "accessibility": {
           "largeText": {
@@ -24344,7 +24463,8 @@
           "catch.person_avatar"
         ],
         "notes": [
-          "The system ChatMessage. Callers pass already-localized text and time; the bubble composes CatchTimestampedMessageText, which places the time on the last line or under it. Copy for a failed message belongs to the caller."
+          "The system ChatMessage. Callers pass already-localized text and time; the bubble composes CatchTimestampedMessageText, which places the time on the last line or under it. Copy for a failed message belongs to the caller.",
+          "Group chats pass a CatchChatAuthor; the name and its caller-localized note sit over the first bubble of a run, and the avatar comes from the author unless leading overrides it."
         ]
       },
       "governance": {
@@ -24527,6 +24647,444 @@
           "catch.workspace_header"
         ],
         "reason": "Draws the pane header row from data. CatchWorkspaceHeader only measures and aligns whatever header it wraps, so pane headers side by side share one height."
+      }
+    },
+    {
+      "id": "catch.map",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchMap",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "summary": "A static map drawn without a map provider: streets and water on the map ground, event-coloured pins at percent positions with labels, an optional dotted route, and a footer under it.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Map",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Map",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "pins",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchMapPin>",
+            "notes": "CatchMapPin: x and y in percent, label, format, status (CatchMapPinStatus regular or selected)."
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "notes": "What the map shows, read aloud."
+          },
+          {
+            "name": "route",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchMapPoint>?",
+            "notes": "A dotted walking or running line through percent points."
+          },
+          {
+            "name": "aspect",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": 1.7778,
+            "notes": "Width over height; 16 / 9 by default."
+          },
+          {
+            "name": "onOpen",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Makes the whole map a button that opens the full map."
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Under the map: the address, a directions button."
+          }
+        ],
+        "states": [
+          "pins",
+          "selected-pin",
+          "route",
+          "open",
+          "footer"
+        ],
+        "slots": [
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.map",
+          "theme.light.color.ground",
+          "theme.light.color.tintIndigo",
+          "theme.light.color.ink",
+          "radius.lg",
+          "size.badgeMd"
+        ],
+        "dartRoles": [
+          "CatchMapPin",
+          "CatchMapPinStatus",
+          "CatchMapPoint",
+          "CatchFormat"
+        ],
+        "goldens": [
+          "map_chat_family"
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.button",
+          "catch.text"
+        ],
+        "notes": [
+          "The system MapPreview for programme and formats boards: pass percent pins and a route over the drawn streets. It draws no tiles; the Google Maps MapPreview (catch.map_preview) stays for exact locations until its callers redraw."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.map",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.map"
+      },
+      "dart": {
+        "symbol": "CatchMap",
+        "file": "packages/catch_ui/lib/src/components/catch_map.dart",
+        "constructors": [
+          "CatchMap"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Map",
+      "naming": {
+        "useCase": "",
+        "reason": "The base Map role: a provider-free map drawn from percent pins and a route over painted streets. MapPreview (catch.map_preview) is a live Google Maps viewport around one coordinate, and that record and its React twin hold the MapPreview name; ActivityMapPin draws one pin on a real map."
+      }
+    },
+    {
+      "id": "catch.composer_input",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchComposerInput",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "summary": "The message field at the foot of a chat: a pill field on the tile and a send button that waits for text, an optional leading action, and a closed note in place of the field when the chat no longer takes messages.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ComposerInput",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ComposerInput",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "placeholder",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "notes": "Caller-localized hint: Message."
+          },
+          {
+            "name": "sendLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "notes": "The send button tooltip and label: Send."
+          },
+          {
+            "name": "onSend",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?",
+            "notes": "Gets the trimmed text; the field then clears. Null disables sending."
+          },
+          {
+            "name": "controller",
+            "type": "object",
+            "required": false,
+            "dartType": "TextEditingController?",
+            "notes": "Keeps the draft with the caller; without one the composer owns it."
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Before the field: add a photo."
+          },
+          {
+            "name": "closedNote",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Replaces the field in a closed chat."
+          }
+        ],
+        "states": [
+          "empty",
+          "draft",
+          "leading",
+          "closed"
+        ],
+        "slots": [
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.tile",
+          "theme.light.color.ground",
+          "theme.light.color.line",
+          "theme.light.color.primary",
+          "theme.light.color.focus",
+          "size.controlMd",
+          "radius.pill"
+        ],
+        "dartRoles": [
+          "CatchIconAction",
+          "CatchTextInput"
+        ],
+        "goldens": [
+          "map_chat_family"
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.icon_button"
+        ],
+        "notes": [
+          "The system ChatComposer for new chats. Callers pass localized copy and own sending. The legacy ChatInput (catch.chat_composer) keeps its app callers, with their image upload and sending states, until the chat redraw moves them here."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.composer_input",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.composer_input"
+      },
+      "dart": {
+        "symbol": "CatchComposerInput",
+        "file": "packages/catch_ui/lib/src/components/catch_composer_input.dart",
+        "constructors": [
+          "CatchComposerInput"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Composer",
+        "comparedWith": [
+          "catch.chat_composer",
+          "catch.field.text_input"
+        ],
+        "reason": "Draws the system ChatComposer from caller copy with no app bindings. ChatInput (catch.chat_composer) binds app localization, write contracts, image upload and sending states, and its registered name blocks CatchChatInput; CatchTextInput is the bare editable text it composes."
+      }
+    },
+    {
+      "id": "catch.countdown_indicator",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchCountdownIndicator",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "summary": "Whole seconds counting down to a moment on the guest phone, as big figures or inside a ring that empties in the event colour, with a label and a callback at zero.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/CountdownIndicator",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "CountdownIndicator",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "seconds",
+            "type": "number",
+            "required": true,
+            "dartType": "int",
+            "notes": "Where it starts; a new value starts it again."
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Under the figures and read with them: Tables in."
+          },
+          {
+            "name": "onDone",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Called once at zero."
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchCountdownIndicatorVariant",
+            "values": [
+              "text",
+              "ring"
+            ],
+            "default": "text",
+            "notes": "Figures alone, or inside the emptying ring."
+          }
+        ],
+        "states": [
+          "text",
+          "ring",
+          "done"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.line2",
+          "format.games.accent",
+          "stroke.meterMd"
+        ],
+        "dartRoles": [
+          "CatchCountdownIndicatorVariant",
+          "CatchFormat"
+        ],
+        "goldens": [
+          "wave3_board_family"
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Starts when it builds. The ring takes the format of the nearest CatchRoot. Under a disabled TickerMode it holds still, as goldens need."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.countdown_indicator",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.countdown_indicator"
+      },
+      "dart": {
+        "symbol": "CatchCountdownIndicator",
+        "file": "packages/catch_ui/lib/src/components/catch_countdown_indicator.dart",
+        "constructors": [
+          "CatchCountdownIndicator"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Indicator",
+      "naming": {
+        "useCase": "Countdown",
+        "comparedWith": [
+          "catch.loading_indicator",
+          "catch.event_card.clock_mark"
+        ],
+        "reason": "Counts seconds to a reveal and calls back at zero. CatchLoadingIndicator spins for work of unknown length; CatchClockIndicator draws a time of day as clock hands."
       }
     }
   ]

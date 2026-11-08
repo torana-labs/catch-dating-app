@@ -437,6 +437,10 @@ import 'package:widgetbook_workspace/primitives/contracts/chrome.dart'
     as _widgetbook_workspace_primitives_contracts_chrome;
 import 'package:widgetbook_workspace/primitives/contracts/code_input.dart'
     as _widgetbook_workspace_primitives_contracts_code_input;
+import 'package:widgetbook_workspace/primitives/contracts/composer_input.dart'
+    as _widgetbook_workspace_primitives_contracts_composer_input;
+import 'package:widgetbook_workspace/primitives/contracts/countdown_indicator.dart'
+    as _widgetbook_workspace_primitives_contracts_countdown_indicator;
 import 'package:widgetbook_workspace/primitives/contracts/dialogs.dart'
     as _widgetbook_workspace_primitives_contracts_dialogs;
 import 'package:widgetbook_workspace/primitives/contracts/dock.dart'
@@ -465,6 +469,8 @@ import 'package:widgetbook_workspace/primitives/contracts/list_section.dart'
     as _widgetbook_workspace_primitives_contracts_list_section;
 import 'package:widgetbook_workspace/primitives/contracts/loading.dart'
     as _widgetbook_workspace_primitives_contracts_loading;
+import 'package:widgetbook_workspace/primitives/contracts/map.dart'
+    as _widgetbook_workspace_primitives_contracts_map;
 import 'package:widgetbook_workspace/primitives/contracts/messages.dart'
     as _widgetbook_workspace_primitives_contracts_messages;
 import 'package:widgetbook_workspace/primitives/contracts/metadata.dart'
@@ -523,6 +529,8 @@ import 'package:widgetbook_workspace/primitives/contracts/wave1_board_states.dar
     as _widgetbook_workspace_primitives_contracts_wave1_board_states;
 import 'package:widgetbook_workspace/primitives/contracts/wave2_board_states.dart'
     as _widgetbook_workspace_primitives_contracts_wave2_board_states;
+import 'package:widgetbook_workspace/primitives/contracts/wave3_board_states.dart'
+    as _widgetbook_workspace_primitives_contracts_wave3_board_states;
 import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
     as _widgetbook_workspace_primitives_contracts_welcome_text;
 import 'package:widgetbook_workspace/primitives/contracts/workspace_header.dart'
@@ -2931,6 +2939,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_contracts_table
                     .catchTableContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchTableWave3States,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -3001,6 +3015,23 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_contracts_chat_bubble
                     .catchChatBubbleContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchChatBubbleWave3States,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchCountdownIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_countdown_indicator
+                        .catchCountdownIndicatorContractStates,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -3053,6 +3084,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_contracts_wave2_board_states
                         .catchNoticeWave2States,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchNoticeWave3States,
               ),
             ],
           ),
@@ -3162,6 +3199,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_contracts_wave2_board_states
                         .catchFieldWave2States,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchFieldWave3States,
               ),
             ],
           ),
@@ -3392,6 +3435,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchComposerInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_composer_input
+                        .catchComposerInputContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchControlSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3500,6 +3554,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_contracts_inputs
                     .catchRangeInputContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchRangeInputWave3States,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -3520,6 +3580,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_inputs
                     .catchSearchFieldContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliderInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchSliderInputContractStates,
               ),
             ],
           ),
@@ -3828,6 +3899,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchMap',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_map
+                    .catchMapContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchMediaOverlay',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4116,6 +4197,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_contracts_tabs
                     .catchTabBarIdentityContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchTabBarIdentityWave3States,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -4251,6 +4338,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_dock
                     .catchSystemDockContractStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchDockWave3States,
               ),
             ],
           ),
@@ -4579,6 +4672,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_contracts_choices
                     .catchChoiceTileContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchChoiceTileWave3States,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -4654,6 +4753,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_contracts_wave2_board_states
                         .catchBadgeWave2States,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wave 3 board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave3_board_states
+                        .catchBadgeWave3States,
               ),
             ],
           ),
