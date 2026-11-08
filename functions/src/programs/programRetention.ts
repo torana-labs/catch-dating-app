@@ -246,6 +246,12 @@ const retentionCollections = [
   "programVendorBills",
   "programHampers",
   "programPhotos",
+  "programWhatsappThreads",
+  "programWhatsappMessages",
+  "programWhatsappReplyOperations",
+  "programWhatsappCannedReplies",
+  "programAssistantSettings",
+  "programWhatsappEndpointIndex",
 ] as const;
 
 function shortId(docId: string): string {
@@ -282,6 +288,14 @@ function retentionScrub(
   case "programHampers":
   case "programPhotos":
     return null; // Photo records; their files go with the prefix below.
+  case "programWhatsappThreads":
+  case "programWhatsappMessages":
+  case "programWhatsappReplyOperations":
+    return null; // Guest conversations end with the programme.
+  case "programWhatsappCannedReplies":
+  case "programAssistantSettings":
+  case "programWhatsappEndpointIndex":
+    return null; // Planner settings and the derived phone index.
   case "programVendorBills":
     // Keep the commercial totals; the free text may name guests.
     return {

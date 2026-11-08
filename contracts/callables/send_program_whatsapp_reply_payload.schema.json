@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_program_whatsapp_reply_payload.schema.json",
+  "title": "SendProgramWhatsappReplyCallablePayload",
+  "description": "Send a free-text reply to a guest inside the 24-hour WhatsApp window. The reply is reserved before the Meta call; an uncertain outcome fails closed. Replying takes the thread over from the assistant and marks it handled. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "threadId",
+    "text",
+    "idempotencyKey",
+    "expectedLastInboundAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "expectedLastInboundAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "cannedReplyId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+    }
+  }
+}

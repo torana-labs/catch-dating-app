@@ -1,0 +1,264 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_whatsapp_threads_response.schema.json",
+  "title": "ProgramWhatsappThreadsCallableResponse",
+  "description": "One page of a programme's guest WhatsApp threads with the segment counts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "filter",
+    "counts",
+    "threads",
+    "nextCursor",
+    "sender"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "needsYou",
+        "handled",
+        "all"
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "needsYou",
+        "handled",
+        "all"
+      ],
+      "properties": {
+        "needsYou": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "handled": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "all": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        }
+      },
+      "description": "Counts over at most the newest 500 threads."
+    },
+    "threads": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "threadId",
+          "householdId",
+          "guestId",
+          "displayName",
+          "sideLabel",
+          "unknownSender",
+          "handledBy",
+          "state",
+          "language",
+          "escalationReason",
+          "lastMessagePreview",
+          "lastMessageDirection",
+          "lastMessageAuthor",
+          "lastMessageAtMillis",
+          "lastInboundAtMillis",
+          "serviceWindowExpiresAtMillis",
+          "serviceWindowOpen",
+          "unreadCount",
+          "revision"
+        ],
+        "properties": {
+          "threadId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 260,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "householdId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "guestId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "description": "The household label, or the guest's name, or 'Unknown number'."
+          },
+          "sideLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "unknownSender": {
+            "type": "boolean"
+          },
+          "handledBy": {
+            "type": "string",
+            "enum": [
+              "assistant",
+              "planner"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "needsYou",
+              "handled"
+            ]
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "en",
+              "hi",
+              "ta",
+              "te",
+              "bn",
+              "mr",
+              "gu",
+              "kn",
+              "ml",
+              "pa",
+              "ur",
+              null
+            ]
+          },
+          "escalationReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "notInFacts",
+              "askedForPerson",
+              "sentMedia",
+              "distressed",
+              "unknownSender",
+              "assistantOff",
+              "budgetReached",
+              "other",
+              null
+            ]
+          },
+          "lastMessagePreview": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "lastMessageDirection": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "lastMessageAuthor": {
+            "type": "string",
+            "enum": [
+              "guest",
+              "assistant",
+              "planner",
+              "system"
+            ]
+          },
+          "lastMessageAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "lastInboundAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "serviceWindowExpiresAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "serviceWindowOpen": {
+            "type": "boolean"
+          },
+          "unreadCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 600
+    },
+    "sender": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "connectionId",
+        "displayPhoneNumber",
+        "status"
+      ],
+      "properties": {
+        "connectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayPhoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      },
+      "description": "The wedding's number, or null when none is connected."
+    }
+  }
+}
