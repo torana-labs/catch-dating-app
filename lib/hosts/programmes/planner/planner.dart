@@ -11,3 +11,4 @@ export 'programme_routes.dart'
 export 'programme_share_screen.dart' show HostProgrammeShareScreen;
 export 'programme_team_screen.dart' show HostProgrammeTeamScreen;
 export 'programme_trips_screen.dart' show HostProgrammeTripsScreen;
+export 'programmes_home_screen.dart' show HostProgrammesHomeScreen;

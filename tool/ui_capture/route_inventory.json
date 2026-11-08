@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "ed7cbadb63f63591a622b65726b29986b691d5694c577f6dd32d44b3bf67a77b",
+    "routeContractSha256": "0d050c50e966f2269c278479e83b76ee9bcee0cbeac00c810082faa159213218",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -1234,8 +1234,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostWorkHotelScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>StaffHotelDeskScreen(programId:state.pathParameters['programId']!,hotelId:state.pathParameters['hotelId']!)",
-      "presentationTarget": "StaffHotelDeskScreen",
+      "presentationExpression": "(context,state)=>staffHotelScreenForUri(state.pathParameters['programId']!,state.pathParameters['hotelId']!,state.uri)",
+      "presentationTarget": "staffHotelScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1420,9 +1420,9 @@
       "runtimePath": "/host/programs",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostProgramsScreen.path",
-      "renderKind": "redirect",
-      "presentationExpression": "(context,state)=>hostProgramsLegacyRedirect(state.uri)",
-      "presentationTarget": "hostProgramsLegacyRedirect",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostProgrammesHomeScreen(organizerId:hostProgrammesHomeOrganizer(state.uri)!)",
+      "presentationTarget": "HostProgrammesHomeScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },

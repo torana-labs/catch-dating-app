@@ -992,7 +992,8 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_staff_hotel_desk_phone"
+        "host_staff_hotel_desk_phone",
+        "host_staff_departures_phone"
       ],
       "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
@@ -1070,10 +1071,13 @@
     },
     {
       "routeId": "hostProgramsScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P1",
-      "canonicalRouteId": "hostEventsScreen",
-      "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
+      "captureIds": [
+        "host_programmes_home_phone",
+        "host_programmes_home_desktop"
+      ],
+      "reason": "view=home with an organizerId opens the planner home from deterministic planner fixtures; legacy Programs links still redirect to Events and preserve organizer query parameters."
     },
     {
       "routeId": "hostCreateProgramScreen",
@@ -1093,7 +1097,11 @@
         "host_programme_phone",
         "host_programme_function_phone",
         "host_programme_household_phone",
-        "host_programme_travel_phone"
+        "host_programme_travel_phone",
+        "host_programme_messages_phone",
+        "host_programme_message_phone",
+        "host_programme_live_board_phone",
+        "host_programme_branding_phone"
       ]
     },
     {
