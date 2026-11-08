@@ -20,7 +20,7 @@ export const programmeLinkCopy = {
   refresh: "Try again",
   refreshing: "Trying again…",
   madeWith: `Made with ${brand.name}`,
-  /** "Made with Catch · Meher Shah Weddings" when the planner set a credit line. */
+  /** The made-with line with the planner's credit line after a middle dot. */
   madeWithCredit: (credit: string) => `Made with ${brand.name} · ${credit}`,
   viewOnly: "View only",
   mainLabel: "Programme link",
