@@ -34,6 +34,12 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/payments_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
@@ -904,7 +910,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerTeamScreen.path,
     name: Routes.hostOrganizerTeamScreen.name,
-    builder: (context, state) => HostOrganizerTeamScreen(
+    builder: (context, state) => OrganizerTeamScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -912,7 +918,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerPaymentsScreen.path,
     name: Routes.hostOrganizerPaymentsScreen.name,
-    builder: (context, state) => HostOrganizerPaymentsScreen(
+    builder: (context, state) => OrganizerPaymentsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -920,7 +926,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerMembershipsScreen.path,
     name: Routes.hostOrganizerMembershipsScreen.name,
-    builder: (context, state) => HostOrganizerMembershipsScreen(
+    builder: (context, state) => OrganizerMembershipsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),

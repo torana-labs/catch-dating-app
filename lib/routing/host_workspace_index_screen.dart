@@ -110,7 +110,15 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
         uri,
         initialOrganizerId: initialOrganizerId,
       ),
-      Routes.hostOrganizerScreen => hostOrganizerScreenForUri(uri),
+      Routes.hostOrganizerScreen => switch (uri.queryParameters['tab']) {
+        'page' || 'edit' when uri.queryParameters['editField'] == null =>
+          OrganizerPageEditScreen(initialOrganizerId: organizerId),
+        'settings' => OrganizerSettingsScreen(initialOrganizerId: organizerId),
+        null when uri.queryParameters['editField'] == null => OrganizerScreen(
+          initialOrganizerId: organizerId,
+        ),
+        _ => hostOrganizerScreenForUri(uri),
+      },
       _ => throw StateError('Not a Host workspace root: $root'),
     };
   }

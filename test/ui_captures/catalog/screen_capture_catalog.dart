@@ -324,6 +324,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
+import '../../hosts/organizer/organizer_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
@@ -3306,6 +3307,17 @@ final _createHandlers = CreateHandlers(
 );
 
 Widget _createCapture(Widget screen) => CatchRoot(child: screen);
+
+// The organiser tab, Your page, Payments, Team and Settings on the fixture
+// organizer, live on the web with a bill and Razorpay connected.
+List<Object> _organizerCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [organizerCaptureOrganizer],
+    ownedOrganizers: [organizerCaptureOrganizer],
+  ),
+  ...organizerCaptureOverrides(),
+];
 
 Widget _hostTodayCapture() => _HostRoutedShellCapture(
   initialLocation: '/host/today',
@@ -10673,6 +10685,45 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.auditTablet,
     providerOverrides: _hostTodayCaptureOverrides(),
     builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_tab_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/organizer',
+      activeIndex: 4,
+      child: organizerTabCapture(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_page_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerPageEditCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_payments_phone',
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerPaymentsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_team_phone',
+    routeIds: const <String>['hostOrganizerTeamScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerTeamCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_settings_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerSettingsCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',

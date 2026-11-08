@@ -1095,7 +1095,10 @@
       "priority": "P1",
       "captureIds": [
         "host_clubs_management",
-        "host_organizer_media_summary"
+        "host_organizer_media_summary",
+        "host_organizer_tab_phone",
+        "host_organizer_page_phone",
+        "host_organizer_settings_phone"
       ],
       "reason": "The first-class Host Organizer branch is captured through the real five-destination Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
     },
@@ -1174,14 +1177,18 @@
         "host_team_save_profile_error",
         "host_team_save_profile_offline",
         "host_team_sign_out_error",
-        "host_team_sign_out_offline"
+        "host_team_sign_out_offline",
+        "host_organizer_team_phone"
       ]
     },
     {
       "routeId": "hostOrganizerPaymentsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The owner-only Payments spoke has loaded Widgetbook coverage; add routed payout-ready and restricted captures in the next Host Clubs capture refresh."
+      "reason": "The rebuilt Payments and billing screen is captured at phone with Razorpay connected, the current bill against its cap, the plan and the bill rows.",
+      "captureIds": [
+        "host_organizer_payments_phone"
+      ]
     },
     {
       "routeId": "hostOrganizerMembershipsScreen",

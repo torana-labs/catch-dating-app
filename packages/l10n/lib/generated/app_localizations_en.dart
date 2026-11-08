@@ -20919,6 +20919,569 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayRehearseThisEvent => 'Rehearse this event';
 
   @override
+  String hostOrganizerKicker({required String area, required String year}) {
+    return '$area · since $year';
+  }
+
+  @override
+  String hostOrganizerSince({required String year}) {
+    return 'Since $year';
+  }
+
+  @override
+  String get hostOrganizerSwitch => 'Switch organiser';
+
+  @override
+  String get hostOrganizerYourPageTitle => 'Your page';
+
+  @override
+  String get hostOrganizerPageLive => 'Live';
+
+  @override
+  String get hostOrganizerPageNotLive => 'Not live';
+
+  @override
+  String get hostOrganizerPageNoLink => 'No link yet';
+
+  @override
+  String get hostOrganizerPageNote => 'The link in your Instagram bio.';
+
+  @override
+  String get hostOrganizerPageEdit => 'Edit page';
+
+  @override
+  String get hostOrganizerPageView => 'View page';
+
+  @override
+  String get hostOrganizerPageShare => 'Share your page';
+
+  @override
+  String get hostOrganizerLastThirtyDaysTitle => 'Last 30 days';
+
+  @override
+  String get hostOrganizerAllInsights => 'All insights';
+
+  @override
+  String get hostOrganizerStatBookings => 'Bookings';
+
+  @override
+  String get hostOrganizerStatTicketSales => 'Ticket sales';
+
+  @override
+  String get hostOrganizerStatFollowers => 'Followers';
+
+  @override
+  String get hostOrganizerStatPageVisits => 'Page visits';
+
+  @override
+  String hostOrganizerRunningTitle({required String name}) {
+    return 'Running $name';
+  }
+
+  @override
+  String get hostOrganizerRowPayments => 'Payments and billing';
+
+  @override
+  String get hostOrganizerRowPaymentsNote =>
+      'Guests pay your Razorpay; your Catch bill';
+
+  @override
+  String get hostOrganizerRowTeam => 'Team';
+
+  @override
+  String get hostOrganizerRowTeamNote =>
+      'Who can run the door and live screens';
+
+  @override
+  String hostOrganizerRowTeamCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostOrganizerRowMemberships => 'Memberships';
+
+  @override
+  String get hostOrganizerRowMembershipsNote => 'Paid plans for your regulars';
+
+  @override
+  String get hostOrganizerRowDefaults => 'Event defaults';
+
+  @override
+  String get hostOrganizerRowDefaultsNote =>
+      'Starting price, places, refunds and questions for new events';
+
+  @override
+  String get hostOrganizerRowRehearse => 'Rehearse a night';
+
+  @override
+  String get hostOrganizerRowRehearseNote =>
+      'Practise the door and live screens with made-up guests';
+
+  @override
+  String get hostOrganizerYouTitle => 'You';
+
+  @override
+  String get hostOrganizerRowSettings => 'Settings';
+
+  @override
+  String get hostOrganizerRowSettingsNote => 'Notifications and your account';
+
+  @override
+  String get hostOrganizerRowHelp => 'Help';
+
+  @override
+  String get hostOrganizerRowHelpNote => 'Guides for running your nights';
+
+  @override
+  String get hostOrganizerBack => 'Back';
+
+  @override
+  String get hostOrganizerCancel => 'Cancel';
+
+  @override
+  String get hostOrganizerRetry => 'Try again';
+
+  @override
+  String get hostOrganizerPageTitle => 'Your page';
+
+  @override
+  String get hostOrganizerPagePreview => 'Preview';
+
+  @override
+  String get hostOrganizerPageLogoNote =>
+      'Your logo shows on your page, every poster and in guests’ tickets.';
+
+  @override
+  String get hostOrganizerPageChangeLogo => 'Change logo';
+
+  @override
+  String get hostOrganizerPagePhotos => 'Photos';
+
+  @override
+  String get hostOrganizerPagePhotoAdd => 'Add';
+
+  @override
+  String get hostOrganizerPagePhotosNote =>
+      'Tap a photo to take it off your page.';
+
+  @override
+  String get hostOrganizerPagePhotoRemove => 'Remove photo';
+
+  @override
+  String get hostOrganizerPagePhotoRemoveTitle => 'Remove this photo?';
+
+  @override
+  String get hostOrganizerPagePhotoRemoveBody =>
+      'It comes off your page straight away.';
+
+  @override
+  String get hostOrganizerPagePhotoFailed =>
+      'That picture didn’t upload. Try again.';
+
+  @override
+  String get hostOrganizerPageName => 'Name';
+
+  @override
+  String get hostOrganizerPageAbout => 'About';
+
+  @override
+  String get hostOrganizerPageArea => 'Where you run things';
+
+  @override
+  String get hostOrganizerPageFormats => 'What you run';
+
+  @override
+  String get hostOrganizerFormatGames => 'Quizzes';
+
+  @override
+  String get hostOrganizerFormatRun => 'Social runs';
+
+  @override
+  String get hostOrganizerFormatDinner => 'Suppers';
+
+  @override
+  String get hostOrganizerFormatCourts => 'Racket sports';
+
+  @override
+  String get hostOrganizerFormatNightsOut => 'Parties';
+
+  @override
+  String get hostOrganizerPageLinks => 'Links';
+
+  @override
+  String get hostOrganizerPageInstagram => 'Instagram';
+
+  @override
+  String get hostOrganizerPagePhone => 'Phone';
+
+  @override
+  String get hostOrganizerPageEmail => 'Email';
+
+  @override
+  String get hostOrganizerPageOnYourPage => 'On your page';
+
+  @override
+  String get hostOrganizerPageListed =>
+      'Show your page in Catch and on the web';
+
+  @override
+  String get hostOrganizerPageListedNote =>
+      'Off keeps it private until you are ready';
+
+  @override
+  String get hostOrganizerPageSave => 'Save changes';
+
+  @override
+  String get hostOrganizerPageDiscard => 'Discard';
+
+  @override
+  String get hostOrganizerPageSaved => 'Your page is saved';
+
+  @override
+  String get hostOrganizerPaymentsTitle => 'Payments and billing';
+
+  @override
+  String get hostOrganizerPaymentsOwnerOnlyTitle => 'Only the owner sees money';
+
+  @override
+  String get hostOrganizerPaymentsOwnerOnlyBody =>
+      'Razorpay, your Catch bill and the plan are for the organiser’s owner.';
+
+  @override
+  String get hostOrganizerRazorpayTitle => 'Guests pay you directly';
+
+  @override
+  String get hostOrganizerRazorpayConnected => 'Connected';
+
+  @override
+  String get hostOrganizerRazorpayConnecting => 'Connecting';
+
+  @override
+  String get hostOrganizerRazorpayNeedsReconnect => 'Needs reconnecting';
+
+  @override
+  String get hostOrganizerRazorpayNotConnected => 'Not connected';
+
+  @override
+  String get hostOrganizerRazorpayReadyBody =>
+      'Ticket money goes into your own Razorpay account, and Razorpay sends it to your bank. Catch never holds it.';
+
+  @override
+  String get hostOrganizerRazorpayConnectBody =>
+      'Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.';
+
+  @override
+  String get hostOrganizerRazorpayUnavailable =>
+      'Razorpay connections aren’t open for your organiser yet.';
+
+  @override
+  String get hostOrganizerRazorpayConnect => 'Connect Razorpay';
+
+  @override
+  String get hostOrganizerRazorpayReconnect => 'Reconnect Razorpay';
+
+  @override
+  String get hostOrganizerRazorpayRefresh => 'Check again';
+
+  @override
+  String get hostOrganizerRazorpayFailed =>
+      'We couldn’t reach Razorpay. Try again.';
+
+  @override
+  String get hostOrganizerRazorpayDisconnect => 'Disconnect';
+
+  @override
+  String get hostOrganizerRazorpayDisconnectTitle => 'Disconnect Razorpay?';
+
+  @override
+  String get hostOrganizerRazorpayDisconnectBody =>
+      'Guests can’t pay for events, forms or memberships until you connect an account again.';
+
+  @override
+  String hostOrganizerBillKicker({required String month}) {
+    return 'Your Catch bill · $month';
+  }
+
+  @override
+  String get hostOrganizerBillKickerNone => 'Your Catch bill';
+
+  @override
+  String get hostOrganizerBillNoneBody =>
+      'No bills yet. Catch bills you once a month, for the month before.';
+
+  @override
+  String hostOrganizerBillBody({required String sales}) {
+    return 'On $sales in ticket sales, after refunds.';
+  }
+
+  @override
+  String hostOrganizerBillBodyDue({
+    required String sales,
+    required String date,
+  }) {
+    return 'On $sales in ticket sales, after refunds. Due on $date.';
+  }
+
+  @override
+  String get hostOrganizerBillMeter => 'Catch bill this cycle';
+
+  @override
+  String hostOrganizerBillCapLeft({
+    required String remaining,
+    required String cap,
+  }) {
+    return '$remaining to the $cap cap. After that, nothing more this cycle.';
+  }
+
+  @override
+  String hostOrganizerBillCapReached({required String cap}) {
+    return 'You reached the $cap cap. Nothing more this cycle.';
+  }
+
+  @override
+  String get hostOrganizerBillPay => 'Pay this bill';
+
+  @override
+  String get hostOrganizerPlanTitle => 'Your plan';
+
+  @override
+  String get hostOrganizerPlanCompare => 'Compare plans';
+
+  @override
+  String get hostOrganizerPlanBody =>
+      'What Catch charges, and the tools-only plan, are on the Catch website.';
+
+  @override
+  String get hostOrganizerBillsTitle => 'Bills';
+
+  @override
+  String get hostOrganizerBillsEmpty => 'No bills yet.';
+
+  @override
+  String get hostOrganizerBillsFailed => 'We couldn’t load your bills.';
+
+  @override
+  String get hostOrganizerBillDue => 'Due';
+
+  @override
+  String get hostOrganizerBillOverdue => 'Overdue';
+
+  @override
+  String get hostOrganizerBillPaid => 'Paid';
+
+  @override
+  String get hostOrganizerBillWrittenOff => 'Written off';
+
+  @override
+  String get hostOrganizerBillFree => 'Free';
+
+  @override
+  String get hostOrganizerBillTrial => 'Your first 30 days';
+
+  @override
+  String hostOrganizerBillCapped({required String sales}) {
+    return '$sales in sales, capped';
+  }
+
+  @override
+  String hostOrganizerBillSales({required String sales, required int events}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      events,
+      locale: localeName,
+      other: '$sales in sales · $events events',
+      one: '$sales in sales · 1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostOrganizerSetUpTitle => 'Set up';
+
+  @override
+  String get hostOrganizerSetUpRazorpay => 'Razorpay account';
+
+  @override
+  String get hostOrganizerSetUpRazorpayNote => 'Where guests’ payments go';
+
+  @override
+  String get hostOrganizerSetUpRefunds => 'Refunds';
+
+  @override
+  String get hostOrganizerSetUpRefundsNote => 'Your default for new events';
+
+  @override
+  String get hostOrganizerTeamTitle => 'Team';
+
+  @override
+  String get hostOrganizerTeamYou => 'You';
+
+  @override
+  String get hostOrganizerTeamRoleOwner => 'Owner';
+
+  @override
+  String get hostOrganizerTeamRoleHost => 'Host';
+
+  @override
+  String get hostOrganizerTeamEmpty => 'Nobody on the team yet.';
+
+  @override
+  String get hostOrganizerTeamChangeBody =>
+      'Hand the organiser over, or take them off the team.';
+
+  @override
+  String get hostOrganizerTeamMakeOwner => 'Make owner';
+
+  @override
+  String hostOrganizerTeamMakeOwnerTitle({required String name}) {
+    return 'Make $name the owner?';
+  }
+
+  @override
+  String get hostOrganizerTeamMakeOwnerBody =>
+      'They get Razorpay, the Catch bill and the team. You stay on as a host.';
+
+  @override
+  String get hostOrganizerTeamRemove => 'Remove';
+
+  @override
+  String hostOrganizerTeamRemoveTitle({required String name}) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get hostOrganizerTeamRemoveBody =>
+      'They stop seeing this organiser’s events, guests and messages.';
+
+  @override
+  String get hostOrganizerInviteTitle => 'Invite someone';
+
+  @override
+  String get hostOrganizerInvitePhone => 'Their phone number';
+
+  @override
+  String get hostOrganizerInvitePhonePlaceholder => '98201 44718';
+
+  @override
+  String get hostOrganizerInviteNote =>
+      'Hosts create and run events and message guests. They don’t see money.';
+
+  @override
+  String get hostOrganizerInviteSend => 'Add as a host';
+
+  @override
+  String get hostOrganizerInviteSent => 'Added to your team';
+
+  @override
+  String get hostOrganizerRolesTitle => 'What each role can do';
+
+  @override
+  String get hostOrganizerRoleCheckIn => 'Check guests in';
+
+  @override
+  String get hostOrganizerRoleLive => 'Run the live screens';
+
+  @override
+  String get hostOrganizerRoleEvents => 'Create events, message guests';
+
+  @override
+  String get hostOrganizerRoleMoney => 'Money, plan and team';
+
+  @override
+  String get hostOrganizerRoleOwnerAndHost => 'Owner · Host';
+
+  @override
+  String get hostOrganizerRolesNote =>
+      'Door staff are added to each event, and wedding and trip staff inside each programme. They only see their own jobs.';
+
+  @override
+  String get hostOrganizerSettingsTitle => 'Settings';
+
+  @override
+  String get hostOrganizerSettingsNotifyTitle => 'Tell me when';
+
+  @override
+  String get hostOrganizerSettingsNotifyKicker =>
+      'On your phone. Guests’ messages also arrive in People.';
+
+  @override
+  String get hostOrganizerSettingsNotifyMessages => 'A guest messages you';
+
+  @override
+  String get hostOrganizerSettingsAccountTitle => 'Account';
+
+  @override
+  String get hostOrganizerSettingsName => 'Your name';
+
+  @override
+  String get hostOrganizerSettingsPhone => 'Phone';
+
+  @override
+  String get hostOrganizerSettingsOrganizers => 'Organisers you run';
+
+  @override
+  String get hostOrganizerSettingsDelete => 'Delete your account';
+
+  @override
+  String get hostOrganizerSettingsHelpTitle => 'Help';
+
+  @override
+  String get hostOrganizerSettingsGuides => 'Guides';
+
+  @override
+  String get hostOrganizerSettingsTerms => 'Terms';
+
+  @override
+  String get hostOrganizerSettingsPrivacy => 'Privacy';
+
+  @override
+  String get hostOrganizerSettingsSignOut => 'Sign out';
+
+  @override
+  String hostOrganizerSettingsVersion({required String version}) {
+    return 'Catch Host · version $version';
+  }
+
+  @override
+  String get hostOrganizerProfileTitle => 'Your host profile';
+
+  @override
+  String get hostOrganizerProfileName => 'Your name';
+
+  @override
+  String get hostOrganizerProfileRole => 'What you do';
+
+  @override
+  String get hostOrganizerProfileBio => 'About you';
+
+  @override
+  String get hostOrganizerProfileSave => 'Save';
+
+  @override
+  String hostOrganizerMembershipMembers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+      zero: 'No members yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostOrganizerMembershipPlansEmpty => 'No plans yet.';
+
+  @override
+  String get hostOrganizerMembershipsFailed =>
+      'We couldn’t load your memberships.';
+
+  @override
   String get hostWorkShellTitle => 'Work';
 
   @override

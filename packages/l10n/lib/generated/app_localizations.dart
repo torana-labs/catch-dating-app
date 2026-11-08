@@ -33335,6 +33335,978 @@ abstract class AppLocalizations {
   /// **'Rehearse this event'**
   String get hostTodayRehearseThisEvent;
 
+  /// Organiser tab kicker: where the organizer runs things and the year it joined.
+  ///
+  /// In en, this message translates to:
+  /// **'{area} · since {year}'**
+  String hostOrganizerKicker({required String area, required String year});
+
+  /// Organiser tab kicker when the organizer has no area.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {year}'**
+  String hostOrganizerSince({required String year});
+
+  /// Organiser tab top bar button that opens the organizer switcher.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch organiser'**
+  String get hostOrganizerSwitch;
+
+  /// Organiser tab section title for the public page tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page'**
+  String get hostOrganizerYourPageTitle;
+
+  /// Badge on the page tile: the public page is published.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostOrganizerPageLive;
+
+  /// Badge on the page tile: the public page is not published.
+  ///
+  /// In en, this message translates to:
+  /// **'Not live'**
+  String get hostOrganizerPageNotLive;
+
+  /// Page tile line when the public page has no address yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No link yet'**
+  String get hostOrganizerPageNoLink;
+
+  /// Page tile note under the page address.
+  ///
+  /// In en, this message translates to:
+  /// **'The link in your Instagram bio.'**
+  String get hostOrganizerPageNote;
+
+  /// Page tile button that opens Your page.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit page'**
+  String get hostOrganizerPageEdit;
+
+  /// Page tile button that opens the public page.
+  ///
+  /// In en, this message translates to:
+  /// **'View page'**
+  String get hostOrganizerPageView;
+
+  /// Page tile share button label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your page'**
+  String get hostOrganizerPageShare;
+
+  /// Organiser tab section title for the thirty-day stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get hostOrganizerLastThirtyDaysTitle;
+
+  /// Organiser tab section action that opens Insights.
+  ///
+  /// In en, this message translates to:
+  /// **'All insights'**
+  String get hostOrganizerAllInsights;
+
+  /// Organiser tab stat: bookings in the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get hostOrganizerStatBookings;
+
+  /// Organiser tab stat: ticket sales in the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket sales'**
+  String get hostOrganizerStatTicketSales;
+
+  /// Organiser tab stat: people who follow the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get hostOrganizerStatFollowers;
+
+  /// Organiser tab stat: views of the organizer page in the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Page visits'**
+  String get hostOrganizerStatPageVisits;
+
+  /// Organiser tab section title over the organizer settings rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Running {name}'**
+  String hostOrganizerRunningTitle({required String name});
+
+  /// Organiser tab row that opens Payments and billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments and billing'**
+  String get hostOrganizerRowPayments;
+
+  /// Organiser tab Payments row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay your Razorpay; your Catch bill'**
+  String get hostOrganizerRowPaymentsNote;
+
+  /// Organiser tab row that opens Team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get hostOrganizerRowTeam;
+
+  /// Organiser tab Team row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can run the door and live screens'**
+  String get hostOrganizerRowTeamNote;
+
+  /// Organiser tab Team row value: how many people are on the team.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostOrganizerRowTeamCount({required int count});
+
+  /// Organiser tab row that opens Memberships.
+  ///
+  /// In en, this message translates to:
+  /// **'Memberships'**
+  String get hostOrganizerRowMemberships;
+
+  /// Organiser tab Memberships row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid plans for your regulars'**
+  String get hostOrganizerRowMembershipsNote;
+
+  /// Organiser tab row that opens Event defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults'**
+  String get hostOrganizerRowDefaults;
+
+  /// Organiser tab Event defaults row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting price, places, refunds and questions for new events'**
+  String get hostOrganizerRowDefaultsNote;
+
+  /// Organiser tab row that starts a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse a night'**
+  String get hostOrganizerRowRehearse;
+
+  /// Organiser tab Rehearse row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the door and live screens with made-up guests'**
+  String get hostOrganizerRowRehearseNote;
+
+  /// Organiser tab section title over the host account rows.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get hostOrganizerYouTitle;
+
+  /// Organiser tab row that opens Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get hostOrganizerRowSettings;
+
+  /// Organiser tab Settings row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications and your account'**
+  String get hostOrganizerRowSettingsNote;
+
+  /// Organiser tab row that opens the help page.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get hostOrganizerRowHelp;
+
+  /// Organiser tab Help row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guides for running your nights'**
+  String get hostOrganizerRowHelpNote;
+
+  /// Back button label on the organizer screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostOrganizerBack;
+
+  /// Cancel button in organizer screen dialogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostOrganizerCancel;
+
+  /// Retry action on an organizer screen notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostOrganizerRetry;
+
+  /// Your page top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page'**
+  String get hostOrganizerPageTitle;
+
+  /// Your page top bar action that previews the public page.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get hostOrganizerPagePreview;
+
+  /// Your page note beside the logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your logo shows on your page, every poster and in guests’ tickets.'**
+  String get hostOrganizerPageLogoNote;
+
+  /// Your page button that picks a new logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get hostOrganizerPageChangeLogo;
+
+  /// Your page label over the photo tiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get hostOrganizerPagePhotos;
+
+  /// Your page tile that adds photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostOrganizerPagePhotoAdd;
+
+  /// Your page note under the photo tiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a photo to take it off your page.'**
+  String get hostOrganizerPagePhotosNote;
+
+  /// Your page action that removes a photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get hostOrganizerPagePhotoRemove;
+
+  /// Your page dialog title before a photo is removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this photo?'**
+  String get hostOrganizerPagePhotoRemoveTitle;
+
+  /// Your page dialog body before a photo is removed.
+  ///
+  /// In en, this message translates to:
+  /// **'It comes off your page straight away.'**
+  String get hostOrganizerPagePhotoRemoveBody;
+
+  /// Your page notice when a logo or photo upload fails.
+  ///
+  /// In en, this message translates to:
+  /// **'That picture didn’t upload. Try again.'**
+  String get hostOrganizerPagePhotoFailed;
+
+  /// Your page field: the organizer name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostOrganizerPageName;
+
+  /// Your page field: the organizer description.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get hostOrganizerPageAbout;
+
+  /// Your page field: the area the organizer runs events in.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you run things'**
+  String get hostOrganizerPageArea;
+
+  /// Your page label over the kinds of night.
+  ///
+  /// In en, this message translates to:
+  /// **'What you run'**
+  String get hostOrganizerPageFormats;
+
+  /// Your page kind of night: quizzes and games.
+  ///
+  /// In en, this message translates to:
+  /// **'Quizzes'**
+  String get hostOrganizerFormatGames;
+
+  /// Your page kind of night: runs and movement.
+  ///
+  /// In en, this message translates to:
+  /// **'Social runs'**
+  String get hostOrganizerFormatRun;
+
+  /// Your page kind of night: suppers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppers'**
+  String get hostOrganizerFormatDinner;
+
+  /// Your page kind of night: racket sports.
+  ///
+  /// In en, this message translates to:
+  /// **'Racket sports'**
+  String get hostOrganizerFormatCourts;
+
+  /// Your page kind of night: nights out.
+  ///
+  /// In en, this message translates to:
+  /// **'Parties'**
+  String get hostOrganizerFormatNightsOut;
+
+  /// Your page section title over the contact links.
+  ///
+  /// In en, this message translates to:
+  /// **'Links'**
+  String get hostOrganizerPageLinks;
+
+  /// Your page field: the Instagram handle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get hostOrganizerPageInstagram;
+
+  /// Your page field: the public phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostOrganizerPagePhone;
+
+  /// Your page field: the public email address.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostOrganizerPageEmail;
+
+  /// Your page section title over what the page shows.
+  ///
+  /// In en, this message translates to:
+  /// **'On your page'**
+  String get hostOrganizerPageOnYourPage;
+
+  /// Your page switch that publishes the page.
+  ///
+  /// In en, this message translates to:
+  /// **'Show your page in Catch and on the web'**
+  String get hostOrganizerPageListed;
+
+  /// Your page switch subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Off keeps it private until you are ready'**
+  String get hostOrganizerPageListedNote;
+
+  /// Your page dock button that saves the page.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get hostOrganizerPageSave;
+
+  /// Your page dock button that drops unsaved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get hostOrganizerPageDiscard;
+
+  /// Your page notice after a save.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page is saved'**
+  String get hostOrganizerPageSaved;
+
+  /// Payments and billing top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments and billing'**
+  String get hostOrganizerPaymentsTitle;
+
+  /// Payments notice title for a host who is not the owner.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the owner sees money'**
+  String get hostOrganizerPaymentsOwnerOnlyTitle;
+
+  /// Payments notice body for a host who is not the owner.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay, your Catch bill and the plan are for the organiser’s owner.'**
+  String get hostOrganizerPaymentsOwnerOnlyBody;
+
+  /// Payments Razorpay tile title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay you directly'**
+  String get hostOrganizerRazorpayTitle;
+
+  /// Razorpay status: connected and taking payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get hostOrganizerRazorpayConnected;
+
+  /// Razorpay status: waiting for the Razorpay sign-in to finish.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting'**
+  String get hostOrganizerRazorpayConnecting;
+
+  /// Razorpay status: the connection can no longer take payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs reconnecting'**
+  String get hostOrganizerRazorpayNeedsReconnect;
+
+  /// Razorpay status: no connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get hostOrganizerRazorpayNotConnected;
+
+  /// Razorpay tile body when connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket money goes into your own Razorpay account, and Razorpay sends it to your bank. Catch never holds it.'**
+  String get hostOrganizerRazorpayReadyBody;
+
+  /// Razorpay tile body before it is connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.'**
+  String get hostOrganizerRazorpayConnectBody;
+
+  /// Razorpay tile body when connections are unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay connections aren’t open for your organiser yet.'**
+  String get hostOrganizerRazorpayUnavailable;
+
+  /// Razorpay tile button that starts the Razorpay sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Razorpay'**
+  String get hostOrganizerRazorpayConnect;
+
+  /// Razorpay tile button that replaces a broken connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Razorpay'**
+  String get hostOrganizerRazorpayReconnect;
+
+  /// Razorpay tile button that refreshes the connection status.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostOrganizerRazorpayRefresh;
+
+  /// Razorpay notice when the connection read or a command fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t reach Razorpay. Try again.'**
+  String get hostOrganizerRazorpayFailed;
+
+  /// Razorpay dialog button that disconnects the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get hostOrganizerRazorpayDisconnect;
+
+  /// Razorpay dialog title before disconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect Razorpay?'**
+  String get hostOrganizerRazorpayDisconnectTitle;
+
+  /// Razorpay dialog body before disconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can’t pay for events, forms or memberships until you connect an account again.'**
+  String get hostOrganizerRazorpayDisconnectBody;
+
+  /// Payments bill spotlight kicker with the month billed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Catch bill · {month}'**
+  String hostOrganizerBillKicker({required String month});
+
+  /// Payments bill spotlight kicker before the first bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Catch bill'**
+  String get hostOrganizerBillKickerNone;
+
+  /// Payments bill spotlight body before the first bill.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet. Catch bills you once a month, for the month before.'**
+  String get hostOrganizerBillNoneBody;
+
+  /// Payments bill spotlight body.
+  ///
+  /// In en, this message translates to:
+  /// **'On {sales} in ticket sales, after refunds.'**
+  String hostOrganizerBillBody({required String sales});
+
+  /// Payments bill spotlight body for a bill waiting to be paid.
+  ///
+  /// In en, this message translates to:
+  /// **'On {sales} in ticket sales, after refunds. Due on {date}.'**
+  String hostOrganizerBillBodyDue({
+    required String sales,
+    required String date,
+  });
+
+  /// Payments bill cap meter label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch bill this cycle'**
+  String get hostOrganizerBillMeter;
+
+  /// Payments line under the cap meter.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to the {cap} cap. After that, nothing more this cycle.'**
+  String hostOrganizerBillCapLeft({
+    required String remaining,
+    required String cap,
+  });
+
+  /// Payments line under the cap meter once the cap is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'You reached the {cap} cap. Nothing more this cycle.'**
+  String hostOrganizerBillCapReached({required String cap});
+
+  /// Payments button that opens the bill payment page.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay this bill'**
+  String get hostOrganizerBillPay;
+
+  /// Payments plan tile title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get hostOrganizerPlanTitle;
+
+  /// Payments plan tile button that opens the pricing page.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare plans'**
+  String get hostOrganizerPlanCompare;
+
+  /// Payments plan tile body.
+  ///
+  /// In en, this message translates to:
+  /// **'What Catch charges, and the tools-only plan, are on the Catch website.'**
+  String get hostOrganizerPlanBody;
+
+  /// Payments section title over the bills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get hostOrganizerBillsTitle;
+
+  /// Payments bills empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet.'**
+  String get hostOrganizerBillsEmpty;
+
+  /// Payments notice when the bills cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your bills.'**
+  String get hostOrganizerBillsFailed;
+
+  /// Bill status: sent and waiting to be paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get hostOrganizerBillDue;
+
+  /// Bill status: past its due date.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get hostOrganizerBillOverdue;
+
+  /// Bill status: paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get hostOrganizerBillPaid;
+
+  /// Bill status: written off by Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Written off'**
+  String get hostOrganizerBillWrittenOff;
+
+  /// Bill status: nothing to pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get hostOrganizerBillFree;
+
+  /// Bill row subtitle for a free trial month.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first 30 days'**
+  String get hostOrganizerBillTrial;
+
+  /// Bill row subtitle for a month that reached the cap.
+  ///
+  /// In en, this message translates to:
+  /// **'{sales} in sales, capped'**
+  String hostOrganizerBillCapped({required String sales});
+
+  /// Bill row subtitle: sales and events in the month.
+  ///
+  /// In en, this message translates to:
+  /// **'{events, plural, =1{{sales} in sales · 1 event} other{{sales} in sales · {events} events}}'**
+  String hostOrganizerBillSales({required String sales, required int events});
+
+  /// Payments section title over the setup rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up'**
+  String get hostOrganizerSetUpTitle;
+
+  /// Payments setup row for the Razorpay connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay account'**
+  String get hostOrganizerSetUpRazorpay;
+
+  /// Payments Razorpay row subtitle before it is connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Where guests’ payments go'**
+  String get hostOrganizerSetUpRazorpayNote;
+
+  /// Payments setup row that opens the event defaults for refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get hostOrganizerSetUpRefunds;
+
+  /// Payments Refunds row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your default for new events'**
+  String get hostOrganizerSetUpRefundsNote;
+
+  /// Team top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get hostOrganizerTeamTitle;
+
+  /// Team row subtitle for the signed-in host.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get hostOrganizerTeamYou;
+
+  /// Team role badge: the organizer owner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get hostOrganizerTeamRoleOwner;
+
+  /// Team role badge: a host.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get hostOrganizerTeamRoleHost;
+
+  /// Team empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody on the team yet.'**
+  String get hostOrganizerTeamEmpty;
+
+  /// Team dialog body listing what the owner can do to someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand the organiser over, or take them off the team.'**
+  String get hostOrganizerTeamChangeBody;
+
+  /// Team action that hands ownership to someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Make owner'**
+  String get hostOrganizerTeamMakeOwner;
+
+  /// Team dialog title before handing over ownership.
+  ///
+  /// In en, this message translates to:
+  /// **'Make {name} the owner?'**
+  String hostOrganizerTeamMakeOwnerTitle({required String name});
+
+  /// Team dialog body before handing over ownership.
+  ///
+  /// In en, this message translates to:
+  /// **'They get Razorpay, the Catch bill and the team. You stay on as a host.'**
+  String get hostOrganizerTeamMakeOwnerBody;
+
+  /// Team action that takes someone off the team.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostOrganizerTeamRemove;
+
+  /// Team dialog title before removing someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String hostOrganizerTeamRemoveTitle({required String name});
+
+  /// Team dialog body before removing someone.
+  ///
+  /// In en, this message translates to:
+  /// **'They stop seeing this organiser’s events, guests and messages.'**
+  String get hostOrganizerTeamRemoveBody;
+
+  /// Team section title over the invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite someone'**
+  String get hostOrganizerInviteTitle;
+
+  /// Team invite field: the phone number of the person to add.
+  ///
+  /// In en, this message translates to:
+  /// **'Their phone number'**
+  String get hostOrganizerInvitePhone;
+
+  /// Team invite field placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'98201 44718'**
+  String get hostOrganizerInvitePhonePlaceholder;
+
+  /// Team invite note on what a host can do.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts create and run events and message guests. They don’t see money.'**
+  String get hostOrganizerInviteNote;
+
+  /// Team invite button that adds the person as a host.
+  ///
+  /// In en, this message translates to:
+  /// **'Add as a host'**
+  String get hostOrganizerInviteSend;
+
+  /// Team notice after someone is added.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to your team'**
+  String get hostOrganizerInviteSent;
+
+  /// Team section title over the role table.
+  ///
+  /// In en, this message translates to:
+  /// **'What each role can do'**
+  String get hostOrganizerRolesTitle;
+
+  /// Team role table row.
+  ///
+  /// In en, this message translates to:
+  /// **'Check guests in'**
+  String get hostOrganizerRoleCheckIn;
+
+  /// Team role table row.
+  ///
+  /// In en, this message translates to:
+  /// **'Run the live screens'**
+  String get hostOrganizerRoleLive;
+
+  /// Team role table row.
+  ///
+  /// In en, this message translates to:
+  /// **'Create events, message guests'**
+  String get hostOrganizerRoleEvents;
+
+  /// Team role table row.
+  ///
+  /// In en, this message translates to:
+  /// **'Money, plan and team'**
+  String get hostOrganizerRoleMoney;
+
+  /// Team role table value: owners and hosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner · Host'**
+  String get hostOrganizerRoleOwnerAndHost;
+
+  /// Team note under the role table.
+  ///
+  /// In en, this message translates to:
+  /// **'Door staff are added to each event, and wedding and trip staff inside each programme. They only see their own jobs.'**
+  String get hostOrganizerRolesNote;
+
+  /// Settings top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get hostOrganizerSettingsTitle;
+
+  /// Settings section title over the notification switches.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell me when'**
+  String get hostOrganizerSettingsNotifyTitle;
+
+  /// Settings notification section kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'On your phone. Guests’ messages also arrive in People.'**
+  String get hostOrganizerSettingsNotifyKicker;
+
+  /// Settings switch for guest message notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest messages you'**
+  String get hostOrganizerSettingsNotifyMessages;
+
+  /// Settings section title over the account rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get hostOrganizerSettingsAccountTitle;
+
+  /// Settings row that edits the host profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get hostOrganizerSettingsName;
+
+  /// Settings row showing the account phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostOrganizerSettingsPhone;
+
+  /// Settings row listing the organizers the host runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisers you run'**
+  String get hostOrganizerSettingsOrganizers;
+
+  /// Settings row that deletes the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account'**
+  String get hostOrganizerSettingsDelete;
+
+  /// Settings section title over the help rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get hostOrganizerSettingsHelpTitle;
+
+  /// Settings row that opens the help guides.
+  ///
+  /// In en, this message translates to:
+  /// **'Guides'**
+  String get hostOrganizerSettingsGuides;
+
+  /// Settings row that opens the terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get hostOrganizerSettingsTerms;
+
+  /// Settings row that opens the privacy policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get hostOrganizerSettingsPrivacy;
+
+  /// Settings button that signs out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get hostOrganizerSettingsSignOut;
+
+  /// Settings line with the installed build.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch Host · version {version}'**
+  String hostOrganizerSettingsVersion({required String version});
+
+  /// Settings sheet title for the host profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your host profile'**
+  String get hostOrganizerProfileTitle;
+
+  /// Host profile sheet field: the display name.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get hostOrganizerProfileName;
+
+  /// Host profile sheet field: the role title.
+  ///
+  /// In en, this message translates to:
+  /// **'What you do'**
+  String get hostOrganizerProfileRole;
+
+  /// Host profile sheet field: the bio.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get hostOrganizerProfileBio;
+
+  /// Host profile sheet button that saves it.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get hostOrganizerProfileSave;
+
+  /// Membership plan row subtitle: active members.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No members yet} =1{1 member} other{{count} members}}'**
+  String hostOrganizerMembershipMembers({required int count});
+
+  /// Memberships plans empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No plans yet.'**
+  String get hostOrganizerMembershipPlansEmpty;
+
+  /// Memberships notice when the programme cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load your memberships.'**
+  String get hostOrganizerMembershipsFailed;
+
   /// Unified staff work shell title.
   ///
   /// In en, this message translates to:
