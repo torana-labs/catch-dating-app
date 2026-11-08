@@ -48,8 +48,10 @@ Future<List<OrganizerProgramListRow>> hostEventsProgrammes(
 }
 
 /// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. Nothing
-/// here refreshes on return; the listener keeps Upcoming current.
+/// past events through the events read owner, and the programmes. The
+/// listener keeps Upcoming current; the screen calls
+/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+/// saved or published there shows on return.
 @riverpod
 HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
   final upcomingValue = ref.watch(
@@ -100,6 +102,11 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
     historyFailed: (timeline?.hasError ?? false) || history?.pastError != null,
   );
 }
+
+/// Reads drafts and past events again, after Create or an event workspace
+/// returns to the tab.
+void refreshHostEventsHistory(WidgetRef ref) =>
+    ref.invalidate(hostEventsTimelineControllerProvider);
 
 /// Starts the Events reads again after one failed.
 void retryHostEventsReads(WidgetRef ref, HostEventsRequest request) {

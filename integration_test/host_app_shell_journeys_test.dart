@@ -4,7 +4,9 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
+import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
+import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
@@ -256,7 +258,7 @@ void main() {
     expect(find.byType(CreateTicketsScreen), findsOneWidget);
 
     // Back walks the steps; Close on the first returns to the Events tab,
-    // whose upcoming list listens to the saved event.
+    // which reads its drafts again on return: the saved event is a draft.
     await tester.tap(find.byTooltip('Back'));
     await pumpAppShellFrames(tester);
     await tester.tap(find.byTooltip('Back'));
@@ -264,6 +266,8 @@ void main() {
     await tester.tap(find.byTooltip('Close'));
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(CreateBasicsScreen), findsNothing);
+    await tester.tap(find.text('Drafts'));
+    await pumpAppShellFrames(tester, frames: 20);
     expect(find.text('Rooftop supper club'), findsWidgets);
     final reopenFrom = backend.functions.calls.length;
     await tester.tap(find.byKey(ValueKey('host-events-draft-$eventId')));
@@ -324,9 +328,23 @@ void main() {
 
     await tester.tap(find.byKey(ValueKey('host-events-tonight-${event.id}')));
     await pumpAppShellFrames(tester, frames: 30);
-    // The event workspace opens the door, which is the guest list.
-    await tester.tap(find.byKey(const ValueKey('host-event-ready-door')));
+    // The event workspace's Live view runs a night that is on now; its
+    // Guests view is the door, where guests are checked in.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(HostEventTabBar),
+        matching: find.text('Live'),
+      ),
+    );
     await pumpAppShellFrames(tester, frames: 30);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(EventSuccessLiveWorkspaceTabBar),
+        matching: find.text('Guests'),
+      ),
+    );
+    await pumpAppShellFrames(tester, frames: 30);
+    expect(find.byType(DoorScreen), findsOneWidget);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
     expect(find.text('0 of 2 in'), findsOneWidget);
