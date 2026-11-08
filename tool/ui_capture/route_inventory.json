@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "65b0f6686974805a4b0ba1c667223e2f5d277bd28a18079f2305f8e1e07b6eff",
+    "routeContractSha256": "b86a71b496e913d228303923ea6841377037fcb3c6ea3a5addb3f88601fbe49e",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -1632,8 +1632,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerTeamScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerTeamScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostOrganizerTeamScreen",
+      "presentationExpression": "(context,state)=>OrganizerTeamScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "OrganizerTeamScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1647,8 +1647,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerPaymentsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerPaymentsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostOrganizerPaymentsScreen",
+      "presentationExpression": "(context,state)=>OrganizerPaymentsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "OrganizerPaymentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1662,8 +1662,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerMembershipsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerMembershipsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostOrganizerMembershipsScreen",
+      "presentationExpression": "(context,state)=>OrganizerMembershipsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "OrganizerMembershipsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },

@@ -110,7 +110,28 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
         uri,
         initialOrganizerId: initialOrganizerId,
       ),
-      Routes.hostOrganizerScreen => hostOrganizerScreenForUri(uri),
+      // The rebuilt organizer screens sit in a task workspace so a pushed
+      // organizer destination takes the pane, as the legacy screen did.
+      Routes.hostOrganizerScreen => switch (uri.queryParameters['tab']) {
+        'page' || 'edit' when uri.queryParameters['editField'] == null =>
+          HostNavigationWorkspace(
+            spec: HostTaskWorkspace(
+              content: OrganizerPageEditScreen(initialOrganizerId: organizerId),
+            ),
+          ),
+        'settings' => HostNavigationWorkspace(
+          spec: HostTaskWorkspace(
+            content: OrganizerSettingsScreen(initialOrganizerId: organizerId),
+          ),
+        ),
+        null when uri.queryParameters['editField'] == null =>
+          HostNavigationWorkspace(
+            spec: HostTaskWorkspace(
+              content: OrganizerScreen(initialOrganizerId: organizerId),
+            ),
+          ),
+        _ => hostOrganizerScreenForUri(uri),
+      },
       _ => throw StateError('Not a Host workspace root: $root'),
     };
   }
