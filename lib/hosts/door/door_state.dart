@@ -28,6 +28,7 @@ class DoorState {
     this.filter = DoorFilter.arriving,
     this.query = '',
     this.needsReview = 0,
+    this.scannedAttendeeId,
     this.error,
     this.stackTrace,
   });
@@ -49,6 +50,9 @@ class DoorState {
   /// Attendance changes on this phone the server refused; the host looks
   /// at them before they are dropped.
   final int needsReview;
+
+  /// The guest the last scanned ticket checked in.
+  final String? scannedAttendeeId;
   final Object? error;
   final StackTrace? stackTrace;
 
@@ -64,6 +68,12 @@ class DoorState {
 
   int get checkedIn => countOf(DoorFilter.checkedIn);
 
+  /// The row of the guest the last scanned ticket checked in, for the
+  /// scanner's success sheet.
+  HostDoorGuest? get scanned => scannedAttendeeId == null
+      ? null
+      : guests.where((g) => g.attendeeId == scannedAttendeeId).firstOrNull;
+
   /// Everyone booked for tonight: in or still to come.
   int get expected => checkedIn + countOf(DoorFilter.arriving);
 
@@ -74,6 +84,7 @@ class DoorState {
     filter: filter ?? this.filter,
     query: query ?? this.query,
     needsReview: needsReview,
+    scannedAttendeeId: scannedAttendeeId,
     error: error,
     stackTrace: stackTrace,
   );

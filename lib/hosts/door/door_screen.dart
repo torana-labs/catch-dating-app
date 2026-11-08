@@ -94,7 +94,14 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
           checkedIn: state.checkedIn,
           expected: state.expected,
           camera: widget.scanCamera,
-          onClose: () => setState(() => _scanning = false),
+          result: state.scanned,
+          onTicket: _session.scanTicket,
+          onNext: _session.clearScanned,
+          onUndo: () => unawaited(_guard(_session.undoScanned)),
+          onClose: () {
+            _session.clearScanned();
+            setState(() => _scanning = false);
+          },
         ),
       );
     }

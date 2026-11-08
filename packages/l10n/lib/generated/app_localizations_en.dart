@@ -23216,6 +23216,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get doorScanCancelled => 'That ticket was cancelled.';
+
+  @override
+  String get doorScanNotBooked =>
+      'That guest does not have a place tonight yet.';
+
+  @override
+  String get doorScanUnavailable => 'Could not read that ticket. Try again.';
+
+  @override
+  String get eventTicketCodeHint => 'Show this at the door';
+
+  @override
+  String get eventTicketCodeQrLabel => 'Your ticket code';
+
+  @override
   String hostEventsRowMeta({
     required Object time,
     required int booked,

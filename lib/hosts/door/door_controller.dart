@@ -3,13 +3,16 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_ticket_code_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -31,6 +34,7 @@ class DoorSessionState {
     this.outbox = const HostAttendanceOutboxSummary([]),
     this.flips = const <String, bool>{},
     this.awaiting = const <String, DoorAwaiting>{},
+    this.scannedAttendeeId,
   });
 
   final DoorFilter filter;
@@ -45,18 +49,27 @@ class DoorSessionState {
   /// shows their result.
   final Map<String, DoorAwaiting> awaiting;
 
+  /// The guest the last scanned ticket checked in, while the scanner's
+  /// success sheet shows them.
+  final String? scannedAttendeeId;
+
   DoorSessionState copyWith({
     DoorFilter? filter,
     String? query,
     HostAttendanceOutboxSummary? outbox,
     Map<String, bool>? flips,
     Map<String, DoorAwaiting>? awaiting,
+    String? scannedAttendeeId,
+    bool clearScanned = false,
   }) => DoorSessionState(
     filter: filter ?? this.filter,
     query: query ?? this.query,
     outbox: outbox ?? this.outbox,
     flips: flips ?? this.flips,
     awaiting: awaiting ?? this.awaiting,
+    scannedAttendeeId: clearScanned
+        ? null
+        : scannedAttendeeId ?? this.scannedAttendeeId,
   );
 }
 
@@ -136,6 +149,49 @@ class DoorSession extends _$DoorSession {
       }
       rethrow;
     }
+  }
+
+  /// Checks in the guest a scanned ticket names: the server says whose
+  /// ticket it is, and the attendance outbox checks them in like a tap on
+  /// their row. Returns why nobody was checked in, or null when the success
+  /// sheet now shows the guest.
+  Future<DoorScanNotice?> scanTicket(String ticketCode) async {
+    final EventTicketResolution ticket;
+    try {
+      ticket = await ref
+          .read(eventTicketCodeRepositoryProvider)
+          .resolveTicketCode(eventId: eventId, ticketCode: ticketCode);
+    } catch (error) {
+      return doorTicketNoticeFor(error);
+    }
+    if (!ref.mounted) return null;
+    if (ticket.eventId != eventId) return DoorScanNotice.otherEvent;
+    if (ticket.status == EventAttendeeStatus.invited ||
+        ticket.status == EventAttendeeStatus.waitlisted) {
+      return DoorScanNotice.notBooked;
+    }
+    final attendee = ref
+        .read(watchEventAttendeesProvider(eventId))
+        .value
+        ?.where((attendee) => attendee.id == ticket.attendeeId)
+        .firstOrNull;
+    if (attendee == null) return DoorScanNotice.notBooked;
+    state = state.copyWith(scannedAttendeeId: ticket.attendeeId);
+    if (!attendee.isCheckedIn && !ticket.isCheckedIn) {
+      await toggleAttendance(ticket.attendeeId);
+    }
+    return null;
+  }
+
+  /// Lets the success sheet go, for the next ticket.
+  void clearScanned() => state = state.copyWith(clearScanned: true);
+
+  /// Undoes the check-in the last scanned ticket made.
+  Future<void> undoScanned() async {
+    final attendeeId = state.scannedAttendeeId;
+    if (attendeeId == null) return;
+    state = state.copyWith(clearScanned: true);
+    await toggleAttendance(attendeeId);
   }
 
   /// Approves a guest's request to join.
@@ -231,6 +287,19 @@ class DoorSession extends _$DoorSession {
   }
 }
 
+/// What the scanner says when the server would not resolve a ticket.
+DoorScanNotice doorTicketNoticeFor(Object error) {
+  final reason = backendCallableErrorDetails(
+    error,
+    code: 'failed-precondition',
+  )?['reason'];
+  return switch (reason) {
+    'invalidTicket' => DoorScanNotice.notATicket,
+    'ticketCancelled' => DoorScanNotice.cancelled,
+    _ => DoorScanNotice.unavailable,
+  };
+}
+
 /// A fresh idempotency key for one attendance change.
 String doorOperationId(String attendeeId) =>
     'door_${attendeeId.hashCode.abs().toRadixString(36)}_'
@@ -271,6 +340,7 @@ DoorState doorController(Ref ref, String eventId) {
     filter: session.filter,
     query: session.query,
     needsReview: session.outbox.needsReviewCount,
+    scannedAttendeeId: session.scannedAttendeeId,
   );
 }
 

@@ -123,5 +123,7 @@ void main() {
       doorScanNoticeFor(EventCheckInQrScanResult.matchedVenueSession),
       DoorScanNotice.eventCode,
     );
+    // A ticket is resolved by the door, not answered by the scanner.
+    expect(doorScanNoticeFor(EventCheckInQrScanResult.matchedTicket), isNull);
   });
 }

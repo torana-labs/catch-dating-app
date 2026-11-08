@@ -70,7 +70,7 @@ final class DoorSessionProvider
   }
 }
 
-String _$doorSessionHash() => r'ffae949fd59b34ff17dc06b2bff9724093f016eb';
+String _$doorSessionHash() => r'46d7da91baaae904ad8bea26c8f76f838f767746';
 
 /// The door's commands and local state. Check-in and undo go through the
 /// attendance outbox; let in and offer through the roster commands. After
@@ -204,7 +204,7 @@ final class DoorControllerProvider
   }
 }
 
-String _$doorControllerHash() => r'7f14a4786a3b7278b6422a2145f1edfcccf16956';
+String _$doorControllerHash() => r'c9a2bae6ffeaff038d57bc30599063f7108e85b8';
 
 /// The door for one event, composed from its listeners: the attendees
 /// (who is booked and who is in), the participations (who is waiting or
