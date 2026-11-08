@@ -1054,6 +1054,10 @@ function renderCtorParam(field) {
   // exceed the 80-column page width: annotations go on their own line, the
   // declaration on the next. Emit that form directly so output is stable.
   if (annotationsText && oneLine.length > 80) {
+    // When the annotations alone overflow too, each takes its own line.
+    if (`    ${annotationsText}`.length > 80) {
+      return [...annotations, decl].map((line) => `    ${line}`).join("\n");
+    }
     return `    ${annotationsText}\n    ${decl}`;
   }
   return oneLine;

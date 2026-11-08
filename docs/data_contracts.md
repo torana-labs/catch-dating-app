@@ -2254,7 +2254,15 @@ reads false), `planVisibleToGuests` (missing reads true) and
 `publicationState` with a changed setting saves only the setting and leaves
 registration as it is. Link-only events keep their own event page but are left
 out of Explore (client filter: a list rule cannot exclude them without a
-field on every event), Algolia and the organizer page lists. The details
+field on every event), Algolia, the organizer page lists, and the website's
+live readers (server lists, sitemap and the live listing feed). Guests see
+the settings: the app and website event pages hide "Who's going" when
+`showGuestList` is false, show no price while `priceHiddenUntilBookingOpens`
+is set and Catch registration is closed (the public projection carries
+`priceHidden`), and link out where `externalBooking` sells the tickets,
+tracked as an imported event's outbound link. The public catch-event
+projection carries `showGuestList: false`, `priceHidden: true` and
+`externalBooking` only when they differ from the defaults. The details
 command sets `planVisibleToGuests`, which the `eventSuccessPlans` read rule
 enforces for guests, and `externalBooking`, which keeps Catch registration
 closed and lets publishing skip Catch admission terms. Event preferences take
@@ -2264,14 +2272,27 @@ a resolved one appears only once chosen or set as an organizer default.
 Publishing applies them to the admission policy with the seat ledger: askFirst
 is the existing host-approval path (`manualApprovalRequired`), and a disabled
 waitlist makes `joinEventWaitlist` refuse joins except join requests on an
-askFirst event. `followersFirst` is stored but not enforced yet. Organizer
+askFirst event. Publishing with `followersFirst` sets the event's
+`followersFirstUntilMs` (start less 24 hours); until then
+`signUpUserForEvent`, the free website RSVP and the public checkout refuse
+non-followers with `failed-precondition` and `details.reason`
+`followersFirst` (a paid native fulfilment was checked before payment).
+`setEventPublication` also takes `bookingMode` on a published event and
+applies it under the published-edit rules (setup-revision fence, the seat
+ledger refusing while places are reserved); the setup view's
+`eventSettings.publishedBookingMode` reports it. Organizer
 defaults add `startingPriceMinor`, `places`, `waitlistEnabled`,
 `bookingMode`, `refundPolicy` (`flexible` 24 h, `standard` 3 days, `strict`
 none), `askedAtBooking` question ids and `autoMessages {thankYou, arrival}`;
-unset keys leave the defaults hash unchanged. `createPrivateEventSeries`
-creates a weekly series (2 to 8 events) through `createPrivateEventSetup`,
-one receipt per event under `requestId-index`, writing `seriesId` and
-`seriesIndex`. The setup view's trigger-owned `facts` state `ticketsSold`,
+unset keys leave the defaults hash unchanged. `createPrivateEventSetup` copies
+`askedAtBooking` onto the new event as `bookingQuestionIds`, and publishing
+arms the close-out thank-you (10:00 the morning after) and the event-start
+reminder when `autoMessages` asks for them, each create-only.
+`createPrivateEventSeries` creates a weekly series (2 to 8 events) through
+`createPrivateEventSetup`, one receipt per event under `requestId-index`,
+writing `seriesId` and `seriesIndex`; an optional `sourceEventId` tags that
+event as index 0 (setup revision untouched) and the new events count on from
+1. The setup view's trigger-owned `facts` state `ticketsSold`,
 `grossMinor` and `arrivalMessage.ready` (the event-start reminder moment is
 armed).
 
