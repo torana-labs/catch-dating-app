@@ -136,6 +136,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     ["host_apply", path.join("host", "apply", "index.html")],
     ["visitor_discovery", path.join("explore", "index.html")],
     ["event_offer", path.join("offer", "index.html")],
+    ["account", path.join("account", "index.html")],
     ["event_booking", path.join("booking", "index.html")],
     ["event_assistance", path.join("event-update", "index.html")],
     ["organizers", path.join("organizers", "index.html")],

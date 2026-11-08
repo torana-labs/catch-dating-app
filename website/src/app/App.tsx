@@ -42,7 +42,8 @@ import {eventPageFromListing} from "../features/events/eventPageFromListing";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
-import {PageShell} from "../shared/site";
+import {PageShell, SiteAccountActionProvider} from "../shared/site";
+import {SiteAccountAction} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
@@ -58,6 +59,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/eventRuntime/EventRuntimePage.tsx",
   "../features/events/PublicBookingPage.tsx",
   "../features/eventOffers/EventOfferPage.tsx",
+  "../features/account/AccountPage.tsx",
   "../features/eventAssistance/EventAssistancePage.tsx",
   "../features/eventRehearsal/EventRehearsalPage.tsx",
   "../features/events/EventInvitePage.tsx",
@@ -115,6 +117,9 @@ const PublicBookingPage = route(async () => ({
 const EventOfferPage = route(async () => ({
   default: (await import("../features/eventOffers/EventOfferPage")).EventOfferPage,
 }), "../features/eventOffers/EventOfferPage", "EventOfferPage");
+const AccountPage = route(async () => ({
+  default: (await import("../features/account/AccountPage")).AccountPage,
+}), "../features/account/AccountPage", "AccountPage");
 const EventAssistancePage = route(async () => ({
   default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
 }), "../features/eventAssistance/EventAssistancePage", "EventAssistancePage");
@@ -181,7 +186,9 @@ function App() {
       <PendingRequestProvider>
         <CustomFormDomainGate>
           <PublicEventListingsProvider>
-            <MarketingRouteShell />
+            <SiteAccountActionProvider value={<SiteAccountAction />}>
+              <MarketingRouteShell />
+            </SiteAccountActionProvider>
           </PublicEventListingsProvider>
         </CustomFormDomainGate>
       </PendingRequestProvider>
@@ -291,6 +298,7 @@ function CanonicalMarketingRouteShell() {
           />
           <Route path={marketingRoutePaths.event_booking} element={<PublicBookingPage />} />
           <Route path={marketingRoutePaths.event_offer} element={<EventOfferRoute />} />
+          <Route path={marketingRoutePaths.account} element={<AccountPage />} />
           <Route
             path={marketingRoutePaths.event_assistance}
             element={<EventAssistanceRoute />}
@@ -411,7 +419,7 @@ function CanonicalMarketingRouteShell() {
       {page === "event_runtime" || page === "event_rehearsal" ||
        page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
-       page === "household_rsvp" || page === "programme_link" ||
+       page === "household_rsvp" || page === "programme_link" || page === "account" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>

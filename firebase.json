@@ -203,6 +203,14 @@
           "destination": "/offer/index.html"
         },
         {
+          "source": "/account/**",
+          "destination": "/account/index.html"
+        },
+        {
+          "source": "/account",
+          "destination": "/account/index.html"
+        },
+        {
           "source": "/api/form-domain",
           "function": {
             "functionId": "resolvePublicFormDomain",

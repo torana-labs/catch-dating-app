@@ -1067,6 +1067,63 @@
       }
     },
     {
+      "id": "account",
+      "kind": "static",
+      "path": "/account/",
+      "pageKey": "account",
+      "source": "website/src/features/account/AccountPage.tsx",
+      "metaKey": "account",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The signed-in guest's account (no board; drawn from the system): Plans with passes (getEventTicketCode), Following, Reviews with verified state, Details, per-organiser Messages permissions and Privacy and data, read in one manageWebsiteAccount read with sections. Signed out it offers the sign-in sheet (phone code, Google, email link). Private shell: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "signed-out",
+          "loading",
+          "plans",
+          "plans-empty",
+          "pass",
+          "following",
+          "following-empty",
+          "reviews",
+          "reviews-empty",
+          "details",
+          "details-add-phone",
+          "messages",
+          "messages-empty",
+          "privacy",
+          "sign-in-sheet"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "signed-out",
+            "loading",
+            "plans",
+            "plans-empty",
+            "pass",
+            "following",
+            "following-empty",
+            "reviews",
+            "reviews-empty",
+            "details",
+            "details-add-phone",
+            "messages",
+            "messages-empty",
+            "privacy",
+            "sign-in-sheet"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "event_booking",
       "kind": "clientDynamic",
       "pathPattern": "/booking/:eventId/",

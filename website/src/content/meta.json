@@ -119,6 +119,13 @@
       "twitterDescription": "A private link from your wedding planner.",
       "robots": "noindex, follow"
     },
+    "account": {
+      "title": "Your account | Catch",
+      "description": "Your plans and passes, the organisers you follow, your reviews, your details and message settings.",
+      "canonicalPath": "/account/",
+      "twitterDescription": "Your Catch account.",
+      "robots": "noindex, follow"
+    },
     "event_offer": {
       "title": "Your event invitation | Catch",
       "description": "Verify your phone to open your private event invitation and check your booking.",

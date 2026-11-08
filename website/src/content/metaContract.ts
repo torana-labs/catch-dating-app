@@ -17,6 +17,7 @@ export const staticMetaKeys = [
   "event_invite",
   "household_rsvp",
   "programme_link",
+  "account",
   "public_form",
   "organizers",
   "claim",
