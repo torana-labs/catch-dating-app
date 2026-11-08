@@ -20,7 +20,6 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
@@ -33,7 +32,12 @@ import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_publish_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
+import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
@@ -576,9 +580,11 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostAppEventManageScreen,
     path: Routes.hostEventPublicationScreen.path,
     name: Routes.hostEventPublicationScreen.name,
-    builder: (context, state) => HostEventPublicationRouteScreen(
-      organizerId: state.pathParameters['organizerId']!,
-      eventId: state.pathParameters['eventId']!,
+    builder: (context, state) => HostEventPublishScreen(
+      request: HostEventRequest(
+        organizerId: state.pathParameters['organizerId']!,
+        eventId: state.pathParameters['eventId']!,
+      ),
     ),
   ),
   HostWorkspaceDestination(
@@ -894,7 +900,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerEventDefaultsScreen.path,
     name: Routes.hostOrganizerEventDefaultsScreen.name,
-    builder: (context, state) => HostOrganizerEventDefaultsScreen(
+    builder: (context, state) => HostEventDefaultsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -1012,7 +1018,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostEventRehearsalStartScreen,
     path: Routes.hostEventRehearsalScreen.path,
     name: Routes.hostEventRehearsalScreen.name,
-    builder: (context, state) => HostEventRehearsalScreen(
+    builder: (context, state) => HostRehearsalScreen(
       organizerId: state.pathParameters['organizerId']!,
       sessionId: state.pathParameters['sessionId']!,
     ),
@@ -1028,12 +1034,20 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.events,
     path: Routes.hostAppEventManageScreen.path,
     name: Routes.hostAppEventManageScreen.name,
-    builder: (context, state) => HostEventManageRouteScreen(
-      organizerId: state.pathParameters['organizerId']!,
-      eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
-      initialSection: _hostManageSectionFromState(state),
-    ),
+    builder: (context, state) {
+      final section = _hostManageSectionFromState(state);
+      return section == HostEventManageSection.setup
+          ? HostEventWorkspaceScreen(
+              organizerId: state.pathParameters['organizerId']!,
+              eventId: state.pathParameters['eventId']!,
+            )
+          : HostEventManageRouteScreen(
+              organizerId: state.pathParameters['organizerId']!,
+              eventId: state.pathParameters['eventId']!,
+              initialEvent: _routeEventExtra(state),
+              initialSection: section,
+            );
+    },
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,

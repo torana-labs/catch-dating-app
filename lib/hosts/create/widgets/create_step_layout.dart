@@ -7,8 +7,8 @@ import 'package:flutter/widgets.dart';
 /// One phone step: the step top bar (Close on the first step, Back after,
 /// "n of 4"), the body, and the bar dock with Next or Publish and Save
 /// draft. [overlay] is a contained sheet over the step.
-class CreateStepFrame extends StatelessWidget {
-  const CreateStepFrame({
+class CreateStepLayout extends StatelessWidget {
+  const CreateStepLayout({
     super.key,
     required this.state,
     required this.handlers,

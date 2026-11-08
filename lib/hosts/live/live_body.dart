@@ -91,7 +91,7 @@ class HostLiveBody extends StatelessWidget {
         break;
     }
 
-    final views = HostLiveViews(
+    final views = HostLiveViewTabBar(
       scores: state.scores && !expanded,
       room: state.room && expanded,
       onView: onView,
@@ -213,8 +213,8 @@ class HostLiveBody extends StatelessWidget {
 }
 
 /// Now, Guests and Scores on a phone; Now, Guests and Room on a tablet.
-class HostLiveViews extends StatelessWidget {
-  const HostLiveViews({
+class HostLiveViewTabBar extends StatelessWidget {
+  const HostLiveViewTabBar({
     super.key,
     required this.onView,
     this.selected = HostLiveView.now,

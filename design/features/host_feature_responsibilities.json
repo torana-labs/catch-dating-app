@@ -833,7 +833,8 @@
       "currentRoots": [
         "lib/hosts/presentation/host_operations",
         "lib/hosts/presentation/organizer_management",
-        "lib/hosts/presentation/payments"
+        "lib/hosts/presentation/payments",
+        "lib/hosts/insights"
       ],
       "additionalCodeOwners": [
         {
@@ -874,9 +875,15 @@
         },
         {
           "id": "insights",
-          "file": "lib/hosts/presentation/host_operations/host_organizer_insights_section.dart",
-          "symbol": "HostOrganizerInsightsSection",
-          "role": "Actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events."
+          "file": "lib/hosts/insights/host_insights_screen.dart",
+          "symbol": "HostInsightsScreen",
+          "role": "Actions: retry_insights, select_insights_range, open_insights_event_report."
+        },
+        {
+          "id": "event_report",
+          "file": "lib/hosts/insights/host_event_report_screen.dart",
+          "symbol": "HostEventReportScreen",
+          "role": "Actions: share_event_report, open_event_reviews, invite_event_guests, choose_event_guests, download_event_csv."
         },
         {
           "id": "payout_adapter",
@@ -969,7 +976,10 @@
         "test/hosts/host_team_management_controller_test.dart",
         "test/hosts/host_team_management_section_test.dart",
         "test/payments/host_payment_account_test.dart",
-        "test/hosts/host_operations_screen_test.dart"
+        "test/hosts/host_operations_screen_test.dart",
+        "test/hosts/insights/host_insights_body_test.dart",
+        "test/hosts/insights/host_event_report_body_test.dart",
+        "test/hosts/insights/host_insights_controller_test.dart"
       ]
     }
   ]

@@ -18,6 +18,7 @@ import 'package:catch_dating_app/event_success/event_success.dart'
         EventSuccessSpatialPreview,
         EventSuccessSpatialReassign;
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';

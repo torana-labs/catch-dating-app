@@ -140,6 +140,6 @@ void main() {
       tester.getTopLeft(find.text('Table 1')).dy,
       tester.getTopLeft(find.text('Table 2')).dy,
     );
-    expect(find.byType(HostLiveViews), findsOneWidget);
+    expect(find.byType(HostLiveViewTabBar), findsOneWidget);
   });
 }

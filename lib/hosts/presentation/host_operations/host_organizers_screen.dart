@@ -17,6 +17,10 @@ class HostOrganizersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Insights keeps the organizer route and its tab link, on its own screen.
+    if (effectiveInitialTab == HostOrganizerTab.insights) {
+      return HostInsightsScreen(initialOrganizerId: initialOrganizerId);
+    }
     final uidAsync = ref.watch(uidProvider);
     final selectedTab = effectiveInitialTab;
     return CatchAsyncBoundary<String?>(
