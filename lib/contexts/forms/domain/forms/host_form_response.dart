@@ -44,6 +44,7 @@ class HostFormResponseListRequest {
     this.limit = 25,
     this.answerFilters = const {},
     this.oldestFirst = false,
+    this.offeredOnly = false,
   });
 
   final String organizerId;
@@ -70,6 +71,10 @@ class HostFormResponseListRequest {
   final Map<String, Set<String>> answerFilters;
   final bool oldestFirst;
 
+  /// Only entries whose application has a live event offer. Read from the
+  /// response summaries; it needs [includeApplications] and no review filter.
+  final bool offeredOnly;
+
   HostFormResponseListRequest copyWith({String? cursor}) =>
       HostFormResponseListRequest(
         organizerId: organizerId,
@@ -91,6 +96,7 @@ class HostFormResponseListRequest {
         limit: limit,
         answerFilters: answerFilters,
         oldestFirst: oldestFirst,
+        offeredOnly: offeredOnly,
       );
 
   @override
@@ -114,6 +120,7 @@ class HostFormResponseListRequest {
       cursor == other.cursor &&
       limit == other.limit &&
       oldestFirst == other.oldestFirst &&
+      offeredOnly == other.offeredOnly &&
       answerFilters.length == other.answerFilters.length &&
       answerFilters.entries.every(
         (entry) => formOperationSetEquals(
@@ -141,7 +148,7 @@ class HostFormResponseListRequest {
     to,
     cursor,
     limit,
-    oldestFirst,
+    Object.hash(oldestFirst, offeredOnly),
     Object.hashAllUnordered(
       answerFilters.entries.map(
         (entry) => Object.hash(entry.key, Object.hashAllUnordered(entry.value)),

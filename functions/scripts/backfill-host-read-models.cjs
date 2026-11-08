@@ -8,7 +8,8 @@ const {backfillContactSummaries, activateContactSummaries} =
 const {backfillSimpleSummaries, activateSimpleSummaries} =
   require("../lib/hostReadModels/simpleStore");
 
-const {backfillResponseSummaries, activateResponseSummaries} =
+const {backfillResponseSummaries, activateResponseSummaries,
+  backfillResponseOfferSummaries} =
   require("../lib/hostReadModels/responseStore");
 
 const {backfillOrganizerAttention} =
@@ -48,6 +49,8 @@ const evaluatedModels = {
   "roster-insights": backfillRosterInsights,
   "case-views": backfillEventCaseViews,
   "delivery-views": backfillEventDeliveryViews,
+  // The derived offer on response summaries: the applications offers point at.
+  "response-offers": backfillResponseOfferSummaries,
 };
 
 async function main(argv = process.argv.slice(2)) {
@@ -73,7 +76,7 @@ async function main(argv = process.argv.slice(2)) {
     ...guestViewModels].includes(model)) {
     throw new Error("Use --model contacts, forms, events, groups, responses, " +
       "attention, event-setup, event-setup-defaults, provider-connections, " +
-      "roster-insights, case-views, delivery-views, " +
+      "roster-insights, case-views, delivery-views, response-offers, " +
       [...movementViewModels, ...guestViewModels].join(", ") + ".");
   }
   const apply = args.get("--apply") === true;

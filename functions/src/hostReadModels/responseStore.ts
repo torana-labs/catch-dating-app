@@ -11,6 +11,32 @@ import {emptyDirectory} from "./contactStore";
 
 type Kind = "response" | "application";
 type Entry = HostResponseSummaryDocument["row"];
+type Offer = NonNullable<HostResponseSummaryDocument["offer"]>;
+
+/**
+ * The latest non-draft event offer made from [applicationId] by this
+ * organizer. Offers are one aggregate per organizer/event/contact that
+ * remembers the application it came from; a draft is not yet an offer.
+ */
+async function offerFor(db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction, organizerId: string,
+  applicationId: string): Promise<Offer | null> {
+  // applicationId equality alone uses the automatic single-field index.
+  const offers = await tx.get(db.collection("organizerEventOffers")
+    .where("applicationId", "==", applicationId).limit(20));
+  let latest: {offer: Offer; at: number} | null = null;
+  for (const doc of offers.docs) {
+    const data = doc.data();
+    if (data.organizerId !== organizerId || typeof data.eventId !== "string" ||
+        !["offered", "withdrawn", "expired"].includes(data.status)) continue;
+    const at = Number(data.updatedAtMillis ?? 0);
+    if (latest && latest.at >= at) continue;
+    latest = {at, offer: {status: data.status, eventId: data.eventId,
+      offeredAtMillis: Number.isSafeInteger(data.offeredAtMillis) &&
+        data.offeredAtMillis > 0 ? data.offeredAtMillis : null}};
+  }
+  return latest?.offer ?? null;
+}
 
 async function applicationRow(db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction, id: string,
@@ -108,9 +134,16 @@ async function project(db: FirebaseFirestore.Firestore,
         // Raw answers, including list-presentation answers, remain lazy detail.
         highlights: [], conversionKinds}};
   }
+  // Query copies for the Responses filters and counts; present only when
+  // there is something to filter on, so older views read as none.
+  const application = row.application;
+  const offer = application ?
+    await offerFor(db, tx, organizerId, application.applicationId) : null;
   return {organizerId, summaryId: responseSummaryId(kind, id), kind,
     formId: row.response?.formId ?? row.application!.formId,
-    submittedAtMillis: row.submittedAtMillis, row, version: 1};
+    submittedAtMillis: row.submittedAtMillis, row, version: 1,
+    ...(application ? {reviewStatus: application.reviewStatus} : {}),
+    ...(offer ? {offer} : {})};
 }
 
 /** All privacy authority is reread inside the view transaction. */
@@ -192,6 +225,39 @@ export async function backfillResponseSummaries(db: FirebaseFirestore.Firestore,
     } while (cursor);
   }
   return count;
+}
+
+/**
+ * Recomputes the summaries whose application an organizer's event offers
+ * point at: the backfill for the derived `offer` on existing views.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} organizerId Organizer to backfill.
+ * @param {boolean} apply Write views; otherwise only count.
+ * @return {Promise<object>} Offers scanned and applications reconciled.
+ */
+export async function backfillResponseOfferSummaries(
+  db: FirebaseFirestore.Firestore, organizerId: string, apply: boolean,
+): Promise<{scanned: number; applications: number}> {
+  const applications = new Set<string>();
+  let scanned = 0;
+  let cursor: FirebaseFirestore.QueryDocumentSnapshot | undefined;
+  do {
+    let query = db.collection("organizerEventOffers")
+      .where("organizerId", "==", organizerId)
+      .orderBy(FieldPath.documentId()).limit(100);
+    if (cursor) query = query.startAfter(cursor);
+    const page = await query.get();
+    scanned += page.size;
+    for (const doc of page.docs) {
+      const applicationId = doc.get("applicationId");
+      if (typeof applicationId === "string") applications.add(applicationId);
+    }
+    cursor = page.size === 100 ? page.docs.at(-1) : undefined;
+  } while (cursor);
+  if (apply) {
+    for (const id of applications) await reconcileApplicationSummary(db, id);
+  }
+  return {scanned, applications: applications.size};
 }
 
 export async function activateResponseSummaries(db: FirebaseFirestore.Firestore,

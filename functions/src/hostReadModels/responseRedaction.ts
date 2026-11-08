@@ -22,6 +22,7 @@ export function redactResponseSummary(value: unknown, organizerId: string,
     application.sourceResponseId = null;
     application.reviewStatus = "withdrawn";
     application.dataAccessState = "revokedParticipantGrant";
+    if (view.reviewStatus !== undefined) view.reviewStatus = "withdrawn";
   }
   if (view.row.response) {
     view.row.response.status = "withdrawn";
