@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:flutter/widgets.dart';
@@ -123,5 +124,29 @@ void main() {
 
     await pumpPlannerBody(tester, body(editing: true), size: plannerDesktop);
     expect(find.text('Check the bill'), findsOneWidget);
+  });
+
+  testWidgets('photos show one tile per album and add from the phone', (
+    tester,
+  ) async {
+    String? album = 'none';
+    var added = 0;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammePhotosBody(
+        status: HostProgrammeStatus.ready,
+        photos: plannerPhotos,
+        now: DateTime(2026, 10, 28, 10),
+        onAlbum: (value) => album = value,
+        onAdd: () => added++,
+        onRetry: () {},
+      ),
+    );
+    expect(find.text('214 photos'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-photo-album-sangeet')));
+    expect(album, 'sangeet');
+    await tester.tap(find.text('Add photos'));
+    await tester.tap(find.text('Add'));
+    expect(added, 2);
   });
 }

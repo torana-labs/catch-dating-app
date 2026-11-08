@@ -45,6 +45,8 @@ void main() {
       (_) => plannerReconcileCapture(),
       desktop,
     ),
+    ('host_programme_photos_phone', (_) => plannerPhotosCapture(), phone),
+    ('host_programme_branding_phone', (_) => plannerBrandingCapture(), phone),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

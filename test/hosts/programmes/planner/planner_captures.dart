@@ -12,6 +12,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_s
 import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_controller.dart';
@@ -93,6 +94,10 @@ List<Override> plannerCaptureOverrides() => [
     (ref) async =>
         (value: plannerVendorBill, snapshotAt: null, snapshotExpiresAt: null),
   ),
+  programPhotosViewProvider(plannerProgramId, null).overrideWith(
+    (ref) async =>
+        (value: plannerPhotos, snapshotAt: null, snapshotExpiresAt: null),
+  ),
   programCreateControllerProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
@@ -151,3 +156,6 @@ Widget plannerReconcileCapture() => const HostProgrammeReconcileScreen(
   programId: plannerProgramId,
   vendorId: 'shree',
 );
+
+Widget plannerPhotosCapture() =>
+    const HostProgrammePhotosScreen(programId: plannerProgramId);

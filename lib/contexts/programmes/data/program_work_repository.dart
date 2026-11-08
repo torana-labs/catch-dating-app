@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_departures_m
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_photo_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -20,6 +21,7 @@ part 'program_work_repository.g.dart';
 part 'program_bills_repository.dart';
 part 'program_hampers_repository.dart';
 part 'program_ids_repository.dart';
+part 'program_photos_repository.dart';
 part 'program_work_repository_door.dart';
 part 'program_work_repository_live.dart';
 part 'program_work_repository_reports.dart';

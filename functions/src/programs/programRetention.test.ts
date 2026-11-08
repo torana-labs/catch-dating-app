@@ -694,6 +694,10 @@ test("retention deletes guest IDs, alerts and files and clears bill notes",
       "programAlerts/program-1_staff:1": {programId: "program-1",
         organizerId: "org-1", alertId: "staff:1", state: "done",
         assigneeUid: "greeter-1", assigneeName: "Asha"},
+      "programPhotos/program-1_photo_a": {programId: "program-1",
+        organizerId: "org-1", photoId: "photo_a"},
+      "programHampers/program-1_hotel-1_214": {programId: "program-1",
+        organizerId: "org-1", roomKey: "214"},
       "programVendorBills/program-1_vendor-1": {programId: "program-1",
         organizerId: "org-1", vendorId: "vendor-1", note: "Mehra family",
         revision: 2, totals: {billedMinor: 100},
@@ -713,6 +717,9 @@ test("retention deletes guest IDs, alerts and files and clears bill notes",
     "completed");
     assert.equal(db.getDoc("programGuestIds/program-1_guest-1"), undefined);
     assert.equal(db.getDoc("programAlerts/program-1_staff:1"), undefined);
+    assert.equal(db.getDoc("programPhotos/program-1_photo_a"), undefined);
+    assert.equal(db.getDoc("programHampers/program-1_hotel-1_214"),
+      undefined);
     assert.ok(db.getDoc("programGuestIds/program-2_guest-9"));
     const bill = db.getDoc("programVendorBills/program-1_vendor-1")!;
     assert.equal(bill.note, null);
@@ -898,7 +905,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 27);
+      Array<{collection: string}>).length, 28);
   });
 
 test("mismatched evidence scope blocks retention completion",

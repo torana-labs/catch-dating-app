@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_photo_models.dart';
 
 import 'planner_fixtures.dart';
 
@@ -177,3 +178,40 @@ final plannerVendorBillData = <String, Object?>{
 final plannerVendorBill = ProgramVendorBillView.fromCallableData(
   plannerVendorBillData,
 );
+
+Map<String, Object?> _album(String id, String name, DateTime day, int count) =>
+    {
+      'functionId': id,
+      'name': name,
+      'startsAtMillis': day.millisecondsSinceEpoch,
+      'photoCount': count,
+      'coverUrl': null,
+    };
+
+/// `listProgramPhotos` as the Photos board draws it.
+final plannerPhotosData = <String, Object?>{
+  'programId': plannerProgramId,
+  'functionId': null,
+  'coverUrl': null,
+  'albums': [
+    _album('mehendi', 'Mehendi', DateTime(2026, 10, 25, 16), 214),
+    _album('haldi', 'Haldi', DateTime(2026, 10, 26, 10), 96),
+    _album('sangeet', 'Sangeet', DateTime(2026, 10, 27, 20), 388),
+    _album('wedding', 'Wedding', DateTime(2026, 10, 29, 18), 0),
+  ],
+  'photos': [
+    for (var index = 0; index < 6; index++)
+      {
+        'photoId': 'photo_${'$index'.padLeft(40, 'a')}',
+        'functionId': 'sangeet',
+        'caption': null,
+        'status': 'visible',
+        'url': null,
+        'createdAtMillis': DateTime(2026, 10, 27, 22).millisecondsSinceEpoch,
+        'revision': 1,
+      },
+  ],
+  'urlsExpireAtMillis': DateTime(2026, 10, 28, 10, 10).millisecondsSinceEpoch,
+};
+
+final plannerPhotos = ProgramPhotos.fromCallableData(plannerPhotosData);

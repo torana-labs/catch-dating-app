@@ -57,6 +57,17 @@ class HostProgrammeScreen extends ConsumerWidget {
               ),
             ),
             CatchIconAction(
+              key: const ValueKey<String>('host-programme-open-photos'),
+              tooltip: l10n.hostProgrammePhotosTitle,
+              variant: CatchIconActionVariant.plain,
+              child: CatchIcon(CatchIcons.photos),
+              onPressed: () => openHostProgrammePage(
+                context,
+                programId,
+                HostProgrammePage.photos,
+              ),
+            ),
+            CatchIconAction(
               key: const ValueKey<String>('host-programme-open-ids'),
               tooltip: l10n.hostProgrammeIdsTitle,
               variant: CatchIconActionVariant.plain,

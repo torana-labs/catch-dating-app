@@ -618,11 +618,12 @@ class ProgramBranding {
 
   ProgramBranding copyWith({
     ProgramBrandColor? color,
+    String? coverImagePath,
     String? creditLine,
     bool clearCredit = false,
   }) => ProgramBranding(
     color: color ?? this.color,
-    coverImagePath: coverImagePath,
+    coverImagePath: coverImagePath ?? this.coverImagePath,
     creditLine: clearCredit ? null : creditLine ?? this.creditLine,
   );
 }
