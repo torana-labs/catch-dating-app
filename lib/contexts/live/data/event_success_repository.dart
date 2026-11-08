@@ -35,6 +35,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         PublishEventSuccessRotationRoundCallableRequest,
         EventSuccessLiveActionCallableRequest,
         HeartbeatEventSuccessPresenceCallableRequest,
+        ChangeEventCrawlStopCallableRequest,
         ResolveEventSuccessLateArrivalCallableRequest,
         SaveEventPlanStepCallableRequest,
         SetEventSuccessAccountabilityResolutionCallableRequest,
@@ -86,6 +87,7 @@ Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
   data.remove('stepOverrides');
   data.remove('stepStartedAtMs');
   data.remove('pausedAtMs');
+  data.remove('crawlStopChanges');
   return data;
 }
 

@@ -45,6 +45,11 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
       .toList(),
   stepStartedAtMs: (json['stepStartedAtMs'] as num?)?.toInt(),
   pausedAtMs: (json['pausedAtMs'] as num?)?.toInt(),
+  crawlStopChanges: (json['crawlStopChanges'] as List<dynamic>?)
+      ?.map(
+        (e) => EventSuccessCrawlStopChange.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
   liveControlRevision: (json['liveControlRevision'] as num?)?.toInt() ?? 0,
   assignmentDraftRevision:
       (json['assignmentDraftRevision'] as num?)?.toInt() ?? 0,
@@ -94,6 +99,9 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
       'stepOverrides': instance.stepOverrides?.map((e) => e.toJson()).toList(),
       'stepStartedAtMs': instance.stepStartedAtMs,
       'pausedAtMs': instance.pausedAtMs,
+      'crawlStopChanges': instance.crawlStopChanges
+          ?.map((e) => e.toJson())
+          .toList(),
       'liveControlRevision': instance.liveControlRevision,
       'assignmentDraftRevision': instance.assignmentDraftRevision,
       'publishedRotationRoundIndex': instance.publishedRotationRoundIndex,
@@ -128,6 +136,24 @@ const _$EventSuccessRevealStatusEnumMap = {
   EventSuccessRevealStatus.idle: 'idle',
   EventSuccessRevealStatus.countingDown: 'countingDown',
   EventSuccessRevealStatus.revealed: 'revealed',
+};
+
+_EventSuccessCrawlStopChange _$EventSuccessCrawlStopChangeFromJson(
+  Map<String, dynamic> json,
+) => _EventSuccessCrawlStopChange(
+  stopId: json['stopId'] as String,
+  title: json['title'] as String,
+  address: json['address'] as String?,
+  changedAtMs: (json['changedAtMs'] as num).toInt(),
+);
+
+Map<String, dynamic> _$EventSuccessCrawlStopChangeToJson(
+  _EventSuccessCrawlStopChange instance,
+) => <String, dynamic>{
+  'stopId': instance.stopId,
+  'title': instance.title,
+  'address': instance.address,
+  'changedAtMs': instance.changedAtMs,
 };
 
 _EventSuccessPlanStep _$EventSuccessPlanStepFromJson(

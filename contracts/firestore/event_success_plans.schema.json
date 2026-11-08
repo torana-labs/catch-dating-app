@@ -236,6 +236,23 @@
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
       "x-catch-ownership": "callable-owned"
     },
+    "crawlStopChanges": {
+      "type": "array",
+      "maxItems": 40,
+      "description": "Stops the host changed on the night through changeEventCrawlStop, keyed by itinerary item id. Missing on older plans: the route is the itinerary as published.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stopId", "title", "address", "changedAtMs"],
+        "properties": {
+          "stopId": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[A-Za-z0-9_-]+$"},
+          "title": {"type": "string", "minLength": 1, "maxLength": 80},
+          "address": {"type": ["string", "null"], "maxLength": 200},
+          "changedAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

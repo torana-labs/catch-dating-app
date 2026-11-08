@@ -2,15 +2,18 @@ import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repositor
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'formats_crawl_controller.g.dart';
 
-/// The crawl board, composed from the event's route and the guest list
-/// listener: who is with the crawl (checked in), the arrival groups and
-/// who has not joined yet. Nothing polls.
+/// The crawl board, composed from the event's route, the plan listener
+/// (stops changed on the night) and the guest list listener: who is with
+/// the crawl (checked in), the arrival groups and who has not joined yet.
+/// Nothing polls.
 @riverpod
 HostFormatsCrawlState hostFormatsCrawlController(
   Ref ref,
@@ -26,10 +29,13 @@ HostFormatsCrawlState hostFormatsCrawlController(
   }
   final attendees = attendeesValue.value;
   if (attendees == null) return const HostFormatsCrawlState.loading();
+  // A plan not read yet, or none, leaves the route as published.
+  final plan = ref.watch(watchEventSuccessPlanProvider(event.id)).value;
   return hostFormatsCrawlState(
     event: event,
     host: organizer.name,
     attendees: attendees,
+    plan: plan,
   );
 }
 
@@ -38,7 +44,13 @@ HostFormatsCrawlState hostFormatsCrawlState({
   required Event event,
   required String host,
   required List<EventAttendee> attendees,
+  EventSuccessPlan? plan,
 }) {
+  final changes = {
+    for (final change
+        in plan?.crawlStopChanges ?? const <EventSuccessCrawlStopChange>[])
+      change.stopId: change,
+  };
   final located = event.itinerary.where((item) => item.location != null);
   final route = (located.isNotEmpty ? located : event.itinerary)
       .where((item) => item.kind != EventItineraryKind.finish)
@@ -48,10 +60,18 @@ HostFormatsCrawlState hostFormatsCrawlState({
   }
   final stops = [
     for (final stop in route)
-      HostFormatsStop(
-        stop: stop,
-        startsAt: event.startTime.add(Duration(minutes: stop.offsetMinutes)),
-      ),
+      if (changes[stop.id] case final change?)
+        HostFormatsStop(
+          stop: stop.copyWith(title: change.title, location: null),
+          startsAt: event.startTime.add(Duration(minutes: stop.offsetMinutes)),
+          changed: true,
+          changedAddress: change.address,
+        )
+      else
+        HostFormatsStop(
+          stop: stop,
+          startsAt: event.startTime.add(Duration(minutes: stop.offsetMinutes)),
+        ),
   ]..sort((a, b) => a.startsAt.compareTo(b.startsAt));
   // Booked: registered or already checked in.
   final coming = attendees
@@ -98,5 +118,6 @@ HostFormatsCrawlState hostFormatsCrawlState({
     ]),
     missing: List.unmodifiable(missing),
     host: host,
+    liveControlRevision: plan?.liveControlRevision,
   );
 }

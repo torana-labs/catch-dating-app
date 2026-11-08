@@ -49,6 +49,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
 
     /// Server milliseconds the active step was paused; null while it runs.
     int? pausedAtMs,
+
+    /// Crawl stops the host changed on the night, by itinerary item id;
+    /// null while the route is the itinerary as published.
+    List<EventSuccessCrawlStopChange>? crawlStopChanges,
     @Default(0) int liveControlRevision,
     @Default(0) int assignmentDraftRevision,
     @Default(-1) int publishedRotationRoundIndex,
@@ -347,6 +351,21 @@ Set<String> _assignmentParticipantUids(
     uids.addAll(assignment.allPeerUids);
   }
   return uids;
+}
+
+/// A crawl stop the host changed on the night through
+/// `changeEventCrawlStop`.
+@freezed
+abstract class EventSuccessCrawlStopChange with _$EventSuccessCrawlStopChange {
+  const factory EventSuccessCrawlStopChange({
+    required String stopId,
+    required String title,
+    String? address,
+    required int changedAtMs,
+  }) = _EventSuccessCrawlStopChange;
+
+  factory EventSuccessCrawlStopChange.fromJson(Map<String, dynamic> json) =>
+      _$EventSuccessCrawlStopChangeFromJson(json);
 }
 
 /// One step of the host's edited run of show, as `saveEventPlanStep`

@@ -20,7 +20,9 @@ mixin _$EventSuccessPlan {
 /// spans; null on plans that predate it, whose time follows the
 /// schedule.
  int? get stepStartedAtMs;/// Server milliseconds the active step was paused; null while it runs.
- int? get pausedAtMs; int get liveControlRevision; int get assignmentDraftRevision; int get publishedRotationRoundIndex; int get publishedRevealRoundIndex; EventSuccessPlanStatus get status; EventSuccessRevealStatus get revealStatus; int get activeRevealRoundIndex;@NullableTimestampConverter() DateTime? get revealStartedAt; String? get attendeePrompt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get frozenAt;@NullableTimestampConverter() DateTime? get completedAt;
+ int? get pausedAtMs;/// Crawl stops the host changed on the night, by itinerary item id;
+/// null while the route is the itinerary as published.
+ List<EventSuccessCrawlStopChange>? get crawlStopChanges; int get liveControlRevision; int get assignmentDraftRevision; int get publishedRotationRoundIndex; int get publishedRevealRoundIndex; EventSuccessPlanStatus get status; EventSuccessRevealStatus get revealStatus; int get activeRevealRoundIndex;@NullableTimestampConverter() DateTime? get revealStartedAt; String? get attendeePrompt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get frozenAt;@NullableTimestampConverter() DateTime? get completedAt;
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,16 +35,16 @@ $EventSuccessPlanCopyWith<EventSuccessPlan> get copyWith => _$EventSuccessPlanCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other.stepOverrides, stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other.stepOverrides, stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&const DeepCollectionEquality().equals(other.crawlStopChanges, crawlStopChanges)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(stepOverrides),stepStartedAtMs,pausedAtMs,liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(stepOverrides),stepStartedAtMs,pausedAtMs,const DeepCollectionEquality().hash(crawlStopChanges),liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, crawlStopChanges: $crawlStopChanges, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $EventSuccessPlanCopyWith<$Res>  {
   factory $EventSuccessPlanCopyWith(EventSuccessPlan value, $Res Function(EventSuccessPlan) _then) = _$EventSuccessPlanCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String? layoutId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, EventSuccessConversationGraphConsentMode conversationGraphConsentMode, int activeStepIndex, List<EventSuccessPlanStep>? stepOverrides, int? stepStartedAtMs, int? pausedAtMs, int liveControlRevision, int assignmentDraftRevision, int publishedRotationRoundIndex, int publishedRevealRoundIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String? layoutId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, EventSuccessConversationGraphConsentMode conversationGraphConsentMode, int activeStepIndex, List<EventSuccessPlanStep>? stepOverrides, int? stepStartedAtMs, int? pausedAtMs, List<EventSuccessCrawlStopChange>? crawlStopChanges, int liveControlRevision, int assignmentDraftRevision, int publishedRotationRoundIndex, int publishedRevealRoundIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
 });
 
 
@@ -70,7 +72,7 @@ class _$EventSuccessPlanCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? conversationGraphConsentMode = null,Object? activeStepIndex = null,Object? stepOverrides = freezed,Object? stepStartedAtMs = freezed,Object? pausedAtMs = freezed,Object? liveControlRevision = null,Object? assignmentDraftRevision = null,Object? publishedRotationRoundIndex = null,Object? publishedRevealRoundIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? conversationGraphConsentMode = null,Object? activeStepIndex = null,Object? stepOverrides = freezed,Object? stepStartedAtMs = freezed,Object? pausedAtMs = freezed,Object? crawlStopChanges = freezed,Object? liveControlRevision = null,Object? assignmentDraftRevision = null,Object? publishedRotationRoundIndex = null,Object? publishedRevealRoundIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -90,7 +92,8 @@ as EventSuccessConversationGraphConsentMode,activeStepIndex: null == activeStepI
 as int,stepOverrides: freezed == stepOverrides ? _self.stepOverrides : stepOverrides // ignore: cast_nullable_to_non_nullable
 as List<EventSuccessPlanStep>?,stepStartedAtMs: freezed == stepStartedAtMs ? _self.stepStartedAtMs : stepStartedAtMs // ignore: cast_nullable_to_non_nullable
 as int?,pausedAtMs: freezed == pausedAtMs ? _self.pausedAtMs : pausedAtMs // ignore: cast_nullable_to_non_nullable
-as int?,liveControlRevision: null == liveControlRevision ? _self.liveControlRevision : liveControlRevision // ignore: cast_nullable_to_non_nullable
+as int?,crawlStopChanges: freezed == crawlStopChanges ? _self.crawlStopChanges : crawlStopChanges // ignore: cast_nullable_to_non_nullable
+as List<EventSuccessCrawlStopChange>?,liveControlRevision: null == liveControlRevision ? _self.liveControlRevision : liveControlRevision // ignore: cast_nullable_to_non_nullable
 as int,assignmentDraftRevision: null == assignmentDraftRevision ? _self.assignmentDraftRevision : assignmentDraftRevision // ignore: cast_nullable_to_non_nullable
 as int,publishedRotationRoundIndex: null == publishedRotationRoundIndex ? _self.publishedRotationRoundIndex : publishedRotationRoundIndex // ignore: cast_nullable_to_non_nullable
 as int,publishedRevealRoundIndex: null == publishedRevealRoundIndex ? _self.publishedRevealRoundIndex : publishedRevealRoundIndex // ignore: cast_nullable_to_non_nullable
@@ -188,10 +191,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  List<EventSuccessCrawlStopChange>? crawlStopChanges,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan() when $default != null:
-return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.crawlStopChanges,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   return orElse();
 
 }
@@ -209,10 +212,10 @@ return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  List<EventSuccessCrawlStopChange>? crawlStopChanges,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan():
-return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.crawlStopChanges,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -229,10 +232,10 @@ return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.pl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String? layoutId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  EventSuccessConversationGraphConsentMode conversationGraphConsentMode,  int activeStepIndex,  List<EventSuccessPlanStep>? stepOverrides,  int? stepStartedAtMs,  int? pausedAtMs,  List<EventSuccessCrawlStopChange>? crawlStopChanges,  int liveControlRevision,  int assignmentDraftRevision,  int publishedRotationRoundIndex,  int publishedRevealRoundIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan() when $default != null:
-return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.conversationGraphConsentMode,_that.activeStepIndex,_that.stepOverrides,_that.stepStartedAtMs,_that.pausedAtMs,_that.crawlStopChanges,_that.liveControlRevision,_that.assignmentDraftRevision,_that.publishedRotationRoundIndex,_that.publishedRevealRoundIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   return null;
 
 }
@@ -244,7 +247,7 @@ return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.pl
 @JsonSerializable()
 
 class _EventSuccessPlan extends EventSuccessPlan {
-  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, this.layoutId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), required this.hostGoal, this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.conversationGraphConsentMode = EventSuccessConversationGraphConsentMode.optIn, this.activeStepIndex = 0, final  List<EventSuccessPlanStep>? stepOverrides, this.stepStartedAtMs, this.pausedAtMs, this.liveControlRevision = 0, this.assignmentDraftRevision = 0, this.publishedRotationRoundIndex = -1, this.publishedRevealRoundIndex = -1, this.status = EventSuccessPlanStatus.setup, this.revealStatus = EventSuccessRevealStatus.idle, this.activeRevealRoundIndex = 0, @NullableTimestampConverter() this.revealStartedAt, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,_stepOverrides = stepOverrides,super._();
+  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, this.layoutId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), required this.hostGoal, this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.conversationGraphConsentMode = EventSuccessConversationGraphConsentMode.optIn, this.activeStepIndex = 0, final  List<EventSuccessPlanStep>? stepOverrides, this.stepStartedAtMs, this.pausedAtMs, final  List<EventSuccessCrawlStopChange>? crawlStopChanges, this.liveControlRevision = 0, this.assignmentDraftRevision = 0, this.publishedRotationRoundIndex = -1, this.publishedRevealRoundIndex = -1, this.status = EventSuccessPlanStatus.setup, this.revealStatus = EventSuccessRevealStatus.idle, this.activeRevealRoundIndex = 0, @NullableTimestampConverter() this.revealStartedAt, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,_stepOverrides = stepOverrides,_crawlStopChanges = crawlStopChanges,super._();
   factory _EventSuccessPlan.fromJson(Map<String, dynamic> json) => _$EventSuccessPlanFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -285,6 +288,19 @@ class _EventSuccessPlan extends EventSuccessPlan {
 @override final  int? stepStartedAtMs;
 /// Server milliseconds the active step was paused; null while it runs.
 @override final  int? pausedAtMs;
+/// Crawl stops the host changed on the night, by itinerary item id;
+/// null while the route is the itinerary as published.
+ final  List<EventSuccessCrawlStopChange>? _crawlStopChanges;
+/// Crawl stops the host changed on the night, by itinerary item id;
+/// null while the route is the itinerary as published.
+@override List<EventSuccessCrawlStopChange>? get crawlStopChanges {
+  final value = _crawlStopChanges;
+  if (value == null) return null;
+  if (_crawlStopChanges is EqualUnmodifiableListView) return _crawlStopChanges;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 @override@JsonKey() final  int liveControlRevision;
 @override@JsonKey() final  int assignmentDraftRevision;
 @override@JsonKey() final  int publishedRotationRoundIndex;
@@ -312,16 +328,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other._stepOverrides, _stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other._stepOverrides, _stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&const DeepCollectionEquality().equals(other._crawlStopChanges, _crawlStopChanges)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(_stepOverrides),stepStartedAtMs,pausedAtMs,liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(_stepOverrides),stepStartedAtMs,pausedAtMs,const DeepCollectionEquality().hash(_crawlStopChanges),liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, crawlStopChanges: $crawlStopChanges, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -332,7 +348,7 @@ abstract mixin class _$EventSuccessPlanCopyWith<$Res> implements $EventSuccessPl
   factory _$EventSuccessPlanCopyWith(_EventSuccessPlan value, $Res Function(_EventSuccessPlan) _then) = __$EventSuccessPlanCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String? layoutId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, EventSuccessConversationGraphConsentMode conversationGraphConsentMode, int activeStepIndex, List<EventSuccessPlanStep>? stepOverrides, int? stepStartedAtMs, int? pausedAtMs, int liveControlRevision, int assignmentDraftRevision, int publishedRotationRoundIndex, int publishedRevealRoundIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String? layoutId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, EventSuccessConversationGraphConsentMode conversationGraphConsentMode, int activeStepIndex, List<EventSuccessPlanStep>? stepOverrides, int? stepStartedAtMs, int? pausedAtMs, List<EventSuccessCrawlStopChange>? crawlStopChanges, int liveControlRevision, int assignmentDraftRevision, int publishedRotationRoundIndex, int publishedRevealRoundIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
 });
 
 
@@ -349,7 +365,7 @@ class __$EventSuccessPlanCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? conversationGraphConsentMode = null,Object? activeStepIndex = null,Object? stepOverrides = freezed,Object? stepStartedAtMs = freezed,Object? pausedAtMs = freezed,Object? liveControlRevision = null,Object? assignmentDraftRevision = null,Object? publishedRotationRoundIndex = null,Object? publishedRevealRoundIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? conversationGraphConsentMode = null,Object? activeStepIndex = null,Object? stepOverrides = freezed,Object? stepStartedAtMs = freezed,Object? pausedAtMs = freezed,Object? crawlStopChanges = freezed,Object? liveControlRevision = null,Object? assignmentDraftRevision = null,Object? publishedRotationRoundIndex = null,Object? publishedRevealRoundIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
   return _then(_EventSuccessPlan(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -369,7 +385,8 @@ as EventSuccessConversationGraphConsentMode,activeStepIndex: null == activeStepI
 as int,stepOverrides: freezed == stepOverrides ? _self._stepOverrides : stepOverrides // ignore: cast_nullable_to_non_nullable
 as List<EventSuccessPlanStep>?,stepStartedAtMs: freezed == stepStartedAtMs ? _self.stepStartedAtMs : stepStartedAtMs // ignore: cast_nullable_to_non_nullable
 as int?,pausedAtMs: freezed == pausedAtMs ? _self.pausedAtMs : pausedAtMs // ignore: cast_nullable_to_non_nullable
-as int?,liveControlRevision: null == liveControlRevision ? _self.liveControlRevision : liveControlRevision // ignore: cast_nullable_to_non_nullable
+as int?,crawlStopChanges: freezed == crawlStopChanges ? _self._crawlStopChanges : crawlStopChanges // ignore: cast_nullable_to_non_nullable
+as List<EventSuccessCrawlStopChange>?,liveControlRevision: null == liveControlRevision ? _self.liveControlRevision : liveControlRevision // ignore: cast_nullable_to_non_nullable
 as int,assignmentDraftRevision: null == assignmentDraftRevision ? _self.assignmentDraftRevision : assignmentDraftRevision // ignore: cast_nullable_to_non_nullable
 as int,publishedRotationRoundIndex: null == publishedRotationRoundIndex ? _self.publishedRotationRoundIndex : publishedRotationRoundIndex // ignore: cast_nullable_to_non_nullable
 as int,publishedRevealRoundIndex: null == publishedRevealRoundIndex ? _self.publishedRevealRoundIndex : publishedRevealRoundIndex // ignore: cast_nullable_to_non_nullable
@@ -383,6 +400,278 @@ as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore
 as DateTime,frozenAt: freezed == frozenAt ? _self.frozenAt : frozenAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,completedAt: freezed == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$EventSuccessCrawlStopChange {
+
+ String get stopId; String get title; String? get address; int get changedAtMs;
+/// Create a copy of EventSuccessCrawlStopChange
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EventSuccessCrawlStopChangeCopyWith<EventSuccessCrawlStopChange> get copyWith => _$EventSuccessCrawlStopChangeCopyWithImpl<EventSuccessCrawlStopChange>(this as EventSuccessCrawlStopChange, _$identity);
+
+  /// Serializes this EventSuccessCrawlStopChange to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessCrawlStopChange&&(identical(other.stopId, stopId) || other.stopId == stopId)&&(identical(other.title, title) || other.title == title)&&(identical(other.address, address) || other.address == address)&&(identical(other.changedAtMs, changedAtMs) || other.changedAtMs == changedAtMs));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,stopId,title,address,changedAtMs);
+
+@override
+String toString() {
+  return 'EventSuccessCrawlStopChange(stopId: $stopId, title: $title, address: $address, changedAtMs: $changedAtMs)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EventSuccessCrawlStopChangeCopyWith<$Res>  {
+  factory $EventSuccessCrawlStopChangeCopyWith(EventSuccessCrawlStopChange value, $Res Function(EventSuccessCrawlStopChange) _then) = _$EventSuccessCrawlStopChangeCopyWithImpl;
+@useResult
+$Res call({
+ String stopId, String title, String? address, int changedAtMs
+});
+
+
+
+
+}
+/// @nodoc
+class _$EventSuccessCrawlStopChangeCopyWithImpl<$Res>
+    implements $EventSuccessCrawlStopChangeCopyWith<$Res> {
+  _$EventSuccessCrawlStopChangeCopyWithImpl(this._self, this._then);
+
+  final EventSuccessCrawlStopChange _self;
+  final $Res Function(EventSuccessCrawlStopChange) _then;
+
+/// Create a copy of EventSuccessCrawlStopChange
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? stopId = null,Object? title = null,Object? address = freezed,Object? changedAtMs = null,}) {
+  return _then(_self.copyWith(
+stopId: null == stopId ? _self.stopId : stopId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,changedAtMs: null == changedAtMs ? _self.changedAtMs : changedAtMs // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EventSuccessCrawlStopChange].
+extension EventSuccessCrawlStopChangePatterns on EventSuccessCrawlStopChange {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EventSuccessCrawlStopChange value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EventSuccessCrawlStopChange value)  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EventSuccessCrawlStopChange value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String stopId,  String title,  String? address,  int changedAtMs)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange() when $default != null:
+return $default(_that.stopId,_that.title,_that.address,_that.changedAtMs);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String stopId,  String title,  String? address,  int changedAtMs)  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange():
+return $default(_that.stopId,_that.title,_that.address,_that.changedAtMs);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String stopId,  String title,  String? address,  int changedAtMs)?  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessCrawlStopChange() when $default != null:
+return $default(_that.stopId,_that.title,_that.address,_that.changedAtMs);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EventSuccessCrawlStopChange implements EventSuccessCrawlStopChange {
+  const _EventSuccessCrawlStopChange({required this.stopId, required this.title, this.address, required this.changedAtMs});
+  factory _EventSuccessCrawlStopChange.fromJson(Map<String, dynamic> json) => _$EventSuccessCrawlStopChangeFromJson(json);
+
+@override final  String stopId;
+@override final  String title;
+@override final  String? address;
+@override final  int changedAtMs;
+
+/// Create a copy of EventSuccessCrawlStopChange
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EventSuccessCrawlStopChangeCopyWith<_EventSuccessCrawlStopChange> get copyWith => __$EventSuccessCrawlStopChangeCopyWithImpl<_EventSuccessCrawlStopChange>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$EventSuccessCrawlStopChangeToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessCrawlStopChange&&(identical(other.stopId, stopId) || other.stopId == stopId)&&(identical(other.title, title) || other.title == title)&&(identical(other.address, address) || other.address == address)&&(identical(other.changedAtMs, changedAtMs) || other.changedAtMs == changedAtMs));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,stopId,title,address,changedAtMs);
+
+@override
+String toString() {
+  return 'EventSuccessCrawlStopChange(stopId: $stopId, title: $title, address: $address, changedAtMs: $changedAtMs)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EventSuccessCrawlStopChangeCopyWith<$Res> implements $EventSuccessCrawlStopChangeCopyWith<$Res> {
+  factory _$EventSuccessCrawlStopChangeCopyWith(_EventSuccessCrawlStopChange value, $Res Function(_EventSuccessCrawlStopChange) _then) = __$EventSuccessCrawlStopChangeCopyWithImpl;
+@override @useResult
+$Res call({
+ String stopId, String title, String? address, int changedAtMs
+});
+
+
+
+
+}
+/// @nodoc
+class __$EventSuccessCrawlStopChangeCopyWithImpl<$Res>
+    implements _$EventSuccessCrawlStopChangeCopyWith<$Res> {
+  __$EventSuccessCrawlStopChangeCopyWithImpl(this._self, this._then);
+
+  final _EventSuccessCrawlStopChange _self;
+  final $Res Function(_EventSuccessCrawlStopChange) _then;
+
+/// Create a copy of EventSuccessCrawlStopChange
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? stopId = null,Object? title = null,Object? address = freezed,Object? changedAtMs = null,}) {
+  return _then(_EventSuccessCrawlStopChange(
+stopId: null == stopId ? _self.stopId : stopId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,changedAtMs: null == changedAtMs ? _self.changedAtMs : changedAtMs // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

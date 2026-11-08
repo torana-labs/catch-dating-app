@@ -135,6 +135,43 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// Changes one crawl stop on the night and, with a [message], tells
+  /// everyone booked, through `changeEventCrawlStop`, fenced on the plan's
+  /// live-control revision. A retry with the same [requestId] replays both.
+  Future<void> changeEventCrawlStop({
+    required String eventId,
+    required String requestId,
+    required int expectedLiveControlRevision,
+    required String stopId,
+    required String title,
+    required String? address,
+    required String? message,
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      await functions
+          .httpsCallable('changeEventCrawlStop')
+          .call<Object?>(
+            ChangeEventCrawlStopCallableRequest(
+              eventId: eventId,
+              requestId: requestId,
+              expectedLiveControlRevision: expectedLiveControlRevision,
+              stopId: stopId,
+              stop: {'title': title, 'address': address},
+              message: message,
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'change crawl stop',
+      resource: _plansPath,
+    ),
+  );
+
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
