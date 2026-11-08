@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_staff_presence_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
@@ -58,10 +59,6 @@ class DoorScreen extends ConsumerStatefulWidget {
 }
 
 class _DoorScreenState extends ConsumerState<DoorScreen> {
-  /// How often an open door says its host is still on it; presence lapses
-  /// after two missed beats.
-  static const _heartbeatEvery = Duration(seconds: 45);
-
   var _scanning = false;
   Timer? _heartbeat;
 
@@ -78,7 +75,7 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
       unawaited(_session.heartbeat());
     });
     _heartbeat = Timer.periodic(
-      _heartbeatEvery,
+      EventStaffPresenceRepository.heartbeatInterval,
       (_) => unawaited(_session.heartbeat()),
     );
     ref.listenManual(appConnectivityProvider, (_, next) {

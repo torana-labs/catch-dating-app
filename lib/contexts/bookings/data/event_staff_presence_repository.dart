@@ -70,6 +70,10 @@ class EventStaffPresenceRepository {
 
   static const _collectionPath = 'eventStaffPresence';
 
+  /// How often an open door says its host is still on it; the server lets
+  /// presence lapse after two missed beats.
+  static const heartbeatInterval = Duration(seconds: 45);
+
   /// An event's door team is a handful of people; this bounds the read.
   static const maxRows = 50;
 

@@ -276,7 +276,27 @@ class CompanionPaperTicket extends StatelessWidget {
                         ? const SizedBox.shrink()
                         : Padding(
                             padding: CatchInsets.contentDense,
-                            child: EventTicketCodeQr(ticket: ticket),
+                            child: CatchStack(
+                              children: [
+                                Center(
+                                  child: QrImageView(
+                                    key: const ValueKey<String>(
+                                      'event-ticket-code-qr',
+                                    ),
+                                    data: ticket.encode(),
+                                    size: CatchLayout.eventSuccessVenueQrExtent,
+                                    backgroundColor: CatchTokens.editorialWhite,
+                                    semanticsLabel:
+                                        context.l10n.eventTicketCodeQrLabel,
+                                  ),
+                                ),
+                                CatchText(
+                                  context.l10n.eventTicketCodeHint,
+                                  tone: CatchTextTone.secondary,
+                                  align: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           );
                   },
                 ),

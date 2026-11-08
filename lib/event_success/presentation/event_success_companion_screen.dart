@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_ticket_code_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
-import 'package:catch_dating_app/contexts/bookings/parts/event_ticket_code_qr.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
@@ -59,6 +58,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 part 'companion_parts/event_success_companion_afterglow_card.dart';
 part 'companion_parts/event_success_companion_arrival_card.dart';
