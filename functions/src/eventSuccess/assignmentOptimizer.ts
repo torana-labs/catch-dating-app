@@ -2821,7 +2821,7 @@ function runShapePlanner<T extends AssignmentParticipant>(input: {
   const topology = params.topology;
   const rotating = topology.rotationsEnabled &&
     (params.rotationRoundCount ?? 0) > 0;
-  const units = plannerUnitSpec(topology);
+  const units = plannerUnitSpec(topology, params.participants.length);
   const result = planAssignmentRounds({
     participants: params.participants,
     units,
@@ -2917,12 +2917,17 @@ function runShapePlanner<T extends AssignmentParticipant>(input: {
 }
 
 /**
- * Translates the saved topology into a planner unit shape.
+ * Translates the saved topology into a planner unit shape. Courts keep a
+ * bench when full; tables never leave a guest standing, so a table roster
+ * larger than the configured tables opens more tables of the same size.
  * @param {AssignmentTopology} topology Resolved topology.
+ * @param {number} participantCount Eligible participants.
  * @return {PlannerUnitSpec} Unit shape.
  */
-export function plannerUnitSpec(topology: AssignmentTopology):
-  PlannerUnitSpec {
+export function plannerUnitSpec(
+  topology: AssignmentTopology,
+  participantCount = 0
+): PlannerUnitSpec {
   const capacity = topology.resourceCapacity ?? null;
   const seats = capacity?.seatsPerUnit ?? null;
   const concurrent = capacity?.concurrentUnits ?? null;
@@ -2931,7 +2936,9 @@ export function plannerUnitSpec(topology: AssignmentTopology):
     seats !== null && seats > 2 && seats % 2 === 0;
   const flexibleMinimum = seats === null ? 1 :
     Math.max(2, Math.ceil(seats * 2 / 3));
-  if (seats !== null && concurrent !== null) {
+  const overflowsTables = !pairsOnResource && seats !== null &&
+    concurrent !== null && participantCount > concurrent * seats;
+  if (seats !== null && concurrent !== null && !overflowsTables) {
     return {
       resource: {
         count: concurrent,

@@ -39,9 +39,11 @@ A format describes its units through the saved `structureConfig`.
 Explicit size lists (`sizes: [6, 6, 4]`) are supported by the planner for
 callers that already know them. Rounds come from the event duration divided
 by the cadence (`rotationIntervalMinutes`); no cadence means one static round.
-A resource holds at most `seatsPerUnit` people. When everyone does not fit,
-the rest sit on the bench for that round. A doubles court runs only full
-(`minSeats = seatsPerUnit`); a table may run between two thirds full and full.
+A resource holds at most `seatsPerUnit` people. On courts, when everyone
+does not fit, the rest sit on the bench for that round; a doubles court runs
+only full (`minSeats = seatsPerUnit`). Tables never leave a guest standing:
+a table may run between two thirds full and full, and a roster larger than
+the configured tables opens more tables of the same size.
 
 ## Request
 
@@ -239,7 +241,9 @@ stay two-person pairs.
 - **Doubles persistence and display.** The engine schedules partners and
   opponents on courts. The rotation callable still persists one-to-one pair
   slots, and the companion shows one peer, so live doubles needs the slot
-  schema and companion work first.
+  schema and companion work first. Until then, `generateEventSuccessRotations`
+  refuses a court with more than two seats, rather than silently producing no
+  rounds.
 - **Legacy cores.** Pace pods, social pods and pair rotations still run on
   the legacy scorer. Moving them onto the planner needs parity tests against
   the current romantic and fairness pins.

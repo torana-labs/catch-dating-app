@@ -54,6 +54,25 @@ test("derives unit labels and copy from unit kind", () => {
   assert.equal(unitSubtitle("tables", 4), "4 people at this table.");
 });
 
+test("pair rotation wrapper refuses doubles courts until slots hold teams",
+  () => {
+    assert.throws(
+      () =>
+        assertPairRotationTopology({
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            resourceCapacity: {concurrentUnits: 3, resourceLabelId: "court",
+              seatsPerUnit: 4},
+          },
+        }),
+      (error) => {
+        isHttpsError(error, "failed-precondition", "Doubles courts");
+        return true;
+      }
+    );
+  });
+
 test("pair rotation wrapper accepts only two-person units", () => {
   assert.doesNotThrow(() =>
     assertPairRotationTopology({

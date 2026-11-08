@@ -384,6 +384,24 @@ test("dinner: tables of four to six seat by affinity with couples beside " +
   assert.ok(neighbours.includes("d02"), "couple seated side by side");
 });
 
+test("dinner: more guests than tables opens tables instead of a bench",
+  () => {
+    const people = Array.from({length: 26}, (_, index) =>
+      person(`o${pad(index)}`));
+    const result = run({
+      participants: people,
+      topology: topology({unitKind: "tables", unitSize: 4, groupCount: 5,
+        maxGroupSize: 4, topology: "adjacency",
+        resourceCapacity: {concurrentUnits: 5, resourceLabelId: "table",
+          seatsPerUnit: 4}}),
+      assignmentAlgorithm: "tableSeating",
+    });
+    assert.equal(result.plannedRounds[0].bench.length, 0);
+    assert.ok(result.groups.every((group) =>
+      group.participants.length >= 3 && group.participants.length <= 4));
+    assert.equal(result.explainability.assignedParticipantCount, 26);
+  });
+
 test("dinner: course rotations avoid repeating table companions", () => {
   // Four tables of four over three courses is the largest dinner where a
   // repeat-free seating exists (orthogonal Latin squares); tables larger
