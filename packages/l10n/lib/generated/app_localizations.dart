@@ -43499,6 +43499,567 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This question can’t be used this way. Try another use.'**
   String get hostFormatsRuleInvalid;
+
+  /// Create flow top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get hostCreateNewEvent;
+
+  /// Create flow action that leaves the flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostCreateClose;
+
+  /// Create flow action that goes back a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostCreateBack;
+
+  /// Create flow action that goes to the next step.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostCreateNext;
+
+  /// Create flow action that publishes the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get hostCreatePublish;
+
+  /// Create flow action that saves a draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get hostCreateSaveDraft;
+
+  /// Create flow notice after a draft is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft saved'**
+  String get hostCreateDraftSaved;
+
+  /// Create flow action that finishes a sheet or the flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostCreateDone;
+
+  /// Create flow step counter.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of 4'**
+  String hostCreateStepOf({required int index});
+
+  /// Create flow step heading, by step.
+  ///
+  /// In en, this message translates to:
+  /// **'{step, select, basics{What are you hosting?} when{When and where} tickets{Tickets} plan{Plan the night} other{It\'\'s live. Now tell people.}}'**
+  String hostCreateStepTitle({required String step});
+
+  /// Create flow desktop rail step title, by step.
+  ///
+  /// In en, this message translates to:
+  /// **'{step, select, basics{The basics} when{When and where} tickets{Tickets} plan{The plan} other{Share}}'**
+  String hostCreateRailTitle({required String step});
+
+  /// Create flow desktop rail note under the basics step.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, format, photos'**
+  String get hostCreateRailNoteBasics;
+
+  /// Create flow desktop rail note under the plan step.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get hostCreateRailNotePlan;
+
+  /// Create flow desktop action that goes to the named next step.
+  ///
+  /// In en, this message translates to:
+  /// **'{step, select, basics{Next: the basics} when{Next: when and where} tickets{Next: tickets} plan{Next: the plan} other{Next: share}}'**
+  String hostCreateNextTo({required String step});
+
+  /// Create basics photo picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo'**
+  String get hostCreateAddPhoto;
+
+  /// Create basics note: photos can be added after the date is set.
+  ///
+  /// In en, this message translates to:
+  /// **'After you pick a date'**
+  String get hostCreateAddPhotoLater;
+
+  /// Create basics photo strip semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get hostCreatePhotos;
+
+  /// Create basics name field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostCreateName;
+
+  /// Create basics name validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a name'**
+  String get hostCreateNameNeeded;
+
+  /// Create basics format section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get hostCreateFormat;
+
+  /// Create basics format validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a format'**
+  String get hostCreateFormatNeeded;
+
+  /// Create basics description field title.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'\'s it like?'**
+  String get hostCreateWhatsItLike;
+
+  /// Create basics run distance field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get hostCreateDistance;
+
+  /// Create basics run pace section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
+  String get hostCreatePace;
+
+  /// Create basics format option label, by format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format, select, quiz{Quiz or trivia} run{Social run} supper{Supper} courts{Racket sports} party{Party} other{Something else}}'**
+  String hostCreateFormatLabel({required String format});
+
+  /// Create preview short format label, by format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format, select, quiz{Trivia} run{Social run} supper{Supper} courts{Racket sports} party{Party} other{Event}}'**
+  String hostCreateFormatShort({required String format});
+
+  /// Create basics note on what the chosen format changes, by format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format, select, quiz{Your poster and live screens turn yellow.} run{Adds distance and pace; the poster turns coral.} supper{Adds courses and dietary questions; the poster turns pink.} courts{Adds courts and levels; the poster turns mint.} party{The poster turns magenta.} other{Your poster stays ink and white.}}'**
+  String hostCreateFormatNote({required String format});
+
+  /// Create basics run pace option, by pace.
+  ///
+  /// In en, this message translates to:
+  /// **'{pace, select, easy{Easy} moderate{Moderate} fast{Fast} other{Competitive}}'**
+  String hostCreatePaceLabel({required String pace});
+
+  /// Create when-and-where calendar button for one date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date · {date}'**
+  String hostCreateDateSingle({required String date});
+
+  /// Create when-and-where calendar button for a date range.
+  ///
+  /// In en, this message translates to:
+  /// **'Date · {from} to {to}'**
+  String hostCreateDateRange({required String from, required String to});
+
+  /// Create when-and-where date picker title and action.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get hostCreatePickDate;
+
+  /// Create when-and-where dates field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get hostCreateDates;
+
+  /// Create when-and-where date validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get hostCreateDateNeeded;
+
+  /// Create when-and-where start time title.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get hostCreateStarts;
+
+  /// Create when-and-where end time title.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get hostCreateEnds;
+
+  /// Create when-and-where start time validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a start'**
+  String get hostCreateStartNeeded;
+
+  /// Create when-and-where place section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get hostCreateWhere;
+
+  /// Create when-and-where place picker row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a place'**
+  String get hostCreatePickPlace;
+
+  /// Create when-and-where place validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick where it is'**
+  String get hostCreatePlaceNeeded;
+
+  /// Create when-and-where action that changes the place.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostCreateChange;
+
+  /// Create when-and-where directions field title.
+  ///
+  /// In en, this message translates to:
+  /// **'How to find you · optional'**
+  String get hostCreateHowToFindYou;
+
+  /// Create when-and-where map semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'{place} on the map'**
+  String hostCreateOnTheMap({required String place});
+
+  /// Create calendar legend for days that already have an event.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have something on'**
+  String get hostCreateAlreadyOn;
+
+  /// Create calendar action that confirms the picked date.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {date}'**
+  String hostCreateUseDate({required String date});
+
+  /// Create tickets selling-place control label.
+  ///
+  /// In en, this message translates to:
+  /// **'Where tickets are sold'**
+  String get hostCreateWhereSold;
+
+  /// Create tickets option: sell on Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell on Catch'**
+  String get hostCreateSellOnCatch;
+
+  /// Create tickets option: tickets are sold elsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'I sell elsewhere'**
+  String get hostCreateSellElsewhere;
+
+  /// Create tickets price field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per place'**
+  String get hostCreatePricePerPlace;
+
+  /// Create tickets price validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a price, or 0 for free'**
+  String get hostCreatePriceNeeded;
+
+  /// Create tickets and preview label for the number of places.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hostCreatePlaces;
+
+  /// Create tickets stepper decrease semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer places'**
+  String get hostCreateFewerPlaces;
+
+  /// Create tickets stepper increase semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'More places'**
+  String get hostCreateMorePlaces;
+
+  /// Create tickets admission section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can come'**
+  String get hostCreateWhoCanCome;
+
+  /// Create tickets admission option title, by admission.
+  ///
+  /// In en, this message translates to:
+  /// **'{admission, select, open{Anyone can book} other{Invite only}}'**
+  String hostCreateAdmissionTitle({required String admission});
+
+  /// Create tickets admission option note, by admission.
+  ///
+  /// In en, this message translates to:
+  /// **'{admission, select, open{Paid places are confirmed straight away} other{Only people with your link can book}}'**
+  String hostCreateAdmissionNote({required String admission});
+
+  /// Create tickets notice on payouts and the Catch fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay into your own Razorpay account. After 30 days free, Catch bills you 5% of ticket sales, never more than ₹10,000 a cycle.'**
+  String get hostCreatePayoutNotice;
+
+  /// Create plan step introduction.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan runs your live screen on the night: what\'\'s now, what\'\'s next, and when to move on.'**
+  String get hostCreatePlanIntro;
+
+  /// Create plan template section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from'**
+  String get hostCreateStartFrom;
+
+  /// Create plan option: start from an empty plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank'**
+  String get hostCreateBlank;
+
+  /// Create plan template option, by format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format, select, quiz{Trivia night} run{Social run} supper{Supper club} courts{Open play} party{Party night} other{Doors to goodbyes}}'**
+  String hostCreateTemplate({required String format});
+
+  /// Create plan action and sheet title that adds a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a step'**
+  String get hostCreateAddStep;
+
+  /// Create plan step sheet title when editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the step'**
+  String get hostCreateEditStep;
+
+  /// Create plan step row edit semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {title}'**
+  String hostCreateEditStepLabel({required String title});
+
+  /// Create plan step sheet title field.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens'**
+  String get hostCreateStepWhat;
+
+  /// Create plan step sheet note field.
+  ///
+  /// In en, this message translates to:
+  /// **'Note · optional'**
+  String get hostCreateStepNote;
+
+  /// Create plan step sheet duration title.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get hostCreateMinutes;
+
+  /// Create plan step duration decrease semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shorter'**
+  String get hostCreateShorter;
+
+  /// Create plan step duration increase semantic label.
+  ///
+  /// In en, this message translates to:
+  /// **'Longer'**
+  String get hostCreateLonger;
+
+  /// Create plan step sheet remove action.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the step'**
+  String get hostCreateRemoveStep;
+
+  /// Create plan step row duration.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String hostCreateStepMinutes({required int minutes});
+
+  /// Create plan step row duration with its note.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min · {note}'**
+  String hostCreateStepMinutesNote({
+    required int minutes,
+    required String note,
+  });
+
+  /// Create plan default title of a new step.
+  ///
+  /// In en, this message translates to:
+  /// **'New step'**
+  String get hostCreateNewStep;
+
+  /// Create plan template first step.
+  ///
+  /// In en, this message translates to:
+  /// **'Doors and hellos'**
+  String get hostCreateDoorsAndHellos;
+
+  /// Create plan template last step.
+  ///
+  /// In en, this message translates to:
+  /// **'Goodbyes'**
+  String get hostCreateGoodbyes;
+
+  /// Create plan template main step, by format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format, select, quiz{Quiz rounds} run{The run} supper{Supper} courts{Games} party{The party} other{The main event}}'**
+  String hostCreateMainStep({required String format});
+
+  /// Create desktop preview title.
+  ///
+  /// In en, this message translates to:
+  /// **'What guests see'**
+  String get hostCreateWhatGuestsSee;
+
+  /// Create desktop preview note.
+  ///
+  /// In en, this message translates to:
+  /// **'The poster, ticket and live screens take the format\'\'s colour. Changes show here as you type.'**
+  String get hostCreatePreviewNote;
+
+  /// Create desktop preview checklist title.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to set'**
+  String get hostCreateStillToSet;
+
+  /// Create desktop preview checklist when nothing is left.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to publish'**
+  String get hostCreateNothingToSet;
+
+  /// Create poster placeholder when no date is set.
+  ///
+  /// In en, this message translates to:
+  /// **'Date to come'**
+  String get hostCreateDateToCome;
+
+  /// Create poster placeholder when no place is set.
+  ///
+  /// In en, this message translates to:
+  /// **'Place to come'**
+  String get hostCreatePlaceToCome;
+
+  /// Create poster placeholder when the event has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event'**
+  String get hostCreateUntitled;
+
+  /// Create preview label for booked places.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostCreateBooked;
+
+  /// Create preview placeholder for a count that is not known yet.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get hostCreateNoValue;
+
+  /// Create share step status badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get hostCreatePublished;
+
+  /// Create share step note.
+  ///
+  /// In en, this message translates to:
+  /// **'Most bookings come in the first two days, from the link in your bio and your WhatsApp groups.'**
+  String get hostCreateShareNote;
+
+  /// Create share action that copies the event link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostCreateCopyLink;
+
+  /// Create share notice after the link is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get hostCreateLinkCopied;
+
+  /// Create share QR card title.
+  ///
+  /// In en, this message translates to:
+  /// **'A QR for the door'**
+  String get hostCreateQrTitle;
+
+  /// Create share QR card note.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-ins scan it to book on the spot'**
+  String get hostCreateQrNote;
+
+  /// Create share QR card print action.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get hostCreatePrint;
+
+  /// Create share action for an Instagram story.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to your Instagram story'**
+  String get hostCreateShareStory;
+
+  /// Create share action for WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell your followers on WhatsApp'**
+  String get hostCreateTellFollowers;
 }
 
 class _AppLocalizationsDelegate

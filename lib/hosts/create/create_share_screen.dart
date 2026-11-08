@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -24,7 +24,7 @@ class CreateShareScreen extends StatelessWidget {
     topBar: CatchTopBar(
       variant: CatchTopBarVariant.tool,
       action: CatchTopBarAction(
-        label: CreateCopy.done,
+        label: context.l10n.hostCreateDone,
         onPressed: handlers.onDone,
       ),
     ),

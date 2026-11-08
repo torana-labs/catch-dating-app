@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -41,15 +40,21 @@ class CreateTicketsBody extends StatelessWidget {
       children: [
         if (showTitle)
           CatchText(
-            CreateCopy.stepTitle(CreateStep.tickets),
+            context.l10n.hostCreateStepTitle(step: CreateStep.tickets.name),
             variant: CatchTextVariant.displaySection,
           ),
         CatchPageTabBar<bool>.segmented(
           key: const ValueKey<String>('create-where-sold'),
-          label: CreateCopy.whereSold,
-          options: const [
-            CatchOption(value: false, label: CreateCopy.sellOnCatch),
-            CatchOption(value: true, label: CreateCopy.sellElsewhere),
+          label: context.l10n.hostCreateWhereSold,
+          options: [
+            CatchOption(
+              value: false,
+              label: context.l10n.hostCreateSellOnCatch,
+            ),
+            CatchOption(
+              value: true,
+              label: context.l10n.hostCreateSellElsewhere,
+            ),
           ],
           selected: elsewhere,
           onChanged: onSellElsewhere,
@@ -64,21 +69,21 @@ class CreateTicketsBody extends StatelessWidget {
               CatchField.input(
                 key: const ValueKey<String>('create-price'),
                 copy: copy,
-                title: CreateCopy.pricePerPlace,
+                title: context.l10n.hostCreatePricePerPlace,
                 initialValue: draft.price ?? '',
                 prefixText: '₹',
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: onPrice,
                 errorText: state.problems.contains(CreateProblem.price)
-                    ? CreateCopy.priceNeeded
+                    ? context.l10n.hostCreatePriceNeeded
                     : null,
               ),
               CatchStack(
                 gap: CatchStackGap.g8,
                 children: [
-                  const CatchText(
-                    CreateCopy.places,
+                  CatchText(
+                    context.l10n.hostCreatePlaces,
                     variant: CatchTextVariant.labelAction,
                   ),
                   CatchStepper(
@@ -86,8 +91,8 @@ class CreateTicketsBody extends StatelessWidget {
                     value: places,
                     min: 1,
                     max: 500,
-                    decreaseSemanticLabel: CreateCopy.fewerPlaces,
-                    increaseSemanticLabel: CreateCopy.morePlaces,
+                    decreaseSemanticLabel: context.l10n.hostCreateFewerPlaces,
+                    increaseSemanticLabel: context.l10n.hostCreateMorePlaces,
                     onChanged: (value) => onPlaces(value.toInt()),
                   ),
                 ],
@@ -97,22 +102,27 @@ class CreateTicketsBody extends StatelessWidget {
         CatchStack(
           gap: CatchStackGap.g8,
           children: [
-            const CatchText(
-              CreateCopy.whoCanCome,
+            CatchText(
+              context.l10n.hostCreateWhoCanCome,
               variant: CatchTextVariant.labelAction,
             ),
             for (final admission in CreateAdmission.values)
               CatchChoiceTile(
                 key: ValueKey<String>('create-admission-${admission.name}'),
                 variant: CatchChoiceTileVariant.row,
-                title: CreateCopy.admissionTitle(admission),
-                subtitle: CreateCopy.admissionNote(admission),
+                title: context.l10n.hostCreateAdmissionTitle(
+                  admission: admission.name,
+                ),
+                subtitle: context.l10n.hostCreateAdmissionNote(
+                  admission: admission.name,
+                ),
                 selected: state.admission == admission,
                 onTap: () => onAdmission(admission),
               ),
           ],
         ),
-        if (!elsewhere) CatchNotice.inline(body: CreateCopy.payoutNotice),
+        if (!elsewhere)
+          CatchNotice.inline(body: context.l10n.hostCreatePayoutNotice),
       ],
     );
   }

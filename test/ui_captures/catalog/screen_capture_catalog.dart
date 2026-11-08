@@ -244,6 +244,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
@@ -3234,7 +3235,7 @@ final _createDraft = EventDraft(
   startingPointLng: 72.8295,
   price: '499',
   capacity: '30',
-  itinerary: createPlanTemplate(CreateFormat.quiz, 150),
+  itinerary: createPlanTemplate(AppLocalizationsEn(), CreateFormat.quiz, 150),
 );
 
 CreateFlowState _createState(CreateStep step, {EventDraft? draft}) =>

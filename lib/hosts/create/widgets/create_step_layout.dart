@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -30,28 +30,32 @@ class CreateStepLayout extends StatelessWidget {
       key: ValueKey<String>('create-step-${step.name}'),
       topBar: CatchTopBar(
         variant: CatchTopBarVariant.step,
-        title: CreateCopy.stepTitle(step),
+        title: context.l10n.hostCreateStepTitle(step: step.name),
         back: CatchTopBarBack(
-          label: first ? CreateCopy.close : CreateCopy.back,
+          label: first
+              ? context.l10n.hostCreateClose
+              : context.l10n.hostCreateBack,
           close: first,
           onPressed: state.working ? null : handlers.onBack,
         ),
         step: CatchTopBarStep(
           index: step.number,
           total: 4,
-          label: CreateCopy.stepOf(step.number),
+          label: context.l10n.hostCreateStepOf(index: step.number),
         ),
       ),
       body: CatchPageBody(child: body),
       dock: CatchDock(
         placement: CatchDockPlacement.bar,
         primary: CatchDockAction(
-          label: step == CreateStep.plan ? CreateCopy.publish : CreateCopy.next,
+          label: step == CreateStep.plan
+              ? context.l10n.hostCreatePublish
+              : context.l10n.hostCreateNext,
           loading: state.working,
           onPressed: busy ? null : handlers.onNext,
         ),
         secondary: CatchDockAction(
-          label: CreateCopy.saveDraft,
+          label: context.l10n.hostCreateSaveDraft,
           loading: state.savingDraft,
           onPressed: busy ? null : handlers.onSaveDraft,
         ),

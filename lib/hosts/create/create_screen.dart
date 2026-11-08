@@ -9,7 +9,6 @@ import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_controller.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_editor_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
@@ -243,6 +242,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           controller.edit((d) => d.copyWith(admissionPreset: value.preset)),
       onTemplate: () => controller.useTemplate(
         createPlanTemplate(
+          context.l10n,
           state.format ?? CreateFormat.other,
           state.draft.durationMinutes,
         ),
@@ -258,7 +258,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           kind: EventItineraryKind.activity,
           offsetMinutes: 0,
           durationMinutes: 30,
-          title: CreateCopy.newStep,
+          title: context.l10n.hostCreateNewStep,
         );
         _editingNew = true;
       }),
@@ -305,7 +305,10 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           },
       ];
     }
-    return [for (final step in state.unsetSteps) CreateCopy.railTitle(step)];
+    return [
+      for (final step in state.unsetSteps)
+        context.l10n.hostCreateRailTitle(step: step.name),
+    ];
   }
 
   String _link(CreateFlowState state) {
@@ -323,9 +326,9 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
     ref
         .read(catchNoticeControllerProvider.notifier)
         .show(
-          const CatchNoticeData(
+          CatchNoticeData(
             id: 'create-link-copied',
-            title: CreateCopy.linkCopied,
+            title: context.l10n.hostCreateLinkCopied,
             tone: CatchNoticeTone.success,
           ),
         );
@@ -342,9 +345,9 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
     ref
         .read(catchNoticeControllerProvider.notifier)
         .show(
-          const CatchNoticeData(
+          CatchNoticeData(
             id: 'create-draft-saved',
-            title: CreateCopy.draftSaved,
+            title: context.l10n.hostCreateDraftSaved,
             tone: CatchNoticeTone.success,
           ),
         );
@@ -387,7 +390,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       initialTime: parts == null
           ? const TimeOfDay(hour: 19, minute: 30)
           : TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1])),
-      title: CreateCopy.starts,
+      title: context.l10n.hostCreateStarts,
     );
     if (time != null && mounted) _controller.setStart(time.hour, time.minute);
   }
@@ -400,7 +403,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: TimeOfDay(hour: end ~/ 60, minute: end % 60),
-      title: CreateCopy.ends,
+      title: context.l10n.hostCreateEnds,
     );
     if (time != null && mounted) _controller.setEnd(time.hour, time.minute);
   }

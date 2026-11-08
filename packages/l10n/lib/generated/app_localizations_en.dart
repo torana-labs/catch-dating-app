@@ -26991,4 +26991,403 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormatsRuleInvalid =>
       'This question can’t be used this way. Try another use.';
+
+  @override
+  String get hostCreateNewEvent => 'New event';
+
+  @override
+  String get hostCreateClose => 'Close';
+
+  @override
+  String get hostCreateBack => 'Back';
+
+  @override
+  String get hostCreateNext => 'Next';
+
+  @override
+  String get hostCreatePublish => 'Publish';
+
+  @override
+  String get hostCreateSaveDraft => 'Save draft';
+
+  @override
+  String get hostCreateDraftSaved => 'Draft saved';
+
+  @override
+  String get hostCreateDone => 'Done';
+
+  @override
+  String hostCreateStepOf({required int index}) {
+    return 'Step $index of 4';
+  }
+
+  @override
+  String hostCreateStepTitle({required String step}) {
+    String _temp0 = intl.Intl.selectLogic(step, {
+      'basics': 'What are you hosting?',
+      'when': 'When and where',
+      'tickets': 'Tickets',
+      'plan': 'Plan the night',
+      'other': 'It\'s live. Now tell people.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateRailTitle({required String step}) {
+    String _temp0 = intl.Intl.selectLogic(step, {
+      'basics': 'The basics',
+      'when': 'When and where',
+      'tickets': 'Tickets',
+      'plan': 'The plan',
+      'other': 'Share',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCreateRailNoteBasics => 'Name, format, photos';
+
+  @override
+  String get hostCreateRailNotePlan => 'Optional';
+
+  @override
+  String hostCreateNextTo({required String step}) {
+    String _temp0 = intl.Intl.selectLogic(step, {
+      'basics': 'Next: the basics',
+      'when': 'Next: when and where',
+      'tickets': 'Next: tickets',
+      'plan': 'Next: the plan',
+      'other': 'Next: share',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCreateAddPhoto => 'Add a photo';
+
+  @override
+  String get hostCreateAddPhotoLater => 'After you pick a date';
+
+  @override
+  String get hostCreatePhotos => 'Photos';
+
+  @override
+  String get hostCreateName => 'Name';
+
+  @override
+  String get hostCreateNameNeeded => 'Give it a name';
+
+  @override
+  String get hostCreateFormat => 'Format';
+
+  @override
+  String get hostCreateFormatNeeded => 'Pick a format';
+
+  @override
+  String get hostCreateWhatsItLike => 'What\'s it like?';
+
+  @override
+  String get hostCreateDistance => 'Distance';
+
+  @override
+  String get hostCreatePace => 'Pace';
+
+  @override
+  String hostCreateFormatLabel({required String format}) {
+    String _temp0 = intl.Intl.selectLogic(format, {
+      'quiz': 'Quiz or trivia',
+      'run': 'Social run',
+      'supper': 'Supper',
+      'courts': 'Racket sports',
+      'party': 'Party',
+      'other': 'Something else',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateFormatShort({required String format}) {
+    String _temp0 = intl.Intl.selectLogic(format, {
+      'quiz': 'Trivia',
+      'run': 'Social run',
+      'supper': 'Supper',
+      'courts': 'Racket sports',
+      'party': 'Party',
+      'other': 'Event',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateFormatNote({required String format}) {
+    String _temp0 = intl.Intl.selectLogic(format, {
+      'quiz': 'Your poster and live screens turn yellow.',
+      'run': 'Adds distance and pace; the poster turns coral.',
+      'supper': 'Adds courses and dietary questions; the poster turns pink.',
+      'courts': 'Adds courts and levels; the poster turns mint.',
+      'party': 'The poster turns magenta.',
+      'other': 'Your poster stays ink and white.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreatePaceLabel({required String pace}) {
+    String _temp0 = intl.Intl.selectLogic(pace, {
+      'easy': 'Easy',
+      'moderate': 'Moderate',
+      'fast': 'Fast',
+      'other': 'Competitive',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateDateSingle({required String date}) {
+    return 'Date · $date';
+  }
+
+  @override
+  String hostCreateDateRange({required String from, required String to}) {
+    return 'Date · $from to $to';
+  }
+
+  @override
+  String get hostCreatePickDate => 'Pick a date';
+
+  @override
+  String get hostCreateDates => 'Dates';
+
+  @override
+  String get hostCreateDateNeeded => 'Pick a date';
+
+  @override
+  String get hostCreateStarts => 'Starts';
+
+  @override
+  String get hostCreateEnds => 'Ends';
+
+  @override
+  String get hostCreateStartNeeded => 'Set a start';
+
+  @override
+  String get hostCreateWhere => 'Where';
+
+  @override
+  String get hostCreatePickPlace => 'Pick a place';
+
+  @override
+  String get hostCreatePlaceNeeded => 'Pick where it is';
+
+  @override
+  String get hostCreateChange => 'Change';
+
+  @override
+  String get hostCreateHowToFindYou => 'How to find you · optional';
+
+  @override
+  String hostCreateOnTheMap({required String place}) {
+    return '$place on the map';
+  }
+
+  @override
+  String get hostCreateAlreadyOn => 'You already have something on';
+
+  @override
+  String hostCreateUseDate({required String date}) {
+    return 'Use $date';
+  }
+
+  @override
+  String get hostCreateWhereSold => 'Where tickets are sold';
+
+  @override
+  String get hostCreateSellOnCatch => 'Sell on Catch';
+
+  @override
+  String get hostCreateSellElsewhere => 'I sell elsewhere';
+
+  @override
+  String get hostCreatePricePerPlace => 'Price per place';
+
+  @override
+  String get hostCreatePriceNeeded => 'Set a price, or 0 for free';
+
+  @override
+  String get hostCreatePlaces => 'Places';
+
+  @override
+  String get hostCreateFewerPlaces => 'Fewer places';
+
+  @override
+  String get hostCreateMorePlaces => 'More places';
+
+  @override
+  String get hostCreateWhoCanCome => 'Who can come';
+
+  @override
+  String hostCreateAdmissionTitle({required String admission}) {
+    String _temp0 = intl.Intl.selectLogic(admission, {
+      'open': 'Anyone can book',
+      'other': 'Invite only',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateAdmissionNote({required String admission}) {
+    String _temp0 = intl.Intl.selectLogic(admission, {
+      'open': 'Paid places are confirmed straight away',
+      'other': 'Only people with your link can book',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCreatePayoutNotice =>
+      'Guests pay into your own Razorpay account. After 30 days free, Catch bills you 5% of ticket sales, never more than ₹10,000 a cycle.';
+
+  @override
+  String get hostCreatePlanIntro =>
+      'The plan runs your live screen on the night: what\'s now, what\'s next, and when to move on.';
+
+  @override
+  String get hostCreateStartFrom => 'Start from';
+
+  @override
+  String get hostCreateBlank => 'Blank';
+
+  @override
+  String hostCreateTemplate({required String format}) {
+    String _temp0 = intl.Intl.selectLogic(format, {
+      'quiz': 'Trivia night',
+      'run': 'Social run',
+      'supper': 'Supper club',
+      'courts': 'Open play',
+      'party': 'Party night',
+      'other': 'Doors to goodbyes',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCreateAddStep => 'Add a step';
+
+  @override
+  String get hostCreateEditStep => 'Edit the step';
+
+  @override
+  String hostCreateEditStepLabel({required String title}) {
+    return 'Edit $title';
+  }
+
+  @override
+  String get hostCreateStepWhat => 'What happens';
+
+  @override
+  String get hostCreateStepNote => 'Note · optional';
+
+  @override
+  String get hostCreateMinutes => 'Minutes';
+
+  @override
+  String get hostCreateShorter => 'Shorter';
+
+  @override
+  String get hostCreateLonger => 'Longer';
+
+  @override
+  String get hostCreateRemoveStep => 'Remove the step';
+
+  @override
+  String hostCreateStepMinutes({required int minutes}) {
+    return '$minutes min';
+  }
+
+  @override
+  String hostCreateStepMinutesNote({
+    required int minutes,
+    required String note,
+  }) {
+    return '$minutes min · $note';
+  }
+
+  @override
+  String get hostCreateNewStep => 'New step';
+
+  @override
+  String get hostCreateDoorsAndHellos => 'Doors and hellos';
+
+  @override
+  String get hostCreateGoodbyes => 'Goodbyes';
+
+  @override
+  String hostCreateMainStep({required String format}) {
+    String _temp0 = intl.Intl.selectLogic(format, {
+      'quiz': 'Quiz rounds',
+      'run': 'The run',
+      'supper': 'Supper',
+      'courts': 'Games',
+      'party': 'The party',
+      'other': 'The main event',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCreateWhatGuestsSee => 'What guests see';
+
+  @override
+  String get hostCreatePreviewNote =>
+      'The poster, ticket and live screens take the format\'s colour. Changes show here as you type.';
+
+  @override
+  String get hostCreateStillToSet => 'Still to set';
+
+  @override
+  String get hostCreateNothingToSet => 'Ready to publish';
+
+  @override
+  String get hostCreateDateToCome => 'Date to come';
+
+  @override
+  String get hostCreatePlaceToCome => 'Place to come';
+
+  @override
+  String get hostCreateUntitled => 'Your event';
+
+  @override
+  String get hostCreateBooked => 'Booked';
+
+  @override
+  String get hostCreateNoValue => '—';
+
+  @override
+  String get hostCreatePublished => 'Published';
+
+  @override
+  String get hostCreateShareNote =>
+      'Most bookings come in the first two days, from the link in your bio and your WhatsApp groups.';
+
+  @override
+  String get hostCreateCopyLink => 'Copy link';
+
+  @override
+  String get hostCreateLinkCopied => 'Link copied';
+
+  @override
+  String get hostCreateQrTitle => 'A QR for the door';
+
+  @override
+  String get hostCreateQrNote => 'Walk-ins scan it to book on the spot';
+
+  @override
+  String get hostCreatePrint => 'Print';
+
+  @override
+  String get hostCreateShareStory => 'Share to your Instagram story';
+
+  @override
+  String get hostCreateTellFollowers => 'Tell your followers on WhatsApp';
 }

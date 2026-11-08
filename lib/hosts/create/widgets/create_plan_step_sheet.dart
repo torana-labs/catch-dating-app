@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -40,13 +39,15 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
     final title = _step.title.trim();
     return CatchSheet.contained(
       key: const ValueKey<String>('create-plan-step-sheet'),
-      title: widget.isNew ? CreateCopy.addStep : CreateCopy.editStep,
+      title: widget.isNew
+          ? context.l10n.hostCreateAddStep
+          : context.l10n.hostCreateEditStep,
       footer: CatchStack(
         gap: CatchStackGap.g8,
         children: [
           CatchButton(
             key: const ValueKey<String>('create-plan-step-done'),
-            label: CreateCopy.done,
+            label: context.l10n.hostCreateDone,
             fullWidth: true,
             onPressed: title.isEmpty
                 ? null
@@ -54,7 +55,7 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
           ),
           if (!widget.isNew)
             CatchButton(
-              label: CreateCopy.removeStep,
+              label: context.l10n.hostCreateRemoveStep,
               variant: CatchButtonVariant.quiet,
               fullWidth: true,
               onPressed: widget.onRemove,
@@ -67,7 +68,7 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
           CatchField.input(
             key: ValueKey<String>('create-plan-step-title-${_step.id}'),
             copy: copy,
-            title: CreateCopy.stepWhat,
+            title: context.l10n.hostCreateStepWhat,
             initialValue: _step.title,
             maxLength: 80,
             onChanged: (value) =>
@@ -76,7 +77,7 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
           CatchField.input(
             key: ValueKey<String>('create-plan-step-note-${_step.id}'),
             copy: copy,
-            title: CreateCopy.stepNote,
+            title: context.l10n.hostCreateStepNote,
             initialValue: _step.description ?? '',
             maxLength: 160,
             onChanged: (value) => setState(
@@ -87,13 +88,13 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
           ),
           CatchField.stepper(
             copy: copy,
-            title: CreateCopy.minutes,
+            title: context.l10n.hostCreateMinutes,
             value: _step.durationMinutes ?? 30,
             min: 5,
             max: 600,
             step: 5,
-            decreaseSemanticLabel: CreateCopy.shorter,
-            increaseSemanticLabel: CreateCopy.longer,
+            decreaseSemanticLabel: context.l10n.hostCreateShorter,
+            increaseSemanticLabel: context.l10n.hostCreateLonger,
             onChanged: (value) => setState(
               () => _step = _step.copyWith(durationMinutes: value.toInt()),
             ),
