@@ -144,6 +144,28 @@ void main() {
       return calls;
     }
 
+    testWidgets('the setup view facts add the arrival message and sales', (
+      tester,
+    ) async {
+      final ready = workspaceReady();
+      await pumpWorkspace(
+        tester,
+        HostEventWorkspaceState(
+          status: ready.status,
+          event: ready.event,
+          planSteps: ready.planSteps,
+          door: ready.door,
+          doorChecked: true,
+          ticketSalesMinor: 49900,
+          ticketsSold: 1,
+          arrivalReady: true,
+        ),
+      );
+      expect(find.text('3 of 4 done'), findsOneWidget);
+      expect(find.text('Arrival message is ready'), findsOneWidget);
+      expect(find.text('1 ticket sold'), findsOneWidget);
+    });
+
     testWidgets('ready shows the poster, the views, the checklist, the links, '
         'the stats and cancel', (tester) async {
       final calls = await pumpWorkspace(tester, workspaceReady());

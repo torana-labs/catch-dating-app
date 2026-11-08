@@ -17,6 +17,7 @@ export type EventSetupViewSource =
   | "events"
   | "eventSetupPreferences"
   | "organizers"
+  | "organizerMoments"
   | typeof commitmentCollections[number];
 
 /** Organizer fields the projection and its readiness read. */
@@ -63,7 +64,18 @@ export async function resolveEventSetupViewEventIds(
     }
     return ids;
   }
+  case "organizerMoments":
+    // Only an event's start reminder is its arrival message.
+    return documentId.endsWith("_event_start_reminder") ?
+      distinctIds([before?.scopeKind === "event" ? before.scopeId : null,
+        after?.scopeKind === "event" ? after.scopeId : null]) : [];
   default:
+    // A payment update can change the gross the view states.
+    if (before && after && source === "payments") {
+      return isSame(before.status, after.status) &&
+        isSame(before.amount, after.amount) ? [] :
+        distinctIds([before.eventId, after.eventId]);
+    }
     // An update cannot change whether a commitment witness exists.
     if (before && after) return [];
     return distinctIds([before?.eventId, after?.eventId]);
@@ -121,3 +133,6 @@ export const onHostEventSetupViewPaymentChanged = onDocumentWritten({
 export const onHostEventSetupViewPendingOrderChanged = onDocumentWritten({
   ...options, document: "razorpayPendingOrders/{documentId}",
 }, (event) => reconcileForWrite("razorpayPendingOrders", event));
+export const onHostEventSetupViewMomentChanged = onDocumentWritten({
+  ...options, document: "organizerMoments/{documentId}",
+}, (event) => reconcileForWrite("organizerMoments", event));

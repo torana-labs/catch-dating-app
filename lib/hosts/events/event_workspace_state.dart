@@ -20,6 +20,8 @@ class HostEventWorkspaceState {
     this.door = const <String>[],
     this.doorChecked = false,
     this.ticketSalesMinor,
+    this.ticketsSold,
+    this.arrivalReady,
     this.error,
   });
 
@@ -49,13 +51,23 @@ class HostEventWorkspaceState {
   /// Ticket sales from the cached host report, in minor units; null when
   /// the report has not counted them.
   final num? ticketSalesMinor;
+
+  /// Places booked, from the setup view's facts; null before they exist.
+  final int? ticketsSold;
+
+  /// Whether the arrival message is armed; null before the facts exist.
+  final bool? arrivalReady;
   final Object? error;
 
   bool get planSet => (planSteps ?? 0) > 0;
 
   /// How many of the ready-for-tonight items are done.
-  int get readyDone => (planSet ? 1 : 0) + (door.isNotEmpty ? 1 : 0);
+  int get readyDone =>
+      (planSet ? 1 : 0) +
+      (door.isNotEmpty ? 1 : 0) +
+      (arrivalReady == true ? 1 : 0);
 
-  /// The ready-for-tonight items: the plan, the door and the practice run.
-  static const int readyTotal = 3;
+  /// The ready-for-tonight items: the plan, the door, the practice run and,
+  /// once the setup view states it, the arrival message.
+  int get readyTotal => arrivalReady == null ? 3 : 4;
 }

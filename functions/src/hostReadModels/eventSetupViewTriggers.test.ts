@@ -65,6 +65,7 @@ test("organizer writes route to every setup event when a read field changes",
 test("commitment rows route on create and delete, never on update",
   async () => {
     for (const collection of commitmentCollections) {
+      if (collection === "payments") continue;
       assert.deepEqual(await resolveEventSetupViewEventIds(db(), collection,
         "row", undefined, {eventId: "e1"}), ["e1"], collection);
       assert.deepEqual(await resolveEventSetupViewEventIds(db(), collection,
@@ -76,3 +77,21 @@ test("commitment rows route on create and delete, never on update",
         "row", undefined, {status: "no event"}), [], collection);
     }
   });
+
+test("payments reroute when their status or amount moves the gross",
+  async () => {
+    assert.deepEqual(await resolveEventSetupViewEventIds(db(), "payments",
+      "row", {eventId: "e1", status: "pending", amount: 100},
+      {eventId: "e1", status: "completed", amount: 100}), ["e1"]);
+    assert.deepEqual(await resolveEventSetupViewEventIds(db(), "payments",
+      "row", {eventId: "e1", status: "completed", amount: 100},
+      {eventId: "e1", status: "completed", amount: 100, note: "x"}), []);
+  });
+
+test("only an event's start reminder routes its arrival message", async () => {
+  const moment = {scopeKind: "event", scopeId: "e1", status: "armed"};
+  assert.deepEqual(await resolveEventSetupViewEventIds(db(),
+    "organizerMoments", "e1_event_start_reminder", undefined, moment), ["e1"]);
+  assert.deepEqual(await resolveEventSetupViewEventIds(db(),
+    "organizerMoments", "m2", undefined, moment), []);
+});
