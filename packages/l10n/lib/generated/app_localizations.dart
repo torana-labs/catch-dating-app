@@ -44286,6 +44286,1165 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Night {count}'**
   String doorScanNights({required int count});
+
+  /// Events row meta: start time and places booked.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {booked} of {capacity} booked'**
+  String hostEventsRowMeta({
+    required Object time,
+    required int booked,
+    required int capacity,
+  });
+
+  /// Events tonight row meta with the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {booked} of {capacity} booked · {waiting} waiting'**
+  String hostEventsRowMetaWaiting({
+    required Object time,
+    required int booked,
+    required int capacity,
+    required int waiting,
+  });
+
+  /// Events row status: the event was cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostEventsRowWasCancelled;
+
+  /// Events row status: the event is tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostEventsRowTonight;
+
+  /// Events row status: every place is booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get hostEventsRowFull;
+
+  /// Events row status: places still free.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} left'**
+  String hostEventsRowLeft({required int count});
+
+  /// Events past row status: how many checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} came'**
+  String hostEventsRowCame({required int count});
+
+  /// Booked meter and count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostEventsBooked;
+
+  /// Draft row title while the draft has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled event'**
+  String get hostEventsDraftUntitled;
+
+  /// Draft row meta when details are done.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · ready to publish'**
+  String hostEventsDraftReady({required Object time});
+
+  /// Draft row meta when details are still missing.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · details to add'**
+  String hostEventsDraftDetails({required Object time});
+
+  /// Draft row status.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostEventsDraftStatus;
+
+  /// Programme tile dates, first day to last.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} to {to}'**
+  String hostEventsProgrammeDates({required Object from, required Object to});
+
+  /// Programme tile: how many functions it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} functions'**
+  String hostEventsProgrammeFunctions({required int count});
+
+  /// Events tab title.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get hostEventsTitle;
+
+  /// Events top bar button: create an event.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostEventsNew;
+
+  /// Events error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your events could not load'**
+  String get hostEventsErrorTitle;
+
+  /// Events error body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostEventsErrorBody;
+
+  /// Retry action on the events screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostEventsRetry;
+
+  /// Events segmented control label.
+  ///
+  /// In en, this message translates to:
+  /// **'Which events'**
+  String get hostEventsTabsLabel;
+
+  /// Events tab: coming events.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get hostEventsTabUpcoming;
+
+  /// Events tab: events still being set up.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get hostEventsTabDrafts;
+
+  /// Events tab: events that are over.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get hostEventsTabPast;
+
+  /// Events section: the event tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostEventsTonightTitle;
+
+  /// Events section: the organizer's programmes.
+  ///
+  /// In en, this message translates to:
+  /// **'Programmes'**
+  String get hostEventsProgrammesTitle;
+
+  /// Programmes section action.
+  ///
+  /// In en, this message translates to:
+  /// **'New programme'**
+  String get hostEventsNewProgramme;
+
+  /// Events section: the coming seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get hostEventsThisWeekTitle;
+
+  /// This week empty copy when later events exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing else this week.'**
+  String get hostEventsThisWeekEmpty;
+
+  /// Events empty copy with no coming events.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing coming up yet.'**
+  String get hostEventsUpcomingEmpty;
+
+  /// Events section: coming events in a later month.
+  ///
+  /// In en, this message translates to:
+  /// **'Later in {month}'**
+  String hostEventsLaterIn({required Object month});
+
+  /// Events section note while a list is read.
+  ///
+  /// In en, this message translates to:
+  /// **'Still loading'**
+  String get hostEventsStillLoading;
+
+  /// Drafts or Past empty copy after a failed read.
+  ///
+  /// In en, this message translates to:
+  /// **'These events could not load.'**
+  String get hostEventsHistoryFailed;
+
+  /// Drafts empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts.'**
+  String get hostEventsDraftsEmpty;
+
+  /// Past empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No past events yet.'**
+  String get hostEventsPastEmpty;
+
+  /// Events empty state with no organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first organiser'**
+  String get hostEventsNoOrganizerTitle;
+
+  /// Events empty state body with no organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Events belong to an organiser. Create one to start.'**
+  String get hostEventsNoOrganizerBody;
+
+  /// Events empty state action.
+  ///
+  /// In en, this message translates to:
+  /// **'Create organiser'**
+  String get hostEventsCreateOrganizer;
+
+  /// Event views segmented control label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event views'**
+  String get hostEventsViewsLabel;
+
+  /// Event view: the workspace overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get hostEventsViewOverview;
+
+  /// Event view: the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostEventsViewGuests;
+
+  /// Event view: the live console.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostEventsViewLive;
+
+  /// Event view: the report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get hostEventsViewReport;
+
+  /// Event workspace when the event is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is not here any more'**
+  String get hostEventsMissingTitle;
+
+  /// Event workspace missing body.
+  ///
+  /// In en, this message translates to:
+  /// **'It may have been deleted, or it belongs to another organiser.'**
+  String get hostEventsMissingBody;
+
+  /// Event screens error title.
+  ///
+  /// In en, this message translates to:
+  /// **'This event could not load'**
+  String get hostEventsWorkspaceErrorTitle;
+
+  /// Event workspace when the account does not host the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the organiser\'\'s hosts can manage this event'**
+  String get hostEventsDeniedTitle;
+
+  /// Event workspace denied body.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask an organiser host to add you to the team.'**
+  String get hostEventsDeniedBody;
+
+  /// Event workspace back label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Events'**
+  String get hostEventsBackToEvents;
+
+  /// Event workspace danger button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this event'**
+  String get hostEventsCancelEvent;
+
+  /// Event workspace checklist section.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for tonight'**
+  String get hostEventsReadyTitle;
+
+  /// Checklist note: how many items are done.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} done'**
+  String hostEventsReadyNote({required int done, required int total});
+
+  /// Checklist: the plan has steps.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan is set'**
+  String get hostEventsReadyPlanSet;
+
+  /// Checklist: the plan has no steps yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan yet'**
+  String get hostEventsReadyPlanMissing;
+
+  /// Checklist subtitle: plan steps and the start.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} steps, from doors at {time}'**
+  String hostEventsReadyPlanSteps({required int count, required Object time});
+
+  /// Checklist subtitle when there is no plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a format and its steps'**
+  String get hostEventsReadyPlanMissingBody;
+
+  /// Checklist: a team member has door access.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is on the door'**
+  String hostEventsReadyDoor({required Object name});
+
+  /// Checklist subtitle for the door.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking people in from a phone'**
+  String get hostEventsReadyDoorBody;
+
+  /// Checklist: nobody has door access.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is on the door yet'**
+  String get hostEventsReadyDoorNobody;
+
+  /// Checklist while the team read answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your team'**
+  String get hostEventsReadyDoorChecking;
+
+  /// Checklist subtitle when nobody has the door.
+  ///
+  /// In en, this message translates to:
+  /// **'Give someone on your team the door'**
+  String get hostEventsReadyDoorNobodyBody;
+
+  /// Checklist: rehearse the night.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the live screens'**
+  String get hostEventsReadyPractise;
+
+  /// Checklist subtitle for practice.
+  ///
+  /// In en, this message translates to:
+  /// **'With pretend guests and your real plan'**
+  String get hostEventsReadyPractiseBody;
+
+  /// Checklist action: start a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise'**
+  String get hostEventsReadyPractiseAction;
+
+  /// Workspace link: the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan for the night'**
+  String get hostEventsLinkPlan;
+
+  /// Workspace link subtitle for the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Format, run of show, teams and tables'**
+  String get hostEventsLinkPlanBody;
+
+  /// Workspace link value: plan steps.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} steps'**
+  String hostEventsSteps({required int count});
+
+  /// Workspace link and screen title: publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see and book'**
+  String get hostEventsLinkPublish;
+
+  /// Publication summary: anyone can find it.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get hostEventsPublishEveryone;
+
+  /// Publication summary: invite only.
+  ///
+  /// In en, this message translates to:
+  /// **'Only people you invite'**
+  String get hostEventsPublishInvite;
+
+  /// Workspace link: close out attendance.
+  ///
+  /// In en, this message translates to:
+  /// **'After the night'**
+  String get hostEventsLinkCloseOut;
+
+  /// Workspace link subtitle for close out.
+  ///
+  /// In en, this message translates to:
+  /// **'Close out attendance'**
+  String get hostEventsLinkCloseOutBody;
+
+  /// Booked stat note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} on the waitlist'**
+  String hostEventsOnWaitlist({required int count});
+
+  /// Ticket sales stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket sales'**
+  String get hostEventsTicketSales;
+
+  /// Workspace row: edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the event'**
+  String get hostEventsEdit;
+
+  /// Workspace row subtitle: edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Details, tickets and the plan'**
+  String get hostEventsEditBody;
+
+  /// Workspace row: the team.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team tonight'**
+  String get hostEventsTeam;
+
+  /// Team row subtitle with no door access.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody on the door yet'**
+  String get hostEventsTeamNobody;
+
+  /// Team row subtitle: who has door access.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} on the door'**
+  String hostEventsTeamDoor({required Object names});
+
+  /// Avatar row overflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more'**
+  String hostEventsTeamMore({required int count});
+
+  /// Event actions menu label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event actions'**
+  String get hostEventsMenuLabel;
+
+  /// Event actions: edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event'**
+  String get hostEventsMenuEdit;
+
+  /// Event actions: duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get hostEventsMenuDuplicate;
+
+  /// Event actions: cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel event'**
+  String get hostEventsMenuCancel;
+
+  /// Cancel confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this event?'**
+  String get hostEventsCancelTitle;
+
+  /// Cancel confirmation body.
+  ///
+  /// In en, this message translates to:
+  /// **'It leaves every schedule, and guests are told and refunded under your cancellation policy. Their bookings, payments and history stay.'**
+  String get hostEventsCancelBody;
+
+  /// Cancel confirmation: keep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the event'**
+  String get hostEventsCancelKeep;
+
+  /// Cancel confirmation: confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel event'**
+  String get hostEventsCancelConfirm;
+
+  /// Notice after cancelling.
+  ///
+  /// In en, this message translates to:
+  /// **'Event cancelled'**
+  String get hostEventsCancelled;
+
+  /// Plan step subtitle: what guests see.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see: {what}'**
+  String hostEventsStepGuestsSee({required Object what});
+
+  /// Plan screen when the event has no plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan for this night yet'**
+  String get hostEventsPlanEmptyTitle;
+
+  /// Plan screen empty body.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a format when you edit the event, and its steps appear here.'**
+  String get hostEventsPlanEmptyBody;
+
+  /// Plan spotlight kicker: the format.
+  ///
+  /// In en, this message translates to:
+  /// **'{format} · Catch prepares'**
+  String hostEventsPlanKicker({required Object format});
+
+  /// Plan spotlight stat label: teams or tables and their size.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} of {size}'**
+  String hostEventsPlanUnits({required Object kind, required int size});
+
+  /// Plan spotlight stat label: steps.
+  ///
+  /// In en, this message translates to:
+  /// **'steps'**
+  String get hostEventsPlanStepsLabel;
+
+  /// Plan spotlight stat label: when the plan ends.
+  ///
+  /// In en, this message translates to:
+  /// **'ends'**
+  String get hostEventsPlanEndsLabel;
+
+  /// Plan spotlight note while the plan can change.
+  ///
+  /// In en, this message translates to:
+  /// **'The steps come from the format. The night\'\'s options stay yours to change until doors open.'**
+  String get hostEventsPlanNoteEditable;
+
+  /// Plan spotlight note once the plan is locked.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan is locked now that the night has started.'**
+  String get hostEventsPlanNoteLocked;
+
+  /// Plan section: the steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Run of show'**
+  String get hostEventsPlanRunOfShow;
+
+  /// Run of show empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This format has no steps.'**
+  String get hostEventsPlanRunOfShowEmpty;
+
+  /// Plan section: how guests are seated.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams and tables'**
+  String get hostEventsPlanTeamsTitle;
+
+  /// Teams and tables copy with a count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {kind} of {size}.'**
+  String hostEventsPlanTeamsCounted({
+    required int count,
+    required Object kind,
+    required int size,
+  });
+
+  /// Teams and tables copy without a count.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} of {size}, as many as the night needs.'**
+  String hostEventsPlanTeamsSized({required Object kind, required int size});
+
+  /// Plan section: the night's options.
+  ///
+  /// In en, this message translates to:
+  /// **'On the night'**
+  String get hostEventsPlanOnTheNight;
+
+  /// Plan option: introduction requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can ask you for an introduction'**
+  String get hostEventsPlanIntroductions;
+
+  /// Plan option subtitle: introductions.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests come to you during the night'**
+  String get hostEventsPlanIntroductionsBody;
+
+  /// Plan option: conversation openers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested openers on guests\'\' phones'**
+  String get hostEventsPlanOpeners;
+
+  /// Plan option subtitle: openers.
+  ///
+  /// In en, this message translates to:
+  /// **'A line to start with, for each person they meet'**
+  String get hostEventsPlanOpenersBody;
+
+  /// Plan option: questionnaire answers rank pairings.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers decide who meets whom'**
+  String get hostEventsPlanAnswersPair;
+
+  /// Plan option subtitle: answers.
+  ///
+  /// In en, this message translates to:
+  /// **'When guests answer the questions before the night'**
+  String get hostEventsPlanAnswersPairBody;
+
+  /// Plan top bar action: start a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse'**
+  String get hostEventsPlanRehearse;
+
+  /// Plan dock: save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the plan'**
+  String get hostEventsPlanSave;
+
+  /// Plan dock: undo unsaved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get hostEventsPlanUndo;
+
+  /// Notice after saving the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan saved'**
+  String get hostEventsPlanSaved;
+
+  /// Close-out screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Close out the night'**
+  String get hostEventsCloseOutTitle;
+
+  /// Close-out row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No check-in'**
+  String get hostEventsCloseOutRowNote;
+
+  /// Close-out choice: the guest came.
+  ///
+  /// In en, this message translates to:
+  /// **'Came'**
+  String get hostEventsCloseOutCame;
+
+  /// Close-out choice: the guest did not come.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'\'t come'**
+  String get hostEventsCloseOutNoShow;
+
+  /// Close-out headline: guests checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} came'**
+  String hostEventsCloseOutCameCount({required int count});
+
+  /// Close-out headline: guests booked.
+  ///
+  /// In en, this message translates to:
+  /// **'of {count} booked'**
+  String hostEventsCloseOutOfBooked({required int count});
+
+  /// Close-out explanation with people left to check.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the {count} people nobody checked in. It decides the report and who can review.'**
+  String hostEventsCloseOutWhy({required int count});
+
+  /// Close-out explanation when nobody is left to check.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who booked is accounted for.'**
+  String get hostEventsCloseOutAllDone;
+
+  /// Close-out section.
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked in'**
+  String get hostEventsCloseOutNotCheckedIn;
+
+  /// Close-out section empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who booked was checked in.'**
+  String get hostEventsCloseOutEmpty;
+
+  /// Guest row subtitle: their first night with the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'First time'**
+  String get hostEventsGuestFirstTime;
+
+  /// Guest row subtitle: which night this is with the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Night {count} with you'**
+  String hostEventsGuestNights({required int count});
+
+  /// Guest row badge: first time.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostEventsGuestNew;
+
+  /// Guests inline stat: booked.
+  ///
+  /// In en, this message translates to:
+  /// **'booked'**
+  String get hostEventsGuestsStatBooked;
+
+  /// Guests inline stat: places still free.
+  ///
+  /// In en, this message translates to:
+  /// **'places left'**
+  String get hostEventsGuestsStatLeft;
+
+  /// Guests inline stat: waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'waitlist'**
+  String get hostEventsGuestsStatWaitlist;
+
+  /// Guests inline stat: first-time guests.
+  ///
+  /// In en, this message translates to:
+  /// **'first time'**
+  String get hostEventsGuestsStatFirstTime;
+
+  /// Guest lists segmented control label.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get hostEventsGuestsListsLabel;
+
+  /// Guest list: booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostEventsGuestsBooked;
+
+  /// Guest list: people who asked to join.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked'**
+  String get hostEventsGuestsAsked;
+
+  /// Guest list: waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get hostEventsGuestsWaitlist;
+
+  /// Guest list: cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostEventsGuestsCancelled;
+
+  /// Guest list empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody here yet.'**
+  String get hostEventsGuestsEmpty;
+
+  /// Guest row action: approve a join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Let in'**
+  String get hostEventsGuestsLetIn;
+
+  /// Guest row action: offer a place from the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer'**
+  String get hostEventsGuestsOffer;
+
+  /// Guests button: message every booked guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Message all {count}'**
+  String hostEventsGuestsMessageAll({required int count});
+
+  /// Guests button: export the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Download the list'**
+  String get hostEventsGuestsDownload;
+
+  /// Notice after exporting the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list ready to share'**
+  String get hostEventsGuestsDownloaded;
+
+  /// Notice when the export fails.
+  ///
+  /// In en, this message translates to:
+  /// **'The list could not be made. Try again.'**
+  String get hostEventsGuestsDownloadFailed;
+
+  /// Publication screen before the setup view exists.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is still being prepared'**
+  String get hostEventsPublishPendingTitle;
+
+  /// Publication screen pending body.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see it can be changed in a moment.'**
+  String get hostEventsPublishPendingBody;
+
+  /// Publication choice group label.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can find it'**
+  String get hostEventsPublishWhoCanFind;
+
+  /// Publication choice subtitle: published.
+  ///
+  /// In en, this message translates to:
+  /// **'On your page and in Catch Explore'**
+  String get hostEventsPublishEveryoneBody;
+
+  /// Publication choice subtitle when it cannot be published yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the event\'\'s details to publish it'**
+  String get hostEventsPublishNotReady;
+
+  /// Publication choice: unpublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your team'**
+  String get hostEventsPublishTeam;
+
+  /// Publication choice subtitle: unpublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpublished. Nobody else can find or book it.'**
+  String get hostEventsPublishTeamBody;
+
+  /// Event defaults screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults'**
+  String get hostEventsDefaultsTitle;
+
+  /// Event defaults screen kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Every new event starts with these'**
+  String get hostEventsDefaultsKicker;
+
+  /// Event defaults error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event defaults could not load'**
+  String get hostEventsDefaultsErrorTitle;
+
+  /// Event defaults before the server writes them.
+  ///
+  /// In en, this message translates to:
+  /// **'Your defaults are being prepared'**
+  String get hostEventsDefaultsPendingTitle;
+
+  /// Event defaults pending body.
+  ///
+  /// In en, this message translates to:
+  /// **'They appear here in a moment.'**
+  String get hostEventsDefaultsPendingBody;
+
+  /// Event defaults value when a default is not set.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get hostEventsDefaultsNotSet;
+
+  /// Event defaults section action: open the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get hostEventsDefaultsEdit;
+
+  /// Event defaults section: basics.
+  ///
+  /// In en, this message translates to:
+  /// **'Each event'**
+  String get hostEventsDefaultsEachEvent;
+
+  /// Event defaults row: duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual length'**
+  String get hostEventsDefaultsLength;
+
+  /// Event defaults row subtitle: duration.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change it per event'**
+  String get hostEventsDefaultsLengthBody;
+
+  /// Event defaults row: time zone.
+  ///
+  /// In en, this message translates to:
+  /// **'Time zone'**
+  String get hostEventsDefaultsTimezone;
+
+  /// Event defaults row: preferred venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual venue'**
+  String get hostEventsDefaultsVenue;
+
+  /// Event defaults value when a venue is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen'**
+  String get hostEventsDefaultsVenueSet;
+
+  /// Event defaults section: waitlist offers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get hostEventsDefaultsOffers;
+
+  /// Event defaults row: offer validity.
+  ///
+  /// In en, this message translates to:
+  /// **'An offer holds a place for'**
+  String get hostEventsDefaultsOfferHolds;
+
+  /// Event defaults row subtitle: offer validity.
+  ///
+  /// In en, this message translates to:
+  /// **'Then it goes to the next person'**
+  String get hostEventsDefaultsOfferHoldsBody;
+
+  /// Event defaults row: offer message template.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer message'**
+  String get hostEventsDefaultsOfferMessage;
+
+  /// Event defaults choice group title.
+  ///
+  /// In en, this message translates to:
+  /// **'How guests pay'**
+  String get hostEventsDefaultsHowGuestsPay;
+
+  /// Event defaults choice group note.
+  ///
+  /// In en, this message translates to:
+  /// **'New events start with this. You can change it per event.'**
+  String get hostEventsDefaultsHowGuestsPayBody;
+
+  /// Collection choice: Catch checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checkout'**
+  String get hostEventsDefaultsCheckout;
+
+  /// Collection choice subtitle: Catch checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay when they book, to your Razorpay'**
+  String get hostEventsDefaultsCheckoutBody;
+
+  /// Collection choice: a reusable payment page.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment page'**
+  String get hostEventsDefaultsPage;
+
+  /// Collection choice subtitle: reusable page.
+  ///
+  /// In en, this message translates to:
+  /// **'One page you reuse for every guest'**
+  String get hostEventsDefaultsPageBody;
+
+  /// Collection choice: personal payment requests.
+  ///
+  /// In en, this message translates to:
+  /// **'A request to each guest'**
+  String get hostEventsDefaultsRequest;
+
+  /// Collection choice subtitle: personal request.
+  ///
+  /// In en, this message translates to:
+  /// **'You send each guest their own request'**
+  String get hostEventsDefaultsRequestBody;
+
+  /// Collection choice: manual instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own instructions'**
+  String get hostEventsDefaultsManual;
+
+  /// Collection choice subtitle: manual instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests follow the steps you write'**
+  String get hostEventsDefaultsManualBody;
+
+  /// Event defaults section: payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostEventsDefaultsPayments;
+
+  /// Event defaults row: currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostEventsDefaultsCurrency;
+
+  /// Event defaults row: payment instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment instructions'**
+  String get hostEventsDefaultsInstructions;
+
+  /// Event defaults row: reusable payment page.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment page'**
+  String get hostEventsDefaultsPaymentPage;
+
+  /// Rehearsal screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal'**
+  String get hostEventsRehearsalScreenTitle;
+
+  /// Rehearsal close label.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostEventsRehearsalClose;
+
+  /// Rehearsal error title.
+  ///
+  /// In en, this message translates to:
+  /// **'This rehearsal could not load'**
+  String get hostEventsRehearsalErrorTitle;
+
+  /// Rehearsal practice badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice · nothing is sent or charged'**
+  String get hostEventsRehearsalBadge;
+
+  /// Rehearsal page title.
+  ///
+  /// In en, this message translates to:
+  /// **'Run tonight before it happens.'**
+  String get hostEventsRehearsalTitle;
+
+  /// Rehearsal page title once ended.
+  ///
+  /// In en, this message translates to:
+  /// **'This rehearsal is over.'**
+  String get hostEventsRehearsalEndedTitle;
+
+  /// Rehearsal explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} made-up guests, your real plan. Real guests never see a rehearsal.'**
+  String hostEventsRehearsalBody({required int count});
+
+  /// Rehearsal steps empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan has no steps to practise.'**
+  String get hostEventsRehearsalNoSteps;
+
+  /// Rehearsal button: open the practice screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the practice door'**
+  String get hostEventsRehearsalOpenDoor;
+
+  /// Rehearsal button: end it.
+  ///
+  /// In en, this message translates to:
+  /// **'End rehearsal'**
+  String get hostEventsRehearsalEnd;
+
+  /// Back label on the event screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostEventsBack;
 }
 
 class _AppLocalizationsDelegate
