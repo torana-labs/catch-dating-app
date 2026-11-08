@@ -46,7 +46,8 @@
           "enum": [
             "preferSimilar",
             "preferDifferent",
-            "balanceAcrossGroups"
+            "balanceAcrossGroups",
+            "coverAcrossGroups"
           ]
         },
         "weight": {

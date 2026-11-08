@@ -368,6 +368,8 @@ String _activityExpectationBody(Event event, AppLocalizations l10n) {
       l10n.eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat,
     EventInteractionModel.freeFormMixer =>
       l10n.eventsEventDetailOverviewSectionVisiblecopyExpectALooserSocial,
+    EventInteractionModel.routeStops =>
+      l10n.eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith,
     EventInteractionModel.hostLedProgram =>
       l10n.eventsEventDetailOverviewSectionVisiblecopyExpectAHostLed,
     EventInteractionModel.openFormat =>

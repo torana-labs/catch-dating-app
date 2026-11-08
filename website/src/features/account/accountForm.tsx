@@ -3,11 +3,13 @@ import {optionalAccountFields} from "../../shared/contracts/generated/profileReq
 import {accountCopy} from "../../content/account";
 import {Form} from "../../shared/ui/primitives";
 import type {WebsiteAccountController} from "./useWebsiteAccountController";
+import {SignInButton} from "./SignInSheet";
 
 const noop = () => undefined;
 
 /**
- * Inline account step shared by follow, event and claim actions. A claim has
+ * Inline account step shared by follow, event and claim actions: the phone
+ * code inline, and the sign-in sheet's Google and email link one tap away. A claim has
  * no age rule, so it leaves the optional birth date out, and names the send
  * action as its board does.
  */
@@ -62,6 +64,7 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
         label={account.stage === "code" ? accountCopy.verify : account.verified ? accountCopy.continue : sendCodeLabel} />
       {account.stage === "code" ? <CatchButton fullWidth label={accountCopy.restartVerification}
         onPressed={account.pending ? null : account.restartVerification} variant="quiet" /> : null}
+      {!account.uid && account.stage === "details" ? <SignInButton label={accountCopy.otherWays} size="md" /> : null}
       <CatchLegacyText as="p" color={account.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
         {account.status.message}
       </CatchLegacyText>

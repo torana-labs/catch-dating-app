@@ -154,7 +154,7 @@ export function trackingEventPolicyReason(event: Record<string, unknown>) {
   }
   if (["socialRun", "singlesMixer", "barCrawl", "dinner"]
     .includes(format.activityKind) ||
-    ["pairedRotations", "seatedTable", "freeFormMixer"]
+    ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]
       .includes(format.interactionModel)) {
     return "sensitiveEvent" as const;
   }

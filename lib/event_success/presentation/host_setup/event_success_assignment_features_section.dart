@@ -544,6 +544,7 @@ class _EventSuccessAssignmentFeaturesSectionState
   String _modeLabel(BuildContext context, String mode) => switch (mode) {
     'preferSimilar' => context.l10n.eventMatchingHostSimilar,
     'preferDifferent' => context.l10n.eventMatchingHostDifferent,
+    'coverAcrossGroups' => context.l10n.eventMatchingHostCover,
     _ => context.l10n.eventMatchingHostBalance,
   };
 

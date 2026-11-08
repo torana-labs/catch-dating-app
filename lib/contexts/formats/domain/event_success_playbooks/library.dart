@@ -253,7 +253,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Were people willing to follow up across tables?',
     ],
     wiringNotes: [
-      'Can launch as a host-only playbook before full team assignment automation.',
+      'Teams come from the shared assignment engine: arrival groups stay together and solo arrivals are spread.',
     ],
   );
 
@@ -268,7 +268,7 @@ abstract final class EventSuccessPlaybookLibrary {
     attendeePromise:
         'You know where to sit, who to start with, and how to follow up without public pressure.',
     hostPromise:
-        'Balance tables, reveal seating moments, and keep conversation moving without over-facilitating dinner.',
+        'Balance tables, reveal seating once, and keep phones away so dinner carries the conversation without over-facilitating.',
     capacity: EventCapacityGuidance(
       min: 12,
       max: 48,
@@ -279,8 +279,8 @@ abstract final class EventSuccessPlaybookLibrary {
       EventSuccessModuleCatalog.checkIn,
       EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
-      EventSuccessModuleCatalog.guidedRotations,
       EventSuccessModuleCatalog.liveReveal,
       EventSuccessModuleCatalog.socialMissions,
       EventSuccessModuleCatalog.wingmanRequests,
@@ -305,7 +305,7 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 4,
         hostInstruction: 'Set the tone and give one easy table prompt.',
         attendeeExperience: 'Have a natural first line at the table.',
-        moduleIds: ['host_script', 'social_missions', 'safety_controls'],
+        moduleIds: ['host_script', 'safety_controls'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.activity,
@@ -314,7 +314,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             'Only rotate when the dinner format has a planned course or seat-change moment.',
         attendeeExperience: 'Meet a new table without managing logistics.',
-        moduleIds: ['guided_rotations', 'live_reveal'],
+        moduleIds: ['micro_pods', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.closing,
@@ -332,6 +332,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Do not make people move tables without a clear course or transition.',
       'Do not expose compatibility answers to hosts or tablemates.',
       'Do not make the table plan feel like a verdict on chemistry.',
+      'Do not ask guests to keep checking their phones at the table: check in and see the seat once, then phones away.',
     ],
     iterationQuestions: [
       'Did the seating plan create balanced conversation?',
@@ -339,7 +340,103 @@ abstract final class EventSuccessPlaybookLibrary {
       'Did attendees follow up after the dinner?',
     ],
     wiringNotes: [
-      'Table assignment generation should eventually become a dedicated assignment engine; V1 can use host-reviewed structure and reveal controls.',
+      'Tables, and course-by-course table changes, come from the shared assignment engine through the group assignment tool.',
+    ],
+  );
+
+  static const barCrawl = EventSuccessPlaybook(
+    id: 'bar_crawl_route',
+    title: 'Bar Crawl Route',
+    activityType: ActivityKind.barCrawl,
+    socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.stops,
+    summary:
+        'A route with stops: a first hello mixes the group, phones come out only between stops, and the host knows who returned or departed at every departure.',
+    attendeePromise:
+        'You meet people at the start, keep your phone away at each stop, and never get left behind.',
+    hostPromise:
+        'Mix the first group, move between stops without rotations, and close with a sweep so nobody is lost.',
+    capacity: EventCapacityGuidance(
+      min: 8,
+      max: 40,
+      rationale: 'A moving group stays manageable for one host and a few stops.',
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.microPods,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: 'Meet up and first hello',
+        durationMinutes: 15,
+        hostInstruction:
+            'Check guests in and send each one to say hello to someone they have not met.',
+        attendeeExperience: 'Meet one person, check each other in, and start the night in a mixed group.',
+        moduleIds: ['qr_check_in'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: 'Welcome and the route',
+        durationMinutes: 3,
+        hostInstruction:
+            'Share the stops, the meeting point if anyone falls behind, and safety expectations.',
+        attendeeExperience: 'Know the route and how to find the group.',
+        moduleIds: ['host_script', 'safety_controls'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: 'At a stop',
+        durationMinutes: 40,
+        hostInstruction:
+            'Let the venue carry the conversation; keep phones away.',
+        attendeeExperience: 'Talk with the group without checking your phone.',
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.mixing,
+        title: 'Head to the next stop',
+        durationMinutes: 10,
+        hostInstruction:
+            'Mark who left with the group and who departed, then move on.',
+        attendeeExperience: 'Get one easy prompt for the walk to the next stop.',
+        moduleIds: ['social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: 'Last stop and sweep',
+        durationMinutes: 10,
+        hostInstruction:
+            'Offer one introduction, then mark every guest returned or departed before the group scatters.',
+        attendeeExperience:
+            'Ask the host for help with one introduction before the night ends.',
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      'Do not run timed partner rotations on a moving group.',
+      'Do not ask guests to use their phones at a stop; prompts belong to the walk between stops.',
+      'Do not leave a stop without knowing who departed.',
+    ],
+    iterationQuestions: [
+      'Did the first hello mix the group before the first stop?',
+      'Did anyone get left behind at a departure?',
+      'Did the prompts between stops feel natural?',
+    ],
+    wiringNotes: [
+      'Departures, returned and departed marking and the end-of-night sweep use the movement layer and the event itinerary.',
     ],
   );
 
@@ -350,7 +447,7 @@ abstract final class EventSuccessPlaybookLibrary {
     socialIntensity: EventSocialIntensity.light,
     durationShape: EventSuccessDurationShape.continuous,
     summary:
-        'A simple wrapper for classes, bar crawls, open activities, and host-led formats where the activity stays primary.',
+        'A simple wrapper for classes, open activities, and host-led formats where the activity stays primary.',
     attendeePromise:
         'The event stays natural, with enough structure to arrive, talk, and follow up.',
     hostPromise:
@@ -523,6 +620,7 @@ abstract final class EventSuccessPlaybookLibrary {
     pickleball,
     pubQuiz,
     dinner,
+    barCrawl,
     hostLedSocial,
     algorithmicMixer,
   ];

@@ -20,6 +20,9 @@ it("maps credential routes to a public family enum only", () => {
   }
   expect(privateShellFamily("/offer/")).toBe("offer");
   expect(privateShellFamily("/offer/abc/")).toBeNull();
+  expect(privateShellFamily("/account/")).toBe("account");
+  expect(privateShellFamily("/account")).toBe("account");
+  expect(privateShellFamily("/account/plans/")).toBeNull();
   expect(privateShellFamily("/private-shell/")).toBeNull();
 });
 

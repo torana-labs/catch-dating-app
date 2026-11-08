@@ -164,7 +164,10 @@ test(
   }
 );
 
-function buildHarness(overrides: Record<string, FakeData | undefined> = {}) {
+function buildHarness(
+  overrides: Record<string, FakeData | undefined> = {},
+  now = new Date("2026-05-02T10:55:00.000Z")
+) {
   const notifications: FcmParams[] = [];
   const firestore = new FakeFirestore({
     "events/event-1": eventDoc(),
@@ -198,7 +201,7 @@ function buildHarness(overrides: Record<string, FakeData | undefined> = {}) {
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
-      now: () => new Date("2026-05-02T10:55:00.000Z"),
+      now: () => now,
       increment: (value: number) =>
         ({__op: "increment", value}) as unknown as FirebaseFirestore.FieldValue,
       checkRateLimit: async () => undefined,
@@ -231,3 +234,50 @@ function callableRequest(data: FakeData): CallableRequest<unknown> {
     data,
   } as CallableRequest<unknown>;
 }
+
+test(
+  "markEventAttendanceHandler holds the companion push for a runner " +
+    "checked in mid-run",
+  async () => {
+    const h = buildHarness({
+      "events/event-1": {
+        ...eventDoc(),
+        eventFormat: {
+          version: 1,
+          activityKind: "socialRun",
+          interactionModel: "pacePods",
+        },
+      },
+    }, new Date("2026-05-02T11:10:00.000Z"));
+
+    await markEventAttendanceHandler(
+      callableRequest({eventId: "event-1", userId: "runner-1"}),
+      h.deps
+    );
+
+    assert.deepEqual(h.notifications, []);
+  }
+);
+
+test(
+  "markEventAttendanceHandler still sends the companion push for a late " +
+    "arrival when phones are allowed",
+  async () => {
+    for (const eventFormat of [
+      {version: 1, activityKind: "dinner", interactionModel: "seatedTable"},
+      {version: 1, activityKind: "pubQuiz", interactionModel: "teamRotations"},
+      {version: 1, activityKind: "barCrawl", interactionModel: "routeStops"},
+    ]) {
+      const h = buildHarness({
+        "events/event-1": {...eventDoc(), eventFormat},
+      }, new Date("2026-05-02T11:10:00.000Z"));
+
+      await markEventAttendanceHandler(
+        callableRequest({eventId: "event-1", userId: "runner-1"}),
+        h.deps
+      );
+
+      assert.equal(h.notifications.length, 1, eventFormat.activityKind);
+    }
+  }
+);

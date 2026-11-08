@@ -693,6 +693,7 @@ const EVENT_SUCCESS_INTERACTION_MODELS = [
   "teamRotations",
   "seatedTable",
   "freeFormMixer",
+  "routeStops",
   "hostLedProgram",
   "openFormat",
 ];

@@ -51,6 +51,7 @@ export interface EventSuccessVariableResolution {
 
 export interface ResolvedEventSuccessPrimitives {
   interactionModel: EventFormatSnapshot["interactionModel"];
+  phoneAvailability: EventSuccessPhoneAvailability;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
   matchingObjective: EventSuccessMatchingObjective;
@@ -116,7 +117,9 @@ export const EVENT_SUCCESS_TOPOLOGIES: readonly EventSuccessTopology[] =
   ["set", "sequence", "adjacency"];
 
 /**
- * Closed resolution table for every implemented variable axis through T7.
+ * Closed resolution table for every implemented variable axis. Team
+ * balancing and table seating run through the shape planner
+ * (docs/assignment_engine.md).
  */
 export const EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE:
   readonly EventSuccessVariableResolution[] =
@@ -176,8 +179,13 @@ export function eventSuccessPrimitivesFor(
     raw.accountability : defaultAccountabilityFor(interactionModel);
   const durationShape = isEventSuccessDurationShape(raw?.durationShape) ?
     raw.durationShape : defaultDurationShapeFor(interactionModel);
+  const phoneAvailability =
+    isEventSuccessPhoneAvailability(raw?.phoneAvailability) ?
+      raw.phoneAvailability :
+      defaultPhoneAvailabilityFor(format, interactionModel);
   return {
     interactionModel,
+    phoneAvailability,
     assignmentAlgorithm,
     compatibilityPolicy,
     matchingObjective,
@@ -206,6 +214,8 @@ export function defaultDurationShapeFor(
     return "rounds";
   case "seatedTable":
     return "courses";
+  case "routeStops":
+    return "stops";
   case "hostLedProgram":
   case "openFormat":
   default:
@@ -217,7 +227,74 @@ export function defaultDurationShapeFor(
 export function defaultAccountabilityFor(
   interactionModel: EventFormatSnapshot["interactionModel"]
 ): EventSuccessAccountability {
-  return interactionModel === "pacePods" ? "sweep" : "none";
+  return interactionModel === "pacePods" || interactionModel === "routeStops" ?
+    "sweep" : "none";
+}
+
+/** Activities whose core is continuous movement; mirrors the kernel. */
+const MOVEMENT_HEAVY_ACTIVITY_KINDS: ReadonlySet<string> = new Set([
+  "socialRun", "running", "walking", "pickleball", "padel", "tennis",
+  "badminton", "cycling", "spinClass",
+]);
+
+/**
+ * Returns when guests can use their phones, mirroring the Dart profile.
+ * @param {EventFormatSnapshot} eventFormat Persisted event format.
+ * @param {string} interactionModel Effective interaction model.
+ * @return {EventSuccessPhoneAvailability} Phone availability.
+ */
+export function defaultPhoneAvailabilityFor(
+  eventFormat: Pick<EventFormatSnapshot, "activityKind">,
+  interactionModel: EventFormatSnapshot["interactionModel"]
+): EventSuccessPhoneAvailability {
+  switch (interactionModel) {
+  case "pacePods":
+    return "arrivalAndPostEventOnly";
+  case "pairedRotations":
+  case "teamRotations":
+  case "freeFormMixer":
+  case "routeStops":
+    return "plannedPauses";
+  case "seatedTable":
+    // Phones are at the table; the format keeps them away by norm.
+    return "continuous";
+  case "hostLedProgram":
+    return MOVEMENT_HEAVY_ACTIVITY_KINDS.has(eventFormat.activityKind) ?
+      "hostOnlyLive" : "plannedPauses";
+  case "openFormat":
+  default:
+    return "hostOnlyLive";
+  }
+}
+
+/** When a guest-facing prompt, nudge or push would reach the phone. */
+export type EventSuccessGuestCueTiming =
+  "arrival" | "stepChange" | "midStep" | "postEvent";
+
+/**
+ * Whether a guest cue may interrupt the guest. Mirrors the Dart policy.
+ * @param {EventSuccessPhoneAvailability} phoneAvailability Event property.
+ * @param {EventSuccessGuestCueTiming} timing When the cue would land.
+ * @param {boolean} activityUnderway Whether the core activity is running.
+ * @return {boolean} Whether the cue may reach the phone.
+ */
+export function eventSuccessGuestCueAllowed(
+  phoneAvailability: EventSuccessPhoneAvailability,
+  timing: EventSuccessGuestCueTiming,
+  activityUnderway: boolean
+): boolean {
+  switch (phoneAvailability) {
+  case "continuous":
+    return true;
+  case "plannedPauses":
+    return timing !== "midStep";
+  case "arrivalAndPostEventOnly":
+  case "hostOnlyLive":
+  case "noneDuringActivity":
+    if (timing === "postEvent") return true;
+    if (timing === "midStep") return false;
+    return !activityUnderway;
+  }
 }
 
 /**
@@ -262,6 +339,7 @@ export function defaultUnitOutcomeFor(
     return "rank";
   case "seatedTable":
   case "freeFormMixer":
+  case "routeStops":
   case "hostLedProgram":
   case "openFormat":
   default:
@@ -339,6 +417,7 @@ export function defaultCompatibilityPolicyFor(
   case "pairedRotations":
   case "teamRotations":
   case "seatedTable":
+  case "routeStops":
     return "questionnaireClueOnly";
   case "pacePods":
     return "socialCohortBalance";
@@ -450,7 +529,8 @@ export function isEventSuccessDurationShape(
   return value === "continuous" ||
     value === "rounds" ||
     value === "courses" ||
-    value === "segments";
+    value === "segments" ||
+    value === "stops";
 }
 
 /** Returns the implemented endpoint for an assignment algorithm. */
@@ -458,10 +538,10 @@ function assignmentAlgorithmResolution(
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm,
   topology: EventSuccessTopology
 ): Pick<EventSuccessVariableResolution, "status" | "reason"> {
-  if (topology === "adjacency") {
+  if (topology === "adjacency" && assignmentAlgorithm !== "tableSeating") {
     return {
       status: "unsupported",
-      reason: "Seat adjacency and table seating are not implemented yet.",
+      reason: "Seat adjacency applies only to table seating.",
     };
   }
   if (topology === "sequence" && assignmentAlgorithm !== "pairRotations") {
@@ -491,13 +571,15 @@ function assignmentAlgorithmResolution(
     };
   case "teamBalancer":
     return {
-      status: "unsupported",
-      reason: "Team balancing is not implemented yet.",
+      status: "supported",
+      reason: "Teams use the shape planner: balanced, solo arrivals spread.",
     };
   case "tableSeating":
     return {
-      status: "unsupported",
-      reason: "Table seating and seat adjacency are not implemented yet.",
+      status: "supported",
+      reason: topology === "adjacency" ?
+        "Tables use the shape planner with seat order." :
+        "Tables use the shape planner.",
     };
   }
 }

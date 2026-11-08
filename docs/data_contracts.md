@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.185.3
-updated: 2026-11-02
+version: 1.186.0
+updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -72,6 +72,12 @@ and preference defaults are storage shape, not questions for the user.
 with live Auth phone ownership, disabled/deleted-account checks, an expected UID
 and a profile-revision comparison. Omitted DOB and richer existing fields are
 preserved. Minimal accounts remain absent from public social projections.
+Its optional read `sections` (`plans`, `following`, `reviews`, `messages`)
+serve the website's `/account/` page from existing collections only: own
+`eventParticipations` joined to events, active `organizerFollows`, own
+`reviews` with their verified state, and `organizerCommunicationPreferences`
+summarized per channel (opted in only with complete evidence). Each section is
+absent unless requested; no new collection or stored field backs the page.
 Website follow reads and mutations use canonical `organizerFollows` edges;
 legacy browser saves do not become follows or notification consent.
 
@@ -1828,16 +1834,24 @@ link, and later venue edits or archival never rewrite existing events.
 (`set`, `sequence`, `adjacency`) and the optional `resourceCapacity` object.
 `concurrentUnits` is a configurable simultaneous-resource limit; null means
 unconstrained. `resourceLabelId` is one of `court`, `table`, `lane`, or `board`.
-`seatsPerUnit` may be non-null only for `adjacency` and does not enable the
-deferred table-seating engine.
+`seatsPerUnit` may be non-null only for `adjacency` (table seats) or for
+`unitKind: pairs` (a doubles court holds four players as two partner pairs).
 
 `sequence` is implemented only with `pairRotations`. The server scheduler
 produces ordered, capacity-bounded rounds, explicit sit-out slots, and stable
 `resourceUnitId` values on rotation slots. It consumes the same cumulative
 exclusion totals used by T3 and the derived `unitProximity` graph from T5.
-`adjacency`, `tableSeating`, and other sequence-algorithm combinations remain
-explicitly unsupported in the exhaustive resolution table; no neighbouring
-engine fallback is permitted.
+`adjacency` is supported only for `tableSeating`, and `sequence` only for
+`pairRotations`; every other combination stays explicitly unsupported in the
+exhaustive resolution table, with no neighbouring engine fallback.
+
+`structureConfig` also carries `coverActivityAttributes` (units hold a
+cross-section of the attribute) and `arrivalGroupPolicy` (`keepTogether`,
+`spread`, `ignore`; absent means the unit-kind default). The activity attribute
+enum adds the sensitive `gender` and `ageBand`; the server resolves them only
+for an event whose saved structure names them. Host feature rules accept the
+`coverAcrossGroups` mode for category and multi-select answers. The engine
+contract is [assignment_engine.md](assignment_engine.md).
 
 ### Event Success Unit Outcomes And Standings
 

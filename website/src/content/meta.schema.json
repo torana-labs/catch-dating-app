@@ -25,6 +25,7 @@
         "event_invite",
         "household_rsvp",
         "programme_link",
+        "account",
         "public_form",
         "organizers",
         "claim",
@@ -69,6 +70,9 @@
           "$ref": "#/$defs/staticMeta"
         },
         "programme_link": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "account": {
           "$ref": "#/$defs/staticMeta"
         },
         "public_form": {

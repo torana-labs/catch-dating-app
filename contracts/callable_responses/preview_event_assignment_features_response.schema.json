@@ -55,7 +55,7 @@
         "properties": {
           "featureId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
           "kind": {"enum": ["category", "set", "number", "ordinal"]},
-          "mode": {"enum": ["preferSimilar", "preferDifferent", "balanceAcrossGroups"]},
+          "mode": {"enum": ["preferSimilar", "preferDifferent", "balanceAcrossGroups", "coverAcrossGroups"]},
           "weight": {"type": "number", "minimum": 0, "maximum": 100},
           "grantedCount": {"type": "integer", "minimum": 0, "maximum": 1000},
           "usableCount": {"type": "integer", "minimum": 0, "maximum": 1000},

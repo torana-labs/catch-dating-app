@@ -276,8 +276,8 @@ abstract final class EventSuccessPlaybookLibrary {
       EventSuccessModuleCatalog.checkIn,
       EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
-      EventSuccessModuleCatalog.guidedRotations,
       EventSuccessModuleCatalog.liveReveal,
       EventSuccessModuleCatalog.socialMissions,
       EventSuccessModuleCatalog.wingmanRequests,
@@ -302,7 +302,7 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 4,
         hostInstruction: {{library.dinner.hostInstruction.2}},
         attendeeExperience: {{library.dinner.attendeeExperience.2}},
-        moduleIds: ['host_script', 'social_missions', 'safety_controls'],
+        moduleIds: ['host_script', 'safety_controls'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.activity,
@@ -311,7 +311,7 @@ abstract final class EventSuccessPlaybookLibrary {
         hostInstruction:
             {{library.dinner.hostInstruction.3}},
         attendeeExperience: {{library.dinner.attendeeExperience.3}},
-        moduleIds: ['guided_rotations', 'live_reveal'],
+        moduleIds: ['micro_pods', 'live_reveal'],
       ),
       EventRunOfShowStep(
         stage: EventSuccessStage.closing,
@@ -329,6 +329,7 @@ abstract final class EventSuccessPlaybookLibrary {
       {{library.dinner.antiPatterns.1}},
       {{library.dinner.antiPatterns.2}},
       {{library.dinner.antiPatterns.3}},
+      {{library.dinner.antiPatterns.4}},
     ],
     iterationQuestions: [
       {{library.dinner.iterationQuestions.1}},
@@ -337,6 +338,102 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     wiringNotes: [
       {{library.dinner.wiringNotes.1}},
+    ],
+  );
+
+  static const barCrawl = EventSuccessPlaybook(
+    id: 'bar_crawl_route',
+    title: {{library.barCrawl.title.1}},
+    activityType: ActivityKind.barCrawl,
+    socialIntensity: EventSocialIntensity.light,
+    durationShape: EventSuccessDurationShape.stops,
+    summary:
+        {{library.barCrawl.summary.1}},
+    attendeePromise:
+        {{library.barCrawl.attendeePromise.1}},
+    hostPromise:
+        {{library.barCrawl.hostPromise.1}},
+    capacity: EventCapacityGuidance(
+      min: 8,
+      max: 40,
+      rationale: {{library.barCrawl.rationale.1}},
+    ),
+    modules: [
+      EventSuccessModuleCatalog.crowdBalance,
+      EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
+      EventSuccessModuleCatalog.hostScript,
+      EventSuccessModuleCatalog.compatibilityQuestionnaire,
+      EventSuccessModuleCatalog.microPods,
+      EventSuccessModuleCatalog.socialMissions,
+      EventSuccessModuleCatalog.guidedRotations,
+      EventSuccessModuleCatalog.liveReveal,
+      EventSuccessModuleCatalog.wingmanRequests,
+      EventSuccessModuleCatalog.contextualOpeners,
+      EventSuccessModuleCatalog.decomposedFeedback,
+      EventSuccessModuleCatalog.hostAnalytics,
+      EventSuccessModuleCatalog.safetyControls,
+    ],
+    runOfShow: [
+      EventRunOfShowStep(
+        stage: EventSuccessStage.arrival,
+        title: {{library.barCrawl.title.2}},
+        durationMinutes: 15,
+        hostInstruction:
+            {{library.barCrawl.hostInstruction.1}},
+        attendeeExperience: {{library.barCrawl.attendeeExperience.1}},
+        moduleIds: ['qr_check_in'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.opening,
+        title: {{library.barCrawl.title.3}},
+        durationMinutes: 3,
+        hostInstruction:
+            {{library.barCrawl.hostInstruction.2}},
+        attendeeExperience: {{library.barCrawl.attendeeExperience.2}},
+        moduleIds: ['host_script', 'safety_controls'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.activity,
+        title: {{library.barCrawl.title.4}},
+        durationMinutes: 40,
+        hostInstruction:
+            {{library.barCrawl.hostInstruction.3}},
+        attendeeExperience: {{library.barCrawl.attendeeExperience.3}},
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.mixing,
+        title: {{library.barCrawl.title.5}},
+        durationMinutes: 10,
+        hostInstruction:
+            {{library.barCrawl.hostInstruction.4}},
+        attendeeExperience: {{library.barCrawl.attendeeExperience.4}},
+        moduleIds: ['social_missions'],
+      ),
+      EventRunOfShowStep(
+        stage: EventSuccessStage.closing,
+        title: {{library.barCrawl.title.6}},
+        durationMinutes: 10,
+        hostInstruction:
+            {{library.barCrawl.hostInstruction.5}},
+        attendeeExperience:
+            {{library.barCrawl.attendeeExperience.5}},
+        moduleIds: ['wingman_requests'],
+      ),
+    ],
+    metrics: EventSuccessMetricCatalog.core,
+    antiPatterns: [
+      {{library.barCrawl.antiPatterns.1}},
+      {{library.barCrawl.antiPatterns.2}},
+      {{library.barCrawl.antiPatterns.3}},
+    ],
+    iterationQuestions: [
+      {{library.barCrawl.iterationQuestions.1}},
+      {{library.barCrawl.iterationQuestions.2}},
+      {{library.barCrawl.iterationQuestions.3}},
+    ],
+    wiringNotes: [
+      {{library.barCrawl.wiringNotes.1}},
     ],
   );
 
@@ -520,6 +617,7 @@ abstract final class EventSuccessPlaybookLibrary {
     pickleball,
     pubQuiz,
     dinner,
+    barCrawl,
     hostLedSocial,
     algorithmicMixer,
   ];

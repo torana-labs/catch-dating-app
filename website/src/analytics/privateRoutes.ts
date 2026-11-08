@@ -4,5 +4,6 @@ export function isPrivateEventUpdatePath(path: string): boolean {
     path.startsWith("/event-update/") ||
     path.startsWith("/booking/") ||
     ["/itinerary/", "/ids/", "/hotel/", "/trip/", "/runsheet/", "/hampers/", "/family/"].some((root) => path.startsWith(root)) ||
-    path === "/offer" || path === "/offer/";
+    path === "/offer" || path === "/offer/" ||
+    path === "/account" || path === "/account/";
 }

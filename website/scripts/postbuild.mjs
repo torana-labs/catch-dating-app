@@ -57,6 +57,7 @@ writeRoute("/join/", staticRouteMeta(websiteMeta, "event_runtime", baseUrl));
 writeRoute("/booking/", staticRouteMeta(websiteMeta, "event_booking", baseUrl));
 writeRoute("/demo/", staticRouteMeta(websiteMeta, "sales_demo", baseUrl));
 writeRoute("/offer/", staticRouteMeta(websiteMeta, "event_offer", baseUrl));
+writeRoute("/account/", staticRouteMeta(websiteMeta, "account", baseUrl));
 writeRoute("/event-update/", staticRouteMeta(websiteMeta, "event_assistance", baseUrl));
 writeRoute("/rehearse/", staticRouteMeta(websiteMeta, "event_rehearsal", baseUrl));
 writeRoute("/invite/", staticRouteMeta(websiteMeta, "event_invite", baseUrl));

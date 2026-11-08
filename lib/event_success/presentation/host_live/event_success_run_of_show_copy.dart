@@ -38,5 +38,9 @@ String eventSuccessRunOfShowBeatLabel(
       context.l10n.eventSuccessEventSuccessHostLiveLabelLegNumber(
         number: number,
       ),
+    EventSuccessDurationShape.stops =>
+      context.l10n.eventSuccessEventSuccessHostLiveLabelStopNumber(
+        number: number,
+      ),
   };
 }

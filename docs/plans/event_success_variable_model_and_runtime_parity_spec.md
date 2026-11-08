@@ -1,7 +1,7 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.11.0
-updated: 2026-08-14
+version: 1.12.0
+updated: 2026-11-08
 owner: event_success
 status: active
 ---
@@ -207,7 +207,7 @@ payload instead of an assignment payload. **Do not build a second ceremony.**
 | --- | --- | --- |
 | `set` | membership only — who is in this unit | implemented (pods, pairs) |
 | `sequence` | ordered opposition — who meets whom, in what order | **T6** |
-| `adjacency` | position within a unit — who is beside/across from whom | deferred, see A.12 |
+| `adjacency` | position within a unit — who is beside/across from whom | table seating ring order, see A.12 |
 
 `set` is the current implicit behavior. `sequence` is what a tournament,
 bracket, or round-robin requires and is what `resourceCapacity` schedules
@@ -358,14 +358,14 @@ pattern-match; map fidelity does not. **Do not build a to-scale venue editor.**
 Host tweaks (move a unit, disable a seat, ragged rows) are incremental
 additions to the parametric form, not a drawing canvas.
 
-## A.12 Explicitly deferred
+## A.12 Table seating (shipped)
 
-`seatAdjacency` and the `tableSeating` engine remain **deferred**. Seat-level
-adjacency — who sits beside versus across from whom — has exactly one launch
-format, and the dinner host's live pain is dietary handling and the mid-meal
-seat change rather than optimal adjacency. Until its engine ships,
-`tableSeating` and `topology: adjacency` must resolve to `unsupported` with an
-honest reason rather than silently falling back to micro-pods.
+The owner funded table seating and team balancing (torana-labs/catch-dating-app#1602).
+Both run on the shared shape planner described in
+[`../assignment_engine.md`](../assignment_engine.md). `topology: adjacency` is
+supported only with `tableSeating` and produces a clockwise seat order per
+table (couples beside each other, no repeated neighbours across courses);
+every other algorithm with adjacency still resolves to `unsupported`.
 
 This deferral does **not** block A.11 or D.2. The room map needs
 `unitProximity` only.
@@ -916,8 +916,8 @@ reflective disclosure without sampling or branching on `ActivityKind`.
 5. Host analytics anonymity threshold (carried over from
    [docs/event_success.md](../event_success.md), still open): 3, 5, or dynamic
    by event size.
-6. Whether `adjacency` and table seating are funded this cycle or remain
-   `unsupported` through the next two occurrences of the dinner format.
+6. Resolved in #1602: the owner funded table seating and team balancing;
+   both ship on the shared assignment engine.
 7. Resolved in T5: the pilot uses explicit Host confirmation and visually keeps
    assigned position distinct from Host-confirmed position; table-level QR is
    not required.
