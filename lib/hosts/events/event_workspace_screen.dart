@@ -207,11 +207,14 @@ class _HostEventWorkspaceActions {
         return;
       case HostEventView.guests:
         // The roster route is the door; the guest lists open beside it.
-        _push(
-          HostEventGuestsScreen(
-            request: HostEventRequest(
-              organizerId: organizerId,
-              eventId: event.id,
+        final request = HostEventRequest(
+          organizerId: organizerId,
+          eventId: event.id,
+        );
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => HostEventGuestsScreen(request: request),
             ),
           ),
         );
@@ -236,14 +239,26 @@ class _HostEventWorkspaceActions {
     );
     switch (action) {
       case HostEventWorkspaceAction.plan:
-        _push(HostEventPlanScreen(request: request));
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => HostEventPlanScreen(request: request),
+            ),
+          ),
+        );
       case HostEventWorkspaceAction.publish:
         context.pushNamed(
           Routes.hostEventPublicationScreen.name,
           pathParameters: _path,
         );
       case HostEventWorkspaceAction.closeOut:
-        _push(HostEventCloseOutScreen(request: request));
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => HostEventCloseOutScreen(request: request),
+            ),
+          ),
+        );
       case HostEventWorkspaceAction.edit:
         context.pushNamed(
           Routes.hostAppEditEventScreen.name,
@@ -313,8 +328,4 @@ class _HostEventWorkspaceActions {
           .then<void>((_) {}, onError: (Object _) {}),
     );
   }
-
-  void _push(Widget screen) => unawaited(
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen)),
-  );
 }
