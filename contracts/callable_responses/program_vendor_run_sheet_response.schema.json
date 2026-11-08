@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_vendor_run_sheet_response.schema.json",
+  "title": "ProgramVendorRunSheetCallableResponse",
+  "description": "A vendor's view-only run sheet: the programme's active functions in order and, for a transport vendor, the trips booked with them. Guest names and contact data never leave the server.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "vendorId",
+    "vendorName",
+    "programTitle",
+    "timezone",
+    "functions",
+    "trips",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorName": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "venueName",
+          "startsAtMillis",
+          "endsAtMillis"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "venueName": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "trips": {
+      "type": "array",
+      "maxItems": 300,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "status",
+          "plateDisplay",
+          "pickupLabel",
+          "destinationLabel",
+          "departedAtMillis",
+          "arrivedAtMillis",
+          "passengerCount"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "$ref": "../shared/program_common.schema.json#/definitions/transportTripStatus"
+          },
+          "plateDisplay": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 30
+          },
+          "pickupLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "departedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "arrivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

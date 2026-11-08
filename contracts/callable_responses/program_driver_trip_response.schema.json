@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_driver_trip_response.schema.json",
+  "title": "ProgramDriverTripCallableResponse",
+  "description": "What a driver needs for one trip: where from and to, the car, and passenger first names with party sizes. No phone numbers, emails or flight details leave the server.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "tripId",
+    "programTitle",
+    "status",
+    "vehicleClassLabel",
+    "plateDisplay",
+    "pickupLabel",
+    "destinationLabel",
+    "departedAtMillis",
+    "passengerCount",
+    "passengers",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/transportTripStatus"
+    },
+    "vehicleClassLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 60
+    },
+    "plateDisplay": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
+    },
+    "pickupLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "departedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "passengerCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "passengers": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "passengers",
+          "luggageUnits"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200
+          },
+          "luggageUnits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

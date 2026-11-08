@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/programmes/parts/staff_arrival_row.dar
 import 'package:catch_dating_app/hosts/programmes/staff/staff_alerts_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_state.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff_departures_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_door_body.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'staff_fixtures.dart';
+import 'staff_live_fixtures.dart';
 
 Future<void> _pump(
   WidgetTester tester,
@@ -300,24 +302,59 @@ void main() {
       expect(doors, ['dinner']);
     });
 
-    testWidgets('alerts list newest first with the job they touch', (
+    testWidgets('alerts split into open, mine and done with actions', (
+      tester,
+    ) async {
+      final actions = <String>[];
+      var filter = StaffAlertsFilter.open;
+      await _pump(
+        tester,
+        StatefulBuilder(
+          builder: (context, setState) => StaffAlertsBody(
+            status: StaffAlertsStatus.content,
+            board: staffLiveBoard(),
+            now: staffNightNow,
+            onRetry: () {},
+            filter: filter,
+            onFilter: (value) => setState(() => filter = value),
+            onAction: (alert, action) =>
+                actions.add('${alert.alertId}:${action.name}'),
+          ),
+        ),
+      );
+      expect(find.text('AI 471 was diverted'), findsOneWidget);
+      expect(find.text('Open 2'), findsOneWidget);
+      await tester.tap(find.text('Take it'));
+      await tester.tap(find.text('Done'));
+      expect(actions, ['flight_leg-1:claim', 'r1_functionLead:done']);
+      await tester.tap(find.text('Done 1'));
+      await tester.pump();
+      expect(
+        find.text('A car has waited 20 minutes at the airport'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Reopen'));
+      expect(actions.last, 'r2_transportDispatcher:reopen');
+      expect(find.text('What raises an alert'), findsOneWidget);
+    });
+
+    testWidgets('departures list who leaves next and who is late', (
       tester,
     ) async {
       await _pump(
         tester,
-        StaffAlertsBody(
-          status: StaffAlertsStatus.content,
-          feed: staffAttention(),
-          now: staffNightNow,
+        StaffDeparturesBody(
+          status: StaffDeparturesStatus.content,
+          roster: staffDepartures(),
+          now: DateTime(2026, 12, 15, 9, 40),
           onRetry: () {},
         ),
       );
-      expect(
-        find.text("The Sharma family's flight went to Jaipur"),
-        findsOneWidget,
-      );
-      expect(find.text('Door'), findsOneWidget);
-      expect(find.text('What raises an alert'), findsOneWidget);
+      expect(find.text('14 leave in the next 3 hours'), findsOneWidget);
+      expect(find.text('The Mehra family'), findsNWidgets(2));
+      expect(find.text('Still in room'), findsOneWidget);
+      expect(find.text('Sana Khan'), findsNothing);
+      expect(find.text('Next car · 9:30 AM'), findsOneWidget);
     });
   });
 }

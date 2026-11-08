@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_program_alert_payload.schema.json",
+  "title": "ResolveProgramAlertCallablePayload",
+  "description": "Take, finish or reopen one live board alert. Replays of the same requestId return the stored result; expectedRevision fences concurrent edits (0 when nobody has acted on the alert yet).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "alertId",
+    "action",
+    "expectedRevision",
+    "requestId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "alertId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "^[A-Za-z0-9_:-]+$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "claim",
+        "done",
+        "reopen"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    }
+  }
+}

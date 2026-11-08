@@ -18,6 +18,10 @@
     "initiation": {"$ref": "../shared/moment_common.schema.json#/definitions/momentInitiation"},
     "sense": {"$ref": "../shared/moment_common.schema.json#/definitions/momentSense"},
     "audience": {"$ref": "../shared/moment_common.schema.json#/definitions/momentAudience"},
-    "action": {"$ref": "../shared/moment_common.schema.json#/definitions/momentAction"}
+    "action": {"$ref": "../shared/moment_common.schema.json#/definitions/momentAction"},
+    "anchor": {
+      "$ref": "../shared/moment_common.schema.json#/definitions/momentPlanAnchor",
+      "description": "Optional planner anchor (function, flight or date). Omitted on create derives it from the initiation; omitted on a revision keeps the stored one."
+    }
   }
 }

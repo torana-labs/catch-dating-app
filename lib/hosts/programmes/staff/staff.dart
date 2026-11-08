@@ -5,6 +5,8 @@ library;
 export 'staff_alerts_screen.dart' show StaffAlertsScreen;
 export 'staff_arrivals_screen.dart' show StaffArrivalsScreen;
 export 'staff_assignments_screen.dart' show StaffAssignmentsScreen;
+export 'staff_departures_screen.dart'
+    show StaffDeparturesScreen, staffHotelScreenForUri;
 export 'staff_dispatch_screen.dart' show StaffDispatchScreen;
 export 'staff_door_screen.dart' show StaffDoorScreen;
 export 'staff_hotel_desk_screen.dart' show StaffHotelDeskScreen;

@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/misc.dart' show Override;
 
 import 'staff_fixtures.dart';
+import 'staff_live_fixtures.dart';
 
 /// The staff capture fixtures: every read the staff screens make answered
 /// with the boards' wedding weekend, an empty outbox and the phone online.
@@ -61,9 +62,13 @@ List<Override> hostStaffCaptureOverrides({
     staffProgramId,
     staffSangeetId,
   ).overrideWithValue(AsyncData(_live(staffDoorView()))),
-  programStaffAttentionProvider(
+  programLiveBoardViewProvider(
     staffProgramId,
-  ).overrideWithValue(AsyncData(staffAttention())),
+  ).overrideWithValue(AsyncData(_live(staffLiveBoard()))),
+  programDeparturesRosterViewProvider(
+    staffProgramId,
+    staffHotelId,
+  ).overrideWithValue(AsyncData(_live(staffDepartures()))),
 ];
 
 Widget hostStaffWorkCapture() => const StaffAssignmentsScreen();
@@ -121,3 +126,9 @@ ProgramOperationOutboxSummary staffOfflineOutbox() =>
 
 /// The access a test needs when it overrides only the jobs read.
 ProgramWorkAccess hostStaffAccess() => staffAccess();
+
+Widget hostStaffDeparturesCapture() => StaffDeparturesScreen(
+  programId: staffProgramId,
+  hotelId: staffHotelId,
+  now: () => DateTime(2026, 12, 15, 9, 40),
+);

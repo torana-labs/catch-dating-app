@@ -44333,6 +44333,828 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tell your followers on WhatsApp'**
   String get hostCreateTellFollowers;
+
+  /// Planned messages page title and workspace tile title.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned messages'**
+  String get hostProgrammeMessagesTitle;
+
+  /// Section action opening the full list.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get hostProgrammeSeeAll;
+
+  /// Planned messages tile when no message is scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned yet'**
+  String get hostProgrammeMessagesNone;
+
+  /// Planned messages tile: the next message and its date.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}, on {date}'**
+  String hostProgrammeMessagesNext({
+    required Object name,
+    required Object date,
+  });
+
+  /// Planned messages tile: the next message without a date.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}'**
+  String hostProgrammeMessagesNextUndated({required Object name});
+
+  /// Planned messages tile: how many are still to go out.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{None planned} =1{1 planned} other{{count} planned}}'**
+  String hostProgrammeMessagesPlanned({required int count});
+
+  /// Planned messages tile note.
+  ///
+  /// In en, this message translates to:
+  /// **'They move if a function’s time changes'**
+  String get hostProgrammeMessagesMove;
+
+  /// Planned messages page intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Every household gets these on WhatsApp. If a function moves, the messages tied to it move with it.'**
+  String get hostProgrammeMessagesIntro;
+
+  /// Planned messages page empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No planned messages yet.'**
+  String get hostProgrammeMessagesEmpty;
+
+  /// Planned messages page button opening a new message.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan another message'**
+  String get hostProgrammeMessagesPlan;
+
+  /// Planned message row meta: how many it was sent to.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Sent to 1} other{Sent to {count}}}'**
+  String hostProgrammeMessagesSent({required int count});
+
+  /// Planned message badge: saved, not approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostProgrammeMessageStateDraft;
+
+  /// Planned message badge: approved, still to go out.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get hostProgrammeMessageStatePlanned;
+
+  /// Planned message badge: the next one to go out.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostProgrammeMessageStateNext;
+
+  /// Planned message badge: already sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get hostProgrammeMessageStateSent;
+
+  /// Planned message badge: paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get hostProgrammeMessageStatePaused;
+
+  /// Planned message audience: every household.
+  ///
+  /// In en, this message translates to:
+  /// **'Every household'**
+  String get hostProgrammeMessageWhoEveryone;
+
+  /// Planned message audience: households that have not replied.
+  ///
+  /// In en, this message translates to:
+  /// **'Households still to reply'**
+  String get hostProgrammeMessageWhoNotReplied;
+
+  /// Planned message audience: guests coming to the function.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests coming to it'**
+  String get hostProgrammeMessageWhoComing;
+
+  /// Planned message audience: guests coming or maybe coming to the function.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests coming or maybe'**
+  String get hostProgrammeMessageWhoMaybe;
+
+  /// Planned message row: the function it is tied to.
+  ///
+  /// In en, this message translates to:
+  /// **'Tied to the {name}'**
+  String hostProgrammeMessageTiedTo({required Object name});
+
+  /// Planned message row: tied to a flight.
+  ///
+  /// In en, this message translates to:
+  /// **'Tied to a flight'**
+  String get hostProgrammeMessageTiedFlight;
+
+  /// Planned message tie option: a function.
+  ///
+  /// In en, this message translates to:
+  /// **'A function'**
+  String get hostProgrammeMessageTieFunction;
+
+  /// Planned message tie option: a flight.
+  ///
+  /// In en, this message translates to:
+  /// **'A flight'**
+  String get hostProgrammeMessageTieFlight;
+
+  /// Planned message tie option: a date.
+  ///
+  /// In en, this message translates to:
+  /// **'A date'**
+  String get hostProgrammeMessageTieDate;
+
+  /// Message page title for a new message.
+  ///
+  /// In en, this message translates to:
+  /// **'New planned message'**
+  String get hostProgrammeMessageNewTitle;
+
+  /// Message page title for an existing message.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned message'**
+  String get hostProgrammeMessageEditTitle;
+
+  /// Top bar close label.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostProgrammeClose;
+
+  /// Message page section: when it goes.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get hostProgrammeMessageWhen;
+
+  /// Message page segmented control label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tied to'**
+  String get hostProgrammeMessageTiedToLabel;
+
+  /// Message page field: which function.
+  ///
+  /// In en, this message translates to:
+  /// **'Function'**
+  String get hostProgrammeMessageFunction;
+
+  /// Message page field: which flight.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight'**
+  String get hostProgrammeMessageFlight;
+
+  /// Message page row: the day a date message goes.
+  ///
+  /// In en, this message translates to:
+  /// **'Send on'**
+  String get hostProgrammeMessageSendOn;
+
+  /// Message lead time chip.
+  ///
+  /// In en, this message translates to:
+  /// **'The day before'**
+  String get hostProgrammeMessageDayBefore;
+
+  /// Message lead time chip.
+  ///
+  /// In en, this message translates to:
+  /// **'2 hours before'**
+  String get hostProgrammeMessageTwoHours;
+
+  /// Message lead time chip.
+  ///
+  /// In en, this message translates to:
+  /// **'30 minutes before'**
+  String get hostProgrammeMessageHalfHour;
+
+  /// Message lead time chip.
+  ///
+  /// In en, this message translates to:
+  /// **'When it starts'**
+  String get hostProgrammeMessageWhenStarts;
+
+  /// Message page section: audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Who gets it'**
+  String get hostProgrammeMessageWho;
+
+  /// Message page section: the template.
+  ///
+  /// In en, this message translates to:
+  /// **'What it says'**
+  String get hostProgrammeMessageWhat;
+
+  /// Message page field: which WhatsApp message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostProgrammeMessageTemplate;
+
+  /// Template name: function starting.
+  ///
+  /// In en, this message translates to:
+  /// **'It’s starting soon'**
+  String get hostProgrammeMessageTemplateStarting;
+
+  /// Template name: what to wear and bring.
+  ///
+  /// In en, this message translates to:
+  /// **'Get ready'**
+  String get hostProgrammeMessageTemplateReady;
+
+  /// Template name: transport ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Your car is ready'**
+  String get hostProgrammeMessageTemplateCar;
+
+  /// Template name: RSVP reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Please reply'**
+  String get hostProgrammeMessageTemplateReply;
+
+  /// Template preview: function starting.
+  ///
+  /// In en, this message translates to:
+  /// **'See you soon! The function starts shortly. Your itinerary has the details.'**
+  String get hostProgrammeMessagePreviewStarting;
+
+  /// Template preview: get ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting ready? Here is what to wear and what to bring.'**
+  String get hostProgrammeMessagePreviewReady;
+
+  /// Template preview: car ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Your car is ready. Look for the driver at the pickup point.'**
+  String get hostProgrammeMessagePreviewCar;
+
+  /// Template preview: RSVP reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Please tell us who is coming so we can plan for you.'**
+  String get hostProgrammeMessagePreviewReply;
+
+  /// Message page notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet hours and consent'**
+  String get hostProgrammeMessageQuietTitle;
+
+  /// Message page notice body.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages wait until morning during quiet hours, and only go to guests who agreed to WhatsApp.'**
+  String get hostProgrammeMessageQuietBody;
+
+  /// Message page notice when no WhatsApp sender is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a WhatsApp number in messaging before planning messages.'**
+  String get hostProgrammeMessageNoSender;
+
+  /// Message page primary action.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve and schedule'**
+  String get hostProgrammeMessageApprove;
+
+  /// Message page secondary action.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get hostProgrammeMessageSaveDraft;
+
+  /// Message page error after a failed save.
+  ///
+  /// In en, this message translates to:
+  /// **'The message wasn’t saved. Try again.'**
+  String get hostProgrammeMessageSaveFailed;
+
+  /// Alerts segment: open alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Open {count}}}'**
+  String hostStaffAlertsOpen({required int count});
+
+  /// Alerts segment: alerts this person took.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Mine {count}}}'**
+  String hostStaffAlertsMine({required int count});
+
+  /// Alerts segment: finished alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Done {count}}}'**
+  String hostStaffAlertsDone({required int count});
+
+  /// Alert action: take the alert.
+  ///
+  /// In en, this message translates to:
+  /// **'Take it'**
+  String get hostStaffAlertsTake;
+
+  /// Alert action: mark the alert done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostStaffAlertsMarkDone;
+
+  /// Alert action: reopen a finished alert.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get hostStaffAlertsReopen;
+
+  /// Alert meta: who took it and when it was raised.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has it · {time}'**
+  String hostStaffAlertsWith({required Object name, required Object time});
+
+  /// Notice after a refused alert action.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone changed this alert. Check it and try again.'**
+  String get hostStaffAlertsActionFailed;
+
+  /// Live board top bar title fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Live board'**
+  String get hostProgrammeLiveTitle;
+
+  /// Live board badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostProgrammeLiveBadge;
+
+  /// Workspace button opening the live board.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the live board'**
+  String get hostProgrammeLiveOpen;
+
+  /// Live board top bar button planning a message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message everyone'**
+  String get hostProgrammeLiveMessage;
+
+  /// Live board when no function is on today.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on today.'**
+  String get hostProgrammeLiveNothingOn;
+
+  /// Live board spotlight kicker for the function on now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now · {time}'**
+  String hostProgrammeLiveNow({required Object time});
+
+  /// Live board spotlight kicker for the next function.
+  ///
+  /// In en, this message translates to:
+  /// **'Next · {time}'**
+  String hostProgrammeLiveNext({required Object time});
+
+  /// Live board door meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in: {count} of {total}'**
+  String hostProgrammeLiveCheckedIn({required int count, required int total});
+
+  /// Live board stat.
+  ///
+  /// In en, this message translates to:
+  /// **'In the hall'**
+  String get hostProgrammeLiveInHall;
+
+  /// Live board stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostProgrammeLiveExpected;
+
+  /// Live board stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to come'**
+  String get hostProgrammeLiveToCome;
+
+  /// Live board section.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel and hotels'**
+  String get hostProgrammeLiveTravel;
+
+  /// Live board travel row.
+  ///
+  /// In en, this message translates to:
+  /// **'Still landing'**
+  String get hostProgrammeLiveLanding;
+
+  /// Live board travel row.
+  ///
+  /// In en, this message translates to:
+  /// **'At the curb'**
+  String get hostProgrammeLiveAtCurb;
+
+  /// Live board travel row: disrupted journeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Need a new plan'**
+  String get hostProgrammeLiveDisrupted;
+
+  /// Live board travel status.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get hostProgrammeLiveBusy;
+
+  /// Live board travel status.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get hostProgrammeLiveCheck;
+
+  /// Live board travel status.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get hostProgrammeLiveOk;
+
+  /// Live board section: today's functions.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostProgrammeLiveTonight;
+
+  /// Live board empty tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions today.'**
+  String get hostProgrammeLiveTonightEmpty;
+
+  /// Live board alerts section.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostProgrammeLiveNeedsYou;
+
+  /// Live board alerts count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing open} other{{count} open}}'**
+  String hostProgrammeLiveOpenCount({required int count});
+
+  /// Live board button opening the Alerts screen.
+  ///
+  /// In en, this message translates to:
+  /// **'All alerts'**
+  String get hostProgrammeLiveAllAlerts;
+
+  /// Hotel desk button opening departures.
+  ///
+  /// In en, this message translates to:
+  /// **'Departures'**
+  String get hostStaffDeparturesOpen;
+
+  /// Departures error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Departures didn’t load'**
+  String get hostStaffDeparturesErrorTitle;
+
+  /// Departures top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Departures · {day} · {time}'**
+  String hostStaffDeparturesKicker({required Object day, required Object time});
+
+  /// Departures page title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nobody leaves in the next 3 hours} =1{1 leaves in the next 3 hours} other{{count} leave in the next 3 hours}}'**
+  String hostStaffDeparturesTitleCount({required int count});
+
+  /// Departures stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked out'**
+  String get hostStaffDeparturesCheckedOut;
+
+  /// Departures stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving soon'**
+  String get hostStaffDeparturesSoon;
+
+  /// Departures stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Late checkouts'**
+  String get hostStaffDeparturesLate;
+
+  /// Departures notice title: the next car's time.
+  ///
+  /// In en, this message translates to:
+  /// **'Next car · {time}'**
+  String hostStaffDeparturesNextCar({required Object time});
+
+  /// Departures section.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving next'**
+  String get hostStaffDeparturesLeavingNext;
+
+  /// Departures empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody else is leaving from this hotel.'**
+  String get hostStaffDeparturesEmpty;
+
+  /// Departure row room.
+  ///
+  /// In en, this message translates to:
+  /// **'Room {room}'**
+  String hostStaffDeparturesRoom({required Object room});
+
+  /// Departure row party size.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostStaffDeparturesPeople({required int count});
+
+  /// Departure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked out'**
+  String get hostStaffDeparturesStateOut;
+
+  /// Departure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Car not needed'**
+  String get hostStaffDeparturesStateNoCar;
+
+  /// Departure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get hostStaffDeparturesStateLeft;
+
+  /// Departure state.
+  ///
+  /// In en, this message translates to:
+  /// **'Still in room'**
+  String get hostStaffDeparturesStateRoom;
+
+  /// Branding page title.
+  ///
+  /// In en, this message translates to:
+  /// **'How it looks'**
+  String get hostProgrammeBrandingTitle;
+
+  /// Branding field: the planner credit line.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown as'**
+  String get hostProgrammeBrandingShownAs;
+
+  /// Branding field helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company name on the guest pages.'**
+  String get hostProgrammeBrandingShownAsHelp;
+
+  /// Branding section.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get hostProgrammeBrandingColour;
+
+  /// Brand colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Rani pink'**
+  String get hostProgrammeBrandingRani;
+
+  /// Brand colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Marigold'**
+  String get hostProgrammeBrandingMarigold;
+
+  /// Brand colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Mehendi green'**
+  String get hostProgrammeBrandingMehendi;
+
+  /// Brand colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Rose'**
+  String get hostProgrammeBrandingRose;
+
+  /// Brand colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Haldi yellow'**
+  String get hostProgrammeBrandingHaldi;
+
+  /// Branding section.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo'**
+  String get hostProgrammeBrandingCover;
+
+  /// Branding cover row without a photo.
+  ///
+  /// In en, this message translates to:
+  /// **'No cover photo yet'**
+  String get hostProgrammeBrandingNoCover;
+
+  /// Branding cover row with a photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo added'**
+  String get hostProgrammeBrandingHasCover;
+
+  /// Branding cover row note: uploads are not built yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo uploads arrive with programme photos.'**
+  String get hostProgrammeBrandingCoverNote;
+
+  /// Branding preview section.
+  ///
+  /// In en, this message translates to:
+  /// **'What guests see'**
+  String get hostProgrammeBrandingPreview;
+
+  /// Branding preview note.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get hostProgrammeBrandingPreviewNote;
+
+  /// Branding preview kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re invited'**
+  String get hostProgrammeBrandingPreviewKicker;
+
+  /// Branding preview credit.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned by {name}'**
+  String hostProgrammeBrandingBy({required Object name});
+
+  /// Branding section.
+  ///
+  /// In en, this message translates to:
+  /// **'Your credit'**
+  String get hostProgrammeBrandingCredit;
+
+  /// Branding switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Show your company on guest pages'**
+  String get hostProgrammeBrandingShowCredit;
+
+  /// Branding save error.
+  ///
+  /// In en, this message translates to:
+  /// **'That wasn’t saved. Someone may have changed the programme; try again.'**
+  String get hostProgrammeBrandingSaveFailed;
+
+  /// Programme tile and home row: guests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest} other{{count} guests}}'**
+  String hostEventsProgrammeGuests({required int count});
+
+  /// Programme tile and home row: inbound journeys.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} flying in}}'**
+  String hostEventsProgrammeFlying({required int count});
+
+  /// Programme tile replies meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% replied'**
+  String hostEventsProgrammeReplied({required int percent});
+
+  /// Planner home title.
+  ///
+  /// In en, this message translates to:
+  /// **'Programmes'**
+  String get hostProgrammesHomeTitle;
+
+  /// Planner home action.
+  ///
+  /// In en, this message translates to:
+  /// **'New programme'**
+  String get hostProgrammesHomeNew;
+
+  /// Planner home stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Programmes'**
+  String get hostProgrammesHomeStatProgrammes;
+
+  /// Planner home stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostProgrammesHomeStatGuests;
+
+  /// Planner home stat.
+  ///
+  /// In en, this message translates to:
+  /// **'Flying in'**
+  String get hostProgrammesHomeStatFlying;
+
+  /// Planner home section.
+  ///
+  /// In en, this message translates to:
+  /// **'Your programmes'**
+  String get hostProgrammesHomeYours;
+
+  /// Planner home empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No programmes yet.'**
+  String get hostProgrammesHomeEmpty;
+
+  /// Planner home row status.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get hostProgrammesHomeArchived;
+
+  /// Planner home row status.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get hostProgrammesHomeEnded;
+
+  /// Planner home row status.
+  ///
+  /// In en, this message translates to:
+  /// **'On now'**
+  String get hostProgrammesHomeLiveNow;
+
+  /// Planner home row status.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Live tomorrow} other{Live in {count} days}}'**
+  String hostProgrammesHomeLiveIn({required int count});
+
+  /// Planner home row progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {percent}% replied'**
+  String hostProgrammesHomeReplied({
+    required Object name,
+    required int percent,
+  });
 }
 
 class _AppLocalizationsDelegate

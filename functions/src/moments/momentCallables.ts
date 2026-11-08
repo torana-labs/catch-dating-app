@@ -64,8 +64,10 @@ import {
   readAction,
   readAudience,
   readInitiation,
+  readPlanAnchor,
   readScope,
 } from "./momentDocuments";
+import {loadMomentPlans, type MomentPlanSummary} from "./momentPlans";
 import {
   armMoment,
   pauseMoment,
@@ -76,6 +78,7 @@ import {
   validateMomentDefinition,
   type LifecycleResult,
   type MomentDefinition,
+  type MomentPlanAnchor,
   type MomentScope,
 } from "./momentModel";
 import {
@@ -188,7 +191,16 @@ export async function upsertOrganizerMomentHandler(
       "invalid-argument",
       "travelTimeLead applies to functionGuests audiences only.");
   }
+  const anchor = params.payload.anchor === undefined ||
+    params.payload.anchor === null ?
+    null : readPlanAnchor(params.payload.anchor);
+  if (params.payload.anchor !== undefined && params.payload.anchor !== null &&
+      anchor === null) {
+    throw new HttpsError(
+      "invalid-argument", "anchor needs a kind, and an id for a function.");
+  }
   await requireScopeMutable(deps, db, scope, params.actorUid);
+  if (anchor !== null) await requireAnchorInScope(db, scope, anchor);
 
   const momentId = typeof params.payload.momentId === "string" &&
     params.payload.momentId.length > 0 ?
@@ -209,7 +221,7 @@ export async function upsertOrganizerMomentHandler(
     }
     const result = reviseMoment(current,
       {name, initiation, sense: readSense(params.payload.sense),
-        audience, action});
+        audience, action, ...(anchor !== null ? {anchor} : {})});
     return lifecycleWrite(db, deps, ref, current, result);
   }
   const next: MomentDefinition = {
@@ -224,6 +236,7 @@ export async function upsertOrganizerMomentHandler(
     approval: null,
     origin: "organizer",
     revision: 1,
+    ...(anchor !== null ? {anchor} : {}),
   };
   const violations = validateMomentDefinition(next);
   if (violations.length > 0) {
@@ -233,6 +246,29 @@ export async function upsertOrganizerMomentHandler(
   }
   await ref.set(momentToDocument(next, deps.nowMillis(), true));
   return {moment: next};
+}
+
+/** A planner anchor must name something in the moment's own programme:
+ *  a function of that programme, or one of its travel legs. */
+async function requireAnchorInScope(
+  db: Firestore,
+  scope: MomentScope,
+  anchor: MomentPlanAnchor,
+): Promise<void> {
+  if (anchor.kind === "date" || anchor.id === null) return;
+  if (scope.kind !== "program") {
+    throw new HttpsError(
+      "invalid-argument",
+      "Function and flight anchors apply to programme moments only.");
+  }
+  const collection = anchor.kind === "function" ?
+    "programFunctions" : "programTravelLegs";
+  const snap = await db.collection(collection).doc(anchor.id).get();
+  if (!snap.exists ||
+      (snap.data() as Record<string, unknown>).programId !== scope.programId) {
+    throw new HttpsError(
+      "invalid-argument", "The anchor is not part of this programme.");
+  }
 }
 
 interface MomentRefParams extends ActorParams {
@@ -371,13 +407,18 @@ export async function runOrganizerMomentHandler(
   return result;
 }
 
-/** Lists moments for one scope; the caller already holds manage access. */
+/** Lists moments for one scope with their board summaries; the caller
+ *  already holds manage access. */
 export async function listOrganizerMomentsHandler(
   deps: MomentCallablesDeps,
   params: ActorParams & {scope: MomentScope},
-): Promise<{moments: MomentDefinition[]}> {
+): Promise<{
+  moments: MomentDefinition[];
+  plans: MomentPlanSummary[];
+  senderConnectionId?: string | null;
+}> {
   const db = deps.firestore();
-  await deps.authorizeManage(db, params.scope, params.actorUid);
+  const access = await deps.authorizeManage(db, params.scope, params.actorUid);
   const snap = await db.collection(MOMENTS_COLLECTION)
     .where("scopeKind", "==", params.scope.kind)
     .where("scopeId", "==", scopeId(params.scope))
@@ -388,7 +429,29 @@ export async function listOrganizerMomentsHandler(
     if (moment !== null) moments.push(moment);
   }
   moments.sort((a, b) => a.momentId.localeCompare(b.momentId));
-  return {moments};
+  const plans = await loadMomentPlans(db, moments);
+  if (params.scope.kind !== "program") return {moments, plans};
+  const organizerId = access ? access.program.organizerId : null;
+  return {
+    moments,
+    plans,
+    senderConnectionId: organizerId ?
+      await activeWhatsappConnectionId(db, organizerId) : null,
+  };
+}
+
+/** The organiser's active WhatsApp sender connection, if any. */
+async function activeWhatsappConnectionId(
+  db: Firestore,
+  organizerId: string,
+): Promise<string | null> {
+  const snap = await db.collection("organizerSenderConnections")
+    .where("organizerId", "==", organizerId)
+    .where("channel", "==", "whatsapp")
+    .where("status", "==", "active")
+    .limit(1)
+    .get();
+  return snap.docs[0]?.id ?? null;
 }
 
 function readSense(raw: unknown): MomentDefinition["sense"] {
@@ -440,6 +503,7 @@ function momentToWire(
     approval: moment.approval,
     origin: moment.origin,
     revision: moment.revision,
+    ...(moment.anchor ? {anchor: {...moment.anchor}} : {}),
   };
 }
 
@@ -603,7 +667,13 @@ async function listHandler(
     actorUid,
     scope: scopeFromWire(data.scope),
   });
-  return {moments: result.moments.map(momentToWire)};
+  const response: ListOrganizerMomentsCallableResponse = {
+    moments: result.moments.map(momentToWire),
+    plans: result.plans.map((plan) => ({...plan, anchor: {...plan.anchor}})),
+    ...(result.senderConnectionId !== undefined ?
+      {senderConnectionId: result.senderConnectionId} : {}),
+  };
+  return response;
 }
 
 export const upsertOrganizerMoment = onCall(

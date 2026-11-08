@@ -28,6 +28,7 @@ void main() {
     ('host_staff_door_phone', (_) => hostStaffDoorCapture(), true),
     ('host_staff_lead_phone', (_) => hostStaffLeadCapture(), false),
     ('host_staff_alerts_phone', (_) => hostStaffAlertsCapture(), false),
+    ('host_staff_departures_phone', (_) => hostStaffDeparturesCapture(), false),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, offline) in captures) {

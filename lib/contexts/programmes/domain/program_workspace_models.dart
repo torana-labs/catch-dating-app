@@ -17,6 +17,10 @@ class OrganizerProgramListRow {
     this.startsAt,
     this.endsAt,
     this.functionCount,
+    this.guestCount,
+    this.flyingInCount,
+    this.repliedShare,
+    this.billedMinor,
     this.canArchive = false,
     this.canUnarchive = false,
     this.archivedAt,
@@ -46,6 +50,10 @@ class OrganizerProgramListRow {
       functionCount: map['functionCount'] is num
           ? (map['functionCount']! as num).toInt()
           : null,
+      guestCount: (map['guestCount'] as num?)?.toInt(),
+      flyingInCount: (map['flyingInCount'] as num?)?.toInt(),
+      repliedShare: (map['repliedShare'] as num?)?.toDouble(),
+      billedMinor: (map['billedMinor'] as num?)?.toInt(),
       archivedAt: map['archivedAtMillis'] is num
           ? DateTime.fromMillisecondsSinceEpoch(
               (map['archivedAtMillis']! as num).toInt(),
@@ -73,6 +81,14 @@ class OrganizerProgramListRow {
   final DateTime? startsAt;
   final DateTime? endsAt;
   final int? functionCount;
+
+  /// Planner overview numbers; null when the server could not count them.
+  final int? guestCount;
+  final int? flyingInCount;
+
+  /// The share of guests who replied, 0 to 1.
+  final double? repliedShare;
+  final int? billedMinor;
 
   /// Actor-specific authority from the inventory response. Legacy responses
   /// fail closed; organizer membership and a grace deadline grant no authority.
@@ -167,6 +183,7 @@ class OrganizerProgramSettings {
     required this.capabilities,
     required this.revision,
     this.transportSettings,
+    this.branding = ProgramBranding.standard,
   });
 
   final String programId;
@@ -180,6 +197,9 @@ class OrganizerProgramSettings {
   final List<String> capabilities;
   final Map<String, Object?>? transportSettings;
   final int revision;
+
+  /// How guest pages look; the standard look when none is stored.
+  final ProgramBranding branding;
 }
 
 class OrganizerFunctionDetail {
@@ -269,6 +289,7 @@ class OrganizerProgramDetail {
         transportSettings:
             programMap['transportSettings'] as Map<String, Object?>?,
         revision: requiredInt(programMap, 'revision'),
+        branding: ProgramBranding.fromMap(programMap['branding']),
       ),
       functions: mapList(
         map['functions'],
@@ -553,4 +574,55 @@ class ProgramManifestImportResult {
   final int groupsCreated;
   final List<({int index, String message})> rowErrors;
   final bool alreadyApplied;
+}
+
+/// The guest pages' accent colours.
+enum ProgramBrandColor { rani, marigold, mehendi, rose, haldi }
+
+/// How a programme's guest pages look: colour, cover photo and the
+/// planner's credit.
+class ProgramBranding {
+  const ProgramBranding({
+    required this.color,
+    required this.coverImagePath,
+    required this.creditLine,
+  });
+
+  /// Read-time default for programmes without branding.
+  static const standard = ProgramBranding(
+    color: ProgramBrandColor.rani,
+    coverImagePath: null,
+    creditLine: null,
+  );
+
+  factory ProgramBranding.fromMap(Object? value) {
+    if (value is! Map<Object?, Object?>) return standard;
+    return ProgramBranding(
+      color:
+          nullableEnum(value['color'], ProgramBrandColor.values) ??
+          ProgramBrandColor.rani,
+      coverImagePath: value['coverImagePath'] as String?,
+      creditLine: value['creditLine'] as String?,
+    );
+  }
+
+  final ProgramBrandColor color;
+  final String? coverImagePath;
+  final String? creditLine;
+
+  Map<String, Object?> toJson() => {
+    'color': color.name,
+    'coverImagePath': coverImagePath,
+    'creditLine': creditLine,
+  };
+
+  ProgramBranding copyWith({
+    ProgramBrandColor? color,
+    String? creditLine,
+    bool clearCredit = false,
+  }) => ProgramBranding(
+    color: color ?? this.color,
+    coverImagePath: coverImagePath,
+    creditLine: clearCredit ? null : creditLine ?? this.creditLine,
+  );
 }

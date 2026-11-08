@@ -9,6 +9,7 @@ import {
   type GeoPoint,
   type MomentAutomationBinding,
   type MomentDefinition,
+  type MomentPlanAnchor,
   type MomentScope,
   type RunRecord,
   type TravelFacts,
@@ -59,7 +60,24 @@ export function momentFromDocument(
         data.origin === "formAutomation" ?
       data.origin : "organizer",
     revision: readInt(data.revision, 1),
+    ...(readPlanAnchor(data.anchor) ? {anchor: readPlanAnchor(data.anchor)} :
+      {}),
   };
+}
+
+/** The optional planner anchor; anything malformed reads as absent so the
+ *  derived default applies. */
+export function readPlanAnchor(raw: unknown): MomentPlanAnchor | null {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return null;
+  }
+  const data = raw as Record<string, unknown>;
+  if (data.kind !== "function" && data.kind !== "flight" &&
+      data.kind !== "date") return null;
+  const id = typeof data.id === "string" && data.id.length > 0 ?
+    data.id : null;
+  if (data.kind === "function" && id === null) return null;
+  return {kind: data.kind, id: data.kind === "date" ? null : id};
 }
 
 /** Serializes a definition for storage; scopeKind/scopeId are denormalized
@@ -83,6 +101,7 @@ export function momentToDocument(
     approval: moment.approval,
     origin: moment.origin,
     revision: moment.revision,
+    ...(moment.anchor ? {anchor: moment.anchor} : {}),
     updatedAtMillis: nowMillis,
     ...(isCreate ? {createdAtMillis: nowMillis} : {}),
   };

@@ -109,6 +109,22 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
             ),
           ),
           live: l10n.hostStaffHotelLive,
+          actions: [
+            CatchButton(
+              key: const ValueKey<String>('staff-hotel-departures'),
+              label: l10n.hostStaffDeparturesOpen,
+              size: CatchButtonSize.sm,
+              variant: CatchButtonVariant.secondary,
+              onPressed: () => context.pushNamed(
+                Routes.hostWorkHotelScreen.name,
+                pathParameters: {
+                  'programId': widget.programId,
+                  'hotelId': widget.hotelId,
+                },
+                queryParameters: {'view': 'departures'},
+              ),
+            ),
+          ],
         ),
         body: StaffHotelDeskBody(
           state: state,
