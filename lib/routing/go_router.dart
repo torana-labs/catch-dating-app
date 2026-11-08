@@ -1070,20 +1070,12 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.events,
     path: Routes.hostAppEventManageScreen.path,
     name: Routes.hostAppEventManageScreen.name,
-    builder: (context, state) {
-      final section = _hostManageSectionFromState(state);
-      return section == HostEventManageSection.setup
-          ? HostEventWorkspaceScreen(
-              organizerId: state.pathParameters['organizerId']!,
-              eventId: state.pathParameters['eventId']!,
-            )
-          : HostEventManageRouteScreen(
-              organizerId: state.pathParameters['organizerId']!,
-              eventId: state.pathParameters['eventId']!,
-              initialEvent: _routeEventExtra(state),
-              initialSection: section,
-            );
-    },
+    builder: (context, state) => _HostEventManageSectionRouteScreen(
+      organizerId: state.pathParameters['organizerId']!,
+      eventId: state.pathParameters['eventId']!,
+      initialEvent: _routeEventExtra(state),
+      section: _hostManageSectionFromState(state),
+    ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,
@@ -1593,6 +1585,32 @@ class _AuthRouteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       isHostApp ? const HostSignInScreen() : const AuthScreen();
+}
+
+/// Event manage: the event workspace for the default `setup` section; the
+/// legacy manage screen (the live console and the report) for the others.
+class _HostEventManageSectionRouteScreen extends StatelessWidget {
+  const _HostEventManageSectionRouteScreen({
+    required this.organizerId,
+    required this.eventId,
+    required this.initialEvent,
+    required this.section,
+  });
+
+  final String organizerId;
+  final String eventId;
+  final Event? initialEvent;
+  final HostEventManageSection section;
+
+  @override
+  Widget build(BuildContext context) => section == HostEventManageSection.setup
+      ? HostEventWorkspaceScreen(organizerId: organizerId, eventId: eventId)
+      : HostEventManageRouteScreen(
+          organizerId: organizerId,
+          eventId: eventId,
+          initialEvent: initialEvent,
+          initialSection: section,
+        );
 }
 
 class _RouteLoadingScreen extends StatelessWidget {

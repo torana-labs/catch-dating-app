@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "b86a71b496e913d228303923ea6841377037fcb3c6ea3a5addb3f88601fbe49e",
+    "routeContractSha256": "e53f1cb193f7debcb92382b965f8f1013891a70734c6751044a883066ec55f9b",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 17,
-    "imperativePageTargetCount": 10
+    "imperativePageRouteCount": 22,
+    "imperativePageTargetCount": 15
   },
   "routes": [
     {
@@ -733,8 +733,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostNewMessageScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostNewMessageScreen(organizerId:state.uri.queryParameters['organizerId']!)",
-      "presentationTarget": "HostNewMessageScreen",
+      "presentationExpression": "(context,state)=>HostComposeScreen(organizerId:state.uri.queryParameters['organizerId'],eventId:state.uri.queryParameters['eventId'])",
+      "presentationTarget": "HostComposeScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -769,8 +769,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventPublicationScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventPublicationRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!)",
-      "presentationTarget": "HostEventPublicationRouteScreen",
+      "presentationExpression": "(context,state)=>HostEventPublishScreen(request:HostEventRequest(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!))",
+      "presentationTarget": "HostEventPublishScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -786,8 +786,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseOfferScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostResponseOfferScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,recipientLabel:state.uri.queryParameters['recipientLabel'])",
-      "presentationTarget": "HostResponseOfferScreen",
+      "presentationExpression": "(context,state)=>HostOfferScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,recipientLabel:state.uri.queryParameters['recipientLabel'])",
+      "presentationTarget": "HostOfferScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -803,8 +803,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseOfferReviewScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,returnToOffer:true)",
-      "presentationTarget": "HostFormResponseDetailScreen",
+      "presentationExpression": "(context,state)=>HostResponseScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,returnToOffer:true)",
+      "presentationTarget": "HostResponseScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -886,8 +886,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCreateSavedAudienceScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostSavedAudienceEditorScreen",
+      "presentationExpression": "(context,state)=>HostSavedGroupScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostSavedGroupScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -903,8 +903,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostSavedAudienceDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'',audienceId:state.pathParameters['audienceId'],initialAudience:_routeAudienceExtra(state))",
-      "presentationTarget": "HostSavedAudienceEditorScreen",
+      "presentationExpression": "(context,state)=>HostSavedGroupScreen(organizerId:state.uri.queryParameters['organizerId']??'',audienceId:state.pathParameters['audienceId'])",
+      "presentationTarget": "HostSavedGroupScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -918,8 +918,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormTemplatesScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormTemplatesScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostFormTemplatesScreen",
+      "presentationExpression": "(context,state)=>HostFormNewScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostFormNewScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -935,8 +935,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormResponseDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',responseId:state.pathParameters['responseId']!,queue:_responseReviewQueue(state.extra))",
-      "presentationTarget": "HostFormResponseDetailScreen",
+      "presentationExpression": "(context,state)=>HostResponseScreen(organizerId:state.uri.queryParameters['organizerId']??'',responseId:state.pathParameters['responseId']!)",
+      "presentationTarget": "HostResponseScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -952,8 +952,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormBuilderScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!,initialView:hostFormViewFromQuery(state.uri.queryParameters['view']))",
-      "presentationTarget": "HostFormBuilderScreen",
+      "presentationExpression": "(context,state)=>hostFormScreenForUri(state.uri,formId:state.pathParameters['formId']!)",
+      "presentationTarget": "hostFormScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1003,8 +1003,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormAnalyticsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormAnalyticsScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
-      "presentationTarget": "HostFormAnalyticsScreen",
+      "presentationExpression": "(context,state)=>HostResponsesScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!,initialView:HostResponsesView.results)",
+      "presentationTarget": "HostResponsesScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1018,8 +1018,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAudienceAutomationsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormAutomationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostFormAutomationsScreen",
+      "presentationExpression": "(context,state)=>HostAutomationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostAutomationsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1067,7 +1067,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostApplicationDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!,queue:_responseReviewQueue(state.extra))",
+      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!)",
       "presentationTarget": "HostApplicationDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1084,8 +1084,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCustomerDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostCustomerDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',contactId:state.pathParameters['contactId']!,initialDisplayName:_routeContactNameExtra(state))",
-      "presentationTarget": "HostCustomerDetailScreen",
+      "presentationExpression": "(context,state)=>HostPersonScreen(organizerId:state.uri.queryParameters['organizerId']??'',contactId:state.pathParameters['contactId']!)",
+      "presentationTarget": "HostPersonScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1602,8 +1602,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerEventDefaultsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerEventDefaultsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
-      "presentationTarget": "HostOrganizerEventDefaultsScreen",
+      "presentationExpression": "(context,state)=>HostEventDefaultsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostEventDefaultsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1746,8 +1746,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRehearsalScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventRehearsalScreen(organizerId:state.pathParameters['organizerId']!,sessionId:state.pathParameters['sessionId']!)",
-      "presentationTarget": "HostEventRehearsalScreen",
+      "presentationExpression": "(context,state)=>HostRehearsalScreen(organizerId:state.pathParameters['organizerId']!,sessionId:state.pathParameters['sessionId']!)",
+      "presentationTarget": "HostRehearsalScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1782,8 +1782,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEventManageScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
-      "presentationTarget": "HostEventManageRouteScreen",
+      "presentationExpression": "(context,state)=>_HostEventManageSectionRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),section:_hostManageSectionFromState(state))",
+      "presentationTarget": "_HostEventManageSectionRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1919,6 +1919,51 @@
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_defaults_screen.dart:501497bd00dd92ceba59a43c5988c0698640716b9959812f5e04fcc3f34b1c55:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostOrganizerEventDefaultsScreen(organizerId:organizerId))",
+      "sourcePath": "lib/hosts/events/event_defaults_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostOrganizerEventDefaultsScreen(organizerId:organizerId)",
+      "presentationTarget": "HostOrganizerEventDefaultsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:1dfe4e3aeacb6314fc55b96a1d3d575063ad93a78180921458dcfdecc2222345:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventGuestsScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventGuestsScreen(request:request)",
+      "presentationTarget": "HostEventGuestsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:6dfa92c8b1947c7fdc77b946025ccdfe94300ddd86717e2fedcba3688d0da82a:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventCloseOutScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventCloseOutScreen(request:request)",
+      "presentationTarget": "HostEventCloseOutScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:e4f3ecb5f9639d7f492fbe75691e6a3b6c6c5660410a2698efe1fc8384632fc6:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventPlanScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventPlanScreen(request:request)",
+      "presentationTarget": "HostEventPlanScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/rehearsal_screen.dart:ad5dead709023a0e5a2491bc04a660384c171d1cff0c33a307b4c7159963a6da:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventRehearsalScreen(organizerId:organizerId,sessionId:sessionId))",
+      "sourcePath": "lib/hosts/events/rehearsal_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventRehearsalScreen(organizerId:organizerId,sessionId:sessionId)",
+      "presentationTarget": "HostEventRehearsalScreen",
+      "fullscreenDialogExpression": null
     },
     {
       "siteId": "material-page:lib/hosts/live/live_screen.dart:1af948f0cef3e2af19335a64f32e4e7e046cd7df455c2ae12a8227407d85d4e6:1",
