@@ -48470,6 +48470,1254 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your connection and try again.'**
   String get hostPeopleGroupErrorBody;
+
+  /// Staff notice title: changes kept on the phone that have not reached the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this phone'**
+  String get hostStaffOutboxTitle;
+
+  /// Staff notice body: changes waiting to send.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change will send when you are back online.} other{{count} changes will send when you are back online.}}'**
+  String hostStaffOutboxPending({required int count});
+
+  /// Staff notice body: waiting and refused changes.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} waiting to send · {review} refused. Look at the refused ones before you carry on.'**
+  String hostStaffOutboxReview({required int pending, required int review});
+
+  /// Staff notice button: send the saved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get hostStaffOutboxSend;
+
+  /// Staff notice button: open the refused changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Look at them'**
+  String get hostStaffOutboxLook;
+
+  /// Staff notice button: export the work kept on this phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a copy'**
+  String get hostStaffOutboxSaveCopy;
+
+  /// Staff button: retry a read or a send.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostStaffTryAgain;
+
+  /// Staff notice title: the screen shows what was saved before going offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get hostStaffSnapshotTitle;
+
+  /// Staff notice body: when the saved view was taken.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown as it was at {time}. It refreshes when you are back online.'**
+  String hostStaffSnapshotBody({required String time});
+
+  /// Arrivals row action: take this party to greet.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim'**
+  String get hostStaffArrivalsClaim;
+
+  /// Arrivals row action: release a party you claimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Let go'**
+  String get hostStaffArrivalsRelease;
+
+  /// Arrivals row action: the party is out at the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get hostStaffArrivalsReady;
+
+  /// Arrivals action: the party cannot travel as planned.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag a problem'**
+  String get hostStaffArrivalsDisrupted;
+
+  /// Arrivals row: people in the party.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostStaffArrivalsPeople({required int count});
+
+  /// Arrivals row: where the party goes.
+  ///
+  /// In en, this message translates to:
+  /// **'for {destination}'**
+  String hostStaffArrivalsFor({required String destination});
+
+  /// Arrivals row: bags with the party.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 bag} other{{count} bags}}'**
+  String hostStaffArrivalsBags({required int count});
+
+  /// Arrivals row: you claimed this party.
+  ///
+  /// In en, this message translates to:
+  /// **'yours'**
+  String get hostStaffArrivalsYours;
+
+  /// Arrivals row: another greeter claimed this party.
+  ///
+  /// In en, this message translates to:
+  /// **'with {name}'**
+  String hostStaffArrivalsWith({required String name});
+
+  /// Arrivals row: flight number and origin airport.
+  ///
+  /// In en, this message translates to:
+  /// **'{flight} from {origin}'**
+  String hostStaffArrivalsFlightFrom({
+    required String flight,
+    required String origin,
+  });
+
+  /// Arrivals row: arrival terminal.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminal {terminal}'**
+  String hostStaffArrivalsTerminal({required String terminal});
+
+  /// Arrivals row status: the flight went elsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Diverted'**
+  String get hostStaffArrivalsDiverted;
+
+  /// Arrivals row status: the flight is cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostStaffArrivalsCancelled;
+
+  /// Arrivals row status: the flight landed.
+  ///
+  /// In en, this message translates to:
+  /// **'Landed'**
+  String get hostStaffArrivalsLanded;
+
+  /// Arrivals row status: the flight is delayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get hostStaffArrivalsLate;
+
+  /// Arrivals row status: the flight is on time.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get hostStaffArrivalsOnTime;
+
+  /// Arrivals row status: no landing estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'No time yet'**
+  String get hostStaffArrivalsNoEstimate;
+
+  /// Staff row badge: the server refused a change saved on this phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Refused'**
+  String get hostStaffRefused;
+
+  /// Staff row badge: a change saved on this phone is waiting to send.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent'**
+  String get hostStaffNotSent;
+
+  /// Door row: people expected in the party.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} expected'**
+  String hostStaffDoorPartyExpected({required int count});
+
+  /// Door row: people in the party who are checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in'**
+  String hostStaffDoorPartyIn({required int count});
+
+  /// Door row: marked as not coming.
+  ///
+  /// In en, this message translates to:
+  /// **'did not come'**
+  String get hostStaffDoorNoShow;
+
+  /// Door row badge: not on the invitation list.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get hostStaffDoorWalkIn;
+
+  /// Door row action: undo a check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get hostStaffDoorUndo;
+
+  /// Door row action: check one guest in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get hostStaffDoorCheckIn;
+
+  /// Door action: check this many people in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in {count}'**
+  String hostStaffDoorCheckInCount({required int count});
+
+  /// Staff job name: runs the programme.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinator'**
+  String get hostStaffDutyCoordinator;
+
+  /// Staff job name: guest relations.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests and replies'**
+  String get hostStaffDutyGuests;
+
+  /// Staff job name: communications.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostStaffDutyMessages;
+
+  /// Staff job name: function check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get hostStaffDutyDoor;
+
+  /// Staff job name: runs one function.
+  ///
+  /// In en, this message translates to:
+  /// **'Function lead'**
+  String get hostStaffDutyLead;
+
+  /// Staff job name: meets arrivals.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport greeter'**
+  String get hostStaffDutyGreeter;
+
+  /// Staff job name: welcomes guests at the hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get hostStaffDutyHotel;
+
+  /// Staff job name: sends the cars.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostStaffDutyDispatch;
+
+  /// Staff job name: reconciliation viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills and records'**
+  String get hostStaffDutyReconcile;
+
+  /// Staff job name: stakeholder viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts'**
+  String get hostStaffDutyCounts;
+
+  /// Staff time range: start to end.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String hostStaffTimeRange({required String start, required String end});
+
+  /// Function row: checked in out of expected.
+  ///
+  /// In en, this message translates to:
+  /// **'{checkedIn} of {expected} in'**
+  String hostStaffFunctionCounts({
+    required int checkedIn,
+    required int expected,
+  });
+
+  /// Dispatch car title: vehicle and its seats.
+  ///
+  /// In en, this message translates to:
+  /// **'{vehicle} · {seats} seats'**
+  String hostStaffDispatchCarTitle({
+    required String vehicle,
+    required int seats,
+  });
+
+  /// Dispatch car: where it goes.
+  ///
+  /// In en, this message translates to:
+  /// **'To {destination}'**
+  String hostStaffDispatchTo({required String destination});
+
+  /// Dispatch car: when it should leave.
+  ///
+  /// In en, this message translates to:
+  /// **'leave by {time}'**
+  String hostStaffDispatchBy({required String time});
+
+  /// Dispatch car: it waited too long.
+  ///
+  /// In en, this message translates to:
+  /// **'should have left at {time}'**
+  String hostStaffDispatchOverdue({required String time});
+
+  /// Dispatch car: seats taken out of seats.
+  ///
+  /// In en, this message translates to:
+  /// **'{taken}/{seats}'**
+  String hostStaffDispatchSeats({required int taken, required int seats});
+
+  /// Dispatch car row: party and how many.
+  ///
+  /// In en, this message translates to:
+  /// **'{party} · {count}'**
+  String hostStaffDispatchParty({required String party, required int count});
+
+  /// Dispatch car row status: the party is out.
+  ///
+  /// In en, this message translates to:
+  /// **'At the curb'**
+  String get hostStaffDispatchAtCurb;
+
+  /// Dispatch car row status: landed or landing, not out yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not out yet'**
+  String get hostStaffDispatchNotOut;
+
+  /// Dispatch car button: send this car.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostStaffDispatchAction;
+
+  /// Dispatch car button while people are not out yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {count} more'**
+  String hostStaffDispatchWaiting({required int count});
+
+  /// Hotel car status: on the way, no estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get hostStaffHotelOnTheWay;
+
+  /// Hotel car status: arriving now.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost here'**
+  String get hostStaffHotelAlmostHere;
+
+  /// Hotel car status: minutes away.
+  ///
+  /// In en, this message translates to:
+  /// **'About {count} min'**
+  String hostStaffHotelMinutesAway({required int count});
+
+  /// Hotel car status: arrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get hostStaffHotelArrived;
+
+  /// Hotel car status: cancelled or voided.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostStaffHotelCancelled;
+
+  /// Hotel car action: record the car reaching the hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get hostStaffHotelMarkArrived;
+
+  /// Staff jobs top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your jobs today'**
+  String get hostStaffJobsTitle;
+
+  /// Staff jobs top bar kicker: the programme.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff for {title}'**
+  String hostStaffJobsKicker({required String title});
+
+  /// Staff jobs error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your jobs did not load'**
+  String get hostStaffJobsErrorTitle;
+
+  /// Staff jobs error body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostStaffJobsErrorBody;
+
+  /// Staff jobs empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs here right now'**
+  String get hostStaffJobsEmptyTitle;
+
+  /// Staff jobs empty body.
+  ///
+  /// In en, this message translates to:
+  /// **'When the planner gives you a job at this programme, it shows here.'**
+  String get hostStaffJobsEmptyBody;
+
+  /// Staff jobs next function: guests expected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} coming · you check them in'**
+  String hostStaffJobsNextMeta({required int count});
+
+  /// Staff jobs section: other jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get hostStaffJobsLater;
+
+  /// Staff jobs section: other pages this person may open.
+  ///
+  /// In en, this message translates to:
+  /// **'Also yours'**
+  String get hostStaffJobsAlso;
+
+  /// Staff jobs footer: what staff can see.
+  ///
+  /// In en, this message translates to:
+  /// **'You see only the guests these jobs need.'**
+  String get hostStaffJobsScope;
+
+  /// Staff jobs footer: what staff can see and until when.
+  ///
+  /// In en, this message translates to:
+  /// **'You see only the guests these jobs need. Your access ends on {date}.'**
+  String hostStaffJobsScopeEnds({required String date});
+
+  /// Staff job role, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals'**
+  String get hostStaffJobsRoleGreeter;
+
+  /// Staff job role, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostStaffJobsRoleDispatch;
+
+  /// Staff job role, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel'**
+  String get hostStaffJobsRoleHotel;
+
+  /// Staff job role, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get hostStaffJobsRoleDoor;
+
+  /// Staff job role, short.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get hostStaffJobsRoleLead;
+
+  /// Staff jobs link: the alerts for your jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get hostStaffJobsLinkAlerts;
+
+  /// Staff jobs link: programme messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned messages'**
+  String get hostStaffJobsLinkMessages;
+
+  /// Staff jobs link: the programme inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest messages'**
+  String get hostStaffJobsLinkInbox;
+
+  /// Staff jobs link: the guest desk.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostStaffJobsLinkGuests;
+
+  /// Staff jobs link: import a guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the guest list'**
+  String get hostStaffJobsLinkImport;
+
+  /// Staff jobs link: import from phone contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guests from your contacts'**
+  String get hostStaffJobsLinkPhoneImport;
+
+  /// Staff jobs link: the trip ledger.
+  ///
+  /// In en, this message translates to:
+  /// **'Car trips'**
+  String get hostStaffJobsLinkTrips;
+
+  /// Staff jobs link: counts-only overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is coming'**
+  String get hostStaffJobsLinkCounts;
+
+  /// Staff jobs link: who came to what.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get hostStaffJobsLinkAttendance;
+
+  /// Staff jobs spotlight badge.
+  ///
+  /// In en, this message translates to:
+  /// **'On now'**
+  String get hostStaffJobsOnNow;
+
+  /// Staff jobs spotlight badge with the end time.
+  ///
+  /// In en, this message translates to:
+  /// **'On now · until {time}'**
+  String hostStaffJobsOnNowUntil({required String time});
+
+  /// Staff jobs spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open arrivals'**
+  String get hostStaffJobsOpenArrivals;
+
+  /// Staff jobs spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open dispatch'**
+  String get hostStaffJobsOpenDispatch;
+
+  /// Staff jobs spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the desk'**
+  String get hostStaffJobsOpenHotel;
+
+  /// Staff jobs spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the door'**
+  String get hostStaffJobsOpenDoor;
+
+  /// Staff jobs spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the function'**
+  String get hostStaffJobsOpenLead;
+
+  /// Staff work list top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your work'**
+  String get hostStaffWorkTitle;
+
+  /// Staff work list top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Programmes and events you work at'**
+  String get hostStaffWorkKicker;
+
+  /// Staff work list empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No work here yet'**
+  String get hostStaffWorkEmptyTitle;
+
+  /// Staff work list empty body.
+  ///
+  /// In en, this message translates to:
+  /// **'When an organiser adds you to their team, the work shows here.'**
+  String get hostStaffWorkEmptyBody;
+
+  /// Staff work row: when access ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ends {date}'**
+  String hostStaffWorkEnds({required String date});
+
+  /// Staff work row action: open the programme team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get hostStaffWorkTeam;
+
+  /// Staff job name: runs an event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event lead'**
+  String get hostStaffDutyEventLead;
+
+  /// Staff sheet button: close the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostStaffClose;
+
+  /// Staff top bar back button.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to your jobs'**
+  String get hostStaffBackToJobs;
+
+  /// Arrivals top bar kicker with the roster time.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals · {time}'**
+  String hostStaffArrivalsKicker({required String time});
+
+  /// Arrivals top bar kicker before the roster loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals'**
+  String get hostStaffArrivalsKickerPlain;
+
+  /// Arrivals top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Greeter'**
+  String get hostStaffArrivalsLive;
+
+  /// Arrivals dock button: open dispatch, with parties at the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Open dispatch} =1{Open dispatch · 1 party out} other{Open dispatch · {count} parties out}}'**
+  String hostStaffArrivalsOpenDispatch({required int count});
+
+  /// Arrivals error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The roster did not load'**
+  String get hostStaffArrivalsErrorTitle;
+
+  /// Arrivals headline: people out at the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} at the curb'**
+  String hostStaffArrivalsHeadline({required int count});
+
+  /// Arrivals stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Still landing'**
+  String get hostStaffArrivalsStatLanding;
+
+  /// Arrivals stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to hotels'**
+  String get hostStaffArrivalsStatSent;
+
+  /// Arrivals stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostStaffArrivalsStatNeedsYou;
+
+  /// Arrivals section: parties that need someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostStaffArrivalsNeedsYou;
+
+  /// Arrivals section: parties out at the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'At the curb'**
+  String get hostStaffArrivalsAtCurb;
+
+  /// Arrivals section empty: nobody at the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is out yet.'**
+  String get hostStaffArrivalsAtCurbEmpty;
+
+  /// Arrivals section: parties still landing.
+  ///
+  /// In en, this message translates to:
+  /// **'Landing next'**
+  String get hostStaffArrivalsLanding;
+
+  /// Arrivals section empty: nobody landing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody else is due.'**
+  String get hostStaffArrivalsLandingEmpty;
+
+  /// Arrivals notice title: the party and how many.
+  ///
+  /// In en, this message translates to:
+  /// **'{party}, {count, plural, =1{1 person} other{{count} people}}'**
+  String hostStaffArrivalsNoticeTitle({
+    required String party,
+    required int count,
+  });
+
+  /// Dispatch top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostStaffDispatchTitle;
+
+  /// Dispatch top bar back button.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to arrivals'**
+  String get hostStaffDispatchBack;
+
+  /// Dispatch top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get hostStaffDispatchLive;
+
+  /// Dispatch error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The cars did not load'**
+  String get hostStaffDispatchErrorTitle;
+
+  /// Dispatch intro line.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars suggested by curb time and hotel. You decide what leaves.'**
+  String get hostStaffDispatchIntro;
+
+  /// Dispatch notice title: parties the plan could not place.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 party has no car} other{{count} parties have no car}}'**
+  String hostStaffDispatchUnplacedTitle({required int count});
+
+  /// Dispatch notice: missing time.
+  ///
+  /// In en, this message translates to:
+  /// **'Some have no landing time yet.'**
+  String get hostStaffDispatchReasonTime;
+
+  /// Dispatch notice: no suitable vehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Some need a car the programme does not have.'**
+  String get hostStaffDispatchReasonVehicle;
+
+  /// Dispatch notice: outside scope.
+  ///
+  /// In en, this message translates to:
+  /// **'Some go somewhere outside your dispatch.'**
+  String get hostStaffDispatchReasonScope;
+
+  /// Dispatch empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No cars to send'**
+  String get hostStaffDispatchEmptyTitle;
+
+  /// Dispatch empty body.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars show here as guests reach the curb.'**
+  String get hostStaffDispatchEmptyBody;
+
+  /// Dispatch sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the {vehicle}'**
+  String hostStaffDispatchSheetTitle({required String vehicle});
+
+  /// Dispatch sheet button.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch now'**
+  String get hostStaffDispatchNow;
+
+  /// Dispatch sheet field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Number plate'**
+  String get hostStaffDispatchPlate;
+
+  /// Dispatch sheet plate placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'RJ 27 TA 4471'**
+  String get hostStaffDispatchPlateHint;
+
+  /// Dispatch sheet label: parties the car can wait for.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for'**
+  String get hostStaffDispatchHold;
+
+  /// Dispatch sheet chip: a party to wait for.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {count, plural, =1{1 person} other{{count} people}}'**
+  String hostStaffDispatchHoldOption({
+    required String time,
+    required int count,
+  });
+
+  /// Dispatch sheet summary: guests and destination.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest to {destination}} other{{count} guests to {destination}}}'**
+  String hostStaffDispatchSummary({
+    required int count,
+    required String destination,
+  });
+
+  /// Dispatch sheet: vendors failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The vendors did not load. You can dispatch without one.'**
+  String get hostStaffDispatchVendorsFailed;
+
+  /// Dispatch sheet: no vendors.
+  ///
+  /// In en, this message translates to:
+  /// **'No car vendor is set up for this programme.'**
+  String get hostStaffDispatchNoVendors;
+
+  /// Dispatch sheet: vendors loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the vendors…'**
+  String get hostStaffDispatchVendorsLoading;
+
+  /// Staff stat value while its count has not loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'–'**
+  String get hostStaffNoCount;
+
+  /// Hotel desk top bar kicker with the board time.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk · {time}'**
+  String hostStaffHotelKicker({required String time});
+
+  /// Hotel desk top bar kicker before the board loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get hostStaffHotelKickerPlain;
+
+  /// Hotel desk top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel'**
+  String get hostStaffHotelLive;
+
+  /// Hotel desk error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The desk did not load'**
+  String get hostStaffHotelErrorTitle;
+
+  /// Hotel desk headline.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No cars on the way} =1{1 car on the way} other{{count} cars on the way}}'**
+  String hostStaffHotelHeadline({required int count});
+
+  /// Hotel desk stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get hostStaffHotelStatCheckedIn;
+
+  /// Hotel desk stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to come'**
+  String get hostStaffHotelStatToCome;
+
+  /// Hotel desk stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms free'**
+  String get hostStaffHotelStatFree;
+
+  /// Hotel desk button: return to the first page.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the first page'**
+  String get hostStaffHotelFirstPage;
+
+  /// Hotel desk section: cars on the way.
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get hostStaffHotelOnTheWayTitle;
+
+  /// Hotel desk section empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No cars are on the way.'**
+  String get hostStaffHotelOnTheWayEmpty;
+
+  /// Hotel desk section action: the next page.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get hostStaffHotelMore;
+
+  /// Hotel desk section: guests waiting for keys.
+  ///
+  /// In en, this message translates to:
+  /// **'At the desk now'**
+  String get hostStaffHotelAtDeskTitle;
+
+  /// Hotel desk section empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is waiting at the desk.'**
+  String get hostStaffHotelAtDeskEmpty;
+
+  /// Hotel desk section action: open the room board.
+  ///
+  /// In en, this message translates to:
+  /// **'Room board'**
+  String get hostStaffHotelRooms;
+
+  /// Hotel desk row: the room.
+  ///
+  /// In en, this message translates to:
+  /// **'Room {room}'**
+  String hostStaffHotelRoom({required String room});
+
+  /// Hotel desk row: the room is ready.
+  ///
+  /// In en, this message translates to:
+  /// **'room ready'**
+  String get hostStaffHotelRoomReady;
+
+  /// Hotel desk row action: check the guest in.
+  ///
+  /// In en, this message translates to:
+  /// **'Give keys'**
+  String get hostStaffHotelGiveKeys;
+
+  /// Hotel desk section: parties still at the airport.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to leave the airport'**
+  String get hostStaffHotelStillTitle;
+
+  /// Hotel desk section empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has left the airport.'**
+  String get hostStaffHotelStillEmpty;
+
+  /// Hotel desk row: when the party reaches the curb.
+  ///
+  /// In en, this message translates to:
+  /// **'Out at {time}'**
+  String hostStaffHotelOutAt({required String time});
+
+  /// Programme door top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get hostStaffDoorLive;
+
+  /// Programme door error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest list did not load'**
+  String get hostStaffDoorErrorTitle;
+
+  /// Programme door meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get hostStaffDoorMeter;
+
+  /// Programme door line: people still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} still to come'**
+  String hostStaffDoorToCome({required int count});
+
+  /// Programme door line: walk-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 walk-in} other{{count} walk-ins}}'**
+  String hostStaffDoorWalkIns({required int count});
+
+  /// Programme door line: the list holds only this function invitees.
+  ///
+  /// In en, this message translates to:
+  /// **'only {function} invitees are on this list'**
+  String hostStaffDoorOnlyInvitees({required String function});
+
+  /// Programme door search placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'A family or a name'**
+  String get hostStaffDoorSearch;
+
+  /// Programme door search label.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a guest'**
+  String get hostStaffDoorSearchLabel;
+
+  /// Programme door filters label.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get hostStaffDoorShow;
+
+  /// Programme door filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get hostStaffDoorExpected;
+
+  /// Programme door filter.
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get hostStaffDoorIn;
+
+  /// Programme door filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-ins'**
+  String get hostStaffDoorWalkInsTab;
+
+  /// Programme door notice: cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This function is cancelled. The door is closed.'**
+  String get hostStaffDoorCancelled;
+
+  /// Programme door notice: check-in off.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in is off for this function.'**
+  String get hostStaffDoorClosed;
+
+  /// Programme door empty list.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody here right now.'**
+  String get hostStaffDoorEmpty;
+
+  /// Programme door empty search.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody matches that name.'**
+  String get hostStaffDoorNoMatch;
+
+  /// Programme door stepper: decrease.
+  ///
+  /// In en, this message translates to:
+  /// **'One fewer'**
+  String get hostStaffDoorFewer;
+
+  /// Programme door stepper: increase.
+  ///
+  /// In en, this message translates to:
+  /// **'One more'**
+  String get hostStaffDoorMore;
+
+  /// Programme door action: mark as not coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Did not come'**
+  String get hostStaffDoorMarkNoShow;
+
+  /// Programme door dock button and sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a walk-in'**
+  String get hostStaffDoorAddWalkIn;
+
+  /// Programme door walk-in sheet button.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Add and check in} other{Add and check in {count}}}'**
+  String hostStaffDoorWalkInAdd({required int count});
+
+  /// Programme door walk-in field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostStaffDoorWalkInName;
+
+  /// Programme door walk-in stepper label.
+  ///
+  /// In en, this message translates to:
+  /// **'People with them'**
+  String get hostStaffDoorWalkInParty;
+
+  /// Programme door dock badge offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline · {count} will sync'**
+  String hostStaffDoorOffline({required int count});
+
+  /// Programme door dock badge online with unsent changes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to sync'**
+  String hostStaffDoorToSync({required int count});
+
+  /// Function lead top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get hostStaffLeadLive;
+
+  /// Function lead error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The functions did not load'**
+  String get hostStaffLeadErrorTitle;
+
+  /// Function lead empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions left'**
+  String get hostStaffLeadEmptyTitle;
+
+  /// Function lead empty body.
+  ///
+  /// In en, this message translates to:
+  /// **'Every function of this programme has finished or been cancelled.'**
+  String get hostStaffLeadEmptyBody;
+
+  /// Function lead spotlight kicker: next function start.
+  ///
+  /// In en, this message translates to:
+  /// **'Next · {time}'**
+  String hostStaffLeadNext({required String time});
+
+  /// Function lead spotlight kicker: function on now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now · until {time}'**
+  String hostStaffLeadNow({required String time});
+
+  /// Function lead spotlight: minutes until the next function.
+  ///
+  /// In en, this message translates to:
+  /// **'in {count} min'**
+  String hostStaffLeadIn({required int count});
+
+  /// Function lead spotlight button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open its door'**
+  String get hostStaffLeadOpenDoor;
+
+  /// Function lead stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'In the hall'**
+  String get hostStaffLeadStatIn;
+
+  /// Function lead stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to come'**
+  String get hostStaffLeadStatToCome;
+
+  /// Function lead section: the day functions.
+  ///
+  /// In en, this message translates to:
+  /// **'Run of show'**
+  String get hostStaffLeadRunOfShow;
+
+  /// Alerts top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get hostStaffAlertsTitle;
+
+  /// Alerts top bar live tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostStaffAlertsLive;
+
+  /// Alerts error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The alerts did not load'**
+  String get hostStaffAlertsErrorTitle;
+
+  /// Alerts note: the list is cut short.
+  ///
+  /// In en, this message translates to:
+  /// **'The latest alerts; older ones are not shown.'**
+  String get hostStaffAlertsTruncated;
+
+  /// Alerts empty list.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs you right now.'**
+  String get hostStaffAlertsEmpty;
+
+  /// Alerts section title.
+  ///
+  /// In en, this message translates to:
+  /// **'What raises an alert'**
+  String get hostStaffAlertsWhatTitle;
+
+  /// Alerts section body.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight changes, guests reaching a hotel after a function has started, cars waiting too long and help requests from guests. Each one goes to the people whose job it touches.'**
+  String get hostStaffAlertsWhatBody;
 }
 
 class _AppLocalizationsDelegate

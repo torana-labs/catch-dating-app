@@ -30017,4 +30017,813 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPeopleGroupErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostStaffOutboxTitle => 'Saved on this phone';
+
+  @override
+  String hostStaffOutboxPending({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes will send when you are back online.',
+      one: '1 change will send when you are back online.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostStaffOutboxReview({required int pending, required int review}) {
+    return '$pending waiting to send · $review refused. Look at the refused ones before you carry on.';
+  }
+
+  @override
+  String get hostStaffOutboxSend => 'Send now';
+
+  @override
+  String get hostStaffOutboxLook => 'Look at them';
+
+  @override
+  String get hostStaffOutboxSaveCopy => 'Save a copy';
+
+  @override
+  String get hostStaffTryAgain => 'Try again';
+
+  @override
+  String get hostStaffSnapshotTitle => 'Offline';
+
+  @override
+  String hostStaffSnapshotBody({required String time}) {
+    return 'Shown as it was at $time. It refreshes when you are back online.';
+  }
+
+  @override
+  String get hostStaffArrivalsClaim => 'Claim';
+
+  @override
+  String get hostStaffArrivalsRelease => 'Let go';
+
+  @override
+  String get hostStaffArrivalsReady => 'Ready';
+
+  @override
+  String get hostStaffArrivalsDisrupted => 'Flag a problem';
+
+  @override
+  String hostStaffArrivalsPeople({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostStaffArrivalsFor({required String destination}) {
+    return 'for $destination';
+  }
+
+  @override
+  String hostStaffArrivalsBags({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bags',
+      one: '1 bag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffArrivalsYours => 'yours';
+
+  @override
+  String hostStaffArrivalsWith({required String name}) {
+    return 'with $name';
+  }
+
+  @override
+  String hostStaffArrivalsFlightFrom({
+    required String flight,
+    required String origin,
+  }) {
+    return '$flight from $origin';
+  }
+
+  @override
+  String hostStaffArrivalsTerminal({required String terminal}) {
+    return 'Terminal $terminal';
+  }
+
+  @override
+  String get hostStaffArrivalsDiverted => 'Diverted';
+
+  @override
+  String get hostStaffArrivalsCancelled => 'Cancelled';
+
+  @override
+  String get hostStaffArrivalsLanded => 'Landed';
+
+  @override
+  String get hostStaffArrivalsLate => 'Late';
+
+  @override
+  String get hostStaffArrivalsOnTime => 'On time';
+
+  @override
+  String get hostStaffArrivalsNoEstimate => 'No time yet';
+
+  @override
+  String get hostStaffRefused => 'Refused';
+
+  @override
+  String get hostStaffNotSent => 'Not sent';
+
+  @override
+  String hostStaffDoorPartyExpected({required int count}) {
+    return '$count expected';
+  }
+
+  @override
+  String hostStaffDoorPartyIn({required int count}) {
+    return '$count in';
+  }
+
+  @override
+  String get hostStaffDoorNoShow => 'did not come';
+
+  @override
+  String get hostStaffDoorWalkIn => 'Walk-in';
+
+  @override
+  String get hostStaffDoorUndo => 'Undo';
+
+  @override
+  String get hostStaffDoorCheckIn => 'Check in';
+
+  @override
+  String hostStaffDoorCheckInCount({required int count}) {
+    return 'Check in $count';
+  }
+
+  @override
+  String get hostStaffDutyCoordinator => 'Coordinator';
+
+  @override
+  String get hostStaffDutyGuests => 'Guests and replies';
+
+  @override
+  String get hostStaffDutyMessages => 'Messages';
+
+  @override
+  String get hostStaffDutyDoor => 'Door';
+
+  @override
+  String get hostStaffDutyLead => 'Function lead';
+
+  @override
+  String get hostStaffDutyGreeter => 'Airport greeter';
+
+  @override
+  String get hostStaffDutyHotel => 'Hotel desk';
+
+  @override
+  String get hostStaffDutyDispatch => 'Dispatch';
+
+  @override
+  String get hostStaffDutyReconcile => 'Bills and records';
+
+  @override
+  String get hostStaffDutyCounts => 'Counts';
+
+  @override
+  String hostStaffTimeRange({required String start, required String end}) {
+    return '$start to $end';
+  }
+
+  @override
+  String hostStaffFunctionCounts({
+    required int checkedIn,
+    required int expected,
+  }) {
+    return '$checkedIn of $expected in';
+  }
+
+  @override
+  String hostStaffDispatchCarTitle({
+    required String vehicle,
+    required int seats,
+  }) {
+    return '$vehicle · $seats seats';
+  }
+
+  @override
+  String hostStaffDispatchTo({required String destination}) {
+    return 'To $destination';
+  }
+
+  @override
+  String hostStaffDispatchBy({required String time}) {
+    return 'leave by $time';
+  }
+
+  @override
+  String hostStaffDispatchOverdue({required String time}) {
+    return 'should have left at $time';
+  }
+
+  @override
+  String hostStaffDispatchSeats({required int taken, required int seats}) {
+    return '$taken/$seats';
+  }
+
+  @override
+  String hostStaffDispatchParty({required String party, required int count}) {
+    return '$party · $count';
+  }
+
+  @override
+  String get hostStaffDispatchAtCurb => 'At the curb';
+
+  @override
+  String get hostStaffDispatchNotOut => 'Not out yet';
+
+  @override
+  String get hostStaffDispatchAction => 'Dispatch';
+
+  @override
+  String hostStaffDispatchWaiting({required int count}) {
+    return 'Waiting for $count more';
+  }
+
+  @override
+  String get hostStaffHotelOnTheWay => 'On the way';
+
+  @override
+  String get hostStaffHotelAlmostHere => 'Almost here';
+
+  @override
+  String hostStaffHotelMinutesAway({required int count}) {
+    return 'About $count min';
+  }
+
+  @override
+  String get hostStaffHotelArrived => 'Arrived';
+
+  @override
+  String get hostStaffHotelCancelled => 'Cancelled';
+
+  @override
+  String get hostStaffHotelMarkArrived => 'Arrived';
+
+  @override
+  String get hostStaffJobsTitle => 'Your jobs today';
+
+  @override
+  String hostStaffJobsKicker({required String title}) {
+    return 'Staff for $title';
+  }
+
+  @override
+  String get hostStaffJobsErrorTitle => 'Your jobs did not load';
+
+  @override
+  String get hostStaffJobsErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostStaffJobsEmptyTitle => 'No jobs here right now';
+
+  @override
+  String get hostStaffJobsEmptyBody =>
+      'When the planner gives you a job at this programme, it shows here.';
+
+  @override
+  String hostStaffJobsNextMeta({required int count}) {
+    return '$count coming · you check them in';
+  }
+
+  @override
+  String get hostStaffJobsLater => 'Later';
+
+  @override
+  String get hostStaffJobsAlso => 'Also yours';
+
+  @override
+  String get hostStaffJobsScope => 'You see only the guests these jobs need.';
+
+  @override
+  String hostStaffJobsScopeEnds({required String date}) {
+    return 'You see only the guests these jobs need. Your access ends on $date.';
+  }
+
+  @override
+  String get hostStaffJobsRoleGreeter => 'Arrivals';
+
+  @override
+  String get hostStaffJobsRoleDispatch => 'Dispatch';
+
+  @override
+  String get hostStaffJobsRoleHotel => 'Hotel';
+
+  @override
+  String get hostStaffJobsRoleDoor => 'Door';
+
+  @override
+  String get hostStaffJobsRoleLead => 'Lead';
+
+  @override
+  String get hostStaffJobsLinkAlerts => 'Alerts';
+
+  @override
+  String get hostStaffJobsLinkMessages => 'Planned messages';
+
+  @override
+  String get hostStaffJobsLinkInbox => 'Guest messages';
+
+  @override
+  String get hostStaffJobsLinkGuests => 'Guests';
+
+  @override
+  String get hostStaffJobsLinkImport => 'Add the guest list';
+
+  @override
+  String get hostStaffJobsLinkPhoneImport => 'Add guests from your contacts';
+
+  @override
+  String get hostStaffJobsLinkTrips => 'Car trips';
+
+  @override
+  String get hostStaffJobsLinkCounts => 'Who is coming';
+
+  @override
+  String get hostStaffJobsLinkAttendance => 'Attendance';
+
+  @override
+  String get hostStaffJobsOnNow => 'On now';
+
+  @override
+  String hostStaffJobsOnNowUntil({required String time}) {
+    return 'On now · until $time';
+  }
+
+  @override
+  String get hostStaffJobsOpenArrivals => 'Open arrivals';
+
+  @override
+  String get hostStaffJobsOpenDispatch => 'Open dispatch';
+
+  @override
+  String get hostStaffJobsOpenHotel => 'Open the desk';
+
+  @override
+  String get hostStaffJobsOpenDoor => 'Open the door';
+
+  @override
+  String get hostStaffJobsOpenLead => 'Open the function';
+
+  @override
+  String get hostStaffWorkTitle => 'Your work';
+
+  @override
+  String get hostStaffWorkKicker => 'Programmes and events you work at';
+
+  @override
+  String get hostStaffWorkEmptyTitle => 'No work here yet';
+
+  @override
+  String get hostStaffWorkEmptyBody =>
+      'When an organiser adds you to their team, the work shows here.';
+
+  @override
+  String hostStaffWorkEnds({required String date}) {
+    return 'Access ends $date';
+  }
+
+  @override
+  String get hostStaffWorkTeam => 'Team';
+
+  @override
+  String get hostStaffDutyEventLead => 'Event lead';
+
+  @override
+  String get hostStaffClose => 'Close';
+
+  @override
+  String get hostStaffBackToJobs => 'Back to your jobs';
+
+  @override
+  String hostStaffArrivalsKicker({required String time}) {
+    return 'Arrivals · $time';
+  }
+
+  @override
+  String get hostStaffArrivalsKickerPlain => 'Arrivals';
+
+  @override
+  String get hostStaffArrivalsLive => 'Greeter';
+
+  @override
+  String hostStaffArrivalsOpenDispatch({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Open dispatch · $count parties out',
+      one: 'Open dispatch · 1 party out',
+      zero: 'Open dispatch',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffArrivalsErrorTitle => 'The roster did not load';
+
+  @override
+  String hostStaffArrivalsHeadline({required int count}) {
+    return '$count at the curb';
+  }
+
+  @override
+  String get hostStaffArrivalsStatLanding => 'Still landing';
+
+  @override
+  String get hostStaffArrivalsStatSent => 'Sent to hotels';
+
+  @override
+  String get hostStaffArrivalsStatNeedsYou => 'Needs you';
+
+  @override
+  String get hostStaffArrivalsNeedsYou => 'Needs you';
+
+  @override
+  String get hostStaffArrivalsAtCurb => 'At the curb';
+
+  @override
+  String get hostStaffArrivalsAtCurbEmpty => 'Nobody is out yet.';
+
+  @override
+  String get hostStaffArrivalsLanding => 'Landing next';
+
+  @override
+  String get hostStaffArrivalsLandingEmpty => 'Nobody else is due.';
+
+  @override
+  String hostStaffArrivalsNoticeTitle({
+    required String party,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$party, $_temp0';
+  }
+
+  @override
+  String get hostStaffDispatchTitle => 'Dispatch';
+
+  @override
+  String get hostStaffDispatchBack => 'Back to arrivals';
+
+  @override
+  String get hostStaffDispatchLive => 'Dispatch';
+
+  @override
+  String get hostStaffDispatchErrorTitle => 'The cars did not load';
+
+  @override
+  String get hostStaffDispatchIntro =>
+      'Cars suggested by curb time and hotel. You decide what leaves.';
+
+  @override
+  String hostStaffDispatchUnplacedTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parties have no car',
+      one: '1 party has no car',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffDispatchReasonTime => 'Some have no landing time yet.';
+
+  @override
+  String get hostStaffDispatchReasonVehicle =>
+      'Some need a car the programme does not have.';
+
+  @override
+  String get hostStaffDispatchReasonScope =>
+      'Some go somewhere outside your dispatch.';
+
+  @override
+  String get hostStaffDispatchEmptyTitle => 'No cars to send';
+
+  @override
+  String get hostStaffDispatchEmptyBody =>
+      'Cars show here as guests reach the curb.';
+
+  @override
+  String hostStaffDispatchSheetTitle({required String vehicle}) {
+    return 'Send the $vehicle';
+  }
+
+  @override
+  String get hostStaffDispatchNow => 'Dispatch now';
+
+  @override
+  String get hostStaffDispatchPlate => 'Number plate';
+
+  @override
+  String get hostStaffDispatchPlateHint => 'RJ 27 TA 4471';
+
+  @override
+  String get hostStaffDispatchHold => 'Wait for';
+
+  @override
+  String hostStaffDispatchHoldOption({
+    required String time,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$time · $_temp0';
+  }
+
+  @override
+  String hostStaffDispatchSummary({
+    required int count,
+    required String destination,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests to $destination',
+      one: '1 guest to $destination',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffDispatchVendorsFailed =>
+      'The vendors did not load. You can dispatch without one.';
+
+  @override
+  String get hostStaffDispatchNoVendors =>
+      'No car vendor is set up for this programme.';
+
+  @override
+  String get hostStaffDispatchVendorsLoading => 'Loading the vendors…';
+
+  @override
+  String get hostStaffNoCount => '–';
+
+  @override
+  String hostStaffHotelKicker({required String time}) {
+    return 'Hotel desk · $time';
+  }
+
+  @override
+  String get hostStaffHotelKickerPlain => 'Hotel desk';
+
+  @override
+  String get hostStaffHotelLive => 'Hotel';
+
+  @override
+  String get hostStaffHotelErrorTitle => 'The desk did not load';
+
+  @override
+  String hostStaffHotelHeadline({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cars on the way',
+      one: '1 car on the way',
+      zero: 'No cars on the way',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffHotelStatCheckedIn => 'Checked in';
+
+  @override
+  String get hostStaffHotelStatToCome => 'Still to come';
+
+  @override
+  String get hostStaffHotelStatFree => 'Rooms free';
+
+  @override
+  String get hostStaffHotelFirstPage => 'Back to the first page';
+
+  @override
+  String get hostStaffHotelOnTheWayTitle => 'On the way';
+
+  @override
+  String get hostStaffHotelOnTheWayEmpty => 'No cars are on the way.';
+
+  @override
+  String get hostStaffHotelMore => 'More';
+
+  @override
+  String get hostStaffHotelAtDeskTitle => 'At the desk now';
+
+  @override
+  String get hostStaffHotelAtDeskEmpty => 'Nobody is waiting at the desk.';
+
+  @override
+  String get hostStaffHotelRooms => 'Room board';
+
+  @override
+  String hostStaffHotelRoom({required String room}) {
+    return 'Room $room';
+  }
+
+  @override
+  String get hostStaffHotelRoomReady => 'room ready';
+
+  @override
+  String get hostStaffHotelGiveKeys => 'Give keys';
+
+  @override
+  String get hostStaffHotelStillTitle => 'Still to leave the airport';
+
+  @override
+  String get hostStaffHotelStillEmpty => 'Everyone has left the airport.';
+
+  @override
+  String hostStaffHotelOutAt({required String time}) {
+    return 'Out at $time';
+  }
+
+  @override
+  String get hostStaffDoorLive => 'Door';
+
+  @override
+  String get hostStaffDoorErrorTitle => 'The guest list did not load';
+
+  @override
+  String get hostStaffDoorMeter => 'Checked in';
+
+  @override
+  String hostStaffDoorToCome({required int count}) {
+    return '$count still to come';
+  }
+
+  @override
+  String hostStaffDoorWalkIns({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count walk-ins',
+      one: '1 walk-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostStaffDoorOnlyInvitees({required String function}) {
+    return 'only $function invitees are on this list';
+  }
+
+  @override
+  String get hostStaffDoorSearch => 'A family or a name';
+
+  @override
+  String get hostStaffDoorSearchLabel => 'Find a guest';
+
+  @override
+  String get hostStaffDoorShow => 'Show';
+
+  @override
+  String get hostStaffDoorExpected => 'Expected';
+
+  @override
+  String get hostStaffDoorIn => 'In';
+
+  @override
+  String get hostStaffDoorWalkInsTab => 'Walk-ins';
+
+  @override
+  String get hostStaffDoorCancelled =>
+      'This function is cancelled. The door is closed.';
+
+  @override
+  String get hostStaffDoorClosed => 'Check-in is off for this function.';
+
+  @override
+  String get hostStaffDoorEmpty => 'Nobody here right now.';
+
+  @override
+  String get hostStaffDoorNoMatch => 'Nobody matches that name.';
+
+  @override
+  String get hostStaffDoorFewer => 'One fewer';
+
+  @override
+  String get hostStaffDoorMore => 'One more';
+
+  @override
+  String get hostStaffDoorMarkNoShow => 'Did not come';
+
+  @override
+  String get hostStaffDoorAddWalkIn => 'Add a walk-in';
+
+  @override
+  String hostStaffDoorWalkInAdd({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add and check in $count',
+      one: 'Add and check in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostStaffDoorWalkInName => 'Name';
+
+  @override
+  String get hostStaffDoorWalkInParty => 'People with them';
+
+  @override
+  String hostStaffDoorOffline({required int count}) {
+    return 'Offline · $count will sync';
+  }
+
+  @override
+  String hostStaffDoorToSync({required int count}) {
+    return '$count to sync';
+  }
+
+  @override
+  String get hostStaffLeadLive => 'Lead';
+
+  @override
+  String get hostStaffLeadErrorTitle => 'The functions did not load';
+
+  @override
+  String get hostStaffLeadEmptyTitle => 'No functions left';
+
+  @override
+  String get hostStaffLeadEmptyBody =>
+      'Every function of this programme has finished or been cancelled.';
+
+  @override
+  String hostStaffLeadNext({required String time}) {
+    return 'Next · $time';
+  }
+
+  @override
+  String hostStaffLeadNow({required String time}) {
+    return 'Now · until $time';
+  }
+
+  @override
+  String hostStaffLeadIn({required int count}) {
+    return 'in $count min';
+  }
+
+  @override
+  String get hostStaffLeadOpenDoor => 'Open its door';
+
+  @override
+  String get hostStaffLeadStatIn => 'In the hall';
+
+  @override
+  String get hostStaffLeadStatToCome => 'Still to come';
+
+  @override
+  String get hostStaffLeadRunOfShow => 'Run of show';
+
+  @override
+  String get hostStaffAlertsTitle => 'Alerts';
+
+  @override
+  String get hostStaffAlertsLive => 'Live';
+
+  @override
+  String get hostStaffAlertsErrorTitle => 'The alerts did not load';
+
+  @override
+  String get hostStaffAlertsTruncated =>
+      'The latest alerts; older ones are not shown.';
+
+  @override
+  String get hostStaffAlertsEmpty => 'Nothing needs you right now.';
+
+  @override
+  String get hostStaffAlertsWhatTitle => 'What raises an alert';
+
+  @override
+  String get hostStaffAlertsWhatBody =>
+      'Flight changes, guests reaching a hotel after a function has started, cars waiting too long and help requests from guests. Each one goes to the people whose job it touches.';
 }

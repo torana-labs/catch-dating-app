@@ -327,6 +327,7 @@ import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../hosts/organizer/organizer_captures.dart';
 import '../../hosts/people/people_captures.dart';
+import '../../hosts/programmes/staff/staff_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
@@ -9863,6 +9864,72 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
+  ScreenCaptureEntry(
+    id: 'host_staff_work_phone',
+    routeIds: const <String>['hostWorkScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffWorkCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_jobs_phone',
+    routeIds: const <String>['hostWorkProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffJobsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_arrivals_phone',
+    routeIds: const <String>['hostWorkArrivalsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffArrivalsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_dispatch_phone',
+    routeIds: const <String>['hostWorkDispatchScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffDispatchCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_dispatch_sheet_phone',
+    routeIds: const <String>['hostWorkDispatchScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffDispatchCapture(sheet: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_hotel_desk_phone',
+    routeIds: const <String>['hostWorkHotelScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffHotelDeskCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_door_phone',
+    routeIds: const <String>['hostWorkDoorScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(
+      outbox: staffOfflineOutbox(),
+      offline: true,
+    ),
+    builder: (context) => hostStaffDoorCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_lead_phone',
+    routeIds: const <String>['hostWorkNowScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffLeadCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_staff_alerts_phone',
+    routeIds: const <String>['hostWorkAttentionScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostStaffCaptureOverrides(),
+    builder: (context) => hostStaffAlertsCapture(),
+  ),
   ScreenCaptureEntry(
     id: 'host_people_phone',
     routeIds: const <String>['hostAudienceScreen'],
