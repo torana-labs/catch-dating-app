@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_program_assistant_reply_payload.schema.json",
+  "title": "PreviewProgramAssistantReplyCallablePayload",
+  "description": "The assistant settings screen's Try it: ask the wedding assistant a question as a guest and see its reply, through the same policy, prompt, provider and budget as a live WhatsApp message, without sending anything. householdId answers from that household's itinerary; without it only programme-wide facts are used. A requestId runs once.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "requestId",
+    "text"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}
