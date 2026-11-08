@@ -7,8 +7,6 @@ import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_ui/src/components/catch_table_cell.dart';
-
 /// Where a [CatchTable] column places its label and cells.
 enum CatchTablePlacement { start, end }
 
