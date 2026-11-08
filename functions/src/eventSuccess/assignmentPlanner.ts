@@ -650,8 +650,9 @@ class PlannerState<T extends PlannerParticipant> {
   ): void {
     this.pairCache.clear();
     for (const unit of units) {
-      for (const key of pairKeys(unit.members)) increment(this.pairMeetings,
-        key);
+      for (const key of pairKeys(unit.members)) {
+        increment(this.pairMeetings, key);
+      }
       if (unit.subunits !== undefined) {
         for (const subunit of unit.subunits) {
           for (const key of pairKeys(subunit)) increment(this.partners, key);
