@@ -297,7 +297,11 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `configureEventAssignmentFeatures` / `previewEventAssignmentFeatures` / `setEventAssignmentFeatureConsent` | `src/eventSuccess/assignmentFeatureActions.ts` | Map exact published custom questions to bounded soft matching rules, preview aggregate roster coverage and trusted source labels, and independently grant or withdraw verified respondent answer use. Preview reveals no answers or participant identities; sequence topology is unsupported. |
 | `listEventAssignmentFeatureChoices` | `src/eventSuccess/assignmentFeatureActions.ts` | Show a verified respondent their own eligible answer labels and retained historical matching grants for withdrawal, including grants whose Host mapping was removed. |
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
-| `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state and confirmed, idempotent prepared-round publication |
+| `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state (incl. pause/resume of the active step) and confirmed, idempotent prepared-round publication |
+| `saveEventPlanStep` | `src/eventSuccess/planSteps.ts` | Revision-fenced, replay-safe run-of-show step edit (add, edit, remove, reorder) into the plan's `stepOverrides` |
+| `setEventCloseOut` | `src/eventSuccess/closeOut.ts` | Saves the night's close-out on `eventCloseOuts`; arms or pauses the event-scope thank-you moment |
+| `changeEventCrawlStop` | `src/eventSuccess/crawlStop.ts` | Changes one crawl stop on the plan and sends one event broadcast under one requestId |
+| `onEventSuccessStandingsWritten` | `src/eventSuccess/guestHistory.ts` | Projects each guest's game history from the standings into `eventSuccessGuestHistory` |
 | `upsertEventSuccessLayout` / `getEventSuccessSpatialLayout` / `controlEventSuccessSpatial` | `src/eventSuccess/layoutAssets.ts` | Persist reusable room layouts, resolve event spatial state, and control revision-fenced live reveal placement |
 | `recordEventSuccessUnitOutcomes` | `src/eventSuccess/unitOutcomes.ts` | Record revision-safe unit outcomes used by standings-backed event formats |
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |

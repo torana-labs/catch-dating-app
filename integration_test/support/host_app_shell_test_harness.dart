@@ -288,6 +288,26 @@ class HostShellBackend {
         'threads': const <Object?>[],
         'nextCursor': null,
       },
+      // Plan step edits, pause/resume, close-out and the crawl stop change
+      // answer as applied; their listeners keep what the journey seeded.
+      'saveEventPlanStep' => {
+        'eventId': eventId,
+        'liveControlRevision': 1,
+        'stepCount': 1,
+        'replayed': false,
+      },
+      'controlEventSuccessLive' => {'replayed': false, 'revision': 1},
+      'setEventCloseOut' => {
+        'eventId': eventId,
+        'revision': 1,
+        'replayed': false,
+      },
+      'changeEventCrawlStop' => {
+        'eventId': eventId,
+        'liveControlRevision': 1,
+        'replayed': false,
+        'recipientCount': 0,
+      },
       _ => null,
     };
   }
