@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/forms/form_body.dart';
+import 'package:catch_dating_app/hosts/forms/form_detail_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_state.dart';
 import 'package:catch_dating_app/hosts/forms/form_state.dart';
@@ -25,7 +25,7 @@ Future<_FormCalls> _pumpForm(WidgetTester tester, HostFormState state) async {
   final calls = _FormCalls();
   await pumpFormsBody(
     tester,
-    HostFormBody(
+    HostFormDetailBody(
       state: state,
       now: formsNow,
       onOpenResponse: calls.opened.add,

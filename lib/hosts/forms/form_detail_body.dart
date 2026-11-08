@@ -10,8 +10,8 @@ import 'package:flutter/widgets.dart';
 /// One form in board order: its status, name and questions, the three
 /// funnel stats, the answers waiting for the host, what happens when the
 /// host lets someone in, and Share and Edit questions.
-class HostFormBody extends StatelessWidget {
-  const HostFormBody({
+class HostFormDetailBody extends StatelessWidget {
+  const HostFormDetailBody({
     super.key,
     required this.state,
     required this.now,

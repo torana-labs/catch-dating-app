@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/parts/organizer_host_row.dart';
+import 'package:catch_dating_app/contexts/organizers/parts/organizer_team_member_row.dart';
 import 'package:catch_dating_app/hosts/organizer/team_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -41,7 +41,7 @@ class OrganizerTeamBody extends StatelessWidget {
           empty: l10n.hostOrganizerTeamEmpty,
           children: [
             for (final host in state.hosts)
-              OrganizerHostRow(
+              OrganizerTeamMemberRow(
                 key: ValueKey<String>('team-host-${host.uid}'),
                 host: host,
                 isYou: host.uid == state.currentUid,

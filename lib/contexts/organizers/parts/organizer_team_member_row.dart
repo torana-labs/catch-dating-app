@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart';
 
 /// One person on an organizer's team: their face, name and role badge, a
 /// "You" line for the signed-in host, and a tap for what an owner can do.
-class OrganizerHostRow extends StatelessWidget {
-  const OrganizerHostRow({
+class OrganizerTeamMemberRow extends StatelessWidget {
+  const OrganizerTeamMemberRow({
     super.key,
     required this.host,
     required this.isYou,
