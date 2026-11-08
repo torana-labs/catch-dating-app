@@ -38,11 +38,16 @@ class StaffDispatchScreen extends ConsumerStatefulWidget {
     required this.programId,
     required this.pickupPointId,
     required this.stationLabel,
+    this.openCar,
   });
 
   final String programId;
   final String pickupPointId;
   final String stationLabel;
+
+  /// Opens the sheet for the suggested car at this index once the plan has
+  /// loaded; previews and captures.
+  final int? openCar;
 
   @override
   ConsumerState<StaffDispatchScreen> createState() =>
@@ -58,6 +63,7 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
   final Set<String> _held = {};
   bool _busy = false;
   Object? _error;
+  bool _openCarUsed = false;
 
   @override
   String get operationsProgramId => widget.programId;
@@ -108,7 +114,13 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
       _ => const StaffDispatchState.loading(),
     };
     final errorMessage = operationsErrorMessage(operations);
-    final sending = _sending;
+    final suggested = plan.asData?.value.value.groups ?? const [];
+    final openCar = widget.openCar;
+    final sending =
+        _sending ??
+        (!_openCarUsed && openCar != null && openCar < suggested.length
+            ? suggested[openCar]
+            : null);
     StaffDispatchSheet? sheet;
     if (sending != null && access != null) {
       final vendors = ref.watch(
@@ -204,7 +216,10 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
         onDispatch: () => unawaited(
           _dispatch(sending, heldGroups, access, operations.accountId),
         ),
-        onClose: () => setState(() => _sending = null),
+        onClose: () => setState(() {
+          _sending = null;
+          _openCarUsed = true;
+        }),
       );
     }
     return CatchRoot(
@@ -245,6 +260,7 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
                 )
               : null,
           onDispatch: (group) => setState(() {
+            _openCarUsed = true;
             _sending = group;
             _classId = group.vehicleClassId;
             _vendorId = null;
@@ -336,7 +352,10 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
           false;
       if (!mounted) return;
       if (accepted) {
-        setState(() => _sending = null);
+        setState(() {
+          _sending = null;
+          _openCarUsed = true;
+        });
       } else {
         final current = ref
             .read(programOperationsStateProvider(widget.programId))
