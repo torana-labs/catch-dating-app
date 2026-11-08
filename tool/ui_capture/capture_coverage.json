@@ -740,9 +740,16 @@
     },
     {
       "routeId": "hostEventRosterScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_door_arriving",
+        "host_door_in",
+        "host_door_asked",
+        "host_door_scan_checked_in",
+        "host_door_tablet_landscape"
+      ],
+      "reason": "The door, always night: arriving, in and asked on a phone, a scan that checked a guest in, and the operations layout on a landscape tablet."
     },
     {
       "routeId": "hostEventPublicationScreen",
@@ -1115,6 +1122,7 @@
         "host_clubs_offline",
         "host_clubs_empty",
         "host_clubs_cohost_edit",
+        "host_insights_phone",
         "host_clubs_insights_report",
         "host_clubs_insights_loading",
         "host_clubs_insights_error",
@@ -1322,6 +1330,13 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
+        "host_event_report_phone",
+        "host_live_now_phone",
+        "host_live_now_tablet",
+        "host_live_needs_phone",
+        "host_live_needs_tablet",
+        "host_live_scores_phone",
+        "host_live_scores_tablet",
         "host_manage_route_loading",
         "host_manage_initial_event_extra",
         "host_manage_route_error",

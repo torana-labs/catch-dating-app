@@ -123,7 +123,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
       expect(tab('Organizer'), findsNothing);
       expect(tab('Edit'), findsOneWidget);
       expect(tab('Audience'), findsNothing);
-      expect(tab('Insights'), findsOneWidget);
+      expect(tab('Insights'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('host-organizer-insights')),
+        findsOneWidget,
+      );
       expect(tab('Preview'), findsOneWidget);
       expect(find.byTooltip('Switch organizer'), findsNothing);
       final workspaceSemantics = tester.widget<Semantics>(
@@ -135,16 +139,15 @@ void _registerHostOperationsAnalyticsTeamTests() {
       );
       expect(
         workspaceSemantics.properties.hint,
-        'Drag left or right to switch between Edit, Insights, and Preview.',
+        'Drag left or right to switch between Edit and Preview.',
       );
-      final currentPage = tester.widget<CatchRootScreenPageScrollView>(
+      // Edit and Preview are neighbours, so the pager keeps both alive.
+      for (final page in tester.widgetList<CatchRootScreenPageScrollView>(
         find.byType(CatchRootScreenPageScrollView),
-      );
-      expect(currentPage.includeTerminalPadding, isTrue);
-      expect(
-        currentPage.constrainToContentWidth,
-        constrainToContentWidth ?? false,
-      );
+      )) {
+        expect(page.includeTerminalPadding, isTrue);
+        expect(page.constrainToContentWidth, constrainToContentWidth ?? false);
+      }
     }
 
     expectSharedChrome();
@@ -204,61 +207,6 @@ void _registerHostOperationsAnalyticsTeamTests() {
         .position;
     expect(editScroll.pixels, greaterThan(0));
 
-    await tester.tap(tab('Insights'));
-    await pumpUntilFound(tester, find.byType(HostAnalyticsPeriodInput));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
-
-    expectSharedChrome();
-    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
-    final insightsBodyPadding = tester
-        .widgetList<SliverPadding>(
-          find.ancestor(
-            of: find.byType(HostOrganizerInsightsSection),
-            matching: find.byType(SliverPadding),
-          ),
-        )
-        .where(
-          (padding) =>
-              padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
-        );
-    expect(insightsBodyPadding, isEmpty);
-    expect(find.byType(HostAnalyticsTrendSection), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(CatchRootScreenScaffold),
-        matching: find.text('SAKET · INDORE'),
-      ),
-      findsNothing,
-    );
-    expect(find.byTooltip('Back to Organizer'), findsNothing);
-    final rangeOptions = find.byType(
-      CatchChoiceInput<HostOrganizerInsightsRangePreset>,
-    );
-    expect(
-      tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
-            rangeOptions,
-          )
-          .selected,
-      {HostOrganizerInsightsRangePreset.thirtyDays},
-    );
-    await Scrollable.ensureVisible(
-      tester.element(find.text('90 days')),
-      alignment: 0.5,
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('90 days'));
-    await pumpFeatureUi(tester);
-    expect(
-      tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
-            rangeOptions,
-          )
-          .selected,
-      {HostOrganizerInsightsRangePreset.ninetyDays},
-    );
-
     await tester.tap(tab('Preview'));
     await pumpFeatureUi(tester);
 
@@ -298,24 +246,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(eventCard.statusLabel, isNull);
     expect(eventCard.onTap, isNull);
 
-    await tester.tap(tab('Insights'));
-    await pumpFeatureUi(tester);
-    expect(
-      tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
-            rangeOptions,
-          )
-          .selected,
-      {HostOrganizerInsightsRangePreset.ninetyDays},
-    );
-
     await tester.tap(tab('Edit'));
     await pumpFeatureUi(tester);
 
     expectSharedChrome();
+    // The all-time figures moved into Edit with Insights' own screen.
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
+      findsOneWidget,
     );
   });
 
@@ -878,12 +816,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
         watchHostPaymentAccountsProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
-        hostAnalyticsRepositoryProvider.overrideWithValue(
-          _EmptyHostAnalyticsRepository(
-            topEvents: List.generate(
-              12,
-              (index) => _hostAnalyticsEventRow(eventId: 'offset-$index'),
-            ),
+        organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(ownedOrganizer, events: const []),
           ),
         ),
       ],
@@ -893,8 +828,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final editKey = const PageStorageKey<String>(
       'host-club-offset-club-edit-scroll',
     );
-    final insightsKey = const PageStorageKey<String>(
-      'host-club-offset-club-insights-scroll',
+    final previewKey = const PageStorageKey<String>(
+      'host-club-offset-club-preview-scroll',
     );
 
     ScrollPosition positionFor(PageStorageKey<String> key) => tester
@@ -913,78 +848,24 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final editOffset = positionFor(editKey).pixels;
     expect(editOffset, greaterThan(0));
 
-    await tester.tap(
-      find.descendant(of: rail, matching: find.text('Insights')),
-    );
+    await tester.tap(find.descendant(of: rail, matching: find.text('Preview')));
     await pumpFeatureUi(tester);
-    expect(positionFor(insightsKey).pixels, 0);
-    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
+    expect(positionFor(previewKey).pixels, 0);
 
-    final insightsPosition = positionFor(insightsKey);
-    expect(insightsPosition.maxScrollExtent, greaterThan(0));
-    insightsPosition.jumpTo(insightsPosition.maxScrollExtent / 2);
+    final previewPosition = positionFor(previewKey);
+    expect(previewPosition.maxScrollExtent, greaterThan(0));
+    previewPosition.jumpTo(previewPosition.maxScrollExtent / 2);
     await pumpFeatureUi(tester);
-    final insightsOffset = insightsPosition.pixels;
-    expect(insightsOffset, greaterThan(0));
+    final previewOffset = previewPosition.pixels;
+    expect(previewOffset, greaterThan(0));
 
     await tester.tap(find.descendant(of: rail, matching: find.text('Edit')));
     await pumpFeatureUi(tester);
     expect(positionFor(editKey).pixels, closeTo(editOffset, 1));
 
-    await tester.tap(
-      find.descendant(of: rail, matching: find.text('Insights')),
-    );
+    await tester.tap(find.descendant(of: rail, matching: find.text('Preview')));
     await pumpFeatureUi(tester);
-    expect(positionFor(insightsKey).pixels, closeTo(insightsOffset, 1));
-  });
-
-  testWidgets('Host analytics trend renders every backend bucket', (
-    tester,
-  ) async {
-    final points = List.generate(
-      30,
-      (index) => HostAnalyticsTrendPoint(
-        periodStart: DateTime(2026, 6, index + 1),
-        periodEnd: DateTime(2026, 6, index + 2),
-        metrics: {'demand': index + 2, 'bookings': index + 1},
-      ),
-    );
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: HostAnalyticsTrendSection(
-            points: points,
-            granularity: HostAnalyticsGranularity.week,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byType(HostAnalyticsBarTile), findsNWidgets(30));
-    expect(find.byType(CatchSection), findsOneWidget);
-  });
-
-  testWidgets('Host analytics loading does not invent report sections', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: CatchSection.content(
-              child: const HostAnalyticsReportLoadingIndicator(),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byType(CatchSection), findsOneWidget);
-    expect(find.byType(CatchSkeleton), findsNothing);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(positionFor(previewKey).pixels, closeTo(previewOffset, 1));
   });
 }
 

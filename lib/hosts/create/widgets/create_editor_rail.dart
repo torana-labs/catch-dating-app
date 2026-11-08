@@ -41,8 +41,8 @@ class CreateStepRail extends StatelessWidget {
 
 /// The desktop editor's live preview: the poster as guests will see it,
 /// following the form, and what is still to set before publishing.
-class CreatePreviewPane extends StatelessWidget {
-  const CreatePreviewPane({
+class CreateEditorPreview extends StatelessWidget {
+  const CreateEditorPreview({
     super.key,
     required this.state,
     required this.stillToSet,

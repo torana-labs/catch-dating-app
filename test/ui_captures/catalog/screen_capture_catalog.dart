@@ -38,6 +38,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -178,9 +179,14 @@ import 'package:catch_dating_app/hosts/create/create_share_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
+import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
+import 'package:catch_dating_app/hosts/door/door_screen.dart';
+import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
+import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -323,6 +329,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
@@ -3313,6 +3320,523 @@ Widget _hostTodayCapture() => _HostRoutedShellCapture(
   child: HostTodayScreen(
     initialOrganizerId: _hostTodayOrganizer.id,
     now: _hostTodayNow,
+  ),
+);
+
+// The door on a Tuesday trivia night, doors open: nineteen of twenty-six
+// in, two asking to join and one waiting.
+final _doorNow = DateTime(2026, 10, 27, 19, 42);
+final _doorEvent = _hostTodayTonight;
+
+EventAttendee _doorAttendee(
+  String id,
+  String name, {
+  EventAttendeeStatus status = EventAttendeeStatus.registered,
+  String? uid,
+  DateTime? checkedInAt,
+  int? paidMinor,
+}) => EventAttendee(
+  id: 'design-door-$id',
+  eventId: _doorEvent.id,
+  organizerId: _hostTodayOrganizer.id,
+  displayName: name,
+  searchName: name.toLowerCase(),
+  source: uid == null
+      ? EventAttendeeSource.hostImport
+      : EventAttendeeSource.catchBooking,
+  status: status,
+  linkedUid: uid,
+  checkedInAt: checkedInAt,
+  revenueAmountMinor: paidMinor,
+  revenueCurrency: paidMinor == null ? null : 'INR',
+  createdAt: _doorNow.subtract(const Duration(days: 3)),
+  updatedAt: _doorNow.subtract(const Duration(days: 3)),
+);
+
+final _doorAttendees = [
+  _doorAttendee('dp', 'Dev Patel', paidMinor: 99800),
+  _doorAttendee('rk', 'Rhea Kapoor'),
+  _doorAttendee('ss', 'Sameer Shah', paidMinor: 49900),
+  _doorAttendee('tm', 'Tara Menon'),
+  _doorAttendee('ir', 'Ishita Rao'),
+  _doorAttendee('nv', 'Neel Verma', paidMinor: 99800),
+  _doorAttendee('ak', 'Arjun Kulkarni'),
+  for (final (index, name) in const [
+    'Kabir Rao',
+    'Aanya Sharma',
+    'Meera Iyer',
+    'Rohan Das',
+    'Sana Qureshi',
+    'Vikram Nair',
+    'Leela Joshi',
+    'Farhan Ali',
+    'Priya Menon',
+    'Aditya Rao',
+    'Nisha Kapoor',
+    'Karan Malhotra',
+    'Tanvi Shah',
+    'Omar Sheikh',
+    'Diya Bose',
+    'Raghav Sethi',
+    'Ira Banerjee',
+    'Zain Khan',
+    'Maya Pillai',
+  ].indexed)
+    _doorAttendee(
+      'in-$index',
+      name,
+      status: EventAttendeeStatus.checkedIn,
+      checkedInAt: _doorNow.subtract(Duration(minutes: 1 + index * 2)),
+    ),
+  _doorAttendee(
+    'zm',
+    'Zoya Merchant',
+    status: EventAttendeeStatus.waitlisted,
+    uid: 'design-door-u-zm',
+  ),
+  _doorAttendee(
+    'ib',
+    'Ishaan Bose',
+    status: EventAttendeeStatus.waitlisted,
+    uid: 'design-door-u-ib',
+  ),
+  _doorAttendee(
+    'nr',
+    'Nikhil Rao',
+    status: EventAttendeeStatus.waitlisted,
+    uid: 'design-door-u-nr',
+  ),
+];
+
+EventParticipation _doorParticipation(
+  String uid, {
+  EventJoinRequestStatus? request,
+  required Duration ago,
+}) => EventParticipation(
+  id: '${_doorEvent.id}_$uid',
+  eventId: _doorEvent.id,
+  organizerId: _hostTodayOrganizer.id,
+  uid: uid,
+  status: EventParticipationStatus.waitlisted,
+  hostApprovalStatus: request,
+  waitlistedAt: _doorNow.subtract(ago),
+  createdAt: _doorNow.subtract(ago),
+  updatedAt: _doorNow.subtract(ago),
+);
+
+final _doorParticipations = [
+  _doorParticipation(
+    'design-door-u-zm',
+    request: EventJoinRequestStatus.pending,
+    ago: const Duration(minutes: 2),
+  ),
+  _doorParticipation(
+    'design-door-u-ib',
+    request: EventJoinRequestStatus.pending,
+    ago: const Duration(minutes: 5),
+  ),
+  _doorParticipation('design-door-u-nr', ago: const Duration(days: 1)),
+];
+
+HostEventRosterInsight _doorLabel(String id, {int prior = 0}) =>
+    HostEventRosterInsight(
+      attendeeId: 'design-door-$id',
+      contactId: null,
+      availability: HostRosterInsightAvailability.ready,
+      signals: {
+        prior == 0
+            ? HostRosterInsightSignal.firstTime
+            : HostRosterInsightSignal.returning,
+      },
+      priorAttendedEventCount: prior,
+      priorExpectedEventCount: prior,
+      priorNoShowCount: 0,
+      lastAttendedAt: null,
+      attendanceRate: null,
+      catchSpend: const [],
+    );
+
+final _doorLabels = HostEventRosterInsights(
+  eventId: _doorEvent.id,
+  organizerId: _hostTodayOrganizer.id,
+  cutoffAt: _doorEvent.startTime,
+  sourceCoverage: HostRosterInsightCoverage.exact,
+  spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+  rows: [
+    _doorLabel('dp'),
+    _doorLabel('rk', prior: 5),
+    _doorLabel('tm'),
+    _doorLabel('ir', prior: 2),
+    _doorLabel('zm', prior: 3),
+    _doorLabel('ib'),
+  ],
+  computedAt: _doorNow,
+);
+
+List<Object> _doorCaptureOverrides() => [
+  uidProvider.overrideWithValue(const AsyncData<String?>(_captureViewerUid)),
+  appConnectivityProvider.overrideWith(
+    (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
+  ),
+  hostAttendanceOutboxStoreProvider.overrideWithValue(
+    _CaptureHostAttendanceOutboxStore(),
+  ),
+  watchEventProvider(
+    _doorEvent.id,
+  ).overrideWith((ref) => Stream.value(_doorEvent)),
+  watchEventAttendeesProvider(
+    _doorEvent.id,
+  ).overrideWith((ref) => Stream.value(_doorAttendees)),
+  watchEventParticipationsForEventProvider(
+    _doorEvent.id,
+  ).overrideWith((ref) => Stream.value(_doorParticipations)),
+  hostEventRosterInsightsProvider(
+    _doorEvent.id,
+  ).overrideWith((ref) => Stream.value(_doorLabels)),
+];
+
+Widget _doorCapture({DoorFilter? filter}) => DoorScreen(
+  organizerId: _hostTodayOrganizer.id,
+  eventId: _doorEvent.id,
+  initialEvent: _doorEvent,
+  initialFilter: filter,
+);
+
+// The camera stands in as a plain night tile; the sheet is the scan that
+// just checked Dev Patel in.
+Widget _doorScanCapture() => DoorScanScreen(
+  eventId: _doorEvent.id,
+  checkedIn: 20,
+  expected: 26,
+  camera: const ColoredBox(color: Colors.black),
+  onClose: () {},
+  onNext: () {},
+  onUndo: () {},
+  result: const HostDoorGuest(
+    attendeeId: 'design-door-dp',
+    name: 'Dev Patel',
+    status: HostDoorGuestStatus.checkedIn,
+    firstTime: true,
+    paidMinor: 99800,
+    paidCurrency: 'INR',
+  ),
+);
+
+// The live console is drawn for a tall phone and a landscape tablet.
+const _hostLivePhone = CaptureDevice(
+  id: 'host-live-phone-390x1240',
+  size: Size(390, 1240),
+);
+const _hostLiveTablet = CaptureDevice(
+  id: 'host-live-tablet-1194x834',
+  size: hostLiveTabletLandscapeSize,
+);
+
+// Insights on the system: the last thirty days of a busy organizer, with
+// this week still filling.
+HostAnalyticsEventRow _hostInsightsNight(
+  String id,
+  String title,
+  DateTime start, {
+  required int booked,
+  required num fillRate,
+  required num rating,
+  int revenue = 0,
+  int payments = 0,
+  int matches = 0,
+}) => HostAnalyticsEventRow(
+  eventId: id,
+  organizerId: _hostTodayOrganizer.id,
+  title: title,
+  startTime: start,
+  status: 'completed',
+  bookedCount: booked,
+  checkedInCount: booked,
+  waitlistedCount: 0,
+  fillRate: fillRate,
+  checkInRate: 100,
+  grossRevenueMinor: revenue,
+  currency: 'INR',
+  checkoutStartedCount: payments,
+  checkoutDropoffCount: 0,
+  paymentCompletedCount: payments,
+  paymentFailedCount: 0,
+  paymentRefundedCount: 0,
+  reviewCount: 14,
+  averageRating: rating,
+  demandCount: 0,
+  inviteOpenCount: 0,
+  mutualMatchCount: matches,
+  chatStartedCount: 0,
+  repeatAttendeeCount: 0,
+);
+
+HostAnalyticsReport _hostInsightsReport({
+  List<HostAnalyticsEventRow>? topEvents,
+}) {
+  final source = HostOperationsFixtures.analyticsReport;
+  return HostAnalyticsReport(
+    generatedAt: _hostTodayNow,
+    timezone: 'Asia/Kolkata',
+    summaryCards: const [
+      HostAnalyticsMetricCard(
+        id: HostAnalyticsMetricIds.bookings,
+        label: 'Bookings',
+        value: 312,
+        previousValue: 264,
+        unit: HostAnalyticsMetricUnit.count,
+        status: HostAnalyticsMetricStatus.ready,
+      ),
+      HostAnalyticsMetricCard(
+        id: HostAnalyticsMetricIds.revenue,
+        label: 'Revenue',
+        value: 14800000,
+        previousValue: 13300000,
+        unit: HostAnalyticsMetricUnit.moneyMinor,
+        status: HostAnalyticsMetricStatus.ready,
+      ),
+    ],
+    trend: [
+      for (final (index, bookings) in const [58, 64, 71, 82, 37].indexed)
+        HostAnalyticsTrendPoint(
+          periodStart: DateTime(2026, 9, 29).add(Duration(days: 7 * index)),
+          periodEnd: DateTime(2026, 10, 6).add(Duration(days: 7 * index)),
+          metrics: {HostAnalyticsTrendKeys.bookings: bookings},
+        ),
+    ],
+    topEvents:
+        topEvents ??
+        [
+          _hostInsightsNight(
+            'design-insights-supper',
+            'Long Table Supper',
+            DateTime(2026, 10, 21, 20),
+            booked: 14,
+            fillRate: 100,
+            rating: 4.9,
+          ),
+          _hostInsightsNight(
+            'design-insights-trivia',
+            'Tuesday Trivia Night',
+            DateTime(2026, 10, 20, 19, 30),
+            booked: 29,
+            fillRate: 96.67,
+            rating: 4.8,
+          ),
+          _hostInsightsNight(
+            'design-insights-run',
+            'Carter Road Social Run',
+            DateTime(2026, 10, 18, 6, 30),
+            booked: 32,
+            fillRate: 80,
+            rating: 4.7,
+          ),
+        ],
+    reviewSummary: source.reviewSummary,
+    discoverySummary: const HostAnalyticsDiscoverySummary(
+      listingViews: 3412,
+      searchAppearances: 0,
+      eventViews: 0,
+      organizerSaves: 0,
+      eventSaves: 0,
+      contactClicks: 0,
+      claimClicks: 0,
+      outboundClicks: 0,
+      linkClicks: 1086,
+    ),
+    dataQuality: const [],
+    linkSummary: const HostAnalyticsLinkSummary(
+      trafficSources: {
+        HostAnalyticsTrafficSource.instagram: 61,
+        HostAnalyticsTrafficSource.whatsapp: 22,
+        HostAnalyticsTrafficSource.direct: 11,
+        HostAnalyticsTrafficSource.other: 6,
+      },
+    ),
+  );
+}
+
+List<Object> _hostInsightsCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [_hostTodayOrganizer],
+    ownedOrganizers: [_hostTodayOrganizer],
+    analyticsRepository: HostFixtureAnalyticsRepository(
+      report: _hostInsightsReport(),
+    ),
+  ),
+];
+
+Widget _hostInsightsCapture() => _HostRoutedShellCapture(
+  initialLocation: '/host/organizer',
+  activeIndex: 4,
+  child: HostInsightsScreen(initialOrganizerId: _hostTodayOrganizer.id),
+);
+
+// The event report the night of a trivia event: who came, what guests said
+// and the next Tuesday to bring them back to.
+final _hostReportNow = DateTime(2026, 10, 27, 23, 10);
+final _hostReportEvent =
+    HostOperationsFixtures.event(
+      id: 'design-report-trivia',
+      organizer: _hostTodayOrganizer,
+      start: DateTime(2026, 10, 27, 19, 30),
+      bookedCount: 24,
+      capacityLimit: 30,
+      activityKind: ActivityKind.pubQuiz,
+      meetingPoint: 'Harbour Room, Bandra West',
+    ).copyWith(
+      name: 'Tuesday Trivia Night',
+      endTime: DateTime(2026, 10, 27, 22, 5),
+    );
+final _hostReportNext = HostOperationsFixtures.event(
+  id: 'design-report-next',
+  organizer: _hostTodayOrganizer,
+  start: DateTime(2026, 11, 3, 19, 30),
+  bookedCount: 0,
+  capacityLimit: 30,
+  activityKind: ActivityKind.pubQuiz,
+  meetingPoint: 'Harbour Room, Bandra West',
+).copyWith(name: 'Tuesday Trivia Night');
+
+final _hostReportReviews = [
+  for (final (index, (name, rating, comment)) in const [
+    (
+      'Rhea K.',
+      5,
+      'Came alone, left with a team for next week. The food round was '
+          'brilliant.',
+    ),
+    (
+      'Sameer S.',
+      4,
+      'Great host and a good crowd. It got loud by round two, but that '
+          'was half the fun.',
+    ),
+    ('Ana D.', 5, 'Best quiz night in Bandra.'),
+    ('Kabir R.', 5, 'Will be back.'),
+    ('Ishaan S.', 4, 'Fun rounds.'),
+    ('Zoya M.', 5, 'Loved the music round.'),
+    ('Aanya M.', 5, 'Great host.'),
+    ('Dev P.', 5, 'So much fun.'),
+    ('Meera N.', 4, 'Good crowd.'),
+    ('Arjun T.', 5, 'Brilliant.'),
+    ('Tara B.', 5, 'Lovely evening.'),
+    ('Nikhil G.', 5, 'Already booked the next one.'),
+    ('Sana Q.', 5, 'Perfect Tuesday.'),
+    ('Vikram L.', 5, 'Ten out of ten.'),
+  ].indexed)
+    Review(
+      id: 'design-report-review-$index',
+      organizerId: _hostTodayOrganizer.id,
+      eventId: _hostReportEvent.id,
+      reviewerName: name,
+      rating: rating,
+      comment: comment,
+      createdAt: _hostReportNow.subtract(Duration(minutes: index)),
+    ),
+];
+
+List<Object> _hostReportCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [_hostTodayOrganizer],
+    ownedOrganizers: [_hostTodayOrganizer],
+    analyticsRepository: HostFixtureAnalyticsRepository(
+      report: _hostInsightsReport(
+        topEvents: [
+          _hostInsightsNight(
+            _hostReportEvent.id,
+            'Tuesday Trivia Night',
+            _hostReportEvent.startTime,
+            booked: 24,
+            fillRate: 80,
+            rating: 4.8,
+            revenue: 1297400,
+            payments: 24,
+            matches: 11,
+          ),
+        ],
+      ),
+    ),
+  ),
+  watchEventParticipationRosterProvider(_hostReportEvent.id).overrideWith(
+    (ref) => Stream.value(
+      EventParticipationRoster(
+        bookedIds: [for (var index = 0; index < 24; index++) 'booked-$index'],
+        checkedInIds: [for (var index = 0; index < 26; index++) 'came-$index'],
+        waitlistedIds: const [],
+      ),
+    ),
+  ),
+  hostEventRosterInsightsProvider(_hostReportEvent.id).overrideWith(
+    (ref) => Stream.value(
+      HostEventRosterInsights(
+        eventId: _hostReportEvent.id,
+        organizerId: _hostTodayOrganizer.id,
+        cutoffAt: _hostReportEvent.startTime,
+        sourceCoverage: HostRosterInsightCoverage.exact,
+        spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+        rows: [
+          for (var index = 0; index < 26; index++)
+            HostEventRosterInsight(
+              attendeeId: 'design-report-roster-$index',
+              contactId: null,
+              availability: HostRosterInsightAvailability.ready,
+              signals: {
+                index < 9
+                    ? HostRosterInsightSignal.firstTime
+                    : HostRosterInsightSignal.returning,
+              },
+              priorAttendedEventCount: index < 9 ? 0 : 2,
+              priorExpectedEventCount: index < 9 ? 0 : 2,
+              priorNoShowCount: 0,
+              lastAttendedAt: null,
+              attendanceRate: null,
+              catchSpend: const [],
+            ),
+        ],
+        computedAt: _hostReportNow,
+      ),
+    ),
+  ),
+  watchEventAttendeesProvider(_hostReportEvent.id).overrideWith(
+    (ref) => Stream.value([
+      for (final (index, name) in const [
+        'Rhea Kapoor',
+        'Kabir Rao',
+        'Ana Dsouza',
+      ].indexed)
+        EventAttendee(
+          id: 'design-report-attendee-$index',
+          eventId: _hostReportEvent.id,
+          organizerId: _hostTodayOrganizer.id,
+          displayName: name,
+          searchName: name.toLowerCase(),
+          source: EventAttendeeSource.catchBooking,
+          status: EventAttendeeStatus.registered,
+          createdAt: _hostReportNow,
+          updatedAt: _hostReportNow,
+        ),
+    ]),
+  ),
+  watchReviewsForEventProvider(
+    _hostReportEvent.id,
+  ).overrideWith((ref) => Stream.value(_hostReportReviews)),
+  watchActiveEventsForOrganizerProvider(
+    ActiveOrganizerEventsQuery(
+      organizerId: _hostTodayOrganizer.id,
+      day: _hostReportNow,
+    ),
+  ).overrideWith((ref) => Stream.value([_hostReportNext])),
+];
+
+Widget _hostReportCapture() => _AppRoleCapture(
+  role: AppRole.host,
+  child: HostEventReportScreen(
+    organizer: _hostTodayOrganizer,
+    event: _hostReportEvent,
+    now: _hostReportNow,
   ),
 );
 
@@ -10673,6 +11197,121 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.auditTablet,
     providerOverrides: _hostTodayCaptureOverrides(),
     builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_door_arriving',
+    routeIds: const <String>['hostEventRosterScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _doorCaptureOverrides(),
+    builder: (context) => _doorCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_door_in',
+    routeIds: const <String>['hostEventRosterScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _doorCaptureOverrides(),
+    builder: (context) => _doorCapture(filter: DoorFilter.checkedIn),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_door_asked',
+    routeIds: const <String>['hostEventRosterScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _doorCaptureOverrides(),
+    builder: (context) => _doorCapture(filter: DoorFilter.asked),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_door_scan_checked_in',
+    routeIds: const <String>['hostEventRosterScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _doorCaptureOverrides(),
+    builder: (context) => _doorScanCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_door_tablet_landscape',
+    routeIds: const <String>['hostEventRosterScreen'],
+    device: CaptureDevice.auditTabletLandscape,
+    providerOverrides: _doorCaptureOverrides(),
+    builder: (context) => _doorCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_now_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveNowCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_now_tablet',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLiveTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveNowCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_needs_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveNeedsCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_needs_tablet',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLiveTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveNeedsCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_scores_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_scores_tablet',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLiveTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostLiveCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_insights_phone',
+    routeIds: const <String>['hostOrganizersScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostInsightsCaptureOverrides(),
+    builder: (context) => _hostInsightsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_report_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostReportCaptureOverrides(),
+    builder: (context) => _hostReportCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',

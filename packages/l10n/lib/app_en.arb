@@ -1199,6 +1199,503 @@
     "x-surface": "hosts.today",
     "x-max-chars": 20
   },
+  "hostInsightsPeriodLabel": "Period",
+  "@hostInsightsPeriodLabel": {
+    "description": "Insights segmented control label: which period the numbers cover.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 16
+  },
+  "hostInsightsPeriodSevenDays": "7 days",
+  "@hostInsightsPeriodSevenDays": {
+    "description": "Insights period option: the last seven days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsPeriodThirtyDays": "30 days",
+  "@hostInsightsPeriodThirtyDays": {
+    "description": "Insights period option: the last thirty days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsPeriodNinetyDays": "90 days",
+  "@hostInsightsPeriodNinetyDays": {
+    "description": "Insights period option: the last ninety days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsBookingsEachWeek": "Bookings each week",
+  "@hostInsightsBookingsEachWeek": {
+    "description": "Insights section title over the weekly bookings chart.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsBookingsEachDay": "Bookings each day",
+  "@hostInsightsBookingsEachDay": {
+    "description": "Insights section title over the daily bookings chart (seven-day view).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsBookingsEmpty": "No bookings in this period.",
+  "@hostInsightsBookingsEmpty": {
+    "description": "Insights bookings chart copy when the period has no bookings.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 48
+  },
+  "hostInsightsSourcesTitle": "Where visitors came from",
+  "@hostInsightsSourcesTitle": {
+    "description": "Insights section title over the share of page visitors by where they came from (Instagram, WhatsApp and so on).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 32
+  },
+  "hostInsightsVisits": "{count, plural, =1{Your page had 1 visit} other{Your page had {count} visits}}",
+  "@hostInsightsVisits": {
+    "description": "Insights row: visits to the organizer page in the period.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 40
+  },
+  "hostInsightsLinkClicks": "{count, plural, =1{1 link click} other{{count} link clicks}}",
+  "@hostInsightsLinkClicks": {
+    "description": "Insights row subtitle: clicks on the organizer page links in the period.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 32
+  },
+  "hostInsightsFullestNightsTitle": "Your fullest nights",
+  "@hostInsightsFullestNightsTitle": {
+    "description": "Insights section title over the events that filled best in the period.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsFullestNightsEmpty": "No events in this period yet.",
+  "@hostInsightsFullestNightsEmpty": {
+    "description": "Insights fullest nights copy when the period has no booked events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 48
+  },
+  "hostInsightsNightBooked": "{booked} booked",
+  "@hostInsightsNightBooked": {
+    "description": "Insights night row meta when the event has no capacity: places booked.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 20
+  },
+  "hostInsightsNightBookedOf": "{booked} of {capacity}",
+  "@hostInsightsNightBookedOf": {
+    "description": "Insights night row meta: places booked out of the capacity.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "capacity": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 20
+  },
+  "hostInsightsNightRated": "{booked} · rated {rating}",
+  "@hostInsightsNightRated": {
+    "description": "Insights night row meta with the average guest rating.",
+    "placeholders": {
+      "booked": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 36
+  },
+  "hostInsightsNightFill": "{percent}%",
+  "@hostInsightsNightFill": {
+    "description": "Insights night row status: how full the event was.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 6
+  },
+  "hostEventReportWhen": "{date} · {start} to {end}",
+  "@hostEventReportWhen": {
+    "description": "Event report kicker: the event's date and its start and end times.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 48
+  },
+  "hostEventReportHowItWent": "How it went",
+  "@hostEventReportHowItWent": {
+    "description": "Event report line under the event title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportCame": "Came",
+  "@hostEventReportCame": {
+    "description": "Event report stat label: guests who checked in.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventReportMoreThanBooked": "{count} more than booked",
+  "@hostEventReportMoreThanBooked": {
+    "description": "Event report Came note when more guests checked in than booked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportOfBooked": "of {booked} booked",
+  "@hostEventReportOfBooked": {
+    "description": "Event report Came note: out of the guests who booked.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportPayments": "{count, plural, =1{from 1 payment} other{from {count} payments}}",
+  "@hostEventReportPayments": {
+    "description": "Event report Ticket sales note: completed payments behind the total.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportFirstTime": "first time with you",
+  "@hostEventReportFirstTime": {
+    "description": "Event report New faces note.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportRating": "Rating",
+  "@hostEventReportRating": {
+    "description": "Event report stat label: the average guest rating.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventReportRatedBy": "{count, plural, =1{from 1 guest} other{from {count} guests}}",
+  "@hostEventReportRatedBy": {
+    "description": "Event report Rating note: how many guests rated the event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportNotRated": "No ratings yet",
+  "@hostEventReportNotRated": {
+    "description": "Event report Rating note before any guest rated the event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportMoreFaces": "+{count}",
+  "@hostEventReportMoreFaces": {
+    "description": "Event report faces: how many more guests than the faces shown.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 6
+  },
+  "hostEventReportStayInTouchTitle": "{count, plural, =1{One pair wants to stay in touch} other{{count} pairs want to stay in touch}}",
+  "@hostEventReportStayInTouchTitle": {
+    "description": "Event report: pairs of guests who matched with each other after the event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 40
+  },
+  "hostEventReportStayInTouchBody": "They matched after the event. Only they see who.",
+  "@hostEventReportStayInTouchBody": {
+    "description": "Event report line under the stay-in-touch count.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 60
+  },
+  "hostEventReportReviewsTitle": "What guests said",
+  "@hostEventReportReviewsTitle": {
+    "description": "Event report section title over the guest reviews.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportAllReviews": "All {count}",
+  "@hostEventReportAllReviews": {
+    "description": "Event report reviews action: open every review.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventReportReviewsEmpty": "No reviews yet.",
+  "@hostEventReportReviewsEmpty": {
+    "description": "Event report reviews copy before any guest reviewed the event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 40
+  },
+  "hostEventReportReviewAnonymous": "A guest",
+  "@hostEventReportReviewAnonymous": {
+    "description": "Event report review row title for an anonymous review.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportReviewSemantics": "{name}, {rating} of 5 stars",
+  "@hostEventReportReviewSemantics": {
+    "description": "Event report review row, read aloud: the reviewer and the stars.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 48
+  },
+  "hostEventReportReviewBookedOnCatch": "Booked on Catch",
+  "@hostEventReportReviewBookedOnCatch": {
+    "description": "Event report review row meta: the reviewer booked through Catch.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportNextPlaces": "Next {day} · {places} places",
+  "@hostEventReportNextPlaces": {
+    "description": "Event report spotlight kicker: the organizer's next event and its places.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "places": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportBringBackTitle": "{when, select, tonight{Bring tonight’s {count} back} other{Bring these {count} back}}",
+  "@hostEventReportBringBackTitle": {
+    "description": "Event report spotlight title: invite the guests who came to the next event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "when": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportBringBackBody": "Message everyone who came about {event}.",
+  "@hostEventReportBringBackBody": {
+    "description": "Event report spotlight line: the guests who came hear about the next event.",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 80
+  },
+  "hostEventReportInviteAll": "Invite all {count}",
+  "@hostEventReportInviteAll": {
+    "description": "Event report spotlight button: message every guest who came.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportChoose": "Choose",
+  "@hostEventReportChoose": {
+    "description": "Event report spotlight button: pick which guests to invite.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventReportDownloadsTitle": "Downloads",
+  "@hostEventReportDownloadsTitle": {
+    "description": "Event report section title over the CSV exports.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportDownloadGuestList": "Guest list and check-ins",
+  "@hostEventReportDownloadGuestList": {
+    "description": "Event report export row: the guest list with check-ins.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportDownloadPayments": "Bookings and payments",
+  "@hostEventReportDownloadPayments": {
+    "description": "Event report export row: bookings with their payments.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportDownloadCsv": "CSV",
+  "@hostEventReportDownloadCsv": {
+    "description": "Event report export row value: the file type.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 6
+  },
+  "hostEventReportShare": "Share the report",
+  "@hostEventReportShare": {
+    "description": "Event report top bar action, read aloud: share a summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportShareText": "{event}: {came} came, {newFaces} for the first time.",
+  "@hostEventReportShareText": {
+    "description": "Event report shared summary text.",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      },
+      "came": {
+        "type": "int"
+      },
+      "newFaces": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 120
+  },
   "hostTodayCountBooked": "Booked",
   "@hostTodayCountBooked": {
     "description": "Today event poster count label: guests booked.",
@@ -12112,7 +12609,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
-  "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit, Insights, and Preview.",
+  "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit and Preview.",
   "@hostsHostOrganizersScaffoldBodyDragLeftOrRight": {
     "description": "Accessibility hint for switching Host Clubs workspace pages.",
     "x-audience": "host",
@@ -33195,5 +33692,117 @@
   "hostMembershipsCustomerMemberSince": "Since {date}",
   "@hostMembershipsCustomerMemberSince": {"description": "Customer member-since date.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"date": {"type": "String"}}},
   "hostMembershipsRosterMembers": "Members",
-  "@hostMembershipsRosterMembers": {"description": "Roster filter for paid members.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets"}
+  "@hostMembershipsRosterMembers": {"description": "Roster filter for paid members.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets"},
+  "doorTitle": "Door",
+  "@doorTitle": {"description": "Door top bar title before the event loads.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorKicker": "Doors open · {time}",
+  "@doorKicker": {"description": "Door top bar kicker: when the event starts.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 32},
+  "doorBack": "Back to Today",
+  "@doorBack": {"description": "Door top bar back button label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 24},
+  "doorLiveTag": "Door",
+  "@doorLiveTag": {"description": "Door top bar live badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorHeadline": "{checkedIn} of {expected} in",
+  "@doorHeadline": {"description": "Door headline and scanner badge: guests checked in out of everyone booked.", "placeholders": {"checkedIn": {"type": "int"}, "expected": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorMeterLabel": "Checked in",
+  "@doorMeterLabel": {"description": "Door meter screen-reader label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorSummary": "{toCome} still to come · {asked} asked to join · {waiting} waiting",
+  "@doorSummary": {"description": "Door sentence under the meter: guests still to come, join requests and the waitlist.", "placeholders": {"toCome": {"type": "int"}, "asked": {"type": "int"}, "waiting": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 72},
+  "doorSearchPlaceholder": "{count, plural, =1{Search 1 guest} other{Search {count} guests}}",
+  "@doorSearchPlaceholder": {"description": "Door search field placeholder with the number of guests.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 28},
+  "doorFiltersLabel": "Show guests",
+  "@doorFiltersLabel": {"description": "Door segmented control screen-reader label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorFilterArriving": "Arriving",
+  "@doorFilterArriving": {"description": "Door filter: booked guests still to come.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorFilterIn": "In",
+  "@doorFilterIn": {"description": "Door filter: guests checked in.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorFilterWaitlist": "Waitlist",
+  "@doorFilterWaitlist": {"description": "Door filter: guests on the waitlist.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorFilterAsked": "Asked",
+  "@doorFilterAsked": {"description": "Door filter: guests asking to join.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorEmpty": "Nobody here right now.",
+  "@doorEmpty": {"description": "Door list when the filter has no guests.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 32},
+  "doorScanTicket": "Scan a ticket",
+  "@doorScanTicket": {"description": "Door dock action and scan button label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorAddWalkIn": "Add walk-in",
+  "@doorAddWalkIn": {"description": "Door dock secondary action: add a guest at the door.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorWalkInAdded": "{name} is on the list",
+  "@doorWalkInAdded": {"description": "Door notice after a walk-in is added.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 48},
+  "doorWalkInFailed": "Could not add {name}",
+  "@doorWalkInFailed": {"description": "Door notice when the walk-in could not be added.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 48},
+  "doorRefusedTitle": "{count, plural, =1{1 change did not save} other{{count} changes did not save}}",
+  "@doorRefusedTitle": {"description": "Door notice title for attendance changes the server refused.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 40},
+  "doorRefusedBody": "Someone else changed these guests first. Try again or drop your changes.",
+  "@doorRefusedBody": {"description": "Door notice body for refused attendance changes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 96},
+  "doorRefusedRetry": "Try again",
+  "@doorRefusedRetry": {"description": "Door button: send refused attendance changes again.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorRefusedDiscard": "Drop them",
+  "@doorRefusedDiscard": {"description": "Door button: drop refused attendance changes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorScannerTileTitle": "Scanner",
+  "@doorScannerTileTitle": {"description": "Door tablet scanner tile title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorScannerTileBody": "Hold a ticket up to the camera",
+  "@doorScannerTileBody": {"description": "Door tablet scanner tile body.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 40},
+  "doorLatestTitle": "{name} is in",
+  "@doorLatestTitle": {"description": "Door tablet notice for the latest arrival.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 40},
+  "doorStatToCome": "still to come",
+  "@doorStatToCome": {"description": "Door tablet stat label: guests still to come.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorStatAsked": "asked to join",
+  "@doorStatAsked": {"description": "Door tablet stat label: join requests.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorStatWaiting": "waiting",
+  "@doorStatWaiting": {"description": "Door tablet stat label: waitlist.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorGuestNew": "New",
+  "@doorGuestNew": {"description": "Door row badge for a first-timer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 8},
+  "doorGuestCheckIn": "Check in",
+  "@doorGuestCheckIn": {"description": "Door row action for a guest still to come.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorGuestUndo": "Undo",
+  "@doorGuestUndo": {"description": "Door row action to undo a check-in.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorGuestLetIn": "Let in",
+  "@doorGuestLetIn": {"description": "Door row action to approve a join request.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorGuestOffer": "Offer",
+  "@doorGuestOffer": {"description": "Door row action to offer a waitlisted guest a place.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12},
+  "doorGuestFirstTime": "first time",
+  "@doorGuestFirstTime": {"description": "Door row meta for a first-timer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorGuestNightsBefore": "{count, plural, =1{1 night with you} other{{count} nights with you}}",
+  "@doorGuestNightsBefore": {"description": "Door row meta: earlier nights with the organizer.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 32},
+  "doorGuestPaid": "paid {amount}",
+  "@doorGuestPaid": {"description": "Door row meta: what the guest paid.", "placeholders": {"amount": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorGuestInAt": "In at {time}",
+  "@doorGuestInAt": {"description": "Door row meta: when the guest checked in.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorGuestInJustNow": "In just now",
+  "@doorGuestInJustNow": {"description": "Door row meta: a check-in not yet confirmed.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorGuestAskedAt": "Asked at {time}",
+  "@doorGuestAskedAt": {"description": "Door row meta: when the guest asked to join.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorGuestOffered": "Offered a place · waiting to pay",
+  "@doorGuestOffered": {"description": "Door row meta: a waitlist offer is out.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 40},
+  "doorGuestFirstOnWaitlist": "First on the waitlist",
+  "@doorGuestFirstOnWaitlist": {"description": "Door row meta: the first waitlisted guest.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 24},
+  "doorGuestWaitlistPosition": "Number {position} on the waitlist",
+  "@doorGuestWaitlistPosition": {"description": "Door row meta: a waitlist position.", "placeholders": {"position": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 32},
+  "doorGuestNotSynced": "not synced yet",
+  "@doorGuestNotSynced": {"description": "Door row meta: a change still on this phone.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorScanTitle": "Scan tickets",
+  "@doorScanTitle": {"description": "Scanner top bar title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorScanClose": "Close the scanner",
+  "@doorScanClose": {"description": "Scanner close button label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 24},
+  "doorScanFinderLabel": "Camera",
+  "@doorScanFinderLabel": {"description": "Scanner finder screen-reader label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 20},
+  "doorScanHint": "Point at the ticket on their phone",
+  "@doorScanHint": {"description": "Scanner line under the finder.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 48},
+  "doorScanNotATicket": "That code is not a Catch ticket.",
+  "@doorScanNotATicket": {"description": "Scanner notice for a code that is not Catch.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 48},
+  "doorScanOtherEvent": "That ticket is for another event.",
+  "@doorScanOtherEvent": {"description": "Scanner notice for another event code.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 48},
+  "doorScanEventCode": "That is the event code guests scan, not a ticket.",
+  "@doorScanEventCode": {"description": "Scanner notice for the event own door code.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 64},
+  "doorScanCheckedIn": "Checked in",
+  "@doorScanCheckedIn": {"description": "Scanner success sheet kicker.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorScanNext": "Next ticket",
+  "@doorScanNext": {"description": "Scanner success sheet primary button.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorScanPaidOnCatch": "paid on Catch",
+  "@doorScanPaidOnCatch": {"description": "Scanner success sheet stat label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorScanNothingPaid": "Free",
+  "@doorScanNothingPaid": {"description": "Scanner success sheet stat when nothing was paid.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 8},
+  "doorScanFirstNight": "first night",
+  "@doorScanFirstNight": {"description": "Scanner success sheet stat label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 16},
+  "doorScanNights": "Night {count}",
+  "@doorScanNights": {"description": "Scanner success sheet stat value: which night with the organizer.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door", "x-max-chars": 12}
 }

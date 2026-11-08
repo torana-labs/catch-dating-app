@@ -1,15 +1,21 @@
 part of '../host_operations_screen.dart';
 
+/// The organizer route's paged tabs; Insights is its own screen.
+const _hostOrganizerPagedTabs = [
+  HostOrganizerTab.edit,
+  HostOrganizerTab.preview,
+];
+
+int _hostOrganizerPageIndex(HostOrganizerTab tab) => _hostOrganizerPagedTabs
+    .indexOf(tab)
+    .clamp(0, _hostOrganizerPagedTabs.length);
+
 List<CatchOption<HostOrganizerTab>> _hostOrganizerTabOptions(
   BuildContext context,
 ) => [
   CatchOption(
     value: HostOrganizerTab.edit,
     label: context.l10n.hostsHostOrganizersScaffoldLabelEdit,
-  ),
-  CatchOption(
-    value: HostOrganizerTab.insights,
-    label: context.l10n.hostsHostOrganizersScaffoldLabelInsights,
   ),
   CatchOption(
     value: HostOrganizerTab.preview,
@@ -52,7 +58,7 @@ class HostOrganizerStateScaffold extends StatelessWidget {
           actions: CatchPageTabBar<HostOrganizerTab>(
             groupKey: _hostOrganizerTabRailKey,
             selected: selectedTab,
-            selectionPosition: selectedTab.index.toDouble(),
+            selectionPosition: _hostOrganizerPageIndex(selectedTab).toDouble(),
             options: _hostOrganizerTabOptions(context),
           ),
           semanticsLabel: context
@@ -106,12 +112,10 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
   final GlobalKey _profileSectionsKey = GlobalKey();
   final Map<HostOrganizerTab, CatchRootScreenPageScrollController>
   _pageScrollControllers = {
-    for (final tab in HostOrganizerTab.values)
+    for (final tab in _hostOrganizerPagedTabs)
       tab: CatchRootScreenPageScrollController(),
   };
   final Map<HostOrganizerTab, double> _pageScrollOffsets = {};
-  final HostOrganizerInsightsRefreshController _insightsRefreshController =
-      HostOrganizerInsightsRefreshController();
   bool _didRevealInitialEditor = false;
   bool _legalLinkPending = false;
 
@@ -120,8 +124,8 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
     super.initState();
     _selectedTab = _effectiveInitialTab;
     _tabController = TabController(
-      length: HostOrganizerTab.values.length,
-      initialIndex: HostOrganizerTab.values.indexOf(_selectedTab),
+      length: _hostOrganizerPagedTabs.length,
+      initialIndex: _hostOrganizerPageIndex(_selectedTab),
       vsync: this,
     )..addListener(_handleTabControllerChanged);
   }
@@ -136,7 +140,7 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
     if (oldWidget.initialTab != widget.initialTab) {
       _selectedTab = _effectiveInitialTab;
     }
-    final selectedIndex = HostOrganizerTab.values.indexOf(_selectedTab);
+    final selectedIndex = _hostOrganizerPageIndex(_selectedTab);
     if (_tabController.index != selectedIndex) {
       _tabController.index = selectedIndex;
     }
@@ -267,10 +271,22 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
       ],
       errorContext: AppErrorContext.auth,
     );
+    final insightsAction = CatchIconAction.toolbar(
+      key: const ValueKey<String>('host-organizer-insights'),
+      tooltip: context.l10n.hostsHostOrganizersScaffoldLabelInsights,
+      icon: CatchIcons.insights,
+      onPressed: () => context.goNamed(
+        Routes.hostOrganizerScreen.name,
+        queryParameters: {
+          'organizerId': selectedOrganizer.id,
+          'tab': HostOrganizerTab.insights.name,
+        },
+      ),
+    );
     final indexPane = CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(
         title: selectedOrganizer.name,
-        actions: [accountMenu, signOutAction],
+        actions: [insightsAction, accountMenu, signOutAction],
       ),
       actions: CatchPageTabBar<HostOrganizerTab>.controlled(
         controller: _tabController,
@@ -295,39 +311,29 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: double.infinity,
-                    child: KeyedSubtree(
-                      key: _profileSectionsKey,
-                      child: HostOrganizerEditBody(
-                        key: ValueKey('host-club-${selectedOrganizer.id}-edit'),
-                        organizer: selectedOrganizer,
-                        currentUid: state.currentUid,
-                        isOwner: state.selectedOrganizerIsOwner,
-                        initialExpandedField: widget.initialExpandedEditField,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.sections(
-              scrollStateController:
-                  _pageScrollControllers[HostOrganizerTab.insights],
-              onRefresh: _insightsRefreshController.refresh,
-              scrollKey: PageStorageKey(
-                'host-club-${selectedOrganizer.id}-insights-scroll',
-              ),
-              children: [
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: HostOrganizerInsightsSection(
-                      key: ValueKey(
-                        'host-club-${selectedOrganizer.id}-insights',
-                      ),
-                      organizer: selectedOrganizer,
-                      refreshController: _insightsRefreshController,
+                    child: CatchSectionList(
+                      emptyStateOmitted: true,
+                      children: [
+                        KeyedSubtree(
+                          key: _profileSectionsKey,
+                          child: HostOrganizerEditBody(
+                            key: ValueKey(
+                              'host-club-${selectedOrganizer.id}-edit',
+                            ),
+                            organizer: selectedOrganizer,
+                            currentUid: state.currentUid,
+                            isOwner: state.selectedOrganizerIsOwner,
+                            initialExpandedField:
+                                widget.initialExpandedEditField,
+                          ),
+                        ),
+                        // Moved here with Insights' own screen: tracking
+                        // settings, the all-time figures and the audience.
+                        HostTrackingSettingsSection(
+                          organizerId: selectedOrganizer.id,
+                        ),
+                        HostOrganizerSectionList(organizer: selectedOrganizer),
+                      ],
                     ),
                   ),
                 ),
@@ -442,12 +448,13 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
   }
 
   HostOrganizerTab get _effectiveInitialTab =>
-      widget.initialExpandedEditField == null
+      widget.initialExpandedEditField == null &&
+          _hostOrganizerPagedTabs.contains(widget.initialTab)
       ? widget.initialTab
       : HostOrganizerTab.edit;
 
   void _handleTabControllerChanged() {
-    final tab = HostOrganizerTab.values[_tabController.index];
+    final tab = _hostOrganizerPagedTabs[_tabController.index];
     if (!mounted) return;
     if (tab != _selectedTab) {
       final previousTab = _selectedTab;

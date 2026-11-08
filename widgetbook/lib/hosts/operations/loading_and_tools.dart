@@ -13,11 +13,6 @@ import '../../support/page_preview.dart';
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: 'Report loading',
-  type: HostAnalyticsReportLoadingIndicator,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
   name: 'Inline icon loading',
   type: HostInlineIconSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
@@ -27,10 +22,6 @@ Widget hostLoadingStatesCatalog(BuildContext context) {
     title: 'Host loading states',
     contractId: 'component.host.loading_skeletons',
     children: [
-      WidgetbookPageStateCard(
-        label: 'unresolved report',
-        child: HostAnalyticsReportLoadingIndicator(),
-      ),
       WidgetbookPageStateCard(
         label: 'unresolved icon',
         child: HostInlineIconSkeleton(),
@@ -246,15 +237,6 @@ Widget hostStrictCatchRosterActionCellCatalogStates(BuildContext context) =>
 )
 Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
     hostRosterPrimitiveCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsReportLoadingIndicator,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsReportLoadingIndicatorCatalogStates(
-  BuildContext context,
-) => hostLoadingStatesCatalog(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

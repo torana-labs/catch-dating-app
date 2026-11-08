@@ -138,25 +138,6 @@ void _registerHostOperationsStateEventsTests() {
     },
   );
 
-  test('HostOrganizerInsightsState owns only club and narrative range', () {
-    final state = HostOrganizerInsightsState.initial(organizerId: 'club-1');
-
-    expect(state.rangePreset, HostOrganizerInsightsRangePreset.thirtyDays);
-    expect(state.query.organizerId, 'club-1');
-
-    final ranged = state.selectRange(
-      HostOrganizerInsightsRangePreset.twelveMonths,
-    );
-    expect(ranged.rangePreset, HostOrganizerInsightsRangePreset.twelveMonths);
-
-    final switchedOrganizer = ranged.selectOrganizer('club-2');
-    expect(switchedOrganizer.query.organizerId, 'club-2');
-    expect(
-      switchedOrganizer.rangePreset,
-      HostOrganizerInsightsRangePreset.twelveMonths,
-    );
-  });
-
   test('HostEventsRouteState maps auth and organizer async branches', () {
     final organizer = buildOrganizer(id: 'owned-club', ownerUserId: _hostUid);
     final stackTrace = StackTrace.current;
@@ -237,7 +218,7 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.text('Organizer'), findsOneWidget);
     expect(find.text('Edit'), findsOneWidget);
-    expect(find.text('Insights'), findsOneWidget);
+    expect(find.text('Insights'), findsNothing);
     expect(find.text('Preview'), findsOneWidget);
     expect(
       tester

@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "9e510f60de83befd37e9ecab6656ba4f42ac923f71e5850b57c9839e5341b108",
+    "routeContractSha256": "65b0f6686974805a4b0ba1c667223e2f5d277bd28a18079f2305f8e1e07b6eff",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 14,
-    "imperativePageTargetCount": 7
+    "imperativePageRouteCount": 17,
+    "imperativePageTargetCount": 10
   },
   "routes": [
     {
@@ -751,8 +751,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRosterScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.guests)",
-      "presentationTarget": "HostEventManageRouteScreen",
+      "presentationExpression": "(context,state)=>DoorScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
+      "presentationTarget": "DoorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1919,6 +1919,33 @@
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:1af948f0cef3e2af19335a64f32e4e7e046cd7df455c2ae12a8227407d85d4e6:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostLiveScoresScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostLiveScoresScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now)",
+      "presentationTarget": "HostLiveScoresScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:1da32eb4f6932cc18d426ff9a29111085aa59f9b7afb10c49252548a41e11c8b:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostLiveRoomScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostLiveRoomScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now)",
+      "presentationTarget": "HostLiveRoomScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:5544126ffe66759cbe1092d76f8ebb9ebe47a43a872521d1dc4c84f5b08052c8:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostLiveNeedsScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostLiveNeedsScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now)",
+      "presentationTarget": "HostLiveNeedsScreen",
+      "fullscreenDialogExpression": null
     },
     {
       "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_actions.dart:1460f8b1d07dbb461e0e2fa7e5c42836ff899a03d147b24d65b0770ca865c45a:1",

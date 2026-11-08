@@ -31,7 +31,7 @@ class HostLiveRoomBody extends StatelessWidget {
       child: CatchStack(
         gap: CatchStackGap.section,
         children: [
-          HostLiveViews(
+          HostLiveViewTabBar(
             selected: HostLiveView.room,
             room: true,
             onView: onView,

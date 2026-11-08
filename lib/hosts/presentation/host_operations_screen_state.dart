@@ -2,9 +2,9 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 
+/// The organizer route's views: the editor and the public preview are
+/// tabs; `insights` opens the Insights screen in their place.
 enum HostOrganizerTab { edit, insights, preview }
-
-enum HostOrganizerInsightsRangePreset { thirtyDays, ninetyDays, twelveMonths }
 
 @immutable
 class HostOrganizersScreenState {
@@ -85,59 +85,5 @@ class HostOrganizersScreenState {
       return organizers.length - 1;
     }
     return selectedOrganizerIndex;
-  }
-}
-
-@immutable
-class HostOrganizerInsightsQueryState {
-  const HostOrganizerInsightsQueryState({
-    required this.organizerId,
-    required this.rangePreset,
-  });
-
-  final String organizerId;
-  final HostOrganizerInsightsRangePreset rangePreset;
-}
-
-@immutable
-class HostOrganizerInsightsState {
-  const HostOrganizerInsightsState._({
-    required this.organizerId,
-    required this.rangePreset,
-  });
-
-  factory HostOrganizerInsightsState.initial({required String organizerId}) =>
-      HostOrganizerInsightsState._(
-        organizerId: organizerId,
-        rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
-      );
-
-  final String organizerId;
-  final HostOrganizerInsightsRangePreset rangePreset;
-
-  HostOrganizerInsightsQueryState get query => HostOrganizerInsightsQueryState(
-    organizerId: organizerId,
-    rangePreset: rangePreset,
-  );
-
-  HostOrganizerInsightsState selectOrganizer(String organizerId) {
-    if (organizerId == this.organizerId) return this;
-    return _copyWith(organizerId: organizerId);
-  }
-
-  HostOrganizerInsightsState selectRange(
-    HostOrganizerInsightsRangePreset rangePreset,
-  ) {
-    return _copyWith(rangePreset: rangePreset);
-  }
-
-  HostOrganizerInsightsState _copyWith({
-    String? organizerId,
-    HostOrganizerInsightsRangePreset? rangePreset,
-  }) {
-    return HostOrganizerInsightsState._(
-      organizerId: organizerId ?? this.organizerId,
-      rangePreset: rangePreset ?? this.rangePreset,
-    );
   }
 }

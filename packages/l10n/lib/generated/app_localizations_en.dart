@@ -874,6 +874,247 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayStatSame => 'Same as before';
 
   @override
+  String get hostInsightsPeriodLabel => 'Period';
+
+  @override
+  String get hostInsightsPeriodSevenDays => '7 days';
+
+  @override
+  String get hostInsightsPeriodThirtyDays => '30 days';
+
+  @override
+  String get hostInsightsPeriodNinetyDays => '90 days';
+
+  @override
+  String get hostInsightsBookingsEachWeek => 'Bookings each week';
+
+  @override
+  String get hostInsightsBookingsEachDay => 'Bookings each day';
+
+  @override
+  String get hostInsightsBookingsEmpty => 'No bookings in this period.';
+
+  @override
+  String get hostInsightsSourcesTitle => 'Where visitors came from';
+
+  @override
+  String hostInsightsVisits({required int count}) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Your page had $countString visits',
+      one: 'Your page had 1 visit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostInsightsLinkClicks({required int count}) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString link clicks',
+      one: '1 link click',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostInsightsFullestNightsTitle => 'Your fullest nights';
+
+  @override
+  String get hostInsightsFullestNightsEmpty => 'No events in this period yet.';
+
+  @override
+  String hostInsightsNightBooked({required int booked}) {
+    return '$booked booked';
+  }
+
+  @override
+  String hostInsightsNightBookedOf({
+    required int booked,
+    required int capacity,
+  }) {
+    return '$booked of $capacity';
+  }
+
+  @override
+  String hostInsightsNightRated({
+    required String booked,
+    required String rating,
+  }) {
+    return '$booked · rated $rating';
+  }
+
+  @override
+  String hostInsightsNightFill({required int percent}) {
+    return '$percent%';
+  }
+
+  @override
+  String hostEventReportWhen({
+    required String date,
+    required String start,
+    required String end,
+  }) {
+    return '$date · $start to $end';
+  }
+
+  @override
+  String get hostEventReportHowItWent => 'How it went';
+
+  @override
+  String get hostEventReportCame => 'Came';
+
+  @override
+  String hostEventReportMoreThanBooked({required int count}) {
+    return '$count more than booked';
+  }
+
+  @override
+  String hostEventReportOfBooked({required int booked}) {
+    return 'of $booked booked';
+  }
+
+  @override
+  String hostEventReportPayments({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'from $count payments',
+      one: 'from 1 payment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventReportFirstTime => 'first time with you';
+
+  @override
+  String get hostEventReportRating => 'Rating';
+
+  @override
+  String hostEventReportRatedBy({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'from $count guests',
+      one: 'from 1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventReportNotRated => 'No ratings yet';
+
+  @override
+  String hostEventReportMoreFaces({required int count}) {
+    return '+$count';
+  }
+
+  @override
+  String hostEventReportStayInTouchTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pairs want to stay in touch',
+      one: 'One pair wants to stay in touch',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventReportStayInTouchBody =>
+      'They matched after the event. Only they see who.';
+
+  @override
+  String get hostEventReportReviewsTitle => 'What guests said';
+
+  @override
+  String hostEventReportAllReviews({required int count}) {
+    return 'All $count';
+  }
+
+  @override
+  String get hostEventReportReviewsEmpty => 'No reviews yet.';
+
+  @override
+  String get hostEventReportReviewAnonymous => 'A guest';
+
+  @override
+  String hostEventReportReviewSemantics({
+    required String name,
+    required int rating,
+  }) {
+    return '$name, $rating of 5 stars';
+  }
+
+  @override
+  String get hostEventReportReviewBookedOnCatch => 'Booked on Catch';
+
+  @override
+  String hostEventReportNextPlaces({required String day, required int places}) {
+    return 'Next $day · $places places';
+  }
+
+  @override
+  String hostEventReportBringBackTitle({
+    required int count,
+    required String when,
+  }) {
+    String _temp0 = intl.Intl.selectLogic(when, {
+      'tonight': 'Bring tonight’s $count back',
+      'other': 'Bring these $count back',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostEventReportBringBackBody({required String event}) {
+    return 'Message everyone who came about $event.';
+  }
+
+  @override
+  String hostEventReportInviteAll({required int count}) {
+    return 'Invite all $count';
+  }
+
+  @override
+  String get hostEventReportChoose => 'Choose';
+
+  @override
+  String get hostEventReportDownloadsTitle => 'Downloads';
+
+  @override
+  String get hostEventReportDownloadGuestList => 'Guest list and check-ins';
+
+  @override
+  String get hostEventReportDownloadPayments => 'Bookings and payments';
+
+  @override
+  String get hostEventReportDownloadCsv => 'CSV';
+
+  @override
+  String get hostEventReportShare => 'Share the report';
+
+  @override
+  String hostEventReportShareText({
+    required String event,
+    required int came,
+    required int newFaces,
+  }) {
+    return '$event: $came came, $newFaces for the first time.';
+  }
+
+  @override
   String get hostTodayCountBooked => 'Booked';
 
   @override
@@ -6831,7 +7072,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostOrganizersScaffoldBodyDragLeftOrRight =>
-      'Drag left or right to switch between Edit, Insights, and Preview.';
+      'Drag left or right to switch between Edit and Preview.';
 
   @override
   String get hostsHostOrganizersScaffoldLabelEdit => 'Edit';
@@ -27089,4 +27330,224 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsRosterMembers => 'Members';
+
+  @override
+  String get doorTitle => 'Door';
+
+  @override
+  String doorKicker({required String time}) {
+    return 'Doors open · $time';
+  }
+
+  @override
+  String get doorBack => 'Back to Today';
+
+  @override
+  String get doorLiveTag => 'Door';
+
+  @override
+  String doorHeadline({required int checkedIn, required int expected}) {
+    return '$checkedIn of $expected in';
+  }
+
+  @override
+  String get doorMeterLabel => 'Checked in';
+
+  @override
+  String doorSummary({
+    required int toCome,
+    required int asked,
+    required int waiting,
+  }) {
+    return '$toCome still to come · $asked asked to join · $waiting waiting';
+  }
+
+  @override
+  String doorSearchPlaceholder({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Search $count guests',
+      one: 'Search 1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorFiltersLabel => 'Show guests';
+
+  @override
+  String get doorFilterArriving => 'Arriving';
+
+  @override
+  String get doorFilterIn => 'In';
+
+  @override
+  String get doorFilterWaitlist => 'Waitlist';
+
+  @override
+  String get doorFilterAsked => 'Asked';
+
+  @override
+  String get doorEmpty => 'Nobody here right now.';
+
+  @override
+  String get doorScanTicket => 'Scan a ticket';
+
+  @override
+  String get doorAddWalkIn => 'Add walk-in';
+
+  @override
+  String doorWalkInAdded({required String name}) {
+    return '$name is on the list';
+  }
+
+  @override
+  String doorWalkInFailed({required String name}) {
+    return 'Could not add $name';
+  }
+
+  @override
+  String doorRefusedTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes did not save',
+      one: '1 change did not save',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorRefusedBody =>
+      'Someone else changed these guests first. Try again or drop your changes.';
+
+  @override
+  String get doorRefusedRetry => 'Try again';
+
+  @override
+  String get doorRefusedDiscard => 'Drop them';
+
+  @override
+  String get doorScannerTileTitle => 'Scanner';
+
+  @override
+  String get doorScannerTileBody => 'Hold a ticket up to the camera';
+
+  @override
+  String doorLatestTitle({required String name}) {
+    return '$name is in';
+  }
+
+  @override
+  String get doorStatToCome => 'still to come';
+
+  @override
+  String get doorStatAsked => 'asked to join';
+
+  @override
+  String get doorStatWaiting => 'waiting';
+
+  @override
+  String get doorGuestNew => 'New';
+
+  @override
+  String get doorGuestCheckIn => 'Check in';
+
+  @override
+  String get doorGuestUndo => 'Undo';
+
+  @override
+  String get doorGuestLetIn => 'Let in';
+
+  @override
+  String get doorGuestOffer => 'Offer';
+
+  @override
+  String get doorGuestFirstTime => 'first time';
+
+  @override
+  String doorGuestNightsBefore({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nights with you',
+      one: '1 night with you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String doorGuestPaid({required String amount}) {
+    return 'paid $amount';
+  }
+
+  @override
+  String doorGuestInAt({required String time}) {
+    return 'In at $time';
+  }
+
+  @override
+  String get doorGuestInJustNow => 'In just now';
+
+  @override
+  String doorGuestAskedAt({required String time}) {
+    return 'Asked at $time';
+  }
+
+  @override
+  String get doorGuestOffered => 'Offered a place · waiting to pay';
+
+  @override
+  String get doorGuestFirstOnWaitlist => 'First on the waitlist';
+
+  @override
+  String doorGuestWaitlistPosition({required int position}) {
+    return 'Number $position on the waitlist';
+  }
+
+  @override
+  String get doorGuestNotSynced => 'not synced yet';
+
+  @override
+  String get doorScanTitle => 'Scan tickets';
+
+  @override
+  String get doorScanClose => 'Close the scanner';
+
+  @override
+  String get doorScanFinderLabel => 'Camera';
+
+  @override
+  String get doorScanHint => 'Point at the ticket on their phone';
+
+  @override
+  String get doorScanNotATicket => 'That code is not a Catch ticket.';
+
+  @override
+  String get doorScanOtherEvent => 'That ticket is for another event.';
+
+  @override
+  String get doorScanEventCode =>
+      'That is the event code guests scan, not a ticket.';
+
+  @override
+  String get doorScanCheckedIn => 'Checked in';
+
+  @override
+  String get doorScanNext => 'Next ticket';
+
+  @override
+  String get doorScanPaidOnCatch => 'paid on Catch';
+
+  @override
+  String get doorScanNothingPaid => 'Free';
+
+  @override
+  String get doorScanFirstNight => 'first night';
+
+  @override
+  String doorScanNights({required int count}) {
+    return 'Night $count';
+  }
 }
