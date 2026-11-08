@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_state.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -91,3 +93,15 @@ void openHostProgrammeView(
       context.goNamed(Routes.hostProgramTeamScreen.name, pathParameters: path);
   }
 }
+
+/// The guests route's screen for [uri]: `filter=noReply` opens on the
+/// households still to reply.
+Widget hostProgrammeGuestsScreenForUri(String programId, Uri uri) =>
+    HostProgrammeGuestsScreen(
+      programId: programId,
+      initialFilter:
+          HostProgrammeGuestFilter.values
+              .where((filter) => filter.name == uri.queryParameters['filter'])
+              .firstOrNull ??
+          HostProgrammeGuestFilter.all,
+    );
