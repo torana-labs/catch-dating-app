@@ -56,7 +56,7 @@ Typed handoffs:
 | `HostEventsOrganizerCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Actions: retry_host_events, open_program. |
 | `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Actions: load_more_schedule, load_more_history, retry_event_history. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
-| `ProgramCreateScreen` | `lib/programs/presentation/program_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
+| `HostProgrammeCreateScreen` | `lib/hosts/programmes/planner/programme_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
 | `ProgramEventsController` | `lib/programs/presentation/program_events_controller.dart` | Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences. |
 | `ProgramEventsRow` | `lib/programs/presentation/program_events_row.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
 
@@ -82,7 +82,6 @@ Typed handoffs:
 - `test/hosts/host_events_timeline_controller_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 - `test/programs/program_create_controller_test.dart`
-- `test/programs/program_create_screen_test.dart`
 - `test/programs/program_events_controller_test.dart`
 
 ## Maintenance

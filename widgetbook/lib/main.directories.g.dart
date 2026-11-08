@@ -11069,7 +11069,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'HostCreateEventRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Route states',
+                name: 'Route and wizard states',
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_routes
                         .hostCreateEventRouteAndWizardStates,
@@ -11080,7 +11080,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'HostCreateOrganizerScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Route states',
+                name: 'Route and wizard states',
                 builder:
                     _widgetbook_workspace_hosts_operations_create_organizer_routes
                         .hostCreateOrganizerRouteAndWizardStates,

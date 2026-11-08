@@ -57,7 +57,6 @@ Typed handoffs:
 | `HostWhatsappSetupSection` | `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
 | `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner. |
 | `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
-| `HostWhatsappThreadSheet` | `lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart` | Actions: open_whatsapp_thread, send_whatsapp_reply. |
 
 ## Shared dependencies
 

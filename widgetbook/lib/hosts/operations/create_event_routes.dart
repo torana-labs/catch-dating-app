@@ -23,7 +23,7 @@ import 'preview.dart';
 import 'role_theme.dart';
 
 @widgetbook.UseCase(
-  name: 'Route states',
+  name: 'Route and wizard states',
   type: HostCreateEventRouteScreen,
   path: '[P1 product surfaces]/Host operations',
 )

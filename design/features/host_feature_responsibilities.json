@@ -184,8 +184,8 @@
         },
         {
           "id": "program_create_screen",
-          "file": "lib/programs/presentation/program_create_screen.dart",
-          "symbol": "ProgramCreateScreen",
+          "file": "lib/hosts/programmes/planner/programme_create_screen.dart",
+          "symbol": "HostProgrammeCreateScreen",
           "role": "Recoverable organizer-scoped Program creation route entered from Events."
         },
         {
@@ -229,7 +229,6 @@
         "test/hosts/host_events_timeline_controller_test.dart",
         "test/hosts/host_operations_screen_test.dart",
         "test/programs/program_create_controller_test.dart",
-        "test/programs/program_create_screen_test.dart",
         "test/programs/program_events_controller_test.dart"
       ]
     },
@@ -274,7 +273,7 @@
             "answer": "Audience is the Host workspace for understanding and organizing an organizer’s relationships with people. Its four peer modes are People (the contact directory), Audiences (reusable groups), Forms (intake design and publication), and Responses (submitted answers and review). Organizer applications belong to this intake workflow. Hosts select the organizer whose records they want to work with; event operations remain in Events and communication delivery moves to Inbox. The implementation still lives across the listed customers, forms, and applications folders; this README is the entry point for the whole destination.",
             "sourcePaths": [
               "lib/hosts/presentation/host_audience_view.dart",
-              "lib/hosts/presentation/customers/host_customers_screen.dart",
+              "lib/hosts/people/people_screen.dart",
               "lib/hosts/forms/forms_screen.dart",
               "lib/routing/go_router.dart",
               "lib/routing/shell/host_shell_screen.dart"
@@ -315,7 +314,7 @@
             "answer": "A saved audience is a named, reusable organizer CRM group. Hosts can select people explicitly for a static list, or combine reviewed rules using all/any matching. Rules cover computed segments, tags, attendance counts and named events, recency, communication reachability, application status, versioned form answers, and spending. The server validates and evaluates definitions; Inbox consumes a saved audience rather than rebuilding its rules. Static lists follow contact merges and exclude unavailable people, and cannot be mixed with rule predicates. Spending uses bounded canonical Catch payment data, currency and time-window rules, current refund status, and unique verified identities; it does not establish complete spending across external providers.",
             "sourcePaths": [
               "contracts/firestore/organizer_saved_audiences.schema.json",
-              "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+              "lib/hosts/people/saved_group_screen.dart",
               "functions/src/organizers/organizerSavedAudiences.ts",
               "functions/src/organizers/organizerSavedAudienceSources.ts",
               "functions/src/organizers/organizerSavedAudienceMembership.ts",
@@ -345,8 +344,7 @@
               "functions/src/organizers/organizerSavedAudiences.ts",
               "functions/src/organizers/organizerSavedAudienceMembers.ts",
               "functions/src/organizers/organizerAudienceCoverage.ts",
-              "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
-              "lib/hosts/presentation/customers/host_saved_audience_section.dart"
+              "lib/hosts/people/saved_group_screen.dart"
             ],
             "examples": [
               {
@@ -393,7 +391,7 @@
               "functions/src/organizers/organizerSavedAudiences.ts",
               "functions/src/shared/organizerCommunicationPreferences.ts",
               "lib/hosts/presentation/customers/host_customers_screen_state.dart",
-              "lib/hosts/presentation/customers/host_customers_screen.dart",
+              "lib/hosts/people/people_screen.dart",
               "tool/architecture/check_host_crm_boundaries.mjs"
             ],
             "examples": [
@@ -462,21 +460,15 @@
       "additionalCodeOwners": [
         {
           "id": "customers_screen",
-          "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "symbol": "HostCustomersScreen",
+          "file": "lib/hosts/people/people_screen.dart",
+          "symbol": "HostPeopleScreen",
           "role": "Actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers."
         },
         {
           "id": "audiences_workspace",
-          "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
-          "symbol": "HostSavedAudiencesWorkspace",
+          "file": "lib/hosts/people/saved_group_screen.dart",
+          "symbol": "HostSavedGroupScreen",
           "role": "Actions: search_saved_audiences, open_saved_audience_detail."
-        },
-        {
-          "id": "audience_editor",
-          "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
-          "symbol": "HostSavedAudienceEditorScreen",
-          "role": "Actions: save_saved_audience, archive_saved_audience."
         },
         {
           "id": "customer_create",
@@ -498,21 +490,9 @@
         },
         {
           "id": "customer_detail",
-          "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-          "symbol": "HostCustomerDetailScreen",
+          "file": "lib/hosts/people/person_screen.dart",
+          "symbol": "HostPersonScreen",
           "role": "Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff."
-        },
-        {
-          "id": "customer_memory",
-          "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
-          "symbol": "HostCustomerMemorySection",
-          "role": "Actions: edit_contact_tags, create_contact_note, edit_contact_note."
-        },
-        {
-          "id": "customer_merge_review",
-          "file": "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart",
-          "symbol": "HostContactMergeReviewSheet",
-          "role": "Actions: decide_duplicate_customer."
         },
         {
           "id": "audience_view",
@@ -625,7 +605,6 @@
         "test/hosts/host_customers_screen_state_test.dart",
         "test/hosts/forms/forms_body_test.dart",
         "test/hosts/forms/host_form_builder_screen_test.dart",
-        "test/hosts/forms/host_form_response_detail_screen_test.dart",
         "test/hosts/host_operations_screen_test.dart"
       ]
     },
@@ -731,12 +710,6 @@
           "file": "lib/hosts/presentation/host_audience_controller.dart",
           "symbol": "HostAudienceController",
           "role": "Actions: manage_campaign."
-        },
-        {
-          "id": "whatsapp_thread",
-          "file": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
-          "symbol": "HostWhatsappThreadSheet",
-          "role": "Actions: open_whatsapp_thread, send_whatsapp_reply."
         }
       ],
       "additionalDataContracts": [
