@@ -1,28 +1,19 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../hosts/forms/support/response_filter_fixtures.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'support/capture_device.dart';
@@ -123,99 +114,6 @@ void main() {
       expect(tester.takeException(), isNull);
     }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
-  for (final responses in [false, true]) {
-    testWidgets(
-      'Host sheet review ${responses ? 'responses' : 'forms'} filters',
-      (tester) async {
-        if (output.isEmpty) return;
-        await captureCatchWidget(
-          tester,
-          id: responses ? 'responses-filter' : 'forms-filter',
-          outputDirectory: Directory(output),
-          device: CaptureDevice.iphone17Pro,
-          includeOverlays: true,
-          providerOverrides: [
-            uidProvider.overrideWithValue(const AsyncData('host-review')),
-            hostOperableOrganizersProvider('host-review').overrideWithValue(
-              AsyncData([HostOperationsFixtures.primaryOrganizer]),
-            ),
-            hostFormsDirectoryControllerProvider.overrideWith2(
-              (_) => _Forms(withExamples: responses),
-            ),
-            hostFormResponsesControllerProvider.overrideWith2(
-              (_) => _Responses(),
-            ),
-          ],
-          builder: (_) => responses
-              ? const HostFormsScreen(
-                  initialResponses: true,
-                  initialFormId: 'rsvp',
-                )
-              : const HostFormsScreen(),
-          drive: (tester) async {
-            await tester.tap(find.text('Filters').hitTestable().first);
-            await pumpFeatureUi(tester);
-            if (responses) {
-              for (final value in [
-                'city-Mumbai',
-                'city-Delhi',
-                'diet-vegetarian',
-              ]) {
-                final chip = find.byKey(ValueKey('response-filter-$value'));
-                await tester.ensureVisible(chip);
-                await tester.tap(chip);
-                await pumpFeatureUi(tester);
-              }
-            }
-            if (!responses) {
-              for (final label in [
-                'Application',
-                'Registration',
-                'Intake',
-                'Published',
-                'Paused',
-              ]) {
-                final chip = find.descendant(
-                  of: find.byType(CatchSheet),
-                  matching: find.widgetWithText(CatchChip, label),
-                );
-                await tester.ensureVisible(chip);
-                await tester.tap(chip);
-                await pumpFeatureUi(tester);
-              }
-            }
-            _expectChipClearance(tester);
-          },
-        );
-        expect(tester.takeException(), isNull);
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
-  }
-}
-
-class _Forms extends HostFormsDirectoryController {
-  _Forms({required this.withExamples});
-  final bool withExamples;
-  @override
-  Future<HostFormsDirectoryState> build(HostFormListRequest request) async =>
-      HostFormsDirectoryState(
-        forms: withExamples ? responseFilterForms : [],
-        nextCursor: null,
-      );
-}
-
-class _Responses extends HostFormResponsesController {
-  @override
-  Future<HostFormResponsesState> build(
-    HostFormResponseListRequest request,
-  ) async => HostFormResponsesState(
-    responses: const [],
-    nextCursor: null,
-    answerFilterOptions: request.formId == null
-        ? const []
-        : responseFilterQuestions,
-  );
 }
 
 void _expectChipClearance(WidgetTester tester) {

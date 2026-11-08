@@ -18,6 +18,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.d
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
+import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
@@ -25,7 +26,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -111,11 +111,7 @@ Future<void> main() async {
       GoRoute(
         path: '/audience',
         name: Routes.hostAudienceScreen.name,
-        builder: (_, state) => HostFormsScreen(
-          initialOrganizerId: organizerId,
-          initialFormId: formId,
-          initialResponses: state.uri.queryParameters['view'] == 'responses',
-        ),
+        builder: (_, state) => HostFormsScreen(initialOrganizerId: organizerId),
       ),
       GoRoute(
         path: '/applications/:applicationId',
