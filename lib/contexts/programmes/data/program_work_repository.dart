@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_projection_lif
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -14,6 +15,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_work_repository.g.dart';
 part 'program_work_repository_door.dart';
+part 'program_work_repository_live.dart';
 part 'program_work_repository_reports.dart';
 part 'program_work_repository_rooms.dart';
 

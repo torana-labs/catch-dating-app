@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'staff_fixtures.dart';
+import 'staff_live_fixtures.dart';
 
 Future<void> _pump(
   WidgetTester tester,
@@ -300,23 +301,39 @@ void main() {
       expect(doors, ['dinner']);
     });
 
-    testWidgets('alerts list newest first with the job they touch', (
+    testWidgets('alerts split into open, mine and done with actions', (
       tester,
     ) async {
+      final actions = <String>[];
+      var filter = StaffAlertsFilter.open;
       await _pump(
         tester,
-        StaffAlertsBody(
-          status: StaffAlertsStatus.content,
-          feed: staffAttention(),
-          now: staffNightNow,
-          onRetry: () {},
+        StatefulBuilder(
+          builder: (context, setState) => StaffAlertsBody(
+            status: StaffAlertsStatus.content,
+            board: staffLiveBoard(),
+            now: staffNightNow,
+            onRetry: () {},
+            filter: filter,
+            onFilter: (value) => setState(() => filter = value),
+            onAction: (alert, action) =>
+                actions.add('${alert.alertId}:${action.name}'),
+          ),
         ),
       );
+      expect(find.text('AI 471 was diverted'), findsOneWidget);
+      expect(find.text('Open 2'), findsOneWidget);
+      await tester.tap(find.text('Take it'));
+      await tester.tap(find.text('Done'));
+      expect(actions, ['flight_leg-1:claim', 'r1_functionLead:done']);
+      await tester.tap(find.text('Done 1'));
+      await tester.pump();
       expect(
-        find.text("The Sharma family's flight went to Jaipur"),
+        find.text('A car has waited 20 minutes at the airport'),
         findsOneWidget,
       );
-      expect(find.text('Door'), findsOneWidget);
+      await tester.tap(find.text('Reopen'));
+      expect(actions.last, 'r2_transportDispatcher:reopen');
       expect(find.text('What raises an alert'), findsOneWidget);
     });
   });

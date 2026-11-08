@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/catch_test_fonts.dart';
+import '../staff/staff_live_fixtures.dart';
 import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';
 import 'planner_test_pump.dart';
@@ -155,5 +158,33 @@ void main() {
       find.byKey(const ValueKey('host-programme-message-function')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('the live board shows the function on now and open alerts', (
+    tester,
+  ) async {
+    final actions = <ProgramAlertAction>[];
+    var all = 0;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeLiveBoardBody(
+        status: HostProgrammeStatus.ready,
+        board: staffLiveBoard(),
+        onRetry: () {},
+        onAction: (_, action) => actions.add(action),
+        onAllAlerts: () => all++,
+      ),
+    );
+    expect(find.text('Checked in: 184 of 266'), findsOneWidget);
+    expect(find.text('Dinner opens'), findsOneWidget);
+    expect(find.text('2 open'), findsOneWidget);
+    expect(
+      find.text('A car has waited 20 minutes at the airport'),
+      findsNothing,
+    );
+    await tester.tap(find.text('Take it'));
+    expect(actions, [ProgramAlertAction.claim]);
+    await tester.tap(find.text('All alerts'));
+    expect(all, 1);
   });
 }

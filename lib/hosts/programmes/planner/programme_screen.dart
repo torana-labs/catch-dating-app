@@ -70,6 +70,13 @@ class HostProgrammeScreen extends ConsumerWidget {
           ),
           onRetry: () => refreshHostProgramme(ref, programId),
           messages: messages.value,
+          onLiveBoard: days == null || days > 0
+              ? null
+              : () => openHostProgrammePage(
+                  context,
+                  programId,
+                  HostProgrammePage.liveBoard,
+                ),
           onMessages: () => openHostProgrammePage(
             context,
             programId,

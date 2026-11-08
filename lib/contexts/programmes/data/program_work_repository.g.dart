@@ -751,6 +751,97 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
   String toString() => r'programFunctionDoorViewWithSnapshotProvider';
 }
 
+/// The live board, from the live read or a bounded offline snapshot.
+
+@ProviderFor(programLiveBoardView)
+final programLiveBoardViewProvider = ProgramLiveBoardViewFamily._();
+
+/// The live board, from the live read or a bounded offline snapshot.
+
+final class ProgramLiveBoardViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramLiveBoard>>,
+          ProgramReadView<ProgramLiveBoard>,
+          FutureOr<ProgramReadView<ProgramLiveBoard>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramLiveBoard>>,
+        $FutureProvider<ProgramReadView<ProgramLiveBoard>> {
+  /// The live board, from the live read or a bounded offline snapshot.
+  ProgramLiveBoardViewProvider._({
+    required ProgramLiveBoardViewFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programLiveBoardViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programLiveBoardViewHash();
+
+  @override
+  String toString() {
+    return r'programLiveBoardViewProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramLiveBoard>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramLiveBoard>> create(Ref ref) {
+    final argument = this.argument as String;
+    return programLiveBoardView(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramLiveBoardViewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programLiveBoardViewHash() =>
+    r'54efdc4c0a01e01ca505dca9629f86908b73c04f';
+
+/// The live board, from the live read or a bounded offline snapshot.
+
+final class ProgramLiveBoardViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramLiveBoard>>,
+          String
+        > {
+  ProgramLiveBoardViewFamily._()
+    : super(
+        retry: null,
+        name: r'programLiveBoardViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The live board, from the live read or a bounded offline snapshot.
+
+  ProgramLiveBoardViewProvider call(String programId) =>
+      ProgramLiveBoardViewProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programLiveBoardViewProvider';
+}
+
 /// Lead-facing report and feed providers: attendance rollups, stakeholder
 /// counts, the duty-scoped attention feed and the organizer's vendor
 /// directory. Split into a part file so the work repository stays under the

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_create_scree
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_controller.dart';
@@ -23,6 +24,7 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 
+import '../staff/staff_live_fixtures.dart';
 import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';
 
@@ -71,6 +73,10 @@ List<Override> plannerCaptureOverrides() => [
     plannerProgramId,
     null,
   ).overrideWith((ref) async => plannerTravel.roster!),
+  programLiveBoardViewProvider(plannerProgramId).overrideWith(
+    (ref) async =>
+        (value: staffLiveBoard(), snapshotAt: null, snapshotExpiresAt: null),
+  ),
   programCreateControllerProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
@@ -110,3 +116,6 @@ Widget plannerMessagesCapture() =>
 
 Widget plannerMessageCapture() =>
     const HostProgrammeMessageScreen(programId: plannerProgramId);
+
+Widget plannerLiveBoardCapture() =>
+    const HostProgrammeLiveBoardScreen(programId: plannerProgramId);

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_screen.dart';
@@ -24,6 +25,7 @@ enum HostProgrammePage {
   vendor,
   messages,
   message,
+  liveBoard,
 }
 
 /// The workspace route's screen for [uri]: the workspace itself, or the
@@ -65,6 +67,9 @@ Widget hostProgrammeScreenForUri(String programId, Uri uri) {
     HostProgrammePage.message => HostProgrammeMessageScreen(
       programId: programId,
       momentId: id,
+    ),
+    HostProgrammePage.liveBoard => HostProgrammeLiveBoardScreen(
+      programId: programId,
     ),
     _ => HostProgrammeScreen(programId: programId),
   };

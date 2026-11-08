@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_live_board_payload.schema.json",
+  "title": "GetProgramLiveBoardCallablePayload",
+  "description": "Read the programme's live board: the function on now, tonight's schedule, travel at a glance and the alerts the caller may see.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}

@@ -23,6 +23,7 @@ class HostProgrammeBody extends StatelessWidget {
     required this.onRetry,
     this.messages,
     this.onMessages,
+    this.onLiveBoard,
   });
 
   final HostProgrammeState state;
@@ -35,6 +36,9 @@ class HostProgrammeBody extends StatelessWidget {
   /// The planned messages, once read; the tile waits for them.
   final ProgramPlannedMessages? messages;
   final VoidCallback? onMessages;
+
+  /// Opens the live board; shown once the programme has started.
+  final VoidCallback? onLiveBoard;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +107,15 @@ class HostProgrammeBody extends StatelessWidget {
         ),
         if (messages case final planned?)
           HostProgrammeMessagesTile(messages: planned, onSeeAll: onMessages),
+        if (onLiveBoard != null)
+          CatchButton(
+            key: const ValueKey<String>('host-programme-live-board'),
+            label: l10n.hostProgrammeLiveOpen,
+            variant: CatchButtonVariant.quiet,
+            leading: CatchIcon(CatchIcons.live),
+            fullWidth: true,
+            onPressed: onLiveBoard,
+          ),
       ],
     );
   }

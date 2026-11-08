@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_alerts.schema.json",
+  "title": "ProgramAlertDocument",
+  "description": "Resolution of one live board alert. Alerts themselves are derived on read (staff attention sends, flights, journeys); this document exists only once someone takes, finishes or reopens one, so it survives the read window. Server-only; written by resolveProgramAlert. It holds staff uids and display names, never guest data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAlerts",
+  "x-firestore-path": "programAlerts/{programAlertId}",
+  "x-owner": "resolveProgramAlert callable",
+  "required": [
+    "programId",
+    "organizerId",
+    "alertId",
+    "state",
+    "assigneeUid",
+    "assigneeName",
+    "updatedByUid",
+    "updatedAtMillis",
+    "revision",
+    "lastRequestId",
+    "lastRequestHash"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "alertId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "done"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assigneeName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}
