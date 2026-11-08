@@ -350,55 +350,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'If another manager updated these settings, reload the current revision before saving again.';
 
   @override
-  String get hostsHostAnalyticsLabelObservedStages => 'Observed booking stages';
-
-  @override
-  String get hostsHostAnalyticsLabelProviderBookingClicks =>
-      'Provider booking clicks';
-
-  @override
-  String get hostsHostAnalyticsLabelFormDrafts => 'Form drafts';
-
-  @override
-  String get hostsHostAnalyticsLabelFormSubmissions => 'Form submissions';
-
-  @override
-  String get hostsHostAnalyticsLabelFormCheckoutAttempts =>
-      'Form fee checkout attempts';
-
-  @override
-  String get hostsHostAnalyticsLabelFormFeesCaptured => 'Form fees captured';
-
-  @override
-  String get hostsHostAnalyticsLabelDirectCheckoutAttempts =>
-      'Direct checkout attempts';
-
-  @override
-  String get hostsHostAnalyticsLabelDirectPaymentsCaptured =>
-      'Direct payments captured';
-
-  @override
-  String get hostsHostAnalyticsLabelDirectPaidAdmissions =>
-      'Direct paid admissions';
-
-  @override
-  String get hostsHostAnalyticsTextObservedStageLimits =>
-      'Separate counts observed in this period, not a linked cohort or conversion rate. A form fee payment does not confirm admission. Direct bookings can skip forms and approval. Provider clicks do not confirm an external purchase. Missing stages are shown as —; partial stages may be incomplete.';
-
-  @override
-  String get hostsHostAnalyticsLabelPublicPresence => 'Public presence';
-
-  @override
-  String get hostsHostAnalyticsLabelOutboundSourceClicks =>
-      'Outbound source clicks';
-
-  @override
-  String get hostsHostAnalyticsLabelLinkClicks => 'Link clicks';
-
-  @override
-  String get hostsHostAnalyticsLabelRemovedLink => 'Removed link';
-
-  @override
   String hostsHostAnalyticsLabelTrafficSource({required String source}) {
     String _temp0 = intl.Intl.selectLogic(source, {
       'instagram': 'Instagram',
@@ -412,35 +363,6 @@ class AppLocalizationsEn extends AppLocalizations {
     });
     return '$_temp0';
   }
-
-  @override
-  String hostsHostAnalyticsTextLinkClicksBySource({required String sources}) {
-    return 'Link clicks came from $sources.';
-  }
-
-  @override
-  String hostsHostAnalyticsTextTrafficSourceClicks({
-    required String source,
-    required String count,
-  }) {
-    return '$source $count';
-  }
-
-  @override
-  String get hostsHostAnalyticsTextPresenceUnavailable =>
-      'Presence data is unavailable for this range. Missing data is shown as —.';
-
-  @override
-  String get hostsHostAnalyticsTextPresenceEmpty =>
-      'No public views or outbound clicks were observed in this range.';
-
-  @override
-  String get hostsHostAnalyticsTextPresenceObservedTotals =>
-      'Observed totals, not unique visitors or a linked conversion funnel. Repeat visits, owner previews and automated traffic may affect these counts.';
-
-  @override
-  String get hostsHostAnalyticsTextPresenceExternalLimits =>
-      'Outbound source clicks include source and provider links. They do not confirm a booking or payment on another website.';
 
   @override
   String get appTitleConsumer => 'Catch';
@@ -484,9 +406,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostNavigationEvents => 'Events';
-
-  @override
-  String get hostNavigationCustomers => 'Customers';
 
   @override
   String get hostNavigationAudience => 'Audience';
@@ -768,19 +687,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostOnboardingDoneCreateEvent => 'Create your first event';
-
-  @override
-  String get hostTodayEmptyTitle => 'You’re all caught up';
-
-  @override
-  String get hostTodayEmptyBody =>
-      'No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.';
-
-  @override
-  String get hostTodayViewAllEvents => 'View full calendar';
-
-  @override
-  String get hostTodayLater => 'Next 7 days';
 
   @override
   String hostTodayGreeting({required String part, required Object name}) {
@@ -2383,24 +2289,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forceUpdateUpdateRequiredScreenLabelUpdateNow => 'Update now';
 
   @override
-  String get hostsCreateOrganizerScreenTitleOrganizerBasics =>
-      'Organizer basics';
-
-  @override
-  String get hostsCreateOrganizerScreenTitleOrganizerDetails =>
-      'Organizer details';
-
-  @override
-  String get hostsCreateOrganizerScreenTitleHostDefaults => 'Host defaults';
-
-  @override
-  String get hostsCreateOrganizerScreenTitleEventSuccessDefaults =>
-      'Event success defaults';
-
-  @override
-  String get hostsOrganizerBasicsStepTitleOrganizerName => 'Organizer name';
-
-  @override
   String get hostsOrganizerTypeLabel => 'Organizer type';
 
   @override
@@ -2420,20 +2308,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOrganizerTypeBrand => 'Brand';
-
-  @override
-  String get hostsOrganizerBasicsStepTitleCity => 'City';
-
-  @override
-  String get hostsOrganizerBasicsStepTitleAreaNeighbourhood =>
-      'Area / neighbourhood';
-
-  @override
-  String get hostsOrganizerBasicsStepPlaceholderEGBandraKoramangala =>
-      'e.g. Bandra, Koramangala';
-
-  @override
-  String get hostsOrganizerDetailsStepTitleDescription => 'Description';
 
   @override
   String get hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide =>
@@ -2488,26 +2362,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOrganizerHostDefaultsStepTitleMax => 'Max';
-
-  @override
-  String get hostsCreateOrganizerContactFieldsTitleInstagramHandle =>
-      'Instagram handle';
-
-  @override
-  String get hostsCreateOrganizerContactFieldsPlaceholderYourorganizer =>
-      '@yourclub';
-
-  @override
-  String get hostsCreateOrganizerContactFieldsTitlePhoneNumber =>
-      'Phone number';
-
-  @override
-  String get hostsCreateOrganizerContactFieldsTitleEmail => 'Email';
-
-  @override
-  String
-  get hostsCreateOrganizerContactFieldsPlaceholderHelloYourorganizerCom =>
-      'hello@yourclub.com';
 
   @override
   String get hostsCreateOrganizerPhotosPickerTextDragToReorderThe =>
@@ -2684,49 +2538,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Schedule changes are blocked here to avoid changing attendee commitments.';
 
   @override
-  String get hostsCreateEventScreenTitleEventDate => 'Event date';
-
-  @override
-  String get hostsCreateEventScreenTitleStartTime => 'Start time';
-
-  @override
-  String get hostsCreateEventSuccessScreenEyebrowEventCreated =>
-      'Event created';
-
-  @override
-  String get hostsCreateEventSuccessScreenTitleYourEventIsLive =>
-      'Your event is live.';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelWhen => 'When';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelWhere => 'Where';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelEvent => 'Event';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelCapacity => 'Capacity';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelInviteCode => 'Invite code';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelPrivateLink => 'Private link';
-
-  @override
-  String get hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance =>
-      'Bookings, waitlist, and attendance are tracked from Manage event.';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelManageEvent => 'Manage event';
-
-  @override
-  String get hostsCreateEventSuccessScreenLabelBackToOrganizer =>
-      'Back to organizer';
-
-  @override
   String get hostsHostCreateEventRouteLoadingScreenTitleEventBasics =>
       'Event basics';
 
@@ -2744,23 +2555,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventDetailsStepPlaceholderEventName => 'Friday night social';
 
   @override
-  String get hostsEventDetailsStepTitleFormatName => 'Format name';
-
-  @override
-  String get hostsEventDetailsStepPlaceholderSalsaNight => 'Salsa night';
-
-  @override
-  String get hostsEventDetailsStepTitleDistanceKm => 'Distance (km)';
-
-  @override
   String get hostsEventDetailsStepTitleDescription => 'Description';
-
-  @override
-  String get hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect =>
-      'What should attendees expect? Any tips for the route or venue?';
-
-  @override
-  String get hostsEventDetailsStepExternalProviderTitle => 'Booking platform';
 
   @override
   String get hostsEventDetailsStepExternalProviderCatch => 'Catch';
@@ -2793,148 +2588,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventDetailsStepExternalProviderAirbnbExperiences =>
       'Airbnb Experiences';
-
-  @override
-  String get hostsEventDetailsStepExternalEventUrlTitle => 'Booking page';
-
-  @override
-  String get hostsEventDetailsStepExternalEventUrlPlaceholder =>
-      'https://your-booking-platform.com/event';
-
-  @override
-  String get hostsEventDetailsStepExternalEventUrlInvalid =>
-      'Enter a secure https URL';
-
-  @override
-  String get hostsEventDetailsStepExternalEventIdTitle => 'Booking reference';
-
-  @override
-  String get hostsEventDetailsStepExternalEventIdPlaceholder =>
-      'Event ID or internal reference';
-
-  @override
-  String get hostsEventDetailsStepExternalWalkInTitle => 'Unlisted guests';
-
-  @override
-  String get hostsEventDetailsStepExternalWalkInDeny => 'Roster only';
-
-  @override
-  String get hostsEventDetailsStepExternalWalkInApproval =>
-      'Ask me to approve them';
-
-  @override
-  String get hostsEventDetailsStepExternalWalkInAutomatic =>
-      'Allow them automatically';
-
-  @override
-  String get hostsEventPolicyStepTextConfigureWhoCanBook =>
-      'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.';
-
-  @override
-  String get hostsEventPolicyStepExternalOperationsIntro =>
-      'Set your capacity and guest access. Bookings stay with your provider.';
-
-  @override
-  String get hostsEventPolicyStepTitleMaxAttendees => 'Max attendees';
-
-  @override
-  String get hostsEventPolicyStepTextTheCodeIsStored =>
-      'The code is stored in the host-only private access document. Public event listings only show that an invite is required.';
-
-  @override
-  String get hostsEventPolicyStepTitleInviteCode => 'Invite code';
-
-  @override
-  String get hostsEventPolicyStepPlaceholderCatchDelhi => 'CATCH-DELHI';
-
-  @override
-  String get hostsEventPolicyStepTitleCohortCaps => 'Cohort caps';
-
-  @override
-  String get hostsEventPolicyStepBodyOptionallyCapStraightMen =>
-      'Optionally cap straight men and straight women without making this a separate admission format.';
-
-  @override
-  String get hostsEventPolicyStepTitleMaxStraightMen => 'Max straight men';
-
-  @override
-  String get hostsEventPolicyStepPlaceholderMaxMen => 'Max men';
-
-  @override
-  String get hostsEventPolicyStepTitleMaxStraightWomen => 'Max straight women';
-
-  @override
-  String get hostsEventPolicyStepPlaceholderMaxWomen => 'Max women';
-
-  @override
-  String get hostsEventPolicyStepTextRequestsAppearInHost =>
-      'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.';
-
-  @override
-  String get hostsEventPolicyStepTitleDemandPricing => 'Demand pricing';
-
-  @override
-  String get hostsEventPolicyStepBodyIncreaseTheStraightMen =>
-      'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.';
-
-  @override
-  String get hostsEventPolicyStepTextHostPayoutIsReleased =>
-      'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.';
-
-  @override
-  String get hostsEventSuccessStepTitleLiveEventGuide => 'Live event guide';
-
-  @override
-  String get hostsEventSuccessStepSubtitleSaveASimplePlan =>
-      'Save a simple plan with this event so Live mode is ready when it starts.';
-
-  @override
-  String get hostsWhenStepPlaceholderSelectADate => 'Select a date';
-
-  @override
-  String get hostsWhenStepPlaceholderSelectStartTime => 'Select start time';
-
-  @override
-  String get hostsWhereStepSavedPlacesTitle => 'Saved places';
-
-  @override
-  String get hostsWhereStepSavedPlacesSubtitle =>
-      'Choose a team-saved place to fill the location, or save the current place for next time.';
-
-  @override
-  String get hostsWhereStepSavedPlaceSelected => 'Selected';
-
-  @override
-  String get hostsWhereStepSaveCurrentPlace => 'Save current place';
-
-  @override
-  String get hostsWhereStepUpdateSavedPlace => 'Update saved place';
-
-  @override
-  String get hostsWhereStepTitleLocationName => 'Location name';
-
-  @override
-  String get hostsWhereStepPlaceholderEGBandstandPromenade =>
-      'e.g. Bandstand Promenade, Bandra';
-
-  @override
-  String get hostsWhereStepHelpertextPickAMapLocation =>
-      'Pick a map location first. Google Places fills this when available.';
-
-  @override
-  String get hostsWhereStepHelpertextEditThisIfAttendees =>
-      'Edit this if attendees need a clearer name.';
-
-  @override
-  String get hostsWhereStepTitleExtraDirections => 'Extra directions';
-
-  @override
-  String get hostsWhereStepPlaceholderEGMeetOutside =>
-      'e.g. Meet outside the blue gate, third entrance';
-
-  @override
-  String get hostsWhereStepHelpertextGateEntranceFloorOr =>
-      'Gate, entrance, floor, or landmark for the group.';
 
   @override
   String get hostsHostEventManageScreenTitleCancelThisEvent =>
@@ -3358,10 +3011,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Waitlist movement';
 
   @override
-  String get hostsHostEventToolsLabelHostEventToolsCarousel =>
-      'Host event tools carousel';
-
-  @override
   String get hostsHostTeamManagementSectionTitleHostTeam => 'Host team';
 
   @override
@@ -3390,9 +3039,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostTeamManagementSectionTitlePhoneNumber => 'Phone number';
-
-  @override
-  String get hostsStepperFooterLabelNext => 'Next';
 
   @override
   String get imageUploadsProfilePhotoEditorScreenTitleDeletePhoto =>
@@ -4315,9 +3961,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cancellation policy';
 
   @override
-  String get hostsCreateOrganizerContactFieldsLabelContact => 'Contact';
-
-  @override
   String get hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos =>
       'Gallery & cover';
 
@@ -4385,21 +4028,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostCreateEventScreenMessageOnlyThisOrganizerS =>
       'Only this organizer\'s host team can create events for this organizer.';
-
-  @override
-  String get hostsCreateEventPhotoPickerTitleCoverAndGallery =>
-      'Event cover & gallery';
-
-  @override
-  String get hostsCreateEventPhotoPickerBodyInheritedLogo =>
-      'Organizer logo · inherited';
-
-  @override
-  String get hostsCreateEventPhotoPickerBodyUnlimitedGallery =>
-      'Add as many event photos as you need. The first photo is the cover.';
-
-  @override
-  String get hostsEventDetailsStepLabelActivityType => 'Activity type';
 
   @override
   String get hostsRouteEventPlanSectionTitle => 'Route plan';
@@ -4511,26 +4139,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsRouteEventPlanRolePhotographer => 'Photographer';
 
   @override
-  String get hostsEventDetailsStepLabelFormatStructure => 'Format structure';
-
-  @override
   String get hostsEventDetailsStepLabelPaceLevel => 'Pace level';
-
-  @override
-  String get hostsEventPolicyStepLabelAdmissionFormat => 'Admission format';
-
-  @override
-  String get hostsEventPolicyStepLabelCancellationPolicy =>
-      'Cancellation policy';
-
-  @override
-  String get hostsWhenStepLabelDate => 'Date';
-
-  @override
-  String get hostsWhenStepLabelStartTime => 'Start time';
-
-  @override
-  String get hostsWhenStepLabelDuration => 'Duration';
 
   @override
   String get hostsWhereStepLabelMeetingLocation => 'Meeting location';
@@ -4571,9 +4180,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
-
-  @override
-  String get hostsHostEventToolsLabelHostEvent => 'Host event';
 
   @override
   String chatsChatEventContextHeaderTextTitleDate({
@@ -4796,43 +4402,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed({
-    required Object displayName,
-    required Object name,
-  }) {
-    return '$displayName is now listed on $name. People can discover it from their home feed.';
-  }
-
-  @override
-  String hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed244c65({
-    required Object displayName,
-    required Object name,
-  }) {
-    return '$displayName is now listed on $name. People can discover it, but only attendees with the invite code or private link can book.';
-  }
-
-  @override
-  String hostsEventPolicyStepTitleBasePriceCurrencycode({
-    required Object currencyCode,
-  }) {
-    return 'Base price ($currencyCode)';
-  }
-
-  @override
-  String hostsEventPolicyStepTitleStepCurrencycode({
-    required Object currencyCode,
-  }) {
-    return 'Step ($currencyCode)';
-  }
-
-  @override
-  String hostsEventPolicyStepTitleMaxCurrencycode({
-    required Object currencyCode,
-  }) {
-    return 'Max ($currencyCode)';
-  }
-
-  @override
   String hostsHostEventManageScreenMessageThisStopsNewAttribution({
     required Object label,
   }) {
@@ -4920,30 +4489,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object count,
   }) {
     return 'Offer next $count';
-  }
-
-  @override
-  String hostsHostEventToolsLabelHostEventValue1Of({
-    required Object value1,
-    required Object itemCount,
-  }) {
-    return 'Host event $value1 of $itemCount';
-  }
-
-  @override
-  String hostsHostEventToolsTextValue1OfItemcount({
-    required Object value1,
-    required Object itemCount,
-  }) {
-    return '$value1 of $itemCount';
-  }
-
-  @override
-  String hostsHostEventToolsLabelShortdatelabelTimerangelabel({
-    required Object shortDateLabel,
-    required Object timeRangeLabel,
-  }) {
-    return '$shortDateLabel · $timeRangeLabel';
   }
 
   @override
@@ -6765,201 +6310,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'No hosted organizers yet.';
 
   @override
-  String get hostsHostAnalyticsLabelAllEvents => 'All events';
-
-  @override
-  String get hostsHostAnalyticsLabel30Days => '30 days';
-
-  @override
-  String get hostsHostAnalyticsLabel90Days => '90 days';
-
-  @override
-  String get hostsHostAnalyticsLabel12Months => '12 months';
-
-  @override
-  String hostsHostAnalyticsTextUpdatedRelative({required Object relative}) {
-    return 'Updated $relative';
-  }
-
-  @override
-  String get hostsHostAnalyticsTextSomeDataIsStillSyncingNumbersMayUpdate =>
-      'Some data is still syncing — numbers may update.';
-
-  @override
   String get hostsHostAnalyticsLabelAllTime => 'All time';
-
-  @override
-  String get hostsHostAnalyticsLabelPerformancePeriod => 'Performance period';
-
-  @override
-  String get hostsHostAnalyticsLabelPerformance => 'Performance';
-
-  @override
-  String get hostsHostAnalyticsLabelProfileAndEventViews =>
-      'Profile & event views';
-
-  @override
-  String get hostsHostAnalyticsLabelProfileViews => 'Profile views';
-
-  @override
-  String get hostsHostAnalyticsLabelEventViews => 'Event views';
-
-  @override
-  String get hostsHostAnalyticsLabelAttendanceRate => 'Attendance rate';
-
-  @override
-  String get hostsHostAnalyticsLabelRevenue => 'Revenue';
-
-  @override
-  String get hostsHostAnalyticsLabelConnections => 'Connections';
-
-  @override
-  String get hostsHostAnalyticsLabelCheckoutDropOff => 'Checkout drop-off';
-
-  @override
-  String get hostsHostAnalyticsLabelCheckoutConversion => 'Checkout conversion';
-
-  @override
-  String get hostsHostAnalyticsLabelChatsStarted => 'Chats started';
-
-  @override
-  String get hostsHostAnalyticsLabelMoreMetrics => 'More metrics';
-
-  @override
-  String get hostsHostAnalyticsBodyCheckoutChatsAndSaves =>
-      'Checkout, chats and saves';
 
   @override
   String get hostsHostAnalyticsLabelPartial => 'Partial';
 
   @override
   String get hostsHostAnalyticsLabelMissing => 'Missing';
-
-  @override
-  String hostsHostAnalyticsTextDirectionPercentVsPreviousPeriod({
-    required Object direction,
-    required Object percent,
-    required Object period,
-  }) {
-    return '$direction $percent% vs previous $period';
-  }
-
-  @override
-  String get hostsHostAnalyticsTextNoAnalyticsInThisRange =>
-      'No analytics in this range.';
-
-  @override
-  String hostsHostAnalyticsTextPeriodDemandBookings({
-    required Object period,
-    required Object demand,
-    required Object bookings,
-  }) {
-    return '$period: $demand demand · $bookings bookings';
-  }
-
-  @override
-  String get hostsHostAnalyticsLabelRecentEvents => 'Recent events';
-
-  @override
-  String get hostsHostAnalyticsLabelPaymentIssues => 'Payment issues';
-
-  @override
-  String hostsHostAnalyticsTextBookedAttendedMatches({
-    required Object booked,
-    required Object attended,
-    required Object matches,
-  }) {
-    return '$booked booked · $attended attended · $matches matches';
-  }
-
-  @override
-  String hostsHostAnalyticsTextEventDateStatus({
-    required Object date,
-    required Object status,
-  }) {
-    return '$date · $status';
-  }
-
-  @override
-  String get hostsHostAnalyticsLabelReviews => 'Reviews';
-
-  @override
-  String get hostsHostAnalyticsLabelPublishedReviews => 'Published reviews';
-
-  @override
-  String get hostsHostAnalyticsStatusLive => 'Live';
-
-  @override
-  String get hostsHostAnalyticsStatusActive => 'Active';
-
-  @override
-  String get hostsHostAnalyticsStatusOpen => 'Open';
-
-  @override
-  String get hostsHostAnalyticsStatusPublished => 'Published';
-
-  @override
-  String get hostsHostAnalyticsStatusCompleted => 'Completed';
-
-  @override
-  String get hostsHostAnalyticsStatusPast => 'Past';
-
-  @override
-  String get hostsHostAnalyticsStatusDraft => 'Draft';
-
-  @override
-  String get hostsHostAnalyticsStatusPending => 'Pending';
-
-  @override
-  String get hostsHostAnalyticsStatusScheduled => 'Scheduled';
-
-  @override
-  String get hostsHostAnalyticsStatusCancelled => 'Cancelled';
-
-  @override
-  String get hostsHostAnalyticsLabelTrendBookingsVsDemand =>
-      'Trend · bookings vs demand';
-
-  @override
-  String get hostsHostAnalyticsLabelDemand => 'Demand';
-
-  @override
-  String get hostsHostAnalyticsLabelBookings => 'Bookings';
-
-  @override
-  String get hostsHostAnalyticsTextNoEventsInThis => 'No events in this range.';
-
-  @override
-  String get hostsHostAnalyticsLabelNewReviews => 'New reviews';
-
-  @override
-  String get hostsHostAnalyticsLabelAverageRating => 'Average rating';
-
-  @override
-  String get hostsHostAnalyticsLabelEventSaves => 'Event saves';
-
-  @override
-  String get hostsHostAnalyticsLabelResponses => 'Responses';
-
-  @override
-  String get hostsHostAnalyticsTitleCoach => 'Coach';
-
-  @override
-  String get hostsHostAnalyticsCoachAttendance =>
-      'Almost half your bookings didn\'t show. Reminders and check-in help — see how your last event ran.';
-
-  @override
-  String get hostsHostAnalyticsCoachCheckoutDropoff =>
-      'Lots of people started paying and stopped. Review your price or enable demand pricing.';
-
-  @override
-  String hostsHostAnalyticsCoachDemandCapacity({required String event}) {
-    return 'Demand outran capacity on $event. Consider a bigger venue or a second date.';
-  }
-
-  @override
-  String get hostsHostAnalyticsCoachNoRepeatAttendees =>
-      'No repeat attendees this period. Organizer posts and follows help people come back.';
 
   @override
   String get hostsHostAuthRequiredScreenTitleSignInRequired =>
@@ -7280,33 +6637,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This preview is capped at 2,500 roster records.';
 
   @override
-  String get hostsHostTodayTitleNeedsYou => 'Needs attention';
-
-  @override
   String get hostsHostTodayTooltipSwitchOrganizer => 'Switch organizer';
-
-  @override
-  String hostsHostTodayTextEventdaylabelTime({
-    required Object eventDayLabel,
-    required Object time,
-  }) {
-    return '$eventDayLabel · $time';
-  }
-
-  @override
-  String get hostsHostTodayLabelGoing => 'expected';
-
-  @override
-  String get hostsHostTodayLabelNeedsYou => 'things to finish';
-
-  @override
-  String get hostsHostTodayLabelOpenRunOfShow => 'Open run-of-show';
-
-  @override
-  String get hostsHostTodayLabelSetUpRun => 'Continue setup';
-
-  @override
-  String get hostTodayTaskSummary => 'Setup, guests, run sheet';
 
   @override
   String get hostTodayAttentionLiveTitle => 'Event is live';
@@ -7495,15 +6826,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forceUpdateUpdateRequiredScreenTextANewVersionOf =>
       'A new version of Catch is available. Please update to continue.';
-
-  @override
-  String hostsHostEventToolsLabelSignedupcountCapacitylimitBookedWaitlistcount({
-    required Object signedUpCount,
-    required Object capacityLimit,
-    required Object waitlistCount,
-  }) {
-    return '$signedUpCount/$capacityLimit booked · $waitlistCount waitlist';
-  }
 
   @override
   String get onboardingWelcomePageTextShowUpToSomething =>
@@ -8760,25 +8082,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessQuestionnaireConfigEditorLabelOption3 =>
       'Option 3';
-
-  @override
-  String get hostsHostEventToolsLabelManageEvent => 'Manage event';
-
-  @override
-  String get hostsHostEventToolsLabelTakeAttendance => 'Take attendance';
-
-  @override
-  String get hostsHostEventToolsLabelViewReport => 'View report';
-
-  @override
-  String get hostsHostEventToolsBadgelabelAttendanceOpen => 'Attendance open';
-
-  @override
-  String get hostsHostEventToolsBadgelabelUpcoming => 'Upcoming';
-
-  @override
-  String get hostsHostEventToolsBadgelabelAttendanceClosed =>
-      'Attendance closed';
 
   @override
   String get hostsHostBroadcastComposerSheetLabelReminder => 'Reminder';
@@ -10144,43 +9447,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsCreateOrganizerScreenVisiblecopyRestoredYourOrganizerDraft =>
-      'Restored your organizer draft';
-
-  @override
-  String
-  get hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenRestoresaveddraftFailed =>
-      'CreateClubScreen._restoreSavedDraft failed';
-
-  @override
-  String get hostsCreateOrganizerScreenVisiblecopyDraftUpdated =>
-      'Draft updated';
-
-  @override
-  String get hostsCreateOrganizerScreenVisiblecopyDraftSaved => 'Draft saved';
-
-  @override
-  String
-  get hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenSubmitFailed =>
-      'CreateClubScreen._submit failed';
-
-  @override
-  String get hostsOrganizerBasicsStepVisiblecopyPleaseEnterAOrganizer =>
-      'Please enter an organizer name';
-
-  @override
-  String get hostsOrganizerBasicsStepVisiblecopyPleaseSelectACity =>
-      'Please select a city';
-
-  @override
-  String get hostsOrganizerBasicsStepVisiblecopyPleaseEnterAnArea =>
-      'Please enter an area';
-
-  @override
-  String get hostsOrganizerDetailsStepVisiblecopyPleaseAddADescription =>
-      'Please add a description';
-
-  @override
   String get hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos =>
       'Add photos';
 
@@ -10203,79 +9469,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEditHostedEventScreenVisiblecopyFree => 'Free';
-
-  @override
-  String get hostsCreateEventScreenVisiblecopyConfiguredin => 'configuredIn';
-
-  @override
-  String get hostsCreateEventScreenVisiblecopyCreateEvent => 'create_event';
-
-  @override
-  String hostsCreateEventSuccessScreenVisiblecopyCapacitylimitAttendees({
-    required Object capacityLimit,
-  }) {
-    return '$capacityLimit attendees';
-  }
-
-  @override
-  String get hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos =>
-      'Add event photos';
-
-  @override
-  String get hostsCreateEventPhotoPickerVisiblecopyAddPhotos => 'Add photos';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyRequired => 'Required';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyTooLong => 'Too long';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyDD => '^\\d*\\.?\\d*';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyInvalid => 'Invalid';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyMustBe0 => 'Must be > 0';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopySelectAPace => 'Select a pace';
-
-  @override
-  String get hostsEventPolicyStepVisiblecopyRequired => 'Required';
-
-  @override
-  String get hostsEventPolicyStepVisiblecopyMin1 => 'Min 1';
-
-  @override
-  String get hostsEventPolicyStepVisiblecopyDD => '^\\d*\\.?\\d*';
-
-  @override
-  String get hostsEventPolicyStepVisiblecopyInvalid => 'Invalid';
-
-  @override
-  String get hostsEventPolicyStepVisiblecopyAZaZ09 => '[A-Za-z0-9_-]';
-
-  @override
-  String get hostsWhenStepVisiblecopyPleaseSelectADate =>
-      'Please select a date';
-
-  @override
-  String get hostsWhenStepVisiblecopyRequired => 'Required';
-
-  @override
-  String get hostsWhenStepVisiblecopyDecreaseDuration => 'Decrease duration';
-
-  @override
-  String get hostsWhenStepVisiblecopyIncreaseDuration => 'Increase duration';
-
-  @override
-  String get hostsWhereStepVisiblecopyChooseAMeetingLocation =>
-      'Choose a meeting location';
-
-  @override
-  String get hostsWhereStepVisiblecopyAddALocationName => 'Add a location name';
 
   @override
   String get hostsHostEventManageScreenVisiblecopyEventCancelled =>
@@ -10551,18 +9744,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsHostTodayVisiblecopySignedupcount({
-    required Object signedUpCount,
-  }) {
-    return '$signedUpCount';
-  }
-
-  @override
-  String hostsHostTodayVisiblecopyTaskcount({required Object taskCount}) {
-    return '$taskCount';
-  }
-
-  @override
   String get hostsHostInboxScreenVisiblecopySomePushAttemptsFailed =>
       'Some push attempts failed; Activity updates are still available.';
 
@@ -10709,22 +9890,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object personNoun,
   }) {
     return 'Next $count $personNoun on the waitlist';
-  }
-
-  @override
-  String hostsHostEventToolsVisiblecopyHostedEventValue1Of({
-    required Object value1,
-    required Object length,
-  }) {
-    return 'Hosted event $value1 of $length';
-  }
-
-  @override
-  String hostsHostEventToolsVisiblecopyHostedEventSelectedindexOf({
-    required Object selectedIndex,
-    required Object length,
-  }) {
-    return 'Hosted event $selectedIndex of $length';
   }
 
   @override
@@ -12499,14 +11664,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reserved Cross Paths spots';
 
   @override
-  String get hostsEventPolicyStepBodyCrossPathsPairs =>
-      'Keep a small part of capacity for people who agree to attend together through Cross Paths.';
-
-  @override
-  String get hostsEventPolicyStepTitleCrossPathsPairCapacity =>
-      'Reserved companion spots';
-
-  @override
   String get hostsOperationalRosterTitle => 'Guest roster';
 
   @override
@@ -12974,60 +12131,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsCreateEventRosterTitle => 'Guest list';
-
-  @override
-  String hostsCreateEventRosterAttached({
-    required String fileName,
-    required int ready,
-    required int review,
-    required int excluded,
-  }) {
-    return '$fileName · $ready ready · $review need review · $excluded excluded';
-  }
-
-  @override
-  String hostsCreateEventRosterReattach({required String fileName}) {
-    return 'Reattach $fileName before publishing. Drafts remember the file fingerprint, not guest data.';
-  }
-
-  @override
-  String get hostsCreateEventRosterChoose => 'Choose file';
-
-  @override
-  String get hostsCreateEventRosterReplace => 'Replace file';
-
-  @override
-  String hostsCreateEventRosterImportSuccess({
-    required int created,
-    required int updated,
-    required int skipped,
-  }) {
-    return 'Guest list imported: $created added, $updated refreshed, $skipped skipped.';
-  }
-
-  @override
-  String hostsCreateEventRosterImportPartial({required int count}) {
-    return 'The event is live, but $count guest rows need attention. Open Manage event to review the roster and retry the file.';
-  }
-
-  @override
-  String get hostsCreateEventRosterImportFailed =>
-      'The event is live, but the guest list was not imported. Open Manage event and retry the same file.';
-
-  @override
-  String get hostsCreateEventExternalSuccessNote =>
-      'Catch tracks the operational roster, check-in, walk-ins, and event safety. Bookings and payments stay with the external provider.';
-
-  @override
-  String get hostsCreateEventRosterDetailLabel => 'Guest list';
-
-  @override
-  String hostsCreateEventCapacityBelowRoster({required int count}) {
-    return 'Capacity must be at least $count to include every ready guest.';
-  }
-
-  @override
   String hostsOperationalRosterLimit({required int count}) {
     return 'This import uses the first 250 guests. Put the remaining $count guests in another file.';
   }
@@ -13164,21 +12267,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter the guest\'s name.';
 
   @override
-  String get hostsHostAnalyticsLabelRosterGuests => 'Guests on roster';
-
-  @override
-  String get hostsHostAnalyticsLabelRosterAttendanceRate => 'Roster attendance';
-
-  @override
-  String hostsHostAnalyticsTextRosterAttendedExternal({
-    required int roster,
-    required int attended,
-    required int external,
-  }) {
-    return '$roster guests · $attended checked in · $external outside Catch';
-  }
-
-  @override
   String get hostsHostEventReviewsTitlePublicReviews => 'Public reviews';
 
   @override
@@ -13285,23 +12373,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationActionDisable => 'Close registration';
-
-  @override
-  String get hostsHostAudienceAttended => 'Attended';
-
-  @override
-  String get hostsHostAudienceSearch => 'Search by name';
-
-  @override
-  String get hostsHostAudienceAll => 'All';
-
-  @override
-  String get hostsHostAudienceCoveragePartial =>
-      'Some customer history is unavailable';
-
-  @override
-  String get hostsHostAudienceCoveragePartialBody =>
-      'Some older attendance may be missing. Counts marked + are minimums, and audience campaigns stay off until history is complete.';
 
   @override
   String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
@@ -13426,82 +12497,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsAttendeeShareLinkLabel => 'Attendee share';
 
   @override
-  String get hostsHostAudienceExport => 'Export this audience';
-
-  @override
-  String get hostsHostAudienceExportSubject => 'Catch audience export';
-
-  @override
-  String get hostsHostAudienceExportTruncated =>
-      'This export reached the 2,500-contact safety limit.';
-
-  @override
-  String hostsHostAudienceExportCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count organizer contacts.',
-      one: '1 organizer contact.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostsHostAudienceRemoveTitle => 'Remove customer?';
-
-  @override
-  String get hostsHostAudienceRemoveBody =>
-      'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.';
-
-  @override
-  String get hostsHostAudienceRemoveConfirm => 'Remove';
-
-  @override
-  String get hostsHostAudienceRemoveAction => 'Remove customer';
-
-  @override
   String get hostsHostAudienceContactNameHelp =>
       'This does not alter the guest’s Catch profile or verified contact details.';
 
   @override
-  String get hostsHostAudienceContactVerifiedPhone => 'Verified phone';
-
-  @override
   String get hostsHostAudienceContactEmail => 'Email';
-
-  @override
-  String get hostsHostAudienceContactConsentPaused =>
-      'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
-
-  @override
-  String get hostsHostAudienceSegmentNew => 'New to your audience';
-
-  @override
-  String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
-
-  @override
-  String get hostsHostAudienceSegmentRepeat => 'Repeat attendees';
-
-  @override
-  String get hostsHostAudienceSegmentRegular => 'Regulars';
-
-  @override
-  String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
-
-  @override
-  String get hostsHostAudienceSegmentNeedsConfirmation => 'Needs confirmation';
-
-  @override
-  String get hostsHostAudienceSegmentAdvocate => 'Advocates';
-
-  @override
-  String get hostsHostAudienceSegmentHighImpact => 'High-impact advocates';
-
-  @override
-  String get hostsHostAudienceSegmentWhatsapp => 'WhatsApp reachable';
-
-  @override
-  String get hostsHostAudienceSegmentSms => 'SMS reachable';
 
   @override
   String get hostsHostAudienceMessageFollowUp => 'Post-event follow-up';
@@ -13524,23 +12524,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceSenderNeedsAttention => 'Reconnect required';
-
-  @override
-  String hostCustomersCompactEventCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count events attended',
-      one: '1 event attended',
-      zero: 'No events attended',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostsHostAudienceLastSeen({required String date}) {
-    return 'Last seen $date';
-  }
 
   @override
   String get hostsHostAudienceBlockerProvider =>
@@ -15085,10 +14068,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'On larger screens, drag is also available. Tap controls always work.';
 
   @override
-  String get hostCustomersIntro =>
-      'Everyone who has attended, registered, been imported, or been added by your team.';
-
-  @override
   String get hostMessagingWorkspaceInbox => 'Inbox';
 
   @override
@@ -15358,30 +14337,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
-
-  @override
   String get hostInboxAnnouncementDisclosure =>
       'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
-
-  @override
-  String get hostInboxWhatsappReply => 'Reply';
-
-  @override
-  String get hostInboxWhatsappReplyHint => 'Write a WhatsApp reply';
-
-  @override
-  String hostInboxWhatsappWindowOpen({required String time}) {
-    return 'Replies available until $time';
-  }
-
-  @override
-  String get hostInboxWhatsappWindowClosed =>
-      'The 24-hour reply window is closed. Start a new message with an approved template.';
-
-  @override
-  String get hostInboxWhatsappHistoryTruncated =>
-      'Only the 200 most recent retained messages are shown.';
 
   @override
   String get hostSendsDeliveryTime => 'Delivery';
@@ -15397,12 +14354,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersContactDetails => 'Details';
-
-  @override
-  String get hostCustomersEditDetails => 'Edit details';
-
-  @override
-  String get hostCustomersNotSaved => 'Not saved';
 
   @override
   String get hostCustomersAdd => 'Add person';
@@ -15445,14 +14396,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Private notes are visible only to this organizer’s management team.';
 
   @override
-  String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Phone and email come from the source record and can’t be edited here.';
-
-  @override
-  String get hostCustomersUnverifiedContactDetails =>
-      'Added by your team · not verified by Catch';
-
-  @override
   String get hostCustomersUnavailable => 'Customers unavailable';
 
   @override
@@ -15468,14 +14411,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersReloadDetail => 'Reload customer';
 
   @override
-  String hostCustomersFilterSummary({
-    required String label,
-    required String countLabel,
-  }) {
-    return '$label · $countLabel';
-  }
-
-  @override
   String get hostCustomersFilters => 'Filters';
 
   @override
@@ -15486,19 +14421,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersViewAudiences => 'Groups';
-
-  @override
-  String get hostSavedAudienceSaveTitle => 'Save this group';
-
-  @override
-  String get hostSavedAudienceSaveBody =>
-      'Name this reusable customer group. Inbox will use this saved definition and recheck eligibility before sending.';
-
-  @override
-  String get hostSavedAudienceName => 'Group name';
-
-  @override
-  String get hostSavedAudienceSaveAndMessage => 'Save and continue to message';
 
   @override
   String get hostSavedAudiencesEmptyTitle => 'No groups yet';
@@ -15525,841 +14447,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudiencesManage => 'Groups';
 
   @override
-  String get hostSavedAudiencesSearch => 'Search groups';
-
-  @override
-  String get hostSavedAudiencesSearchEmptyTitle =>
-      'No groups match this search';
-
-  @override
-  String get hostSavedAudiencesSearchEmptyBody => 'Try a different group name.';
-
-  @override
-  String get hostSavedAudienceNew => 'New group';
-
-  @override
-  String get hostSavedAudienceDetails => 'Group details';
-
-  @override
-  String get hostSavedAudienceNameRequired => 'Add an group name.';
-
-  @override
-  String get hostSavedAudienceMatch => 'Match rules';
-
-  @override
-  String get hostSavedAudienceMatchAll => 'Match every rule';
-
-  @override
-  String get hostSavedAudienceMatchAny => 'Match any rule';
-
-  @override
-  String hostSavedAudienceCondition({required int number}) {
-    return 'Condition $number';
-  }
-
-  @override
-  String get hostSavedAudienceRemoveRule => 'Remove';
-
-  @override
-  String get hostSavedAudienceAddRule => 'Add condition';
-
-  @override
-  String get hostSavedAudienceRuleType => 'Condition type';
-
-  @override
-  String get hostSavedAudienceRuleSegment => 'Customer segment';
-
-  @override
-  String get hostSavedAudienceRuleTag => 'Your tag';
-
-  @override
-  String get hostSavedAudienceRuleAttendance => 'Attendance count';
-
-  @override
-  String get hostSavedAudienceRuleLastSeen => 'Last seen';
-
-  @override
-  String get hostSavedAudienceRuleManagedReach =>
-      'Managed WhatsApp eligibility';
-
-  @override
-  String get hostSavedAudienceSegment => 'Segment';
-
-  @override
-  String get hostSavedAudienceTag => 'Tag';
-
-  @override
-  String get hostSavedAudienceChooseTag => 'Choose a tag';
-
-  @override
-  String get hostSavedAudienceAttendanceComparison => 'Comparison';
-
-  @override
-  String get hostSavedAudienceAtLeast => 'At least';
-
-  @override
-  String get hostSavedAudienceAtMost => 'At most';
-
-  @override
-  String get hostSavedAudienceEventsAttended => 'Events attended';
-
-  @override
-  String get hostSavedAudienceEventsUnit => 'events';
-
-  @override
-  String get hostSavedAudienceLastSeenWithin => 'Last seen within';
-
-  @override
-  String get hostSavedAudienceDaysUnit => 'days';
-
-  @override
-  String get hostSavedAudienceDecreaseCount => 'Decrease event count';
-
-  @override
-  String get hostSavedAudienceIncreaseCount => 'Increase event count';
-
-  @override
-  String get hostSavedAudienceDecreaseDays => 'Decrease day count';
-
-  @override
-  String get hostSavedAudienceIncreaseDays => 'Increase day count';
-
-  @override
-  String get hostSavedAudienceManagedReach => 'Eligibility';
-
-  @override
-  String get hostSavedAudienceManagedReachBody =>
-      'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Inbox rechecks this at send time.';
-
-  @override
-  String get hostSavedAudienceCompleteRules =>
-      'Complete every group condition before saving.';
-
-  @override
-  String get hostSavedAudienceCurrentPreview => 'Saved preview';
-
-  @override
-  String get hostSavedAudiencePeople => 'People and reach';
-
-  @override
-  String get hostSavedAudienceArchiveTitle => 'Archive this group?';
-
-  @override
-  String get hostSavedAudienceArchiveBody =>
-      'It will disappear from new sends. Historical sends keep the group snapshot they used.';
-
-  @override
-  String get hostSavedAudienceNotFound => 'This saved group is unavailable.';
-
-  @override
-  String get hostSavedAudiencePreview => 'Refresh';
-
-  @override
-  String get hostSavedAudienceArchive => 'Archive';
-
-  @override
-  String get hostSavedAudienceNeverPreviewed => 'Not checked yet';
-
-  @override
-  String hostSavedAudiencePeopleCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people',
-      one: '1 person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostAudienceReachCountInCatch({required int count}) {
-    return '$count in Catch';
-  }
-
-  @override
-  String hostAudienceReachCountAutomatic({required int count}) {
-    return '$count automatic';
-  }
-
-  @override
-  String hostAudienceReachCountByHand({required int count}) {
-    return '$count by hand';
-  }
-
-  @override
-  String hostAudienceReachCountUnavailable({required int count}) {
-    return '$count unavailable';
-  }
-
-  @override
-  String get hostCustomersCoverageRefresh => 'Check again';
-
-  @override
-  String hostCustomersMessageThese({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Message these $count people',
-      one: 'Message this person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersMessageTheseAtLeast({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Message at least $count people',
-      one: 'Message at least 1 person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersSetUpWhatsappBusiness => 'Set up WhatsApp Business';
-
-  @override
-  String get hostCustomersFilterSheetTitle => 'Filter people';
-
-  @override
   String get hostFiltersResetAll => 'Reset all';
-
-  @override
-  String get hostCustomersFilterGroupAttendance => 'Attendance';
-
-  @override
-  String get hostCustomersFilterGroupReliability => 'Reliability';
-
-  @override
-  String get hostCustomersFilterGroupAdvocacy => 'Advocacy';
-
-  @override
-  String get hostCustomersFilterGroupReachable => 'Reachable';
-
-  @override
-  String hostCustomersPeopleCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people',
-      one: '1 person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersPeopleCountAtLeast({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'At least $count people',
-      one: 'At least 1 person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersFilterAtRisk => 'At risk';
-
-  @override
-  String get hostCustomersNeedsReview => 'Needs review';
-
-  @override
-  String get hostCustomersReviewDuplicates => 'Review possible duplicates';
-
-  @override
-  String get hostCustomersMergeReviewTitle => 'Possible duplicate customers';
-
-  @override
-  String get hostCustomersMergeReviewHelp =>
-      'Nothing is merged automatically. Compare the evidence, then choose which customer record to keep.';
-
-  @override
-  String get hostCustomersMergeReviewEmpty =>
-      'No possible duplicates need review.';
-
-  @override
-  String get hostCustomersMergeEvidenceVerifiedUid =>
-      'Same verified Catch account';
-
-  @override
-  String get hostCustomersMergeEvidenceVerifiedPhone => 'Same verified phone';
-
-  @override
-  String get hostCustomersMergeEvidenceImportedPhone => 'Same imported phone';
-
-  @override
-  String get hostCustomersMergeEvidenceEmail => 'Same email';
-
-  @override
-  String hostCustomersMergeSharedEvents({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count shared events',
-      one: '1 shared event',
-      zero: 'No shared events',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersMergeKeep({required String name}) {
-    return 'Keep $name';
-  }
-
-  @override
-  String get hostCustomersMergeAction => 'Merge customers';
-
-  @override
-  String get hostCustomersDifferentPeople => 'Different people';
-
-  @override
-  String get hostCustomersMergeConfirmTitle => 'Merge these customer records?';
-
-  @override
-  String hostCustomersMergeConfirmBody({required String survivor}) {
-    return '$survivor will be kept. Attendance and identity facts will move into that record. This also confirms any conflicting phone, email, or linked-account details shown here. You can undo the merge from the surviving customer’s details.';
-  }
-
-  @override
-  String get hostCustomersDismissedDuplicates => 'Marked as different people';
-
-  @override
-  String get hostCustomersReopenDuplicate => 'Review again';
-
-  @override
-  String get hostCustomersReopenOwnerOnly =>
-      'Only the manager who marked this pair can reopen it.';
-
-  @override
-  String get hostCustomersMergedHistory => 'Merged records';
-
-  @override
-  String hostCustomersMergedHistoryRow({
-    required String name,
-    required int count,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count facts moved',
-      one: '1 fact moved',
-    );
-    return '$name · $_temp0';
-  }
-
-  @override
-  String get hostCustomersUndoMerge => 'Undo merge';
-
-  @override
-  String get hostCustomersUndoMergeTitle => 'Undo this merge?';
-
-  @override
-  String get hostCustomersUndoMergeBody =>
-      'The original customer record and its moved facts will be restored.';
-
-  @override
-  String get hostCustomersEmpty => 'No customers yet';
-
-  @override
-  String get hostCustomersNoResults => 'No customers match these filters.';
-
-  @override
-  String get hostCustomersLoadMore => 'Load more';
-
-  @override
-  String get hostCustomersDetailAttendance => 'Attendance';
-
-  @override
-  String get hostCustomersExpected => 'Expected';
-
-  @override
-  String get hostCustomersAttendanceRate => 'Attendance rate';
-
-  @override
-  String get hostCustomersDetailRevenue => 'Recorded spend';
-
-  @override
-  String get hostCustomersDetailNoRevenue => 'No spend recorded.';
-
-  @override
-  String get hostCustomersDetailRevenueUnavailable =>
-      'Revenue facts are unavailable right now.';
-
-  @override
-  String get hostCustomersDetailRevenuePartial =>
-      'Some event and payment history may be missing.';
-
-  @override
-  String hostCustomersDetailRevenueFacts({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count spend records',
-      one: '1 spend record',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersRevenueSourceCatch => 'Catch confirmed';
-
-  @override
-  String get hostCustomersRevenueSourceProvider => 'Provider confirmed';
-
-  @override
-  String get hostCustomersRevenueSourceImport => 'Imported by your team';
-
-  @override
-  String get hostCustomersRevenueSourceEstimate => 'Estimated by your team';
-
-  @override
-  String get hostCustomersRevenueSourceAttested => 'Confirmed by your team';
-
-  @override
-  String get hostCustomersMessageOptionsLoading =>
-      'Checking messaging options…';
-
-  @override
-  String get hostCustomersMessageOptionsUnavailable =>
-      'Messaging options unavailable';
-
-  @override
-  String get hostCustomersMessageOptionsRetry => 'Try checking again.';
-
-  @override
-  String get hostCustomersMessagePermissionRequired =>
-      'This person has not granted permission for this kind of message.';
-
-  @override
-  String get hostCustomersMessageSenderUnavailable =>
-      'Sending setup is not available for this route yet.';
-
-  @override
-  String get hostCustomersWhatsappAppChannel => 'Personal WhatsApp';
-
-  @override
-  String get hostCustomersWhatsappHandoffDisclosure =>
-      'Opens WhatsApp on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
-
-  @override
-  String get hostCustomersWhatsappMissingPhone =>
-      'Add a valid phone number to use a personal WhatsApp handoff.';
-
-  @override
-  String get hostCustomersWhatsappOrganizerSuppressed =>
-      'WhatsApp handoff is paused for this customer by your team.';
-
-  @override
-  String get hostCustomersWhatsappContactOptedOut =>
-      'This customer has opted out of WhatsApp messages.';
-
-  @override
-  String get hostCustomersWhatsappHandoffTitle => 'WhatsApp app';
-
-  @override
-  String hostCustomersWhatsappHandoffSubtitle({
-    required String name,
-    required String phone,
-  }) {
-    return '$name · $phone';
-  }
-
-  @override
-  String hostCustomersWhatsappDefaultMessage({required String name}) {
-    return 'Hi $name,';
-  }
-
-  @override
-  String get hostCustomersWhatsappMessage => 'Message';
-
-  @override
-  String get hostCustomersOpenWhatsapp => 'Open WhatsApp';
 
   @override
   String get hostCustomersWhatsappOpenFailed =>
       'Could not open WhatsApp on this device.';
-
-  @override
-  String get hostCustomersWhatsappRecordFailed =>
-      'WhatsApp opened, but Catch couldn’t record it. The task is still waiting in Sends.';
-
-  @override
-  String get hostCustomersConversationUnlinked =>
-      'A conversation becomes available after this customer is unambiguously linked to a Catch account.';
-
-  @override
-  String get hostCustomersConversationAmbiguous =>
-      'Resolve this customer’s identity before starting a conversation.';
-
-  @override
-  String hostCustomersMessagePerson({required String name}) {
-    return 'Message $name';
-  }
-
-  @override
-  String get hostCustomersMessagePersonCatch => 'Opens the Catch conversation.';
-
-  @override
-  String get hostCustomersMessagePersonHandoff =>
-      'Review your message, then send it in WhatsApp.';
-
-  @override
-  String get hostCustomersWhatsappPermission => 'WhatsApp permission';
-
-  @override
-  String get hostCustomersWhatsappPermissionUnknown =>
-      'No participant permission is recorded.';
-
-  @override
-  String get hostCustomersWhatsappPermissionGrantedUndated =>
-      'Participant granted permission.';
-
-  @override
-  String get hostCustomersWhatsappPermissionRevokedUndated =>
-      'Participant withdrew permission.';
-
-  @override
-  String hostCustomersWhatsappPermissionGrantedByForm({
-    required String formTitle,
-    required String date,
-  }) {
-    return 'Granted on $formTitle · $date';
-  }
-
-  @override
-  String hostCustomersWhatsappPermissionGranted({required String date}) {
-    return 'Participant granted permission · $date';
-  }
-
-  @override
-  String hostCustomersWhatsappPermissionRevoked({required String date}) {
-    return 'Participant withdrew permission · $date';
-  }
-
-  @override
-  String get hostCustomersWhatsappPermissionIncomplete =>
-      'The current state is known, but its legacy evidence is incomplete.';
-
-  @override
-  String get hostCustomersWhatsappPermissionUnavailable =>
-      'Permission evidence is unavailable right now.';
-
-  @override
-  String get hostCustomersCustomerProvenance => 'Customer sources';
-
-  @override
-  String get hostCustomersCustomerProvenanceUnavailable =>
-      'Source information is unavailable.';
-
-  @override
-  String hostCustomersCustomerProvenanceItem({
-    required String source,
-    required String date,
-  }) {
-    return '$source · $date';
-  }
-
-  @override
-  String get hostCustomersOriginCatchBooking => 'Catch booking';
-
-  @override
-  String get hostCustomersOriginHostImport => 'Imported by your team';
-
-  @override
-  String get hostCustomersOriginHostManual => 'Added by your team';
-
-  @override
-  String get hostCustomersOriginWebOtp => 'Verified web registration';
-
-  @override
-  String get hostCustomersOriginProviderSync => 'Synced from an event provider';
-
-  @override
-  String hostCustomersOriginHostForm({required String formTitle}) {
-    return '$formTitle';
-  }
-
-  @override
-  String get hostCustomersPauseWhatsappHandoffs => 'Pause personal WhatsApp';
-
-  @override
-  String get hostCustomersPauseWhatsappHandoffsBody =>
-      'Stops your team’s personal WhatsApp handoffs. This does not change the person’s permission.';
-
-  @override
-  String get hostCustomersTimeline => 'History';
-
-  @override
-  String get hostCustomersTimelineEmpty => 'No activity recorded in this view.';
-
-  @override
-  String get hostCustomersTimelinePartialBody =>
-      'Some history may be missing. Available activity is shown newest first.';
-
-  @override
-  String get hostCustomersTimelineReplyBoundary =>
-      'Personal WhatsApp conversations stay in WhatsApp. Only Catch and managed WhatsApp messages appear here.';
-
-  @override
-  String get hostCustomersTimelineFormFallback => 'Form response';
-
-  @override
-  String hostCustomersTimelineFormSubmitted({required int answerCount}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      answerCount,
-      locale: localeName,
-      other: '$answerCount answers',
-      one: '1 answer',
-      zero: 'no recorded answers',
-    );
-    return 'Submitted · $_temp0';
-  }
-
-  @override
-  String hostCustomersTimelineFormWithdrawn({required String date}) {
-    return 'Response withdrawn · $date';
-  }
-
-  @override
-  String hostCustomersTimelineEventStatus({required String status}) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'invited': 'Invited',
-      'registered': 'Registered',
-      'waitlisted': 'Waitlisted',
-      'checkedIn': 'Checked in',
-      'attended': 'Attended',
-      'noShow': 'Did not attend',
-      'cancelled': 'Cancelled',
-      'other': 'Event activity',
-    });
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersTimelineManualHandoff => 'Personal WhatsApp handoff';
-
-  @override
-  String hostCustomersTimelineSendStatus({required String status}) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'available': 'Activity available',
-      'pending': 'Pending',
-      'sending': 'Sending',
-      'suppressed': 'Suppressed',
-      'accepted': 'Accepted by provider',
-      'sent': 'Sent',
-      'delivered': 'Delivered',
-      'read': 'Read',
-      'failed': 'Failed',
-      'replied': 'Replied',
-      'optedOut': 'Opted out',
-      'queued': 'Waiting in Sends',
-      'handoffOpened': 'You opened WhatsApp',
-      'hostMarkedSent': 'You marked this sent',
-      'skipped': 'Skipped',
-      'cancelled': 'Cancelled',
-      'superseded': 'Superseded',
-      'expired': 'Expired',
-      'other': 'Status unavailable',
-    });
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersTimelineCatchMessage => 'Catch message';
-
-  @override
-  String get hostCustomersTimelineManagedWhatsapp => 'Managed WhatsApp message';
-
-  @override
-  String hostCustomersTimelineDirection({required String direction}) {
-    String _temp0 = intl.Intl.selectLogic(direction, {
-      'inbound': 'Message received',
-      'outbound': 'Message sent',
-      'other': 'Message',
-    });
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersFilterGroupYourTags => 'Your tags';
-
-  @override
-  String get hostCustomersMemory => 'Notes & tags';
-
-  @override
-  String get hostCustomersOverview => 'Overview';
-
-  @override
-  String get hostCustomersRecentEvents => 'Event activity';
-
-  @override
-  String get hostCustomersMemoryHelp =>
-      'Notes and tags are private to your host team.';
-
-  @override
-  String get hostCustomersManualTags => 'Your tags';
-
-  @override
-  String get hostCustomersEditTags => 'Edit tags';
-
-  @override
-  String get hostCustomersNoManualTags => 'No organizer tags yet.';
-
-  @override
-  String get hostCustomersTagSheetTitle => 'Customer tags';
-
-  @override
-  String get hostCustomersTagSheetSubtitle =>
-      'Choose up to 5 of your organizer’s tags, or create a new one.';
-
-  @override
-  String get hostCustomersNewTag => 'New tag';
-
-  @override
-  String get hostCustomersAddTag => 'Add tag';
-
-  @override
-  String get hostCustomersSaveTags => 'Save tags';
-
-  @override
-  String get hostCustomersTagContactLimit =>
-      'A customer can have up to 5 tags.';
-
-  @override
-  String get hostCustomersTagVocabularyLimit =>
-      'Your organizer already has 20 tags. Choose an existing tag.';
-
-  @override
-  String get hostCustomersNotes => 'Notes';
-
-  @override
-  String get hostCustomersAddNote => 'Add note';
-
-  @override
-  String get hostCustomersEditNote => 'Edit note';
-
-  @override
-  String get hostCustomersNoteBody => 'Note';
-
-  @override
-  String get hostCustomersSaveNote => 'Save note';
-
-  @override
-  String get hostCustomersNoNotes => 'No notes yet.';
-
-  @override
-  String hostCustomersNoteByYou({required String date}) {
-    return 'You · $date';
-  }
-
-  @override
-  String hostCustomersNoteByTeam({required String date}) {
-    return 'Team member · $date';
-  }
-
-  @override
-  String get hostCustomersNoteEdited => 'edited';
-
-  @override
-  String get hostCustomersNotesTruncated =>
-      'Only the 100 newest notes are shown.';
-
-  @override
-  String get hostCustomersNotesUnavailableBody =>
-      'Notes are temporarily unavailable. Other customer details are still available.';
-
-  @override
-  String get hostCustomersOutreach => 'Outreach';
-
-  @override
-  String get hostCustomersLogOutreach => 'Log outreach';
-
-  @override
-  String get hostCustomersLogOutreachBody =>
-      'Record a call, message or conversation you had with this person. It appears on their history.';
-
-  @override
-  String get hostCustomersOutreachChannelField => 'Channel';
-
-  @override
-  String get hostCustomersOutreachOutcomeField => 'Outcome';
-
-  @override
-  String hostCustomersOutreachChannel({required String channel}) {
-    String _temp0 = intl.Intl.selectLogic(channel, {
-      'phoneCall': 'Phone call',
-      'whatsapp': 'WhatsApp',
-      'email': 'Email',
-      'sms': 'Text message',
-      'inPerson': 'In person',
-      'other': 'Outreach',
-    });
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersOutreachOutcome({required String outcome}) {
-    String _temp0 = intl.Intl.selectLogic(outcome, {
-      'reached': 'Reached',
-      'noAnswer': 'No answer',
-      'leftMessage': 'Left a message',
-      'wrongContact': 'Wrong contact',
-      'attempted': 'Attempted',
-      'other': 'Outcome recorded',
-    });
-    return '$_temp0';
-  }
-
-  @override
-  String get hostCustomersOutreachNote => 'Note';
-
-  @override
-  String get hostCustomersEmailAppChannel => 'Personal email';
-
-  @override
-  String get hostCustomersMessagePersonEmail =>
-      'Review your email, then send it from your mail app.';
-
-  @override
-  String get hostCustomersEmailMissingEmail =>
-      'Add an email address to use an email handoff.';
-
-  @override
-  String get hostCustomersEmailHandoffTitle => 'Email app';
-
-  @override
-  String hostCustomersEmailHandoffSubtitle({
-    required String name,
-    required String email,
-  }) {
-    return '$name · $email';
-  }
-
-  @override
-  String get hostCustomersEmailHandoffDisclosure =>
-      'Opens your email app on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
-
-  @override
-  String get hostCustomersEmailMessage => 'Message';
-
-  @override
-  String hostCustomersEmailDefaultMessage({required String name}) {
-    return 'Hi $name,';
-  }
-
-  @override
-  String get hostCustomersOpenEmail => 'Open email';
-
-  @override
-  String get hostCustomersEmailOpenFailed =>
-      'Could not open an email app on this device.';
-
-  @override
-  String get hostCustomersEmailRecordFailed =>
-      'Your email app opened, but Catch couldn’t record the attempt.';
 
   @override
   String get hostSheetClose => 'Close';
@@ -16371,15 +14463,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostCustomersSortControl({required String label}) {
     return 'Sort: $label';
   }
-
-  @override
-  String get hostCustomersSortLastSeen => 'Last seen';
-
-  @override
-  String get hostCustomersSortMostAttended => 'Most attended';
-
-  @override
-  String get hostCustomersSortName => 'Name';
 
   @override
   String get hostCustomersMoreActions => 'More audience actions';
@@ -16539,9 +14622,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventRosterDrawerMessageGuests => 'Message guests';
 
   @override
-  String get hostApplicationsTitle => 'Applications';
-
-  @override
   String get hostApplicationsUnavailable => 'Applications unavailable';
 
   @override
@@ -16551,87 +14631,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationNotFound => 'Application not found';
 
   @override
-  String get hostApplicationsImport => 'Import responses';
-
-  @override
-  String get hostApplicationsImportTitle => 'Import responses';
-
-  @override
-  String get hostApplicationsImportSubtitle =>
-      'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
-
-  @override
-  String get hostApplicationsImportReusableField => 'Reusable profile field';
-
-  @override
-  String get hostApplicationsImportOrganizerField => 'Organizer-only question';
-
-  @override
-  String hostApplicationsImportAction({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count responses',
-      one: '1 response',
-    );
-    return 'Import $_temp0';
-  }
-
-  @override
-  String hostApplicationsImportLimit({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count additional rows will need a second import.',
-      one: '1 additional row will need a second import.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostApplicationsImportMissingName =>
-      'Map a Name, Full name, or First name column before importing.';
-
-  @override
-  String get hostApplicationsImportNoRows =>
-      'The spreadsheet does not contain any application rows.';
-
-  @override
-  String hostApplicationsImportComplete({
-    required int created,
-    required int skipped,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      created,
-      locale: localeName,
-      other: 'Imported $created responses',
-      one: 'Imported 1 response',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      skipped,
-      locale: localeName,
-      other: 'skipped $skipped',
-      one: 'skipped 1',
-    );
-    return '$_temp0 · $_temp1.';
-  }
-
-  @override
-  String get hostApplicationsConsentCopy =>
-      'I agree to share these submitted answers with this organizer for application review.';
-
-  @override
-  String get hostApplicationsRetentionCopy =>
-      'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
-
-  @override
   String get hostApplicationsSortNewest => 'Newest first';
 
   @override
   String get hostApplicationsSortOldest => 'Oldest first';
-
-  @override
-  String get hostApplicationsReviewStatusFilter => 'Filter by review status';
 
   @override
   String get hostApplicationsStatusSubmitted => 'Submitted';
@@ -16661,9 +14664,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsSourceConnector => 'Connected form';
 
   @override
-  String get hostApplicationsLoadMore => 'Load more applications';
-
-  @override
   String get hostApplicationNotAnswered => 'Not answered';
 
   @override
@@ -16682,33 +14682,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get hostApplicationCall => 'Call';
-
-  @override
-  String get hostApplicationEmail => 'Email';
-
-  @override
-  String get hostApplicationInstagram => 'Instagram';
-
-  @override
-  String get hostApplicationLinkedin => 'LinkedIn';
-
-  @override
-  String get hostApplicationReviewNote => 'Private review note';
-
-  @override
-  String get hostApplicationReviewNoteHint => 'Add context for your team';
-
-  @override
-  String get hostApplicationApprove => 'Accept and add to People';
-
-  @override
-  String get hostApplicationReviewUpdated => 'Application review updated';
-
-  @override
-  String get hostFormsCreate => 'Create form';
 
   @override
   String get hostFormsUnavailableTitle => 'Forms unavailable';
@@ -16737,9 +14710,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormResponseNotFound => 'Response not found';
 
   @override
-  String get hostFormsSearch => 'Search forms';
-
-  @override
   String get hostFormsFilterAll => 'All';
 
   @override
@@ -16748,13 +14718,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormsEmptyBody =>
       'Start with a template, then tailor the questions and identity requirements.';
-
-  @override
-  String get hostFormsNoMatchesTitle => 'No forms match';
-
-  @override
-  String get hostFormsNoMatchesBody =>
-      'Try another search or lifecycle filter.';
 
   @override
   String get hostFormsActions => 'Form actions';
@@ -16832,9 +14795,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsLoadMore => 'Load more forms';
 
   @override
-  String get hostFormsDuplicate => 'Duplicate form';
-
-  @override
   String get hostFormsPause => 'Pause responses';
 
   @override
@@ -16842,33 +14802,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormsArchive => 'Archive form';
-
-  @override
-  String get hostFormsDeleteDraft => 'Delete draft';
-
-  @override
-  String get hostFormsArchiveConfirmTitle => 'Archive this form?';
-
-  @override
-  String get hostFormsArchiveConfirmBody =>
-      'Its public link will stop accepting responses. Existing responses stay available.';
-
-  @override
-  String get hostFormsDeleteConfirmTitle => 'Delete this draft?';
-
-  @override
-  String get hostFormsDeleteConfirmBody =>
-      'This draft has never been published and will be permanently removed.';
-
-  @override
-  String get hostFormsNoOrganizerTitle => 'Create an organizer first';
-
-  @override
-  String get hostFormsNoOrganizerBody =>
-      'Forms belong to an organizer so your team, brand, and response data remain scoped correctly.';
-
-  @override
-  String get hostFormsCreateOrganizer => 'Create organizer';
 
   @override
   String get hostFormsStatusPublished => 'Published';
@@ -16893,27 +14826,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormsPurposeSurvey => 'Survey';
-
-  @override
-  String get hostFormTemplatesTitle => 'New form';
-
-  @override
-  String get hostFormTemplatesSubtitle =>
-      'Choose a starting point. You can edit every question before publishing.';
-
-  @override
-  String hostFormTemplateSummary({
-    required String purpose,
-    required int count,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count questions',
-      one: '1 question',
-    );
-    return '$purpose · $_temp0';
-  }
 
   @override
   String get hostFormQuestionsTitle => 'Questions';
@@ -17028,59 +14940,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormShare => 'Share form';
-
-  @override
-  String get hostFormCanonicalLink => 'Public link';
-
-  @override
-  String get hostFormCanonicalLinkHelp =>
-      'Respondents open this in any browser. They do not need the Catch app.';
-
-  @override
-  String get hostFormCopyLink => 'Copy link';
-
-  @override
-  String get hostFormLinkCopied => 'Form link copied';
-
-  @override
-  String get hostFormShareLink => 'Share link';
-
-  @override
-  String get hostFormCreateTrackedLink => 'Create tracked link';
-
-  @override
-  String get hostFormTrackedLinkTitle => 'New tracked link';
-
-  @override
-  String get hostFormTrackedLinkLabel => 'Internal label';
-
-  @override
-  String get hostFormTrackedLinkLabelHint => 'August Instagram story';
-
-  @override
-  String get hostFormTrackedLinkSource => 'Source tag (optional)';
-
-  @override
-  String get hostFormTrackedLinkSourceHint => 'instagram_story';
-
-  @override
-  String get hostFormTrackedLinkReady => 'Tracked link ready';
-
-  @override
-  String get hostFormEmbed => 'Embed on your website';
-
-  @override
-  String get hostFormEmbedHelp =>
-      'Paste this iframe into your website builder. The embedded route keeps the same validation and submission controls.';
-
-  @override
-  String get hostFormCopyEmbed => 'Copy embed code';
-
-  @override
-  String get hostFormEmbedCopied => 'Embed code copied';
-
-  @override
-  String get hostFormCreate => 'Create';
 
   @override
   String get hostFormSettings => 'Form settings';
@@ -17517,12 +15376,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsViewResponses => 'Responses';
 
   @override
-  String get hostFormResponsesSearch => 'Search responses';
-
-  @override
-  String get hostFormResponsesSubmitted => 'Submitted';
-
-  @override
   String get hostFormResponsesWithdrawn => 'Withdrawn';
 
   @override
@@ -17556,83 +15409,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormsAutomationsAction => 'Manage automations';
-
-  @override
-  String get hostFormResponseIdentitySection => 'Respondent';
-
-  @override
-  String get hostFormResponseAnswersSection => 'Answers';
-
-  @override
-  String get hostFormResponseEmail => 'Email';
-
-  @override
-  String get hostFormResponsePhone => 'Phone';
-
-  @override
-  String get hostFormResponseSource => 'Source';
-
-  @override
-  String get hostFormResponseSubmittedAt => 'Submitted';
-
-  @override
-  String get hostFormResponseConsent => 'Consent version';
-
-  @override
-  String get hostFormResponseCompletionTime => 'Completion time';
-
-  @override
-  String get hostFormResponseNotProvided => 'Not provided';
-
-  @override
-  String get hostFormResponseNoAnswer => 'No answer';
-
-  @override
-  String hostFormResponseDownloadFile({required String fileName}) {
-    return 'Open $fileName';
-  }
-
-  @override
-  String get hostFormConvertCrm => 'Add to People';
-
-  @override
-  String get hostFormConversionReviewTitle => 'Review this action';
-
-  @override
-  String get hostFormConversionReviewBody =>
-      'Catch will create only the fields shown in this preview. Existing records and conflicts remain protected.';
-
-  @override
-  String get hostFormConversionConfirm => 'Confirm action';
-
-  @override
-  String get hostFormConversionUnavailable =>
-      'This action needs verified identity or additional setup.';
-
-  @override
-  String get hostFormConversionComplete => 'Action completed';
-
-  @override
-  String get hostFormAnalyticsTitle => 'Results';
-
-  @override
-  String get hostFormAnalyticsOpens => 'Opens';
-
-  @override
-  String get hostFormAnalyticsStarts => 'Starts';
-
-  @override
-  String get hostFormAnalyticsSubmissions => 'Submissions';
-
-  @override
-  String get hostFormAnalyticsCompletionRate => 'Completion rate';
-
-  @override
-  String get hostFormAnalyticsSources => 'Sources';
-
-  @override
-  String get hostFormAnalyticsPrivacyNotice =>
-      'Question results appear only when the privacy threshold is met. Sensitive and free-text answers are never charted.';
 
   @override
   String get hostFormExportCsv => 'Export CSV';
@@ -17688,60 +15464,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAutomationsLoadMore => 'Load more runs';
 
   @override
-  String get hostFormResponseOriginAnonymous => 'Anonymous';
-
-  @override
-  String get hostFormResponseOriginGranted => 'Shared by respondent';
-
-  @override
-  String get hostFormResponseOriginAcquired => 'Organizer record';
-
-  @override
-  String get hostFormResponseOriginRevoked => 'Access revoked';
-
-  @override
-  String get hostFormConversionExisting =>
-      'An existing record already matches this response.';
-
-  @override
-  String hostFormAnalyticsSourceSummary({
-    required int opens,
-    required int starts,
-    required int submissions,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      opens,
-      locale: localeName,
-      other: '$opens opens',
-      one: '1 open',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      starts,
-      locale: localeName,
-      other: '$starts starts',
-      one: '1 start',
-    );
-    String _temp2 = intl.Intl.pluralLogic(
-      submissions,
-      locale: localeName,
-      other: '$submissions submissions',
-      one: '1 submission',
-    );
-    return '$_temp0 · $_temp1 · $_temp2';
-  }
-
-  @override
-  String hostFormAnalyticsQuestionSummary({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count answers',
-      one: '1 answer',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get hostFormExportFailed =>
       'The export could not be prepared. Try again.';
 
@@ -17774,9 +15496,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormRedo => 'Redo edit';
 
   @override
-  String get hostsWizardPrevious => 'Previous';
-
-  @override
   String get hostsWizardStatusComplete => 'Complete';
 
   @override
@@ -17784,70 +15503,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsWizardStatusOptional => 'Optional';
-
-  @override
-  String get hostsWizardOverviewSubtitle =>
-      'Open any section and finish the required details in any order.';
-
-  @override
-  String get hostsCreateEventOverviewTitle => 'Event setup';
-
-  @override
-  String get hostsCreateEventReviewActivity => 'Event';
-
-  @override
-  String get hostsCreateEventReviewBooking => 'Bookings';
-
-  @override
-  String get hostsCreateEventReviewCatchBookings => 'Catch bookings';
-
-  @override
-  String hostsCreateEventReviewExternalBookings({required String provider}) {
-    return 'External provider: $provider';
-  }
-
-  @override
-  String get hostsCreateEventReviewLocation => 'Meeting location';
-
-  @override
-  String get hostsCreateEventReviewSchedule => 'Schedule';
-
-  @override
-  String get hostsCreateEventReviewCapacity => 'Capacity';
-
-  @override
-  String hostsCreateEventReviewCapacityValue({required int count}) {
-    return '$count attendees';
-  }
-
-  @override
-  String get hostsCreateEventReviewPrice => 'Price';
-
-  @override
-  String get hostsCreateEventReviewExternalPrice =>
-      'Managed by the external provider';
-
-  @override
-  String get hostsCreateEventReviewFree => 'Free';
-
-  @override
-  String get hostsCreateEventReviewAdmission => 'Admission';
-
-  @override
-  String get hostsCreateOrganizerOverviewTitle => 'Organizer setup';
-
-  @override
-  String get hostsWizardReviewBody =>
-      'Review every section before publishing. Select a row to make changes.';
-
-  @override
-  String get hostsCreateEventReviewTitle => 'Review event';
-
-  @override
-  String get hostsCreateOrganizerReviewTitle => 'Review organizer';
-
-  @override
-  String get hostsCreateOrganizerCreateAction => 'Create organizer';
 
   @override
   String get hostsDraftExitTitle => 'Save your work?';
@@ -18629,13 +16284,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersSelectCustomerTitle => 'Select a customer';
-
-  @override
-  String get hostCustomersSelectCustomerBody =>
-      'Choose someone from the directory to keep their details beside the list.';
-
-  @override
   String get hostInboxSelectConversationTitle => 'Select a conversation';
 
   @override
@@ -18761,81 +16409,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
-
-  @override
-  String get hostCustomersDetails => 'Details';
-
-  @override
-  String get hostCustomersContactMethods => 'Contact methods';
-
-  @override
-  String get hostCustomersSubmittedInformation => 'Form responses';
-
-  @override
-  String get hostCustomersNoSubmittedInformation =>
-      'No form responses recorded.';
-
-  @override
-  String hostCustomersViewAnswers({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count answers',
-      one: '1 answer',
-    );
-    return 'View $_temp0';
-  }
-
-  @override
-  String get hostCustomersNoApplications =>
-      'No applications are linked to this customer.';
-
-  @override
-  String get hostCustomersLatestSubmittedDetails => 'Latest submitted details';
-
-  @override
-  String hostCustomersSubmittedOn({required String date}) {
-    return 'From the application submitted $date. Open the application for all answers and their context.';
-  }
-
-  @override
-  String get hostCustomersAllActivity => 'All activity';
-
-  @override
-  String get hostCustomersMessageHistory => 'Messages';
-
-  @override
-  String get hostCustomersViewBreakdown => 'View breakdown';
-
-  @override
-  String get hostCustomersSpendByEvent => 'By event';
-
-  @override
-  String get hostCustomersSharedOrder => 'Shared order';
-
-  @override
-  String get hostCustomersSpendBreakdownUnavailable =>
-      'No event breakdown is available for these recorded totals.';
-
-  @override
-  String get hostCustomersOpenApplication => 'Open application';
-
-  @override
-  String get hostCustomersSubmittedAnswersUnavailable =>
-      'Submitted answers are unavailable. Open the application to review its status.';
-
-  @override
-  String get hostCustomersMessaging => 'Messaging';
-
-  @override
-  String get hostCustomersCheckMessaging => 'Check again';
-
-  @override
-  String get hostCustomersSourcesTruncated =>
-      'More source records exist. Only the loaded records are shown.';
-
-  @override
-  String get hostApplicationOpenPerson => 'Open person';
 
   @override
   String get hostMomentsTitle => 'Moments';
@@ -19105,134 +16678,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMomentSave => 'Save moment';
 
   @override
-  String get hostSavedAudienceEditRules => 'Edit rules';
-
-  @override
-  String get hostSavedAudienceMembers => 'People';
-
-  @override
-  String get hostSavedAudienceNoMembers => 'No people in this group';
-
-  @override
-  String get hostAudienceRuleApplication => 'Application status';
-
-  @override
-  String get hostAudienceRuleFormAnswer => 'Form answer';
-
-  @override
-  String get hostAudienceRuleNamedEvent => 'Attended event';
-
-  @override
-  String get hostAudienceChooseForm => 'Choose a form';
-
-  @override
-  String get hostAudienceChooseEvent => 'Choose an event';
-
-  @override
-  String get hostAudienceChooseQuestion => 'Choose a published question';
-
-  @override
-  String get hostAudienceChooseAnswer => 'Answer contains or equals';
-
-  @override
-  String get hostAudienceSourceUnavailable => 'Source unavailable';
-
-  @override
-  String get hostAudienceFilterableQuestionsHelp =>
-      'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.';
-
-  @override
-  String hostAudienceSelectedCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count selected people',
-      one: '1 selected person',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostAudienceStaticHelp =>
-      'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.';
-
-  @override
-  String get hostAudienceUnavailablePerson => 'Unavailable person';
-
-  @override
-  String get hostAudienceRemoveSelected => 'Remove from this audience';
-
-  @override
-  String get hostAudiencePreviousPeople => 'Previous people';
-
-  @override
-  String get hostAudienceNextPeople => 'Next people';
-
-  @override
-  String get hostAudienceChoosePeople => 'Choose people';
-
-  @override
-  String get hostAudienceSearchPeople => 'Search by name';
-
-  @override
-  String get hostAudienceAvailablePeople => 'People you can select';
-
-  @override
-  String get hostAudienceNoPeopleFound => 'No people found';
-
-  @override
-  String get hostAudienceNoSelectedPeople => 'No people selected yet';
-
-  @override
-  String get hostAudienceSelectionLimit =>
-      'You have selected the maximum of 2,500 people.';
-
-  @override
-  String get hostAudienceMembershipMode => 'Membership';
-
-  @override
-  String get hostAudienceRuleMembership => 'Match conditions automatically';
-
-  @override
-  String get hostAudienceStaticMembership => 'Choose people manually';
-
-  @override
-  String get hostAudienceSpend => 'Catch spend';
-
-  @override
-  String get hostAudienceSpendHelp =>
-      'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.';
-
-  @override
-  String get hostAudienceSpendCurrency => 'Currency';
-
-  @override
-  String get hostAudienceSpendAmount => 'Amount';
-
-  @override
-  String get hostAudienceSpendAmountInvalid =>
-      'Enter a valid amount within 10 billion minor currency units.';
-
-  @override
-  String get hostAudienceSpendDays => 'Past number of days';
-
-  @override
-  String get hostAudienceSpendDaysHelp =>
-      'Leave blank to include all recorded Catch payments.';
-
-  @override
-  String get hostAudienceSpendDaysInvalid =>
-      'Enter a whole number from 1 to 3,650, or leave blank.';
-
-  @override
-  String get hostAudienceSpendLifetime => 'All recorded payments';
-
-  @override
-  String hostAudienceSpendWindow({required int days}) {
-    return 'Past $days days';
-  }
-
-  @override
   String get hostAutomationNew => 'New automation';
 
   @override
@@ -19375,34 +16820,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAutomationConfigured => 'Configured';
 
   @override
-  String get hostAudienceFormStatusFilter => 'Form status';
-
-  @override
-  String hostAudienceFormEdited({required String time}) {
-    return 'Edited $time';
-  }
-
-  @override
-  String hostAudienceFormLastResponse({required String time}) {
-    return 'Last response $time';
-  }
-
-  @override
-  String hostAudienceFormRecordStatus({
-    required String status,
-    required int count,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count responses',
-      one: '1 response',
-      zero: 'No responses',
-    );
-    return '$status · $_temp0';
-  }
-
-  @override
   String get hostAudienceAllForms => 'All forms';
 
   @override
@@ -19441,130 +16858,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceAfterSubmission => 'After submission';
 
   @override
-  String get hostAudienceCreatingForm => 'Creating form…';
-
-  @override
-  String get hostAudienceShowQr => 'Show QR code';
-
-  @override
-  String get hostAudienceCreatingLink => 'Creating tracked link…';
-
-  @override
   String hostAudienceResultsVersion({required int version}) {
     return 'Published version $version';
   }
-
-  @override
-  String hostAudienceCompletionDenominator({
-    required int submissions,
-    required int starts,
-  }) {
-    return '$submissions submitted from $starts starts.';
-  }
-
-  @override
-  String hostAudienceMedianCompletion({required String duration}) {
-    return 'Median completion time: $duration';
-  }
-
-  @override
-  String get hostAudienceMultipleChoiceResults =>
-      'People can select more than one option.';
-
-  @override
-  String hostAudienceChoiceDenominator({
-    required int count,
-    required int total,
-  }) {
-    return '$count of $total answers';
-  }
-
-  @override
-  String hostAudienceNumericResult({
-    required String average,
-    required int count,
-  }) {
-    return 'Average $average from $count answers';
-  }
-
-  @override
-  String get hostAudienceViewAllResponses => 'View all responses';
 
   @override
   String get hostAudienceResponsesAllVersions =>
       'Includes all versions of this form.';
 
   @override
-  String get hostAudienceSourceTotalsScope =>
-      'Tracked link totals include all versions.';
-
-  @override
   String get hostAudiencePreparingExport => 'Preparing export…';
-
-  @override
-  String get hostAudienceResponseTitle => 'Response';
-
-  @override
-  String get hostAudienceSubmissionDetails => 'Submission details';
-
-  @override
-  String get hostAudienceApplicationAccepted =>
-      'Accepted into People. Event admission is handled separately.';
-
-  @override
-  String get hostAudienceApplicationAdmission =>
-      'Accepting adds this person to People. Event admission is handled separately.';
-
-  @override
-  String get hostAudienceApplicationEvent => 'Event application';
-
-  @override
-  String get hostAudienceApplicationOrganizer => 'Organizer application';
-
-  @override
-  String get hostAudienceManualGroup => 'Selected people';
-
-  @override
-  String get hostAudienceAutomaticGroup => 'Automatic membership';
-
-  @override
-  String hostAudienceGroupChecked({required String date}) {
-    return 'Checked $date';
-  }
-
-  @override
-  String get hostAudienceGroupTitle => 'Group';
-
-  @override
-  String get hostAudienceEditGroup => 'Edit group';
-
-  @override
-  String get hostAudienceOpenInbox => 'Open in Inbox';
-
-  @override
-  String get hostAudienceGroupReach => 'Reach';
-
-  @override
-  String get hostAudienceGroupInboxHelp =>
-      'Inbox checks available contact routes before sending.';
-
-  @override
-  String get hostAudienceGroupReachUnknown =>
-      'Refresh membership to check contact options.';
-
-  @override
-  String get hostAudienceSaveCheckMembership => 'Save and check membership';
-
-  @override
-  String get hostAudienceCreateCheckMembership => 'Create group';
-
-  @override
-  String get hostAudienceSavedGroupPreviewHelp =>
-      'This is the saved group. Saving changes checks membership again.';
-
-  @override
-  String get hostAudienceSavedPreviewFailed =>
-      'Group saved. Membership could not be checked.';
 
   @override
   String get hostAudienceAllAutomations => 'Audience automations';
@@ -19600,21 +16903,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceAutomationThen => 'Then';
 
   @override
-  String get hostAudienceApplicationApprovedUnlinked =>
-      'Application approved. Event admission is handled separately.';
-
-  @override
   String get hostAudienceContactMethod => 'Contact method';
 
   @override
   String get hostAudienceAddedContactPermission =>
       'These details were added by you. Adding a person does not grant permission to send messages.';
-
-  @override
-  String get hostAudienceRecentlyChecked => 'Recently checked';
-
-  @override
-  String get hostAudienceAllGroups => 'All groups';
 
   @override
   String hostAudienceAutomationConsequence({
@@ -19627,67 +16920,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostAudienceContactRequirement =>
       'Add at least one contact method.';
-
-  @override
-  String get hostAudienceRetrySourceNames =>
-      'Form and event names unavailable · Retry';
-
-  @override
-  String get hostAudienceWhoWillBelong => 'Who will belong';
-
-  @override
-  String get hostAudienceMembershipCheckOnSave =>
-      'Membership is checked when you save. Incomplete conditions must be finished first.';
-
-  @override
-  String get hostsCreateEventBasicsTitle => 'Event basics';
-
-  @override
-  String get hostsCreateEventWhenWhereTitle => 'When & where';
-
-  @override
-  String get hostsCreateEventGuestsGuideTitle => 'Guests & live guide';
-
-  @override
-  String get hostsCreateEventBookingGuideTitle => 'Booking & live guide';
-
-  @override
-  String get hostsCreateEventPresentationTitle =>
-      'Description & photos · Optional';
-
-  @override
-  String get hostsCreateEventItineraryTitle => 'Route & itinerary · Optional';
-
-  @override
-  String get hostsCreateEventExternalDetailsTitle =>
-      'Booking source · Optional details';
-
-  @override
-  String get hostsCreateEventShowDetails => 'Edit';
-
-  @override
-  String get hostsCreateEventHideDetails => 'Hide';
-
-  @override
-  String hostsCreateEventGuideReady({required String format}) {
-    return '$format guide is ready. You can adjust it before the event.';
-  }
-
-  @override
-  String get hostsCreateEventGuideOptional =>
-      'Optional host tools for running the event.';
-
-  @override
-  String get hostsCreateEventCustomizeGuide => 'Customize guide';
-
-  @override
-  String get hostsCreateEventHideGuide => 'Hide guide settings';
-
-  @override
-  String get hostsCreateEventRosterLater => 'Import now or later';
-
-  @override
-  String get hostsCreateEventCreateAction => 'Create event';
 
   @override
   String get hostFormPersonField => 'Person field';
@@ -21640,51 +18872,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.';
 
   @override
-  String hostTodayTaskCountPartial({required int count}) {
-    return '$count+';
-  }
-
-  @override
-  String get hostTodayTaskCoverageIncomplete => 'Some tasks may be missing';
-
-  @override
-  String get hostTodayTonight => 'Tonight';
-
-  @override
-  String get hostTodayLiveNow => 'Live now';
-
-  @override
-  String hostTodayStartsInMinutes({required int minutes}) {
-    return 'Starts in $minutes min';
-  }
-
-  @override
-  String hostTodayStartsInHours({required int hours, required int minutes}) {
-    return 'Starts in ${hours}h ${minutes}m';
-  }
-
-  @override
-  String hostTodayStartsOn({required String date, required String time}) {
-    return 'Starts $date · $time';
-  }
-
-  @override
-  String hostTodayCheckedIn({required int count}) {
-    return '$count checked in';
-  }
-
-  @override
   String get hostInboxNewMessage => 'New message';
-
-  @override
-  String get hostInboxFindPerson => 'Find a person';
 
   @override
   String get hostInboxChoosePerson =>
       'Choose someone from People or add a new person.';
-
-  @override
-  String get hostInboxAddPerson => 'Add person';
 
   @override
   String get hostInboxReplyVia => 'Reply via';
@@ -21739,21 +18931,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose a reply route before writing a message.';
 
   @override
-  String get hostInboxAvailableRoutes => 'Available ways to message';
-
-  @override
-  String get hostInboxOpenPerson => 'Open person details';
-
-  @override
-  String get hostInboxNewMessageUnavailable =>
-      'No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.';
-
-  @override
-  String hostInboxMessageVia({required String channel}) {
-    return 'Message via $channel';
-  }
-
-  @override
   String get hostInboxBookedStatus => 'Booked';
 
   @override
@@ -21764,143 +18941,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostInboxWhatsappReplyChannel => 'WhatsApp';
-
-  @override
-  String get hostTodayAddCustomerAction => 'Add a contact';
-
-  @override
-  String get hostTodayAddCustomerTitle => 'Start with someone you know';
-
-  @override
-  String get hostTodayAudienceAction => 'Open People';
-
-  @override
-  String get hostTodayAudienceBody =>
-      'Keep your community in one place. Add contacts, review their history, and build an audience for your next event.';
-
-  @override
-  String get hostTodayAudienceTitle => 'Get to know your audience';
-
-  @override
-  String get hostTodayChangeFocus => 'Change';
-
-  @override
-  String get hostTodayExploreFocus => 'Explore at your own pace';
-
-  @override
-  String get hostTodayFocusAudienceBody =>
-      'Organize contacts and learn who comes back.';
-
-  @override
-  String get hostTodayFocusAudienceTitle => 'Grow and understand my audience';
-
-  @override
-  String get hostTodayFocusBackToToday => 'Back to Today';
-
-  @override
-  String get hostTodayFocusContinue => 'Continue';
-
-  @override
-  String get hostTodayFocusHeading => 'What would you like to work on?';
-
-  @override
-  String get hostTodayFocusIntroduction =>
-      'Choose a focus for Today. You can change it whenever you like.';
-
-  @override
-  String get hostTodayFocusPresenceBody =>
-      'Shape your public page and prepare to welcome guests.';
-
-  @override
-  String get hostTodayFocusPresenceTitle => 'Build my organizer presence';
-
-  @override
-  String get hostTodayFocusRehearsalBody =>
-      'Practice with a rehearsal before your next live event.';
-
-  @override
-  String get hostTodayFocusRehearsalTitle => 'Get confident running events';
-
-  @override
-  String get hostTodayFocusSafety =>
-      'Live events and anything needing attention always come first.';
-
-  @override
-  String get hostTodayFocusScreenTitle => 'Your focus';
-
-  @override
-  String get hostTodayFocusSkip => 'Explore for now';
-
-  @override
-  String get hostTodayFocusUnavailable => 'Organizer unavailable';
-
-  @override
-  String get hostTodayFocusUnavailableBody =>
-      'Return to Today and choose an organizer you can manage.';
-
-  @override
-  String get hostTodayMilestoneAudience => 'Audience established';
-
-  @override
-  String get hostTodayMilestoneAvailable => 'Ready to explore';
-
-  @override
-  String get hostTodayMilestoneComplete => 'Completed';
-
-  @override
-  String get hostTodayMilestoneOwnerOnly => 'Organizer owner only';
-
-  @override
-  String get hostTodayMilestonePage => 'Public organizer page';
-
-  @override
-  String get hostTodayMilestonePayouts => 'Payouts ready';
-
-  @override
-  String get hostTodayMilestoneRehearsal => 'Rehearsal completed';
-
-  @override
-  String get hostTodayMilestoneUnknown => 'Not yet verified';
-
-  @override
-  String get hostTodayPayoutsAction => 'Manage payouts';
-
-  @override
-  String get hostTodayPayoutsBody =>
-      'Set up payouts when you are ready to take payments. This is optional for organizers running free events.';
-
-  @override
-  String get hostTodayPracticeAction => 'Run a dress rehearsal';
-
-  @override
-  String get hostTodayPracticeBody =>
-      'Try the event controls with practice guests. Build confidence without changing a live event.';
-
-  @override
-  String get hostTodayPracticeTitle => 'Practice before event day';
-
-  @override
-  String get hostTodayPresenceAction => 'Open organizer page';
-
-  @override
-  String get hostTodayPresenceBody =>
-      'Help guests understand your community and find your events. Review your public page and choose when to publish it.';
-
-  @override
-  String get hostTodayPresenceTitle => 'Make your organizer page yours';
-
-  @override
-  String get hostTodayRoadmapIntroduction =>
-      'Explore what is useful for your community. Progress reflects verified activity; every feature is optional.';
-
-  @override
-  String get hostTodayRoadmapTitle => 'Your roadmap';
-
-  @override
-  String get hostTodayYourFocus => 'Your focus';
-
-  @override
-  String get hostTodayRehearseThisEvent => 'Rehearse this event';
 
   @override
   String hostOrganizerKicker({required String area, required String year}) {
@@ -22466,63 +19506,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn’t load your memberships.';
 
   @override
-  String get hostWorkShellTitle => 'Work';
-
-  @override
-  String get hostWorkShellSubtitle => 'Your staff assignments';
-
-  @override
-  String get hostWorkShellEmptyTitle => 'No assignments yet';
-
-  @override
-  String get hostWorkShellEmptyMessage =>
-      'When an organizer grants you duties for an event or program, they show up here.';
-
-  @override
-  String get hostWorkAssignmentKindEvent => 'Event';
-
-  @override
-  String get hostWorkAssignmentKindProgram => 'Program';
-
-  @override
-  String hostWorkAssignmentExpires({required Object date}) {
-    return 'Ends $date';
-  }
-
-  @override
-  String get hostWorkDutyProgramCoordinator => 'Coordinator';
-
-  @override
-  String get hostWorkDutyGuestRelations => 'Guest relations';
-
-  @override
-  String get hostWorkDutyCommunications => 'Communications';
-
-  @override
-  String get hostWorkDutyFunctionCheckIn => 'Check-in';
-
-  @override
-  String get hostWorkDutyFunctionLead => 'Function lead';
-
-  @override
-  String get hostWorkDutyAirportGreeter => 'Airport greeter';
-
-  @override
-  String get hostWorkDutyHotelDesk => 'Hotel desk';
-
-  @override
-  String get hostWorkDutyTransportDispatcher => 'Dispatcher';
-
-  @override
-  String get hostWorkDutyReconciliationViewer => 'Reconciliation';
-
-  @override
-  String get hostWorkDutyStakeholderViewer => 'Viewer';
-
-  @override
-  String get hostWorkDutyEventLead => 'Event lead';
-
-  @override
   String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
 
   @override
@@ -22730,45 +19713,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostRehearsalRequiredModule => 'Included in this event type';
-
-  @override
-  String get hostCustomersTimelineUnavailable =>
-      'No activity is available in this view. History may be incomplete.';
-
-  @override
-  String get hostCustomersNoContactMethods => 'No phone number or email saved.';
-
-  @override
-  String get hostCustomersSubmissionsUnavailable =>
-      'Form responses are unavailable or incomplete.';
-
-  @override
-  String get hostCustomersAttendancePartial =>
-      'Attendance covers the records available to your team. Some activity may be missing.';
-
-  @override
-  String hostCustomersAttendanceSummary({
-    required int cancelled,
-    required int noShows,
-    required int imported,
-  }) {
-    return '$cancelled cancelled · $noShows no-shows · $imported imported';
-  }
-
-  @override
-  String get hostCustomersAccountLink => 'Catch account';
-
-  @override
-  String get hostCustomersAccountNeedsReview => 'Possible matches need review';
-
-  @override
-  String get hostCustomersAccountVerified => 'Verified account linked';
-
-  @override
-  String get hostCustomersAccountNotVerified => 'No verified account linked';
-
-  @override
-  String get hostAudienceRecentlyUpdated => 'Recently updated';
 
   @override
   String get hostAudienceSelectedPerson => 'Selected person';
@@ -23104,12 +20048,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagingPermissionsStopPurpose => 'Stop these messages';
-
-  @override
-  String get hostCustomersWhatsappOperations => 'Application and event updates';
-
-  @override
-  String get hostCustomersWhatsappMarketing => 'Future events and offers';
 
   @override
   String get messagingPermissionsRefresh => 'Refresh permissions';
@@ -23466,12 +20404,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatsLoadMore => 'Check more events';
 
   @override
-  String get hostResponseSaveReviewNote => 'Save review note';
-
-  @override
-  String get hostResponseStartReview => 'Start application review';
-
-  @override
   String get eventProfileTitle => 'Event profile';
 
   @override
@@ -23660,168 +20592,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your room membership is unavailable. Contact the host if you need help.';
 
   @override
-  String get programsWorkShellTitle => 'Program operations';
-
-  @override
-  String get programsWorkShellAccessTitle => 'Restricted program access';
-
-  @override
-  String get programsWorkShellAccessSubtitle =>
-      'This workspace shows only the duties and scopes granted for this program.';
-
-  @override
-  String get programsWorkShellRoleManager => 'Organizer manager';
-
-  @override
-  String get programsWorkShellRoleStaff => 'Program staff';
-
-  @override
-  String get programsWorkArrivalsTitle => 'Airport arrivals';
-
-  @override
-  String get programsWorkArrivalsSubtitle =>
-      'Live guest roster for each pickup station in your scope.';
-
-  @override
-  String get programsWorkDispatchTitle => 'Dispatch desk';
-
-  @override
-  String get programsWorkDispatchSubtitle =>
-      'Vehicle suggestions and plate capture per station.';
-
-  @override
-  String get programsWorkHotelTitle => 'Hotel desk';
-
-  @override
-  String get programsWorkHotelSubtitle =>
-      'Inbound vehicles and expected guests for your hotel.';
-
-  @override
-  String get programsWorkDoorTitle => 'Door check-in';
-
-  @override
-  String get programsWorkDoorSubtitle =>
-      'Venue check-in lists for your functions.';
-
-  @override
-  String get programsWorkLedgerTitle => 'Trip ledger';
-
-  @override
-  String get programsWorkLedgerSubtitle =>
-      'Every dispatch as a reconciliation record.';
-
-  @override
-  String get programsWorkLedgerOpen => 'Open trip ledger';
-
-  @override
-  String get programsWorkCountsTitle => 'Program counts';
-
-  @override
-  String get programsWorkCountsSubtitle =>
-      'Headcounts, responses and occupancy at a glance.';
-
-  @override
-  String get programsWorkCountsOpen => 'Open counts overview';
-
-  @override
-  String get programsWorkAttendanceTitle => 'Attendance report';
-
-  @override
-  String get programsWorkAttendanceSubtitle =>
-      'RSVP truth vs door truth per function, with exception queues.';
-
-  @override
-  String get programsWorkAttendanceOpen => 'Open attendance report';
-
-  @override
-  String get programsWorkCommsTitle => 'Communications';
-
-  @override
-  String get programsWorkCommsSubtitle =>
-      'Program announcements and guest conversations.';
-
-  @override
-  String get programsWorkCommsMomentsRow => 'Moments';
-
-  @override
-  String get programsWorkCommsInboxRow => 'Guest inbox';
-
-  @override
-  String get programsWorkGuestsTitle => 'Guest desk';
-
-  @override
-  String get programsWorkGuestsSubtitle =>
-      'Households, function RSVPs and manifest imports.';
-
-  @override
-  String get programsWorkLeadTitle => 'Function lead';
-
-  @override
-  String get programsWorkLeadSubtitle =>
-      'Timeline and alerts for your functions.';
-
-  @override
-  String get programsWorkLeadNowNextRow => 'Now & next';
-
-  @override
-  String get programsWorkLeadAttentionRow => 'Attention';
-
-  @override
-  String get programsNowNextTitle => 'Now & next';
-
-  @override
-  String get programsNowNextSubtitle => 'Your functions across the day.';
-
-  @override
-  String get programsNowNextNowTitle => 'In progress';
-
-  @override
-  String get programsNowNextNowSubtitle => 'Functions on the clock right now.';
-
-  @override
-  String get programsNowNextUpcomingTitle => 'Up next';
-
-  @override
-  String get programsNowNextUpcomingSubtitle =>
-      'Scheduled later, earliest first.';
-
-  @override
-  String get programsNowNextEarlierTitle => 'Earlier';
-
-  @override
-  String get programsNowNextEarlierSubtitle => 'Functions already wrapped.';
-
-  @override
-  String get programsNowNextBucketEmpty => 'Nothing in this window.';
-
-  @override
-  String get programsNowNextEmptyTitle => 'No functions yet';
-
-  @override
-  String get programsNowNextEmptyMessage =>
-      'The planner has not scheduled any functions you can see.';
-
-  @override
-  String get programsAttentionTitle => 'Attention';
-
-  @override
-  String get programsAttentionSubtitle => 'Alerts raised for your duties.';
-
-  @override
-  String get programsAttentionFeedTitle => 'Program alerts';
-
-  @override
-  String get programsAttentionFeedSubtitle => 'Newest alerts first.';
-
-  @override
-  String get programsAttentionFeedSubtitleTruncated =>
-      'Newest alerts first — older alerts may be cut off.';
-
-  @override
-  String get programsAttentionEmpty =>
-      'Nothing needs your attention right now.';
-
-  @override
   String get programsGuestDeskAccessTitle => 'Guest desk access required';
 
   @override
@@ -23838,48 +20608,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$functionName: $status';
   }
-
-  @override
-  String get programsWorkShellEmptyTitle => 'No duties assigned';
-
-  @override
-  String get programsWorkShellEmptyMessage =>
-      'Ask the organizer to grant you an airport, hotel or dispatch duty for this program.';
-
-  @override
-  String get programsArrivalsTitle => 'Arrivals roster';
-
-  @override
-  String get programsArrivalsAttentionTitle => 'Needs attention';
-
-  @override
-  String get programsArrivalsAttentionSubtitle =>
-      'Cancelled, diverted or disrupted arrivals that need a human decision.';
-
-  @override
-  String get programsArrivalsReadyTitle => 'Ready at the curb';
-
-  @override
-  String get programsArrivalsReadySubtitle =>
-      'Guests observed at the pickup point and waiting.';
-
-  @override
-  String get programsArrivalsReadyEmpty =>
-      'Nobody is waiting at the curb right now.';
-
-  @override
-  String get programsArrivalsExpectedTitle => 'Expected';
-
-  @override
-  String get programsArrivalsExpectedSubtitle =>
-      'Inbound or landed guests, sorted by estimated curb time.';
-
-  @override
-  String get programsArrivalsExpectedEmpty =>
-      'No more guests expected at this station.';
-
-  @override
-  String get programsOperationsReviewBadge => 'Needs review';
 
   @override
   String get programsOperationsReviewTitle => 'Review saved changes';
@@ -23959,274 +20687,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsArrivalsOutboxClear => 'Review changes';
 
   @override
-  String get programsArrivalsClaimedByMe => 'Claimed by you';
-
-  @override
-  String get programsArrivalsQueued => 'Queued offline';
-
-  @override
-  String get programsArrivalsCurbSourceReady => 'ready';
-
-  @override
-  String get programsArrivalsCurbSourceManual => 'manual';
-
-  @override
-  String get programsArrivalsCurbSourceLanded => 'landed';
-
-  @override
-  String get programsArrivalsCurbSourceEstimated => 'est.';
-
-  @override
-  String get programsArrivalsCurbSourceScheduled => 'sched.';
-
-  @override
-  String get programsArrivalsCancelled => 'Flight cancelled';
-
-  @override
-  String get programsArrivalsDiverted => 'Flight diverted';
-
-  @override
-  String get programsArrivalsNoEstimate => 'No curb estimate';
-
-  @override
-  String get programsArrivalsReadyBadge => 'Ready';
-
-  @override
-  String get programsArrivalsExpectedBadge => 'Expected';
-
-  @override
-  String get programsArrivalsDisruptedBadge => 'Disrupted';
-
-  @override
-  String get programsArrivalsDispatchedBadge => 'Dispatched';
-
-  @override
-  String get programsArrivalsNoShowBadge => 'No-show';
-
-  @override
-  String get programsArrivalsArrivedBadge => 'Arrived';
-
-  @override
-  String get programsArrivalsRowActions => 'Arrival actions';
-
-  @override
-  String get programsArrivalsClaimAction => 'Claim this party';
-
-  @override
-  String get programsArrivalsUnclaimAction => 'Release my claim';
-
-  @override
-  String get programsArrivalsReadyAction => 'Mark ready at curb';
-
-  @override
-  String get programsArrivalsDisruptedAction => 'Flag disruption';
-
-  @override
-  String get programsDispatchTitle => 'Dispatch desk';
-
-  @override
-  String get programsDispatchGroupsTitle => 'Suggested vehicles';
-
-  @override
-  String get programsDispatchGroupsSubtitle =>
-      'Parties batched by curb window and destination. Suggestions only — you decide.';
-
-  @override
-  String get programsDispatchGroupsEmpty =>
-      'No parties are waiting or expected in this window.';
-
-  @override
-  String get programsDispatchUnassignedTitle => 'Unassigned';
-
-  @override
-  String get programsDispatchUnassignedSubtitle =>
-      'Legs the planner could not batch.';
-
-  @override
-  String get programsDispatchReasonMissingTime =>
-      'A guest has no usable arrival estimate.';
-
-  @override
-  String get programsDispatchReasonNoVehicle =>
-      'No vehicle class fits this party — needs review.';
-
-  @override
-  String get programsDispatchReasonMissingScope =>
-      'A leg is missing a pickup or destination assignment.';
-
-  @override
-  String get programsDispatchAction => 'Dispatch vehicle';
-
-  @override
-  String get programsDispatchSheetTitle => 'Dispatch vehicle';
-
-  @override
-  String get programsDispatchPlateHint => 'Plate, e.g. DL-1T-4471';
-
-  @override
-  String get programsDispatchNoVendors =>
-      'No vendors are bound to this program yet.';
-
-  @override
-  String get programsDispatchVendorsUnavailable =>
-      'Vendor list could not be loaded — you can still dispatch without a vendor.';
-
-  @override
-  String get programsDispatchConfirm => 'Dispatch now';
-
-  @override
-  String get programsDoorTitle => 'Door check-in';
-
-  @override
-  String programsDoorCountsCheckedIn({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count in',
-      one: '1 in',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String programsDoorCountsExpected({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count expected',
-      one: '1 expected',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String programsDoorCountsNoShow({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count no-shows',
-      one: '1 no-show',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String programsDoorCountsWalkIns({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count walk-ins',
-      one: '1 walk-in',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get programsDoorClosedBanner =>
-      'Check-in is not open for this function.';
-
-  @override
-  String get programsDoorCancelledBanner =>
-      'This function was cancelled — no check-in.';
-
-  @override
-  String get programsDoorRosterTitle => 'Guest list';
-
-  @override
-  String programsDoorRosterSubtitle({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count listed guests',
-      one: '1 listed guest',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get programsDoorRosterEmpty =>
-      'No guests are listed for this function.';
-
-  @override
-  String get programsDoorQueued => 'Queued';
-
-  @override
-  String get programsDoorWalkInBadge => 'Walk-in';
-
-  @override
-  String get programsDoorWalkInTitle => 'Walk-in';
-
-  @override
-  String get programsDoorWalkInSubtitle =>
-      'Register a guest who arrived without an invitation. They are checked in immediately.';
-
-  @override
-  String get programsDoorWalkInNameLabel => 'Guest name';
-
-  @override
-  String get programsDoorWalkInPartyLabel => 'Party size';
-
-  @override
-  String get programsDoorWalkInSubmit => 'Register and check in';
-
-  @override
-  String get programsDoorJournalTitle => 'Recent door activity';
-
-  @override
-  String get programsDoorJournalSubtitle =>
-      'Latest recorded actions at this door.';
-
-  @override
-  String get programsDoorJournalGuest => 'A guest';
-
-  @override
-  String get programsDoorJournalCheckIn => 'checked in';
-
-  @override
-  String get programsDoorJournalUndoCheckIn => 'check-in undone';
-
-  @override
-  String get programsDoorJournalNoShow => 'marked no-show';
-
-  @override
-  String get programsDoorJournalWalkIn => 'walked in';
-
-  @override
-  String get programsDoorJournalPartySize => 'party size updated';
-
-  @override
-  String get programsDoorRowActions => 'Guest actions';
-
-  @override
-  String get programsDoorCheckInAction => 'Check in';
-
-  @override
-  String get programsDoorUndoAction => 'Undo check-in';
-
-  @override
-  String get programsDoorNoShowAction => 'Mark no-show';
-
-  @override
-  String get programsDoorPartySizeAction => 'Party size…';
-
-  @override
-  String get programsDoorPartySizeField => 'Party size';
-
-  @override
-  String get programsDoorPartySizeSave => 'Update party size';
-
-  @override
-  String programsDoorPartyCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count guests',
-      one: '1 guest',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get programsDoorRsvpAttending => 'Attending';
 
   @override
@@ -24237,88 +20697,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsDoorRsvpPending => 'No RSVP';
-
-  @override
-  String get programsDoorAttendanceExpected => 'Expected';
-
-  @override
-  String get programsDoorAttendanceCheckedIn => 'Checked in';
-
-  @override
-  String get programsDoorAttendanceNoShow => 'No-show';
-
-  @override
-  String get programsHotelPreviousTrip => 'Previous vehicles';
-
-  @override
-  String get programsHotelFirstTrip => 'First vehicles';
-
-  @override
-  String get programsHotelMoreTrip => 'More vehicles';
-
-  @override
-  String get programsHotelPreviousExpected => 'Previous guests';
-
-  @override
-  String get programsHotelFirstExpected => 'First guests';
-
-  @override
-  String get programsHotelMoreExpected => 'More guests';
-
-  @override
-  String get programsHotelRefresh => 'Refresh hotel';
-
-  @override
-  String get programsHotelTitle => 'Hotel desk';
-
-  @override
-  String get programsHotelSubtitle => 'Inbound arrivals';
-
-  @override
-  String get programsHotelEnRouteTitle => 'On the way';
-
-  @override
-  String get programsHotelEnRouteSubtitle =>
-      'Vehicles that departed the airport for this hotel.';
-
-  @override
-  String get programsHotelEnRouteEmpty =>
-      'No vehicles are on the way right now.';
-
-  @override
-  String get programsHotelExpectedTitle => 'Still expected';
-
-  @override
-  String get programsHotelExpectedSubtitle =>
-      'Parties assigned to this hotel that have not departed yet.';
-
-  @override
-  String get programsHotelExpectedEmpty =>
-      'No more guests expected at this hotel.';
-
-  @override
-  String get programsHotelExpectedNoEstimate => 'No curb estimate yet.';
-
-  @override
-  String get programsHotelEtaUnknown => 'ETA unknown';
-
-  @override
-  String get programsHotelMarkArrived => 'Mark arrived';
-
-  @override
-  String get programsHotelStatusEnRoute => 'En route';
-
-  @override
-  String get programsHotelStatusArrived => 'Arrived';
-
-  @override
-  String get programsHotelStatusCancelled => 'Cancelled';
-
-  @override
-  String get programsHotelStatusVoided => 'Voided';
-
-  @override
-  String get programsHotelRoomsOpen => 'Rooms & stays';
 
   @override
   String get programsRoomsTitle => 'Room board';
@@ -24452,265 +20830,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsRoomsStatusCancelled => 'Cancelled';
 
   @override
-  String get programsTripsNewer => 'Newer trips';
-
-  @override
-  String get programsTripsOlder => 'Older trips';
-
-  @override
-  String get programsTripsLatest => 'Latest trips';
-
-  @override
-  String get programsTripCurrentNames =>
-      'Guest names reflect current records; no dispatch snapshot was saved.';
-
-  @override
-  String get programsAttendanceTitle => 'Attendance report';
-
-  @override
-  String get programsAttendanceSubtitle => 'RSVP vs door per function';
-
-  @override
-  String get programsAttendanceRefresh => 'Refresh report';
-
-  @override
-  String get programsAttendanceExport => 'Export CSV';
-
-  @override
-  String get programsAttendanceExporting => 'Exporting…';
-
-  @override
-  String get programsAttendanceProgramTitle => 'Program totals';
-
-  @override
-  String programsAttendanceProgramSubtitle({required String time}) {
-    return 'As of $time';
-  }
-
-  @override
-  String get programsAttendanceFunctionsTitle => 'Per function';
-
-  @override
-  String get programsAttendanceFunctionsSubtitle =>
-      'Invited vs attended vs checked in, with exception queues.';
-
-  @override
-  String get programsAttendanceEmpty => 'No functions on this program yet.';
-
-  @override
-  String programsAttendanceInvited({required int count}) {
-    return '$count invited';
-  }
-
-  @override
-  String programsAttendanceAttending({required int count}) {
-    return '$count attending';
-  }
-
-  @override
-  String programsAttendanceCheckedIn({required int count}) {
-    return '$count checked in';
-  }
-
-  @override
-  String programsAttendanceNoShow({required int count}) {
-    return '$count no-show';
-  }
-
-  @override
-  String programsAttendanceRowCounts({
-    required int invited,
-    required int attending,
-    required int checkedIn,
-  }) {
-    return '$invited invited · $attending attending · $checkedIn checked in';
-  }
-
-  @override
-  String programsAttendanceWalkIns({required int count}) {
-    return '$count walk-in not on the invite list';
-  }
-
-  @override
-  String programsAttendanceNoResponseException({required int count}) {
-    return '$count invited, no response';
-  }
-
-  @override
-  String programsAttendanceDeclinedCheckedIn({required int count}) {
-    return '$count declined but arrived';
-  }
-
-  @override
-  String programsAttendanceWalkInException({required int count}) {
-    return '$count walk-in to reconcile';
-  }
-
-  @override
-  String programsAttendanceShareSubject({required String title}) {
-    return '$title attendance report';
-  }
-
-  @override
-  String get programsStakeholderTitle => 'Program counts';
-
-  @override
-  String get programsStakeholderSubtitle =>
-      'Headcounts and occupancy — no guest details';
-
-  @override
-  String get programsStakeholderProgramTitle => 'Program';
-
-  @override
-  String get programsStakeholderProgramSubtitle =>
-      'Everyone attached to this program.';
-
-  @override
-  String programsStakeholderGuests({required int count}) {
-    return '$count guests';
-  }
-
-  @override
-  String programsStakeholderHouseholds({required int count}) {
-    return '$count households';
-  }
-
-  @override
-  String get programsStakeholderFunctionsTitle => 'Functions';
-
-  @override
-  String get programsStakeholderFunctionsSubtitle =>
-      'Responses and door counts per function.';
-
-  @override
-  String get programsStakeholderFunctionsEmpty =>
-      'No functions on this program yet.';
-
-  @override
-  String programsStakeholderFunctionRsvp({
-    required int attending,
-    required int declined,
-    required int maybe,
-    required int pending,
-    required int invited,
-  }) {
-    return '$attending attending · $declined declined · $maybe maybe · $pending pending of $invited invited';
-  }
-
-  @override
-  String programsStakeholderFunctionDoor({
-    required int expected,
-    required int checkedIn,
-    required int noShows,
-  }) {
-    return '$expected expected · $checkedIn checked in · $noShows no-shows';
-  }
-
-  @override
-  String get programsStakeholderStatusScheduled => 'Scheduled';
-
-  @override
-  String get programsStakeholderStatusCompleted => 'Completed';
-
-  @override
-  String get programsStakeholderStatusCancelled => 'Cancelled';
-
-  @override
-  String get programsStakeholderHotelsTitle => 'Hotels';
-
-  @override
-  String get programsStakeholderHotelsSubtitle =>
-      'Occupancy from routed travel legs.';
-
-  @override
-  String get programsStakeholderHotelsEmpty => 'No hotel-routed travel yet.';
-
-  @override
-  String programsStakeholderHotelRow({
-    required int arrived,
-    required int routed,
-    required int legs,
-  }) {
-    return '$arrived of $routed guests arrived · $legs legs';
-  }
-
-  @override
-  String get programsTripsTitle => 'Trip ledger';
-
-  @override
-  String get programsTripsSubtitle => 'Dispatch reconciliation';
-
-  @override
-  String get programsTripsLedgerTitle => 'Dispatched vehicles';
-
-  @override
-  String get programsTripsLedgerSubtitle =>
-      'One record per departure, newest first. Voided trips stay listed.';
-
-  @override
-  String get programsTripsEmpty => 'No vehicles dispatched yet.';
-
-  @override
-  String get programsTripsVoidAction => 'Void this trip';
-
-  @override
-  String get programsTripsVoidSheetTitle => 'Void trip';
-
-  @override
-  String get programsTripsVoidSheetSubtitle =>
-      'A void releases the guests back to the ready pool. The record stays in the ledger.';
-
-  @override
-  String get programsTripsVoidReasonHint => 'Reason, e.g. wrong vehicle sent';
-
-  @override
-  String get programsTripsVoidConfirm => 'Void trip';
-
-  @override
-  String get programsTripsStatusEnRoute => 'En route';
-
-  @override
-  String get programsTripsStatusArrived => 'Arrived';
-
-  @override
-  String get programsTripsStatusCancelled => 'Cancelled';
-
-  @override
-  String get programsTripsStatusVoided => 'Voided';
-
-  @override
-  String get programsTripsExport => 'Export CSV';
-
-  @override
-  String get programsTripsExporting => 'Exporting…';
-
-  @override
-  String programsTripsExportSubject({required String title}) {
-    return '$title trip ledger';
-  }
-
-  @override
-  String get programsTripsReviewTitle => 'Needs review';
-
-  @override
-  String get programsTripsReviewSubtitle =>
-      'Open, cancelled and voided trips to reconcile before the vendor invoice clears';
-
-  @override
-  String get programsTripsReviewOnly => 'Review only';
-
-  @override
-  String get programsTripsShowAll => 'Show all';
-
-  @override
-  String get programsTripsReviewEmpty => 'Nothing left to review on this page.';
-
-  @override
-  String programsWorkShellExpires({required Object date}) {
-    return 'Access expires $date';
-  }
-
-  @override
   String programsArrivalsOutboxPending({required int count}) {
     return '$count change(s) queued while offline. They will sync when connectivity returns.';
   }
@@ -24721,130 +20840,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required int review,
   }) {
     return '$pending pending, $review need review before they can sync.';
-  }
-
-  @override
-  String programsArrivalsPassengerCount({required int count}) {
-    return '$count pax';
-  }
-
-  @override
-  String programsArrivalsBagCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count bags',
-      one: '1 bag',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String programsArrivalsOrigin({required String airport}) {
-    return 'from $airport';
-  }
-
-  @override
-  String programsArrivalsTerminal({required String terminal}) {
-    return 'T$terminal';
-  }
-
-  @override
-  String programsArrivalsClaimedBy({required Object name}) {
-    return 'Claimed by $name';
-  }
-
-  @override
-  String programsDispatchGroupMeta({
-    required int passengers,
-    required int luggage,
-    required int legs,
-  }) {
-    return '$passengers pax · $luggage bags · $legs leg(s)';
-  }
-
-  @override
-  String programsDispatchWaitOverdue({required Object time}) {
-    return 'Ready wait overdue — should have left by $time';
-  }
-
-  @override
-  String programsDispatchDispatchBy({required Object time}) {
-    return 'Dispatch by $time to keep the ready wait';
-  }
-
-  @override
-  String programsDispatchSheetSubtitle({required Object destination}) {
-    return 'To $destination';
-  }
-
-  @override
-  String programsHotelExpectedMeta({
-    required int passengers,
-    required Object time,
-  }) {
-    return '$passengers pax · at curb ~$time';
-  }
-
-  @override
-  String programsHotelTripMeta({
-    required int passengers,
-    required Object names,
-  }) {
-    return '$passengers pax · $names';
-  }
-
-  @override
-  String programsHotelTripTiming({
-    required Object departed,
-    required Object eta,
-  }) {
-    return 'Departed $departed · ETA $eta';
-  }
-
-  @override
-  String programsTripsRowMeta({
-    required int passengers,
-    required Object names,
-  }) {
-    return '$passengers pax · $names';
-  }
-
-  @override
-  String programsTripsRowTimingArrived({
-    required Object departed,
-    required Object arrived,
-  }) {
-    return 'Departed $departed · arrived $arrived';
-  }
-
-  @override
-  String programsTripsRowTimingDeparted({required Object departed}) {
-    return 'Departed $departed · still en route';
-  }
-
-  @override
-  String get programsDispatchHoldTitle => 'Hold for expected arrivals';
-
-  @override
-  String programsDispatchHoldSubtitle({required Object destination}) {
-    return 'Still inbound to $destination — adding them makes this vehicle wait.';
-  }
-
-  @override
-  String programsDispatchHoldOption({
-    required Object time,
-    required int passengers,
-  }) {
-    return '$time · $passengers pax';
-  }
-
-  @override
-  String get programsSnapshotTitle => 'Saved view';
-
-  @override
-  String programsSnapshotBanner({required Object time}) {
-    return 'Last synced at $time — your changes queue until you are back online.';
   }
 
   @override
@@ -25017,50 +21012,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Save the basics, then add guests, registration and payments as needed.';
 
   @override
-  String get hostsPrivateEventBasicsHeading => 'Start with the basics';
-
-  @override
   String get hostsPrivateEventCity => 'City';
-
-  @override
-  String get hostsPrivateEventChooseCity => 'Choose a city';
 
   @override
   String get hostsPrivateEventTimezone => 'Timezone';
 
   @override
   String get hostsPrivateEventTimezoneHint => 'Asia/Kolkata';
-
-  @override
-  String get hostsPrivateEventTimezoneSuggestion =>
-      'Suggested by city. Review before saving.';
-
-  @override
-  String get hostsPrivateEventFromOrganizer => 'From organizer';
-
-  @override
-  String get hostsPrivateEventUseOrganizerCity => 'Use organizer city';
-
-  @override
-  String get hostsPrivateEventUseOrganizerTimezone => 'Use organizer timezone';
-
-  @override
-  String get hostsPrivateEventMoreBasics => 'More basics';
-
-  @override
-  String get hostsPrivateEventMoreBasicsBody =>
-      'Venue and end time can be added later';
-
-  @override
-  String get hostsPrivateEventAfterSave => 'After saving';
-
-  @override
-  String get hostsPrivateEventAfterSaveBody =>
-      'Add a venue and end time when you are ready to set up registration or a public listing.';
-
-  @override
-  String get hostsPrivateEventSaveHint =>
-      'The event is saved privately. You can link a form after saving.';
 
   @override
   String get hostResponseQueryLoading => 'Loading responses…';
@@ -25200,128 +21158,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsPrivateEventSaveReturnResponses => 'Save & return to review';
-
-  @override
-  String get hostsPrivateEventSaveContinue => 'Save & continue';
-
-  @override
-  String get hostsPrivateEventDefaultsChanged =>
-      'Organizer defaults changed. Review the city and timezone before saving.';
-
-  @override
-  String get hostsPrivateEventReviewDefaults => 'Review current defaults';
-
-  @override
-  String get hostsPrivateEventSavedTitle => 'Saved event';
-
-  @override
-  String get hostsPrivateEventPrivateTitle => 'Private';
-
-  @override
-  String get hostsPrivateEventPrivateBody =>
-      'Ready to link to forms. Registration and public listing are off.';
-
-  @override
-  String get hostsPrivateEventSetupHeading => 'Continue setup when you need it';
-
-  @override
-  String get hostsPrivateEventReturnResponses => 'Return to selected responses';
-
-  @override
-  String get hostsPrivateEventReturnResponsesBody =>
-      'Your selection stays in Responses.';
-
-  @override
-  String get hostsPrivateEventLinkForm => 'Link a registration form';
-
-  @override
-  String get hostsPrivateEventLinkFormBody =>
-      'Collect responses and offer places for this event.';
-
-  @override
-  String get hostsPrivateEventLinkFormUnavailable =>
-      'Event-bound form setup is not available yet.';
-
-  @override
-  String get hostsPrivateEventDetails => 'Event details';
-
-  @override
-  String get hostsPrivateEventEditBasics => 'Edit event basics';
-
-  @override
-  String get hostsPrivateEventEditBasicsBody =>
-      'Change the name, city, date, start time or timezone.';
-
-  @override
-  String get hostsPrivateEventEditBasicsUnavailable =>
-      'Cancelled events cannot be edited.';
-
-  @override
-  String get hostsPrivateEventDetailsBody =>
-      'Add a venue and end time when needed.';
-
-  @override
-  String get hostsPrivateEventDetailsUnavailable =>
-      'Venue and end-time editing is not available yet.';
-
-  @override
-  String get hostsPrivateEventImportGuests => 'Import a guest list';
-
-  @override
-  String get hostsPrivateEventImportGuestsBody =>
-      'Add existing registrations to the roster.';
-
-  @override
-  String get hostsPrivateEventImportGuestsUnavailable =>
-      'Private-event roster import is not available yet.';
-
-  @override
-  String get hostsPrivateEventCatchRegistration =>
-      'Accept registrations with Catch';
-
-  @override
-  String get hostsPrivateEventCatchRegistrationBody =>
-      'Choose the admission policy and check payment readiness.';
-
-  @override
-  String get hostsPrivateEventCatchRegistrationUnavailable =>
-      'Registration requires an admission policy and booking setup.';
-
-  @override
   String get hostsPrivateEventPayments => 'Payments';
 
   @override
-  String get hostsPrivateEventPaymentsBody =>
-      'Add external collection instructions.';
-
-  @override
-  String get hostsPrivateEventPaymentsUnavailable =>
-      'Event payment settings are not available yet.';
-
-  @override
   String get hostsPrivateEventPublicListing => 'Public listing';
-
-  @override
-  String get hostsPrivateEventPublicListingBody => 'Not published.';
-
-  @override
-  String get hostsPrivateEventPublicListingUnavailable =>
-      'Not published. Add public details before listing.';
-
-  @override
-  String get hostsPrivateEventGuide => 'Live event guide';
-
-  @override
-  String get hostsPrivateEventGuideBody => 'Optional.';
-
-  @override
-  String get hostsPrivateEventGuideUnavailable =>
-      'Optional guide setup is not available yet.';
-
-  @override
-  String get hostsPrivateEventRosterNote =>
-      'Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.';
 
   @override
   String get hostsEventDefaultsBasics => 'Basics';
@@ -25332,25 +21172,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventDefaultsChooseEachEvent => 'Choose on each event';
-
-  @override
-  String get hostsPrivateEventPendingRequest =>
-      'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.';
-
-  @override
-  String get hostsPrivateEventPendingUpdate =>
-      'This edit may already have reached Catch. Retry the same save before changing the basics.';
-
-  @override
-  String get hostsPrivateEventRetrySave => 'Retry the same save';
-
-  @override
-  String get hostsPrivateEventPendingRoster => 'Guest list ready to import';
-
-  @override
-  String hostsPrivateEventPendingRosterBody({required String fileName}) {
-    return '$fileName can be imported after event roster setup is available.';
-  }
 
   @override
   String get hostsEventDefaultsUsualDuration => 'Usual duration';
@@ -25500,70 +21321,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Retry organizer defaults read';
 
   @override
-  String get hostsPrivateEventRetrySavedRead => 'Retry event read';
-
-  @override
-  String get hostsPrivateEventPendingExitTitle => 'Save still unresolved';
-
-  @override
-  String get hostsPrivateEventPendingExitBody =>
-      'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.';
-
-  @override
-  String get hostsPrivateEventPendingUpdateExitBody =>
-      'Catch may already have saved this edit. The request is kept on this device. Leave and retry the same save later before changing the basics.';
-
-  @override
-  String get hostsPrivateEventSetupUnavailable =>
-      'Private event setup is not available yet.';
-
-  @override
-  String get hostsPrivateEventPendingStay => 'Stay and retry';
-
-  @override
-  String get hostsPrivateEventPendingLeave => 'Leave; retry later';
-
-  @override
   String get hostsPrivateEventContinueSaved => 'Continue saved event';
-
-  @override
-  String get hostsEventPreferenceTitle => 'Event settings and payments';
-
-  @override
-  String get hostsEventPreferencePrivateHint =>
-      'These settings belong to this private event. Collection preferences do not activate a provider or send a request.';
-
-  @override
-  String get hostsEventPreferenceInherit => 'Use organizer suggestion';
-
-  @override
-  String get hostsEventPreferenceOverride => 'Use event value';
-
-  @override
-  String get hostsEventPreferenceClear => 'Leave unset';
-
-  @override
-  String get hostsEventPreferenceExpectedAmountMinor =>
-      'Expected amount in the smallest currency unit';
-
-  @override
-  String get hostsEventPreferenceExpectedAmountHint =>
-      'For INR, 120000 means ₹1,200.00';
-
-  @override
-  String get hostsEventPreferenceAdmission => 'Admission suggestion';
-
-  @override
-  String get hostsEventPreferenceAdmissionOpen => 'Open capacity';
-
-  @override
-  String get hostsEventPreferenceAdmissionInvite => 'Invite only';
-
-  @override
-  String get hostsEventPreferenceAdmissionBalanced => 'Balanced singles';
-
-  @override
-  String get hostsEventPreferenceAdmissionFixed => 'Fixed cohort caps';
 
   @override
   String get hostsEventPreferencePending => 'Previous settings save unresolved';
@@ -25626,9 +21384,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.';
 
   @override
-  String get hostResponseAddReviewNote => 'Add note';
-
-  @override
   String get hostEventOfferNeedsContact =>
       'Review these responses and add them to People before offering an event.';
 
@@ -25678,67 +21433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferStatusExpired => 'Expired';
 
   @override
-  String get hostsPrivateEventDetailActualHint =>
-      'These choices update this event. Organizer defaults are suggestions until you apply them.';
-
-  @override
-  String get hostsPrivateEventDetailCurrentDuration => 'Current end time';
-
-  @override
-  String get hostsPrivateEventDetailNotSet => 'Not set';
-
-  @override
-  String hostsPrivateEventDetailMinutes({required int minutes}) {
-    return '$minutes minutes';
-  }
-
-  @override
-  String get hostsPrivateEventDetailDuration => 'Duration in minutes';
-
-  @override
-  String get hostsPrivateEventDetailDurationHint => '15–240 minutes';
-
-  @override
-  String get hostsPrivateEventDetailUseDuration => 'Use suggested duration';
-
-  @override
-  String get hostsPrivateEventDetailNoDurationSuggestion =>
-      'No duration suggestion is saved.';
-
-  @override
-  String get hostsPrivateEventDetailClearDuration => 'Remove end time';
-
-  @override
-  String get hostsPrivateEventDetailCurrentVenue => 'Current place';
-
-  @override
-  String get hostsPrivateEventDetailVenueName => 'Place name';
-
-  @override
-  String get hostsPrivateEventDetailVenueHint => 'Enter a venue name';
-
-  @override
-  String get hostsPrivateEventDetailUseSavedPlace => 'Use saved place';
-
-  @override
-  String get hostsPrivateEventDetailNoSavedPlace =>
-      'No saved place is selected.';
-
-  @override
-  String get hostsPrivateEventDetailSavedPlaceHint =>
-      'Copy the saved place after availability is checked.';
-
-  @override
-  String get hostsPrivateEventDetailClearVenue => 'Remove place';
-
-  @override
   String get hostsPrivateEventDetailFormat => 'Activity format';
-
-  @override
-  String get hostsPrivateEventDetailCurrentFormat => 'Current activity';
-
-  @override
-  String get hostsPrivateEventDetailClearFormat => 'Remove activity format';
 
   @override
   String get hostEventOfferReviewTitle => 'Event offer';
@@ -25834,48 +21529,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not open WhatsApp on this device.';
 
   @override
-  String get hostsEventPreferencePublishedTitle => 'Published event offers';
-
-  @override
   String get hostsEventPreferencePublishedHint =>
       'These settings apply to future offers. Existing offers keep their recorded terms.';
-
-  @override
-  String get hostsPrivateEventInventoryTitle => 'Private events';
-
-  @override
-  String get hostsPrivateEventInventoryUpcoming => 'Upcoming';
-
-  @override
-  String get hostsPrivateEventInventoryPast => 'Past';
-
-  @override
-  String get hostsPrivateEventInventoryCancelled => 'Cancelled';
-
-  @override
-  String get hostsPrivateEventInventoryHistoryEmpty =>
-      'No private events in this view.';
-
-  @override
-  String get hostsPrivateEventHistoryTitle => 'Event history';
-
-  @override
-  String get hostsPrivateEventHistoryBody =>
-      'This event has started or was cancelled. Its saved details are available for reference.';
-
-  @override
-  String get hostsPrivateEventInventoryLoading => 'Loading private events…';
-
-  @override
-  String get hostsPrivateEventInventoryEmpty =>
-      'No upcoming private event setups.';
-
-  @override
-  String get hostsPrivateEventInventoryLoadMore => 'Load more private events';
-
-  @override
-  String get hostsPrivateEventInventoryError =>
-      'Could not load private events.';
 
   @override
   String get hostFormTargetTitle => 'Who is this form for?';
@@ -26052,192 +21707,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsListAnonymized => 'Anonymized';
 
   @override
-  String get programsCreateTitle => 'New program';
-
-  @override
-  String get programsCreateNameLabel => 'Program title';
-
-  @override
-  String get programsCreateNameHint => 'Rao–Shah wedding weekend';
-
-  @override
-  String get programsCreateTimezoneLabel => 'Timezone';
-
-  @override
-  String get programsCreateTimezoneHint => 'Choose a timezone';
-
-  @override
-  String get programsCreateStartLabel => 'Start date';
-
-  @override
-  String get programsCreateEndLabel => 'End date';
-
-  @override
-  String get programsCreateSubmit => 'Create program';
-
-  @override
-  String get programsWorkspaceTitle => 'Program';
-
-  @override
-  String programsWorkspaceStatsGuests({required int count}) {
-    return '$count guests';
-  }
-
-  @override
-  String programsWorkspaceStatsHouseholds({required int count}) {
-    return '$count households';
-  }
-
-  @override
-  String programsWorkspaceStatsLegs({required int count}) {
-    return '$count inbound legs';
-  }
-
-  @override
-  String programsWorkspaceStatsStaff({required int count}) {
-    return '$count staff';
-  }
-
-  @override
-  String get programsWorkspaceScheduleTitle => 'Schedule';
-
-  @override
-  String get programsWorkspaceScheduleSubtitle => 'Functions by day';
-
-  @override
-  String programsWorkspaceDayLabel({required String date, required int index}) {
-    return 'Day $index · $date';
-  }
-
-  @override
-  String get programsWorkspaceFunctionNew => 'New function';
-
-  @override
-  String get programsWorkspaceNoFunctions =>
-      'No functions yet — add the first event of the program.';
-
-  @override
-  String get programsWorkspaceDayEmpty => 'No functions on this day.';
-
-  @override
-  String get programsWorkspaceFunctionEdit => 'Edit function';
-
-  @override
   String get programsWorkspaceFunctionSave => 'Save';
-
-  @override
-  String get programsWorkspaceFunctionInvitations => 'Invitations';
-
-  @override
-  String get programsWorkspaceFunctionName => 'Function name';
-
-  @override
-  String get programsWorkspaceFunctionVenue => 'Venue';
-
-  @override
-  String get programsWorkspaceFunctionVenueNotes => 'Venue notes';
-
-  @override
-  String get programsWorkspaceFunctionStarts => 'Starts';
-
-  @override
-  String get programsWorkspaceFunctionEnds => 'Ends';
-
-  @override
-  String programsWorkspaceInvitations({required String mode}) {
-    return 'Invitations: $mode';
-  }
-
-  @override
-  String programsWorkspaceCheckedIn({
-    required int expected,
-    required int checked,
-  }) {
-    return '$checked/$expected checked in';
-  }
-
-  @override
-  String get programsWorkspaceManageTitle => 'Manage';
-
-  @override
-  String get programsWorkspaceGuestsTitle => 'Guests & RSVP';
-
-  @override
-  String get programsWorkspaceTeamTitle => 'Team & duties';
-
-  @override
-  String get programsWorkspaceImportTitle => 'Manifest import';
-
-  @override
-  String get programsWorkspaceCommunicationsTitle => 'Communications';
-
-  @override
-  String get programsWorkspaceMomentsTitle => 'Moments';
-
-  @override
-  String get programsWorkspaceInboxTitle => 'Guest inbox';
-
-  @override
-  String get programsWorkspacePickupTitle => 'Pickup points';
-
-  @override
-  String get programsWorkspacePickupNew => 'Add pickup point';
-
-  @override
-  String get programsWorkspacePickupEdit => 'Edit pickup point';
-
-  @override
-  String get programsWorkspacePickupEmpty =>
-      'No pickup points yet — add airports, railway stations or other meeting points.';
-
-  @override
-  String get programsWorkspacePickupKind => 'Type';
-
-  @override
-  String get programsWorkspacePickupLabel => 'Label';
-
-  @override
-  String get programsWorkspacePickupIata => 'IATA code';
-
-  @override
-  String get programsWorkspacePickupTerminal => 'Terminal';
-
-  @override
-  String get programsWorkspacePickupMeetingZone => 'Meeting zone';
-
-  @override
-  String get programsWorkspacePickupInstructions => 'Staff instructions';
-
-  @override
-  String get programsWorkspaceLogisticsActive => 'Active';
-
-  @override
-  String get programsWorkspaceLogisticsInactive => 'Inactive';
-
-  @override
-  String get programsWorkspaceHotelsTitle => 'Hotels';
-
-  @override
-  String get programsWorkspaceHotelNew => 'Add hotel';
-
-  @override
-  String get programsWorkspaceHotelEdit => 'Edit hotel';
-
-  @override
-  String get programsWorkspaceHotelEmpty =>
-      'No hotels yet — add the lodging blocks your guests stay in.';
-
-  @override
-  String get programsWorkspaceHotelName => 'Hotel name';
-
-  @override
-  String get programsWorkspaceHotelAddress => 'Address';
-
-  @override
-  String get programsWorkspaceHotelReception => 'Reception contact';
-
-  @override
-  String get programsWorkspaceHotelNotes => 'Notes';
 
   @override
   String get programsGuestsTitle => 'Guests & RSVP';
@@ -26336,16 +21806,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get programsGuestsInviteModeAll => 'all guests';
-
-  @override
-  String get programsGuestsInviteModeSelected => 'selected guests';
-
-  @override
-  String get programsGuestsInviteSelectionHint =>
-      'Pick invited guests from the guest list after saving.';
-
-  @override
   String get programsGuestsNameLabel => 'Guest name';
 
   @override
@@ -26358,211 +21818,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsGuestsHouseholdLabel => 'Household';
 
   @override
-  String get programsTeamTitle => 'Team & duties';
-
-  @override
-  String get programsTeamSubtitle => 'Staff access scoped to program duties';
-
-  @override
-  String get programsTeamGrant => 'Grant access';
-
-  @override
-  String get programsTeamInvite => 'Invite by phone';
-
-  @override
-  String get programsTeamRevoke => 'Revoke';
-
-  @override
-  String get programsTeamRevokeTitle => 'Revoke staff access';
-
-  @override
-  String programsTeamRevokeMessage({required String name}) {
-    return 'Remove $name\'s access to this program?';
-  }
-
-  @override
-  String get programsTeamEmptyTitle => 'No staff yet';
-
-  @override
-  String get programsTeamEmptyMessage =>
-      'Grant duties or invite staff by phone to run this program.';
-
-  @override
-  String programsTeamExpires({required String date}) {
-    return 'Expires $date';
-  }
-
-  @override
-  String get programsTeamNameLabel => 'Display name';
-
-  @override
-  String get programsTeamPhoneLabel => 'Phone (E.164)';
-
-  @override
-  String get programsTeamDutiesLabel => 'Duties';
-
-  @override
-  String get programsTeamExpiryLabel => 'Access expires';
-
-  @override
-  String get programsImportTitle => 'Manifest import';
-
-  @override
-  String get programsImportFileTitle => 'Source file';
-
-  @override
-  String get programsImportFileSubtitle =>
-      'CSV or XLSX guest and travel manifest';
-
-  @override
-  String get programsImportPickFile => 'Choose file';
-
-  @override
-  String programsImportFileSummary({required int count, required int columns}) {
-    return '$count rows · $columns columns';
-  }
-
-  @override
-  String get programsImportMappingTitle => 'Column mapping';
-
-  @override
-  String get programsImportMappingSubtitle =>
-      'Map manifest fields to file columns';
-
-  @override
-  String get programsImportFieldSkip => 'Skip';
-
-  @override
-  String get programsImportFieldDisplayName => 'Display name';
-
-  @override
-  String get programsImportFieldPhone => 'Phone';
-
-  @override
-  String get programsImportFieldEmail => 'Email';
-
-  @override
-  String get programsImportFieldExternalReference => 'External reference';
-
-  @override
-  String get programsImportFieldHousehold => 'Household label';
-
-  @override
-  String get programsImportFieldGroups => 'Group labels';
-
-  @override
-  String get programsImportFieldParty => 'Travel party label';
-
-  @override
-  String get programsImportFieldFlight => 'Flight number';
-
-  @override
-  String get programsImportFieldOrigin => 'Origin IATA';
-
-  @override
-  String get programsImportFieldDestinationIata => 'Destination IATA';
-
-  @override
-  String get programsImportFieldArrival => 'Scheduled arrival';
-
-  @override
-  String get programsImportFieldPassengers => 'Passengers';
-
-  @override
-  String get programsImportFieldLuggage => 'Luggage units';
-
-  @override
-  String get programsImportFieldPickup => 'Pickup point label';
-
-  @override
-  String get programsImportFieldHotel => 'Destination hotel';
-
-  @override
-  String get programsImportFieldDestinationLabel => 'Destination label';
-
-  @override
-  String programsImportRowSummary({required int skipped, required int mapped}) {
-    return '$mapped rows ready · $skipped skipped';
-  }
-
-  @override
-  String get programsImportPreviewTitle => 'Preview & commit';
-
-  @override
-  String get programsImportPreview => 'Preview import';
-
-  @override
-  String get programsImportCommit => 'Import rows';
-
-  @override
-  String programsImportResultGuests({
-    required int created,
-    required int updated,
-  }) {
-    return '+$created guests · $updated updated';
-  }
-
-  @override
-  String programsImportResultLegs({
-    required int created,
-    required int updated,
-  }) {
-    return '+$created legs · $updated updated';
-  }
-
-  @override
-  String programsImportResultHouseholds({required int count}) {
-    return '+$count households';
-  }
-
-  @override
-  String programsImportResultGroups({required int count}) {
-    return '+$count groups';
-  }
-
-  @override
-  String get programsImportAlreadyApplied => 'already applied';
-
-  @override
-  String programsImportErrors({required int count}) {
-    return '$count row errors';
-  }
-
-  @override
-  String programsImportRowError({required String message, required int index}) {
-    return 'Row $index: $message';
-  }
-
-  @override
-  String get programsImportEmptyTitle => 'No file selected';
-
-  @override
-  String get programsImportEmptyMessage =>
-      'Pick a CSV or XLSX manifest to map columns.';
-
-  @override
   String get hostsEventPreferenceNotSet => 'Not set';
 
   @override
-  String get hostsEventPreferenceReviewTitle => 'Review changes';
-
-  @override
-  String get hostsEventPreferenceReviewHint =>
-      'Review current organizer defaults and your edits before applying.';
-
-  @override
-  String get hostsEventPreferenceOfferWarning =>
-      'Issued offers and shared payment links keep their original terms. Review those offers separately if their payment instructions are outdated.';
-
-  @override
   String get hostsEventPreferenceNoChanges => 'No settings have changed';
-
-  @override
-  String get hostsEventPreferenceReviewLoading => 'Preparing preview…';
-
-  @override
-  String get hostsEventPreferencePreview =>
-      'Preview changes and current defaults';
 
   @override
   String get hostsEventPreferenceApply => 'Apply reviewed changes';
@@ -26582,12 +21841,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostResponseOfferEvent => 'Offer an event';
 
   @override
-  String get hostResponseReviewDecision => 'Review status';
-
-  @override
-  String get hostResponseContactDetails => 'Contact details';
-
-  @override
   String get hostEventOfferChangeEvent => 'Change event';
 
   @override
@@ -26604,45 +21857,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferFree => 'Free admission';
 
   @override
-  String get hostResponseContinueOffer => 'Continue to offer';
-
-  @override
   String get hostEventOfferExpiry => 'Valid until';
-
-  @override
-  String get hostResponseChooseBeforeAcceptance =>
-      'Acceptance is required before creating the offer.';
-
-  @override
-  String get hostsPrivateEventReturnToReviewHint =>
-      'Save these basics and return to your selected responses. You can finish event details later.';
 
   @override
   String get hostsPrivateEventDetailPickLocation =>
       'Choose meeting place on map';
 
   @override
-  String get hostsPrivateEventDetailLocationNeeded =>
-      'A map location is required before publishing. A name alone is fine while planning.';
-
-  @override
-  String get hostsPrivateEventDetailLocationReady =>
-      'Meeting place is ready for directions and the public listing.';
-
-  @override
   String get hostsPrivateEventAdmissionTerms => 'Capacity and price';
-
-  @override
-  String get hostsPrivateEventAdmissionTermsHint =>
-      'Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.';
-
-  @override
-  String get hostsPrivateEventSaveTerms => 'Save capacity and price';
-
-  @override
-  String hostsPrivateEventRefundCutoff({required int hours}) {
-    return 'Full refund until $hours hours before; no refund after';
-  }
 
   @override
   String get hostsPublicationNeedsFuture =>
@@ -26660,73 +21882,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Review the event details before publishing';
 
   @override
-  String get hostsPublicationPublishExplanation =>
-      'Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.';
-
-  @override
-  String get hostsPublicationUnpublishExplanation =>
-      'Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.';
-
-  @override
-  String get hostsPublicationPending =>
-      'Visibility change awaiting confirmation';
-
-  @override
-  String get hostsPublicationPendingBody =>
-      'The result has not been confirmed. Retry the same change to recover its result before making another change.';
-
-  @override
-  String get hostsPublicationSaved => 'Visibility change saved';
-
-  @override
-  String get hostsPublicationRegistrationSeparate =>
-      'Registration remains closed after a visibility change. Configure registration separately when you are ready.';
-
-  @override
-  String get hostsPublicationRefresh => 'Refresh readiness';
-
-  @override
-  String get hostsPublicationRetry => 'Recover visibility change';
-
-  @override
-  String get hostsPublicationUnpublish => 'Make event private';
-
-  @override
-  String get hostsPublicationPublish => 'Publish event';
-
-  @override
   String get hostsPublicationPublishedBody =>
       'This event is published. Visibility and registration are managed separately.';
-
-  @override
-  String get hostsPrivateEventCheckingGuests => 'Checking existing guests';
-
-  @override
-  String get hostsPrivateEventCheckingGuestsBody =>
-      'Your admission settings will save when the guest check is complete. If you leave this screen, return here to continue.';
-
-  @override
-  String get hostsPrivateEventContinueCheckingGuests =>
-      'Continue checking guests';
-
-  @override
-  String get hostsPrivateEventDiscardPending =>
-      'Discard change and review settings';
-
-  @override
-  String get hostsPrivateEventDiscardPendingBody =>
-      'Discard changes that have not begun. If the settings have already saved, we will show the saved result.';
-
-  @override
-  String get hostsPrivateEventDiscarding => 'Discarding pending change';
-
-  @override
-  String get hostsPrivateEventDiscardingBody =>
-      'Returning to your settings. If the change already saved, we will retrieve its result.';
-
-  @override
-  String get hostsPrivateEventContinueDiscarding =>
-      'Continue discarding change';
 
   @override
   String get paymentsCancellationLabel => 'Booking cancelled';
@@ -26933,233 +22090,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostOfferPaymentReviewBody => 'New offers will use these terms';
 
   @override
-  String get programsLodgingTitle => 'Stay planner';
-
-  @override
-  String get programsLodgingSubtitle =>
-      'Plan rooms around people, dates and verified needs.';
-
-  @override
-  String get programsLodgingSetupMissing =>
-      'Add lodging dates, confirmed sharing parties and contracted rooms to start planning.';
-
-  @override
-  String get programsLodgingReview => 'Review this proposal';
-
-  @override
-  String get programsLodgingBoundedSearch =>
-      'The search reached its limit. Review this proposal before approval.';
-
-  @override
-  String get programsLodgingRegenerate => 'Regenerate unlocked placements';
-
-  @override
-  String get programsLodgingApprove => 'Approve proposal';
-
-  @override
-  String get programsLodgingPublish => 'Publish rooms to guests';
-
-  @override
-  String get programsLodgingParties => 'Room-sharing parties';
-
-  @override
-  String get programsLodgingList => 'List';
-
-  @override
-  String get programsLodgingMap => 'Floor map';
-
-  @override
-  String get programsLodgingMove => 'Move party';
-
-  @override
-  String get programsLodgingLocked => 'Locked';
-
-  @override
-  String get programsLodgingProvisional => 'Exact room pending';
-
-  @override
-  String get programsLodgingEmpty => 'No contracted rooms on this floor.';
-
-  @override
-  String programsLodgingUnplaced({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count parties still need rooms.',
-      one: 'One party still needs a room.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get programsLodgingSetup => 'Set up lodging';
-
-  @override
-  String get programsLodgingEditSetup => 'Edit dates, sharing and inventory';
-
-  @override
-  String get programsLodgingDemand => 'Guests who need rooms';
-
-  @override
-  String get programsLodgingSharingHint =>
-      'Invitation households and social groups do not confirm room sharing. Select and confirm each party explicitly.';
-
-  @override
-  String get programsLodgingArrival => 'Arrival date (YYYY-MM-DD)';
-
-  @override
-  String get programsLodgingDeparture => 'Checkout date (YYYY-MM-DD)';
-
-  @override
-  String get programsLodgingBeds => 'Beds needed';
-
-  @override
-  String get programsLodgingFeatures => 'Functional features (comma separated)';
-
-  @override
-  String get programsLodgingAddDemand => 'Keep these stay dates';
-
-  @override
-  String get programsLodgingParty => 'Sharing party';
-
-  @override
-  String get programsLodgingConfirmed => 'Guests have confirmed sharing';
-
-  @override
-  String get programsLodgingAddParty => 'Keep this sharing party';
-
-  @override
-  String get programsLodgingPriority => 'Room priority';
-
-  @override
-  String get programsLodgingRoomType => 'Required room type';
-
-  @override
-  String get programsLodgingInventory => 'Contracted inventory';
-
-  @override
-  String get programsLodgingContract => 'Room block';
-
-  @override
-  String get programsLodgingZone => 'Floor area or corridor';
-
-  @override
-  String get programsLodgingBuilding => 'Building';
-
-  @override
-  String get programsLodgingFloor => 'Floor';
-
-  @override
-  String get programsLodgingWing => 'Wing';
-
-  @override
-  String get programsLodgingRoomLabel =>
-      'Hotel room number (leave empty until released)';
-
-  @override
-  String get programsLodgingOccupants => 'Verified occupant capacity';
-
-  @override
-  String get programsLodgingAddInventory => 'Keep this inventory unit';
-
-  @override
-  String get programsLodgingInventoryHint =>
-      'Verify beds, capacity and functional features with the hotel. A type-only unit keeps its identity while the physical room is pending.';
-
-  @override
-  String get programsLodgingNesting => 'Nested social groups';
-
-  @override
-  String get programsLodgingParents => 'Parent groups';
-
-  @override
-  String get programsLodgingAddNesting => 'Keep this nesting';
-
-  @override
-  String get programsLodgingAdoptions => 'Verify existing stays';
-
-  @override
-  String get programsLodgingAdopt => 'Keep this verified stay link';
-
-  @override
-  String get programsLodgingSaveSetup => 'Save setup and plan rooms';
-
-  @override
-  String get programsLodgingAdd => 'Add new';
-
-  @override
-  String get programsLodgingRemove => 'Remove selected item';
-
-  @override
-  String get programsLodgingPinHotel => 'Pin to hotel';
-
-  @override
-  String get programsLodgingPinRoom => 'Pin to room';
-
-  @override
-  String get programsLodgingPinZone => 'Pin to floor area';
-
-  @override
-  String get programsLodgingSaveHint =>
-      'Add dated demand, confirmed sharing choices and verified contracted inventory before planning.';
-
-  @override
-  String get programsLodgingResources => 'Shared component rooms';
-
-  @override
-  String get programsLodgingResourcesHint =>
-      'For a whole villa, select the same component identities used by its rooms so they cannot be allocated twice.';
-
-  @override
-  String get programsLodgingVerified => 'Verified unchanged stay';
-
-  @override
-  String programsLodgingConfirmHotel({required String hotel}) {
-    return 'Record hotel confirmation: $hotel';
-  }
-
-  @override
-  String programsLodgingHotelConfirmed({required String hotel}) {
-    return 'Hotel confirmed: $hotel';
-  }
-
-  @override
-  String get programsLodgingMembershipTitle => 'Review social memberships';
-
-  @override
-  String get programsLodgingMembershipHint =>
-      'Lists suggest memberships. Choose the groups to include; saving records explicit exclusions too. These choices never create a room-sharing party.';
-
-  @override
-  String get programsLodgingMembershipIncluded => 'Included';
-
-  @override
-  String get programsLodgingMembershipExcluded => 'Excluded';
-
-  @override
-  String get programsLodgingMembershipSuggested => 'Suggestion awaiting review';
-
-  @override
-  String get programsLodgingMembershipCanonical =>
-      'Existing membership; source not verified';
-
-  @override
-  String get programsLodgingMembershipSave => 'Save membership choices';
-
-  @override
-  String get programsLodgingMembershipExpired =>
-      'Access expired. Return and refresh before reviewing memberships.';
-
-  @override
-  String programsLodgingMembershipEvidence({
-    required String group,
-    required String status,
-    required String source,
-  }) {
-    return '$group: $status · $source';
-  }
-
-  @override
   String get programsEntryTitle => 'Create';
 
   @override
@@ -27171,78 +22101,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsEntryProgramBody =>
       'Coordinate a multi-day program and manage its events, travel and guest RSVP.';
-
-  @override
-  String get programsCreateKindLabel => 'Program type';
-
-  @override
-  String get programsCreateChooseKind => 'Choose a program type';
-
-  @override
-  String get programsCreateKindWedding => 'Wedding';
-
-  @override
-  String get programsCreateKindCorporate => 'Corporate';
-
-  @override
-  String get programsCreateKindSocial => 'Social';
-
-  @override
-  String get programsCreateKindOther => 'Other';
-
-  @override
-  String get programsCreateRequired => 'Required';
-
-  @override
-  String programsCreateTooLong({required int maximum}) {
-    return 'Use $maximum characters or fewer.';
-  }
-
-  @override
-  String get programsCreateInvalidDate => 'Choose a valid date.';
-
-  @override
-  String get programsCreateEndAfterStart =>
-      'End date must be after start date.';
-
-  @override
-  String get programsCreateRetry => 'Retry and confirm program';
-
-  @override
-  String get programsCreatePendingBody =>
-      'Your save may have reached Catch. Retry the same save to recover its result before changing these details.';
-
-  @override
-  String get programsCreateConfirmingBody =>
-      'Your program is saved. Confirming it appears in Events…';
-
-  @override
-  String get programsCreateNotVisibleBody =>
-      'Your program is saved, but Events has not confirmed it yet. Retry to refresh the list; this will not create another program.';
-
-  @override
-  String get programsCreateActorChangedTitle => 'Organizer access changed';
-
-  @override
-  String get programsCreateActorChangedBody =>
-      'Your account or selected organizer changed. Return to Events and start with the current organizer.';
-
-  @override
-  String get programsCreateLeaveTitle => 'Leave this program?';
-
-  @override
-  String get programsCreateLeaveDraftBody =>
-      'Your program details have not been saved. Stay to keep editing, or discard this draft.';
-
-  @override
-  String get programsCreateLeavePendingBody =>
-      'This save may have reached Catch. Stay and retry to confirm its result, or leave and check Events before starting another program.';
-
-  @override
-  String get programsCreateKeepEditing => 'Keep editing';
-
-  @override
-  String get programsCreateLeaveAction => 'Leave';
 
   @override
   String get programsEventRowLabel => 'Program';
@@ -27269,19 +22127,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsEventArchived => 'Archived';
-
-  @override
-  String get programsCreateSaving => 'Creating program…';
-
-  @override
-  String get programsCreateConfirming => 'Confirming program…';
-
-  @override
-  String get programsCreateViewEvents => 'View in Events';
-
-  @override
-  String get programsCreateSavedBody =>
-      'Your program is saved and available in Events.';
 
   @override
   String get programsEventsLoadMore => 'Load more programs';
@@ -27465,48 +22310,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostWorkspaceResizeColumn => 'Resize column';
 
   @override
-  String get programsTimezoneSearchHint => 'Search city or timezone';
-
-  @override
-  String get programsTimezoneNoMatches =>
-      'No matching timezones. Try a city such as Kolkata or London.';
-
-  @override
-  String get programsTimezoneIndia => 'India Standard Time';
-
-  @override
-  String get programsTimezoneFromOrganizer =>
-      'From organizer settings. Program dates use this timezone; you can change it.';
-
-  @override
-  String get programsTimezoneFromCity =>
-      'Suggested from the organizer city. Program dates use this timezone; you can change it.';
-
-  @override
-  String get programsTimezoneFromDevice =>
-      'Suggested from your device. Choose the timezone where the program takes place.';
-
-  @override
-  String get programsTimezoneDatesHint =>
-      'Choose the timezone where the program takes place. All program dates use it.';
-
-  @override
-  String get programsTimezoneDefaultsUnavailable =>
-      'Organizer timezone settings could not be loaded.';
-
-  @override
-  String get programsTimezoneInvalid =>
-      'Choose a valid timezone from the list.';
-
-  @override
   String get phoneImportProgramCollaborators =>
       'Visible to authorized program collaborators';
-
-  @override
-  String get programsTeamProgramAdmin => 'Program administrator';
-
-  @override
-  String get programsTeamApprovalRequired => 'Owner approval required';
 
   @override
   String eventsItineraryRouteDistance({required String distance}) {
@@ -27556,78 +22361,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventGuestDetailsSave => 'Save guest information';
-
-  @override
-  String get hostsEventPhotoRecoveryTitle => 'Event saved · photos pending';
-
-  @override
-  String get hostsEventPhotoRecoveryUploading =>
-      'Your event is saved. Photos are still uploading. You can leave and return to this event’s photo recovery.';
-
-  @override
-  String get hostsEventPhotoRecoveryFailed =>
-      'Your event is saved. Some photos could not upload. Retry photos on this event.';
-
-  @override
-  String get hostsEventPhotoRecoveryUnknown =>
-      'Your event is saved. We are checking whether its photos were attached. Retry to confirm the same request safely.';
-
-  @override
-  String get hostsEventPhotoRecoveryConflict =>
-      'The event’s photos changed elsewhere. Your saved recovery is preserved. Open the event to review its photos.';
-
-  @override
-  String get hostsEventPhotoRecoveryCleanup =>
-      'Your event is saved. Photo cleanup is still pending. Retry cleanup; the saved recovery will remain until it is resolved.';
-
-  @override
-  String get hostsEventPhotoRecoveryUnsettled =>
-      'An earlier photo upload has an unresolved outcome. Its recovery is preserved for review, even after other photos are saved.';
-
-  @override
-  String get hostsEventPhotoRecoveryMissing =>
-      'Select photos again to retry. Selected photo files do not survive every restart.';
-
-  @override
-  String get hostsEventPhotoRecoveryStorage =>
-      'Your event is saved, but photo recovery could not be saved on this device. Keep this screen open and retry before leaving.';
-
-  @override
-  String get hostsEventPhotoRecoveryRetry => 'Retry photos';
-
-  @override
-  String get hostsEventPhotoRecoveryCheck => 'Check photo status';
-
-  @override
-  String get hostsEventPhotoRecoveryReselect => 'Select photos again';
-
-  @override
-  String get hostsEventPhotoRecoveryCleanupAction => 'Retry cleanup';
-
-  @override
-  String get hostsEventPhotoRecoveryLeaveTitle => 'Leave photo recovery?';
-
-  @override
-  String get hostsEventPhotoRecoveryLeaveMessage =>
-      'Your event is already saved. This device could not save its photo recovery. Leaving may lose the selected photos. You can manage the saved event later.';
-
-  @override
-  String get hostsEventPhotoRecoveryLeave => 'Leave saved event';
-
-  @override
-  String get hostsEventPhotoRecoverySession =>
-      'Your sign-in session changed. Reopen event creation to recover the saved event for your current account.';
-
-  @override
-  String get hostsEventPhotoRecoverySavedTitle => 'Your event is saved.';
-
-  @override
-  String get hostsEventPhotoRecoveryInactive =>
-      'This saved event is no longer active. Open the event to review its current status.';
-
-  @override
-  String get hostsEventPhotoRecoveryRefresh =>
-      'Your photos are attached. Check photo status to refresh the current event details.';
 
   @override
   String get hostAccountDeletionConfirmation =>
@@ -27848,92 +22581,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostRequestsTab => 'Requests';
 
   @override
-  String get hostRequestsEmptyTitle => 'No one is waiting';
-
-  @override
-  String get hostRequestsEmptyBody =>
-      'Join requests and your waitlists show here, across your coming events.';
-
-  @override
-  String hostRequestsFilterAll({required int count}) {
-    return 'All $count';
-  }
-
-  @override
-  String hostRequestsFilterAsked({required int count}) {
-    return 'Asked to join $count';
-  }
-
-  @override
-  String hostRequestsFilterWaitlist({required int count}) {
-    return 'Waitlist $count';
-  }
-
-  @override
-  String get hostRequestsPartial =>
-      'Showing the first people waiting. Open an event to see all of its guests.';
-
-  @override
-  String get hostRequestsGuest => 'A guest';
-
-  @override
-  String get hostRequestsNew => 'New';
-
-  @override
-  String hostRequestsEvents({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count events',
-      one: '1 event',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostRequestsWithYou({required String events}) {
-    return '$events with you';
-  }
-
-  @override
-  String hostRequestsAsked({required String history, required String date}) {
-    return '$history · asked $date';
-  }
-
-  @override
-  String hostRequestsPosition({required int position}) {
-    return 'Number $position on the waitlist';
-  }
-
-  @override
-  String hostRequestsOffered({required String date}) {
-    return 'Offered until $date';
-  }
-
-  @override
-  String get hostRequestsBack => 'Back to requests';
-
-  @override
-  String get hostRequestsFactEvent => 'Event';
-
-  @override
-  String get hostRequestsFactWhen => 'When';
-
-  @override
-  String get hostRequestsFactPlaces => 'Places left';
-
-  @override
-  String hostRequestsPlacesLeft({required int left, required int capacity}) {
-    return '$left of $capacity';
-  }
-
-  @override
-  String get hostRequestsFactWithYou => 'With you';
-
-  @override
-  String get hostRequestsJourney => 'How it got here';
-
-  @override
   String get hostRequestsStepDone => 'Done';
 
   @override
@@ -27941,40 +22588,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostRequestsStepNext => 'Next';
-
-  @override
-  String hostRequestsCameBefore({required String events}) {
-    return 'Came to $events with you';
-  }
-
-  @override
-  String hostRequestsAskedStep({required String event}) {
-    return 'Asked to join $event';
-  }
-
-  @override
-  String hostRequestsWaitlistStep({required String event}) {
-    return 'Joined the waitlist for $event';
-  }
-
-  @override
-  String hostRequestsHears({required String name}) {
-    return '$name gets a notification';
-  }
-
-  @override
-  String hostRequestsHearsThen({required String name, required String next}) {
-    return '$name gets a notification · then $next';
-  }
-
-  @override
-  String get hostRequestsLetIn => 'Let them in';
-
-  @override
-  String get hostRequestsDecline => 'Decline';
-
-  @override
-  String get hostRequestsOffer => 'Offer a spot';
 
   @override
   String get hostJourneyTitle => 'Your page so far';
@@ -28608,31 +23221,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsEventRulesSave => 'Save membership rules';
-
-  @override
-  String get hostMembershipsFilterGroup => 'Membership';
-
-  @override
-  String get hostMembershipsSegmentActive => 'Active members';
-
-  @override
-  String get hostMembershipsSegmentLapsed => 'Lapsed members';
-
-  @override
-  String get hostMembershipsSegmentNoRecentAttendance =>
-      'Members not seen in 30 days';
-
-  @override
-  String get hostMembershipsSegmentFrequentNonMember =>
-      'Regulars without membership';
-
-  @override
-  String get hostMembershipsCustomerMembership => 'Membership';
-
-  @override
-  String hostMembershipsCustomerMemberSince({required String date}) {
-    return 'Since $date';
-  }
 
   @override
   String get hostMembershipsRosterMembers => 'Members';
@@ -30913,14 +25501,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostProgrammeKicker({
-    required Object dates,
-    required Object timezone,
-  }) {
-    return '$dates · $timezone';
-  }
-
-  @override
   String get hostProgrammeKindWedding => 'Wedding';
 
   @override
@@ -32621,24 +27201,4 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormatsRuleInvalid =>
       'This question can’t be used this way. Try another use.';
-
-  @override
-  String get hostFormatsPlanSection => 'Formats';
-
-  @override
-  String get hostFormatsPlanCourtsNote =>
-      'Courts, minutes a game and what matters most';
-
-  @override
-  String get hostFormatsPlanPodsNote => 'Runners in pods by pace';
-
-  @override
-  String get hostFormatsPlanCrawl => 'The crawl, live';
-
-  @override
-  String get hostFormatsPlanCrawlNote =>
-      'The route, the groups and moving everyone';
-
-  @override
-  String get hostFormatsPlanRulesNote => 'Use booking answers to shape groups';
 }

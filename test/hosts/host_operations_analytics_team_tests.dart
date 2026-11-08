@@ -818,7 +818,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
           AsyncData<OrganizerDetailViewModel?>(
-            _previewViewModel(ownedOrganizer, events: const []),
+            _previewViewModel(ownedOrganizer),
           ),
         ),
       ],

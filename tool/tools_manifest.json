@@ -4723,7 +4723,6 @@
         "design/components/system/**",
         "tool/design/check_host_section_composition.mjs",
         "test/tool/host_section_composition_test.mjs",
-        "lib/programs/presentation/program_workspace_screen.dart",
         "lib/programs/presentation/program_guests_screen.dart",
         "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
         "lib/event_success/presentation/event_assistance_help_entry_section.dart",

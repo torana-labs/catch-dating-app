@@ -9,7 +9,6 @@ import 'package:catch_dating_app/event_success/presentation/event_success_questi
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
-import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -50,8 +49,9 @@ Widget eventSuccessStrictPreview(
         activityKind: ActivityKind.socialRun,
         targetAttendeeCount: 24,
         onChanged: (_) {},
-        title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
-        subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
+        title: 'Live event guide',
+        subtitle:
+            'Save a simple plan with this event so Live mode is ready when it starts.',
       ),
     ),
     EventSuccessStrictSurface.featureBlocks => StrictCoverageScaffold(

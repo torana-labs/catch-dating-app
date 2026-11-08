@@ -36,8 +36,8 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
   );
 }
 
-/// The People tab's People view. Requests, forms and responses keep their
-/// own screens through [hostAudienceScreenForUri].
+/// The People tab's People view. Forms and responses keep their own
+/// screens through [hostAudienceScreenForUri].
 @visibleForTesting
 Widget hostPeopleScreenForUri(Uri uri) => HostPeopleScreen(
   initialOrganizerId: uri.queryParameters['organizerId'],

@@ -6,7 +6,6 @@ import path from "node:path";
 import {
   applicationRouteOwnershipFindings,
   audienceWorkspacePresentationFindings,
-  customerMessagingHandoffFindings,
   hostCrmCountCopyFindings,
   manualSendContractFindings,
   scanBackendFile,
@@ -136,71 +135,16 @@ for (const [name, mutate] of [
   });
 }
 
-test("flags generic or context-free Customers messaging handoffs", () => {
-  const findings = customerMessagingHandoffFindings({
-    customersPath: "customers.dart",
-    customersSource: [
-      "onOpenMessaging: () {},",
-      "context.goNamed(",
-      "  Routes.hostInboxScreen.name,",
-      "  queryParameters: {'workspace': HostMessagingWorkspace.campaigns.name},",
-      ");",
-    ].join("\n"),
-  });
-
-  assert.ok(findings.some((item) => /generic Messaging handoff/u.test(item.reason)));
-  assert.ok(findings.some((item) => /saved-audience id/u.test(item.reason)));
-});
-
-test("accepts audience-bound compose and dedicated sender recovery", () => {
-  const findings = customerMessagingHandoffFindings({
-    customersPath: "customers.dart",
-    customersSource: [
-      "onReviewSenderSetup: review,",
-      "context.goNamed(",
-      "  Routes.hostInboxScreen.name,",
-      "  queryParameters: {",
-      "    'workspace': HostMessagingWorkspace.campaigns.name,",
-      "    'compose': '1',",
-      "    'audienceId': audience.audienceId,",
-      "  },",
-      ");",
-      "context.pushNamed(Routes.hostOrganizerMessagingScreen.name);",
-    ].join("\n"),
-  });
-
-  assert.deepEqual(findings, []);
-});
-
-test("flags modal, contained, or duplicate saved-audience presentation", () => {
+test("flags an Audience view or saved-audience route that drifts", () => {
   const findings = audienceWorkspacePresentationFindings({
     audienceViewPath: "audience_view.dart",
     audienceViewSource: [
       "enum HostAudienceView { people, audiences }",
       "class HostAudienceTabRail {}",
     ].join("\n"),
-    customersPath: "customers.dart",
-    customersSource: [
-      "CatchRootScreenScaffold.withPrimaryRail(",
-      "HostSavedAudiencesWorkspace(",
-      "primaryAction: peopleView",
-      "HostSavedAudiencesSheet()",
-    ].join("\n"),
-    workspacePath: "workspace.dart",
-    workspaceSource: [
-      "CatchSection.contained(",
-      "ValueKey('host-saved-audience-create')",
-      "ValueKey('host-saved-audience-create')",
-    ].join("\n"),
-    editorSheetsPath: "sheets.dart",
-    editorSheetsSource: "class HostSavedAudiencesSheet {}",
     routeContractPath: "routes.dart",
     routeContractSource: "",
   });
-  assert.ok(findings.some((item) => /overflow or a modal/u.test(item.reason)));
-  assert.ok(findings.some((item) => /typed row section/u.test(item.reason)));
-  assert.ok(findings.some((item) => /exactly one/u.test(item.reason)));
-  assert.ok(findings.some((item) => /parallel modal/u.test(item.reason)));
   assert.ok(findings.some((item) => /all five peer workspaces/u.test(item.reason)));
   assert.equal(
     findings.filter((item) => /full-page Audience routes/u.test(item.reason))
@@ -209,53 +153,9 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
   );
 });
 
-test("saved-audience directories require the canonical typed row APIs", () => {
-  const scanWorkspace = (workspaceSource) => audienceWorkspacePresentationFindings({
-    audienceViewPath: "audience_view.dart",
-    audienceViewSource: [
-      "enum HostAudienceView { people, audiences, forms, responses, requests }",
-      "class HostAudienceTabRail {}",
-      "ValueKey<String>('host-audience-view-tabs')",
-    ].join("\n"),
-    customersPath: "customers.dart",
-    customersSource: [
-      "CatchRootScreenScaffold.withPrimaryRail(",
-      "HostSavedAudiencesWorkspace(",
-      "primaryAction: peopleView",
-      "ValueKey('host-saved-audience-create')",
-    ].join("\n"),
-    workspacePath: "workspace.dart",
-    workspaceSource,
-    editorSheetsPath: "sheets.dart",
-    editorSheetsSource: "",
-    routeContractPath: "routes.dart",
-    routeContractSource: [
-      "hostCreateSavedAudienceScreen(\n    '/host/audience/audiences/new'",
-      "hostSavedAudienceDetailScreen(\n    '/host/audience/audiences/:audienceId'",
-    ].join("\n"),
-  });
-  for (const section of ["rows", "sliverRows"]) {
-    assert.deepEqual(scanWorkspace(
-      `CatchSection.${section}( CatchField.navigate(`,
-    ), []);
-  }
-  assert.ok(scanWorkspace(
-    "CatchSection.sliverRows( CatchField.navigate( ValueKey('host-saved-audience-create')",
-  ).some((item) => /exactly one New group action/u.test(item.reason)));
-  for (const source of [
-    "CatchSection.containedRows( CatchField.navigate(",
-    "CatchSection.content( CatchField.navigate(",
-    "CatchSection.divided( CatchField.nav(",
-    "CatchSection.sliverRows( CatchField.nav(",
-  ]) {
-    assert.ok(scanWorkspace(source).some((item) =>
-      /typed row section/u.test(item.reason)));
-  }
-});
-
 test("new-message presentation consumes the resolved conversation outcome", () => {
   assert.deepEqual(scanPresentationFile({
-    relativePath: "lib/hosts/presentation/inbox/host_new_message_screen.dart",
+    relativePath: "lib/hosts/people/compose_screen.dart",
     source: "plan.singleRecipient.outcome == HostCommunicationOutcome.inCatch",
   }), []);
 });

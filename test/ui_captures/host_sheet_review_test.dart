@@ -1,15 +1,11 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_platform/app_config.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,25 +33,6 @@ void main() {
         repeatSource: HostOperationsFixtures.upcomingEvent,
       ),
       onDeleteDraft: (_) async {},
-    ),
-    'people-filter': (_) => const HostCustomerFilterSheet(
-      selectedFilters: {
-        HostCustomerFilter.repeat,
-        HostCustomerFilter.firstTime,
-        HostCustomerFilter.reliable,
-        HostCustomerFilter.advocate,
-      },
-      manualTagVocabulary: [],
-      selectedCount: HostCustomerSegmentCount(
-        count: 0,
-        coverage: HostCustomerMatchCountCoverage.exact,
-      ),
-      smsReadiness: HostCrmChannelReadiness.currentEventOnly,
-    ),
-    'people-sort': (_) => HostCustomerControlSection(
-      sort: HostCustomerSort.lastSeen,
-      onSortChanged: (_) {},
-      onOpenFilters: () {},
     ),
     'draft-picker': (_) => HostEventEntrySheet(
       state: HostEventEntryState.resolve(
@@ -104,34 +81,9 @@ void main() {
         drive: (tester) async {
           await tester.tap(find.text('Open'));
           await pumpFeatureUi(tester);
-          if (entry.key == 'people-filter') _expectChipClearance(tester);
-          if (entry.key == 'people-sort') {
-            await tester.tap(find.text('Sort: Last seen'));
-            await pumpFeatureUi(tester);
-          }
         },
       );
       expect(tester.takeException(), isNull);
     }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
-}
-
-void _expectChipClearance(WidgetTester tester) {
-  var measured = 0;
-  for (final section in find.byType(CatchSection).evaluate()) {
-    final group = find.byWidget(section.widget);
-    final chips = find.descendant(of: group, matching: find.byType(CatchChip));
-    final rules = find.descendant(
-      of: group,
-      matching: find.byType(CatchDivider),
-    );
-    if (chips.evaluate().isEmpty || rules.evaluate().isEmpty) continue;
-    expect(
-      tester.getTopLeft(chips.first).dy - tester.getBottomLeft(rules.first).dy,
-      closeTo(CatchFieldTokens.rowVerticalPadding, 0.1),
-      reason: 'Every filter group keeps the rule clear of its first chip.',
-    );
-    measured++;
-  }
-  expect(measured, greaterThan(1));
 }

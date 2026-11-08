@@ -3,9 +3,6 @@ import 'dart:io';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -94,89 +91,6 @@ void main() {
       expect(story.clock('live').isAfter(event.startTime), isTrue);
       expect(story.clock('live').isBefore(event.endTime), isTrue);
       expect(story.clock('followUp').isAfter(event.endTime), isTrue);
-    },
-  );
-
-  test(
-    'production draft restore preserves explicit civil date/time in the process timezone',
-    () {
-      final draft = story.setupDraft(fixtures);
-      final restored = CreateEventDraftRestoreState.fromDraft(
-        draft,
-        now: story.clock('planning'),
-      );
-      expect(story.timeZone, 'Asia/Kolkata');
-      expect(draft.eventLocalDate, '2026-10-17');
-      expect(draft.eventLocalStartTime, '18:30');
-      expect(draft.eventTimezone, 'Asia/Kolkata');
-      expect(restored.selectedDate, DateTime(2026, 10, 17, 18, 30));
-      expect(restored.selectedStartTime!.hour, 18);
-      expect(restored.selectedStartTime!.minute, 30);
-      expect(restored.durationMinutes, 120);
-      expect(restored.scheduleErrorText, isNull);
-      expect(restored.priceText, '0');
-      expect(restored.capacityText, '30');
-      expect(restored.minAgeText, isNull);
-      expect(restored.maxAgeText, isNull);
-      expect(restored.maxMenText, isNull);
-      expect(restored.maxWomenText, isNull);
-      expect(
-        restored.policyState.admissionPreset,
-        EventAdmissionPreset.openCapacity,
-      );
-      expect(restored.policyState.cohortCapsEnabled, isFalse);
-      expect(restored.policyState.dynamicPricingEnabled, isFalse);
-      expect(restored.policyState.crossPathsPairInventoryEnabled, isFalse);
-      expect(draft.inviteCode, isNull);
-    },
-  );
-
-  test(
-    'host-led Guide opts out of compatibility, reveal and assignment modules',
-    () {
-      final defaults = story.guideDefaults;
-      final draft = defaults.toDraft(targetAttendeeCount: 30);
-      expect(draft.playbook.id, 'host_led_social');
-      final restored = CreateEventDraftRestoreState.fromDraft(
-        story.setupDraft(fixtures),
-        now: story.clock('planning'),
-      );
-      final restoredFormat = EventFormatSnapshot.custom(
-        label: restored.customActivityLabelText,
-        interactionModel: restored.interactionModel,
-      );
-      expect(
-        defaults
-            .normalizedForFormat(restoredFormat, targetAttendeeCount: 30)
-            .playbookId,
-        'host_led_social',
-      );
-      expect(
-        draft.selectedModuleIds,
-        containsAll(['qr_check_in', 'host_script', 'safety_controls']),
-      );
-      for (final id in [
-        'compatibility_questionnaire',
-        'live_reveal',
-        'micro_pods',
-        'guided_rotations',
-      ]) {
-        expect(draft.selectedModuleIds, isNot(contains(id)));
-      }
-      expect(defaults.compatibilityAffectsRanking, isFalse);
-      expect(defaults.wingmanRequestsEnabled, isTrue);
-      expect(defaults.contextualOpenersEnabled, isTrue);
-      final event = story.event(fixtures, 'hostLiveConsole');
-      final plan = EventSuccessPlan.fromDraft(
-        id: event.id,
-        eventId: event.id,
-        organizerId: event.organizerId,
-        draft: draft,
-        createdAt: story.clock('planning'),
-        updatedAt: story.clock('live'),
-      );
-      expect(plan.playbookId, 'host_led_social');
-      expect(plan.selectedModuleIds, unorderedEquals(draft.selectedModuleIds));
     },
   );
 }

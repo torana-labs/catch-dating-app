@@ -163,23 +163,6 @@
       ]
     },
     {
-      "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-      "requires": [
-        {
-          "text": "HostDirectoryWorkspace<String>(",
-          "minimumOccurrences": 3
-        }
-      ],
-      "forbids": [
-        {
-          "text": "TabController("
-        },
-        {
-          "text": "CatchNavigationViewport("
-        }
-      ]
-    },
-    {
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "requires": [
         {

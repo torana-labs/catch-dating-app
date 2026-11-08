@@ -21,20 +21,9 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_r
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_communication_plan.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_revenue.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_send.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
@@ -67,7 +56,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/modules.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
@@ -145,7 +133,6 @@ import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
@@ -186,28 +173,18 @@ import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -220,12 +197,10 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
@@ -246,9 +221,6 @@ import 'package:catch_dating_app/organizers/presentation/detail/widgets/organize
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
@@ -317,7 +289,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderContainer,
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
-    show Fake, Finder, WidgetTester, expect, find, findsNothing, findsOneWidget;
+    show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -4147,104 +4119,6 @@ final class _CaptureNoopHostPaymentAccountActions
   }) async {}
 }
 
-List<Object> _hostCreateOrganizerProviderOverrides() {
-  return [
-    uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-    watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(_captureViewer),
-    ),
-  ];
-}
-
-Widget _createOrganizerCapture({
-  int initialStep = 0,
-  bool useDraft = false,
-  bool showValidation = false,
-  bool usePickedMedia = false,
-}) {
-  return CreateOrganizerScreen(
-    initialDraft: useDraft ? HostOperationsFixtures.organizerDraft : null,
-    initialStep: initialStep,
-    restoreSavedDraft: false,
-    formAutovalidateMode: showValidation
-        ? AutovalidateMode.always
-        : AutovalidateMode.disabled,
-    initialPickedOrganizerPhotos: usePickedMedia
-        ? _createOrganizerPickedPhotos()
-        : const <PickedOrganizerPhoto>[],
-    initialProfileImage: usePickedMedia ? _createOrganizerProfileImage() : null,
-  );
-}
-
-Future<void> _driveCreateDisclosure(WidgetTester tester, String key) async {
-  final target = find.byKey(ValueKey(key));
-  await tester.ensureVisible(target);
-  await tester.tap(target);
-  await pumpFeatureUi(tester);
-  if (key == 'host.create_event.customize_guide') {
-    await tester.ensureVisible(find.byType(EventSuccessDefaultsSection));
-    await pumpFeatureUi(tester);
-  }
-}
-
-Widget _createEventCapture({
-  int initialStep = 0,
-  bool useDraft = true,
-  bool showValidation = false,
-  bool usePickedMedia = false,
-  EventDraft? draft,
-}) {
-  return CreateEventScreen(
-    organizer: _dashboardHostOrganizer,
-    initialDraft: draft ?? (useDraft ? _hostEventSetupDraft : null),
-    initialStep: initialStep,
-    formAutovalidateMode: showValidation
-        ? AutovalidateMode.always
-        : AutovalidateMode.disabled,
-    initialPickedEventPhotos: usePickedMedia
-        ? _createEventPickedPhotos()
-        : const <PickedEventPhoto>[],
-    loadMapTiles: false,
-    now: () => _captureNow,
-  );
-}
-
-List<PickedOrganizerPhoto> _createOrganizerPickedPhotos() {
-  return [
-    _createOrganizerPickedPhoto('club-cover-1'),
-    _createOrganizerPickedPhoto('club-cover-2'),
-  ];
-}
-
-PickedOrganizerPhoto _createOrganizerPickedPhoto(String name) {
-  final bytes = name.endsWith('2')
-      ? _profilePortraitBytes
-      : _organizerHeroPortraitBytes;
-  return PickedOrganizerPhoto(
-    image: XFile.fromData(bytes, name: '$name.jpg', mimeType: 'image/jpeg'),
-    bytes: bytes,
-  );
-}
-
-PickedOrganizerProfileImage _createOrganizerProfileImage() {
-  final bytes = _profilePortraitBytes;
-  return PickedOrganizerProfileImage(
-    image: XFile.fromData(
-      bytes,
-      name: 'club-profile.jpg',
-      mimeType: 'image/jpeg',
-    ),
-    bytes: bytes,
-  );
-}
-
-List<PickedEventPhoto> _createEventPickedPhotos() {
-  return [
-    _createEventPickedPhoto('event-cover-1'),
-    _createEventPickedPhoto('event-cover-2'),
-  ];
-}
-
 List<OrderedPhotoPreview> _createHostMediaManagerPhotos() {
   return [
     for (var index = 0; index < 24; index++)
@@ -4258,16 +4132,6 @@ List<OrderedPhotoPreview> _createHostMediaManagerPhotos() {
             : OrderedPhotoStatus.ready,
       ),
   ];
-}
-
-PickedEventPhoto _createEventPickedPhoto(String name) {
-  final bytes = name.endsWith('2')
-      ? _profilePortraitBytes
-      : _organizerHeroPortraitBytes;
-  return PickedEventPhoto(
-    image: XFile.fromData(bytes, name: '$name.jpg', mimeType: 'image/jpeg'),
-    bytes: bytes,
-  );
 }
 
 Uint8List _createOrganizerPngBytes() {
@@ -5831,168 +5695,8 @@ final _hostInquiryImageDayMessages = <ChatMessage>[
   ),
 ];
 
-List<Object> _hostCustomersProviderOverrides() {
-  const preview = bool.fromEnvironment('AUDIENCE_VALUES_FIXTURE');
-  final organizer = HostOperationsFixtures.primaryOrganizer;
-  final request = HostCustomersDirectoryRequest(organizerId: organizer.id);
-  final audienceEditorRequest = HostCustomersDirectoryRequest(
-    organizerId: organizer.id,
-    sort: HostCustomerSort.name,
-  );
-  return [
-    uidProvider.overrideWithValue(
-      const AsyncData<String?>(HostOperationsFixtures.hostUid),
-    ),
-    hostOperableOrganizersProvider(
-      HostOperationsFixtures.hostUid,
-    ).overrideWithValue(AsyncData<List<Organizer>>([organizer])),
-    if (preview)
-      hostCustomerSegmentCountProvider(
-        HostCustomerSegmentCountRequest(
-          organizerId: organizer.id,
-          filter: HostCustomerFilter.newToOrganizer,
-        ),
-      ).overrideWith(
-        (ref) async => const HostCustomerSegmentCount(
-          count: 2,
-          coverage: HostCustomerMatchCountCoverage.exact,
-        ),
-      ),
-    hostCrmSummaryProvider(organizer.id).overrideWithValue(
-      AsyncData(
-        HostCrmSummary(
-          organizerId: organizer.id,
-          contactCount: preview ? 8 : 214,
-          pastAttendeeCount: preview ? 8 : 148,
-          repeatAttendeeCount: preview ? 6 : 37,
-          linkedAccountCount: preview ? 4 : 92,
-          importedContactCount: preview ? 4 : 61,
-          whatsappOptInCount: preview ? 4 : 74,
-          smsOptInCount: preview ? 2 : 29,
-          truncated: false,
-          inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
-          whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
-          smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
-        ),
-      ),
-    ),
-    hostCustomersDirectoryControllerProvider(request).overrideWithBuild(
-      (ref, notifier) async => HostCustomersDirectoryState(
-        contacts: [
-          HostCustomerDirectoryContact(
-            contactId: 'capture-customer-ananya',
-            displayName: 'Ananya Rao',
-            attendedEventCount: 8,
-            lastAttendedAt: DateTime(2026, 6, 18, 18, 30),
-            tags: const {HostCustomerTag.repeat, HostCustomerTag.regular},
-            hasAmbiguousIdentity: false,
-            whatsappOptedIn: true,
-            whatsappAdminSuppressed: false,
-          ),
-          HostCustomerDirectoryContact(
-            contactId: 'capture-customer-kabir',
-            displayName: 'Kabir Mehta',
-            attendedEventCount: 2,
-            lastAttendedAt: DateTime(2026, 5, 30, 19),
-            tags: const {HostCustomerTag.newToOrganizer},
-            hasAmbiguousIdentity: false,
-            whatsappOptedIn: false,
-            whatsappAdminSuppressed: false,
-          ),
-          if (preview) ..._audienceValuesPreviewExtraContacts(),
-        ],
-        nextCursor: null,
-        matchCount: preview ? 8 : 2,
-        matchCountCoverage: HostCustomerMatchCountCoverage.exact,
-        sourceCoverage: HostCustomerDirectoryCoverage.exact,
-        projectionVersion: 1,
-      ),
-    ),
-    hostCustomersDirectoryControllerProvider(
-      audienceEditorRequest,
-    ).overrideWithBuild(
-      (ref, notifier) async => const HostCustomersDirectoryState(
-        contacts: [],
-        nextCursor: null,
-        matchCount: 0,
-        matchCountCoverage: HostCustomerMatchCountCoverage.exact,
-        sourceCoverage: HostCustomerDirectoryCoverage.exact,
-        projectionVersion: 1,
-        manualTagVocabulary: [
-          HostCustomerManualTag(tagId: 'tag-runners', label: 'Runners'),
-          HostCustomerManualTag(tagId: 'tag-regulars', label: 'Regulars'),
-        ],
-      ),
-    ),
-    hostGroupDirectoryControllerProvider(organizer.id).overrideWithBuild(
-      (ref, notifier) async => HostGroupDirectoryState(
-        page: HostSavedAudienceSummaryPage(
-          audiences: [
-            HostSavedAudienceSummary.fromAudience(_hostSavedAudienceCapture()),
-          ],
-          nextCursor: null,
-        ),
-      ),
-    ),
-  ];
-}
-
 // Expanded deterministic data for the explicitly requested before/after preview.
 // The canonical capture remains unchanged unless AUDIENCE_VALUES_FIXTURE is set.
-List<HostCustomerDirectoryContact> _audienceValuesPreviewExtraContacts() => [
-  for (final row in <(String, int, int, Set<HostCustomerTag>)>[
-    ('Rohan Iyer', 12, 28, {HostCustomerTag.repeat, HostCustomerTag.regular}),
-    ('Priya Sharma', 5, 27, {HostCustomerTag.repeat}),
-    ('Arjun Singh', 3, 25, {HostCustomerTag.repeat}),
-    ('Meera Nair', 9, 23, {HostCustomerTag.repeat, HostCustomerTag.regular}),
-    ('Dev Patel', 1, 21, {HostCustomerTag.newToOrganizer}),
-    ('Karan Malhotra', 7, 19, {HostCustomerTag.repeat, HostCustomerTag.atRisk}),
-  ])
-    HostCustomerDirectoryContact(
-      contactId: 'preview-${row.$1.toLowerCase().replaceAll(' ', '-')}',
-      displayName: row.$1,
-      attendedEventCount: row.$2,
-      lastAttendedAt: DateTime(2026, 5, row.$3, 18),
-      tags: row.$4,
-      hasAmbiguousIdentity: false,
-      whatsappOptedIn: row.$2 > 7,
-      whatsappAdminSuppressed: false,
-    ),
-];
-
-HostSavedAudience _hostSavedAudienceCapture() {
-  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
-  return HostSavedAudience(
-    organizerId: organizerId,
-    audienceId: 'capture-repeat-runners',
-    name: 'Repeat runners',
-    status: 'active',
-    definition: const HostSavedAudienceDefinition(
-      join: HostSavedAudienceJoin.all,
-      predicates: [
-        HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
-        HostSavedAudienceAttendanceCount(
-          operator: HostSavedAudienceAttendanceOperator.atLeast,
-          eventCount: 3,
-        ),
-      ],
-    ),
-    definitionHash: 'capture-repeat-runners-hash',
-    definitionVersion: 1,
-    revision: 2,
-    lastPreviewMatchCount: 24,
-    lastPreviewReachSummary: const HostAudienceReachSummary(
-      inCatch: 14,
-      automatic: 0,
-      byHand: 8,
-      unavailable: 2,
-    ),
-    lastPreviewAt: DateTime(2026, 8, 30, 10),
-    createdAt: DateTime(2026, 8, 28, 10),
-    updatedAt: DateTime(2026, 8, 30, 10),
-  );
-}
-
 class _CaptureHostFormEditorController extends HostFormEditorController {
   @override
   bool editorBoundTo(String? accountId) => true;
@@ -6146,184 +5850,6 @@ Map<String, Object?> _hostFormBuilderAuditQuestion({
     'customError': null,
   },
 };
-
-HostAudienceContactDetail _hostCustomerMemoryDetail() {
-  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
-  return HostAudienceContactDetail(
-    organizerId: organizerId,
-    contactId: 'capture-customer-ananya',
-    displayName: 'Ananya Rao',
-    sourceDisplayName: 'Ananya Rao',
-    displayNameOverride: null,
-    phoneE164: '+919876543210',
-    email: 'ananya@example.com',
-    linkedAccount: true,
-    identityState: HostAudienceIdentityState.verified,
-    identityConfidence: 'verified',
-    ambiguousCandidateCount: 0,
-    whatsappAdminSuppressed: false,
-    whatsappPermission: HostCustomerWhatsappPermission(
-      status: HostAudiencePermissionStatus.optedIn,
-      evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
-      receiptId: 'capture-receipt-1',
-      source: 'hostFormResponse',
-      sourceFormId: 'capture-form-1',
-      sourceFormTitle: 'Sunday Run sign-up',
-      decisionAt: DateTime(2026, 5, 20),
-      identityStrength: 'catchAccount',
-    ),
-    origins: [
-      HostCustomerOrigin(
-        originId: 'capture-origin-1',
-        sourceKind: HostCustomerOriginSourceKind.hostForm,
-        sourceEntityKind: 'hostFormResponse',
-        formId: 'capture-form-1',
-        formTitle: 'Sunday Run sign-up',
-        eventId: 'capture-event-1',
-        eventTitle: 'Sunday Run Club',
-        observedAt: DateTime(2026, 5, 20),
-      ),
-    ],
-    originsTruncated: false,
-    traits: const HostCustomerTraits(
-      expectedEventCount: 9,
-      attendedEventCount: 8,
-      cancelledEventCount: 1,
-      noShowCount: 0,
-      importedEventCount: 0,
-      attendanceRate: 8 / 9,
-      segments: {HostAudienceSegment.regular},
-      whatsappStatus: HostAudiencePermissionStatus.optedIn,
-      sourceCoverage: HostAudienceSourceCoverage.exact,
-    ),
-    revenue: const HostCustomerRevenue(
-      coverage: HostCustomerRevenueCoverage.exact,
-      amounts: [
-        HostCustomerRevenueAmount(
-          currency: 'INR',
-          amountMinor: 184500,
-          paidOrderCount: 7,
-        ),
-      ],
-    ),
-    events: [
-      HostAudienceEventFact(
-        eventId: 'capture-event-1',
-        displayName: 'Sunday Run Club',
-        source: 'catchBooking',
-        status: 'checkedIn',
-        checkedIn: true,
-        eventStartAt: DateTime(2026, 6, 18, 18, 30),
-      ),
-    ],
-    eventsTruncated: false,
-    manualTags: const [
-      HostManualTag(
-        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        label: 'Brings friends',
-      ),
-    ],
-    manualTagVocabulary: const [
-      HostManualTag(
-        tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        label: 'Brings friends',
-      ),
-      HostManualTag(
-        tagId: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-        label: 'Prefers weekends',
-      ),
-    ],
-    notes: [
-      HostCustomerNote(
-        noteId: 'capture-note-1',
-        body: 'Introduced three friends and prefers smaller weekend events.',
-        authorUid: HostOperationsFixtures.hostUid,
-        createdAt: DateTime(2026, 8, 15, 11),
-        updatedAt: DateTime(2026, 8, 15, 11),
-        revision: 1,
-      ),
-    ],
-    sends: [
-      HostCustomerSend(
-        campaignId: 'capture-campaign-1',
-        name: 'August member invite',
-        messageClass: 'organizerPromotion',
-        deliveryStatus: HostCustomerSendDeliveryStatus.delivered,
-        createdAt: DateTime(2026, 8, 14, 9),
-        sentAt: DateTime(2026, 8, 14, 9, 5),
-        updatedAt: DateTime(2026, 8, 14, 9, 6),
-      ),
-    ],
-    timeline: [
-      HostCustomerReplyTimelineEntry(
-        timelineId: 'capture-reply-1',
-        occurredAt: DateTime(2026, 8, 16, 12),
-        transport: HostCustomerReplyTransport.catchChat,
-        direction: HostWhatsappMessageDirection.inbound,
-        bodyPreview: 'I’ll bring two friends next week.',
-        threadId: 'capture-match-1',
-      ),
-      HostCustomerEventTimelineEntry(
-        timelineId: 'capture-event-1',
-        occurredAt: DateTime(2026, 6, 18, 18, 30),
-        eventId: 'capture-event-1',
-        eventName: 'Sunday Run Club',
-        status: 'checkedIn',
-        checkedIn: true,
-        eventOrigin: HostCustomerEventOrigin.catchNative,
-        eventProvider: 'catch',
-      ),
-      HostCustomerFormTimelineEntry(
-        timelineId: 'capture-form-1',
-        occurredAt: DateTime(2026, 5, 20),
-        responseId: 'capture-response-1',
-        formId: 'capture-form-1',
-        formTitle: 'Sunday Run sign-up',
-        action: HostCustomerFormTimelineAction.submitted,
-        answeredQuestionCount: 5,
-      ),
-    ],
-    timelineTruncated: false,
-    timelineCoverage: const HostCustomerTimelineCoverage(
-      forms: HostCustomerTimelineCoverageValue.exact,
-      events: HostCustomerTimelineCoverageValue.exact,
-      sends: HostCustomerTimelineCoverageValue.exact,
-      replies: HostCustomerTimelineCoverageValue.partial,
-      outreach: HostCustomerTimelineCoverageValue.exact,
-    ),
-    revision: 3,
-  );
-}
-
-HostCommunicationPlan _hostCustomerMemoryCommunicationPlan() =>
-    HostCommunicationPlan(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      intent: HostCommunicationIntent.individualConversation,
-      capabilityVersion: 1,
-      resolvedAt: DateTime(2026, 8, 29),
-      recipients: const [
-        HostCommunicationRecipientPlan(
-          contactId: 'capture-customer-ananya',
-          displayName: 'Ananya Rao',
-          outcome: HostCommunicationOutcome.inCatch,
-          recommendedRouteId: HostCommunicationRouteId.catchChat,
-          routes: [
-            HostCommunicationRouteOption(
-              routeId: HostCommunicationRouteId.catchChat,
-              executionMode: HostCommunicationExecutionMode.managedDelivery,
-              availability: HostCommunicationRouteAvailability.available,
-              blocker: null,
-            ),
-            HostCommunicationRouteOption(
-              routeId: HostCommunicationRouteId.personalWhatsappHandoff,
-              executionMode: HostCommunicationExecutionMode.externalHandoff,
-              availability: HostCommunicationRouteAvailability.available,
-              blocker: null,
-            ),
-          ],
-        ),
-      ],
-    );
 
 HostMessagingSetup _hostMessagingCaptureSetup(String organizerId) =>
     HostMessagingSetup(
@@ -7346,9 +6872,6 @@ final _hostLiveWindowEvent = _hostEvent.copyWith(
 final _marketingHostOrganizer = hostMarketingIndiaScenario.organizer(
   _captureFixtures,
 );
-final _marketingHostSetupDraft = hostMarketingIndiaScenario.setupDraft(
-  _captureFixtures,
-);
 final _marketingHostTodayEvent = hostMarketingIndiaScenario.event(
   _captureFixtures,
   'hostToday',
@@ -7447,99 +6970,6 @@ final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   id: 'host-event-setup-capture-draft',
   organizer: _dashboardHostOrganizer,
   savedAt: _captureNow,
-);
-final _hostRuntimeSetupDraft = _hostEventSetupDraft.copyWith(
-  id: 'runtime-create-capture',
-  name: 'Friday supper club',
-  externalBookingMode: true,
-  capacity: '24',
-  description: null,
-  externalBookingProvider: 'generic',
-  runtimeWalkInPolicy: 'hostApproval',
-  admissionPreset: 'openCapacity',
-  minAge: null,
-  maxAge: null,
-  selectedDateMillis: _captureNow
-      .add(const Duration(days: 7))
-      .millisecondsSinceEpoch,
-  selectedStartHour: 19,
-  selectedStartMinute: 0,
-);
-final _hostEventGuideDefaults = EventSuccessDefaults.recommendedForActivity(
-  ActivityKind.dinner,
-  enabled: true,
-);
-final _hostEventGuideDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-guide-capture-draft',
-  eventSuccessDefaults: _hostEventGuideDefaults.copyWith(
-    moduleSelectionConfigured: true,
-    selectedModuleIds: [
-      ..._hostEventGuideDefaults.selectedModuleIds,
-      EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-    ],
-  ),
-);
-final _hostEventPastScheduleDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-past-schedule-capture-draft',
-  selectedDateMillis: DateTime(
-    _captureNow.year,
-    _captureNow.month,
-    _captureNow.day,
-  ).millisecondsSinceEpoch,
-  selectedStartHour: _captureNow.hour - 1,
-  selectedStartMinute: 30,
-);
-final _hostEventPolicyAgeValidationDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-policy-age-validation-capture-draft',
-  admissionPreset: 'requestToJoin',
-  minAge: '40',
-  maxAge: '30',
-  maxMen: null,
-  maxWomen: null,
-  dynamicPricingEnabled: false,
-  dynamicPricingStep: null,
-  dynamicPricingMax: null,
-);
-final _hostEventInviteOnlyDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-invite-only-capture-draft',
-  admissionPreset: 'inviteOnly',
-  inviteCode: 'CATCH-DELHI',
-  maxMen: null,
-  maxWomen: null,
-  dynamicPricingEnabled: false,
-  dynamicPricingStep: null,
-  dynamicPricingMax: null,
-);
-final _hostEventCohortCapsDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-cohort-caps-capture-draft',
-  admissionPreset: 'fixedCohortCaps',
-  maxMen: '8',
-  maxWomen: '8',
-  dynamicPricingEnabled: false,
-  dynamicPricingStep: null,
-  dynamicPricingMax: null,
-);
-final _hostEventDynamicPricingDisabledDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-dynamic-pricing-disabled-capture-draft',
-  admissionPreset: 'balancedSingles',
-  dynamicPricingEnabled: false,
-  dynamicPricingStep: null,
-  dynamicPricingMax: null,
-);
-final _hostEventDynamicPricingValidationDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-dynamic-pricing-validation-capture-draft',
-  admissionPreset: 'balancedSingles',
-  dynamicPricingEnabled: true,
-  dynamicPricingStep: '0',
-  dynamicPricingMax: '0',
-);
-final _hostEventCustomActivityDraft = _hostEventSetupDraft.copyWith(
-  id: 'host-event-custom-activity-capture-draft',
-  activityKind: 'openActivity',
-  customActivityLabel: 'Salsa mixer',
-  interactionModel: 'hostLedProgram',
-  distance: null,
-  paceName: null,
 );
 final _hostGuestProfiles = _captureFixtures.rosterProfiles(
   count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
@@ -8046,31 +7476,6 @@ UploadedPhoto _hostMediaReviewPhoto(String id, int position, String assetPath) {
   );
 }
 
-final _hostCreateSuccessReferenceOrganizer = _dashboardHostOrganizer.copyWith(
-  name: 'Sunday sea-face crew',
-);
-final _hostCreateSuccessReferenceEvent = _hostEvent.copyWith(
-  organizerId: _hostCreateSuccessReferenceOrganizer.id,
-  startTime: DateTime(2025, 6, 22, 6, 30),
-  endTime: DateTime(2025, 6, 22, 8),
-  meetingPoint: 'Carter Road jetty, Bandra West',
-  meetingLocation: const EventMeetingLocation(
-    name: 'Carter Road jetty, Bandra West',
-    address: 'Carter Road, Bandra West',
-    latitude: 19.0702,
-    longitude: 72.8228,
-  ),
-  startingPointLat: 19.0702,
-  startingPointLng: 72.8228,
-  locationDetails: 'Meet by the jetty',
-  eventFormat: const EventFormatSnapshot.socialRun(),
-  distanceKm: 5,
-  pace: PaceLevel.easy,
-  capacityLimit: 10,
-  bookedCount: 0,
-  checkedInCount: 0,
-  waitlistedCount: 0,
-);
 final _hostLiveReferenceEvent = _hostEvent.copyWith(
   startTime: DateTime(2026, 6, 9, 20),
   endTime: DateTime(2026, 6, 9, 22),
@@ -10043,42 +9448,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     providerOverrides: hostPeopleCaptureOverrides(),
     builder: (context) => hostSavedGroupCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'program_create_draft',
-    routeIds: const ['hostCreateProgramScreen'],
-    device: CaptureDevice.claudePhone390,
-    disableAnimations: true,
-    builder: (_) => const _ProgramCreateCaptureFixture(state: 'draft'),
-  ),
-  ScreenCaptureEntry(
-    id: 'program_create_validation',
-    routeIds: const ['hostCreateProgramScreen'],
-    device: CaptureDevice.claudePhone390,
-    disableAnimations: true,
-    builder: (_) => const _ProgramCreateCaptureFixture(state: 'validation'),
-  ),
-  ScreenCaptureEntry(
-    id: 'program_create_pending',
-    routeIds: const ['hostCreateProgramScreen'],
-    device: CaptureDevice.claudePhone390,
-    disableAnimations: true,
-    builder: (_) => const _ProgramCreateCaptureFixture(state: 'pending'),
-  ),
-  ScreenCaptureEntry(
-    id: 'program_create_failure',
-    routeIds: const ['hostCreateProgramScreen'],
-    device: CaptureDevice.claudePhone390,
-    disableAnimations: true,
-    builder: (_) => const _ProgramCreateCaptureFixture(state: 'failure'),
-  ),
-  ScreenCaptureEntry(
-    id: 'program_create_large_text',
-    routeIds: const ['hostCreateProgramScreen'],
-    device: CaptureDevice.claudePhone390,
-    textScale: 2,
-    disableAnimations: true,
-    builder: (_) => const _ProgramCreateCaptureFixture(state: 'validation'),
   ),
   ScreenCaptureEntry(
     id: 'profile_self',
@@ -13628,29 +12997,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => hostOnboardingSetupCapture(),
   ),
   ScreenCaptureEntry(
-    id: 'create_club_basics',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => const CreateOrganizerScreen(restoreSavedDraft: false),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_basics_validation',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _createOrganizerCapture(showValidation: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_picked_media',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    precache: _hostMediaCaptureImages,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(useDraft: true, usePickedMedia: true),
-  ),
-  ScreenCaptureEntry(
     id: 'host_media_gallery_manager',
     routeIds: const <String>[
       'hostCreateOrganizerScreen',
@@ -13666,113 +13012,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       onRetryPhoto: (_) {},
       canAdd: true,
     ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_draft_restored',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _createOrganizerCapture(useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_details',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 1, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_host_defaults',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 2, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_event_success_defaults',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 3, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_save_draft_pending',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _HostCreateOrganizerMutationCapture(
-      mode: _HostCreateOrganizerMutationCaptureMode.saveDraftPending,
-      child: _createOrganizerCapture(useDraft: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_save_draft_error',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _HostCreateOrganizerMutationCapture(
-      mode: _HostCreateOrganizerMutationCaptureMode.saveDraftError,
-      child: _createOrganizerCapture(useDraft: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_submit_pending',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _HostCreateOrganizerMutationCapture(
-      mode: _HostCreateOrganizerMutationCaptureMode.submitPending,
-      child: _createOrganizerCapture(initialStep: 3, useDraft: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_submit_error',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _HostCreateOrganizerMutationCapture(
-      mode: _HostCreateOrganizerMutationCaptureMode.submitError,
-      child: _createOrganizerCapture(initialStep: 3, useDraft: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_submit_offline',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) => _HostCreateOrganizerMutationCapture(
-      mode: _HostCreateOrganizerMutationCaptureMode.submitOffline,
-      child: _createOrganizerCapture(initialStep: 3, useDraft: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_text_scale_2',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    textScale: 2,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 1, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_reduced_motion',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    disableAnimations: true,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 2, useDraft: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'create_club_light_dark',
-    routeIds: const <String>['hostCreateOrganizerScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateOrganizerProviderOverrides(),
-    builder: (context) =>
-        _createOrganizerCapture(initialStep: 3, useDraft: true),
   ),
   ScreenCaptureEntry(
     id: 'host_create_route_loading',
@@ -13848,55 +13087,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_create_basics_validation',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(useDraft: false, showValidation: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_custom_activity',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostEventCustomActivityDraft),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_event_photos',
-    drive: (tester) =>
-        _driveCreateDisclosure(tester, 'host.create_event.presentation'),
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    precache: _hostMediaCaptureImages,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(usePickedMedia: true),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_location_selected',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(initialStep: 1),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_draft_picker',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(
-      drafts: [_hostEventSetupDraft],
-    ),
-    builder: (context) => _createEventCapture(useDraft: false),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_draft_restored',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(),
-  ),
-  ScreenCaptureEntry(
     id: 'host_create_draft_delete_confirmation',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -13920,212 +13110,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_create_unsaved_changes_dialog',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _InlineDialogCapture(
-      dialog: CatchDialog<HostDraftExitDecision>.confirmation(
-        title: context.l10n.hostsDraftExitTitle,
-        message: context.l10n.hostsDraftExitMessage,
-        actions: hostDraftExitDialogActions(context.l10n),
-      ),
-      child: _createEventCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_save_draft_pending',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.saveDraftPending,
-      child: _createEventCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_save_draft_error',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.saveDraftError,
-      child: _createEventCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_save_draft_offline',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.saveDraftOffline,
-      child: _createEventCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_submit_pending',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.submitPending,
-      child: _createEventCapture(initialStep: 2),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_submit_error',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.submitError,
-      child: _createEventCapture(initialStep: 2),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_submit_offline',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.submitOffline,
-      child: _createEventCapture(initialStep: 2),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_photo_upload_offline',
-    drive: (tester) =>
-        _driveCreateDisclosure(tester, 'host.create_event.presentation'),
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _HostCreateEventMutationCapture(
-      mode: _HostCreateEventMutationCaptureMode.submitOffline,
-      child: _createEventCapture(usePickedMedia: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_success_manage',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: [
-      ..._hostCreateEventProviderOverrides(),
-      celebrationEffectsControllerProvider.overrideWithValue(
-        _NoopCelebrationEffectsController(),
-      ),
-    ],
-    builder: (context) => CreateEventSuccessScreen(
-      organizer: _hostCreateSuccessReferenceOrganizer,
-      event: _hostCreateSuccessReferenceEvent,
-      eventDisplayName: 'Sundowner 5K, Bandra seafront',
-      onManageEvent: () {},
-      onDone: () {},
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_event_setup',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.eventSetup'],
-    drive: (tester) async {
-      await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
-      await pumpFeatureUi(tester);
-      expect(find.text('Needs information'), findsNothing);
-    },
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      initialStep: 2,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_runtime_basics',
-    routeIds: const ['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(draft: _hostRuntimeSetupDraft),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_runtime_schedule',
-    routeIds: const ['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 1),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_runtime_guests',
-    routeIds: const ['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_runtime_review',
-    routeIds: const ['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    drive: (tester) async {
-      await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
-      await pumpFeatureUi(tester);
-    },
-    builder: (context) =>
-        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_runtime_customize',
-    routeIds: const ['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    drive: (tester) =>
-        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
-    builder: (context) =>
-        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_basics',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.createBasics',
-    ],
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_location',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.createLocation',
-    ],
-    drive: (tester) => tester.ensureVisible(find.byType(WhereStep)),
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      initialStep: 1,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
     id: 'host_create_map_picker_offline',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -14137,174 +13121,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       initialSearchError: obviousOfflineException(),
       usePlatformMapView: false,
       loadMapTiles: false,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_schedule',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.createSchedule',
-    ],
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      initialStep: 1,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_schedule_validation',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostEventPastScheduleDraft, initialStep: 1),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.createPolicy',
-    ],
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      initialStep: 2,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy_age_validation',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(
-      draft: _hostEventPolicyAgeValidationDraft,
-      initialStep: 2,
-      showValidation: true,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy_invite_only',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostEventInviteOnlyDraft, initialStep: 2),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy_cohort_caps',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) =>
-        _createEventCapture(draft: _hostEventCohortCapsDraft, initialStep: 2),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy_dynamic_pricing_disabled',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(
-      draft: _hostEventDynamicPricingDisabledDraft,
-      initialStep: 2,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_policy_dynamic_pricing_validation',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => _createEventCapture(
-      draft: _hostEventDynamicPricingValidationDraft,
-      initialStep: 2,
-      showValidation: true,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_guide',
-    drive: (tester) async {
-      await _driveCreateDisclosure(tester, 'host.create_event.customize_guide');
-      expect(find.text('Trivia social'), findsOneWidget);
-      expect(find.textContaining('A team-based format'), findsNothing);
-    },
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.createGuide'],
-    providerOverrides: _hostCreateEventProviderOverrides(
-      organizer: _marketingHostOrganizer,
-    ),
-    builder: (context) => CreateEventScreen(
-      organizer: _marketingHostOrganizer,
-      initialDraft: _marketingHostSetupDraft,
-      initialStep: 2,
-      loadMapTiles: false,
-      now: () => hostMarketingIndiaScenario.clock('planning'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_guide_question_pack',
-    drive: (tester) =>
-        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => CreateEventScreen(
-      organizer: _dashboardHostOrganizer,
-      initialDraft: _hostEventGuideDraft,
-      initialStep: 2,
-      loadMapTiles: false,
-      now: () => _captureNow,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_text_scale_2',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    textScale: 2,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => CreateEventScreen(
-      organizer: _dashboardHostOrganizer,
-      initialDraft: _hostEventSetupDraft,
-      loadMapTiles: false,
-      now: () => _captureNow,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_reduced_motion',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    disableAnimations: true,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => CreateEventScreen(
-      organizer: _dashboardHostOrganizer,
-      initialDraft: _hostEventSetupDraft,
-      initialStep: 1,
-      loadMapTiles: false,
-      now: () => _captureNow,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_create_light_dark',
-    routeIds: const <String>['hostCreateEventScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostCreateEventProviderOverrides(),
-    builder: (context) => CreateEventScreen(
-      organizer: _dashboardHostOrganizer,
-      initialDraft: _hostEventSetupDraft,
-      initialStep: 2,
-      loadMapTiles: false,
-      now: () => _captureNow,
     ),
   ),
   ScreenCaptureEntry(
@@ -17071,75 +15887,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const ChatsListScreen(initialScope: ConsumerChatScope.messages),
   ),
   ScreenCaptureEntry(
-    id: 'host_customer_add',
-    routeIds: const <String>['hostAddCustomerScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _hostShellCaptureOverrides(
-      HostOperationsFixtures.hostUid,
-    ),
-    builder: (context) => HostAddCustomerScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_customers_populated',
-    routeIds: const <String>['hostAudienceScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostCustomersProviderOverrides(),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience',
-      activeIndex: 2,
-      child: HostCustomersScreen(
-        initialOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_customers_audiences_populated',
-    routeIds: const <String>['hostAudienceScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostCustomersProviderOverrides(),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience?view=audiences',
-      activeIndex: 2,
-      child: HostCustomersScreen(
-        initialOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
-        initialView: HostAudienceView.audiences,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_saved_audience_create',
-    routeIds: const <String>['hostCreateSavedAudienceScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostCustomersProviderOverrides(),
-    ],
-    builder: (context) => HostSavedAudienceEditorScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_saved_audience_detail',
-    routeIds: const <String>['hostSavedAudienceDetailScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostCustomersProviderOverrides(),
-    ],
-    builder: (context) => HostSavedAudienceEditorScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      initialAudience: _hostSavedAudienceCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
     id: 'host_form_overview',
     routeIds: const <String>['hostFormBuilderScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -17183,52 +15930,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     providerOverrides: _audienceCaptureFormOverrides(),
     includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_response_application',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen(
-      organizerId: 'org_1',
-      responseId: 'response_1',
-    ),
-    providerOverrides: _audienceCaptureResponseOverrides(),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_response_intake',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen(
-      organizerId: 'org_1',
-      responseId: 'response_1',
-    ),
-    providerOverrides: _audienceCaptureResponseOverrides(application: false),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_response_withdrawn',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen(
-      organizerId: 'org_1',
-      responseId: 'response_1',
-    ),
-    providerOverrides: _audienceCaptureResponseOverrides(withdrawn: true),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_response_large_text',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen(
-      organizerId: 'org_1',
-      responseId: 'response_1',
-    ),
-    providerOverrides: _audienceCaptureResponseOverrides(),
-    includeOverlays: true,
-    textScale: 2,
-    disableAnimations: true,
   ),
   ScreenCaptureEntry(
     id: 'host_form_automations',
@@ -17282,147 +15983,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     includeOverlays: true,
   ),
   ScreenCaptureEntry(
-    id: 'host_response_review_submitted',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen.application(
-      organizerId: 'org_1',
-      applicationId: 'design-application-1',
+    id: 'host_customer_add',
+    routeIds: const <String>['hostAddCustomerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostShellCaptureOverrides(
+      HostOperationsFixtures.hostUid,
     ),
-    providerOverrides: [
-      ..._audienceCaptureSources('org_1'),
-      hostFormResponseDetailProvider(
-        organizerId: 'org_1',
-        responseId: _audienceCaptureJourney.responseId,
-      ).overrideWith((_) async => _audienceCaptureResponse),
-      hostApplicationDetailProvider(
-        'org_1',
-        'design-application-1',
-      ).overrideWithValue(AsyncData(_responseReviewCaptureApplication())),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_response_review_imported',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen.application(
-      organizerId: 'org_1',
-      applicationId: 'design-application-1',
-    ),
-    providerOverrides: [
-      ..._audienceCaptureSources('org_1'),
-      hostFormResponseDetailProvider(
-        organizerId: 'org_1',
-        responseId: _audienceCaptureJourney.responseId,
-      ).overrideWith((_) async => _audienceCaptureResponse),
-      hostApplicationDetailProvider(
-        'org_1',
-        'design-application-1',
-      ).overrideWithValue(
-        AsyncData(_responseReviewCaptureApplication(imported: true)),
-      ),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_response_review_revoked',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormResponseDetailScreen.application(
-      organizerId: 'org_1',
-      applicationId: 'design-application-1',
-    ),
-    providerOverrides: [
-      ..._audienceCaptureSources('org_1'),
-      hostFormResponseDetailProvider(
-        organizerId: 'org_1',
-        responseId: _audienceCaptureJourney.responseId,
-      ).overrideWith((_) async => _audienceCaptureResponse),
-      hostApplicationDetailProvider(
-        'org_1',
-        'design-application-1',
-      ).overrideWithValue(
-        AsyncData(_responseReviewCaptureApplication(revoked: true)),
-      ),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_group_overview',
-    routeIds: const <String>['hostSavedAudienceDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) =>
-        HostSavedAudienceWorkspace(audience: _audienceCaptureAudience),
-    providerOverrides: _audienceCaptureGroupOverrides(),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_group_edit',
-    routeIds: const <String>['hostSavedAudienceDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) =>
-        HostSavedAudienceWorkspace(audience: _audienceCaptureAudience),
-    providerOverrides: _audienceCaptureGroupOverrides(),
-    includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'Edit rules'),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_group_create',
-    routeIds: const <String>['hostCreateSavedAudienceScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostSavedAudienceEditorScreen(
-      organizerId: _audienceCaptureAudience.organizerId,
-    ),
-    providerOverrides: _audienceCaptureGroupOverrides(),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_person_overview',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostCustomerDetailScreen(
+    builder: (context) => HostAddCustomerScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      contactId: 'capture-customer-ananya',
     ),
-    providerOverrides: _audienceCapturePersonOverrides(),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_person_details',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostCustomerDetailScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      contactId: 'capture-customer-ananya',
-    ),
-    providerOverrides: _audienceCapturePersonOverrides(),
-    includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'Details'),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_person_notes',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostCustomerDetailScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      contactId: 'capture-customer-ananya',
-    ),
-    providerOverrides: _audienceCapturePersonOverrides(),
-    includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'Notes'),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_person_history',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => HostCustomerDetailScreen(
-      organizerId: HostOperationsFixtures.primaryOrganizer.id,
-      contactId: 'capture-customer-ananya',
-    ),
-    providerOverrides: _audienceCapturePersonOverrides(),
-    includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'History'),
   ),
   ScreenCaptureEntry(
     id: 'host_add_person',
@@ -17444,33 +16013,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => HostFormBuilderScreen(
       organizerId: HostOperationsFixtures.primaryOrganizer.id,
       formId: 'saturday-social-application',
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_customer_detail_memory',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      uidProvider.overrideWithValue(
-        const AsyncData<String?>(HostOperationsFixtures.hostUid),
-      ),
-      hostAudienceContactDetailProvider(
-        HostOperationsFixtures.primaryOrganizer.id,
-        'capture-customer-ananya',
-      ).overrideWithValue(AsyncData(_hostCustomerMemoryDetail())),
-      hostCommunicationPlanProvider(
-        HostOperationsFixtures.primaryOrganizer.id,
-        'capture-customer-ananya',
-      ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience',
-      activeIndex: 2,
-      child: HostCustomerDetailScreen(
-        organizerId: HostOperationsFixtures.primaryOrganizer.id,
-        contactId: 'capture-customer-ananya',
-      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -18793,56 +17335,3 @@ final _profileFixture = ProfileView(
     ),
   ],
 );
-
-class _ProgramCreateCaptureFixture extends StatefulWidget {
-  const _ProgramCreateCaptureFixture({required this.state});
-  final String state;
-  @override
-  State<_ProgramCreateCaptureFixture> createState() =>
-      _ProgramCreateCaptureFixtureState();
-}
-
-class _ProgramCreateCaptureFixtureState
-    extends State<_ProgramCreateCaptureFixture> {
-  late final ProgramCreateController controller;
-  @override
-  void initState() {
-    super.initState();
-    final valid = widget.state == 'pending' || widget.state == 'failure';
-    controller = ProgramCreateController(
-      organizerId: 'org',
-      requestId: 'preview-only-request',
-      isActorCurrent: () => true,
-      initialValues: valid
-          ? ProgramCreateValues(
-              title: 'Kapoor–Shah Wedding',
-              kind: ProgramKind.wedding,
-              timezone: 'Asia/Kolkata',
-              startsAt: DateTime(2026, 10, 5),
-              endsAt: DateTime(2026, 10, 8),
-            )
-          : const ProgramCreateValues(),
-      create: (_, _) => widget.state == 'pending'
-          ? Completer<ProgramMutationResult>().future
-          : Future.error(StateError('Connection interrupted. Please retry.')),
-      readSaved: (_) => Future.error(StateError('No persistence in a preview')),
-      refreshPrograms: (_) async => [],
-    );
-    if (widget.state != 'draft') unawaited(controller.submit());
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => CatchScaffold.stepFlow(
-    body: ProgramCreatePageBody(
-      organizerName: 'Kapoor Family',
-      controller: controller,
-      onSaved: (_) {},
-    ),
-  );
-}

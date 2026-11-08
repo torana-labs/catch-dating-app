@@ -29,11 +29,6 @@ String? _operatorEventUriRedirect(BuildContext _, GoRouterState state) =>
       eventId: state.pathParameters['eventId']!,
     );
 
-String? _routeContactNameExtra(GoRouterState state) => switch (state.extra) {
-  HostCustomerDetailRouteArguments(:final displayName) => displayName,
-  _ => null,
-};
-
 PublicProfile? _routePublicProfileExtra(GoRouterState state) =>
     switch (state.extra) {
       final PublicProfile profile => profile,

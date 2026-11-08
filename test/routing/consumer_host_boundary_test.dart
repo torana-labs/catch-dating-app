@@ -56,18 +56,8 @@ void main() {
       ).existsSync(),
       isFalse,
     );
-    expect(
-      File(
-        'lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart',
-      ).existsSync(),
-      isTrue,
-    );
-    expect(
-      File(
-        'lib/hosts/presentation/event_management/create/create_event_screen.dart',
-      ).existsSync(),
-      isTrue,
-    );
+    expect(File('lib/hosts/onboarding/setup_screen.dart').existsSync(), isTrue);
+    expect(File('lib/hosts/create/create_screen.dart').existsSync(), isTrue);
     expect(
       File(
         'lib/hosts/presentation/organizer_management/host_team_management_controller.dart',

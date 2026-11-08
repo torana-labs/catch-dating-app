@@ -285,10 +285,10 @@
     },
     {
       "routeId": "hostTodayFocusScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.home as the account-and-organizer-scoped quiet-day focus route.",
-      "screenId": "screen.host.home"
+      "reason": "Redirect-only: the focus link keeps its name and path and lands on Today.",
+      "canonicalRouteId": "hostTodayScreen"
     },
     {
       "routeId": "hostEventsScreen",
@@ -473,10 +473,9 @@
     },
     {
       "routeId": "hostWorkScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.host.work",
-      "reason": "Covered by screen.host.work as the unified staff assignment picker for event and program scopes."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkEventScreen",
@@ -487,31 +486,27 @@
     },
     {
       "routeId": "hostWorkProgramScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.work",
-      "reason": "Covered by screen.programs.work as the scoped program workspace landing route."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkArrivalsScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.arrivals",
-      "reason": "Covered by screen.programs.arrivals as the station-scoped greeter roster."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkDispatchScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.dispatch",
-      "reason": "Covered by screen.programs.dispatch as the station-scoped dispatch desk."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkHotelScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.hotel_desk",
-      "reason": "Covered by screen.programs.hotel_desk as the hotel-scoped inbound view."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkHotelRoomsScreen",
@@ -522,31 +517,27 @@
     },
     {
       "routeId": "hostWorkDoorScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.door",
-      "reason": "Covered by screen.programs.door as the function-scoped door check-in roster."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkNowScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "reason": "Covered by screen.programs.now_next as the function-lead timeline board.",
-      "screenId": "screen.programs.now_next"
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkAttentionScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "reason": "Covered by screen.programs.attention as the function-lead duty-alert feed.",
-      "screenId": "screen.programs.attention"
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkTripsScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.trips",
-      "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkGuestsScreen",
@@ -557,10 +548,9 @@
     },
     {
       "routeId": "hostWorkImportScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.import",
-      "reason": "Covered by screen.programs.import as the staff manifest mapping and import surface; the callable re-checks guestRelations server-side."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkPhoneImportScreen",
@@ -571,17 +561,15 @@
     },
     {
       "routeId": "hostWorkAttendanceReportScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.attendance_report",
-      "reason": "Covered by screen.programs.attendance_report as the attendance reconciliation surface."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostWorkCountsScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.counts",
-      "reason": "Covered by screen.programs.counts as the stakeholder counts overview."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramsScreen",
@@ -592,45 +580,39 @@
     },
     {
       "routeId": "hostCreateProgramScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.create",
-      "reason": "Covered by screen.programs.create as the recoverable organizer-scoped Program creation flow entered from Events."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramWorkspaceScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.workspace",
-      "reason": "Covered by screen.programs.workspace as the organizer schedule and function overview."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramLodgingScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "reason": "Covered by screen.programs.lodging: the routed state and its same-family scaffold delegate provide typed pushed-route composition for loading, error, expired authority, membership, setup editing and proposal review. This structural contract does not claim a compiled feature contract or routed capture proof.",
-      "screenId": "screen.programs.lodging"
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramGuestsScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.guests",
-      "reason": "Covered by screen.programs.guests as the household and function RSVP matrix."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramTeamScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.team",
-      "reason": "Covered by screen.programs.team as the staff roster and duties surface."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramImportScreen",
-      "status": "contracted",
+      "status": "excluded",
       "priority": "P1",
-      "screenId": "screen.programs.import",
-      "reason": "Covered by screen.programs.import as the manifest mapping and import result surface."
+      "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
     {
       "routeId": "hostProgramMomentsScreen",

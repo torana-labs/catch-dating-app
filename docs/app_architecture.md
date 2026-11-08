@@ -4353,8 +4353,7 @@ Reference files:
 - `functions/src/organizers/organizerCommunicationPlans.ts`
 - `lib/contexts/audience/domain/crm/host_communication_plan.dart`
 - `lib/contexts/audience/data/crm/host_communication_repository.dart`
-- `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
-- `lib/hosts/presentation/customers/host_customer_detail_card.dart`
+- `lib/hosts/people/person_screen.dart`
 
 The server resolves a named communication intent against current identity,
 permission, suppression, endpoint, and sender facts. The result is a momentary
@@ -4411,7 +4410,7 @@ Reference files:
 - `functions/src/organizers/organizerManualSendTasks.ts`
 - `lib/contexts/audience/domain/crm/host_manual_send_task.dart`
 - `lib/contexts/audience/data/crm/host_communication_repository.dart`
-- `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
+- `lib/hosts/people/person_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_list.dart`
 - `test/hosts/host_crm_repository_test.dart`
 - `test/hosts/host_inbox_screen_test.dart`
@@ -4475,9 +4474,8 @@ Reference files:
 - `functions/src/organizers/organizerCampaigns.ts`
 - `lib/contexts/audience/domain/crm/host_saved_audience.dart`
 - `lib/contexts/audience/data/crm/host_saved_audience_repository.dart`
-- `lib/hosts/presentation/customers/host_customers_screen.dart`
-- `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
-- `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
+- `lib/hosts/people/people_screen.dart`
+- `lib/hosts/people/saved_group_screen.dart`
 - `lib/hosts/presentation/inbox/host_campaign_editor.dart`
 
 Customers owns reusable CRM audience definitions through its first-class

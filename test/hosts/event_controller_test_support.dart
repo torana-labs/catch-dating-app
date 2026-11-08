@@ -15,10 +15,8 @@ import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_jou
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -245,10 +243,6 @@ class TestPrivateEventPreferencesController {
   EventOfferPreferencesUpdateRequest buildPreviewRequest(
     PrivateEventPreferenceIntents value,
   ) => _controller.previewRequest(value);
-  Widget screen({required VoidCallback onBack}) => UncontrolledProviderScope(
-    container: container,
-    child: PrivateEventPreferencesScreen(scope: scope, onBack: onBack),
-  );
 }
 
 class _SeededEventOfferPreferencesController
@@ -441,10 +435,6 @@ class TestEventPublicationController {
   void invalidateActor() => _controller.invalidateActor();
   Future<void> changeTo(String value) => _controller.changeTo(value);
   Future<void> retry() => _controller.retry();
-  Widget screen({required VoidCallback onBack}) => UncontrolledProviderScope(
-    container: container,
-    child: EventPublicationScreen(scope: scope, onBack: onBack),
-  );
 }
 
 class _SeededHostManagerEventSetupDefaultsController

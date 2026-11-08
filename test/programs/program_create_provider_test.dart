@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -10,18 +9,14 @@ import 'package:catch_dating_app/contexts/programmes/data/program_setup_reposito
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../support/catch_test_fonts.dart';
-import '../ui_captures/support/capture_device.dart';
-import '../ui_captures/support/capture_pump.dart';
 
 const _scope = (accountId: 'account', organizerId: 'organizer');
 const _empty = ProgramCreateJournalValues(
@@ -204,47 +199,6 @@ void main() {
       expect(inventory.commands, isEmpty);
     },
   );
-
-  for (final recoveredEmpty in [false, true]) {
-    testWidgets(
-      'production provider form accepts title recoveredEmpty=$recoveredEmpty',
-      (tester) async {
-        final (container, controller, inventory) = await _load(
-          values: recoveredEmpty ? _empty : null,
-          submitted: recoveredEmpty ? _empty : null,
-        );
-        await captureCatchWidget(
-          tester,
-          id: recoveredEmpty
-              ? 'program-create-recovered-empty'
-              : 'program-create-fresh',
-          outputDirectory: Directory('build/reports/program-create-regression'),
-          device: CaptureDevice.iphone17Pro,
-          builder: (_) => UncontrolledProviderScope(
-            container: container,
-            child: const ProgramCreateScreen(organizerId: 'organizer'),
-          ),
-          drive: (tester) async {
-            expect(controller.fieldsLocked, isFalse);
-            expect(find.text('Retry and confirm program'), findsNothing);
-            expect(
-              find.text('Something went wrong. Please try again.'),
-              findsNothing,
-            );
-            final title = find.descendant(
-              of: find.byKey(const ValueKey('program-create-title')),
-              matching: find.byType(TextField),
-            );
-            await tester.enterText(title, 'Saket weekend');
-            await tester.pump();
-            expect(controller.values.title, 'Saket weekend');
-            expect(inventory.commands, isEmpty);
-            expect(tester.takeException(), isNull);
-          },
-        );
-      },
-    );
-  }
 
   test(
     'partially empty submitted command is retained conservatively',

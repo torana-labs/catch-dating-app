@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
@@ -11,7 +10,6 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_r
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
-import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
@@ -33,8 +31,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rai
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
@@ -69,8 +65,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
-import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 
 import '../events/events_test_helpers.dart' as event_test;
@@ -378,30 +372,6 @@ ExternalEvent _buildExternalExploreEvent({
         primary: true,
       ),
     ],
-  );
-}
-
-Finder _field(String label) {
-  return find.byWidgetPredicate(
-    (widget) => widget is CatchField && widget.title == label,
-  );
-}
-
-Finder _fieldChoice(String label, {bool? selected}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchChip &&
-        widget.label == label &&
-        (selected == null || widget.selected == selected),
-  );
-}
-
-Finder _fieldOptionCard(String title, {bool? selected}) {
-  return find.byWidgetPredicate(
-    (widget) =>
-        widget is CatchChoiceTile &&
-        widget.title == title &&
-        (selected == null || widget.selected == selected),
   );
 }
 

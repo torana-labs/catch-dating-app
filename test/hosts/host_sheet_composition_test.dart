@@ -1,8 +1,6 @@
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
@@ -217,69 +215,6 @@ void main() {
           expect(selected, 1);
           expect(deleted, 1);
           expect(tester.takeException(), isNull);
-        },
-      );
-      testWidgets(
-        'People filters use muted ruled groups without instructions: dark=$dark scale=$scale',
-        (tester) async {
-          tester.view.physicalSize = const Size(320, 874);
-          tester.view.devicePixelRatio = 1;
-          addTearDown(tester.view.reset);
-          await tester.pumpWidget(
-            _app(
-              dark,
-              scale,
-              const HostCustomerFilterSheet(
-                smsReadiness: HostCrmChannelReadiness.currentEventOnly,
-                manualTagVocabulary: [],
-              ),
-            ),
-          );
-          final sheet = tester.widget<CatchSheet>(find.byType(CatchSheet));
-          expect(sheet.subtitle, isNull);
-          if (scale == 1) {
-            expect(
-              tester.getCenter(find.text('Filter people')).dy,
-              closeTo(tester.getCenter(find.text('Reset all')).dy, 0.1),
-            );
-          }
-          final headings = tester
-              .widgetList<CatchSectionHeader>(find.byType(CatchSectionHeader))
-              .toList();
-          expect(headings.length, greaterThan(1));
-          final tokens = CatchTokens.of(
-            tester.element(find.byType(CatchSheet)),
-          );
-          for (final heading in headings) {
-            expect(heading.color, tokens.ink2);
-            expect(heading.textVariant, CatchKickerTextVariant.fieldSection);
-            final group = find
-                .ancestor(
-                  of: find.byWidget(heading),
-                  matching: find.byType(CatchSection),
-                )
-                .first;
-            final divider = find
-                .descendant(of: group, matching: find.byType(CatchDivider))
-                .first;
-            final chips = find.descendant(
-              of: group,
-              matching: find.byType(CatchChip),
-            );
-            expect(chips, findsWidgets);
-            expect(
-              tester.getTopLeft(chips.first).dy -
-                  tester.getBottomLeft(divider).dy,
-              closeTo(CatchFieldTokens.rowVerticalPadding, 0.1),
-              reason: 'The divider must not touch the first chip surface.',
-            );
-          }
-          final close = find.widgetWithText(CatchButton, 'Close');
-          expect(
-            tester.widget<CatchButton>(close).variant,
-            CatchButtonVariant.secondary,
-          );
-          expect(close.hitTestable(), findsOneWidget);
         },
       );
     }

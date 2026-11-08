@@ -21,7 +21,6 @@ import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_mom
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_roster_summary.dart';
@@ -56,7 +55,6 @@ export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 
 part 'host_event_manage_actions.dart';
 part 'host_event_manage_route_screen.dart';
-part 'host_event_publication_route_screen.dart';
 
 CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) =>
     value == null ? null : catchAsyncStateFromAsyncValue(value);

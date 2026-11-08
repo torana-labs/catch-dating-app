@@ -27,15 +27,9 @@ const rootHeader = /\bCatchLegacyTopBar\.primaryRail\s*\(/gu;
 const protectedHostPaths = [
   'lib/hosts/today/',
   'lib/hosts/events/presentation/',
-  'lib/hosts/presentation/customers/host_customers_screen.dart',
-  'lib/hosts/presentation/customers/host_customers_list.dart',
-  'lib/hosts/presentation/customers/host_saved_audiences_workspace.dart',
-  'lib/hosts/presentation/customers/host_saved_audience_section.dart',
-  'lib/hosts/presentation/customers/host_customer_applications_section.dart',
   'lib/hosts/presentation/forms/host_form_responses_section.dart',
   'lib/hosts/presentation/forms/host_form_overview_section_list.dart',
   'lib/hosts/presentation/forms/host_form_automations_screen.dart',
-  'lib/hosts/presentation/inbox/host_new_message_screen.dart',
   'lib/hosts/presentation/host_operations/host_team_hosted_organizers_section.dart',
 ];
 const unresolvedHostPrefixes = [

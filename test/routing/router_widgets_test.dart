@@ -15,11 +15,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/hosts/create/create_screen.dart';
-import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
-import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
@@ -302,34 +298,6 @@ void main() {
       expect(redirected.queryParametersAll, original.queryParametersAll);
     },
   );
-
-  test('host Audience route resolves all four peer workspaces', () {
-    final audiences =
-        app_router.hostAudienceScreenForUri(
-              Uri.parse(
-                '/host/audience?view=audiences&organizerId=organizer-1&contactId=contact-1',
-              ),
-            )
-            as HostCustomersScreen;
-    final forms =
-        app_router.hostAudienceScreenForUri(
-              Uri.parse('/host/audience?view=forms&organizerId=organizer-1'),
-            )
-            as HostFormsScreen;
-    final responses =
-        app_router.hostAudienceScreenForUri(
-              Uri.parse(
-                '/host/audience?view=responses&organizerId=organizer-1&formId=form-1',
-              ),
-            )
-            as HostResponsesScreen;
-
-    expect(audiences.initialView, HostAudienceView.audiences);
-    expect(audiences.initialContactId, 'contact-1');
-    expect(forms.initialOrganizerId, 'organizer-1');
-    expect(responses.organizerId, 'organizer-1');
-    expect(responses.formId, 'form-1');
-  });
 
   test('host inbox route restores the campaigns saved audience', () {
     final screen = app_router.hostInboxScreenForUri(

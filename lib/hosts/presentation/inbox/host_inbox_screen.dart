@@ -23,7 +23,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_aud
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -42,6 +41,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_inbox_workspace_section.dart';
+
+/// What the new-message route hands back: the thread to open and its scope.
+class HostNewMessageSelection {
+  const HostNewMessageSelection({
+    required this.endpointId,
+    required this.scope,
+  });
+  final String endpointId;
+  final HostInboxScope scope;
+}
 
 enum HostMessagingWorkspace { inbox, campaigns }
 

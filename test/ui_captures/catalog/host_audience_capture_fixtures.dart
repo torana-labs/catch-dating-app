@@ -1,95 +1,10 @@
 part of 'screen_capture_catalog.dart';
 
 final _audienceCaptureJourney = HostAudienceJourneyFixture.maya;
-final _personCaptureJourney = HostAudienceJourneyFixture.ananya(
-  HostOperationsFixtures.primaryOrganizer.id,
-);
 Map<String, Object?> _audienceCaptureDetailMap() =>
     _audienceCaptureJourney.responseData();
 
-final _audienceCaptureAudience = HostSavedAudience(
-  organizerId: 'preview-organizer',
-  audienceId: 'preview-audience',
-  name: 'Sunday regulars',
-  status: 'active',
-  definition: const HostSavedAudienceDefinition(
-    join: HostSavedAudienceJoin.all,
-    predicates: [HostSavedAudienceAttendedEvent('sunday-social')],
-  ),
-  definitionHash: 'preview-definition',
-  definitionVersion: 2,
-  revision: 1,
-  lastPreviewMatchCount: 1,
-  lastPreviewReachSummary: _audienceCaptureReach,
-  lastPreviewAt: DateTime(2026, 9, 3, 12),
-  createdAt: DateTime(2026, 9, 3),
-  updatedAt: DateTime(2026, 9, 3),
-);
-const _audienceCaptureReach = HostAudienceReachSummary(
-  inCatch: 0,
-  automatic: 0,
-  byHand: 1,
-  unavailable: 0,
-);
-const _audienceCaptureOptions = HostSavedAudienceFilterOptions(
-  forms: [
-    HostAudienceSourceOption(
-      id: 'form_1',
-      title: 'Saturday Social application',
-    ),
-  ],
-  questions: [
-    HostAudienceQuestionOption(
-      formId: 'form_1',
-      versionId: 'application-v1',
-      version: 1,
-      formTitle: 'Saturday Social application',
-      questionId: 'drink',
-      label: 'Favorite drink',
-      options: [HostAudienceAnswerOption(label: 'Coffee', value: 'coffee')],
-    ),
-  ],
-  events: [
-    HostAudienceSourceOption(id: 'sunday-social', title: 'Sunday social'),
-  ],
-  tags: [],
-);
-
-class _AudienceCapturePreviewAudienceMembers
-    extends HostSavedAudienceMembersController {
-  @override
-  Future<HostSavedAudienceMembersState> build(
-    HostSavedAudience audience,
-  ) async {
-    const members = [
-      HostSavedAudiencePreviewContact(
-        contactId: 'preview-ada',
-        displayName: 'Ada',
-      ),
-    ];
-    return HostSavedAudienceMembersState(
-      members: members,
-      preview: HostSavedAudiencePreview(
-        audience: audience,
-        matchCount: 1,
-        reachSummary: _audienceCaptureReach,
-        sample: members,
-        evaluatedAt: DateTime(2026, 9, 3, 12),
-      ),
-    );
-  }
-}
-
 final _audienceCaptureApplication = _audienceCaptureJourney.application();
-
-HostApplicationDetail _responseReviewCaptureApplication({
-  bool imported = false,
-  bool revoked = false,
-}) => _audienceCaptureJourney.application(
-  imported: imported,
-  revoked: revoked,
-  status: HostApplicationReviewStatus.submitted,
-);
 
 class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
@@ -149,40 +64,6 @@ class _AudienceCaptureResponses extends HostFormResponsesController {
                 entry.application?.reviewStatus == request.reviewStatus,
           )
           .toList(),
-      nextCursor: null,
-    );
-  }
-}
-
-class _AudienceCaptureApplications extends HostApplicationsDirectoryController {
-  @override
-  Future<HostApplicationsDirectoryState> build(
-    HostApplicationListRequest request,
-  ) async {
-    final story = _personCaptureJourney;
-    if (request.organizerId != story.organizerId ||
-        request.contactId != story.contactId) {
-      throw StateError(
-        'Person capture requested an unrelated application scope',
-      );
-    }
-    final application = story.application();
-    return HostApplicationsDirectoryState(
-      applications: [
-        HostApplicationSummary(
-          applicationId: application.applicationId,
-          formId: application.formId,
-          formVersionId: application.formVersionId,
-          targetKind: application.targetKind,
-          targetId: application.targetId,
-          applicantDisplayName: application.applicantDisplayName,
-          reviewStatus: application.reviewStatus,
-          sourceKind: HostApplicationSourceKind.native,
-          providerId: null,
-          submittedAt: application.submittedAt,
-          revision: application.revision,
-        ),
-      ],
       nextCursor: null,
     );
   }
@@ -401,77 +282,9 @@ List<Object> _audienceCaptureFormOverrides({bool published = false}) => [
     (_) => _AudienceCaptureResponses(),
   ),
 ];
-List<Object> _audienceCaptureResponseOverrides({
-  bool application = true,
-  bool withdrawn = false,
-}) => [
-  ..._audienceCaptureSources('org_1'),
-  hostApplicationDetailProvider(
-    'org_1',
-    'design-application-1',
-  ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
-  hostFormResponseCanApplyProvider(
-    organizerId: 'org_1',
-    responseId: 'response_1',
-  ).overrideWith((_) async => application),
-  hostFormResponseDetailProvider(
-    organizerId: 'org_1',
-    responseId: 'response_1',
-  ).overrideWith(
-    (_) async => _audienceCaptureJourney.response(
-      linked: application,
-      withdrawn: withdrawn,
-    ),
-  ),
-];
 List<Object> _audienceCaptureAutomationOverrides() => [
   ..._audienceCaptureSources('org_1'),
   hostFormAutomationsControllerProvider.overrideWith2(
     (_) => _AudienceCaptureAutomations(),
   ),
 ];
-List<Object> _audienceCaptureGroupOverrides() => [
-  ..._audienceCaptureSources(
-    _audienceCaptureAudience.organizerId,
-    options: _audienceCaptureOptions,
-  ),
-  hostSavedAudienceMembersControllerProvider(
-    _audienceCaptureAudience,
-  ).overrideWith(_AudienceCapturePreviewAudienceMembers.new),
-];
-List<Object> _audienceCapturePersonOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  uidProvider.overrideWithValue(
-    const AsyncData<String?>(HostOperationsFixtures.hostUid),
-  ),
-  ..._audienceCaptureSources(
-    _personCaptureJourney.organizerId,
-    options: _personCaptureJourney.filterOptions,
-  ),
-  hostAudienceContactDetailProvider(
-    HostOperationsFixtures.primaryOrganizer.id,
-    'capture-customer-ananya',
-  ).overrideWithValue(AsyncData(_hostCustomerMemoryDetail())),
-  hostCommunicationPlanProvider(
-    HostOperationsFixtures.primaryOrganizer.id,
-    'capture-customer-ananya',
-  ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
-  hostApplicationDetailProvider(
-    _personCaptureJourney.organizerId,
-    _personCaptureJourney.applicationId,
-  ).overrideWithValue(AsyncData(_personCaptureJourney.application())),
-  hostFormResponseDetailProvider(
-    organizerId: _personCaptureJourney.organizerId,
-    responseId: _personCaptureJourney.responseId,
-  ).overrideWith((_) async => _personCaptureJourney.response()),
-  hostApplicationsDirectoryControllerProvider.overrideWith2(
-    (_) => _AudienceCaptureApplications(),
-  ),
-];
-Future<void> _audienceCaptureOpenTab(WidgetTester tester, String label) async {
-  final tab = find.text(label).first;
-  await tester.ensureVisible(tab);
-  await pumpFeatureUi(tester);
-  await tester.tap(tab);
-  await pumpFeatureUi(tester);
-}

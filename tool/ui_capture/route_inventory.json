@@ -2011,42 +2011,6 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_actions.dart:08b4aae65f524ba0a3ecd66ab39c02d2880bd4b880622c21b7930719c612cc02:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles),fullscreenDialog:true)",
-      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_actions.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_actions.dart:fa27d5e9ff128eac9d1aa1a2dc30114be8469a6875f403e49931c92815957b2a:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles),fullscreenDialog:true)",
-      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_actions.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.organizer.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_content_section.dart:1e1dddbe0b83e173e5f88f8f65fdc38b48abc65cb082d49f305a865d7af4c284:1",
-      "routeExpression": "MaterialPageRoute(fullscreenDialog:true,builder:(_)=>LocationPickerScreen(initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:LocationCoordinate(location?.latitude??city?.latitude??0,location?.longitude??city?.longitude??0),initialLabel:current?.name,countryIsoCode:city?.countryIsoCode))",
-      "sourcePath": "lib/hosts/presentation/event_management/create/private_event_content_section.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:LocationCoordinate(location?.latitude??city?.latitude??0,location?.longitude??city?.longitude??0),initialLabel:current?.name,countryIsoCode:city?.countryIsoCode)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:b2930c77989f03b56e9e4578c003c71f99071a69b44583458a9bd0ce0c1c8c15:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName),fullscreenDialog:true)",
-      "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName)",
-      "presentationTarget": "LocationPickerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
       "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1696a6c08eafdac7875b5796bb21df600ae5340239586b467192f3485ff535c3:1",
       "routeExpression": "MaterialPageRoute(fullscreenDialog:true,builder:(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles))",
       "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",

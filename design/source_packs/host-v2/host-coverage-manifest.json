@@ -37,7 +37,7 @@
       "path": "/host/today",
       "label": "Today",
       "widget": "HostTodayScreen",
-      "source": "lib/hosts/today/presentation/host_today_screen.dart",
+      "source": "lib/hosts/today/host_today_screen.dart",
       "captureId": "host_home_dashboard"
     },
     {
@@ -54,9 +54,9 @@
       "routeId": "hostAudienceScreen",
       "path": "/host/audience",
       "label": "People",
-      "widget": "HostCustomersScreen + HostFormsScreen",
+      "widget": "HostPeopleScreen + HostFormsScreen",
       "source": "lib/hosts/presentation/host_audience_view.dart",
-      "captureId": "host_customers_populated",
+      "captureId": "host_people_phone",
       "otherIndexRouteIds": [
         "hostInboxScreen"
       ]

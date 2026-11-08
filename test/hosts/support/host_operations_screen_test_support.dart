@@ -497,25 +497,3 @@ Uint8List _testPngBytes() => base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
   'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
 );
-
-class _EmptyHostCustomersDirectoryController
-    extends HostCustomersDirectoryController {
-  _EmptyHostCustomersDirectoryController(this.requests);
-
-  final List<HostCustomersDirectoryRequest> requests;
-
-  @override
-  Future<HostCustomersDirectoryState> build(
-    HostCustomersDirectoryRequest request,
-  ) async {
-    requests.add(request);
-    return const HostCustomersDirectoryState(
-      contacts: [],
-      nextCursor: null,
-      matchCount: 0,
-      matchCountCoverage: HostCustomerMatchCountCoverage.exact,
-      sourceCoverage: HostCustomerDirectoryCoverage.exact,
-      projectionVersion: 1,
-    );
-  }
-}
