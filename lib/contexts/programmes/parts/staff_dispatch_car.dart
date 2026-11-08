@@ -112,8 +112,8 @@ class StaffDispatchCar extends StatelessWidget {
               ),
             ],
           ),
-          CatchSection(
-            dividers: CatchSectionPlacement.none,
+          CatchStack(
+            gap: CatchStackGap.none,
             children: [
               for (final party in parties)
                 CatchIndexRow(

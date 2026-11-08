@@ -53,13 +53,13 @@ class StaffHotelTrip extends StatelessWidget {
     };
     return CatchSurface(
       key: ValueKey<String>('staff-hotel-trip-${trip.tripId}'),
-      child: CatchSection(
-        dividers: CatchSectionPlacement.none,
+      child: CatchStack(
+        gap: CatchStackGap.none,
         children: [
           CatchIndexRow(
             icon: CatchIcons.route,
-            title: [?trip.vehicleClassLabel, trip.plateDisplay].join(' · '),
-            subtitle: trip.vendorName,
+            title: trip.plateDisplay,
+            subtitle: [?trip.vehicleClassLabel, ?trip.vendorName].join(' · '),
             status: status,
             statusTone: tone,
             density: CatchIndexRowSize.compact,

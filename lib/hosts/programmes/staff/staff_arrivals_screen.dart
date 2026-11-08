@@ -12,6 +12,8 @@ import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_arrival_sh
 import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notices.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -62,24 +64,28 @@ class _StaffArrivalsScreenState extends ConsumerState<StaffArrivalsScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final operations = watchOperations();
-    final roster = ref.watch(
-      programArrivalsRosterViewProvider(widget.programId, widget.pickupPointId),
+    final roster = catchAsyncStateFromAsyncValue(
+      ref.watch(
+        programArrivalsRosterViewProvider(
+          widget.programId,
+          widget.pickupPointId,
+        ),
+      ),
     );
     final state = switch (roster) {
-      AsyncData(:final value) => StaffArrivalsState.fromRoster(
-        value.value,
-        outbox: operations.outbox,
-        savedAt: value.snapshotAt,
-      ),
-      AsyncError() => const StaffArrivalsState.error(),
+      CatchAsyncState(hasData: true, :final value?) =>
+        StaffArrivalsState.fromRoster(
+          value.value,
+          outbox: operations.outbox,
+          savedAt: value.snapshotAt,
+        ),
+      CatchAsyncState(hasError: true) => const StaffArrivalsState.error(),
       _ => const StaffArrivalsState.loading(),
     };
     final errorMessage = operationsErrorMessage(operations);
-    final access = ref
-        .watch(programWorkEntryProvider(widget.programId, null))
-        .asData
-        ?.value
-        .value;
+    final access = catchAsyncStateFromAsyncValue(
+      ref.watch(programWorkEntryProvider(widget.programId, null)),
+    ).value?.value;
     final canDispatch =
         widget.pickupPointId != null &&
         access != null &&

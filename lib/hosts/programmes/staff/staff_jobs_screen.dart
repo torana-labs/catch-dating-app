@@ -4,6 +4,8 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/programmes/staff/staff_jobs_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_jobs_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -97,17 +99,18 @@ class _StaffJobsScreenState extends ConsumerState<StaffJobsScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final now = widget.now?.call() ?? DateTime.now();
-    final access = ref.watch(_provider);
+    final access = catchAsyncStateFromAsyncValue(ref.watch(_provider));
     final state = switch (access) {
-      AsyncData(:final value) => StaffJobsState.fromAccess(
-        value.value,
-        now: now,
-        savedAt: value.snapshotAt,
-      ),
-      AsyncError() => const StaffJobsState.error(),
+      CatchAsyncState(hasData: true, :final value?) =>
+        StaffJobsState.fromAccess(
+          value.value,
+          now: now,
+          savedAt: value.snapshotAt,
+        ),
+      CatchAsyncState(hasError: true) => const StaffJobsState.error(),
       _ => const StaffJobsState.loading(),
     };
-    final programId = access.asData?.value.value.programId ?? widget.programId;
+    final programId = access.value?.value.programId ?? widget.programId;
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
@@ -122,7 +125,7 @@ class _StaffJobsScreenState extends ConsumerState<StaffJobsScreen> {
         body: StaffJobsBody(
           state: state,
           onOpen: (job) => _open(programId, job),
-          onLink: (link) => _link(access.asData?.value.value, programId, link),
+          onLink: (link) => _link(access.value?.value, programId, link),
           onRetry: () => ref.invalidate(_provider),
         ),
       ),

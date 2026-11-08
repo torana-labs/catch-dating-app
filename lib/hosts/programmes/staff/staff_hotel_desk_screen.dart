@@ -4,9 +4,13 @@ import 'package:catch_dating_app/contexts/programmes/data/program_work_repositor
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_state.dart';
+import 'package:catch_dating_app/programs/presentation/program_stay_actions_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_trip_actions_controller.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -69,18 +73,18 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final now = widget.now?.call() ?? DateTime.now();
-    final inbound = ref.watch(_inbound);
-    final rooms = ref
-        .watch(programHotelRoomsProvider(widget.programId, widget.hotelId))
-        .asData
-        ?.value;
+    final inbound = catchAsyncStateFromAsyncValue(ref.watch(_inbound));
+    final rooms = catchAsyncStateFromAsyncValue(
+      ref.watch(programHotelRoomsProvider(widget.programId, widget.hotelId)),
+    ).value;
     final state = switch (inbound) {
-      AsyncData(:final value) => StaffHotelDeskState.fromInbound(
-        value,
-        rooms: rooms,
-        paged: _tripCursors.isNotEmpty || _expectedCursors.isNotEmpty,
-      ),
-      AsyncError() => const StaffHotelDeskState.error(),
+      CatchAsyncState(hasData: true, :final value?) =>
+        StaffHotelDeskState.fromInbound(
+          value,
+          rooms: rooms,
+          paged: _tripCursors.isNotEmpty || _expectedCursors.isNotEmpty,
+        ),
+      CatchAsyncState(hasError: true) => const StaffHotelDeskState.error(),
       _ => const StaffHotelDeskState.loading(),
     };
     return CatchRoot(
@@ -124,11 +128,11 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
             },
           ),
           onMoreCars: () {
-            final cursor = inbound.asData?.value.nextTripCursor;
+            final cursor = inbound.value?.nextTripCursor;
             if (cursor != null) setState(() => _tripCursors.add(cursor));
           },
           onMoreExpected: () {
-            final cursor = inbound.asData?.value.nextExpectedCursor;
+            final cursor = inbound.value?.nextExpectedCursor;
             if (cursor != null) setState(() => _expectedCursors.add(cursor));
           },
           onFirstPage: () => setState(() {
@@ -150,8 +154,8 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
   Future<void> _arrived(ProgramTripSummary trip) => _run(
     trip.tripId,
     () => ref
-        .read(programWorkRepositoryProvider)
-        .markTripArrived(
+        .read(programTripActionsProvider.notifier)
+        .markArrived(
           programId: widget.programId,
           tripId: trip.tripId,
           expectedRevision: trip.revision,
@@ -164,8 +168,8 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
   Future<void> _giveKeys(ProgramStay stay) => _run(
     stay.stayId,
     () => ref
-        .read(programWorkRepositoryProvider)
-        .upsertStay(
+        .read(programStayActionsProvider.notifier)
+        .saveStay(
           programId: widget.programId,
           guestId: stay.guestId,
           hotelId: widget.hotelId,

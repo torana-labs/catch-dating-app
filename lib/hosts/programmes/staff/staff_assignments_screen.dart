@@ -2,6 +2,8 @@ import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.d
 import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_assignments_body.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -60,7 +62,9 @@ class _StaffAssignmentsScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final assignments = ref.watch(hostWorkAssignmentsProvider);
+    final assignments = catchAsyncStateFromAsyncValue(
+      ref.watch(hostWorkAssignmentsProvider),
+    );
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('staff-assignments-screen'),
@@ -71,13 +75,12 @@ class _StaffAssignmentsScreenState
         ),
         body: StaffAssignmentsBody(
           status: switch (assignments) {
-            AsyncData() => StaffAssignmentsStatus.content,
-            AsyncError() => StaffAssignmentsStatus.error,
+            CatchAsyncState(hasData: true) => StaffAssignmentsStatus.content,
+            CatchAsyncState(hasError: true) => StaffAssignmentsStatus.error,
             _ => StaffAssignmentsStatus.loading,
           },
           assignments:
-              assignments.asData?.value.assignments ??
-              const <HostWorkAssignment>[],
+              assignments.value?.assignments ?? const <HostWorkAssignment>[],
           onOpen: _open,
           onTeam: (assignment) => context.pushNamed(
             Routes.hostProgramTeamScreen.name,

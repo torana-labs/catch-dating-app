@@ -2,6 +2,8 @@ import 'package:catch_dating_app/contexts/programmes/data/program_work_repositor
 import 'package:catch_dating_app/hosts/programmes/staff/staff_alerts_body.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -22,13 +24,12 @@ class StaffAlertsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final feed = ref.watch(programStaffAttentionProvider(programId));
-    final title = ref
-        .watch(programWorkEntryProvider(programId, null))
-        .asData
-        ?.value
-        .value
-        .title;
+    final feed = catchAsyncStateFromAsyncValue(
+      ref.watch(programStaffAttentionProvider(programId)),
+    );
+    final title = catchAsyncStateFromAsyncValue(
+      ref.watch(programWorkEntryProvider(programId, null)),
+    ).value?.value.title;
     return CatchRoot(
       theme: CatchThemeMode.night,
       format: CatchFormat.nightsOut,
@@ -49,11 +50,11 @@ class StaffAlertsScreen extends ConsumerWidget {
         ),
         body: StaffAlertsBody(
           status: switch (feed) {
-            AsyncData() => StaffAlertsStatus.content,
-            AsyncError() => StaffAlertsStatus.error,
+            CatchAsyncState(hasData: true) => StaffAlertsStatus.content,
+            CatchAsyncState(hasError: true) => StaffAlertsStatus.error,
             _ => StaffAlertsStatus.loading,
           },
-          feed: feed.asData?.value,
+          feed: feed.value,
           now: now?.call() ?? DateTime.now(),
           onRetry: () =>
               ref.invalidate(programStaffAttentionProvider(programId)),

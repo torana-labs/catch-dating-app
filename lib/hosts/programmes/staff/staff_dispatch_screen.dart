@@ -14,8 +14,10 @@ import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -81,40 +83,45 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final operations = watchOperations();
-    final plan = ref.watch(
-      programTransportPlanViewProvider(widget.programId, widget.pickupPointId),
+    final plan = catchAsyncStateFromAsyncValue(
+      ref.watch(
+        programTransportPlanViewProvider(
+          widget.programId,
+          widget.pickupPointId,
+        ),
+      ),
     );
-    final roster = ref
-        .watch(
-          programArrivalsRosterViewProvider(
-            widget.programId,
-            widget.pickupPointId,
-          ),
-        )
-        .asData
-        ?.value
-        .value;
-    final access = ref
-        .watch(programWorkEntryProvider(widget.programId, null))
-        .asData
-        ?.value
-        .value;
+    final roster = catchAsyncStateFromAsyncValue(
+      ref.watch(
+        programArrivalsRosterViewProvider(
+          widget.programId,
+          widget.pickupPointId,
+        ),
+      ),
+    ).value?.value;
+    final access = catchAsyncStateFromAsyncValue(
+      ref.watch(programWorkEntryProvider(widget.programId, null)),
+    ).value?.value;
     final vehicleClasses = [
-      ...(roster?.vehicleClasses ?? access?.vehicleClasses ?? const []),
+      ...(roster?.vehicleClasses ??
+          access?.vehicleClasses ??
+          const <ProgramVehicleClass>[]),
     ]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     final state = switch (plan) {
-      AsyncData(:final value) => StaffDispatchState.fromPlan(
-        value.value,
-        outbox: operations.outbox,
-        vehicleClasses: vehicleClasses,
-        roster: roster,
-        savedAt: value.snapshotAt,
-      ),
-      AsyncError() => const StaffDispatchState.error(),
+      CatchAsyncState(hasData: true, :final value?) =>
+        StaffDispatchState.fromPlan(
+          value.value,
+          outbox: operations.outbox,
+          vehicleClasses: vehicleClasses,
+          roster: roster,
+          savedAt: value.snapshotAt,
+        ),
+      CatchAsyncState(hasError: true) => const StaffDispatchState.error(),
       _ => const StaffDispatchState.loading(),
     };
     final errorMessage = operationsErrorMessage(operations);
-    final suggested = plan.asData?.value.value.groups ?? const [];
+    final suggested =
+        plan.value?.value.groups ?? const <TransportGroupSuggestion>[];
     final openCar = widget.openCar;
     final sending =
         _sending ??
@@ -123,18 +130,19 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
             : null);
     StaffDispatchSheet? sheet;
     if (sending != null && access != null) {
-      final vendors = ref.watch(
-        programTransportVendorsProvider(access.organizerId, widget.programId),
+      final vendors = catchAsyncStateFromAsyncValue(
+        ref.watch(
+          programTransportVendorsProvider(access.organizerId, widget.programId),
+        ),
       );
       final active = [
-        for (final vendor
-            in vendors.asData?.value ?? const <ProgramVendorOption>[])
+        for (final vendor in vendors.value ?? const <ProgramVendorOption>[])
           if (vendor.active && vendor.boundToProgram) vendor,
       ];
       final holds = sending.readiness == TransportGroupReadiness.ready
           ? [
               for (final candidate
-                  in plan.asData?.value.value.groups ??
+                  in plan.value?.value.groups ??
                       const <TransportGroupSuggestion>[])
                 if (candidate.readiness == TransportGroupReadiness.expected &&
                     _sameDestination(sending, candidate))
@@ -182,9 +190,11 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
         vendorId: _vendorId,
         onVendor: (id) => setState(() => _vendorId = id),
         vendorNote: switch (vendors) {
-          AsyncError() => l10n.hostStaffDispatchVendorsFailed,
-          AsyncData() when active.isEmpty => l10n.hostStaffDispatchNoVendors,
-          AsyncData() => null,
+          CatchAsyncState(hasError: true) =>
+            l10n.hostStaffDispatchVendorsFailed,
+          CatchAsyncState(hasData: true) when active.isEmpty =>
+            l10n.hostStaffDispatchNoVendors,
+          CatchAsyncState(hasData: true) => null,
           _ => l10n.hostStaffDispatchVendorsLoading,
         },
         holds: [

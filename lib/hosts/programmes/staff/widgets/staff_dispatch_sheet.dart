@@ -99,17 +99,19 @@ class StaffDispatchSheet extends StatelessWidget {
         children: [
           if (error case final message?)
             CatchNotice.inline(tone: CatchNoticeTone.danger, body: message),
-          CatchField.input(
-            key: const ValueKey<String>('staff-dispatch-plate'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostStaffDispatchPlate,
-            placeholder: l10n.hostStaffDispatchPlateHint,
-            contractExemption:
-                'The dispatch command validates the plate; no field constraint is generated for it.',
-            controller: plate,
-            onChanged: onPlateChanged,
-            keyboardType: TextInputType.visiblePassword,
-            textCapitalization: TextCapitalization.characters,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('staff-dispatch-plate'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostStaffDispatchPlate,
+              placeholder: l10n.hostStaffDispatchPlateHint,
+              contractExemption:
+                  'The dispatch command validates the plate; no field constraint is generated for it.',
+              controller: plate,
+              onChanged: onPlateChanged,
+              keyboardType: TextInputType.visiblePassword,
+              textCapitalization: TextCapitalization.characters,
+            ),
           ),
           if (classes.length > 1)
             CatchStack(

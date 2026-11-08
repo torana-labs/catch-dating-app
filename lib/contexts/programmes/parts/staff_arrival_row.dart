@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/staff_function_row.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -143,11 +143,12 @@ class StaffArrivalRow extends StatelessWidget {
     return CatchIndexRow(
       title: row.partyTitle,
       subtitle: landing
-          ? [?flight, staffArrivalSummary(l10n, row)].join(' · ')
+          ? [
+              ?flight,
+              l10n.hostStaffArrivalsPeople(count: row.passengers),
+            ].join(' · ')
           : staffArrivalSummary(l10n, row),
-      time: landing && row.curbAt != null
-          ? AppTimeFormatters.time(row.curbAt!.toLocal())
-          : null,
+      time: landing && row.curbAt != null ? staffClock(row.curbAt!) : null,
       status: landing ? status : null,
       statusTone: tone,
       badge: switch (queued) {

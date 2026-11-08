@@ -53,15 +53,17 @@ class StaffWalkInSheet extends StatelessWidget {
       ),
       child: CatchStack(
         children: [
-          CatchField.input(
-            key: const ValueKey<String>('staff-walk-in-name'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostStaffDoorWalkInName,
-            contract: CatchContractConstraints
-                .createProgramWalkInCallablePayloadDisplayName,
-            controller: name,
-            onChanged: onNameChanged,
-            textCapitalization: TextCapitalization.words,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('staff-walk-in-name'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostStaffDoorWalkInName,
+              contract: CatchContractConstraints
+                  .createProgramWalkInCallablePayloadDisplayName,
+              controller: name,
+              onChanged: onNameChanged,
+              textCapitalization: TextCapitalization.words,
+            ),
           ),
           CatchStack(
             direction: CatchStackDirection.row,
