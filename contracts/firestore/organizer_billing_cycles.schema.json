@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_billing_cycles.schema.json",
+  "title": "OrganizerBillingCycleDocument",
+  "description": "Where one organizer's rolling billing cycles stand (#1126). The daily cycle bill run writes it in the same transaction as each cycle's bill, so a cycle is billed at most once. Cycles chain: the next cycle starts where the last one closed, so a change to commission.cycleDays changes only cycles not yet billed. A cycle with nothing to bill advances the pointer without a bill. Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBillingCycles",
+  "x-firestore-path": "organizerBillingCycles/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Functions organizer billing (daily cycle generation)",
+  "required": ["schemaVersion", "organizerId", "trialEndsAtMillis", "countFromMillis", "nextCycleNumber",
+    "nextCycleStartMillis", "lastBillId", "createdAtMillis", "updatedAtMillis"],
+  "definitions": {
+    "millis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+  },
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "trialEndsAtMillis": {"$ref": "#/definitions/millis", "description": "The trial end the first cycle was anchored at, fixed when the first cycle was billed."},
+    "countFromMillis": {"$ref": "#/definitions/millis", "description": "No payment captured before this is billed by a cycle: the later of the trial end, the end of the organizer's last calendar-month bill, and 1 November 2026, India time."},
+    "nextCycleNumber": {"type": "integer", "minimum": 1},
+    "nextCycleStartMillis": {"$ref": "#/definitions/millis"},
+    "lastBillId": {"type": ["string", "null"], "maxLength": 200},
+    "createdAtMillis": {"$ref": "#/definitions/millis"},
+    "updatedAtMillis": {"$ref": "#/definitions/millis"}
+  }
+}

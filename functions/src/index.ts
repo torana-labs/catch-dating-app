@@ -1142,10 +1142,8 @@ export {
   onOrganizerGrowthNativePaymentWritten,
 } from "./growth/organizerGrowthTriggers";
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
-export {
-  adminManageOrganizerBills,
-  generateOrganizerBillsMonthly,
-} from "./money/organizerBills";
+export {adminManageOrganizerBills} from "./money/organizerBills";
+export {generateOrganizerCycleBillsDaily} from "./money/organizerCycleBills";
 export {listMyOrganizerJourneys} from "./organizers/organizerJourney";
 export {listOrganizerBills} from "./money/organizerOwnBills";
 export {getOrganizerBillingStatus} from "./money/organizerBillingStatus";

@@ -527,6 +527,7 @@
     "OperationWorkItem",
     "OrganizerApplicationDocument",
     "OrganizerBillDocument",
+    "OrganizerBillingCycleDocument",
     "OrganizerCampaignActionCallablePayload",
     "OrganizerCampaignWebhookReceiptDocument",
     "OrganizerCommunityMembershipDecisionDocument",

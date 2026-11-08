@@ -2,21 +2,15 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {onSchedule} from "firebase-functions/v2/scheduler";
 import {requireAdminRole, type AdminContext} from "../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
-import {effectiveCommercialTerms, readCommercialTerms} from
-  "../commercialTerms/resolver";
-import {growthFactsCollection} from "../growth/organizerGrowthFacts";
 import {createRazorpayClient, razorpayKeySecret} from "../payments/razorpay";
 import {razorpayRuntimeProject} from "../payments/razorpayOrderOwnership";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import type {
-  OrganizerBillDocument,
-  OrganizerGrowthFactsDocument,
-} from "../shared/generated/firestoreAdminTypes";
+import type {OrganizerBillDocument} from
+  "../shared/generated/firestoreAdminTypes";
 import type {AdminManageOrganizerBillsCallablePayload as Payload} from
   "../shared/generated/adminManageOrganizerBillsCallablePayload";
 import type {AdminManageOrganizerBillsCallableResponse as Result} from
@@ -27,22 +21,18 @@ import {validateAdminManageOrganizerBillsCallableResponse} from
   "../shared/generated/validators/adminManageOrganizerBillsOutput";
 import {validateOrganizerBillDocument} from
   "../shared/generated/validators/organizerBillDocument";
-import {
-  computeBill,
-  dueAtMillis,
-  monthOf,
-  monthWindow,
-  previousMonth,
-} from "./billComputation";
-import {billablePaymentsByOrganizer} from "./billSources";
+import {cycleBillDueDays} from "./billCycles";
+import {dueAtMillis, monthOf} from "./billComputation";
 import {
   razorpayBillPaymentLinks,
   type BillPaymentLinkClient,
 } from "./billPaymentLinks";
-import {dayMillis, trialAnchorsFromFacts, trialWindow} from "./hostTrial";
+import {dayMillis} from "./hostTrial";
 import {moneyRoles, nextInvoice, readMoneySettings} from "./moneySettings";
 import {readOrganizerTrialStatus} from "./organizerBillingStatus";
 import {prepareNominatorCredit} from "./nominatorCredits";
+import {generateCycleBills, regenerateToSendCycleBills} from
+  "./organizerCycleBills";
 
 export const organizerBillsCollection = "organizerBills";
 const historyLimit = 60;
@@ -82,84 +72,6 @@ function checked(bill: Bill): Bill {
 }
 
 /**
- * Makes (or remakes) a month's bills from its bookings. A bill already sent,
- * paid or written off is kept as it is; a bill to send or a free month is
- * recomputed. Organizers with nothing billable get no bill.
- * @param {BillDeps} deps Dependencies.
- * @param {string} month YYYY-MM.
- * @param {string|null} actorUid Staff member, or null for the schedule.
- * @return {Promise<number>} Bills written.
- */
-export async function generateMonthBills(deps: Pick<BillDeps, "db" | "now">,
-  month: string, actorUid: string | null): Promise<number> {
-  const db = deps.db();
-  const {startMillis, endMillis} = monthWindow(month);
-  const byOrganizer = await billablePaymentsByOrganizer(db, startMillis,
-    endMillis);
-  const {settings} = await readMoneySettings(db);
-  let written = 0;
-  for (const [organizerId, payments] of byOrganizer) {
-    const stored = await readCommercialTerms({db, organizerId});
-    const terms = effectiveCommercialTerms(stored);
-    if (!terms || !stored.platform) {
-      throw new HttpsError("failed-precondition",
-        "Set Catch's platform terms before making bills.");
-    }
-    const [factsSnap, organizerSnap] = await Promise.all([
-      db.collection(growthFactsCollection).doc(organizerId).get(),
-      db.collection("organizers").doc(organizerId).get()]);
-    const facts = factsSnap.data() as OrganizerGrowthFactsDocument |
-      undefined;
-    // The free trial starts at the organizer's first event; a paid booking
-    // with no recorded event dates it instead (hostTrial.ts). Growth facts
-    // that have not caught up yet fall back to the month's first payment.
-    const window = trialWindow(trialAnchorsFromFacts(facts),
-      terms.trial.days);
-    const anchor = window?.startsAtMillis ??
-      Math.min(...payments.map((payment) => payment.capturedAtMillis));
-    const figures = computeBill({payments, terms,
-      trialEndsAtMillis: terms.trial.days > 0 ?
-        anchor + terms.trial.days * dayMillis : null,
-      gstRegistered: settings.gstRegistered,
-      gstRateBasisPoints: settings.gstRateBasisPoints});
-    if (figures.totalMinor === 0 && figures.commission.trialWaivedMinor === 0) {
-      continue;
-    }
-    const id = billId(organizerId, month);
-    const ref = db.collection(organizerBillsCollection).doc(id);
-    const changed = await db.runTransaction(async (tx) => {
-      const current = (await tx.get(ref)).data() as Bill | undefined;
-      if (current && !["toSend", "free"].includes(current.status)) return false;
-      const now = deps.now();
-      const base: Bill = current ?? {schemaVersion: 1, billId: id,
-        organizerId, organizerName: "", month, periodStartMillis: startMillis,
-        periodEndMillis: endMillis, revision: 0, status: "toSend",
-        ...figures, terms: {platformRevision: 0, organizerRevision: 0,
-          ownTerms: false},
-        invoiceNumber: null, dueAtMillis: null, paymentLink: null,
-        sentAtMillis: null, reminders: [], paidAtMillis: null,
-        paidMinor: null, paidVia: null, writtenOffAtMillis: null,
-        history: [], generatedAtMillis: now, updatedAtMillis: now};
-      const next: Bill = {...base, ...figures,
-        organizerName: String(organizerSnap.data()?.name ?? organizerId)
-          .slice(0, 160),
-        revision: base.revision + 1,
-        status: figures.totalMinor > 0 ? "toSend" : "free",
-        terms: {platformRevision: stored.platform!.revision,
-          organizerRevision: stored.organizer?.revision ?? 0,
-          ownTerms: stored.organizer !== null},
-        history: withHistory(base, current ? "regenerated" : "generated", now,
-          actorUid, null),
-        generatedAtMillis: now, updatedAtMillis: now};
-      tx.set(ref, checked(next));
-      return true;
-    });
-    if (changed) written++;
-  }
-  return written;
-}
-
-/**
  * Applies one owner action to one bill.
  * @param {BillDeps} deps Dependencies.
  * @param {AdminContext} actor Staff member.
@@ -168,7 +80,7 @@ export async function generateMonthBills(deps: Pick<BillDeps, "db" | "now">,
  * @return {Promise<void>} Resolves once applied.
  */
 async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
-  request: CallableRequest<unknown>): Promise<void> {
+  request: CallableRequest<unknown>): Promise<Bill> {
   const db = deps.db();
   const ref = db.collection(organizerBillsCollection).doc(data.billId!);
   const action = data.action as "send" | "remind" | "markPaid" | "writeOff";
@@ -199,8 +111,8 @@ async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
         financialYear: invoice.financialYear, lastNumber: invoice.number,
         updatedAtMillis: now});
       next = {...next, status: "sent", invoiceNumber: invoice.label,
-        sentAtMillis: now,
-        dueAtMillis: dueAtMillis(bill.month, settings.billDueDayOfMonth)};
+        sentAtMillis: now, dueAtMillis: billDueAtMillis(bill, now,
+          settings.billDueDayOfMonth)};
     } else if (action === "remind") {
       next = {...next, reminders: [...bill.reminders, now].slice(-24)};
     } else if (action === "markPaid") {
@@ -229,6 +141,25 @@ async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
       after.totalMinor >= 100) {
     await attachPaymentLink(deps, after);
   }
+  return after;
+}
+
+/**
+ * When a sent bill falls due. A calendar-month bill is due on the due day of
+ * the next month; a cycle bill a fixed number of days after its cycle closes,
+ * and never less than a week after it is sent.
+ * @param {Bill} bill The bill being sent.
+ * @param {number} sentAtMillis When it is sent.
+ * @param {number} dueDayOfMonth Money settings' due day for month bills.
+ * @return {number} Epoch millis.
+ */
+export function billDueAtMillis(bill: Bill, sentAtMillis: number,
+  dueDayOfMonth: number): number {
+  if ((bill.periodKind ?? "calendarMonth") === "calendarMonth") {
+    return dueAtMillis(bill.month, dueDayOfMonth);
+  }
+  return Math.max(bill.periodEndMillis + cycleBillDueDays * dayMillis,
+    sentAtMillis + 7 * dayMillis);
 }
 
 /**
@@ -291,7 +222,8 @@ export async function markBillPaidFromLink(deps: BillDeps, linkId: string,
 }
 
 /**
- * Reads a month's bills, or one organizer's bills across months, with
+ * Reads a month's bills (cycle bills by the month their cycle ends), or one
+ * organizer's bills across months, with
  * totals and counts per state.
  * @param {Db} db Firestore.
  * @param {object} scope The month, or the organizer.
@@ -352,18 +284,18 @@ export async function adminManageOrganizerBillsHandler(
     {maxRequests: 60, windowMs: 60 * 1000});
   const now = deps.now();
   if (data.action === "generate" && data.organizerId !== null) {
-    throw new HttpsError("invalid-argument", "Bills are made for a month.");
+    throw new HttpsError("invalid-argument",
+      "Bills are made for every organizer at once.");
   }
-  let month = data.month ?? previousMonth(monthOf(now));
+  // Admin's monthly view groups cycle bills by the month their cycle ends.
+  let month = data.month ?? monthOf(now);
   if (data.action === "generate") {
-    if (monthWindow(month).endMillis > now) {
-      throw new HttpsError("failed-precondition",
-        "A month is billed once it has ended.");
-    }
-    await generateMonthBills(deps, month, actor.uid);
+    // Rolling cycles (#1126): bill every cycle that has closed and refresh
+    // bills not yet sent. Calendar-month bills are no longer made.
+    await regenerateToSendCycleBills(deps, actor.uid);
+    await generateCycleBills(deps, actor.uid);
   } else if (onBill) {
-    await actOnBill(deps, actor, data, request);
-    month = data.billId!.slice(-7);
+    month = (await actOnBill(deps, actor, data, request)).month;
   }
   const result = await listBills(db, data.organizerId !== null ?
     {organizerId: data.organizerId} : {month}, now);
@@ -377,13 +309,3 @@ export const adminManageOrganizerBills = onCall(
   appCheckCallableOptionsWithSecrets([razorpayKeySecret],
     {timeoutSeconds: 300, maxInstances: 5}),
   (request) => adminManageOrganizerBillsHandler(request));
-
-/** On the 1st, India time, last month's bills are made, ready to send. */
-export const generateOrganizerBillsMonthly = onSchedule({
-  schedule: "0 6 1 * *", timeZone: "Asia/Kolkata", timeoutSeconds: 540,
-  maxInstances: 1,
-}, async () => {
-  const month = previousMonth(monthOf(Date.now()));
-  const written = await generateMonthBills(defaultBillDeps, month, null);
-  logger.info("Organizer bills made.", {month, written});
-});

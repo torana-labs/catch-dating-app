@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_bills_response.schema.json",
   "title": "ListOrganizerBillsCallableResponse",
-  "description": "Catch's bills to one organizer as its owner sees them, newest month first: bills sent or closed and free months. A bill not yet sent is left out, and so are its reminders, history, terms revisions and who acted on it, which stay with Catch's staff.",
+  "description": "Catch's bills to one organizer as its owner sees them, newest period first: bills sent or closed and free months. A bill not yet sent is left out, and so are its reminders, history, terms revisions and who acted on it, which stay with Catch's staff.",
   "type": "object",
   "additionalProperties": false,
   "required": ["bills"],
@@ -12,10 +12,14 @@
     "bill": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["billId", "month", "status", "sales", "commission", "gst", "totalMinor", "invoiceNumber", "dueAtMillis", "paymentUrl", "paidAtMillis", "paidMinor"],
+      "required": ["billId", "month", "periodKind", "periodStartMillis", "periodEndMillis", "plan", "status", "sales", "commission", "gst", "totalMinor", "invoiceNumber", "dueAtMillis", "paymentUrl", "paidAtMillis", "paidMinor"],
       "properties": {
         "billId": {"type": "string", "minLength": 1, "maxLength": 200},
         "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+        "periodKind": {"description": "calendarMonth for bills made before rolling cycles; cycle for a rolling billing cycle.", "enum": ["calendarMonth", "cycle"]},
+        "periodStartMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "periodEndMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "description": "Exclusive."},
+        "plan": {"description": "What the period was billed on: ticketing commission, or the tools-only plan (never both).", "enum": ["ticketing", "toolsOnly"]},
         "status": {"enum": ["sent", "paid", "writtenOff", "free"]},
         "sales": {
           "type": "object",
