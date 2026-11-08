@@ -13,6 +13,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {isAccountReadyUserProfile} from "../shared/profileReadiness";
 import {organizerRelationshipId} from "../shared/relationshipDocuments";
+import {readAccountSections} from "./websiteAccountSections";
 import {validateManageWebsiteAccountCallablePayload} from
   "../shared/generated/validators/manageWebsiteAccountInput";
 import {validateUserProfileDocument} from
@@ -57,7 +58,7 @@ export async function manageWebsiteAccountHandler(
   await deps.rateLimit(db, uid, "manageWebsiteAccount", {
     maxRequests: 30, windowMs: 60 * 1000,
   });
-  return db.runTransaction(async (tx) => {
+  const account = await db.runTransaction(async (tx) => {
     const ref = db.collection("users").doc(uid);
     const [snapshot, deleted, authUser, follow, eventSnapshot] =
       await Promise.all([
@@ -157,8 +158,15 @@ export async function manageWebsiteAccountHandler(
       profileRevision: profile?.profileRevision ?? 0,
       following: follow ? follow.data()?.status === "active" : null,
       eventAge: event ? eventAgeEligibility(event, profile, deps.now()) : null,
-    };
+    } satisfies Account;
   });
+  // The account page's own-record sections are read only after the guards
+  // above confirm the account is live, and never inside the transaction.
+  if (data.action !== "read" || !data.sections) return account;
+  return {
+    ...account,
+    ...await readAccountSections(db, uid, data.sections, deps.now()),
+  };
 }
 
 /** Optional birth dates are real dates, not an adult-only account gate. */

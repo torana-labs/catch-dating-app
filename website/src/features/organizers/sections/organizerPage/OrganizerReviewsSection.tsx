@@ -11,6 +11,7 @@ import {
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
+import {SignInPrompt} from "../../../account/SignInSheet";
 
 /**
  * Reviews: the average beside its stars, a bar for each star, the policy,
@@ -86,6 +87,7 @@ function OrganizerReviewForm({review}: {review: ReviewForm}) {
   }
   return (
     <CatchSurface>
+      <SignInPrompt />
       <CatchStack gap={8}>
         <CatchText as="p" id="organizer-review-stars" variant="title-row">{form.starsLabel}</CatchText>
         <CatchStarInput labelledBy="organizer-review-stars" onChanged={review.setStars}

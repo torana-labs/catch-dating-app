@@ -12,6 +12,7 @@ export type MarketingRouteId =
   | "event_runtime"
   | "event_assistance"
   | "event_offer"
+  | "account"
   | "event_booking"
   | "event_rehearsal"
   | "event_invite"
@@ -53,6 +54,7 @@ export const marketingRouteDefinitions = [
   {id: "event_detail", path: "/events/:eventId"},
   {id: "event_runtime", path: "/join/:publicRuntimeId"},
   {id: "event_offer", path: "/offer"},
+  {id: "account", path: "/account"},
   {id: "event_booking", path: "/booking/:eventId"},
   {id: "event_assistance", path: "/event-update/:linkId"},
   {id: "event_rehearsal", path: "/rehearse/:publicRehearsalId"},

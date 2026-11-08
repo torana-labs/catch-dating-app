@@ -72,6 +72,12 @@ and preference defaults are storage shape, not questions for the user.
 with live Auth phone ownership, disabled/deleted-account checks, an expected UID
 and a profile-revision comparison. Omitted DOB and richer existing fields are
 preserved. Minimal accounts remain absent from public social projections.
+Its optional read `sections` (`plans`, `following`, `reviews`, `messages`)
+serve the website's `/account/` page from existing collections only: own
+`eventParticipations` joined to events, active `organizerFollows`, own
+`reviews` with their verified state, and `organizerCommunicationPreferences`
+summarized per channel (opted in only with complete evidence). Each section is
+absent unless requested; no new collection or stored field backs the page.
 Website follow reads and mutations use canonical `organizerFollows` edges;
 legacy browser saves do not become follows or notification consent.
 

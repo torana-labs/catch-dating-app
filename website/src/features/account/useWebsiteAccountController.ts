@@ -3,12 +3,15 @@ import {accountCopy} from "../../content/account";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useId, useRef, useState, type FormEvent} from "react";
 import {beginWebsiteAccountPhoneVerification, manageWebsiteAccount,
-  watchWebsiteAccountAuthState, type PublicEventPhoneVerification, type User} from "../../firebase";
+  watchWebsiteAccountAuthState, type PublicEventPhoneVerification, type User, type WebsiteAccountSection} from "../../firebase";
 import type {FormStatus} from "../../shared/forms/types";
 
 /** Private account data is keyed by UID and discarded when its observer leaves. */
-export function useWebsiteAccountController(scope: {organizerId?: string; eventId?: string} = {}) {
-  const {organizerId, eventId} = scope;
+export function useWebsiteAccountController(scope: {organizerId?: string; eventId?: string;
+  /** The account page's own-record reads; other callers read identity only. */
+  sections?: readonly WebsiteAccountSection[];} = {}) {
+  const {organizerId, eventId, sections} = scope;
+  const sectionKey = sections?.join(",") ?? "";
   const id = useId();
   const queryClient = useQueryClient();
   const recaptchaId = `account-${id.replace(/:/gu, "")}`;
@@ -45,9 +48,10 @@ export function useWebsiteAccountController(scope: {organizerId?: string; eventI
     return () => {live.current.mounted = false; live.current.epoch++; challenge.current?.clear(); stop();};
   }, []);
   const uid = identity.user?.uid ?? null;
-  const query = useQuery({queryKey: ["website-account", uid, organizerId ?? null, eventId ?? null],
+  const query = useQuery({queryKey: ["website-account", uid, organizerId ?? null, eventId ?? null, sectionKey],
     enabled: Boolean(uid), gcTime: 0, staleTime: 0, retry: false,
-    queryFn: () => manageWebsiteAccount({action: "read", ...(organizerId ? {organizerId} : {}), ...(eventId ? {eventId} : {})})});
+    queryFn: () => manageWebsiteAccount({action: "read", ...(organizerId ? {organizerId} : {}), ...(eventId ? {eventId} : {}),
+      ...(sections?.length ? {sections: [...sections]} : {})})});
   const account = uid && !query.error && query.data?.uid === uid ? query.data : undefined;
   const ready = Boolean(account?.accountReady && (!account.eventAge || account.eventAge.eligible));
   useEffect(() => {

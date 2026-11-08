@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_website_account_payload.schema.json",
   "title": "ManageWebsiteAccountCallablePayload",
-  "description": "Read or complete the authenticated account with minimal identity. Phone ownership comes from Firebase Auth, never payload data.",
+  "description": "Read or complete the authenticated account with minimal identity, and read the account page sections. Phone ownership comes from Firebase Auth, never payload data.",
   "oneOf": [
     {
       "type": "object",
@@ -19,6 +19,22 @@
         },
         "eventId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "sections": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "enum": [
+              "plans",
+              "following",
+              "reviews",
+              "messages"
+            ]
+          },
+          "description": "Optional account page sections to read. Omission reads identity only; each section reads only the authenticated UID’s own records."
         }
       }
     },

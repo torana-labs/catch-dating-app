@@ -65,6 +65,13 @@ describe("consolidated public sitemap", () => {
     expect(pageMeta.programme_link.robots).toBe("noindex, follow");
     expect(getPageKey("/hotels/")).toBe("not_found");
   });
+  it("serves the signed-in account page under its own noindex page key", () => {
+    expect(getPageKey("/account/")).toBe("account");
+    expect(getPageKey("/account")).toBe("account");
+    expect(retiredMarketingDestination({pathname: "/account/", search: "", hash: "#following"})).toBeNull();
+    expect(pageMeta.account.robots).toBe("noindex, follow");
+    expect(getPageKey("/accounts/")).toBe("not_found");
+  });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
     for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/afterfly/", "/events/id", "/claim/real-id"]) {
       expect(retiredMarketingDestination({pathname, search: "?token=private", hash: "#credential"})).toBeNull();

@@ -25,6 +25,7 @@ export type PageKey =
   | "event_invite"
   | "household_rsvp"
   | "programme_link"
+  | "account"
   | "public_form"
   | "claim"
   | "privacy"
@@ -123,6 +124,7 @@ export function getPageKey(
   if (pathname.startsWith("/booking/")) return "event_booking";
   if (pathname.startsWith("/join/")) return "event_runtime";
   if (pathname === "/offer" || pathname === "/offer/") return "event_offer";
+  if (pathname === "/account" || pathname === "/account/") return "account";
   if (pathname.startsWith("/event-update/")) return "event_assistance";
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";
