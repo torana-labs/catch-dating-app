@@ -20,6 +20,7 @@ import {
   signedReadUrl,
   type ProgramAssetDeps,
 } from "./programAssets";
+import {programGuestBrandingField} from "./programBranding";
 import type {
   ProgramHamperDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -263,6 +264,7 @@ export async function getProgramHamperWebViewHandler(
       placed: list.filter((room) => room.status === "placed").length},
     rooms: list,
     urlsExpireAtMillis,
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.payload.expiresAtMillis,
   }, "hamper list");
 }

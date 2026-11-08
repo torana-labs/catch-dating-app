@@ -13,6 +13,7 @@ import {
   requireProgramMutable,
 } from "../shared/programAuthority";
 import {householdRsvpSecret} from "../programRsvp/householdRsvp";
+import {programGuestBrandingField} from "./programBranding";
 import {projectTripManifest, readTripDispatchSnapshot} from
   "../transport/tripManifestProjection";
 import type {ProgramGuestDocument, ProgramTravelLegDocument,
@@ -310,6 +311,7 @@ export async function getProgramDriverTripHandler(
         passengers: entry.passengers, luggageUnits: entry.luggageUnits})) :
       manifest.guestNames.map((name) => ({name, passengers: 1,
         luggageUnits: 0})),
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.expiresAtMillis,
   };
 }
@@ -394,6 +396,7 @@ export async function getProgramVendorRunSheetHandler(
           staffTimestampMillis(trip.arrivedAt) : null,
         passengerCount: trip.passengerCount}];
     }).sort((a, b) => (a.departedAtMillis ?? 0) - (b.departedAtMillis ?? 0)),
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.expiresAtMillis,
   };
 }

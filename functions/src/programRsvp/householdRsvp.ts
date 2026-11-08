@@ -16,6 +16,7 @@ import {
   type ProgramAccess,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
+import {programGuestBrandingField} from "../programs/programBranding";
 import type {
   OrganizerProgramDocument,
   ProgramFunctionDocument,
@@ -362,6 +363,7 @@ export async function getProgramHouseholdRsvpViewHandler(
     messagingConsentGranted: household.messagingConsent?.granted === true,
     members,
     hotels,
+    ...programGuestBrandingField(bundle.program),
   };
 }
 

@@ -31,6 +31,7 @@ import {
   type TravelKind,
 } from "./householdRsvpModel";
 import {useHouseholdRsvpController} from "./useHouseholdRsvpController";
+import {programmeCredit, programmeFormat} from "../../shared/domain/programmeBranding";
 
 export function HouseholdRsvpPage({credential}: {credential: Credential | null}) {
   const controller = useHouseholdRsvpController(credential);
@@ -342,8 +343,10 @@ export function HouseholdRsvpView({
     () => credential ? programHouseholdItineraryIcsUrl(credential.token) : null,
     [credential],
   );
+  const branding = screen.kind === "ready" ? screen.view.branding : undefined;
+  const credit = programmeCredit(branding);
   return (
-    <CatchRoot format="nightsOut" theme="day">
+    <CatchRoot format={programmeFormat(branding)} theme="day">
       <CatchTopBar title={screen.kind === "ready" ? screen.view.programTitle : copy.brand} variant="site" />
       <CatchPageBody as="main" gutter={false} pb="s0" pt="s4">
         <CatchPaneLayout
@@ -370,7 +373,7 @@ export function HouseholdRsvpView({
                 <RsvpReady icsUrl={icsUrl} refresh={refresh} refreshing={refreshing} screen={screen}
                   setConsent={setConsent} setResponse={setResponse} setTravel={setTravel} submit={submit} />
               )}
-              <CatchText align="center" tone="secondary" variant="body-meta">{copy.madeWith}</CatchText>
+              <CatchText align="center" tone="secondary" variant="body-meta">{credit ? copy.madeWithCredit(credit) : copy.madeWith}</CatchText>
             </CatchStack>
           }
           pattern="reading"
@@ -397,7 +400,7 @@ function RsvpReady({screen, icsUrl, setResponse, setConsent, setTravel, submit, 
   const last = functions.at(-1)?.fn.startsAtMillis;
   return (
     <>
-      <CatchSurface block="spotlight" color="nightsOut">
+      <CatchSurface block="spotlight" color={programmeFormat(view.branding)}>
         {first !== undefined && last !== undefined ? (
           <CatchText variant="label-kicker">
             {fill(copy.dates, {first: formatDay(first, view.timezone), last: formatDay(last, view.timezone)})}

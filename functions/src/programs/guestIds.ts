@@ -16,6 +16,7 @@ import {
 import {householdRsvpSecret} from "../programRsvp/householdRsvp";
 import {verifyHouseholdToken} from "../programRsvp/rsvpLinkTokens";
 import {verifyWebLinkToken} from "./programWebLinks";
+import {programGuestBrandingField} from "./programBranding";
 import {
   defaultProgramAssetDeps,
   deleteProgramFiles,
@@ -255,6 +256,7 @@ export async function getProgramGuestIdStatusHandler(
     programTitle: String(program.title ?? ""),
     householdLabel: String(household.label ?? ""),
     members,
+    ...programGuestBrandingField(program),
   }, "guest ID status");
 }
 
@@ -544,6 +546,7 @@ export async function getProgramHotelHandoverHandler(
       (a.roomLabel ?? "~").localeCompare(b.roomLabel ?? "~",
         undefined, {numeric: true})),
     urlsExpireAtMillis,
+    ...programGuestBrandingField(program),
     expiresAtMillis: link.payload.expiresAtMillis,
   }, "hotel handover");
 }

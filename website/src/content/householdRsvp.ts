@@ -109,6 +109,7 @@ export const householdRsvpCopy = {
   dates: "{first} to {last}",
   greeting: "Hi {household}! Say who’s coming to each function. You can change it any time before the event.",
   madeWith: `Made with ${brand.name}`,
+  madeWithCredit: (credit: string) => `Made with ${brand.name} · ${credit}`,
   travelBlockTitle: (name: string, kindLabel: string) =>
     `${name} · ${kindLabel}`,
   travelArrival: "Arrival",

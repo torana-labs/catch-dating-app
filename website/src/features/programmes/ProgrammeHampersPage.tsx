@@ -41,7 +41,9 @@ export function ProgrammeHampersView({screen, refresh, refreshing, draft, pick, 
   photo: (file: File | null) => void;
 }) {
   return (
-    <ProgrammeLinkFrame refresh={refresh} refreshing={refreshing} screen={screen} title={copy.title}>
+    <ProgrammeLinkFrame
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing} screen={screen} title={copy.title}>
       {(view) => {
         const photos = view.rooms.filter((room) => room.photoUrl);
         const picked = view.rooms.find((room) => room.stayId === draft.stayId) ?? null;
