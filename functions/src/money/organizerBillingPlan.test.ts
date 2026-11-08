@@ -284,7 +284,8 @@ test("a new purchase waits until the last tools-only window is billed",
     await call("cancelToolsOnly", 2);
     // The plan ended at the first cycle's close, which is not yet billed.
     setNow(trialEnd + cycle + 60_000);
-    await assert.rejects(call("buyToolsOnly", 3), {code: "failed-precondition"});
+    await assert.rejects(call("buyToolsOnly", 3),
+      {code: "failed-precondition"});
     await generateCycleBills({db: deps.db, now: () => trialEnd + cycle + 1},
       null);
     const again = await call("buyToolsOnly", 4);
