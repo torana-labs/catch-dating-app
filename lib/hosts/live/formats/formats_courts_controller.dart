@@ -250,6 +250,7 @@ HostFormatsCourtsSetupState hostFormatsCourtsSetupState({
     saved: hostFormatsCourtsDraftFor(structure),
     eventMinutes: eventMinutes,
     players: players,
+    seatsPerCourt: _seatsPerCourt(structure),
     previewed: count > 0,
     newPartners: count == 0 ? 0 : (partnerTotal / count).round(),
     roundsPlayed: count == 0 ? 0 : (played / count).round(),
@@ -300,6 +301,12 @@ EventSuccessStructureConfig hostFormatsCourtsStructure(
         : structure.rotationRepeatStrategy,
     clusterActivityAttributes: cluster,
   );
+}
+
+/// People on one court: the saved seats, or two (singles) when unset.
+int _seatsPerCourt(EventSuccessStructureConfig structure) {
+  final seats = structure.resourceCapacity?.seatsPerUnit;
+  return seats == null || seats < 2 ? 2 : seats;
 }
 
 /// Guest names by their account, from the guest list.

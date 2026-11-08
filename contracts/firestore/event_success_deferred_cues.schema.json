@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_deferred_cues.schema.json",
+  "title": "EventSuccessDeferredCueDocument",
+  "description": "Server-only guest cue held back by the event's phone rule (today the companion-ready push for a guest checked in after an arrival-only event started), stored at eventSuccessDeferredCues/{eventId_uid} and sent at the next planned stop or the finish.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessDeferredCues",
+  "x-firestore-path": "eventSuccessDeferredCues/{cueId}",
+  "x-document-id-field": "cueId",
+  "x-owner": "event attendance and live control callables",
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "kind",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "companionReady"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}
