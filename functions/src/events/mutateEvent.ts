@@ -95,6 +95,7 @@ import {
 import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
+  isEventSuccessAccountability,
   isEventSuccessAssignmentAlgorithm,
   isEventSuccessCompatibilityPolicy,
   isEventSuccessDurationShape,
@@ -1469,6 +1470,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessUnitOutcome(raw?.unitOutcome)) {
     normalized.unitOutcome = raw.unitOutcome;
+  }
+  if (isEventSuccessAccountability(raw?.accountability)) {
+    normalized.accountability = raw.accountability;
   }
   if (isEventSuccessDurationShape(raw?.durationShape)) {
     normalized.durationShape = raw.durationShape;
