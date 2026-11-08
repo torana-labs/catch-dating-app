@@ -5144,6 +5144,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Include me in timed rotations';
 
   @override
+  String eventSuccessCompanionDoublesSlot({
+    required Object timeRange,
+    required int court,
+    required Object partner,
+    required Object opponentA,
+    required Object opponentB,
+  }) {
+    return '$timeRange · Court $court · You and $partner against $opponentA and $opponentB';
+  }
+
+  @override
+  String get eventSuccessCompanionDoublesOpponent => 'An opponent';
+
+  @override
+  String eventSuccessCompanionBenchSlot({required Object timeRange}) {
+    return '$timeRange · Sitting out this round · mix in the common area';
+  }
+
+  @override
+  String get eventSuccessCompanionPromptSkip => 'Skip';
+
+  @override
+  String get eventSuccessCompanionPromptSkipNote => 'You can skip any prompt.';
+
+  @override
   String eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername({
     required Object timeRange,
     required Object peerName,

@@ -8305,6 +8305,42 @@ abstract class AppLocalizations {
   /// **'Include me in timed rotations'**
   String get eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInTimed;
 
+  /// A guest's doubles game: time, court, partner and opponents.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Court {court} · You and {partner} against {opponentA} and {opponentB}'**
+  String eventSuccessCompanionDoublesSlot({
+    required Object timeRange,
+    required int court,
+    required Object partner,
+    required Object opponentA,
+    required Object opponentB,
+  });
+
+  /// Fallback name for a doubles opponent whose profile is not loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'An opponent'**
+  String get eventSuccessCompanionDoublesOpponent;
+
+  /// A guest's doubles round on the bench.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Sitting out this round · mix in the common area'**
+  String eventSuccessCompanionBenchSlot({required Object timeRange});
+
+  /// Button that puts a live prompt away for this step.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get eventSuccessCompanionPromptSkip;
+
+  /// Note beside the Skip button on every live prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip any prompt.'**
+  String get eventSuccessCompanionPromptSkipNote;
+
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).
   ///
   /// In en, this message translates to:
