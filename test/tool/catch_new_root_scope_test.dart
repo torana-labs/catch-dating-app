@@ -42,6 +42,7 @@ void main() {
       'lib/hosts/insights/host_insights_body.dart',
       'lib/hosts/live/live_body.dart',
       'lib/hosts/organizer/organizer_body.dart',
+      'lib/hosts/forms/forms_body.dart',
       'tool/catch_ui_lints_probe/run.x/1/apps/host/lib/a.dart',
       'tool/catch_ui_lints_probe/run.x/1/arch/lib/pages/a/a.dart',
     ]) {

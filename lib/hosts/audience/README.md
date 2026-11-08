@@ -63,7 +63,7 @@ These are schema declarations, not independent proof of runtime limits.
 
 - Source: [lib/hosts/presentation/host_audience_view.dart](../presentation/host_audience_view.dart)
 - Source: [lib/hosts/presentation/customers/host_customers_screen.dart](../presentation/customers/host_customers_screen.dart)
-- Source: [lib/hosts/presentation/forms/host_forms_screen.dart](../presentation/forms/host_forms_screen.dart)
+- Source: [lib/hosts/forms/forms_screen.dart](../forms/forms_screen.dart)
 - Source: [lib/routing/go_router.dart](../../routing/go_router.dart)
 - Source: [lib/routing/shell/host_shell_screen.dart](../../routing/shell/host_shell_screen.dart)
 
@@ -183,7 +183,7 @@ Typed handoffs:
 | `HostCustomerMemorySection` | `lib/hosts/presentation/customers/host_customer_memory_section.dart` | Actions: edit_contact_tags, create_contact_note, edit_contact_note. |
 | `HostContactMergeReviewSheet` | `lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart` | Actions: decide_duplicate_customer. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
-| `HostFormsScreen` | `lib/hosts/presentation/forms/host_forms_screen.dart` | Forms and Responses route composition inside Audience. |
+| `HostFormsScreen` | `lib/hosts/forms/forms_screen.dart` | The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms. |
 | `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Organizer form inventory state. |
 | `HostFormEditorController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |
 | `HostFormResponsesController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Response list and review-facing projection. |
@@ -247,7 +247,7 @@ Typed handoffs:
 ## Focused tests
 
 - `test/hosts/host_customers_screen_state_test.dart`
-- `test/hosts/forms/host_forms_screen_test.dart`
+- `test/hosts/forms/forms_body_test.dart`
 - `test/hosts/forms/host_form_builder_screen_test.dart`
 - `test/hosts/forms/host_form_response_detail_screen_test.dart`
 - `test/hosts/host_operations_screen_test.dart`

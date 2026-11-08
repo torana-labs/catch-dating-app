@@ -14056,6 +14056,755 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostLiveRetry => 'Try again';
 
   @override
+  String get hostFormsKindApplication => 'Application';
+
+  @override
+  String get hostFormsKindInterestList => 'Interest list';
+
+  @override
+  String get hostFormsKindEnquiry => 'Enquiry';
+
+  @override
+  String get hostFormsKindFeedback => 'Feedback';
+
+  @override
+  String get hostFormsKindWaiver => 'Waiver';
+
+  @override
+  String get hostFormsKindSurvey => 'Survey';
+
+  @override
+  String get hostFormsKindApplicationNote =>
+      'You decide who gets in before they can book. Then: you offer a place to the people you pick';
+
+  @override
+  String get hostFormsKindInterestListNote =>
+      'Collect people for something that has no date yet. Then: they hear first when you add a date';
+
+  @override
+  String get hostFormsKindEnquiryNote =>
+      'Private bookings, companies, partnerships. Then: it lands in Messages for you to reply';
+
+  @override
+  String get hostFormsKindFeedbackNote =>
+      'Questions guests answer after an event. Then: answers feed the event report';
+
+  @override
+  String get hostFormsKindWaiverNote =>
+      'An agreement guests sign before they come. Then: it is kept with their booking';
+
+  @override
+  String get hostFormsKindSurveyNote =>
+      'Questions for your people, with no follow-up. Then: the answers are yours to read';
+
+  @override
+  String get hostFormsStatusTakingAnswers => 'Taking answers';
+
+  @override
+  String get hostFormsStatusPaused => 'Paused';
+
+  @override
+  String get hostFormsStatusDraft => 'Draft';
+
+  @override
+  String get hostFormsStatusClosed => 'Closed';
+
+  @override
+  String get hostFormsPlacementPage => 'on your page';
+
+  @override
+  String get hostFormsPlacementEvent => 'for an event';
+
+  @override
+  String get hostFormsPlacementCampaign => 'from a message';
+
+  @override
+  String hostFormsRowSubtitle({required int count, required String placement}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$_temp0 · $placement';
+  }
+
+  @override
+  String get hostFormsReviewNew => 'New';
+
+  @override
+  String get hostFormsReviewReviewing => 'Reviewing';
+
+  @override
+  String get hostFormsReviewIn => 'In';
+
+  @override
+  String get hostFormsReviewWaitlist => 'Waitlist';
+
+  @override
+  String get hostFormsReviewNotNow => 'Not now';
+
+  @override
+  String get hostFormsReviewWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostFormsQuestionShortAnswer => 'Short answer';
+
+  @override
+  String get hostFormsQuestionLongAnswer => 'Long answer';
+
+  @override
+  String get hostFormsQuestionPickOne => 'Choices · pick one';
+
+  @override
+  String get hostFormsQuestionPickAny => 'Choices · pick any';
+
+  @override
+  String get hostFormsQuestionDate => 'Date';
+
+  @override
+  String get hostFormsQuestionPhone => 'Phone';
+
+  @override
+  String get hostFormsQuestionEmail => 'Email';
+
+  @override
+  String get hostFormsQuestionLink => 'Link';
+
+  @override
+  String get hostFormsQuestionNumber => 'Number';
+
+  @override
+  String get hostFormsQuestionYesNo => 'Yes or no';
+
+  @override
+  String get hostFormsQuestionFile => 'File';
+
+  @override
+  String get hostFormsQuestionAgreement => 'Agreement';
+
+  @override
+  String get hostFormsQuestionSignature => 'Signature';
+
+  @override
+  String get hostFormsQuestionUntitled => 'A new question';
+
+  @override
+  String get hostFormsQuestionRequired => 'Required';
+
+  @override
+  String get hostFormsQuestionOptional => 'Optional';
+
+  @override
+  String get hostFormsQuestionWording => 'Question';
+
+  @override
+  String hostFormsQuestionChoice({required int number}) {
+    return 'Choice $number';
+  }
+
+  @override
+  String get hostFormsQuestionAddChoice => 'Add a choice';
+
+  @override
+  String get hostFormsQuestionRemove => 'Remove question';
+
+  @override
+  String get hostFormsThenNotifyTeam => 'Tell your team';
+
+  @override
+  String get hostFormsThenTag => 'Tag them in People';
+
+  @override
+  String get hostFormsThenPeople => 'Add them to People';
+
+  @override
+  String get hostFormsThenQueue => 'Put them in the review queue';
+
+  @override
+  String get hostFormsThenProposeEvent => 'Suggest them for an event';
+
+  @override
+  String get hostFormsThenWebhook => 'Send it to your own system';
+
+  @override
+  String get hostFormsThenMessage => 'Send them a message';
+
+  @override
+  String get hostFormsAnonymous => 'Someone';
+
+  @override
+  String get hostFormsBack => 'Back';
+
+  @override
+  String get hostFormsClose => 'Close';
+
+  @override
+  String get hostFormsTryAgain => 'Try again';
+
+  @override
+  String get hostFormsLoadMoreFailed => 'More could not be loaded.';
+
+  @override
+  String get hostFormsSettings => 'Settings';
+
+  @override
+  String get hostFormsPreview => 'Preview';
+
+  @override
+  String get hostFormsPeopleTitle => 'People';
+
+  @override
+  String get hostFormsPeopleViews => 'People views';
+
+  @override
+  String get hostFormsViewPeople => 'People';
+
+  @override
+  String get hostFormsViewMessages => 'Messages';
+
+  @override
+  String get hostFormsYourForms => 'Your forms';
+
+  @override
+  String get hostFormsNewForm => 'New form';
+
+  @override
+  String get hostFormsNewFormShort => 'Form';
+
+  @override
+  String get hostFormsNewTitle => 'New form';
+
+  @override
+  String get hostFormsNewKicker => 'Step 1 of 2 · what it’s for';
+
+  @override
+  String get hostFormsNewQuestion => 'What happens after someone answers?';
+
+  @override
+  String get hostFormsNewTemplatesTitle => 'Start from a template';
+
+  @override
+  String get hostFormsNewNoTemplates => 'No templates are available yet.';
+
+  @override
+  String get hostFormsNewNext => 'Next: the questions';
+
+  @override
+  String get hostFormsNewTemplates => 'Templates';
+
+  @override
+  String get hostFormsNewKinds => 'What it is for';
+
+  @override
+  String get hostFormsFormTitle => 'Form';
+
+  @override
+  String hostFormsFormKicker({required String placement}) {
+    return 'Form · $placement';
+  }
+
+  @override
+  String get hostFormsNoQuestions => 'No questions yet';
+
+  @override
+  String hostFormsQuestionsLine({required int count, required String labels}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions',
+      one: '1 question',
+    );
+    return '$_temp0: $labels';
+  }
+
+  @override
+  String get hostFormsStatOpened => 'Opened';
+
+  @override
+  String get hostFormsStatStarted => 'Started';
+
+  @override
+  String get hostFormsStatSent => 'Sent';
+
+  @override
+  String hostFormsStatOfOpens({required int percent}) {
+    return '$percent% of opens';
+  }
+
+  @override
+  String hostFormsStatFinished({required int percent}) {
+    return '$percent% finished';
+  }
+
+  @override
+  String get hostFormsWaitingTitle => 'Waiting for you';
+
+  @override
+  String hostFormsWaitingNote({required int count}) {
+    return '$count to review';
+  }
+
+  @override
+  String get hostFormsWaitingEmpty => 'Nobody is waiting.';
+
+  @override
+  String get hostFormsLetIn => 'Let in';
+
+  @override
+  String get hostFormsLetInDone => 'Let in. They can book now.';
+
+  @override
+  String hostFormsSeeAllAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'See all $count answers',
+      one: 'See the answer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormsThenTitle => 'When you let someone in';
+
+  @override
+  String get hostFormsThenChange => 'Change what happens';
+
+  @override
+  String get hostFormsThenEmpty => 'Nothing else happens yet.';
+
+  @override
+  String get hostFormsShareForm => 'Share the form';
+
+  @override
+  String get hostFormsEditQuestions => 'Edit questions';
+
+  @override
+  String get hostFormsPublish => 'Publish';
+
+  @override
+  String get hostFormsPublished => 'Published. The form is taking answers.';
+
+  @override
+  String get hostFormsPublishBlocked =>
+      'Fix the questions marked in the builder, then publish.';
+
+  @override
+  String get hostFormsQuestionsTitle => 'Questions';
+
+  @override
+  String get hostFormsQuestionsLead =>
+      'People answer these on your form. Keep it short: every question costs you a few answers.';
+
+  @override
+  String get hostFormsQuestionsEmpty =>
+      'No questions yet. Add the first one below.';
+
+  @override
+  String get hostFormsQuestionsAdd => 'Add a question';
+
+  @override
+  String get hostFormsQuestionsAddChoices => 'Choices';
+
+  @override
+  String get hostFormsQuestionsTemplatesLine =>
+      'Or start from a template when you make a new form.';
+
+  @override
+  String get hostFormsQuestionsSave => 'Save questions';
+
+  @override
+  String get hostFormsQuestionsDiscard => 'Discard';
+
+  @override
+  String get hostFormsQuestionsSaved => 'Questions saved.';
+
+  @override
+  String get hostFormsQuestionsSaveFailed =>
+      'The questions could not be saved.';
+
+  @override
+  String get hostFormsQuestionsBlocked =>
+      'Some questions need fixing before the form can publish.';
+
+  @override
+  String get hostFormsShareTitle => 'Share';
+
+  @override
+  String get hostFormsShareLink => 'Link';
+
+  @override
+  String get hostFormsShareLinkLoading => 'Getting the link';
+
+  @override
+  String get hostFormsShareCopy => 'Copy';
+
+  @override
+  String get hostFormsShareCopied => 'Link copied.';
+
+  @override
+  String get hostFormsShareWhatsapp => 'WhatsApp';
+
+  @override
+  String get hostFormsShareStory => 'Story';
+
+  @override
+  String get hostFormsShareEmbed => 'Embed';
+
+  @override
+  String get hostFormsShareEmbedCopied => 'Embed code copied.';
+
+  @override
+  String get hostFormsResponsesTitle => 'Responses';
+
+  @override
+  String hostFormsResponsesKicker({required String kind, required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$kind · $_temp0';
+  }
+
+  @override
+  String get hostFormsResponsesViews => 'Form views';
+
+  @override
+  String get hostFormsResponsesViewResponses => 'Responses';
+
+  @override
+  String get hostFormsResponsesViewQuestions => 'Questions';
+
+  @override
+  String get hostFormsResponsesViewResults => 'Results';
+
+  @override
+  String get hostFormsResponsesShow => 'Show';
+
+  @override
+  String get hostFormsResponsesEmpty => 'Nothing here.';
+
+  @override
+  String get hostFormsResponsesMore => 'Load more';
+
+  @override
+  String get hostFormsResultsEmpty =>
+      'Results show once the form is published and answered.';
+
+  @override
+  String hostFormsResultsAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormsResultsPrivate =>
+      'Counted privately until more people answer.';
+
+  @override
+  String hostFormsResultsRange({
+    required String average,
+    required String min,
+    required String max,
+  }) {
+    return 'Average $average · from $min to $max';
+  }
+
+  @override
+  String get hostFormsResponseTitle => 'Response';
+
+  @override
+  String hostFormsResponseKicker({required String form, required String ago}) {
+    return '$form · $ago';
+  }
+
+  @override
+  String get hostFormsResponseMessage => 'Message';
+
+  @override
+  String get hostFormsResponseMessageFailed =>
+      'No WhatsApp or email app could open.';
+
+  @override
+  String get hostFormsResponseAnswers => 'Answers';
+
+  @override
+  String get hostFormsResponseNoAnswers => 'No answers to show.';
+
+  @override
+  String get hostFormsResponseBlank => 'Left blank';
+
+  @override
+  String get hostFormsResponseOpenFile => 'Open';
+
+  @override
+  String get hostFormsResponseFileFailed => 'The file could not be opened.';
+
+  @override
+  String get hostFormsResponsePayment => 'Payment';
+
+  @override
+  String hostFormsResponsePaymentLine({
+    required String amount,
+    required String status,
+  }) {
+    return '$amount · $status';
+  }
+
+  @override
+  String get hostFormsResponseNote => 'Your note';
+
+  @override
+  String get hostFormsResponseNotePlaceholder => 'Only your team sees this';
+
+  @override
+  String get hostFormsResponseOffer => 'Offer a place';
+
+  @override
+  String get hostFormsResponseAddToPeople => 'Add to People';
+
+  @override
+  String get hostFormsResponseContinueOffer => 'Back to the offer';
+
+  @override
+  String get hostFormsResponseReviewed => 'Saved.';
+
+  @override
+  String get hostFormsResponseAdded => 'Added to People.';
+
+  @override
+  String get hostFormsResponseAddBlocked =>
+      'This answer cannot be added to People.';
+
+  @override
+  String get hostFormsOfferTitle => 'Offer a place';
+
+  @override
+  String hostFormsOfferTo({required String name}) {
+    return 'To $name';
+  }
+
+  @override
+  String get hostFormsOfferUnavailable =>
+      'Offers are unavailable while your account changes.';
+
+  @override
+  String get hostFormsOfferWhichEvent => 'Which event';
+
+  @override
+  String get hostFormsOfferLoading => 'Getting it ready';
+
+  @override
+  String get hostFormsOfferNoEvents => 'No upcoming events can take offers.';
+
+  @override
+  String get hostFormsOfferMoreEvents => 'More events';
+
+  @override
+  String get hostFormsOfferUntitledEvent => 'Untitled event';
+
+  @override
+  String get hostFormsOfferNeedsContactTitle => 'Add to People first';
+
+  @override
+  String get hostFormsOfferNeedsContact =>
+      'An offer goes to someone in People. Add these people, then come back.';
+
+  @override
+  String get hostFormsOfferNeedsSettings =>
+      'Set this event’s offer terms first: the price, how guests pay and how long a place is held.';
+
+  @override
+  String get hostFormsOfferOpenSettings => 'Open settings';
+
+  @override
+  String hostFormsOfferPaymentLink({required String name}) {
+    return 'Payment link for $name';
+  }
+
+  @override
+  String get hostFormsOfferWhoGetsIt => 'Who gets it';
+
+  @override
+  String hostFormsOfferHeldUntil({required String when}) {
+    return 'The place is held until $when.';
+  }
+
+  @override
+  String hostFormsOfferCost({required String amount}) {
+    return 'The place costs $amount. Guests pay you directly.';
+  }
+
+  @override
+  String get hostFormsOfferCostUnknown =>
+      'Guests pay you directly, as the event is set up.';
+
+  @override
+  String get hostFormsOfferFree => 'nothing';
+
+  @override
+  String get hostFormsOfferSent => 'Offer sent.';
+
+  @override
+  String get hostFormsOfferSendFailed =>
+      'The offer was not sent. Try again: it is sent at most once.';
+
+  @override
+  String get hostFormsOfferExistingTitle => 'Offers for this event';
+
+  @override
+  String get hostFormsOfferStatusDraft => 'Draft';
+
+  @override
+  String get hostFormsOfferStatusOffered => 'Offered';
+
+  @override
+  String get hostFormsOfferStatusWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostFormsOfferStatusExpired => 'Expired';
+
+  @override
+  String get hostFormsOfferStatusUnknown => 'Unknown';
+
+  @override
+  String hostFormsOfferStatusLine({
+    required String status,
+    required String when,
+  }) {
+    return '$status · held until $when';
+  }
+
+  @override
+  String hostFormsOfferOnWhatsapp({required String name}) {
+    return '$name gets this on WhatsApp';
+  }
+
+  @override
+  String get hostFormsOfferPrepareMessage => 'Write the WhatsApp message';
+
+  @override
+  String get hostFormsOfferOpenWhatsapp => 'Open WhatsApp';
+
+  @override
+  String get hostFormsOfferCopyMessage => 'Copy';
+
+  @override
+  String get hostFormsOfferMessageCopied => 'Message copied.';
+
+  @override
+  String get hostFormsOfferWhatsappFailed =>
+      'WhatsApp did not open. Copy the message instead.';
+
+  @override
+  String get hostFormsOfferMessageBlocked =>
+      'This person cannot get a WhatsApp message from you yet.';
+
+  @override
+  String get hostFormsOfferPaymentTitle => 'Payment';
+
+  @override
+  String get hostFormsOfferPaymentKicker =>
+      'You check the transfer yourself; Catch takes no money and holds no place for it.';
+
+  @override
+  String get hostFormsOfferPaymentReference => 'Payment reference';
+
+  @override
+  String hostFormsOfferPaymentEvidence({required String reference}) {
+    return 'They sent the reference $reference.';
+  }
+
+  @override
+  String get hostFormsOfferPaymentNote => 'Note';
+
+  @override
+  String get hostFormsOfferPaymentChecked => 'I checked the bank receipt';
+
+  @override
+  String get hostFormsOfferPaymentReceived =>
+      'You marked the payment received.';
+
+  @override
+  String get hostFormsOfferPaymentRejected => 'You turned the reference down.';
+
+  @override
+  String get hostFormsOfferPaymentRecord => 'Record the reference';
+
+  @override
+  String get hostFormsOfferPaymentAttest => 'Mark as received';
+
+  @override
+  String get hostFormsOfferPaymentReject => 'Turn it down';
+
+  @override
+  String get hostFormsOfferLetInTitle => 'Let them in';
+
+  @override
+  String get hostFormsOfferLetInCheck =>
+      'Check that their place is still free, then let them in.';
+
+  @override
+  String get hostFormsOfferLetInReady =>
+      'Their place is free. Let them in to book it.';
+
+  @override
+  String get hostFormsOfferLetInKeep =>
+      'They already hold a place. Letting them in keeps it.';
+
+  @override
+  String get hostFormsOfferLetInSaved =>
+      'Letting them in was saved but not confirmed.';
+
+  @override
+  String get hostFormsOfferLetInDone => 'They are in.';
+
+  @override
+  String get hostFormsOfferLetInCheckAction => 'Check';
+
+  @override
+  String get hostFormsOfferLetInAgainAction => 'Check again';
+
+  @override
+  String get hostFormsOfferSend => 'Send the offer';
+
+  @override
+  String get hostFormsOfferNext => 'Next';
+
+  @override
+  String get hostFormsOfferCancel => 'Cancel';
+
+  @override
+  String get hostFormsOfferStop => 'Stop';
+
+  @override
+  String get hostFormsOfferDone => 'Done';
+
+  @override
+  String get hostFormsOfferFailed => 'Something went wrong.';
+
+  @override
+  String get hostFormsOfferStale =>
+      'The answers changed, so the offer starts again.';
+
+  @override
+  String get hostFormsNewFailed => 'The form could not be made. Try again.';
+
+  @override
+  String get hostFormsLetInFailed => 'They could not be let in. Try again.';
+
+  @override
+  String get hostFormsResponseFailed => 'That did not save. Try again.';
+
+  @override
   String get eventSuccessLiveControlPublishRevealTitle =>
       'Publish this reveal?';
 
@@ -16122,13 +16871,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsCreateOrganizer => 'Create organizer';
 
   @override
-  String get hostFormsStatusDraft => 'Draft';
-
-  @override
   String get hostFormsStatusPublished => 'Published';
-
-  @override
-  String get hostFormsStatusPaused => 'Paused';
 
   @override
   String get hostFormsStatusArchived => 'Archived';

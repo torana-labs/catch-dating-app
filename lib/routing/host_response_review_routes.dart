@@ -1,8 +1,5 @@
 part of 'go_router.dart';
 
-HostResponseReviewQueue? _responseReviewQueue(Object? extra) =>
-    extra is HostResponseReviewQueue ? extra : null;
-
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   return switch (state.uri.queryParameters['section']) {
     'guests' => HostEventManageSection.guests,

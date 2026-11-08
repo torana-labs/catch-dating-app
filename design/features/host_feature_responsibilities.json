@@ -275,7 +275,7 @@
             "sourcePaths": [
               "lib/hosts/presentation/host_audience_view.dart",
               "lib/hosts/presentation/customers/host_customers_screen.dart",
-              "lib/hosts/presentation/forms/host_forms_screen.dart",
+              "lib/hosts/forms/forms_screen.dart",
               "lib/routing/go_router.dart",
               "lib/routing/shell/host_shell_screen.dart"
             ],
@@ -522,9 +522,9 @@
         },
         {
           "id": "forms_screen",
-          "file": "lib/hosts/presentation/forms/host_forms_screen.dart",
+          "file": "lib/hosts/forms/forms_screen.dart",
           "symbol": "HostFormsScreen",
-          "role": "Forms and Responses route composition inside Audience."
+          "role": "The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms."
         },
         {
           "id": "forms_directory",
@@ -623,7 +623,7 @@
       ],
       "testFiles": [
         "test/hosts/host_customers_screen_state_test.dart",
-        "test/hosts/forms/host_forms_screen_test.dart",
+        "test/hosts/forms/forms_body_test.dart",
         "test/hosts/forms/host_form_builder_screen_test.dart",
         "test/hosts/forms/host_form_response_detail_screen_test.dart",
         "test/hosts/host_operations_screen_test.dart"

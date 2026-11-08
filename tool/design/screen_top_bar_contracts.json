@@ -265,14 +265,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/forms/host_form_analytics_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -298,22 +290,6 @@
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
-      "path": "lib/hosts/presentation/forms/host_form_share_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
-      "path": "lib/hosts/presentation/forms/host_form_templates_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
       "owner": "CatchLegacyTopBar",

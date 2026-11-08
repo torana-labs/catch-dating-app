@@ -21914,6 +21914,1294 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get hostLiveRetry;
 
+  /// Form kind: the host decides who gets in.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get hostFormsKindApplication;
+
+  /// Form kind: people waiting for something with no date yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest list'**
+  String get hostFormsKindInterestList;
+
+  /// Form kind: private bookings and partnerships.
+  ///
+  /// In en, this message translates to:
+  /// **'Enquiry'**
+  String get hostFormsKindEnquiry;
+
+  /// Form kind: questions guests answer after an event.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get hostFormsKindFeedback;
+
+  /// Form kind: an agreement guests sign.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiver'**
+  String get hostFormsKindWaiver;
+
+  /// Form kind: questions with no follow-up.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey'**
+  String get hostFormsKindSurvey;
+
+  /// New form kind note for an application.
+  ///
+  /// In en, this message translates to:
+  /// **'You decide who gets in before they can book. Then: you offer a place to the people you pick'**
+  String get hostFormsKindApplicationNote;
+
+  /// New form kind note for an interest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect people for something that has no date yet. Then: they hear first when you add a date'**
+  String get hostFormsKindInterestListNote;
+
+  /// New form kind note for an enquiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Private bookings, companies, partnerships. Then: it lands in Messages for you to reply'**
+  String get hostFormsKindEnquiryNote;
+
+  /// New form kind note for feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions guests answer after an event. Then: answers feed the event report'**
+  String get hostFormsKindFeedbackNote;
+
+  /// New form kind note for a waiver.
+  ///
+  /// In en, this message translates to:
+  /// **'An agreement guests sign before they come. Then: it is kept with their booking'**
+  String get hostFormsKindWaiverNote;
+
+  /// New form kind note for a survey.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions for your people, with no follow-up. Then: the answers are yours to read'**
+  String get hostFormsKindSurveyNote;
+
+  /// Form status: published.
+  ///
+  /// In en, this message translates to:
+  /// **'Taking answers'**
+  String get hostFormsStatusTakingAnswers;
+
+  /// Paused form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get hostFormsStatusPaused;
+
+  /// Draft form lifecycle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostFormsStatusDraft;
+
+  /// Form status: archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get hostFormsStatusClosed;
+
+  /// Where a form shows: the organiser page.
+  ///
+  /// In en, this message translates to:
+  /// **'on your page'**
+  String get hostFormsPlacementPage;
+
+  /// Where a form shows: one event.
+  ///
+  /// In en, this message translates to:
+  /// **'for an event'**
+  String get hostFormsPlacementEvent;
+
+  /// Where a form shows: a campaign link.
+  ///
+  /// In en, this message translates to:
+  /// **'from a message'**
+  String get hostFormsPlacementCampaign;
+
+  /// Forms list row subtitle: answer count and where it shows.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 response} other{{count} responses}} · {placement}'**
+  String hostFormsRowSubtitle({required int count, required String placement});
+
+  /// Response status: not reviewed yet.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostFormsReviewNew;
+
+  /// Response status: in review.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewing'**
+  String get hostFormsReviewReviewing;
+
+  /// Response status: let in.
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get hostFormsReviewIn;
+
+  /// Response status: on the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get hostFormsReviewWaitlist;
+
+  /// Response status: declined.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get hostFormsReviewNotNow;
+
+  /// Response status: the person withdrew.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostFormsReviewWithdrawn;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Short answer'**
+  String get hostFormsQuestionShortAnswer;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Long answer'**
+  String get hostFormsQuestionLongAnswer;
+
+  /// Question kind: single choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choices · pick one'**
+  String get hostFormsQuestionPickOne;
+
+  /// Question kind: multiple choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choices · pick any'**
+  String get hostFormsQuestionPickAny;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get hostFormsQuestionDate;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostFormsQuestionPhone;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostFormsQuestionEmail;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get hostFormsQuestionLink;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get hostFormsQuestionNumber;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes or no'**
+  String get hostFormsQuestionYesNo;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get hostFormsQuestionFile;
+
+  /// Question kind: acknowledgement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement'**
+  String get hostFormsQuestionAgreement;
+
+  /// Question kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get hostFormsQuestionSignature;
+
+  /// Builder: a question with no wording yet.
+  ///
+  /// In en, this message translates to:
+  /// **'A new question'**
+  String get hostFormsQuestionUntitled;
+
+  /// Builder chip: the question must be answered.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get hostFormsQuestionRequired;
+
+  /// Builder chip: the question can be skipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get hostFormsQuestionOptional;
+
+  /// Builder field: the question wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get hostFormsQuestionWording;
+
+  /// Builder field: one choice of a choice question.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice {number}'**
+  String hostFormsQuestionChoice({required int number});
+
+  /// Builder chip: add a choice to a question.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a choice'**
+  String get hostFormsQuestionAddChoice;
+
+  /// Builder button: remove the question.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove question'**
+  String get hostFormsQuestionRemove;
+
+  /// What happens when someone is let in: the team hears.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell your team'**
+  String get hostFormsThenNotifyTeam;
+
+  /// What happens when someone is let in: a tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag them in People'**
+  String get hostFormsThenTag;
+
+  /// What happens when someone is let in: a contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add them to People'**
+  String get hostFormsThenPeople;
+
+  /// What happens when someone answers: the queue.
+  ///
+  /// In en, this message translates to:
+  /// **'Put them in the review queue'**
+  String get hostFormsThenQueue;
+
+  /// What happens when someone is let in: an event proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest them for an event'**
+  String get hostFormsThenProposeEvent;
+
+  /// What happens when someone answers: a webhook.
+  ///
+  /// In en, this message translates to:
+  /// **'Send it to your own system'**
+  String get hostFormsThenWebhook;
+
+  /// What happens when someone is let in: a message.
+  ///
+  /// In en, this message translates to:
+  /// **'Send them a message'**
+  String get hostFormsThenMessage;
+
+  /// A response with no name, email or phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get hostFormsAnonymous;
+
+  /// Forms top bar back label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostFormsBack;
+
+  /// Forms top bar close label.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostFormsClose;
+
+  /// Forms retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostFormsTryAgain;
+
+  /// Forms: the next page failed.
+  ///
+  /// In en, this message translates to:
+  /// **'More could not be loaded.'**
+  String get hostFormsLoadMoreFailed;
+
+  /// Form page top bar action: the form settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get hostFormsSettings;
+
+  /// Question builder top bar action: the form as people see it.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get hostFormsPreview;
+
+  /// Forms tab top bar title (the People destination).
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostFormsPeopleTitle;
+
+  /// Forms tab segmented control label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'People views'**
+  String get hostFormsPeopleViews;
+
+  /// People view: the people list.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostFormsViewPeople;
+
+  /// People view: messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostFormsViewMessages;
+
+  /// Forms tab section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your forms'**
+  String get hostFormsYourForms;
+
+  /// Forms tab empty state action.
+  ///
+  /// In en, this message translates to:
+  /// **'New form'**
+  String get hostFormsNewForm;
+
+  /// Forms tab top bar button: make a new form.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get hostFormsNewFormShort;
+
+  /// New form top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'New form'**
+  String get hostFormsNewTitle;
+
+  /// New form top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1 of 2 · what it’s for'**
+  String get hostFormsNewKicker;
+
+  /// New form page title.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens after someone answers?'**
+  String get hostFormsNewQuestion;
+
+  /// New form page title on the template list.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from a template'**
+  String get hostFormsNewTemplatesTitle;
+
+  /// New form: the template list is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No templates are available yet.'**
+  String get hostFormsNewNoTemplates;
+
+  /// New form dock primary: make the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: the questions'**
+  String get hostFormsNewNext;
+
+  /// New form dock secondary: show every template.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get hostFormsNewTemplates;
+
+  /// New form dock secondary on the template list: back to the kinds.
+  ///
+  /// In en, this message translates to:
+  /// **'What it is for'**
+  String get hostFormsNewKinds;
+
+  /// Form page top bar kicker and fallback title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get hostFormsFormTitle;
+
+  /// Form page kicker: where the form shows.
+  ///
+  /// In en, this message translates to:
+  /// **'Form · {placement}'**
+  String hostFormsFormKicker({required String placement});
+
+  /// Form page: the form has no questions.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions yet'**
+  String get hostFormsNoQuestions;
+
+  /// Form page: how many questions and their wording.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 question} other{{count} questions}}: {labels}'**
+  String hostFormsQuestionsLine({required int count, required String labels});
+
+  /// Form stat: people who opened the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened'**
+  String get hostFormsStatOpened;
+
+  /// Form stat: people who started answering.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get hostFormsStatStarted;
+
+  /// Form stat: answers sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get hostFormsStatSent;
+
+  /// Form stat note: starts as a share of opens.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of opens'**
+  String hostFormsStatOfOpens({required int percent});
+
+  /// Form stat note: the completion rate.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% finished'**
+  String hostFormsStatFinished({required int percent});
+
+  /// Form page section: answers nobody has reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for you'**
+  String get hostFormsWaitingTitle;
+
+  /// Form page section note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to review'**
+  String hostFormsWaitingNote({required int count});
+
+  /// Form page: no answers to review.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is waiting.'**
+  String get hostFormsWaitingEmpty;
+
+  /// Action: let the person in.
+  ///
+  /// In en, this message translates to:
+  /// **'Let in'**
+  String get hostFormsLetIn;
+
+  /// Notice after letting someone in.
+  ///
+  /// In en, this message translates to:
+  /// **'Let in. They can book now.'**
+  String get hostFormsLetInDone;
+
+  /// Form page link row to Responses.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{See the answer} other{See all {count} answers}}'**
+  String hostFormsSeeAllAnswers({required int count});
+
+  /// Form page section: what happens next.
+  ///
+  /// In en, this message translates to:
+  /// **'When you let someone in'**
+  String get hostFormsThenTitle;
+
+  /// Form page section action: the form automations.
+  ///
+  /// In en, this message translates to:
+  /// **'Change what happens'**
+  String get hostFormsThenChange;
+
+  /// Form page: no automations.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing else happens yet.'**
+  String get hostFormsThenEmpty;
+
+  /// Form page button.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the form'**
+  String get hostFormsShareForm;
+
+  /// Form page button.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit questions'**
+  String get hostFormsEditQuestions;
+
+  /// Form page button on a draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get hostFormsPublish;
+
+  /// Notice after publishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Published. The form is taking answers.'**
+  String get hostFormsPublished;
+
+  /// Publishing failed validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix the questions marked in the builder, then publish.'**
+  String get hostFormsPublishBlocked;
+
+  /// Question builder title.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get hostFormsQuestionsTitle;
+
+  /// Question builder lead copy.
+  ///
+  /// In en, this message translates to:
+  /// **'People answer these on your form. Keep it short: every question costs you a few answers.'**
+  String get hostFormsQuestionsLead;
+
+  /// Question builder: no questions.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions yet. Add the first one below.'**
+  String get hostFormsQuestionsEmpty;
+
+  /// Question builder section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a question'**
+  String get hostFormsQuestionsAdd;
+
+  /// Question builder chip: add a choice question.
+  ///
+  /// In en, this message translates to:
+  /// **'Choices'**
+  String get hostFormsQuestionsAddChoices;
+
+  /// Question builder hint under Add a question.
+  ///
+  /// In en, this message translates to:
+  /// **'Or start from a template when you make a new form.'**
+  String get hostFormsQuestionsTemplatesLine;
+
+  /// Question builder dock primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Save questions'**
+  String get hostFormsQuestionsSave;
+
+  /// Question builder dock secondary: undo this visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get hostFormsQuestionsDiscard;
+
+  /// Notice after saving questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions saved.'**
+  String get hostFormsQuestionsSaved;
+
+  /// Question builder: saving failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The questions could not be saved.'**
+  String get hostFormsQuestionsSaveFailed;
+
+  /// Question builder: validation errors.
+  ///
+  /// In en, this message translates to:
+  /// **'Some questions need fixing before the form can publish.'**
+  String get hostFormsQuestionsBlocked;
+
+  /// Share top bar title and Responses action.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get hostFormsShareTitle;
+
+  /// Share tile kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get hostFormsShareLink;
+
+  /// Share tile while the link loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting the link'**
+  String get hostFormsShareLinkLoading;
+
+  /// Share tile button.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get hostFormsShareCopy;
+
+  /// Notice after copying the link.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied.'**
+  String get hostFormsShareCopied;
+
+  /// Share button: send on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostFormsShareWhatsapp;
+
+  /// Share button: the system share sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Story'**
+  String get hostFormsShareStory;
+
+  /// Share button: copy the embed code.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed'**
+  String get hostFormsShareEmbed;
+
+  /// Notice after copying the embed code.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed code copied.'**
+  String get hostFormsShareEmbedCopied;
+
+  /// Responses title across every form.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get hostFormsResponsesTitle;
+
+  /// Responses kicker: form kind and answer count.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} · {count, plural, =1{1 response} other{{count} responses}}'**
+  String hostFormsResponsesKicker({required String kind, required int count});
+
+  /// Responses segmented label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Form views'**
+  String get hostFormsResponsesViews;
+
+  /// Form view: the answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get hostFormsResponsesViewResponses;
+
+  /// Form view: the question builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get hostFormsResponsesViewQuestions;
+
+  /// Form view: answers counted per question.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get hostFormsResponsesViewResults;
+
+  /// Responses review filter label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get hostFormsResponsesShow;
+
+  /// Responses: no answers in this filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here.'**
+  String get hostFormsResponsesEmpty;
+
+  /// Responses: the next page.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get hostFormsResponsesMore;
+
+  /// Results: nothing to count yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Results show once the form is published and answered.'**
+  String get hostFormsResultsEmpty;
+
+  /// Results section note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 answer} other{{count} answers}}'**
+  String hostFormsResultsAnswers({required int count});
+
+  /// Results: below the privacy threshold or free text.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted privately until more people answer.'**
+  String get hostFormsResultsPrivate;
+
+  /// Results for a number question.
+  ///
+  /// In en, this message translates to:
+  /// **'Average {average} · from {min} to {max}'**
+  String hostFormsResultsRange({
+    required String average,
+    required String min,
+    required String max,
+  });
+
+  /// One answer fallback title.
+  ///
+  /// In en, this message translates to:
+  /// **'Response'**
+  String get hostFormsResponseTitle;
+
+  /// One answer kicker: the form and how long ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{form} · {ago}'**
+  String hostFormsResponseKicker({required String form, required String ago});
+
+  /// One answer top bar action: WhatsApp or email.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostFormsResponseMessage;
+
+  /// Message failed to open.
+  ///
+  /// In en, this message translates to:
+  /// **'No WhatsApp or email app could open.'**
+  String get hostFormsResponseMessageFailed;
+
+  /// One answer section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers'**
+  String get hostFormsResponseAnswers;
+
+  /// One answer: none visible.
+  ///
+  /// In en, this message translates to:
+  /// **'No answers to show.'**
+  String get hostFormsResponseNoAnswers;
+
+  /// One answer: a skipped question.
+  ///
+  /// In en, this message translates to:
+  /// **'Left blank'**
+  String get hostFormsResponseBlank;
+
+  /// One answer: open an attached file.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get hostFormsResponseOpenFile;
+
+  /// A file failed to open.
+  ///
+  /// In en, this message translates to:
+  /// **'The file could not be opened.'**
+  String get hostFormsResponseFileFailed;
+
+  /// One answer section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get hostFormsResponsePayment;
+
+  /// One answer payment row.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · {status}'**
+  String hostFormsResponsePaymentLine({
+    required String amount,
+    required String status,
+  });
+
+  /// One answer team note field.
+  ///
+  /// In en, this message translates to:
+  /// **'Your note'**
+  String get hostFormsResponseNote;
+
+  /// One answer team note placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your team sees this'**
+  String get hostFormsResponseNotePlaceholder;
+
+  /// One answer dock primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer a place'**
+  String get hostFormsResponseOffer;
+
+  /// Action: make the person a contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to People'**
+  String get hostFormsResponseAddToPeople;
+
+  /// One answer dock primary when opened from an offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the offer'**
+  String get hostFormsResponseContinueOffer;
+
+  /// Notice after a review.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved.'**
+  String get hostFormsResponseReviewed;
+
+  /// Notice after adding to People.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to People.'**
+  String get hostFormsResponseAdded;
+
+  /// Add to People is not allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'This answer cannot be added to People.'**
+  String get hostFormsResponseAddBlocked;
+
+  /// Offer top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer a place'**
+  String get hostFormsOfferTitle;
+
+  /// Offer top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'To {name}'**
+  String hostFormsOfferTo({required String name});
+
+  /// Offer: no signed-in manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers are unavailable while your account changes.'**
+  String get hostFormsOfferUnavailable;
+
+  /// Offer label over the event choices.
+  ///
+  /// In en, this message translates to:
+  /// **'Which event'**
+  String get hostFormsOfferWhichEvent;
+
+  /// Offer: reading events or terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting it ready'**
+  String get hostFormsOfferLoading;
+
+  /// Offer: no events.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming events can take offers.'**
+  String get hostFormsOfferNoEvents;
+
+  /// Offer: the next page of events.
+  ///
+  /// In en, this message translates to:
+  /// **'More events'**
+  String get hostFormsOfferMoreEvents;
+
+  /// Offer: an event with no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled event'**
+  String get hostFormsOfferUntitledEvent;
+
+  /// Offer section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to People first'**
+  String get hostFormsOfferNeedsContactTitle;
+
+  /// Offer section kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'An offer goes to someone in People. Add these people, then come back.'**
+  String get hostFormsOfferNeedsContact;
+
+  /// Offer notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Set this event’s offer terms first: the price, how guests pay and how long a place is held.'**
+  String get hostFormsOfferNeedsSettings;
+
+  /// Offer notice action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get hostFormsOfferOpenSettings;
+
+  /// Offer field: a personal payment link.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment link for {name}'**
+  String hostFormsOfferPaymentLink({required String name});
+
+  /// Offer section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who gets it'**
+  String get hostFormsOfferWhoGetsIt;
+
+  /// Offer: when the hold ends.
+  ///
+  /// In en, this message translates to:
+  /// **'The place is held until {when}.'**
+  String hostFormsOfferHeldUntil({required String when});
+
+  /// Offer cost line.
+  ///
+  /// In en, this message translates to:
+  /// **'The place costs {amount}. Guests pay you directly.'**
+  String hostFormsOfferCost({required String amount});
+
+  /// Offer cost line with no amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay you directly, as the event is set up.'**
+  String get hostFormsOfferCostUnknown;
+
+  /// Offer cost: a free place.
+  ///
+  /// In en, this message translates to:
+  /// **'nothing'**
+  String get hostFormsOfferFree;
+
+  /// Offer notice after sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer sent.'**
+  String get hostFormsOfferSent;
+
+  /// Offer notice after a failed send.
+  ///
+  /// In en, this message translates to:
+  /// **'The offer was not sent. Try again: it is sent at most once.'**
+  String get hostFormsOfferSendFailed;
+
+  /// Offer section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers for this event'**
+  String get hostFormsOfferExistingTitle;
+
+  /// Offer status.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostFormsOfferStatusDraft;
+
+  /// Offer status.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered'**
+  String get hostFormsOfferStatusOffered;
+
+  /// Offer status.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostFormsOfferStatusWithdrawn;
+
+  /// Offer status.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostFormsOfferStatusExpired;
+
+  /// Offer status the app cannot read.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get hostFormsOfferStatusUnknown;
+
+  /// Offer status line.
+  ///
+  /// In en, this message translates to:
+  /// **'{status} · held until {when}'**
+  String hostFormsOfferStatusLine({
+    required String status,
+    required String when,
+  });
+
+  /// Offer kicker over the message.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} gets this on WhatsApp'**
+  String hostFormsOfferOnWhatsapp({required String name});
+
+  /// Offer button: prepare the message.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the WhatsApp message'**
+  String get hostFormsOfferPrepareMessage;
+
+  /// Offer button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostFormsOfferOpenWhatsapp;
+
+  /// Offer button: copy the message.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get hostFormsOfferCopyMessage;
+
+  /// Offer: the message was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Message copied.'**
+  String get hostFormsOfferMessageCopied;
+
+  /// Offer: WhatsApp failed.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp did not open. Copy the message instead.'**
+  String get hostFormsOfferWhatsappFailed;
+
+  /// Offer: the handoff is blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This person cannot get a WhatsApp message from you yet.'**
+  String get hostFormsOfferMessageBlocked;
+
+  /// Offer section: manual payment check.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get hostFormsOfferPaymentTitle;
+
+  /// Offer payment kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'You check the transfer yourself; Catch takes no money and holds no place for it.'**
+  String get hostFormsOfferPaymentKicker;
+
+  /// Offer field.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reference'**
+  String get hostFormsOfferPaymentReference;
+
+  /// Offer: the guest sent a reference.
+  ///
+  /// In en, this message translates to:
+  /// **'They sent the reference {reference}.'**
+  String hostFormsOfferPaymentEvidence({required String reference});
+
+  /// Offer field: review note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get hostFormsOfferPaymentNote;
+
+  /// Offer switch.
+  ///
+  /// In en, this message translates to:
+  /// **'I checked the bank receipt'**
+  String get hostFormsOfferPaymentChecked;
+
+  /// Offer payment status.
+  ///
+  /// In en, this message translates to:
+  /// **'You marked the payment received.'**
+  String get hostFormsOfferPaymentReceived;
+
+  /// Offer payment status.
+  ///
+  /// In en, this message translates to:
+  /// **'You turned the reference down.'**
+  String get hostFormsOfferPaymentRejected;
+
+  /// Offer dock primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Record the reference'**
+  String get hostFormsOfferPaymentRecord;
+
+  /// Offer dock primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as received'**
+  String get hostFormsOfferPaymentAttest;
+
+  /// Offer dock secondary.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn it down'**
+  String get hostFormsOfferPaymentReject;
+
+  /// Offer section: admission.
+  ///
+  /// In en, this message translates to:
+  /// **'Let them in'**
+  String get hostFormsOfferLetInTitle;
+
+  /// Offer admission copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check that their place is still free, then let them in.'**
+  String get hostFormsOfferLetInCheck;
+
+  /// Offer admission copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Their place is free. Let them in to book it.'**
+  String get hostFormsOfferLetInReady;
+
+  /// Offer admission copy.
+  ///
+  /// In en, this message translates to:
+  /// **'They already hold a place. Letting them in keeps it.'**
+  String get hostFormsOfferLetInKeep;
+
+  /// Offer admission copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Letting them in was saved but not confirmed.'**
+  String get hostFormsOfferLetInSaved;
+
+  /// Offer admission copy.
+  ///
+  /// In en, this message translates to:
+  /// **'They are in.'**
+  String get hostFormsOfferLetInDone;
+
+  /// Offer admission action.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get hostFormsOfferLetInCheckAction;
+
+  /// Offer admission action.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostFormsOfferLetInAgainAction;
+
+  /// Offer dock primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the offer'**
+  String get hostFormsOfferSend;
+
+  /// Offer dock primary after payment links.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostFormsOfferNext;
+
+  /// Offer dock secondary.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostFormsOfferCancel;
+
+  /// Offer dock secondary while preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get hostFormsOfferStop;
+
+  /// Offer dock primary on an open offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostFormsOfferDone;
+
+  /// Offer: a read or command failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get hostFormsOfferFailed;
+
+  /// Offer: the selection changed.
+  ///
+  /// In en, this message translates to:
+  /// **'The answers changed, so the offer starts again.'**
+  String get hostFormsOfferStale;
+
+  /// New form: making the form failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The form could not be made. Try again.'**
+  String get hostFormsNewFailed;
+
+  /// Form page: letting someone in failed.
+  ///
+  /// In en, this message translates to:
+  /// **'They could not be let in. Try again.'**
+  String get hostFormsLetInFailed;
+
+  /// One answer: a review or conversion failed.
+  ///
+  /// In en, this message translates to:
+  /// **'That did not save. Try again.'**
+  String get hostFormsResponseFailed;
+
   /// Confirmation title before an irreversible assignment reveal.
   ///
   /// In en, this message translates to:
@@ -25070,23 +26358,11 @@ abstract class AppLocalizations {
   /// **'Create organizer'**
   String get hostFormsCreateOrganizer;
 
-  /// Draft form lifecycle label.
-  ///
-  /// In en, this message translates to:
-  /// **'Draft'**
-  String get hostFormsStatusDraft;
-
   /// Published form lifecycle label.
   ///
   /// In en, this message translates to:
   /// **'Published'**
   String get hostFormsStatusPublished;
-
-  /// Paused form lifecycle label.
-  ///
-  /// In en, this message translates to:
-  /// **'Paused'**
-  String get hostFormsStatusPaused;
 
   /// Archived form lifecycle label.
   ///
