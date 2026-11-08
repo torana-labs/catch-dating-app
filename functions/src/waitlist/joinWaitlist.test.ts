@@ -8,7 +8,9 @@ import {
   normalizeHostApplication,
   normalizeMarketingAnalytics,
   normalizeMarketingAttribution,
+  normalizeProgrammeApplication,
   normalizeWaitlistRole,
+  waitlistSubmissionId,
   resolveWaitlistCorsOrigin,
   waitlistAllowedOrigins,
   whatsappLaunchNoticeId,
@@ -44,6 +46,8 @@ test(
       "fixtures/valid/join_waitlist_request_host.json",
       "fixtures/valid/join_waitlist_request_runner_compatibility.json",
       "fixtures/valid/join_waitlist_request_whatsapp.json",
+      "fixtures/valid/join_waitlist_request_weddings.json",
+      "fixtures/valid/join_waitlist_request_host_phone_only.json",
     ]) {
       assert.equal(validateJoinWaitlistHTTPRequest(readFixture(fixture)), true);
     }
@@ -52,6 +56,8 @@ test(
       "fixtures/invalid/join_waitlist_request_member_missing_email.json",
       "fixtures/invalid/join_waitlist_request_whatsapp_host.json",
       "fixtures/invalid/join_waitlist_request_whatsapp_marketing_unset.json",
+      "fixtures/invalid/join_waitlist_request_weddings_member.json",
+      "fixtures/invalid/join_waitlist_request_host_missing_contact.json",
     ]) {
       assert.equal(
         validateJoinWaitlistHTTPRequest(readFixture(fixture)), false, fixture);
@@ -619,4 +625,96 @@ test("enabled intake binds one queue row to a new consented Host receipt",
     const deniedIntent = [...records.values()].find((row) =>
       (row.hostLead as {eventId?: string})?.eventId === deniedEventId);
     assert.equal(deniedIntent?.acquisitionAttribution, undefined);
+  });
+
+
+test("normalizeProgrammeApplication keeps only answered fields", () => {
+  assert.equal(normalizeProgrammeApplication({tools: []}), null);
+  assert.deepEqual(normalizeProgrammeApplication({
+    planningCompany: "  Meher   Shah Weddings ", weddingDate: "12 Dec",
+    functions: 5, hotels: 99, teamSize: 24.5, wants: ["Door", "Door"],
+  }), {planningCompany: "Meher Shah Weddings", functions: 5,
+    wants: ["Door"]});
+  assert.equal(waitlistSubmissionId("", "+919820144718"),
+    `phone_${Buffer.from("+919820144718").toString("base64url")}`);
+  assert.equal(waitlistSubmissionId("a@example.test", "+919820144718"),
+    Buffer.from("a@example.test").toString("base64url"));
+});
+
+test("a phone-only weddings application becomes a programme intent",
+  async (context) => {
+    if (!admin.apps.length) {
+      admin.initializeApp({projectId: "demo-sales-intent"});
+    }
+    const validateIntent = contractValidator(
+      "SalesInboundIntentsDocument");
+    const database = admin.firestore();
+    const records = new Map<string, Record<string, unknown>>();
+    type TransactionRunner = (tx: unknown) => Promise<unknown>;
+    context.mock.method(database, "runTransaction",
+      async (run: TransactionRunner) => {
+        const writes: Array<[string, Record<string, unknown>]> = [];
+        await run({
+          get: async (ref: {path?: string}) => ref.path ?
+            {exists: records.has(ref.path),
+              data: () => records.get(ref.path!)} : {size: 0},
+          create: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.push([ref.path, value]);
+          },
+          update: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.push([ref.path, {...records.get(ref.path), ...value}]);
+          },
+          set: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.push([ref.path, value]);
+          },
+        });
+        for (const [path, value] of writes) records.set(path, value);
+      });
+    const submit = async (payload: unknown, ip: string) => {
+      let status = 0;
+      let result: unknown;
+      const response = {
+        set: () => undefined,
+        status: (value: number) => {
+          status = value; return response;
+        },
+        json: (value: unknown) => {
+          result = value; return response;
+        },
+        send: () => undefined,
+      };
+      await joinWaitlist({method: "POST", body: payload, ip,
+        get: () => undefined} as never, response as never);
+      return {status, result};
+    };
+    const body = readFixture(
+      "fixtures/valid/join_waitlist_request_weddings.json") as
+      Record<string, unknown>;
+    const accepted = await submit({...body, phone: "+91 98201 44718"},
+      "synthetic-weddings-1");
+    assert.equal(accepted.status, 200);
+    const waitlistKey =
+      `launchWaitlist/${waitlistSubmissionId("", "+919820144718")}`;
+    assert.equal(records.get(waitlistKey)?.phone, "+919820144718");
+    assert.equal(records.get(waitlistKey)?.email, null);
+    assert.equal(records.get(waitlistKey)?.programme, "weddings");
+    const [intent] = [...records.entries()]
+      .filter(([key]) => key.startsWith("salesInboundIntents/"))
+      .map(([, row]) => row);
+    assert.equal(intent.programme, "weddings");
+    assert.equal(intent.phone, "+919820144718");
+    assert.equal(intent.email, null);
+    assert.deepEqual(intent.programmeApplication,
+      body.programmeApplication);
+    const stored = {...intent,
+      createdAt: admin.firestore.Timestamp.now(),
+      updatedAt: admin.firestore.Timestamp.now()};
+    assert.equal(validateIntent(stored), true,
+      JSON.stringify(validateIntent.errors));
+    // Without email or phone, there is no way to reply.
+    const {phone: _phone, ...noContact} = body;
+    assert.equal(_phone, "+919820144718");
+    assert.equal((await submit(noContact, "synthetic-weddings-2")).status, 400);
+    assert.equal((await submit({...body, phone: "12345"},
+      "synthetic-weddings-3")).status, 400);
   });
