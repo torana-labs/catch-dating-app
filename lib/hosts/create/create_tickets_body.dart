@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -73,6 +74,8 @@ class CreateTicketsBody extends StatelessWidget {
               key: const ValueKey<String>('create-booking-link'),
               copy: copy,
               title: context.l10n.hostCreateBookingLink,
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsExternalBookingValueUrl,
               initialValue: draft.externalEventUrl ?? '',
               placeholder: context.l10n.hostCreateBookingLinkHint,
               keyboardType: TextInputType.url,
@@ -91,6 +94,8 @@ class CreateTicketsBody extends StatelessWidget {
                   key: const ValueKey<String>('create-price'),
                   copy: copy,
                   title: context.l10n.hostCreatePricePerPlace,
+                  contract: CatchContractConstraints
+                      .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
                   initialValue: draft.price ?? '',
                   prefixText: '₹',
                   keyboardType: TextInputType.number,
@@ -138,6 +143,9 @@ class CreateTicketsBody extends StatelessWidget {
                 subtitle: context.l10n.hostCreateAdmissionNote(
                   admission: admission.name,
                 ),
+                contract: CatchContractConstraints
+                    .updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue,
+                contractValue: admission.preset,
                 selected: state.admission == admission,
                 onTap: () => onAdmission(admission),
               ),

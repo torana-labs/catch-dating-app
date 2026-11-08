@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/live/parts/formats_table_row.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -133,6 +134,8 @@ class HostFormatsMixBody extends StatelessWidget {
                 key: const ValueKey<String>('formats-mix-openers'),
                 value: state.openers,
                 semanticLabel: l10n.hostFormatsOpeners,
+                contract: CatchContractConstraints
+                    .eventSuccessPlanDocumentContextualOpenersEnabled,
                 onChanged: savingOpeners ? null : onOpeners,
               ),
             ),

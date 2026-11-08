@@ -64,6 +64,8 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
           CatchField.stepper(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsOperationalRosterFieldPlaces,
+            contract: CatchContractConstraints
+                .importEventAttendeesCallablePayloadRowsItemsPartySize,
             value: _places,
             min: 1,
             max: 20,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -115,6 +116,8 @@ class CreateWhenBody extends StatelessWidget {
                   CatchChoiceTile(
                     key: ValueKey<String>('create-day-${day.day}'),
                     variant: CatchChoiceTileVariant.day,
+                    contract: CatchContractConstraints
+                        .createPrivateEventSetupCallablePayloadBasicsLocalDate,
                     title: weekday.format(day),
                     subtitle: '${day.day}',
                     selected: picked != null && _sameDay(picked, day),
@@ -220,6 +223,8 @@ class CreateWhenBody extends StatelessWidget {
             key: const ValueKey<String>('create-directions'),
             copy: copy,
             title: context.l10n.hostCreateHowToFindYou,
+            contract: CatchContractConstraints
+                .updatePrivateEventDetailsCallablePayloadDetailsVenueValueNotes,
             initialValue: draft.locationDetails ?? '',
             onChanged: onDirections,
           ),

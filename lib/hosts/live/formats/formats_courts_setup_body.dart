@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_setup_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -144,6 +145,8 @@ class HostFormatsCourtsSetupBody extends StatelessWidget {
                   HostFormatsCourtsAim.closeGames =>
                     l10n.hostFormatsAimCloseGamesNote,
                 },
+                contract: CatchContractConstraints
+                    .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
                 selected: draft.aim == aim,
                 onTap: editable
                     ? () => onDraft(draft.copyWith(aim: aim))
