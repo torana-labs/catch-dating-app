@@ -20,7 +20,8 @@ const images = ["/assets/events/social-run-music-hero-960.jpg", "/assets/marketi
 const photo = (id: string, seed: number) => ({id, url: images[seed % images.length], thumbnailUrl: null});
 
 /** The owner view of the claimed fixture page for a role, with or without rolled-up numbers. */
-export function ownerViewFixture(role: OwnerRole, options: {waiting?: boolean; messagesUsed?: number} = {}): OwnerViewData {
+export function ownerViewFixture(role: OwnerRole,
+  options: {waiting?: boolean; messagesUsed?: number; whatsapp?: boolean} = {}): OwnerViewData {
   const days = visitsByDay.map((visits, index) => {
     const back = 29 - index;
     if (options.waiting) return {date: day(back), visits: 0, linkClicks: 0, bookingClicks: 0, newFollowers: 0};
@@ -53,7 +54,8 @@ export function ownerViewFixture(role: OwnerRole, options: {waiting?: boolean; m
     links: claimedOrganizerPage.links.map((link) => ({...link, icon: link.icon ?? null})),
     about: "Sunday social runs from the Lantern Lane jetty: 5K at three paces, then coffee. Wednesday nights it's a 4K and a playlist.",
     photos: [photo("cover", 1), photo("start", 2), photo("coffee", 3), photo("night", 4), photo("finish", 5)],
-    followerMessages: {month: "2026-10", limit: 2, used: options.messagesUsed ?? 1},
+    followerMessages: {month: "2026-10", limit: 2, used: options.messagesUsed ?? 1,
+      whatsappAvailable: options.whatsapp ?? true},
   };
 }
 
@@ -65,7 +67,10 @@ export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
     watchUser: () => () => undefined,
     getView: async () => view,
     manage: async (command) => ({action: command.action, idempotentReplay: false, links: null, photoIds: null,
-      followerMessages: null}),
+      followerMessages: command.action === "sendFollowerMessage" ? {...view.followerMessages,
+        used: Math.min(2, view.followerMessages.used + 1), delivery: {appRecipientCount: 214,
+          whatsapp: command.channels?.includes("whatsapp") ? {status: "collecting", queuedCount: 61, skippedCount: 153,
+            sentCount: 0, deliveredCount: 0, failedCount: 0} : null}} : null}),
     saveAbout: async () => undefined,
     listReviews: async () => claimedOrganizerPage.latestReviews.map((review, index) => ({
       id: review.id ?? `review-${index}`, reviewerName: review.reviewerName, rating: review.rating, comment: review.comment,

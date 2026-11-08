@@ -170,6 +170,18 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 100
+        },
+        "assignedMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440,
+          "description": "Minutes in a pair or on court, for the host court-time tally."
+        },
+        "benchMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440,
+          "description": "Minutes sitting out."
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -204,6 +216,13 @@
           },
           "endsAt": {
             "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "benchNote": {
+            "type": "string",
+            "enum": [
+              "commonArea"
+            ],
+            "description": "Doubles: sitting out this round, so mix in the common area."
           },
           "whySummary": {
             "type": "string",
@@ -262,6 +281,26 @@
           },
           "peerUid": {
             "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "partnerUid": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+            "description": "Doubles: the partner. Equal to peerUid so older clients still show one person."
+          },
+          "opponentUids": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "description": "Doubles: the partnership across the net."
+          },
+          "courtIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200,
+            "description": "Doubles: the zero-based court."
           },
           "unitKind": {
             "type": "string",

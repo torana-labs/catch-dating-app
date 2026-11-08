@@ -37,6 +37,10 @@
       "maximum": 100
     },
     "confirmed": {"type": "boolean"},
+    "activeStepIsActivity": {
+      "type": "boolean",
+      "description": "setActiveStep only: whether the new step is the core activity. false (a planned stop) releases guest cues the phone rule held back; omitted keeps them held until the finish."
+    },
     "accountabilityAcknowledged": {
       "type": "boolean",
       "description": "Explicit Host acknowledgement that a sweep still has unresolved checked-in attendees."

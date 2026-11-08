@@ -143,57 +143,59 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
-          CatchField<EventSuccessActivityAssignmentAttribute>.choices(
+          for (final attribute in _offeredAttributes(value))
+            CatchField<EventSuccessAttributeObjective>.choices(
+              copy: catchFieldCopy(context.l10n),
+              key: ValueKey('eventSuccessAttributeObjective-${attribute.name}'),
+              title: attribute.label,
+              contract: CatchContractConstraints
+                  .mobileFormStateEventSuccessAttributeObjective,
+              contractValueBuilder: (objective) => objective.name,
+              body: context
+                  .l10n
+                  .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
+              values: EventSuccessAttributeObjective.values,
+              itemLabelBuilder: (objective) =>
+                  _objectiveLabel(context, objective),
+              selected: {value.objectiveFor(attribute)},
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
+              onSelectionChanged: enabled
+                  ? (selection) => onChanged(
+                      value.withObjective(attribute, selection.single),
+                    )
+                  : null,
+            ),
+          if (_sensitiveSelected(value))
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('eventSuccessSensitiveAttributeConsent'),
+              title: context
+                  .l10n
+                  .eventSuccessStructureConfigEditorSensitiveConsentTitle,
+              body: context
+                  .l10n
+                  .eventSuccessStructureConfigEditorSensitiveConsentBody,
+              bodyMaxLines: 4,
+              icon: CatchIcons.protected,
+            ),
+          CatchField<EventSuccessArrivalGroupPolicy>.choices(
             copy: catchFieldCopy(context.l10n),
+            key: const ValueKey('eventSuccessArrivalGroupPolicy'),
             title: context
                 .l10n
-                .eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy,
+                .eventSuccessStructureConfigEditorArrivalGroupsTitle,
             contract: CatchContractConstraints
-                .eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
-            contractValueBuilder: (value) => value.name,
-            body: context
-                .l10n
-                .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
-            values: _offeredAttributes(value),
-            itemLabelBuilder: (attribute) => attribute.balanceLabel,
-            selected: value.balanceActivityAttributes.toSet(),
-            mode: CatchChipMode.multiple,
+                .eventSuccessPlanDocumentStructureConfigArrivalGroupPolicy,
+            contractValueBuilder: (policy) => policy.name,
+            body:
+                context.l10n.eventSuccessStructureConfigEditorArrivalGroupsBody,
+            values: EventSuccessArrivalGroupPolicy.values,
+            itemLabelBuilder: (policy) => _arrivalGroupLabel(context, policy),
+            selected: {value.effectiveArrivalGroupPolicy},
             states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
-                    value.copyWith(
-                      balanceActivityAttributes: _orderedAttributes(selection),
-                      clusterActivityAttributes: value.clusterActivityAttributes
-                          .where((attribute) => !selection.contains(attribute))
-                          .toList(growable: false),
-                    ),
-                  )
-                : null,
-          ),
-          CatchField<EventSuccessActivityAssignmentAttribute>.choices(
-            copy: catchFieldCopy(context.l10n),
-            title: context
-                .l10n
-                .eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy,
-            contract: CatchContractConstraints
-                .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
-            contractValueBuilder: (value) => value.name,
-            body: context
-                .l10n
-                .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
-            values: _offeredAttributes(value),
-            itemLabelBuilder: (attribute) => attribute.clusterLabel,
-            selected: value.clusterActivityAttributes.toSet(),
-            mode: CatchChipMode.multiple,
-            states: <WidgetState>{if (!enabled) WidgetState.disabled},
-            onSelectionChanged: enabled
-                ? (selection) => onChanged(
-                    value.copyWith(
-                      clusterActivityAttributes: _orderedAttributes(selection),
-                      balanceActivityAttributes: value.balanceActivityAttributes
-                          .where((attribute) => !selection.contains(attribute))
-                          .toList(growable: false),
-                    ),
+                    value.copyWith(arrivalGroupPolicy: selection.single),
                   )
                 : null,
           ),
@@ -269,6 +271,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         rotationIntervalMinutes: null,
         balanceActivityAttributes: const [],
         clusterActivityAttributes: const [],
+        coverActivityAttributes: const [],
       ),
       EventSuccessUnitKind.pods => value.copyWith(
         unitKind: kind,
@@ -299,10 +302,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
 }
 
 /// Activity signals are always offered. Sensitive profile signals (gender,
-/// age band) are offered for pair formats (singles-first racket nights and
-/// mixers, where mixed partnerships are the usual ask) or when this event
-/// already opted in, so a saved choice stays visible and removable. Which
-/// formats may opt in is an open owner decision (docs/assignment_engine.md).
+/// age band) are offered to pair, team and table formats, never selected by
+/// default, and stay visible on any format once this event opted in, so a
+/// saved choice can be removed (docs/plans/assignment_engine_ui_spec.md).
 List<EventSuccessActivityAssignmentAttribute> _offeredAttributes(
   EventSuccessStructureConfig config,
 ) {
@@ -316,13 +318,39 @@ List<EventSuccessActivityAssignmentAttribute> _offeredAttributes(
         (attribute) =>
             !attribute.sensitive ||
             selected.contains(attribute) ||
-            config.unitKind == EventSuccessUnitKind.pairs,
+            config.unitKind.offersSensitiveAttributes,
       )
       .toList(growable: false);
 }
 
-List<EventSuccessActivityAssignmentAttribute> _orderedAttributes(
-  Set<EventSuccessActivityAssignmentAttribute> selected,
-) => EventSuccessActivityAssignmentAttribute.values
-    .where(selected.contains)
-    .toList(growable: false);
+bool _sensitiveSelected(EventSuccessStructureConfig config) => [
+  ...config.balanceActivityAttributes,
+  ...config.clusterActivityAttributes,
+  ...config.coverActivityAttributes,
+].any((attribute) => attribute.sensitive);
+
+String _objectiveLabel(
+  BuildContext context,
+  EventSuccessAttributeObjective objective,
+) => switch (objective) {
+  EventSuccessAttributeObjective.none =>
+    context.l10n.eventSuccessStructureConfigEditorObjectiveNone,
+  EventSuccessAttributeObjective.balance =>
+    context.l10n.eventSuccessStructureConfigEditorObjectiveBalance,
+  EventSuccessAttributeObjective.cluster =>
+    context.l10n.eventSuccessStructureConfigEditorObjectiveCluster,
+  EventSuccessAttributeObjective.cover =>
+    context.l10n.eventSuccessStructureConfigEditorObjectiveCover,
+};
+
+String _arrivalGroupLabel(
+  BuildContext context,
+  EventSuccessArrivalGroupPolicy policy,
+) => switch (policy) {
+  EventSuccessArrivalGroupPolicy.keepTogether =>
+    context.l10n.eventSuccessStructureConfigEditorArrivalGroupsKeepTogether,
+  EventSuccessArrivalGroupPolicy.spread =>
+    context.l10n.eventSuccessStructureConfigEditorArrivalGroupsSpread,
+  EventSuccessArrivalGroupPolicy.ignore =>
+    context.l10n.eventSuccessStructureConfigEditorArrivalGroupsIgnore,
+};

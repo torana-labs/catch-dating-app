@@ -4574,6 +4574,48 @@
       "exportedFunctions": []
     },
     {
+      "id": "eventSuccessDeferredCues",
+      "path": "eventSuccessDeferredCues/{cueId}",
+      "rulesMatch": "/eventSuccessDeferredCues/{cueId}",
+      "typescriptInterface": "EventSuccessDeferredCueDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps held guest cues server-only"
+      ],
+      "owner": "Event attendance and Event Success live control callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "markEventAttendance",
+        "controlEventSuccessLive"
+      ],
+      "migrationNotes": [
+        "One held companion-ready push per guest and event; deleted when sent at the next planned stop or the finish."
+      ]
+    },
+    {
+      "id": "organizerMeetingHistory",
+      "path": "organizerMeetingHistory/{historyId}",
+      "rulesMatch": "/organizerMeetingHistory/{historyId}",
+      "typescriptInterface": "OrganizerMeetingHistoryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer meeting history server-only"
+      ],
+      "owner": "Event Success live control and rotation callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "controlEventSuccessLive",
+        "generateEventSuccessRotations"
+      ],
+      "migrationNotes": [
+        "Private per organiser and guest: peer uids with meeting counts and the last meeting time. Entries older than 90 days are ignored; expiresAt drives TTL deletion."
+      ]
+    },
+    {
       "id": "organizerTrackingSettings",
       "path": "organizerTrackingSettings/{organizerId}",
       "rulesMatch": "/organizerTrackingSettings/{organizerId}",

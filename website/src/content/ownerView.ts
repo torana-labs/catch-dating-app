@@ -127,6 +127,12 @@ export const ownerViewCopy = {
     allowance: (used: number, limit: number) =>
       used >= limit ? "You have used both messages this month." : `${limit - used} of ${limit} left this month`,
     usedUp: "You can message followers again next month.",
+    whatsapp: "Also send on WhatsApp",
+    whatsappNote: "To followers who ticked WhatsApp updates, from your WhatsApp number. It is the same message and uses the same monthly send.",
+    delivered: (app: number, whatsapp: {queuedCount: number; skippedCount: number} | null) =>
+      whatsapp ?
+        `In the feed for ${number(app)} ${plural(app, "follower", "followers")}. On WhatsApp to ${number(whatsapp.queuedCount)} so far; ${number(whatsapp.skippedCount)} have not ticked WhatsApp updates.` :
+        `In the feed for ${number(app)} ${plural(app, "follower", "followers")}.`,
   },
   settings: {
     addressTitle: "Your page address",

@@ -31,6 +31,15 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "channels": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "contains": {"const": "app"},
+      "items": {"type": "string", "enum": ["app", "whatsapp"]},
+      "description": "Where the update goes. Absent means [\"app\"]. whatsapp also sends it to followers who ticked WhatsApp updates, through the organiser's own number and approved organizer_follower_update template; it counts against the same weekly allowance."
     }
   }
 }

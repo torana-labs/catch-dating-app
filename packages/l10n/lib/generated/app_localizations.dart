@@ -2969,19 +2969,71 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups;
 
-  /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (title).
+  /// Objective choice for one attribute: not used to build groups.
   ///
   /// In en, this message translates to:
-  /// **'Spread people out by'**
-  String
-  get eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy;
+  /// **'Doesn’t matter'**
+  String get eventSuccessStructureConfigEditorObjectiveNone;
 
-  /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (title).
+  /// Objective choice: each group mirrors the room’s mix.
   ///
   /// In en, this message translates to:
-  /// **'Keep similar people together by'**
-  String
-  get eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy;
+  /// **'Spread evenly'**
+  String get eventSuccessStructureConfigEditorObjectiveBalance;
+
+  /// Objective choice: each group is as alike as possible.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep similar together'**
+  String get eventSuccessStructureConfigEditorObjectiveCluster;
+
+  /// Objective choice: each group holds as many different values as it can.
+  ///
+  /// In en, this message translates to:
+  /// **'A mix in every group'**
+  String get eventSuccessStructureConfigEditorObjectiveCover;
+
+  /// Consent note shown when the host opts into gender or age band.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender and age band are optional for guests'**
+  String get eventSuccessStructureConfigEditorSensitiveConsentTitle;
+
+  /// Consent note body for the gender and age band opt-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Used only to shape groups at this event. Guests can leave it out, and anyone who does is grouped by the other rules. Nobody else sees it.'**
+  String get eventSuccessStructureConfigEditorSensitiveConsentBody;
+
+  /// Arrival-group policy row title.
+  ///
+  /// In en, this message translates to:
+  /// **'People who booked together'**
+  String get eventSuccessStructureConfigEditorArrivalGroupsTitle;
+
+  /// Arrival-group policy row body.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends and couples who booked together. Anyone who came alone is spread across the groups.'**
+  String get eventSuccessStructureConfigEditorArrivalGroupsBody;
+
+  /// Arrival-group policy choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep together'**
+  String get eventSuccessStructureConfigEditorArrivalGroupsKeepTogether;
+
+  /// Arrival-group policy choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Split up'**
+  String get eventSuccessStructureConfigEditorArrivalGroupsSpread;
+
+  /// Arrival-group policy choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn’t matter'**
+  String get eventSuccessStructureConfigEditorArrivalGroupsIgnore;
 
   /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (Text).
   ///
@@ -43118,6 +43170,22 @@ abstract class AppLocalizations {
     required int courts,
   });
 
+  /// Court setup estimate: average court time and bench size.
+  ///
+  /// In en, this message translates to:
+  /// **'About {minutes} min on court each{bench, plural, =0{} other{ · {bench} on the bench per round}}'**
+  String hostFormatsCourtsFairTime({required int minutes, required int bench});
+
+  /// Court setup estimate: the court-time range.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone plays {min} to {max} minutes over {rounds, plural, =1{1 round} other{{rounds} rounds}}.'**
+  String hostFormatsCourtsFairRange({
+    required int min,
+    required int max,
+    required int rounds,
+  });
+
   /// Court setup section: the aim.
   ///
   /// In en, this message translates to:
@@ -46126,6 +46194,40 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every {weekday}'**
   String hostCreateRepeatOn({required Object weekday});
+
+  /// Follower update composer: switch that adds the WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Also send on WhatsApp'**
+  String get hostFollowerUpdateWhatsappToggle;
+
+  /// Follower update composer: who the WhatsApp channel reaches.
+  ///
+  /// In en, this message translates to:
+  /// **'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.'**
+  String get hostFollowerUpdateWhatsappToggleBody;
+
+  /// Follower update composer: why the WhatsApp switch is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your WhatsApp number and get the follower update template approved to send there too.'**
+  String get hostFollowerUpdateWhatsappUnavailable;
+
+  /// Notice after a follower update that also went on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Posted to followers. Nobody has ticked WhatsApp updates yet.} =1{Posted to followers. Sending on WhatsApp to 1 follower.} other{Posted to followers. Sending on WhatsApp to {count} followers.}}'**
+  String hostFollowerUpdatePostedWhatsapp({required int count});
+
+  /// Sends: per-channel counts for a follower update's WhatsApp leg.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp: {sent} sent, {delivered} delivered, {skipped} not on WhatsApp'**
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  });
 }
 
 class _AppLocalizationsDelegate

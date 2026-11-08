@@ -54,7 +54,7 @@ describe("useOrganizerPageController", () => {
     expect(result.current.share.displayUrl).toBe(`${brand.web.domain}/organizers/lantern-lane-runners`);
   });
 
-  it("follows through the visitor's account until follow by phone lands, and records the save", async () => {
+  it("follows a signed-in visitor through their account, and records the save", async () => {
     const {listing, result} = renderController();
     expect(result.current.follow.phone).toBeNull();
     await waitFor(() => expect(accountApi.read).toHaveBeenCalled());
@@ -97,25 +97,32 @@ describe("useOrganizerPageController", () => {
     expect(accountApi.follow).not.toHaveBeenCalled();
   });
 
-  it("follows by phone through its backend once one is provided", async () => {
-    const backends: OrganizerPageBackends = {followByPhone: {sendCode: vi.fn(async () => undefined), confirm: vi.fn(async () => undefined)},
+  it("follows a signed-out visitor by phone, with WhatsApp only when ticked", async () => {
+    accountApi.watch.mockImplementation((callback) => {callback(null); return vi.fn();});
+    const challenge = {confirm: vi.fn(async () => undefined), clear: vi.fn()};
+    const backends: OrganizerPageBackends = {followByPhone: {sendCode: vi.fn(async () => challenge), follow: vi.fn(async () => undefined)},
       submitReview: null};
     const {listing, result} = renderController(claimedOrganizerPage, backends);
+    await waitFor(() => expect(result.current.follow.byPhone).toBe(true));
     act(() => result.current.follow.press());
-    expect(result.current.follow.phone?.step).toBe("phone");
+    expect(result.current.follow.phone).toMatchObject({step: "phone", whatsapp: false});
     act(() => result.current.follow.phone!.sendCode());
     expect(result.current.follow.error).toBe("Enter a 10-digit mobile number");
     act(() => result.current.follow.phone!.setNumber("98765 43210"));
+    act(() => result.current.follow.phone!.setWhatsapp(true));
     await act(async () => result.current.follow.phone!.sendCode());
-    expect(backends.followByPhone!.sendCode).toHaveBeenCalledWith({organizerId: listing.id, phoneNumber: "+919876543210"});
+    expect(backends.followByPhone!.sendCode).toHaveBeenCalledWith({phoneNumber: "+919876543210",
+      recaptchaId: result.current.follow.phone!.recaptchaId});
     expect(result.current.follow.phone).toMatchObject({step: "code", shown: "+91 98765 43210"});
     act(() => result.current.follow.phone!.setCode("12a34"));
     act(() => result.current.follow.phone!.confirm());
     expect(result.current.follow.error).toBe("Enter the 6-digit code");
     act(() => result.current.follow.phone!.setCode("123456"));
     await act(async () => result.current.follow.phone!.confirm());
-    expect(backends.followByPhone!.confirm).toHaveBeenCalledWith({organizerId: listing.id, phoneNumber: "+919876543210", code: "123456"});
-    expect(result.current.follow).toMatchObject({following: true, phone: {step: "done"}});
+    expect(challenge.confirm).toHaveBeenCalledWith("123456");
+    expect(backends.followByPhone!.follow).toHaveBeenCalledWith({organizerId: listing.id,
+      requestId: expect.stringMatching(/^[A-Za-z0-9_-]+$/u), whatsappUpdates: true});
+    expect(result.current.follow).toMatchObject({following: true, phone: {step: "done", whatsapp: true}});
     expect(accountApi.follow).not.toHaveBeenCalled();
   });
 

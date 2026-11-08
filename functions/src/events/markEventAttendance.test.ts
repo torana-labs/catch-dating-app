@@ -13,6 +13,10 @@ class FakeDocRef {
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.firestore.get(this.path));
   }
+
+  async set(data: FakeData): Promise<void> {
+    this.firestore.merge(this.path, data);
+  }
 }
 
 class FakeSnapshot {
@@ -256,6 +260,13 @@ test(
     );
 
     assert.deepEqual(h.notifications, []);
+    // Deferred to the next planned stop or the finish, not dropped.
+    const held = h.firestore.get(
+      "eventSuccessDeferredCues/event-1_runner-1"
+    ) as FakeData | undefined;
+    assert.equal(held?.kind, "companionReady");
+    assert.equal(held?.uid, "runner-1");
+    assert.equal(held?.organizerId, "club-1");
   }
 );
 

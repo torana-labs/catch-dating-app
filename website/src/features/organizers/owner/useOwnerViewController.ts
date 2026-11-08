@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {ownerViewBackends, type OwnerViewBackends} from "./ownerViewBackends";
-import type {OwnerCapability, OwnerLink, OwnerViewData} from "./ownerViewTypes";
+import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerViewData} from "./ownerViewTypes";
 
 /** The owner view's five tabs, each shown only when the role has one of its capabilities. */
 export type OwnerTab = "insights" | "links" | "page" | "audience" | "settings";
@@ -95,11 +95,14 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
   const replyMutation = useMutation({retry: false, gcTime: 0,
     mutationFn: (input: {reviewId: string; message: string}) => backends.replyToReview(input.reviewId, input.message)});
 
-  // Message followers.
+  // Message followers, in the feed and, when ticked, on WhatsApp too.
   const [messageText, setMessageText] = useState("");
+  const [messageWhatsapp, setMessageWhatsapp] = useState(false);
+  const [lastDelivery, setLastDelivery] = useState<OwnerFollowerMessages["delivery"] | null>(null);
   const messageMutation = useMutation({retry: false, gcTime: 0,
-    mutationFn: (input: {text: string; requestId: string}) =>
-      backends.manage({organizerId, requestId: input.requestId, action: "sendFollowerMessage", text: input.text})});
+    mutationFn: (input: {text: string; requestId: string; whatsapp: boolean}) =>
+      backends.manage({organizerId, requestId: input.requestId, action: "sendFollowerMessage", text: input.text,
+        ...(input.whatsapp ? {channels: ["app", "whatsapp"]} : {})})});
 
   // Tracking settings.
   const tracking = useQuery({queryKey: ["ownerTracking", organizerId], queryFn: () => backends.getTracking(organizerId),
@@ -112,6 +115,7 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
 
   useEffect(() => {
     setLinkDraft(null); setAboutDraft(null); setReplyTo(null); setReplyText(""); setMessageText("");
+    setMessageWhatsapp(false); setLastDelivery(null);
     setPixelDraft(null); setGaDraft(null); setNotice(null);
   }, [organizerId, uid]);
 
@@ -204,11 +208,21 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
       limit: data?.followerMessages.limit ?? 2,
       usedUp: (data?.followerMessages.used ?? 0) >= (data?.followerMessages.limit ?? 2),
       busy: messageMutation.isPending,
+      /** WhatsApp shows only when the number and its follower template are ready. */
+      whatsappAvailable: data?.followerMessages.whatsappAvailable === true,
+      whatsapp: messageWhatsapp && data?.followerMessages.whatsappAvailable === true,
+      setWhatsapp: (value: boolean) => {setMessageWhatsapp(value); setNotice(null);},
+      /** Counts from the last send, until the view changes. */
+      delivery: lastDelivery,
       send: () => {
         const text = messageText.trim();
         if (!text) return;
-        void run("audience", "message", () => messageMutation.mutateAsync({text, requestId: requestId()}),
-          () => setMessageText(""));
+        const whatsapp = messageWhatsapp && data?.followerMessages.whatsappAvailable === true;
+        setLastDelivery(null);
+        void run("audience", "message", async () => {
+          const result = await messageMutation.mutateAsync({text, requestId: requestId(), whatsapp});
+          setLastDelivery(result.followerMessages?.delivery ?? null);
+        }, () => setMessageText(""));
       },
     },
     tracking: {

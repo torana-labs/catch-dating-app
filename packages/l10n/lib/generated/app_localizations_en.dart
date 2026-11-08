@@ -1793,14 +1793,46 @@ class AppLocalizationsEn extends AppLocalizations {
       'Catch uses this when it builds the groups.';
 
   @override
-  String
-  get eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy =>
-      'Spread people out by';
+  String get eventSuccessStructureConfigEditorObjectiveNone => 'Doesn’t matter';
 
   @override
-  String
-  get eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy =>
-      'Keep similar people together by';
+  String get eventSuccessStructureConfigEditorObjectiveBalance =>
+      'Spread evenly';
+
+  @override
+  String get eventSuccessStructureConfigEditorObjectiveCluster =>
+      'Keep similar together';
+
+  @override
+  String get eventSuccessStructureConfigEditorObjectiveCover =>
+      'A mix in every group';
+
+  @override
+  String get eventSuccessStructureConfigEditorSensitiveConsentTitle =>
+      'Gender and age band are optional for guests';
+
+  @override
+  String get eventSuccessStructureConfigEditorSensitiveConsentBody =>
+      'Used only to shape groups at this event. Guests can leave it out, and anyone who does is grouped by the other rules. Nobody else sees it.';
+
+  @override
+  String get eventSuccessStructureConfigEditorArrivalGroupsTitle =>
+      'People who booked together';
+
+  @override
+  String get eventSuccessStructureConfigEditorArrivalGroupsBody =>
+      'Friends and couples who booked together. Anyone who came alone is spread across the groups.';
+
+  @override
+  String get eventSuccessStructureConfigEditorArrivalGroupsKeepTogether =>
+      'Keep together';
+
+  @override
+  String get eventSuccessStructureConfigEditorArrivalGroupsSpread => 'Split up';
+
+  @override
+  String get eventSuccessStructureConfigEditorArrivalGroupsIgnore =>
+      'Doesn’t matter';
 
   @override
   String
@@ -26744,6 +26776,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostFormatsCourtsFairTime({required int minutes, required int bench}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      bench,
+      locale: localeName,
+      other: ' · $bench on the bench per round',
+      zero: '',
+    );
+    return 'About $minutes min on court each$_temp0';
+  }
+
+  @override
+  String hostFormatsCourtsFairRange({
+    required int min,
+    required int max,
+    required int rounds,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rounds,
+      locale: localeName,
+      other: '$rounds rounds',
+      one: '1 round',
+    );
+    return 'Everyone plays $min to $max minutes over $_temp0.';
+  }
+
+  @override
   String get hostFormatsAimTitle => 'What matters most';
 
   @override
@@ -28717,5 +28775,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostCreateRepeatOn({required Object weekday}) {
     return 'Every $weekday';
+  }
+
+  @override
+  String get hostFollowerUpdateWhatsappToggle => 'Also send on WhatsApp';
+
+  @override
+  String get hostFollowerUpdateWhatsappToggleBody =>
+      'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.';
+
+  @override
+  String get hostFollowerUpdateWhatsappUnavailable =>
+      'Connect your WhatsApp number and get the follower update template approved to send there too.';
+
+  @override
+  String hostFollowerUpdatePostedWhatsapp({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Posted to followers. Sending on WhatsApp to $count followers.',
+      one: 'Posted to followers. Sending on WhatsApp to 1 follower.',
+      zero: 'Posted to followers. Nobody has ticked WhatsApp updates yet.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  }) {
+    return 'WhatsApp: $sent sent, $delivered delivered, $skipped not on WhatsApp';
   }
 }

@@ -1213,6 +1213,18 @@ service cloud.firestore {
     match /eventSetupReceipts/{receiptId} {
       allow read, write: if false;
     }
+    // Guest cues the phone rule held back, sent at the next planned stop or
+    // the finish. Server only.
+    match /eventSuccessDeferredCues/{cueId} {
+      allow read, write: if false;
+    }
+
+    // Who met whom at an organiser's events (last 90 days). Server only:
+    // read by the assignment engine, written when a live guide completes.
+    match /organizerMeetingHistory/{historyId} {
+      allow read, write: if false;
+    }
+
     match /organizerTrackingSettings/{organizerId} {
       allow read, write: if false;
     }
