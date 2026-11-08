@@ -52,7 +52,7 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
     );
     final Widget body;
     if (scope == null || organizer == null) {
-      body = HostOrganizerScopeFallback(
+      body = HostOrganizerScopeBody(
         gap: read.gap,
         error: read.error,
         onRetry: () => retryHostOrganizerScope(ref),

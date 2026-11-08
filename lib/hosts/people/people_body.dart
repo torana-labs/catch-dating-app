@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_list.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,7 +41,7 @@ class HostPeopleBody extends StatelessWidget {
       variant: CatchPageBodyVariant.fixed,
       gap: CatchPageBodyGap.tight,
       children: [
-        HostPeopleTabs(selected: HostPeopleView.people, onView: onView),
+        HostPeopleTabBar(selected: HostPeopleView.people, onView: onView),
         CatchRail(
           label: l10n.hostPeopleShowLabel,
           wrap: CatchRailMode.never,

@@ -77,7 +77,7 @@ class _SettingsScreenState extends ConsumerState<OrganizerSettingsScreen> {
     final Widget body;
     String? kicker;
     if (scope == null) {
-      body = HostOrganizerScopeFallback(
+      body = HostOrganizerScopeBody(
         gap: read.gap,
         error: read.error,
         onRetry: () => retryHostOrganizerScope(ref),

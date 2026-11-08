@@ -4,7 +4,7 @@ import 'package:catch_dating_app/hosts/people/people_desktop_body.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_body.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';

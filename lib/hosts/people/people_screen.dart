@@ -7,8 +7,8 @@ import 'package:catch_dating_app/hosts/people/people_desktop_body.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_controller.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_scope_state.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_scope_body.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -96,7 +96,7 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
 
           final Widget body;
           if (organizer == null) {
-            body = HostPeopleScopeState(
+            body = HostPeopleScopeBody(
               organizer: scope,
               onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
               onSignIn: () => context.go(Routes.authScreen.path),

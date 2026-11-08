@@ -3,7 +3,7 @@ import 'package:catch_dating_app/hosts/people/messages_controller.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/people_controller.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_scope_state.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_scope_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -45,7 +45,7 @@ class _HostMessagesScreenState extends ConsumerState<HostMessagesScreen> {
     final organizer = scope.organizer;
     final Widget body;
     if (organizer == null) {
-      body = HostPeopleScopeState(
+      body = HostPeopleScopeBody(
         organizer: scope,
         onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
         onSignIn: () => context.go(Routes.authScreen.path),
