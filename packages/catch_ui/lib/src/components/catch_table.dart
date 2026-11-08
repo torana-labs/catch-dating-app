@@ -52,10 +52,6 @@ class CatchTableColumn {
       (variant == CatchTableColumnVariant.number
           ? CatchTablePlacement.end
           : CatchTablePlacement.start);
-
-  Widget _sized(Widget child) => width == null
-      ? Expanded(flex: flex, child: child)
-      : SizedBox(width: width, child: child);
 }
 
 /// Bordered data table with an uppercase header row and divided rows.
@@ -109,9 +105,9 @@ class CatchTable extends StatelessWidget {
                 children: [
                   for (final (index, column) in columns.indexed) ...[
                     if (index > 0) const SizedBox(width: CatchSpacing.s2),
-                    column._sized(
-                      Padding(
-                        padding: EdgeInsets.only(left: column.labelInset),
+                    if (column.width case final width?)
+                      SizedBox(
+                        width: width,
                         child: Text(
                           column.label.toUpperCase(),
                           maxLines: 1,
@@ -123,8 +119,25 @@ class CatchTable extends StatelessWidget {
                               : null,
                           style: headerStyle,
                         ),
+                      )
+                    else
+                      Expanded(
+                        flex: column.flex,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: column.labelInset),
+                          child: Text(
+                            column.label.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign:
+                                column.resolvedPlacement ==
+                                    CatchTablePlacement.end
+                                ? TextAlign.right
+                                : null,
+                            style: headerStyle,
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ],
               ),
@@ -181,12 +194,46 @@ class CatchTableRow extends StatelessWidget {
         ? this.children
         : [
             for (final (index, cell) in cells.indexed)
-              _CatchTableCellView(
-                cell: cell,
-                placement: index < columns.length
-                    ? columns[index].resolvedPlacement
-                    : CatchTablePlacement.start,
-              ),
+              if (cell.badge case final badge?)
+                badge
+              else if (cell.variant == CatchTableCellVariant.title)
+                Column(
+                  crossAxisAlignment:
+                      index < columns.length &&
+                          columns[index].resolvedPlacement ==
+                              CatchTablePlacement.end
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CatchText(
+                      cell.text,
+                      variant: CatchTextVariant.titleRow,
+                      maxLines: 1,
+                    ),
+                    if (cell.subtitle case final subtitle?)
+                      CatchText(
+                        subtitle,
+                        variant: CatchTextVariant.bodyMeta,
+                        tone: CatchTextTone.secondary,
+                        maxLines: 1,
+                      ),
+                  ],
+                )
+              else
+                CatchText(
+                  cell.text,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: switch (cell.tone) {
+                    null => CatchTextTone.primary,
+                    CatchTableCellTone.secondary => CatchTextTone.secondary,
+                    CatchTableCellTone.success => CatchTextTone.success,
+                    CatchTableCellTone.warning => CatchTextTone.warning,
+                    CatchTableCellTone.danger => CatchTextTone.danger,
+                  },
+                  numeric: cell.variant == CatchTableCellVariant.number,
+                  maxLines: 2,
+                ),
           ];
     final row = DecoratedBox(
       decoration: BoxDecoration(
@@ -198,19 +245,31 @@ class CatchTableRow extends StatelessWidget {
           children: [
             for (final (index, cell) in children.indexed) ...[
               if (index > 0) const SizedBox(width: CatchSpacing.s2),
-              (index < columns.length
-                  ? columns[index]._sized
-                  : (Widget child) => Expanded(child: child))(
-                Align(
-                  alignment:
-                      index < columns.length &&
-                          columns[index].resolvedPlacement ==
-                              CatchTablePlacement.end
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: cell,
+              if (index < columns.length && columns[index].width != null)
+                SizedBox(
+                  width: columns[index].width,
+                  child: Align(
+                    alignment:
+                        columns[index].resolvedPlacement ==
+                            CatchTablePlacement.end
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: cell,
+                  ),
+                )
+              else
+                Expanded(
+                  flex: index < columns.length ? columns[index].flex : 1,
+                  child: Align(
+                    alignment:
+                        index < columns.length &&
+                            columns[index].resolvedPlacement ==
+                                CatchTablePlacement.end
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: cell,
+                  ),
                 ),
-              ),
             ],
           ],
         ),
@@ -219,60 +278,6 @@ class CatchTableRow extends StatelessWidget {
     final onTap = this.onTap;
     if (onTap == null) return row;
     return CatchRowPressSurface(onTap: onTap, child: row);
-  }
-}
-
-/// Draws one [CatchTableCell] by its kind.
-class _CatchTableCellView extends StatelessWidget {
-  const _CatchTableCellView({required this.cell, required this.placement});
-
-  final CatchTableCell cell;
-  final CatchTablePlacement placement;
-
-  @override
-  Widget build(BuildContext context) {
-    final align = placement == CatchTablePlacement.end ? TextAlign.end : null;
-    final badge = cell.badge;
-    if (badge != null) return badge;
-    final subtitle = cell.subtitle;
-    if (cell.variant == CatchTableCellVariant.title) {
-      return Column(
-        crossAxisAlignment: placement == CatchTablePlacement.end
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CatchText(
-            cell.text,
-            variant: CatchTextVariant.titleRow,
-            align: align,
-            maxLines: 1,
-          ),
-          if (subtitle != null)
-            CatchText(
-              subtitle,
-              variant: CatchTextVariant.bodyMeta,
-              tone: CatchTextTone.secondary,
-              align: align,
-              maxLines: 1,
-            ),
-        ],
-      );
-    }
-    return CatchText(
-      cell.text,
-      variant: CatchTextVariant.bodySmall,
-      tone: switch (cell.tone) {
-        null => CatchTextTone.primary,
-        CatchTableCellTone.secondary => CatchTextTone.secondary,
-        CatchTableCellTone.success => CatchTextTone.success,
-        CatchTableCellTone.warning => CatchTextTone.warning,
-        CatchTableCellTone.danger => CatchTextTone.danger,
-      },
-      align: align,
-      numeric: cell.variant == CatchTableCellVariant.number,
-      maxLines: 2,
-    );
   }
 }
 

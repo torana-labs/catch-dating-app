@@ -42,6 +42,13 @@ class CatchPinMap extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final route = this.route;
+    final shadow = BoxShadow(
+      color: CatchTokens.editorialBlack.withValues(
+        alpha: CatchOpacity.subtleBorder,
+      ),
+      blurRadius: CatchSpacing.micro6,
+      offset: const Offset(0, CatchSpacing.micro2),
+    );
     final map = AspectRatio(
       aspectRatio: aspect,
       child: ClipRRect(
@@ -72,9 +79,70 @@ class CatchPinMap extends StatelessWidget {
                     Positioned(
                       left: size.width * pin.x / 100,
                       top: size.height * pin.y / 100,
+                      // A dot in the event colour inside a ground ring,
+                      // centred on the point, with its label after it.
                       child: FractionalTranslation(
                         translation: const Offset(-0.5, -0.5),
-                        child: _Pin(pin: pin, tokens: t),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: CatchSpacing.micro6,
+                          children: [
+                            Container(
+                              width:
+                                  _ring * 2 +
+                                  (pin.status == CatchMapPinStatus.selected
+                                      ? _dotSelected
+                                      : _dot),
+                              height:
+                                  _ring * 2 +
+                                  (pin.status == CatchMapPinStatus.selected
+                                      ? _dotSelected
+                                      : _dot),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: pin.format.accent,
+                                border: Border.all(
+                                  color: t.ground,
+                                  width: _ring,
+                                  strokeAlign: BorderSide.strokeAlignInside,
+                                ),
+                                boxShadow: [shadow],
+                              ),
+                            ),
+                            if (pin.label case final label?
+                                when label.isNotEmpty)
+                              Container(
+                                height: GeneratedCatchSizeTokens.badgeMd,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: _labelPadding,
+                                ),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color:
+                                      pin.status == CatchMapPinStatus.selected
+                                      ? pin.format.accent
+                                      : t.ground,
+                                  borderRadius: BorderRadius.circular(
+                                    CatchRadius.pill,
+                                  ),
+                                  boxShadow: [shadow],
+                                ),
+                                child: DefaultTextStyle.merge(
+                                  style: TextStyle(
+                                    color:
+                                        pin.status == CatchMapPinStatus.selected
+                                        ? pin.format.ink
+                                        : t.ink,
+                                  ),
+                                  child: CatchText(
+                                    label,
+                                    variant: CatchTextVariant.labelBadge,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                 ],
@@ -110,69 +178,6 @@ class CatchPinMap extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: CatchSpacing.s3,
       children: [semantic, footer],
-    );
-  }
-}
-
-/// A dot in the event colour inside a ground ring, and its label.
-class _Pin extends StatelessWidget {
-  const _Pin({required this.pin, required this.tokens});
-
-  final CatchMapPin pin;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = pin.status == CatchMapPinStatus.selected;
-    final dot = selected ? CatchPinMap._dotSelected : CatchPinMap._dot;
-    final shadow = BoxShadow(
-      color: CatchTokens.editorialBlack.withValues(
-        alpha: CatchOpacity.subtleBorder,
-      ),
-      blurRadius: CatchSpacing.micro6,
-      offset: const Offset(0, CatchSpacing.micro2),
-    );
-    final label = pin.label;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: CatchSpacing.micro6,
-      children: [
-        Container(
-          width: dot + CatchPinMap._ring * 2,
-          height: dot + CatchPinMap._ring * 2,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: pin.format.accent,
-            border: Border.all(
-              color: tokens.ground,
-              width: CatchPinMap._ring,
-              strokeAlign: BorderSide.strokeAlignInside,
-            ),
-            boxShadow: [shadow],
-          ),
-        ),
-        if (label != null && label.isNotEmpty)
-          Container(
-            height: GeneratedCatchSizeTokens.badgeMd,
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchPinMap._labelPadding,
-            ),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: selected ? pin.format.accent : tokens.ground,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              boxShadow: [shadow],
-            ),
-            child: DefaultTextStyle.merge(
-              style: TextStyle(color: selected ? pin.format.ink : tokens.ink),
-              child: CatchText(
-                label,
-                variant: CatchTextVariant.labelBadge,
-                maxLines: 1,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }
