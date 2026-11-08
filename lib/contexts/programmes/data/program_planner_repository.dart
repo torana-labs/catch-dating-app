@@ -92,6 +92,30 @@ class ProgramPlannerRepository {
     parse: (data) => ProgramMutationResult.fromCallableData(data).revision,
   );
 
+  /// Mints a driver (`driverTrip`, subject = trip id) or vendor
+  /// (`vendorRunSheet`, subject = vendor id) web link token. The website
+  /// pages that open it are P4.10.
+  Future<({String token, DateTime expiresAt})> issueWebLink({
+    required String programId,
+    required ProgramWebLinkKind kind,
+    required String subjectId,
+  }) => _call(
+    name: 'issueProgramWebLink',
+    payload: IssueProgramWebLinkCallableRequest(
+      programId: programId,
+      kind: kind.name,
+      subjectId: subjectId,
+    ).toJson(),
+    action: 'share the link',
+    parse: (data) {
+      final map = requiredMap(data, 'web link');
+      return (
+        token: requiredString(map, 'token'),
+        expiresAt: requiredDateTime(map, 'expiresAtMillis'),
+      );
+    },
+  );
+
   static String _momentId(Object? data) {
     if (data is Map<Object?, Object?> &&
         data['moment'] is Map<Object?, Object?>) {
@@ -120,6 +144,9 @@ class ProgramPlannerRepository {
     ),
   );
 }
+
+/// Who a programme web link is for.
+enum ProgramWebLinkKind { driverTrip, vendorRunSheet }
 
 // keepalive: one stateless callable facade shared by the planner screens.
 @Riverpod(keepAlive: true)
