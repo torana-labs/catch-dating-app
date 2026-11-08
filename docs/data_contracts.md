@@ -4343,6 +4343,10 @@ never guest data. `organizerPrograms.branding` (colour, cover photo path in
 `organizerMoments.anchor` (`function | flight | date` with an id) are
 optional: older documents read as the default look (rani, no cover, no
 credit) and as the anchor their initiation implies.
+The guest, vendor, hotel and family web link reads carry the branding as an
+optional `branding` field (absent when unset). The family link
+(`getProgramFamilyView`) is counts only: function names and headcounts,
+never guest or household names, phone numbers, rooms or notes.
 
 ### Programme Guest IDs, Hampers, Photos And Vendor Bills
 

@@ -843,6 +843,7 @@ export {
   getProgramVendorRunSheet,
   issueProgramWebLink,
 } from "./programs/programWebLinks";
+export {getProgramFamilyView} from "./programs/familyView";
 export {createProgramAssetUpload} from "./programs/programAssets";
 export {
   decideProgramGuestId,
