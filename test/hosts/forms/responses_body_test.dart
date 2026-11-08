@@ -13,7 +13,7 @@ Future<void> _pumpResponses(
   WidgetTester tester,
   HostResponsesState state, {
   ValueChanged<HostResponsesView>? onView,
-  ValueChanged<HostApplicationReviewStatus>? onFilter,
+  ValueChanged<HostResponsesFilter>? onFilter,
   ValueChanged<HostFormInboxEntry>? onOpen,
 }) => pumpFormsBody(
   tester,
@@ -31,13 +31,13 @@ void main() {
   group('Responses', () {
     testWidgets('an application form shows the views, the review filter and '
         'one row per answer', (tester) async {
-      final filters = <HostApplicationReviewStatus>[];
+      final filters = <HostResponsesFilter>[];
       final opened = <HostFormInboxEntry>[];
       await _pumpResponses(
         tester,
         HostResponsesState(
           status: HostResponsesStatus.content,
-          filter: HostApplicationReviewStatus.submitted,
+          filter: HostResponsesFilter.submitted,
           entries: formEntries,
         ),
         onFilter: filters.add,
@@ -55,9 +55,37 @@ void main() {
 
       await tester.tap(find.text('In'));
       await tester.pump();
-      expect(filters, [HostApplicationReviewStatus.approved]);
+      expect(filters, [HostResponsesFilter.approved]);
       await tester.tap(find.text('Ishaan Bose'));
       expect(opened.single.entryId, 'entry-ishaan');
+    });
+
+    testWidgets('the filters carry Offered and each filter\'s count', (
+      tester,
+    ) async {
+      final filters = <HostResponsesFilter>[];
+      await _pumpResponses(
+        tester,
+        HostResponsesState(
+          status: HostResponsesStatus.content,
+          filter: HostResponsesFilter.submitted,
+          counts: const {
+            HostResponsesFilter.submitted: 4,
+            HostResponsesFilter.offered: 2,
+          },
+          entries: formEntries,
+        ),
+        onFilter: filters.add,
+      );
+
+      expect(find.text('Offered'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('4'), findsOneWidget);
+      await tester.ensureVisible(find.text('Offered'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Offered'));
+      await tester.pump();
+      expect(filters, [HostResponsesFilter.offered]);
     });
 
     testWidgets('a form nobody reviews has no filter, and none says so', (

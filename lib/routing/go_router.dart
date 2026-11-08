@@ -128,6 +128,17 @@ part 'host_workspace_index_screen.dart';
 part 'route_destinations.dart';
 
 @visibleForTesting
+/// The organiser whose planner home `/host/programs?view=home` opens, or
+/// null for a legacy Programs link (which redirects to Events).
+String? hostProgrammesHomeOrganizer(Uri uri) {
+  final organizerId = uri.queryParameters['organizerId'];
+  return uri.queryParameters['view'] == 'home' &&
+          organizerId != null &&
+          organizerId.isNotEmpty
+      ? organizerId
+      : null;
+}
+
 String hostProgramsLegacyRedirect(Uri uri) =>
     uri.replace(path: Routes.hostEventsScreen.path).toString();
 
@@ -742,9 +753,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkProgramScreen,
     path: Routes.hostWorkHotelScreen.path,
     name: Routes.hostWorkHotelScreen.name,
-    builder: (context, state) => StaffHotelDeskScreen(
-      programId: state.pathParameters['programId']!,
-      hotelId: state.pathParameters['hotelId']!,
+    builder: (context, state) => staffHotelScreenForUri(
+      state.pathParameters['programId']!,
+      state.pathParameters['hotelId']!,
+      state.uri,
     ),
   ),
   HostWorkspaceDestination(
@@ -838,7 +850,12 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.events,
     path: Routes.hostProgramsScreen.path,
     name: Routes.hostProgramsScreen.name,
-    redirect: (context, state) => hostProgramsLegacyRedirect(state.uri),
+    redirect: (context, state) => hostProgrammesHomeOrganizer(state.uri) == null
+        ? hostProgramsLegacyRedirect(state.uri)
+        : null,
+    builder: (context, state) => HostProgrammesHomeScreen(
+      organizerId: hostProgrammesHomeOrganizer(state.uri)!,
+    ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,

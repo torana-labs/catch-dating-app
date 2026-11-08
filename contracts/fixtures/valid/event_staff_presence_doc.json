@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "eventId": "event-1",
+  "organizerId": "club-1",
+  "uid": "staff-1",
+  "displayName": "Kabir",
+  "role": "operator",
+  "lastSeenAt": {"_seconds": 1786626000, "_nanoseconds": 0},
+  "expiresAt": {"_seconds": 1786626120, "_nanoseconds": 0}
+}

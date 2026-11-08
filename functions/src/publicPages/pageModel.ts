@@ -15,7 +15,7 @@ import {
 } from "./publicExternalEvent";
 import {pageOwnerLinks} from "../organizers/organizerLinks";
 import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
-import {publicEventAuthorized} from "./publicReadPolicy";
+import {publicEventAuthorized, publicEventListed} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
 
 /**
@@ -111,10 +111,14 @@ export function buildOrganizerScope(
         [externalPageEvent(withoutExternalDatingFraming(row.event))] : [];
     }),
   ];
-  const upcoming = events.filter((item) => isUpcoming(item, now))
+  // Link-only events keep their event page but stay off every list.
+  const unlisted = new Set(sources.catchEvents
+    .filter((doc) => !publicEventListed(doc.data)).map((doc) => doc.id));
+  const listed = events.filter((item) => !unlisted.has(item.eventId));
+  const upcoming = listed.filter((item) => isUpcoming(item, now))
     .sort((a, b) => startMillis(a) - startMillis(b) ||
       compareIds(a.eventId, b.eventId));
-  const past = events.filter((item) => !isUpcoming(item, now))
+  const past = listed.filter((item) => !isUpcoming(item, now))
     .sort((a, b) => startMillis(b) - startMillis(a) ||
       compareIds(a.eventId, b.eventId));
 

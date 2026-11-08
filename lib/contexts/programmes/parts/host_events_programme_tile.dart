@@ -4,8 +4,9 @@ import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
-/// One programme as a tile: its dates, its name and how many functions it
-/// holds. It draws nothing of its own.
+/// One programme as a tile: its dates, its name, how many functions,
+/// guests and flights it holds, and how many guests replied. It draws
+/// nothing of its own.
 class HostEventsProgrammeTile extends StatelessWidget {
   const HostEventsProgrammeTile({
     super.key,
@@ -47,9 +48,23 @@ class HostEventsProgrammeTile extends StatelessWidget {
           CatchText(programme.title, variant: CatchTextVariant.displaySm),
           if (functions != null)
             CatchText(
-              l10n.hostEventsProgrammeFunctions(count: functions),
+              [
+                l10n.hostEventsProgrammeFunctions(count: functions),
+                if (programme.guestCount case final guests?)
+                  l10n.hostEventsProgrammeGuests(count: guests),
+                if (programme.flyingInCount case final flying? when flying > 0)
+                  l10n.hostEventsProgrammeFlying(count: flying),
+              ].join(' · '),
               variant: CatchTextVariant.bodySmall,
               tone: CatchTextTone.secondary,
+            ),
+          if (programme.repliedShare case final replied?)
+            CatchMeter(
+              value: (replied * 100).round(),
+              label: l10n.hostEventsProgrammeReplied(
+                percent: (replied * 100).round(),
+              ),
+              showLabel: true,
             ),
         ],
       ),

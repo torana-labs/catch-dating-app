@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_response_status_counts.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/responses_body.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
@@ -24,7 +24,8 @@ import 'package:go_router/go_router.dart';
 /// The answers to one form, or to every form when [formId] is null.
 ///
 /// Reads the answers page by page (with each application's review status),
-/// filtered by review status on an application form; the form itself for
+/// filtered by review status or Offered on an application form, with each
+/// filter's count from the response summaries; the form itself for
 /// its title and count; and, on Results, the published version's
 /// per-question counts. Opening an answer carries the filtered queue so the
 /// answer page can step through it.
@@ -52,7 +53,7 @@ class HostResponsesScreen extends ConsumerStatefulWidget {
 }
 
 class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
-  HostApplicationReviewStatus _filter = HostApplicationReviewStatus.submitted;
+  HostResponsesFilter _filter = HostResponsesFilter.submitted;
   late HostResponsesView _view = widget.initialView;
 
   @override
@@ -76,6 +77,16 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
         ? null
         : _request(uid, reviewed ? _filter : null);
     final value = _responses(request);
+    final counts = reviewed
+        ? ref
+              .watch(
+                hostResponseStatusCountsProvider(
+                  organizerId: widget.organizerId,
+                  formId: formId,
+                ),
+              )
+              .value
+        : null;
     final page = value?.value;
     final versionId = form?.activeVersionId;
     final results = _view == HostResponsesView.results
@@ -88,6 +99,14 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
       view: _view,
       forForm: formId != null,
       filter: reviewed ? _filter : null,
+      counts: {
+        if (counts != null)
+          for (final option in HostResponsesFilter.values)
+            option: switch (option.reviewStatus) {
+              final status? => counts.review[status] ?? 0,
+              null => counts.offered,
+            },
+      },
       entries: page?.inboxEntries ?? const [],
       canLoadMore: page?.canLoadMore ?? false,
       loadingMore: page?.loadingMore ?? false,
@@ -197,13 +216,14 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
 
   HostFormResponseListRequest _request(
     String uid,
-    HostApplicationReviewStatus? status,
+    HostResponsesFilter? filter,
   ) => HostFormResponseListRequest(
     organizerId: widget.organizerId,
     accountUid: uid,
     formId: widget.formId,
     includeApplications: true,
-    reviewStatus: status,
+    reviewStatus: filter?.reviewStatus,
+    offeredOnly: filter == HostResponsesFilter.offered,
   );
 
   void _open(HostFormInboxEntry entry) {

@@ -123,6 +123,12 @@ abstract final class HostAnalyticsMetricIds {
   static const chats = 'chats';
   static const combinedViews = 'combinedViews';
   static const eventSaves = 'eventSaves';
+
+  /// Booked guests who had been to one of the organizer's events before.
+  static const cameBackRate = 'cameBackRate';
+
+  /// People following the organizer page at the end of the period.
+  static const followers = 'followers';
 }
 
 class HostAnalyticsQuery {

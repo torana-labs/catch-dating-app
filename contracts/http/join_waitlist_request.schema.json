@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
   "title": "Join Waitlist HTTP Request",
-  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email.",
+  "description": "Version 1 request body for member waitlist, optional Host operating-application and programme (weddings pilot) submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email. Outside that path a name and at least one of email or phone are required.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -46,6 +46,11 @@
       "format": "email",
       "maxLength": 320
     },
+    "phone": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$",
+      "description": "Optional E.164 mobile number. A phone-only applicant (no email) is reviewed and answered on WhatsApp."
+    },
     "city": {
       "type": "string",
       "minLength": 2,
@@ -70,6 +75,16 @@
     },
     "hostApplication": {
       "$ref": "#/definitions/hostApplication"
+    },
+    "programme": {
+      "type": "string",
+      "enum": [
+        "weddings"
+      ],
+      "description": "The programme product this application is for. Absent for the events Host application."
+    },
+    "programmeApplication": {
+      "$ref": "#/definitions/programmeApplication"
     },
     "attribution": {
       "anyOf": [
@@ -187,6 +202,75 @@
             "mixed",
             "undecided"
           ]
+        }
+      }
+    },
+    "programmeApplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The weddings pilot application from /weddings/apply/. Every field is optional; the page sends what the planner answered.",
+      "properties": {
+        "planningCompany": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "weddingDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "First day of the next wedding, yyyy-mm-dd."
+        },
+        "headcount": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "tools": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "functions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40
+        },
+        "hotels": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40
+        },
+        "teamSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "flyingInShare": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "wants": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "freeText": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 80
         }
       }
     },
@@ -416,18 +500,66 @@
     ]
   },
   "then": {
-    "description": "The WhatsApp launch notice is for members only.",
+    "description": "The WhatsApp launch notice is for members only and carries no programme application.",
     "properties": {
       "role": {
         "const": "member"
       }
+    },
+    "not": {
+      "anyOf": [
+        {
+          "required": [
+            "programme"
+          ]
+        },
+        {
+          "required": [
+            "programmeApplication"
+          ]
+        }
+      ]
     }
   },
   "else": {
-    "description": "The email waitlist and Host application need a name and email.",
+    "description": "The email waitlist, Host and programme applications need a name and a way to reply: an email, a phone, or both.",
     "required": [
-      "fullName",
-      "email"
-    ]
+      "fullName"
+    ],
+    "anyOf": [
+      {
+        "required": [
+          "email"
+        ]
+      },
+      {
+        "required": [
+          "phone"
+        ]
+      }
+    ],
+    "if": {
+      "required": [
+        "programme"
+      ]
+    },
+    "then": {
+      "description": "A programme application is a Host application with its programme answers.",
+      "required": [
+        "programmeApplication"
+      ],
+      "properties": {
+        "role": {
+          "const": "host"
+        }
+      }
+    },
+    "else": {
+      "not": {
+        "required": [
+          "programmeApplication"
+        ]
+      }
+    }
   }
 }

@@ -9,15 +9,15 @@ part of 'event_publish_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// The publication screen, read through the event's setup view listener:
-/// its name, whether it is published, whether it can be, and its setup
-/// revision.
+/// its name, whether it is published and listed, whether it can be, its
+/// guest settings, its saved booking choice and its setup revision.
 
 @ProviderFor(hostEventPublishController)
 final hostEventPublishControllerProvider = HostEventPublishControllerFamily._();
 
 /// The publication screen, read through the event's setup view listener:
-/// its name, whether it is published, whether it can be, and its setup
-/// revision.
+/// its name, whether it is published and listed, whether it can be, its
+/// guest settings, its saved booking choice and its setup revision.
 
 final class HostEventPublishControllerProvider
     extends
@@ -28,8 +28,8 @@ final class HostEventPublishControllerProvider
         >
     with $Provider<HostEventPublishState> {
   /// The publication screen, read through the event's setup view listener:
-  /// its name, whether it is published, whether it can be, and its setup
-  /// revision.
+  /// its name, whether it is published and listed, whether it can be, its
+  /// guest settings, its saved booking choice and its setup revision.
   HostEventPublishControllerProvider._({
     required HostEventPublishControllerFamily super.from,
     required HostEventRequest super.argument,
@@ -84,11 +84,11 @@ final class HostEventPublishControllerProvider
 }
 
 String _$hostEventPublishControllerHash() =>
-    r'30b69d9d6a41525257f71f0814a1a3c4c2901a38';
+    r'f6e129ecb1cf6e6a9cb150b7b78032286c391407';
 
 /// The publication screen, read through the event's setup view listener:
-/// its name, whether it is published, whether it can be, and its setup
-/// revision.
+/// its name, whether it is published and listed, whether it can be, its
+/// guest settings, its saved booking choice and its setup revision.
 
 final class HostEventPublishControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostEventPublishState, HostEventRequest> {
@@ -102,12 +102,79 @@ final class HostEventPublishControllerFamily extends $Family
       );
 
   /// The publication screen, read through the event's setup view listener:
-  /// its name, whether it is published, whether it can be, and its setup
-  /// revision.
+  /// its name, whether it is published and listed, whether it can be, its
+  /// guest settings, its saved booking choice and its setup revision.
 
   HostEventPublishControllerProvider call(HostEventRequest request) =>
       HostEventPublishControllerProvider._(argument: request, from: this);
 
   @override
   String toString() => r'hostEventPublishControllerProvider';
+}
+
+/// The commands the publication screen commits beyond publishing: who can
+/// find the event, its guest settings, and who can book. None invalidates a
+/// read; the setup view listener delivers each result.
+
+@ProviderFor(HostEventPublishCommands)
+final hostEventPublishCommandsProvider = HostEventPublishCommandsProvider._();
+
+/// The commands the publication screen commits beyond publishing: who can
+/// find the event, its guest settings, and who can book. None invalidates a
+/// read; the setup view listener delivers each result.
+final class HostEventPublishCommandsProvider
+    extends $NotifierProvider<HostEventPublishCommands, void> {
+  /// The commands the publication screen commits beyond publishing: who can
+  /// find the event, its guest settings, and who can book. None invalidates a
+  /// read; the setup view listener delivers each result.
+  HostEventPublishCommandsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hostEventPublishCommandsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostEventPublishCommandsHash();
+
+  @$internal
+  @override
+  HostEventPublishCommands create() => HostEventPublishCommands();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$hostEventPublishCommandsHash() =>
+    r'a08590e0c802d32dc027301bac07fbe1c613b7ea';
+
+/// The commands the publication screen commits beyond publishing: who can
+/// find the event, its guest settings, and who can book. None invalidates a
+/// read; the setup view listener delivers each result.
+
+abstract class _$HostEventPublishCommands extends $Notifier<void> {
+  void build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<void, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
 }

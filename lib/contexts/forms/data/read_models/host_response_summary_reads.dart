@@ -1,8 +1,11 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, offer.status:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
+
 /// Ordinary inbox pages contain metadata only. Answer filters and detail reads
-/// retain their source-authorized callable path.
+/// retain their source-authorized callable path. Offered entries are read
+/// only here: the derived offer lives on the summary, not the source.
 class HostResponseSummaryReads {
   const HostResponseSummaryReads(this.reader);
   final HostSummaryReader reader;
@@ -10,7 +13,9 @@ class HostResponseSummaryReads {
   Future<HostFormResponsePage?> list(
     HostFormResponseListRequest request,
   ) async {
-    if (request.formId != null ||
+    final offered = request.offeredOnly;
+    if ((request.formId != null && !offered) ||
+        (offered && !request.includeApplications) ||
         request.contactId != null ||
         request.versionId != null ||
         request.reviewStatus != null ||
@@ -35,15 +40,22 @@ class HostResponseSummaryReads {
       organizerId: request.organizerId,
       orderField: 'submittedAtMillis',
       descending: !request.oldestFirst,
-      queryKey: '${request.includeApplications}/${request.oldestFirst}',
+      queryKey:
+          '${request.includeApplications}/${request.oldestFirst}/'
+          '${offered ? 'offered/${request.formId}' : 'all'}',
       limit: request.limit,
-      equalities: request.includeApplications
+      equalities: offered
+          ? {
+              'formId': ?request.formId,
+              'offer.status': HostFormEntryOfferStatus.offered.name,
+            }
+          : request.includeApplications
           ? const {}
           : const {'kind': 'response'},
       cursor: request.cursor,
     );
     final entries = page.documents
-        .map((doc) => HostFormInboxEntry.fromMap(doc['row'] as Map))
+        .map(HostFormInboxEntry.fromSummary)
         .toList(growable: false);
     return HostFormResponsePage(
       organizerId: request.organizerId,

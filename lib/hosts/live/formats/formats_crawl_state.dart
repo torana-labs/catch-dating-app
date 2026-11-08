@@ -9,10 +9,30 @@ enum HostFormatsCrawlStatus { loading, noRoute, running, error }
 /// One stop on the route and when the group gets there.
 @immutable
 class HostFormatsStop {
-  const HostFormatsStop({required this.stop, required this.startsAt});
+  const HostFormatsStop({
+    required this.stop,
+    required this.startsAt,
+    this.changed = false,
+    this.changedAddress,
+  });
 
+  /// The stop as tonight runs it: a changed stop carries its new title and
+  /// no map pin.
   final EventItineraryItem stop;
   final DateTime startsAt;
+
+  /// The host changed this stop on the night.
+  final bool changed;
+
+  /// A changed stop's new address, when it has one.
+  final String? changedAddress;
+
+  /// Where the stop is, as the move sheet and message name it.
+  String? get address {
+    final where = changed ? changedAddress : stop.location?.address;
+    final trimmed = where?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
 }
 
 /// One arrival group and how many of it are with the crawl.
@@ -49,6 +69,7 @@ class HostFormatsCrawlState {
     this.groups = const <HostFormatsCrawlGroup>[],
     this.missing = const <HostFormatsMissing>[],
     this.host = '',
+    this.liveControlRevision,
     this.error,
   });
 
@@ -66,7 +87,13 @@ class HostFormatsCrawlState {
 
   /// Who the group message comes from: the organiser.
   final String host;
+
+  /// The plan's fence for a stop change; null when tonight has no plan, so
+  /// stops cannot change.
+  final int? liveControlRevision;
   final Object? error;
+
+  bool get canChangeStops => liveControlRevision != null;
 
   /// The stop the group is at by the clock: the last one already reached,
   /// or -1 before the first.

@@ -24,6 +24,82 @@ final _detailRequestPattern = RegExp(
       .pattern!,
 );
 
+/// Where guests book an event whose tickets are sold elsewhere.
+class PrivateEventExternalBooking {
+  const PrivateEventExternalBooking({
+    required this.provider,
+    required this.url,
+  });
+
+  static const providers = <String>{
+    'generic',
+    'luma',
+    'eventbrite',
+    'partiful',
+    'posh',
+    'bookmyshow',
+    'district',
+    'sortmyscene',
+    'airbnb',
+  };
+
+  /// The provider a booking link points at, from its host; `generic` when it
+  /// is not one Catch knows.
+  factory PrivateEventExternalBooking.forUrl(String url) {
+    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+    bool on(String domain) => host == domain || host.endsWith('.$domain');
+    final provider = on('lu.ma') || on('luma.com')
+        ? 'luma'
+        : on('eventbrite.com') || on('eventbrite.co.uk')
+        ? 'eventbrite'
+        : on('partiful.com')
+        ? 'partiful'
+        : on('posh.vip')
+        ? 'posh'
+        : on('bookmyshow.com')
+        ? 'bookmyshow'
+        : on('district.in')
+        ? 'district'
+        : on('sortmyscene.com')
+        ? 'sortmyscene'
+        : on('airbnb.com') || on('airbnb.co.in')
+        ? 'airbnb'
+        : 'generic';
+    return PrivateEventExternalBooking(provider: provider, url: url);
+  }
+
+  factory PrivateEventExternalBooking.fromJson(Object? raw) {
+    if (raw is! Map ||
+        raw.length != 2 ||
+        raw['provider'] is! String ||
+        raw['url'] is! String) {
+      throw const FormatException('Invalid external booking');
+    }
+    final booking = PrivateEventExternalBooking(
+      provider: raw['provider'] as String,
+      url: raw['url'] as String,
+    );
+    if (!booking.isValid) {
+      throw const FormatException('Invalid external booking');
+    }
+    return booking;
+  }
+
+  final String provider;
+  final String url;
+
+  bool get isValid {
+    final uri = Uri.tryParse(url);
+    return providers.contains(provider) &&
+        url.length <= 2048 &&
+        url.startsWith('https://') &&
+        uri != null &&
+        uri.host.isNotEmpty;
+  }
+
+  Map<String, Object?> toJson() => {'provider': provider, 'url': url};
+}
+
 /// A partial command. Missing keys leave the event field unchanged; clear is
 /// explicit. Organizer suggestions are copied only by an inherit command.
 class PrivateEventDetailsPatch {
@@ -38,9 +114,18 @@ class PrivateEventDetailsPatch {
     this.admissionTerms,
     this.distanceKm,
     this.pace,
+    this.planVisibleToGuests,
+    this.externalBooking,
   });
 
   final List<EventItineraryItem>? itinerary;
+
+  /// Whether booked guests see the plan for the night; null leaves it.
+  final bool? planVisibleToGuests;
+
+  /// Tickets sold elsewhere: set the booking page, or clear to sell on
+  /// Catch; null leaves it.
+  final EventSetupValue<PrivateEventExternalBooking>? externalBooking;
   final List<UploadedPhoto>? eventPhotos;
   final String? description;
   final PrivateEventAdmissionTerms? admissionTerms;
@@ -61,7 +146,16 @@ class PrivateEventDetailsPatch {
         eventPhotos == null &&
         admissionTerms == null &&
         distanceKm == null &&
-        pace == null) {
+        pace == null &&
+        planVisibleToGuests == null &&
+        externalBooking == null) {
+      return false;
+    }
+    final booking = externalBooking;
+    if (booking != null &&
+        (booking.mode == EventSetupValueMode.inherit ||
+            (booking.mode == EventSetupValueMode.set &&
+                (booking.value == null || !booking.value!.isValid)))) {
       return false;
     }
     if (itinerary != null && !isValidEventItinerary(itinerary!)) return false;
@@ -160,6 +254,7 @@ class PrivateEventDetailsPatch {
     if (admissionTerms != null) 'admissionTerms': admissionTerms!.toJson(),
     if (distanceKm != null) 'distanceKm': distanceKm,
     if (pace != null) 'pace': pace,
+    if (planVisibleToGuests != null) 'planVisibleToGuests': planVisibleToGuests,
     if (durationMinutes != null)
       'durationMinutes': durationMinutes!.toJson((value) => value),
     if (venue != null) 'venue': venue!.toJson((value) => {'name': value}),
@@ -180,8 +275,14 @@ class PrivateEventDetailsPatch {
       'admissionTerms',
       'distanceKm',
       'pace',
+      'planVisibleToGuests',
+      'externalBooking',
     }).isNotEmpty) {
       throw const FormatException('Unknown private event detail');
+    }
+    if (json['planVisibleToGuests'] != null &&
+        json['planVisibleToGuests'] is! bool) {
+      throw const FormatException('Invalid plan visibility');
     }
     EventSetupValue<T> parse<T>(
       Object? raw,
@@ -232,6 +333,14 @@ class PrivateEventDetailsPatch {
                 .toList(),
       distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       pace: json['pace'] as String?,
+      planVisibleToGuests: json['planVisibleToGuests'] as bool?,
+      externalBooking: json.containsKey('externalBooking')
+          ? parse<PrivateEventExternalBooking>(
+              json['externalBooking'],
+              PrivateEventExternalBooking.fromJson,
+              allowInherit: false,
+            )
+          : null,
       admissionTerms: json['admissionTerms'] == null
           ? null
           : PrivateEventAdmissionTerms.fromResponse(json['admissionTerms']),

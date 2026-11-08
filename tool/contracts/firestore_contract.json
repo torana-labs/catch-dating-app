@@ -910,6 +910,26 @@
       ]
     },
     {
+      "id": "eventStaffPresence",
+      "path": "eventStaffPresence/{presenceId}",
+      "rulesMatch": "/eventStaffPresence/{presenceId}",
+      "typescriptInterface": "EventStaffPresenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets an event's managers and roster staff list who is on the door"
+      ],
+      "owner": "heartbeatEventStaffPresence callable",
+      "read": "authorized event host or active viewRoster event staff, by eventId listener",
+      "write": "server only",
+      "exportedFunctions": [
+        "heartbeatEventStaffPresence"
+      ],
+      "migrationNotes": [
+        "New optional collection; no backfill. Rows are current while expiresAt is in the future and requires a Firestore TTL policy on expiresAt (confirm live before relying on deletion)."
+      ]
+    },
+    {
       "id": "eventAttendeeAttendanceReceipts",
       "path": "eventAttendeeAttendanceReceipts/{receiptId}",
       "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
@@ -1187,7 +1207,8 @@
         "onHostEventSetupViewWaitlistOfferChanged",
         "onHostEventSetupViewEventOfferChanged",
         "onHostEventSetupViewPaymentChanged",
-        "onHostEventSetupViewPendingOrderChanged"
+        "onHostEventSetupViewPendingOrderChanged",
+        "onHostEventSetupViewMomentChanged"
       ],
       "migrationNotes": [
         "Publication readiness checks every requirement as if the event started one millisecond from now; the phone applies the clock, so the view needs no sweep.",
@@ -2123,6 +2144,68 @@
       ]
     },
     {
+      "id": "eventLiveCommandReceipts",
+      "path": "eventLiveCommandReceipts/{receiptId}",
+      "rulesMatch": "/eventLiveCommandReceipts/{receiptId}",
+      "typescriptInterface": "EventLiveCommandReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "saveEventPlanStep, setEventCloseOut and changeEventCrawlStop callables",
+      "read": "server only; replay result is returned by the callable",
+      "write": "server only",
+      "exportedFunctions": [
+        "saveEventPlanStep",
+        "setEventCloseOut",
+        "changeEventCrawlStop"
+      ],
+      "migrationNotes": [
+        "Thirty-day TTL receipts keyed by command, actor, event and requestId make run-of-show, close-out and crawl retries idempotent."
+      ]
+    },
+    {
+      "id": "eventCloseOuts",
+      "path": "eventCloseOuts/{eventId}",
+      "rulesMatch": "/eventCloseOuts/{eventId}",
+      "typescriptInterface": "EventCloseOutDocument",
+      "dartModel": "lib/contexts/live/domain/event_close_out.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "setEventCloseOut callable",
+      "read": "the event's organizer hosts get it by listener; a night not closed out reads as missing",
+      "write": "server only",
+      "exportedFunctions": [
+        "setEventCloseOut"
+      ],
+      "migrationNotes": [
+        "New collection, optional per event: a missing document reads as every switch off, so no backfill is needed. The thank-you is an event-scope organizerMoments document; stay-in-touch picks and the no-show note are recorded only."
+      ]
+    },
+    {
+      "id": "eventSuccessGuestHistory",
+      "path": "eventSuccessGuestHistory/{historyId}",
+      "rulesMatch": "/eventSuccessGuestHistory/{historyId}",
+      "typescriptInterface": "EventSuccessGuestHistoryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps close-out, live receipts and guest history server-written"
+      ],
+      "owner": "onEventSuccessStandingsWritten trigger",
+      "read": "the guest whose uid it carries gets their own eventId_uid document",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventSuccessStandingsWritten"
+      ],
+      "migrationNotes": [
+        "Projected from eventSuccessStandings on every standings write; nights scored before the trigger deploys have no history until their standings are written again."
+      ]
+    },
+    {
       "id": "eventLivePositions",
       "path": "eventLivePositions/{positionId}",
       "rulesMatch": "/eventLivePositions/{positionId}",
@@ -3020,6 +3103,20 @@
       ]
     },
     {
+      "id": "programAlerts",
+      "path": "programAlerts/{programAlertId}",
+      "rulesMatch": "/programAlerts/{programAlertId}",
+      "typescriptInterface": "ProgramAlertDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "resolveProgramAlert callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Resolution of a derived live board alert; exists only once someone takes, finishes or reopens one.",
+        "Holds staff uids and display names, never guest data."
+      ]
+    },
+    {
       "id": "programTravelLegs",
       "path": "programTravelLegs/{legId}",
       "rulesMatch": "/programTravelLegs/{legId}",
@@ -3243,7 +3340,8 @@
         "getEventAssistanceGuestView",
         "submitEventAssistanceGuestChoice",
         "resolveEventAssistanceCase",
-        "onHostEventCaseViewCaseChanged"
+        "onHostEventCaseViewCaseChanged",
+        "requestEventRuntimeHostHelp"
       ]
     },
     {
@@ -4234,6 +4332,7 @@
       "read": "server only; manager callable operation result",
       "write": "server only",
       "exportedFunctions": [
+        "createPrivateEventSeries",
         "createPrivateEventSetup",
         "updatePrivateEventBasics",
         "updatePrivateEventDetails",

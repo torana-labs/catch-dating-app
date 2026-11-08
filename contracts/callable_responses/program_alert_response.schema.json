@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_alert_response.schema.json",
+  "title": "ProgramAlertCallableResponse",
+  "description": "The stored resolution of one live board alert after resolveProgramAlert.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "alertId",
+    "state",
+    "assignedToMe",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "alertId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "done"
+      ]
+    },
+    "assignedToMe": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

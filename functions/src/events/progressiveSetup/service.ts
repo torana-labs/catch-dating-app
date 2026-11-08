@@ -56,6 +56,8 @@ export async function createPrivateEventSetup(params: {
   actorUid: string;
   command: CreatePrivateEventSetupCommand;
   deps: ProgressiveSetupDependencies;
+  /** Set only by createPrivateEventSeries; never from a client payload. */
+  series?: {seriesId: string; seriesIndex: number};
 }): Promise<ProgressiveSetupResult> {
   const {actorUid, command, deps} = params;
   if (!validateCreatePrivateEventSetupCallablePayload(command)) {
@@ -123,6 +125,8 @@ export async function createPrivateEventSetup(params: {
       genderCounts: {},
       cohortCounts: {},
       waitlistedCohortCounts: {},
+      ...(params.series ? {seriesId: params.series.seriesId,
+        seriesIndex: params.series.seriesIndex} : {}),
     };
     tx.create(eventRef, event);
     tx.create(receiptRef, {

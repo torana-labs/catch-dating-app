@@ -253,6 +253,11 @@ service cloud.firestore {
         );
     }
 
+    function eventPlanVisibleToGuests(eventId) {
+      return get(/databases/$(database)/documents/events/$(eventId))
+        .data.get('planVisibleToGuests', true) != false;
+    }
+
     function canReadEventSuccess(eventId) {
       return isAuthed()
         && (
@@ -1990,6 +1995,18 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Who of an event's managers and staff is on the door now. Only the
+    // heartbeatEventStaffPresence callable writes it; door phones list it.
+    match /eventStaffPresence/{presenceId} {
+      allow read: if isAuthed()
+        && resource.data.eventId is string
+        && (
+          isOrganizerHostForEvent(resource.data.eventId)
+          || hasActiveEventOperatorGrant(resource.data.eventId, 'viewRoster')
+        );
+      allow write: if false;
+    }
+
     match /eventAttendeeImports/{importId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
@@ -2202,6 +2219,10 @@ service cloud.firestore {
     }
 
     match /programHotels/{hotelId} {
+      allow read, write: if false;
+    }
+
+    match /programAlerts/{programAlertId} {
       allow read, write: if false;
     }
 
@@ -2444,7 +2465,8 @@ service cloud.firestore {
           'publishedRevealRoundIndex', 'status',
           'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
-          'completedAt'
+          'completedAt', 'stepOverrides', 'stepStartedAtMs', 'pausedAtMs',
+          'crawlStopChanges'
         ])
         && data.keys().hasAll([
           'eventId', 'organizerId', 'playbookId', 'selectedModuleIds',
@@ -2658,7 +2680,8 @@ service cloud.firestore {
         && request.resource.data.activeStepIndex == 0
         && !request.resource.data.keys().hasAny([
           'liveControlRevision', 'assignmentDraftRevision',
-          'publishedRotationRoundIndex', 'publishedRevealRoundIndex'
+          'publishedRotationRoundIndex', 'publishedRevealRoundIndex',
+          'stepOverrides', 'stepStartedAtMs', 'pausedAtMs', 'crawlStopChanges'
         ])
         && (
           !request.resource.data.keys().hasAny(['revealStatus'])
@@ -2778,7 +2801,10 @@ service cloud.firestore {
     }
 
     match /eventSuccessPlans/{eventId} {
-      allow read: if canReadEventSuccess(eventId);
+      // Guests see the plan unless the host turned it off for the event;
+      // a missing planVisibleToGuests reads as visible.
+      allow read: if canReadEventSuccess(eventId)
+        && (isOrganizerHostForEvent(eventId) || eventPlanVisibleToGuests(eventId));
       allow create: if isAuthed()
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanCreateAllowed(eventId);
@@ -2786,6 +2812,28 @@ service cloud.firestore {
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
+    }
+
+    // Run-of-show edits, close-out and crawl changes replay through these
+    // receipts; only their callables touch them.
+    match /eventLiveCommandReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // The night's close-out, written only by setEventCloseOut. The event's
+    // organizer hosts get it by listener; a night not closed out reads as
+    // missing.
+    match /eventCloseOuts/{eventId} {
+      allow get: if isAuthed() && isOrganizerHostForEvent(eventId);
+      allow list, write: if false;
+    }
+
+    // One guest's game history, projected from the standings by trigger.
+    match /eventSuccessGuestHistory/{historyId} {
+      allow get: if isAuthed()
+        && resource != null
+        && resource.data.uid == request.auth.uid;
+      allow list, write: if false;
     }
 
     match /eventSuccessFeedback/{feedbackId} {

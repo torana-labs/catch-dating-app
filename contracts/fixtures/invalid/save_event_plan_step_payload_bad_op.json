@@ -1,0 +1,7 @@
+{
+  "eventId": "event_123",
+  "requestId": "plan-step-0002",
+  "expectedLiveControlRevision": 3,
+  "op": "duplicate",
+  "stepId": "playbook-0"
+}

@@ -15,6 +15,7 @@ import 'package:catch_dating_app/hosts/live/live_needs_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_room_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
+import 'package:catch_dating_app/hosts/live/live_step_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -109,7 +110,8 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
     final state = ref.watch(hostLiveControllerProvider(event));
     final changingStep =
         ref.watch(EventSuccessController.updateStepMutation).isPending ||
-        ref.watch(EventSuccessController.completePlanMutation).isPending;
+        ref.watch(EventSuccessController.completePlanMutation).isPending ||
+        ref.watch(HostLiveStepCommands.pauseMutation).isPending;
     listenToCatchMutationErrors(
       context,
       ref,
@@ -117,6 +119,7 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
         EventSuccessController.updateStepMutation,
         EventSuccessController.completePlanMutation,
         EventSuccessController.resolveLateArrivalMutation,
+        HostLiveStepCommands.pauseMutation,
       ],
       errorContext: AppErrorContext.event,
     );
@@ -149,6 +152,8 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
             onView: actions.openView,
             onNext: () => actions.setStep(state, state.activeIndex + 1),
             onBack: () => actions.setStep(state, state.activeIndex - 1),
+            onPause: () => actions.pause(state, resume: false),
+            onResume: () => actions.pause(state, resume: true),
             onFinish: () => actions.finish(state),
             onOpenNeed: (need) => actions.openNeed(state, need),
             onAllNeeds: actions.openNeeds,
@@ -214,6 +219,22 @@ class HostLiveActions {
       ),
     );
   }
+
+  /// Pauses the active step, or resumes it when [resume].
+  void pause(HostLiveState state, {required bool resume}) => runHostLiveCommand(
+    HostLiveStepCommands.pauseMutation.run(ref, (tx) {
+      final commands = tx.get(hostLiveStepCommandsProvider.notifier);
+      return resume
+          ? commands.resume(
+              eventId: event.id,
+              expectedRevision: state.liveControlRevision,
+            )
+          : commands.pause(
+              eventId: event.id,
+              expectedRevision: state.liveControlRevision,
+            );
+    }),
+  );
 
   void finish(HostLiveState state) => runHostLiveCommand(
     EventSuccessController.completePlanMutation.run(

@@ -311,6 +311,71 @@ export function normalizeHostApplication(
 }
 
 /**
+ * Normalizes an optional bounded integer answer.
+ * @param {unknown} value Raw value.
+ * @param {number} min Smallest accepted value.
+ * @param {number} max Largest accepted value.
+ * @return {number|null} The integer, or null when absent or out of range.
+ */
+function normalizeBoundedInteger(
+  value: unknown, min: number, max: number,
+): number | null {
+  return Number.isSafeInteger(value) && Number(value) >= min &&
+    Number(value) <= max ? Number(value) : null;
+}
+
+/**
+ * Normalizes the weddings pilot application (/weddings/apply/). Absent
+ * answers stay absent so the replay hash only covers what was sent.
+ * @param {unknown} value Raw programme application payload.
+ * @return {Record<string, unknown>|null} Sanitized application, or null.
+ */
+export function normalizeProgrammeApplication(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!isRecord(value)) return null;
+  const date = normalizeText(value.weddingDate);
+  const application: Record<string, unknown> = {
+    planningCompany: normalizeOptionalMarketingText(value.planningCompany, 140),
+    city: normalizeOptionalMarketingText(value.city, 80),
+    weddingDate: /^\d{4}-\d{2}-\d{2}$/u.test(date) ? date : null,
+    headcount: normalizeOptionalMarketingText(value.headcount, 40),
+    tools: normalizeMarketingStringArray(value.tools, 8, 80),
+    functions: normalizeBoundedInteger(value.functions, 1, 40),
+    hotels: normalizeBoundedInteger(value.hotels, 1, 40),
+    teamSize: normalizeBoundedInteger(value.teamSize, 1, 500),
+    flyingInShare: normalizeOptionalMarketingText(value.flyingInShare, 40),
+    wants: normalizeMarketingStringArray(value.wants, 16, 120),
+    freeText: normalizeOptionalMarketingText(value.freeText, 1000),
+    source: normalizeOptionalMarketingText(value.source, 80),
+  };
+  const present = Object.entries(application).filter(([, item]) =>
+    Array.isArray(item) ? item.length > 0 : item !== null);
+  return present.length ? Object.fromEntries(present) : null;
+}
+
+/**
+ * Normalizes an optional E.164 phone: spaces and dashes are dropped.
+ * @param {unknown} value Raw phone value.
+ * @return {string} The compact number, or an empty string.
+ */
+export function normalizeWaitlistPhone(value: unknown): string {
+  return normalizeText(value).replace(/[\s()-]/g, "");
+}
+
+/**
+ * The launchWaitlist id for a submission: the email when there is one (the
+ * historical key), else the phone for a phone-only applicant.
+ * @param {string} email Normalized email, possibly empty.
+ * @param {string} phone Normalized phone, possibly empty.
+ * @return {string} The launchWaitlist document id.
+ */
+export function waitlistSubmissionId(email: string, phone: string): string {
+  return email ? Buffer.from(email).toString("base64url") :
+    `phone_${Buffer.from(phone).toString("base64url")}`;
+}
+
+/**
  * Normalizes a bounded string map while allowing only known attribution keys.
  * @param {unknown} value Raw attribution values object.
  * @return {Record<string, string>} Sanitized attribution values.
@@ -612,6 +677,10 @@ export function createJoinWaitlistHandler(options: {
     const instagram = normalizeInstagram(body.instagram);
     const honeypot = normalizeText(body.website);
     const hostApplication = normalizeHostApplication(body.hostApplication);
+    const phone = normalizeWaitlistPhone(body.phone);
+    const programme = body.programme === "weddings" ? "weddings" : null;
+    const programmeApplication = programme ?
+      normalizeProgrammeApplication(body.programmeApplication) : null;
     // Host acquisition uses only the consent-bound immutable receipt below.
     // The legacy mutable field remains available for consumer submissions.
     const marketingAttribution = role === "host" || role === "both" ? null :
@@ -649,7 +718,15 @@ export function createJoinWaitlistHandler(options: {
       return;
     }
 
-    if (!isValidEmail(email)) {
+    // A name and a way to reply: an email, a WhatsApp number, or both.
+    if (phone && !/^\+[1-9][0-9]{7,14}$/.test(phone)) {
+      sendWaitlistJson(response, 400, {
+        error: "Please enter a valid mobile number.",
+      });
+      return;
+    }
+
+    if ((email || !phone) && !isValidEmail(email)) {
       sendWaitlistJson(response, 400, {
         error: "Please enter a valid email.",
       });
@@ -670,7 +747,14 @@ export function createJoinWaitlistHandler(options: {
       return;
     }
 
-    if (!validateJoinWaitlistHTTPRequest(body)) {
+    // Validate the compact number and drop an empty email a phone-only
+    // applicant's form may still carry.
+    const validatedBody: Record<string, unknown> = {...body};
+    delete validatedBody.email;
+    delete validatedBody.phone;
+    if (email) validatedBody.email = body.email;
+    if (phone) validatedBody.phone = phone;
+    if (!validateJoinWaitlistHTTPRequest(validatedBody)) {
       logger.warn("Waitlist request failed schema validation", {
         errors: schemaErrorMessages(validateJoinWaitlistHTTPRequest),
       });
@@ -683,7 +767,7 @@ export function createJoinWaitlistHandler(options: {
     const waitlistRef = admin
       .firestore()
       .collection("launchWaitlist")
-      .doc(Buffer.from(email).toString("base64url"));
+      .doc(waitlistSubmissionId(email, phone));
 
     const referrer = normalizeText(request.get("referer"));
     const userAgent = normalizeText(request.get("user-agent"));
@@ -703,7 +787,8 @@ export function createJoinWaitlistHandler(options: {
     const intent = prepareHostSalesIntent({
       waitlistId: waitlistRef.id,
       requestId: marketingAnalytics?.eventId ?? null,
-      fullName, email, city, role, hostApplication,
+      fullName, email: email || null, city, role, hostApplication,
+      phone: phone || null, programme, programmeApplication,
       entryRoute: marketingAnalytics?.pagePath?.split(/[?#]/)[0] ?? null,
     });
     const intentRef = intent ? admin.firestore()
@@ -717,7 +802,7 @@ export function createJoinWaitlistHandler(options: {
     const measurement = options.measurementEnabled && intent &&
       hostConsentAllowedOrigin(request.get("origin"),
         process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
-      body.hostMeasurement : undefined;
+      validatedBody.hostMeasurement : undefined;
     const consentId = measurement ?
       hostConsentKey(measurement.capability) : null;
 
@@ -778,7 +863,9 @@ export function createJoinWaitlistHandler(options: {
         }
         const baseData = {
           fullName,
-          email,
+          email: email || null,
+          ...(phone ? {phone} : {}),
+          ...(programme ? {programme, programmeApplication} : {}),
           city,
           role,
           instagram,
@@ -836,8 +923,10 @@ export function createJoinWaitlistHandler(options: {
       throw error;
     }
 
+    // A phone number stays out of logs.
     logger.info("Waitlist submission stored", {
-      email,
+      email: email || null,
+      programme,
       city,
       role,
       alreadyJoined,

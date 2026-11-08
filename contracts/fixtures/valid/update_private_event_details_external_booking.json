@@ -1,0 +1,16 @@
+{
+  "organizerId": "org1",
+  "eventId": "event1",
+  "requestId": "details-external-1",
+  "expectedSetupRevision": 2,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "details": {
+    "externalBooking": {
+      "mode": "set",
+      "value": {
+        "provider": "luma",
+        "url": "https://lu.ma/tuesday-trivia"
+      }
+    }
+  }
+}

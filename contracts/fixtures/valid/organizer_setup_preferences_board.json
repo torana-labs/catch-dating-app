@@ -1,0 +1,16 @@
+{
+  "currency": "INR",
+  "startingPriceMinor": 49900,
+  "places": 32,
+  "waitlistEnabled": true,
+  "bookingMode": "askFirst",
+  "refundPolicy": "flexible",
+  "askedAtBooking": [
+    "food",
+    "heard"
+  ],
+  "autoMessages": {
+    "thankYou": true,
+    "arrival": true
+  }
+}

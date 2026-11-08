@@ -32,6 +32,8 @@ class HostLiveBody extends StatelessWidget {
     required this.onEnterScores,
     required this.onMessage,
     required this.onRetry,
+    this.onPause,
+    this.onResume,
     this.changingStep = false,
   });
 
@@ -48,6 +50,12 @@ class HostLiveBody extends StatelessWidget {
   final VoidCallback onEnterScores;
   final VoidCallback onMessage;
   final VoidCallback onRetry;
+
+  /// Stops the active step's clock; null hides Pause.
+  final VoidCallback? onPause;
+
+  /// Restarts a paused step's clock; null hides Resume.
+  final VoidCallback? onResume;
 
   /// A step command is on its way.
   final bool changingStep;
@@ -111,6 +119,8 @@ class HostLiveBody extends StatelessWidget {
             onNext: onNext,
             onBack: onBack,
             onFinish: onFinish,
+            onPause: onPause,
+            onResume: onResume,
           );
     final stats = _HostLiveStats(state: state);
     final needs = CatchSection(
@@ -337,18 +347,24 @@ class _HostLiveSpotlight extends StatelessWidget {
       );
       progress = 0;
     } else {
-      kicker = l10n.hostLiveStepKicker(
-        index: state.activeIndex + 1,
-        total: total,
-      );
-      final left = step.endsAt.difference(now);
+      kicker = state.paused
+          ? l10n.hostLivePausedKicker(
+              index: state.activeIndex + 1,
+              total: total,
+            )
+          : l10n.hostLiveStepKicker(index: state.activeIndex + 1, total: total);
+      // A paused step's clock stands still where it stopped.
+      final at = state.pausedAt ?? now;
+      final endsAt = state.activeStepEndsAt ?? step.endsAt;
+      final startedAt = state.stepStartedAt ?? step.startsAt;
+      final left = endsAt.difference(at);
       clock = left.isNegative
           ? l10n.hostLiveStepOver(time: _clock(-left))
           : l10n.hostLiveStepLeft(time: _clock(left));
-      final length = step.endsAt.difference(step.startsAt).inSeconds;
+      final length = endsAt.difference(startedAt).inSeconds;
       progress = length <= 0
           ? 1
-          : (now.difference(step.startsAt).inSeconds / length).clamp(0, 1);
+          : (at.difference(startedAt).inSeconds / length).clamp(0, 1);
     }
     return CatchSurface(
       block: CatchSurfaceBlock.spotlight,
@@ -432,7 +448,8 @@ class _HostLiveSpotlight extends StatelessWidget {
       };
 }
 
-/// Back a step and Next, or Finish the night on the last step.
+/// Pause and Next, or Finish the night on the last step. While paused:
+/// Back a step and Resume. Without a pause command, Back a step and Next.
 class _HostLiveStepActions extends StatelessWidget {
   const _HostLiveStepActions({
     required this.state,
@@ -440,6 +457,8 @@ class _HostLiveStepActions extends StatelessWidget {
     required this.onNext,
     required this.onBack,
     required this.onFinish,
+    this.onPause,
+    this.onResume,
   });
 
   final HostLiveState state;
@@ -447,6 +466,8 @@ class _HostLiveStepActions extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onBack;
   final VoidCallback onFinish;
+  final VoidCallback? onPause;
+  final VoidCallback? onResume;
 
   @override
   Widget build(BuildContext context) {
@@ -455,11 +476,46 @@ class _HostLiveStepActions extends StatelessWidget {
     final status = changingStep
         ? CatchButtonStatus.loading
         : CatchButtonStatus.idle;
+    final onResume = this.onResume;
+    if (state.paused && onResume != null) {
+      return CatchStack(
+        direction: CatchStackDirection.row,
+        gap: CatchStackGap.g8,
+        children: [
+          if (state.activeIndex > 0)
+            CatchButton(
+              label: l10n.hostLiveBackStep,
+              variant: CatchButtonVariant.secondary,
+              onPressed: changingStep ? null : onBack,
+            ),
+          Expanded(
+            child: CatchButton(
+              key: const ValueKey<String>('host-live-resume'),
+              label: l10n.hostLiveResume,
+              leading: CatchIcon(CatchIcons.play),
+              fullWidth: true,
+              status: status,
+              onPressed: changingStep ? null : onResume,
+            ),
+          ),
+        ],
+      );
+    }
+    final onPause = this.onPause;
+    final canPause = onPause != null && state.stepStartedAt != null;
     return CatchStack(
       direction: CatchStackDirection.row,
       gap: CatchStackGap.g8,
       children: [
-        if (state.activeIndex > 0)
+        if (canPause)
+          CatchButton(
+            key: const ValueKey<String>('host-live-pause'),
+            label: l10n.hostLivePause,
+            leading: CatchIcon(CatchIcons.pause),
+            variant: CatchButtonVariant.secondary,
+            onPressed: changingStep ? null : onPause,
+          )
+        else if (state.activeIndex > 0)
           CatchButton(
             label: l10n.hostLiveBackStep,
             variant: CatchButtonVariant.secondary,

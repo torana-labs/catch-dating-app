@@ -295,9 +295,25 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
-        }
+        },
+        "anchor": {"$ref": "#/definitions/momentPlanAnchor"}
       },
       "description": "The full moment definition returned by moment callables."
+    },
+    "momentPlanAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["function", "flight", "date"]},
+        "id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "The function or travel leg the message is tied to; null for a date."
+        }
+      },
+      "description": "What a planned programme message is tied to on the planner board. Optional on every moment; when absent the read derives it from the initiation (function anchors to function, travel legs to flight, everything else to date)."
     },
     "momentApproval": {
       "type": ["object", "null"],

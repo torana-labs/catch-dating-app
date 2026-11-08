@@ -35,7 +35,7 @@ const defaultDeps: StaffAttentionDeps = {
   now: () => admin.firestore.Timestamp.now(),
 };
 
-interface StaffAttentionSend {
+export interface StaffAttentionSend {
   runId: string;
   momentId: string;
   scopeKind: string;
@@ -48,7 +48,7 @@ interface StaffAttentionSend {
 
 /** Lenient journal parse matching organizerAttention: sends written before
  *  the projection fields shipped drop out rather than failing the read. */
-function staffAttentionSend(
+export function staffAttentionSend(
   snapshot: FirebaseFirestore.DocumentSnapshot
 ): StaffAttentionSend | null {
   const data = snapshot.data() as Record<string, unknown> | undefined;
@@ -148,7 +148,7 @@ export async function listProgramStaffAttentionHandler(
  *  duties the caller's grant actively satisfies. Send duties are free
  *  strings authored on the moment template, so membership, not enum
  *  validation, decides visibility. */
-function staffVisibleDuties(access: ProgramAccess): Set<string> | null {
+export function staffVisibleDuties(access: ProgramAccess): Set<string> | null {
   if (access.role === "manager") return null;
   const duties = new Set(access.grant!.duties.map((a) => a.duty));
   if (duties.has("programCoordinator")) return null;

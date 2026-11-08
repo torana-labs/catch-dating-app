@@ -66,6 +66,8 @@ interface LivePlanDocument {
   activeRevealRoundIndex?: number;
   revealStartedAt?: FirebaseFirestore.Timestamp | null;
   frozenAt?: FirebaseFirestore.Timestamp | null;
+  pausedAtMs?: number | null;
+  stepStartedAtMs?: number | null;
   structureConfig?: {
     revealCountdownSeconds?: number;
   };
@@ -81,6 +83,10 @@ export interface LivePlanState {
   activeRevealRoundIndex: number;
   revealStartedAtMillis: number | null;
   revealCountdownSeconds: number;
+  /** When the active step was paused; null while it runs. */
+  pausedAtMs?: number | null;
+  /** When the active step started, moved later by paused spans. */
+  stepStartedAtMs?: number | null;
 }
 
 type LivePlanUpdate = Partial<Omit<LivePlanState,
@@ -145,6 +151,13 @@ export function resolveEventSuccessLiveAction(
   ) {
     return {replayed: true, update: {}};
   }
+  const paused = typeof state.pausedAtMs === "number";
+  if (
+    (payload.action === "pauseActiveStep" && paused) ||
+    (payload.action === "resumeActiveStep" && !paused)
+  ) {
+    return {replayed: true, update: {}};
+  }
   requireRevision(state.liveControlRevision, payload.expectedRevision);
   if (state.status === "complete") {
     throw new HttpsError("failed-precondition",
@@ -173,6 +186,32 @@ export function resolveEventSuccessLiveAction(
         ...common,
         activeStepIndex: payload.activeStepIndex,
         status: "live",
+        stepStartedAtMs: nowMillis,
+        pausedAtMs: null,
+      },
+    };
+  }
+  case "pauseActiveStep": {
+    if (state.status !== "live") {
+      throw new HttpsError("failed-precondition",
+        "Only a running step can be paused.");
+    }
+    return {
+      replayed: false,
+      update: {...common, pausedAtMs: nowMillis},
+    };
+  }
+  case "resumeActiveStep": {
+    const pausedAt = state.pausedAtMs as number;
+    const startedAt = state.stepStartedAtMs;
+    return {
+      replayed: false,
+      update: {
+        ...common,
+        pausedAtMs: null,
+        // The paused span does not count against the step's time.
+        stepStartedAtMs: typeof startedAt === "number" ?
+          startedAt + Math.max(0, nowMillis - pausedAt) : null,
       },
     };
   }
@@ -240,7 +279,7 @@ export function resolveEventSuccessLiveAction(
   case "complete":
     return {
       replayed: false,
-      update: {...common, status: "complete"},
+      update: {...common, status: "complete", pausedAtMs: null},
     };
   }
 }
@@ -579,7 +618,8 @@ export const publishEventSuccessRotationRound = onCall(
   (request) => publishEventSuccessRotationRoundHandler(request)
 );
 
-async function requireEventManager(
+/** Loads the event and requires the caller to manage its organizer. */
+export async function requireEventManager(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   uid: string
@@ -618,7 +658,14 @@ function livePlanState(plan: LivePlanDocument): LivePlanState {
       0,
       nonNegativeInt(plan.structureConfig?.revealCountdownSeconds)
     ),
+    pausedAtMs: optionalMillis(plan.pausedAtMs),
+    stepStartedAtMs: optionalMillis(plan.stepStartedAtMs),
   };
+}
+
+function optionalMillis(value: unknown): number | null {
+  return Number.isSafeInteger(value) && (value as number) >= 0 ?
+    value as number : null;
 }
 
 function effectivePublishedRevealIndex(
@@ -694,7 +741,8 @@ function assertPlanIdentity(plan: LivePlanDocument, eventId: string): void {
   }
 }
 
-function nextRevision(current: number): number {
+/** The next live-control revision, bounded like the stored field. */
+export function nextRevision(current: number): number {
   if (current >= 2147483647) {
     throw new HttpsError("resource-exhausted",
       "The live-control revision limit has been reached.");

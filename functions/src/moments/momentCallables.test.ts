@@ -74,6 +74,62 @@ test("upsert creates a draft; list returns it scoped", async () => {
   assert.equal(other.moments.length, 0);
 });
 
+test("a planner anchor is stored, kept on revise and listed", async () => {
+  const db = new FakeFirestore({
+    "programFunctions/sangeet": {functionId: "sangeet", programId: "prog"},
+    "programFunctions/elsewhere": {functionId: "elsewhere",
+      programId: "other"},
+  });
+  const {deps} = makeDeps(db);
+  await assert.rejects(upsertOrganizerMomentHandler(deps, {
+    actorUid: "mgr",
+    payload: {...validPayload, anchor: {kind: "function", id: "elsewhere"}},
+  }), /not part of this programme/);
+  await assert.rejects(upsertOrganizerMomentHandler(deps, {
+    actorUid: "mgr",
+    payload: {...validPayload, anchor: {kind: "function", id: null}},
+  }), /anchor needs/);
+  const created = await upsertOrganizerMomentHandler(deps, {
+    actorUid: "mgr",
+    payload: {...validPayload, anchor: {kind: "function", id: "sangeet"}},
+  });
+  assert.deepEqual(created.moment.anchor, {kind: "function", id: "sangeet"});
+  const revised = await upsertOrganizerMomentHandler(deps, {
+    actorUid: "mgr",
+    payload: {...validPayload, momentId: created.moment.momentId,
+      name: "Sangeet tonight"},
+  });
+  assert.deepEqual(revised.moment.anchor, {kind: "function", id: "sangeet"});
+  const list = await listOrganizerMomentsHandler(deps, {
+    actorUid: "mgr", scope: programScope,
+  });
+  assert.deepEqual(list.plans, [{
+    momentId: created.moment.momentId,
+    anchor: {kind: "function", id: "sangeet"},
+    sentCount: 0,
+    nextRunAtMillis: null,
+    state: "draft",
+  }]);
+});
+
+test("programme lists carry the active WhatsApp sender", async () => {
+  const db = new FakeFirestore({
+    "organizerSenderConnections/old": {organizerId: "org",
+      channel: "whatsapp", status: "disconnected"},
+    "organizerSenderConnections/live": {organizerId: "org",
+      channel: "whatsapp", status: "active"},
+  });
+  const deps: MomentCallablesDeps = {
+    firestore: () => db as never,
+    nowMillis: () => NOW,
+    authorizeManage: async () => ({program: {organizerId: "org"}}) as never,
+  };
+  const list = await listOrganizerMomentsHandler(deps, {
+    actorUid: "mgr", scope: programScope,
+  });
+  assert.equal(list.senderConnectionId, "live");
+});
+
 test("invalid axis combination is rejected at upsert", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);

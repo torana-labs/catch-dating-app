@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_body.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
@@ -142,6 +143,28 @@ void main() {
       );
       return calls;
     }
+
+    testWidgets('the setup view facts add the arrival message and sales', (
+      tester,
+    ) async {
+      final ready = workspaceReady();
+      await pumpWorkspace(
+        tester,
+        HostEventWorkspaceState(
+          status: ready.status,
+          event: ready.event,
+          planSteps: ready.planSteps,
+          door: ready.door,
+          doorChecked: true,
+          ticketSalesMinor: 49900,
+          ticketsSold: 1,
+          arrivalReady: true,
+        ),
+      );
+      expect(find.text('3 of 4 done'), findsOneWidget);
+      expect(find.text('Arrival message is ready'), findsOneWidget);
+      expect(find.text('1 ticket sold'), findsOneWidget);
+    });
 
     testWidgets('ready shows the poster, the views, the checklist, the links, '
         'the stats and cancel', (tester) async {
@@ -298,21 +321,69 @@ void main() {
   });
 
   group('Publish', () {
-    testWidgets('published offers going back to the team only', (tester) async {
-      final calls = <bool>[];
+    testWidgets('published offers the link and the team, not itself', (
+      tester,
+    ) async {
+      final calls = <HostEventVisibility>[];
       await _pump(
         tester,
         HostEventPublishBody(
           state: publishReady,
-          onPublished: calls.add,
+          onVisibility: calls.add,
           onRetry: () {},
         ),
       );
       expect(find.text('Everyone'), findsOneWidget);
+      expect(find.text('People with the link'), findsOneWidget);
       expect(find.text('Only your team'), findsOneWidget);
       await tester.tap(find.text('Everyone'));
+      await tester.tap(find.text('People with the link'));
       await tester.tap(find.text('Only your team'));
-      expect(calls, [false]);
+      expect(calls, [HostEventVisibility.link, HostEventVisibility.team]);
+    });
+
+    testWidgets('who can book saves only while the event is unpublished', (
+      tester,
+    ) async {
+      final modes = <HostEventBookingMode>[];
+      final switches = <bool>[];
+      await _pump(
+        tester,
+        HostEventPublishBody(
+          state: publishReady,
+          onVisibility: (_) {},
+          onBookingMode: modes.add,
+          onShowGuestList: switches.add,
+          onRetry: () {},
+        ),
+      );
+      expect(
+        find.text('Unpublish the event to change who can book'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Ask first'));
+      expect(modes, isEmpty);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('host-event-publish-guest-list')),
+      );
+      expect(switches, [false]);
+
+      await _pump(
+        tester,
+        HostEventPublishBody(
+          state: const HostEventPublishState(
+            status: HostEventPublishStatus.ready,
+            canPublish: true,
+            setupRevision: 2,
+            canChangeBooking: true,
+          ),
+          onVisibility: (_) {},
+          onBookingMode: modes.add,
+          onRetry: () {},
+        ),
+      );
+      await tester.tap(find.text('Ask first'));
+      expect(modes, [HostEventBookingMode.askFirst]);
     });
 
     testWidgets('not written yet', (tester) async {
@@ -322,7 +393,7 @@ void main() {
           state: const HostEventPublishState(
             status: HostEventPublishStatus.missing,
           ),
-          onPublished: (_) {},
+          onVisibility: (_) {},
           onRetry: () {},
         ),
       );
@@ -400,6 +471,37 @@ void main() {
         ),
       );
       expect(find.text('Your event defaults could not load'), findsOneWidget);
+    });
+
+    testWidgets('tickets, refunds and messages save on change', (tester) async {
+      final saved = <ManagerEventSetupPreferences>[];
+      await _pump(
+        tester,
+        HostEventDefaultsBody(
+          state: const HostEventDefaultsState(
+            status: HostEventDefaultsStatus.ready,
+            preferences: ManagerEventSetupPreferences(
+              startingPriceMinor: 49900,
+              places: 32,
+              refundPolicy: 'flexible',
+              askedAtBooking: ['food'],
+            ),
+          ),
+          onCollection: (_) {},
+          onChange: saved.add,
+          onEdit: () {},
+          onRetry: () {},
+        ),
+      );
+      expect(find.text('₹499'), findsOneWidget);
+      expect(find.text('1 question'), findsOneWidget);
+      await tester.tap(find.text('No refunds'));
+      await tester.tap(
+        find.byKey(const ValueKey<String>('host-event-defaults-ask')),
+      );
+      expect(saved.map((next) => next.refundPolicy), ['strict', 'flexible']);
+      expect(saved.last.bookingMode, 'askFirst');
+      expect(saved.last.places, 32);
     });
   });
 

@@ -166,6 +166,16 @@ export async function updatePrivateEventDetails(params: {
       set("distanceKm", command.details.distanceKm);
     }
     if (command.details.pace !== undefined) set("pace", command.details.pace);
+    const externalBooking = command.details.externalBooking;
+    if (externalBooking?.mode === "set") {
+      set("externalBooking", {provider: externalBooking.value.provider,
+        url: externalBooking.value.url});
+    } else if (externalBooking?.mode === "clear") {
+      drop("externalBooking");
+    }
+    if (command.details.planVisibleToGuests !== undefined) {
+      set("planVisibleToGuests", command.details.planVisibleToGuests);
+    }
     if (command.details.itinerary !== undefined) {
       set("itinerary", normalizeEventItinerary(command.details.itinerary));
     }

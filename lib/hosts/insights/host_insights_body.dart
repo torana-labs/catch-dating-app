@@ -130,7 +130,7 @@ class HostInsightsBody extends StatelessWidget {
   }
 }
 
-/// The stats two to a row, in equal widths.
+/// The stats two to a row, in equal widths; four stats make two rows.
 class _HostInsightsStatRow extends StatelessWidget {
   const _HostInsightsStatRow({required this.stats});
 
@@ -145,19 +145,27 @@ class _HostInsightsStatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    Widget tile(HostInsightsStat stat) => HostAnalyticsMetricTile(
+      label: switch (stat.kind) {
+        HostInsightsStatKind.bookings => l10n.hostTodayStatBookings,
+        HostInsightsStatKind.ticketSales => l10n.hostTodayStatTicketSales,
+        HostInsightsStatKind.cameBack => l10n.hostInsightsCameBack,
+        HostInsightsStatKind.followers => l10n.hostOrganizerStatFollowers,
+      },
+      value: stat.value,
+      previousValue: stat.previousValue,
+      currencyCode: stat.currencyCode,
+      figure: stat.figure,
+    );
     return CatchStack(
-      direction: CatchStackDirection.row,
-      equal: true,
       children: [
-        for (final stat in stats)
-          HostAnalyticsMetricTile(
-            label: switch (stat.kind) {
-              HostInsightsStatKind.bookings => l10n.hostTodayStatBookings,
-              HostInsightsStatKind.ticketSales => l10n.hostTodayStatTicketSales,
-            },
-            value: stat.value,
-            previousValue: stat.previousValue,
-            currencyCode: stat.currencyCode,
+        for (var start = 0; start < stats.length; start += 2)
+          CatchStack(
+            direction: CatchStackDirection.row,
+            equal: true,
+            children: [
+              for (final stat in stats.skip(start).take(2)) tile(stat),
+            ],
           ),
       ],
     );

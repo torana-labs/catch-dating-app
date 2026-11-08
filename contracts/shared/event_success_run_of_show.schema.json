@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_success_run_of_show.schema.json",
+  "title": "Event Success run-of-show definitions",
+  "definitions": {
+    "planStepId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+    },
+    "planStepStage": {
+      "type": "string",
+      "enum": ["before", "arrival", "opening", "activity", "mixing", "closing", "after", "hostDebrief"]
+    },
+    "planStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One run-of-show step as the host edited it. Steps derived from the playbook use ids playbook-0, playbook-1, ... until the host saves an edit.",
+      "required": ["stepId", "title", "durationMinutes"],
+      "properties": {
+        "stepId": {"$ref": "#/definitions/planStepId"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 80},
+        "durationMinutes": {"type": "integer", "minimum": 1, "maximum": 240},
+        "hostInstruction": {"type": "string", "maxLength": 300},
+        "attendeeExperience": {"type": "string", "maxLength": 300},
+        "stage": {"$ref": "#/definitions/planStepStage"},
+        "moduleIds": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        }
+      }
+    },
+    "planSteps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {"$ref": "#/definitions/planStep"}
+    }
+  }
+}

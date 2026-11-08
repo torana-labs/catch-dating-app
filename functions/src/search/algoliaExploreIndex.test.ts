@@ -167,6 +167,13 @@ test("buildEventSearchRecord omits cancelled events", () => {
   );
 });
 
+test("buildEventSearchRecord omits link-only events", () => {
+  assert.equal(buildEventSearchRecord("event-1", event({listing: "link"}),
+    organizer()), null);
+  assert.notEqual(buildEventSearchRecord("event-1",
+    event({listing: "listed"}), organizer()), null);
+});
+
 test("private and malformed setup events never enter a visible organizer index",
   () => {
     for (const state of [{publicationState: "private"},

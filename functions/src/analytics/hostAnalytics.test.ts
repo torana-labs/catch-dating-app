@@ -3,6 +3,7 @@ import test from "node:test";
 import {createHash} from "node:crypto";
 import {
   buildHostAnalyticsFromRecords,
+  followersCard,
   getHostAnalyticsHandler,
   hostAnalyticsSnapshotId,
   hostAnalyticsSnapshotTtlMs,
@@ -116,6 +117,18 @@ test("host snapshot identity pins authorized scope and local-day range", () => {
     preset: range.preset,
     timezone: range.timezone,
   })).digest("hex");
+  const beforeCards = createHash("sha256").update(JSON.stringify({
+    registrationReadoutVersion: 2,
+    organizerId: payload.organizerId,
+    eventId: null,
+    organizerIds: organizers.map((organizer) => organizer.id).sort(),
+    start: range.start.toISOString(),
+    endExclusive: range.endExclusive.toISOString(),
+    granularity: range.granularity,
+    preset: range.preset,
+    timezone: range.timezone,
+  })).digest("hex");
+  assert.notEqual(first, `host-1_${beforeCards}`);
   assert.notEqual(first, `host-1_${previousHash}`);
   assert.match(first, /^host-1_[a-f0-9]{64}$/u);
   assert.equal(reordered, first);
@@ -236,6 +249,12 @@ test("buildHostAnalyticsFromRecords aggregates host-safe metrics", () => {
   assert.equal(metric(response, "attendanceRate").previousValue, 50);
   assert.equal(metric(response, "listingViews").previousValue, 5);
   assert.equal(metric(response, "revenue").previousValue, 200000);
+  // Two of eight booked guests had been before; none in the prior period.
+  assert.equal(metric(response, "cameBackRate").value, 25);
+  assert.equal(metric(response, "cameBackRate").unit, "percent");
+  assert.equal(metric(response, "cameBackRate").previousValue, 0);
+  assert.equal(response.summaryCards.some((card) => card.id === "followers"),
+    false);
   assert.equal(response.discoverySummary.organizerSaves, 4);
   assert.equal(response.discoverySummary.eventSaves, 7);
   assert.equal(response.reviewSummary.newReviews, 1);
@@ -765,4 +784,38 @@ test("an unreadable link mart leaves the roll-up empty and says so", () => {
   assert.deepEqual(response.linkSummary, {links: [], trafficSources: []});
   assert.equal(response.dataQuality.find((row) =>
     row.id === "owner-link-clicks")?.state, "missing");
+});
+
+test("followers count edges live at the range end against its start", () => {
+  const now = new Date("2026-06-18T12:00:00.000Z");
+  const range = resolveAnalyticsRange({
+    rangePreset: "custom", startDate: "2026-06-01", endDate: "2026-06-30",
+    granularity: "week",
+  }, now);
+  const at = (iso: string) => new Date(iso);
+  const follows = [
+    {status: "active", followedAt: at("2026-05-01T00:00:00Z"),
+      unfollowedAt: null},
+    {status: "active", followedAt: at("2026-06-10T00:00:00Z"),
+      unfollowedAt: null},
+    {status: "inactive", followedAt: at("2026-05-02T00:00:00Z"),
+      unfollowedAt: at("2026-06-05T00:00:00Z")},
+    {status: "inactive", followedAt: at("2026-06-02T00:00:00Z"),
+      unfollowedAt: at("2026-06-03T00:00:00Z")},
+    // Followed after "now": not yet a follower at the capped range end.
+    {status: "active", followedAt: at("2026-06-20T00:00:00Z"),
+      unfollowedAt: null},
+  ];
+  const card = followersCard(follows, false, range, now);
+  assert.equal(card.id, "followers");
+  assert.equal(card.unit, "count");
+  assert.equal(card.status, "ready");
+  assert.equal(card.value, 2);
+  assert.equal(card.previousValue, 2);
+  assert.equal(followersCard(follows, true, range, now).status, "partial");
+  assert.equal(followersCard(null, false, range, now).status, "missing");
+  const response = buildHostAnalyticsFromRecords({...records(), follows},
+    range, now);
+  assert.equal(metric(response, "followers").value, 2);
+  assert.equal(validateHostAnalyticsCallableResponse(response), true);
 });

@@ -40,6 +40,7 @@ import {
   nextRevision,
   requireProgramMutable,
 } from "../shared/programAuthority";
+import {loadProgramOverviewCounts} from "./programOverviewCounts";
 import {replanProgramMoments} from "../moments/momentRunner";
 import type {
   OrganizerDocument,
@@ -222,6 +223,25 @@ export async function createOrganizerProgramHandler(
   });
 }
 
+/** Branding as stored: the cover photo must sit in this programme's own
+ *  branding folder. */
+export function programBrandingFor(
+  programId: string,
+  branding: NonNullable<UpdateOrganizerProgramCallablePayload["branding"]>,
+): NonNullable<UpdateOrganizerProgramCallablePayload["branding"]> {
+  if (branding.coverImagePath !== null &&
+      !branding.coverImagePath.startsWith(`programs/${programId}/branding/`)) {
+    throw new HttpsError("invalid-argument",
+      "The cover photo must be in this programme's branding folder.");
+  }
+  return {
+    color: branding.color,
+    coverImagePath: branding.coverImagePath,
+    creditLine: branding.creditLine === null ?
+      null : branding.creditLine.trim() || null,
+  };
+}
+
 export async function updateOrganizerProgramHandler(
   request: CallableRequest<unknown>,
   deps: ProgramDeps = defaultDeps
@@ -297,6 +317,10 @@ export async function updateOrganizerProgramHandler(
     if (data.rsvpDeadlineAtMillis !== undefined) {
       update.rsvpDeadlineAt = data.rsvpDeadlineAtMillis === null ? null :
         admin.firestore.Timestamp.fromMillis(data.rsvpDeadlineAtMillis);
+    }
+    if (data.branding !== undefined) {
+      update.branding = data.branding === null ? null :
+        programBrandingFor(data.programId, data.branding);
     }
     committedRevision = update.revision as number;
     tx.update(ref, update);
@@ -431,6 +455,8 @@ export async function listOrganizerProgramsHandler(
       logger.warn("Program inventory count unavailable", {error});
     }
   }
+  const overview = await loadProgramOverviewCounts(db, data.organizerId,
+    programDocs.map((doc) => doc.id));
   let exactProgram: OrganizerProgramDocument | null = null;
   if (data.programId !== undefined) {
     const programId = data.programId;
@@ -480,6 +506,7 @@ export async function listOrganizerProgramsHandler(
           program.status === "archived",
         ...(functionCounts.has(doc.id) ?
           {functionCount: functionCounts.get(doc.id)!} : {}),
+        ...(overview.get(doc.id) ?? {}),
         archivedAtMillis: program.archivedAt?.toMillis() ?? null,
         anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
         anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
@@ -546,6 +573,7 @@ export async function getOrganizerProgramHandler(
         anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
         anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
         revision: program.revision,
+        ...(program.branding ? {branding: {...program.branding}} : {}),
       },
       functions: functionsSnap.docs.map((doc) => {
         const fn = doc.data() as ProgramFunctionDocument;

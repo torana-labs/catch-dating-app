@@ -11,6 +11,7 @@ const currencyCode = /^[A-Z]{3}$/;
 const admission = new Set([
   "openCapacity", "inviteOnly", "balancedSingles", "fixedCohortCaps",
 ]);
+const bookingModes = new Set(["anyone", "followersFirst", "askFirst"]);
 const collection = new Set([
   "manualInstructions", "reusablePage", "personalRequest", "catchCheckout",
 ]);
@@ -39,6 +40,14 @@ export function organizerEventDefaultsHash(
         defaults.eventSetup?.paymentInstructions ?? null,
       reusablePaymentPage:
         copyReusablePage(defaults.eventSetup?.reusablePaymentPage ?? null),
+      // Added later: an unset key is left out, so existing hashes hold.
+      bookingMode: defaults.eventSetup?.bookingMode,
+      startingPriceMinor: defaults.eventSetup?.startingPriceMinor,
+      places: defaults.eventSetup?.places,
+      waitlistEnabled: defaults.eventSetup?.waitlistEnabled,
+      refundPolicy: defaults.eventSetup?.refundPolicy,
+      askedAtBooking: defaults.eventSetup?.askedAtBooking,
+      autoMessages: defaults.eventSetup?.autoMessages,
     },
   });
 }
@@ -81,6 +90,17 @@ export function resolveEventPreferences(input: {
       setup.reusablePaymentPage),
     expectedAmountMinor: resolve(intents.expectedAmountMinor, undefined),
   };
+  // Optional intents appear once chosen here or set as an organizer default,
+  // so events of organizers who never used them keep the original shape.
+  if (intents.bookingMode !== undefined || setup.bookingMode !== undefined) {
+    resolved.bookingMode = resolve(intents.bookingMode ?? {mode: "inherit"},
+      setup.bookingMode);
+  }
+  if (intents.waitlistEnabled !== undefined ||
+      setup.waitlistEnabled !== undefined) {
+    resolved.waitlistEnabled = resolve(intents.waitlistEnabled ??
+      {mode: "inherit"}, setup.waitlistEnabled);
+  }
   validateResolved(resolved);
   resolved.reusablePaymentPage = {...resolved.reusablePaymentPage,
     value: copyReusablePage(resolved.reusablePaymentPage.value)};
@@ -171,6 +191,8 @@ function validateOrganizerDefaults(defaults: OrganizerEventDefaults): void {
     }
   }
   const setup = defaults.eventSetup;
+  validateBookingMode(setup?.bookingMode ?? null);
+  validateBoardDefaults(setup);
   validateValues({
     usualDurationMinutes: setup?.usualDurationMinutes ?? null,
     preferredVenueId: setup?.preferredVenueId ?? null,
@@ -186,6 +208,11 @@ function validateOrganizerDefaults(defaults: OrganizerEventDefaults): void {
 }
 
 function validateResolved(value: ResolvedEventPreferences): void {
+  validateBookingMode(value.bookingMode?.value ?? null);
+  const waitlist = value.waitlistEnabled?.value ?? null;
+  if (waitlist !== null && typeof waitlist !== "boolean") {
+    invalid("Invalid waitlist choice.");
+  }
   validateValues({
     usualDurationMinutes: value.usualDurationMinutes.value,
     preferredVenueId: value.preferredVenueId.value,
@@ -247,6 +274,43 @@ function validateValues(value: {
   }
   if (value.reusablePaymentPage !== null) {
     validateReusablePage(value.reusablePaymentPage);
+  }
+}
+
+const refundPolicies = new Set(["flexible", "standard", "strict"]);
+
+/** The defaults the event boards added; each is optional. */
+function validateBoardDefaults(setup: OrganizerEventDefaults["eventSetup"]):
+  void {
+  if (setup?.startingPriceMinor !== undefined) {
+    requireInteger(setup.startingPriceMinor, 0, 100_000_000,
+      "Starting price");
+  }
+  if (setup?.places !== undefined) {
+    requireInteger(setup.places, 1, 1000, "Places");
+  }
+  if (setup?.waitlistEnabled !== undefined &&
+      typeof setup.waitlistEnabled !== "boolean") invalid("Invalid waitlist.");
+  if (setup?.refundPolicy !== undefined &&
+      !refundPolicies.has(setup.refundPolicy)) invalid("Invalid refunds.");
+  const questions = setup?.askedAtBooking;
+  if (questions !== undefined && (!Array.isArray(questions) ||
+      questions.length > 20 || new Set(questions).size !== questions.length ||
+      questions.some((id) => typeof id !== "string" || !venueId.test(id)))) {
+    invalid("Invalid booking questions.");
+  }
+  const messages = setup?.autoMessages;
+  if (messages !== undefined && (typeof messages !== "object" ||
+      messages === null || Object.keys(messages).length !== 2 ||
+      typeof messages.thankYou !== "boolean" ||
+      typeof messages.arrival !== "boolean")) {
+    invalid("Invalid automatic messages.");
+  }
+}
+
+function validateBookingMode(value: string | null): void {
+  if (value !== null && !bookingModes.has(value)) {
+    invalid("Invalid booking mode.");
   }
 }
 

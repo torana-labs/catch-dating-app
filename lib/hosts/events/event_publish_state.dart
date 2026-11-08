@@ -4,6 +4,13 @@ import 'package:flutter/foundation.dart';
 /// server has not written the event's setup view yet, or unable to read.
 enum HostEventPublishStatus { loading, ready, missing, error }
 
+/// Who can find the event: everyone (listed), people with its link, or
+/// only the organizer's team while it is unpublished.
+enum HostEventVisibility { everyone, link, team }
+
+/// Who can book: first come first served, or the host approves each guest.
+enum HostEventBookingMode { anyone, askFirst }
+
 /// Everything the publication screen shows, as plain values.
 @immutable
 class HostEventPublishState {
@@ -13,6 +20,11 @@ class HostEventPublishState {
     this.published = false,
     this.canPublish = false,
     this.setupRevision,
+    this.listing = 'listed',
+    this.showGuestList = true,
+    this.priceHiddenUntilBookingOpens = false,
+    this.bookingMode,
+    this.canChangeBooking = false,
     this.error,
   });
 
@@ -30,5 +42,22 @@ class HostEventPublishState {
 
   /// The fence for the next publication command.
   final int? setupRevision;
+
+  /// `listed` or `link`, with the read-time default applied.
+  final String listing;
+  final bool showGuestList;
+  final bool priceHiddenUntilBookingOpens;
+
+  /// The saved booking choice; null when none is saved.
+  final HostEventBookingMode? bookingMode;
+
+  /// Booking is an event preference, which only an unpublished event edits.
+  final bool canChangeBooking;
   final Object? error;
+
+  HostEventVisibility get visibility => !published
+      ? HostEventVisibility.team
+      : listing == 'link'
+      ? HostEventVisibility.link
+      : HostEventVisibility.everyone;
 }

@@ -55,8 +55,9 @@ export type WeddingsApplicationStage = "stepOne" | "stepTwo" | "sent";
 
 /**
  * The application page: step 1 again when the landing did not hand it over,
- * then step 2, then the sent state. `submit` is the intake front door; without
- * one the application cannot be sent.
+ * then step 2, then the sent state. `submit` is the intake front door (the
+ * page passes the waitlist route's); without one the application cannot be
+ * sent.
  */
 export function useWeddingsApplicationController({submit, initialStepOne}: {
   submit?: WeddingsSubmit;

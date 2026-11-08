@@ -373,6 +373,277 @@
               }
             }
           ]
+        },
+        "startingPriceMinor": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "places": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "waitlistEnabled": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "bookingMode": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "anyone",
+                    "followersFirst",
+                    "askFirst"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "refundPolicy": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "askedAtBooking": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "autoMessages": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "thankYou",
+                    "arrival"
+                  ],
+                  "properties": {
+                    "thankYou": {
+                      "type": "boolean"
+                    },
+                    "arrival": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
         }
       },
       "minProperties": 1,

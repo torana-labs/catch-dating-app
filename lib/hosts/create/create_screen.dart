@@ -240,6 +240,12 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           controller.edit((d) => d.copyWith(capacity: '$value')),
       onAdmission: (value) =>
           controller.edit((d) => d.copyWith(admissionPreset: value.preset)),
+      onWaitlist: controller.setWaitlist,
+      onApproveEach: controller.setApproveEach,
+      onPlanVisible: controller.setPlanVisible,
+      onRepeat: controller.setRepeatWeekly,
+      onBookingLink: (value) =>
+          controller.edit((d) => d.copyWith(externalEventUrl: value.trim())),
       onTemplate: () => controller.useTemplate(
         createPlanTemplate(
           context.l10n,

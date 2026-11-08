@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation_ro
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
@@ -128,6 +129,53 @@ ProviderContainer _container(
 );
 
 void main() {
+  test('Insights shows Came back and Followers after bookings and sales', () {
+    final source = _report();
+    final report = HostAnalyticsReport(
+      generatedAt: source.generatedAt,
+      summaryCards: [
+        ...source.summaryCards,
+        const HostAnalyticsMetricCard(
+          id: HostAnalyticsMetricIds.cameBackRate,
+          label: 'Came back',
+          value: 42,
+          previousValue: 35,
+          unit: HostAnalyticsMetricUnit.percent,
+          status: HostAnalyticsMetricStatus.ready,
+        ),
+        const HostAnalyticsMetricCard(
+          id: HostAnalyticsMetricIds.followers,
+          label: 'Followers',
+          value: 1204,
+          previousValue: 1100,
+          unit: HostAnalyticsMetricUnit.count,
+          status: HostAnalyticsMetricStatus.ready,
+        ),
+      ],
+      trend: source.trend,
+      topEvents: source.topEvents,
+      reviewSummary: source.reviewSummary,
+      discoverySummary: source.discoverySummary,
+      dataQuality: source.dataQuality,
+      linkSummary: source.linkSummary,
+    );
+    final state = hostInsightsStateFor(
+      report,
+      range: HostInsightsRange.thirtyDays,
+      currencyCode: 'INR',
+    );
+    expect(state.stats.map((stat) => stat.kind), [
+      HostInsightsStatKind.bookings,
+      HostInsightsStatKind.ticketSales,
+      HostInsightsStatKind.cameBack,
+      HostInsightsStatKind.followers,
+    ]);
+    expect(state.stats[2].figure, HostAnalyticsFigure.percent);
+    expect(state.stats[2].previousValue, 35);
+    expect(state.stats[3].value, 1204);
+    expect(state.stats[3].figure, isNull);
+  });
+
   group('hostInsightsController', () {
     const request = HostInsightsRequest(
       organizerId: 'org-1',

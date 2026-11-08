@@ -244,6 +244,45 @@
           "items": {
             "$ref": "../embedded/uploaded_photo.schema.json"
           }
+        },
+        "planVisibleToGuests": {
+          "type": "boolean",
+          "description": "Whether booked guests see the plan for the night."
+        },
+        "externalBooking": {
+          "description": "Tickets sold elsewhere: set the booking page, or clear it to sell on Catch.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "$ref": "../embedded/event_external_booking.schema.json"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
         }
       },
       "minProperties": 1

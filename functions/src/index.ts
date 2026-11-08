@@ -97,6 +97,11 @@ export {
   listEventStaff,
   revokeEventStaff,
 } from "./events/eventStaff";
+export {heartbeatEventStaffPresence} from "./events/eventStaffPresence";
+export {
+  getEventTicketCode,
+  resolveEventTicketCode,
+} from "./events/eventTicketCodes";
 export {
   createEventRosterHandoff,
   ingestEventRosterWebhook,
@@ -108,6 +113,8 @@ export {
   getEventRuntimeBootstrap,
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
+export {requestEventRuntimeHostHelp} from
+  "./eventSuccess/eventRuntimeHostHelp";
 export {onEventRuntimeParticipantWritten} from
   "./eventSuccess/operations/runtimeRequiredDataTrigger";
 export {
@@ -440,6 +447,10 @@ export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
 } from "./eventSuccess/liveControl";
+export {saveEventPlanStep} from "./eventSuccess/planSteps";
+export {setEventCloseOut} from "./eventSuccess/closeOut";
+export {changeEventCrawlStop} from "./eventSuccess/crawlStop";
+export {onEventSuccessStandingsWritten} from "./eventSuccess/guestHistory";
 export {setEventSuccessAccountabilityResolution} from
   "./eventSuccess/accountability";
 export {heartbeatEventSuccessPresence} from "./eventSuccess/presence";
@@ -825,6 +836,15 @@ export {importProgramManifest, importWeddingPhoneContacts} from
   "./programs/programManifestImport";
 export {listProgramStaffAttention} from
   "./programs/programStaffAttention";
+export {getProgramLiveBoard, resolveProgramAlert} from
+  "./programs/programLiveBoard";
+export {
+  getProgramDriverTrip,
+  getProgramVendorRunSheet,
+  issueProgramWebLink,
+} from "./programs/programWebLinks";
+export {getProgramDeparturesRoster} from
+  "./transport/programDepartures";
 export {
   getProgramArrivalsRoster,
   getProgramTransportPlan,
@@ -857,7 +877,7 @@ export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 
 export {
-  createPrivateEventSetup, updatePrivateEventBasics,
+  createPrivateEventSetup, createPrivateEventSeries, updatePrivateEventBasics,
   updatePrivateEventPreferences, listPrivateEventSetups,
   updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
   reconcilePrivateEventSeats,
@@ -1029,6 +1049,8 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+export {onHostResponseSummaryOfferChanged} from
+  "./hostReadModels/responseOfferTriggers";
 export {onHostGuestViewEventChanged, onHostGuestViewPlanChanged,
   onHostGuestViewAttendeeChanged, onHostGuestViewGuestChanged,
   onHostGuestViewMembershipChanged, onHostGuestViewOrganizerChanged,
@@ -1053,7 +1075,8 @@ export {onHostEventSetupViewEventChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
   onHostEventSetupViewEventOfferChanged, onHostEventSetupViewPaymentChanged,
-  onHostEventSetupViewPendingOrderChanged} from
+  onHostEventSetupViewPendingOrderChanged,
+  onHostEventSetupViewMomentChanged} from
   "./hostReadModels/eventSetupViewTriggers";
 export {onHostEventSetupDefaultViewDefaultsChanged,
   onHostEventSetupDefaultViewOrganizerChanged} from

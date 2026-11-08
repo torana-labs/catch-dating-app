@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_live_board_response.schema.json",
+  "title": "ProgramLiveBoardCallableResponse",
+  "description": "The live weekend board for planners and coordinators, and the alert list for function leads. Alerts merge staff attention sends, cancelled or diverted flights and disrupted journeys with their stored resolution (programAlerts).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "generatedAtMillis",
+    "now",
+    "tonight",
+    "travel",
+    "alerts",
+    "truncated"
+  ],
+  "definitions": {
+    "alert": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alertId",
+        "source",
+        "severity",
+        "title",
+        "subjectId",
+        "createdAtMillis",
+        "state",
+        "assignedToMe",
+        "assigneeName",
+        "revision"
+      ],
+      "properties": {
+        "alertId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "staffAttention",
+            "flight",
+            "readiness"
+          ],
+          "description": "staffAttention: a staff alert moment fired; flight: a flight was cancelled or diverted; readiness: a journey was marked disrupted."
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "info",
+            "warning",
+            "urgent"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "subjectId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "The travel leg or moment the alert is about."
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "done"
+          ]
+        },
+        "assignedToMe": {
+          "type": "boolean"
+        },
+        "assigneeName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Resolution revision; 0 while nobody has acted on it."
+        }
+      }
+    },
+    "function": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "functionId",
+        "name",
+        "venueName",
+        "startsAtMillis",
+        "endsAtMillis",
+        "expectedCount",
+        "checkedInCount",
+        "phase"
+      ],
+      "properties": {
+        "functionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "venueName": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "checkedInCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "done",
+            "now",
+            "next",
+            "later"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "now": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/function"
+        }
+      ],
+      "description": "The function running now, else the next one today, else null."
+    },
+    "tonight": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/definitions/function"
+      },
+      "description": "Today's active functions in start order."
+    },
+    "travel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "atCurb",
+        "disrupted"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Inbound journeys still landing."
+        },
+        "atCurb": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Inbound journeys ready at the curb."
+        },
+        "disrupted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "maxItems": 150,
+      "items": {
+        "$ref": "#/definitions/alert"
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  }
+}

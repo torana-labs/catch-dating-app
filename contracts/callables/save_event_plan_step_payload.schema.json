@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/save_event_plan_step_payload.schema.json",
+  "title": "SaveEventPlanStepCallablePayload",
+  "description": "One run-of-show edit accepted by saveEventPlanStep, fenced on the plan's liveControlRevision and replay-safe on requestId. The first edit of a plan with no stepOverrides sends baseSteps: the playbook steps the host sees.",
+  "x-callable-aliases": ["saveEventPlanStep"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "requestId", "expectedLiveControlRevision", "op"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"},
+    "expectedLiveControlRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "op": {"type": "string", "enum": ["add", "edit", "remove", "reorder"]},
+    "step": {"$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planStep"},
+    "stepId": {"$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planStepId"},
+    "atIndex": {"type": "integer", "minimum": 0, "maximum": 40},
+    "orderedStepIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {"$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planStepId"}
+    },
+    "baseSteps": {"$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planSteps"}
+  }
+}

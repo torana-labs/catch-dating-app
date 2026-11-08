@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/issue_program_web_link_payload.schema.json",
+  "title": "IssueProgramWebLinkCallablePayload",
+  "description": "Mint a signed, expiring web link for someone without a Catch account: a driver's trip (subjectId = tripId) or a vendor's run sheet (subjectId = vendorId). Minting writes nothing; the token carries only ids and an expiry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "kind",
+    "subjectId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "driverTrip",
+        "vendorRunSheet"
+      ]
+    },
+    "subjectId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}

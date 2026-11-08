@@ -36,6 +36,8 @@ class HostEventPlanState {
     this.unitCount,
     this.options = const <HostEventPlanOption, bool>{},
     this.editable = false,
+    this.stepsEditable = false,
+    this.liveControlRevision = 0,
     this.error,
   });
 
@@ -62,12 +64,25 @@ class HostEventPlanState {
 
   /// The plan is still being set up, so its options can change.
   final bool editable;
+
+  /// The run of show can still change: the night is not over. Each step
+  /// edit is its own command, fenced on [liveControlRevision].
+  final bool stepsEditable;
+
+  /// The plan's fence for the next step edit.
+  final int liveControlRevision;
   final Object? error;
 
   /// Guests sit in teams or at tables.
   bool get seated =>
       unitKind != EventSuccessUnitKind.wholeGroup &&
       unitKind != EventSuccessUnitKind.pairs;
+
+  /// The run of show as the next step edit sends it.
+  List<EventSuccessPlanStep> get planSteps => [
+    for (final (index, step) in steps.indexed)
+      EventSuccessPlanStep.fromRunOfShow(step.step, index: index),
+  ];
 
   DateTime? get endsAt => steps.isEmpty
       ? null

@@ -258,6 +258,9 @@ bool _matchesPostQueryFilters(Event event, EventDiscoveryQuery query) {
   // their event through the canonical participation enrichment path instead of
   // the public discovery query.
   if (event.synthetic) return false;
+  // Link-only events are for people with the link. Rules cannot leave them
+  // out of the list query without a field on every event, so Explore does.
+  if (event.listing == EventListing.link) return false;
   if (!event.isUpcomingAt(query.startAt)) return false;
   final endBefore = query.endBefore;
   if (endBefore != null && !event.startTime.isBefore(endBefore)) return false;

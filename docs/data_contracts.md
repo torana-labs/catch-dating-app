@@ -1700,6 +1700,34 @@ carries an expected revision, and reveal or rotation publication also carries
 explicit confirmation. The asynchronous draft trigger's bounded retry count is
 deployment configuration, not a persisted plan constant.
 
+The plan also carries four optional, callable-owned fields, each with a
+read-time default so older plans stay valid (legal hold: no backfill):
+`stepOverrides` (the host's run of show from `saveEventPlanStep`, shared
+`contracts/shared/event_success_run_of_show.schema.json`; missing means the
+playbook's steps), `stepStartedAtMs` and `pausedAtMs` (written by the
+`controlEventSuccessLive` step, pause and resume actions; missing means time
+left follows the schedule and the step runs), and `crawlStopChanges` (stops
+changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
+missing means the published route). Rules keep all four out of client
+creates and setup updates. Their replay receipts live in server-only
+`eventLiveCommandReceipts/{receiptId}`.
+
+### Event Close-Out And Guest Game History
+
+`contracts/firestore/event_close_outs.schema.json` declares
+`eventCloseOuts/{eventId}`, written only by `setEventCloseOut` (revision
+fenced, replay receipt) and read by the event's organizer hosts through a
+listener; a night not closed out reads as missing, every switch off. The
+thank-you is not stored here as a schedule: it is the event-scope moment
+`organizerMoments/{eventId}_close_out_thank_you`, armed or paused by the same
+call. Stay-in-touch picks and the no-show note are recorded flags only.
+
+`contracts/firestore/event_success_guest_history.schema.json` declares
+`eventSuccessGuestHistory/{eventId}_{uid}`, written only by the
+`onEventSuccessStandingsWritten` trigger from `eventSuccessStandings` and the
+guest's assignments or arrival group (the Host scoreboard's unit ids). Each
+guest gets only their own document.
+
 ### Event Success Presence And Late-Arrival Boundary
 
 `contracts/firestore/event_success_presence.schema.json` owns the server-written
@@ -2216,6 +2244,36 @@ belong to the progressive setup commands; an event without a publication
 state or setup revision is refused as invalid. Dev and prod are reseeded after
 the release that introduced this shape (pre-launch clean-schema mandate), so
 no event without it remains.
+
+Optional event settings carry read-time defaults, so no existing event needs
+a write: `listing` (`listed` | `link`, missing reads `listed`),
+`showGuestList` (missing reads true), `priceHiddenUntilBookingOpens` (missing
+reads false), `planVisibleToGuests` (missing reads true) and
+`externalBooking {provider, url}` (missing means tickets are sold on Catch).
+`setEventPublication` carries the first three: sending the current
+`publicationState` with a changed setting saves only the setting and leaves
+registration as it is. Link-only events keep their own event page but are left
+out of Explore (client filter: a list rule cannot exclude them without a
+field on every event), Algolia and the organizer page lists. The details
+command sets `planVisibleToGuests`, which the `eventSuccessPlans` read rule
+enforces for guests, and `externalBooking`, which keeps Catch registration
+closed and lets publishing skip Catch admission terms. Event preferences take
+two optional intents, `bookingMode` (`anyone` | `followersFirst` |
+`askFirst`) and `waitlistEnabled`; an omitted one keeps the saved choice, and
+a resolved one appears only once chosen or set as an organizer default.
+Publishing applies them to the admission policy with the seat ledger: askFirst
+is the existing host-approval path (`manualApprovalRequired`), and a disabled
+waitlist makes `joinEventWaitlist` refuse joins except join requests on an
+askFirst event. `followersFirst` is stored but not enforced yet. Organizer
+defaults add `startingPriceMinor`, `places`, `waitlistEnabled`,
+`bookingMode`, `refundPolicy` (`flexible` 24 h, `standard` 3 days, `strict`
+none), `askedAtBooking` question ids and `autoMessages {thankYou, arrival}`;
+unset keys leave the defaults hash unchanged. `createPrivateEventSeries`
+creates a weekly series (2 to 8 events) through `createPrivateEventSetup`,
+one receipt per event under `requestId-index`, writing `seriesId` and
+`seriesIndex`. The setup view's trigger-owned `facts` state `ticketsSold`,
+`grossMinor` and `arrivalMessage.ready` (the event-start reminder moment is
+armed).
 
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics` and `listPrivateEventSetups` payload contracts, and
@@ -2739,6 +2797,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
+| Door staff presence | `eventStaffPresence/{eventId}_{uid}`, readable by the event's managers and `viewRoster` staff, written only by `heartbeatEventStaffPresence` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -3011,6 +3070,18 @@ review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
 read these summaries through the SDK. Form-scoped/filter-choice queries, answer
 filters, contact joins, review filters and text search keep the existing callable
 behavior until their own equivalent indexed read contracts are implemented.
+Each summary may also carry two optional query fields, absent on older views and
+read as none: `reviewStatus` (a copy of the application's review status) and
+`offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
+from the entry's application. `onHostResponseSummaryOfferChanged` recomputes them
+when an `organizerEventOffers` document changes; `--model response-offers` in
+`functions/scripts/backfill-host-read-models.cjs` backfills them. A form's
+Responses screen reads its Offered list and per-filter counts from these fields.
+
+`launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
+website submission needs an email or a phone. A weddings pilot application
+carries `programme: "weddings"` and `programmeApplication`; older intents carry
+neither and read as an events Host enquiry.
 
 Participant grant revocation and generic response withdrawal redact their
 verified summary (or delete an invalid view) in the **same transaction** as the authority change, including
@@ -4241,6 +4312,17 @@ with function selection, RSVP-status filters, and household dedupe. The
 document field ships ahead of its callable payload and dispatcher wiring;
 clients cannot set it through `upsertOrganizerCampaign` today.
 
+### Programme Alerts, Branding And Planner Anchors
+
+`programAlerts/{programId}_{alertId}` is server-only and exists only after
+someone takes, finishes or reopens a live board alert; the alerts
+themselves are derived on read. It holds staff uids and display names,
+never guest data. `organizerPrograms.branding` (colour, cover photo path in
+`programs/{programId}/branding/`, credit line) and
+`organizerMoments.anchor` (`function | flight | date` with an id) are
+optional: older documents read as the default look (rani, no cover, no
+credit) and as the anchor their initiation implies.
+
 ### Program Room Occupancy
 
 `programStays` remains the per-guest lodging record. `roomOccupancyId` is a
@@ -4429,6 +4511,15 @@ orders reaches its currency's threshold; `member` is always stored and the
 phone hides it when it does not show membership. A missing view, or one
 recorded as `invalidSource`, shows the roster's unavailable state; check-in
 never depends on it.
+
+`eventAttendees.partySize` is optional (1 to 20): the places a guest-list row
+holds at the door. Only Host roster import and walk-ins write it; a missing value
+reads as 1, and Catch bookings hold one place each. Guest ticket codes are not
+stored: `getEventTicketCode` signs the attendee row id with the event-assistance
+key ring and `resolveEventTicketCode` verifies it, so cancelling the row revokes
+the code. `eventStaffPresence/{eventId}_{uid}` holds `displayName`, `role`
+(`manager` or `operator`), `lastSeenAt` and `expiresAt`; a row is current only
+while `expiresAt` is in the future.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.

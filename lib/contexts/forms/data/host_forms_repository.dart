@@ -307,6 +307,10 @@ class HostFormsRepository {
   ) async {
     final page = await responses?.list(request);
     if (page != null) return page;
+    if (request.offeredOnly) {
+      // The callable inbox does not know offers; never show its list here.
+      throw StateError('Offers show once the response inbox is ready.');
+    }
     return _call(
       name: 'listOrganizerFormResponses',
       payload: ListOrganizerFormResponsesCallableRequest(

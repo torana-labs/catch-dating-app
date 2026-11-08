@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/event_success_live_action_payload.schema.json",
   "title": "EventSuccessLiveActionCallablePayload",
-  "description": "Revision-fenced live control action accepted by controlEventSuccessLive.",
+  "description": "Revision-fenced live control action accepted by controlEventSuccessLive. pauseActiveStep and resumeActiveStep freeze and restart the active step's clock; repeating either is a replay.",
   "x-callable-aliases": ["controlEventSuccessLive"],
   "type": "object",
   "additionalProperties": false,
@@ -21,7 +21,9 @@
         "startRevealCountdown",
         "cancelRevealCountdown",
         "publishReveal",
-        "complete"
+        "complete",
+        "pauseActiveStep",
+        "resumeActiveStep"
       ]
     },
     "activeStepIndex": {

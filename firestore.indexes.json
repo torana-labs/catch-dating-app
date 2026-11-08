@@ -6517,6 +6517,68 @@
       ]
     },
     {
+      "collectionGroup": "hostResponseSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "offer.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "submittedAtMillis",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostResponseSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "reviewStatus",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostResponseSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "offer.status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "hostGroupSummaries",
       "queryScope": "COLLECTION",
       "fields": [
@@ -7137,6 +7199,48 @@
         {
           "fieldPath": "waitingSince",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programGuests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programTravelLegs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transportTrips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "vendorId",
+          "order": "ASCENDING"
         }
       ]
     }

@@ -65,3 +65,18 @@ test("legacy retries coalesce and changed packets remain distinct", () => {
         a: 1}})!.requestHash,
     reordered.requestHash);
 });
+
+test("phone and programme join the hash only when present", () => {
+  const legacy = prepareHostSalesIntent(input)!;
+  assert.equal(prepareHostSalesIntent({...input, phone: null,
+    programme: null, programmeApplication: null})!.requestHash,
+  legacy.requestHash);
+  const weddings = prepareHostSalesIntent({...input, email: null,
+    phone: "+919820144718", programme: "weddings",
+    programmeApplication: {planningCompany: "Example Weddings"}})!;
+  assert.notEqual(weddings.requestHash, legacy.requestHash);
+  assert.equal(weddings.phone, "+919820144718");
+  assert.equal(weddings.programme, "weddings");
+  assert.deepEqual(weddings.programmeApplication,
+    {planningCompany: "Example Weddings"});
+});

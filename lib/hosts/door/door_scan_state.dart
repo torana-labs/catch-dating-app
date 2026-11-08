@@ -11,6 +11,15 @@ enum DoorScanNotice {
 
   /// The event's own door or venue code, which guests scan, not the host.
   eventCode,
+
+  /// A ticket the guest's booking no longer holds.
+  cancelled,
+
+  /// A ticket for a guest who is invited or waiting, not booked.
+  notBooked,
+
+  /// The ticket could not be read just now.
+  unavailable,
 }
 
 /// Everything the scanner shows, as plain values.

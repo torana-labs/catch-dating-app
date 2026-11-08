@@ -1,6 +1,10 @@
+import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_state.dart';
@@ -13,7 +17,18 @@ import 'package:go_router/go_router.dart';
 
 /// The planner pages that ride on the programme workspace route as a
 /// `view` query, so they need no route of their own.
-enum HostProgrammePage { function, household, travel, hotel, pickup, vendor }
+enum HostProgrammePage {
+  function,
+  household,
+  travel,
+  hotel,
+  pickup,
+  vendor,
+  messages,
+  message,
+  liveBoard,
+  branding,
+}
 
 /// The workspace route's screen for [uri]: the workspace itself, or the
 /// page its `view` query names.
@@ -47,6 +62,19 @@ Widget hostProgrammeScreenForUri(String programId, Uri uri) {
       programId: programId,
       kind: HostProgrammeSetupKind.vendor,
       id: id,
+    ),
+    HostProgrammePage.messages => HostProgrammeMessagesScreen(
+      programId: programId,
+    ),
+    HostProgrammePage.message => HostProgrammeMessageScreen(
+      programId: programId,
+      momentId: id,
+    ),
+    HostProgrammePage.liveBoard => HostProgrammeLiveBoardScreen(
+      programId: programId,
+    ),
+    HostProgrammePage.branding => HostProgrammeBrandingScreen(
+      programId: programId,
     ),
     _ => HostProgrammeScreen(programId: programId),
   };

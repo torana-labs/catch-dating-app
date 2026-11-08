@@ -178,6 +178,14 @@ class HostShellBackend {
     final eventId = request['eventId'] as String?;
     return switch (name) {
       'setEventAttendeeAttendance' => _setAttendance(request),
+      // The door says its host is on it on open and every 45 s.
+      'heartbeatEventStaffPresence' => {
+        'eventId': eventId,
+        'lastSeenAtMillis': now,
+        'expiresAtMillis': now + const Duration(minutes: 2).inMilliseconds,
+      },
+      // A journey's ticket code is the attendee id it names.
+      'resolveEventTicketCode' => _resolveTicket(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The Organiser tab and Payments read the Catch bills: none yet.
@@ -196,6 +204,7 @@ class HostShellBackend {
         'refreshAfterMillis': now + const Duration(minutes: 5).inMilliseconds,
       },
       'createPrivateEventSetup' => _createPrivateEvent(request),
+      'createPrivateEventSeries' => _createPrivateEventSeries(request),
       'updatePrivateEventDetails' => _updatePrivateEventDetails(request),
       'listPrivateEventSetups' => {
         'events': [
@@ -280,6 +289,26 @@ class HostShellBackend {
         'threads': const <Object?>[],
         'nextCursor': null,
       },
+      // Plan step edits, pause/resume, close-out and the crawl stop change
+      // answer as applied; their listeners keep what the journey seeded.
+      'saveEventPlanStep' => {
+        'eventId': eventId,
+        'liveControlRevision': 1,
+        'stepCount': 1,
+        'replayed': false,
+      },
+      'controlEventSuccessLive' => {'replayed': false, 'revision': 1},
+      'setEventCloseOut' => {
+        'eventId': eventId,
+        'revision': 1,
+        'replayed': false,
+      },
+      'changeEventCrawlStop' => {
+        'eventId': eventId,
+        'liveControlRevision': 1,
+        'replayed': false,
+        'recipientCount': 0,
+      },
       _ => null,
     };
   }
@@ -332,8 +361,53 @@ class HostShellBackend {
     };
   }
 
+  Future<Map<String, Object?>> _resolveTicket(
+    Map<String, Object?> request,
+  ) async {
+    final attendeeId = request['ticketCode']! as String;
+    final row =
+        (await firestore.collection('eventAttendees').doc(attendeeId).get())
+            .data()!;
+    return {
+      'eventId': row['eventId'],
+      'attendeeId': attendeeId,
+      'displayName': row['displayName'],
+      'status': row['status'],
+      'attendanceRevision': row['attendanceRevision'] ?? 0,
+      'partySize': row['partySize'] ?? 1,
+    };
+  }
+
   /// Stores the setup and, as the backend's setup view trigger does, writes
   /// the event's `hostEventSetupViews` document the steps listen to.
+  /// A weekly series, as `createPrivateEventSeries` makes it: one private
+  /// event per week from the template's date, each created like a single
+  /// event.
+  Future<Map<String, Object?>> _createPrivateEventSeries(
+    Map<String, Object?> request,
+  ) async {
+    final template = Map<String, Object?>.from(request['template']! as Map);
+    final first = DateTime.parse('${template['localDate']}T00:00:00Z');
+    final cadence = Map<String, Object?>.from(request['cadence']! as Map);
+    final eventIds = <String>[];
+    for (var index = 0; index < (cadence['count']! as int); index++) {
+      final date = first.add(Duration(days: 7 * index));
+      final created = await _createPrivateEvent({
+        'organizerId': request['organizerId'],
+        'basics': {
+          ...template,
+          'localDate': date.toIso8601String().substring(0, 10),
+        },
+      });
+      eventIds.add(created['eventId']! as String);
+    }
+    return {
+      'seriesId': 'host-journey-series',
+      'eventIds': eventIds,
+      'replayed': false,
+    };
+  }
+
   Future<Map<String, Object?>> _createPrivateEvent(
     Map<String, Object?> request,
   ) async {

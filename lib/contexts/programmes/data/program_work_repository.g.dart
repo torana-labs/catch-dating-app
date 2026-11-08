@@ -751,6 +751,192 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
   String toString() => r'programFunctionDoorViewWithSnapshotProvider';
 }
 
+/// The departures desk, from the live read or a bounded offline snapshot.
+
+@ProviderFor(programDeparturesRosterView)
+final programDeparturesRosterViewProvider =
+    ProgramDeparturesRosterViewFamily._();
+
+/// The departures desk, from the live read or a bounded offline snapshot.
+
+final class ProgramDeparturesRosterViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramDeparturesRoster>>,
+          ProgramReadView<ProgramDeparturesRoster>,
+          FutureOr<ProgramReadView<ProgramDeparturesRoster>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramDeparturesRoster>>,
+        $FutureProvider<ProgramReadView<ProgramDeparturesRoster>> {
+  /// The departures desk, from the live read or a bounded offline snapshot.
+  ProgramDeparturesRosterViewProvider._({
+    required ProgramDeparturesRosterViewFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programDeparturesRosterViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programDeparturesRosterViewHash();
+
+  @override
+  String toString() {
+    return r'programDeparturesRosterViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramDeparturesRoster>>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramDeparturesRoster>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programDeparturesRosterView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramDeparturesRosterViewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programDeparturesRosterViewHash() =>
+    r'0a5f9d9cd14f063a15521d76776f468b379ba115';
+
+/// The departures desk, from the live read or a bounded offline snapshot.
+
+final class ProgramDeparturesRosterViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramDeparturesRoster>>,
+          (String, String)
+        > {
+  ProgramDeparturesRosterViewFamily._()
+    : super(
+        retry: null,
+        name: r'programDeparturesRosterViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The departures desk, from the live read or a bounded offline snapshot.
+
+  ProgramDeparturesRosterViewProvider call(String programId, String hotelId) =>
+      ProgramDeparturesRosterViewProvider._(
+        argument: (programId, hotelId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programDeparturesRosterViewProvider';
+}
+
+/// The live board, from the live read or a bounded offline snapshot.
+
+@ProviderFor(programLiveBoardView)
+final programLiveBoardViewProvider = ProgramLiveBoardViewFamily._();
+
+/// The live board, from the live read or a bounded offline snapshot.
+
+final class ProgramLiveBoardViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramLiveBoard>>,
+          ProgramReadView<ProgramLiveBoard>,
+          FutureOr<ProgramReadView<ProgramLiveBoard>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramLiveBoard>>,
+        $FutureProvider<ProgramReadView<ProgramLiveBoard>> {
+  /// The live board, from the live read or a bounded offline snapshot.
+  ProgramLiveBoardViewProvider._({
+    required ProgramLiveBoardViewFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programLiveBoardViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programLiveBoardViewHash();
+
+  @override
+  String toString() {
+    return r'programLiveBoardViewProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramLiveBoard>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramLiveBoard>> create(Ref ref) {
+    final argument = this.argument as String;
+    return programLiveBoardView(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramLiveBoardViewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programLiveBoardViewHash() =>
+    r'54efdc4c0a01e01ca505dca9629f86908b73c04f';
+
+/// The live board, from the live read or a bounded offline snapshot.
+
+final class ProgramLiveBoardViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramLiveBoard>>,
+          String
+        > {
+  ProgramLiveBoardViewFamily._()
+    : super(
+        retry: null,
+        name: r'programLiveBoardViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The live board, from the live read or a bounded offline snapshot.
+
+  ProgramLiveBoardViewProvider call(String programId) =>
+      ProgramLiveBoardViewProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programLiveBoardViewProvider';
+}
+
 /// Lead-facing report and feed providers: attendance rollups, stakeholder
 /// counts, the duty-scoped attention feed and the organizer's vendor
 /// directory. Split into a part file so the work repository stays under the

@@ -155,6 +155,21 @@ export function projectPrivateEventSetupSummary(params: {
       event.meetingPoint === undefined && event.sourceVenueId === undefined,
     publicationReadiness: readinessWhenFuture(event as EventDocument,
       organizer, startTimeMillis),
+    eventSettings: projectEventSettings(event),
+  };
+}
+
+/** Event-level guest settings with their read-time defaults applied. */
+export function projectEventSettings(
+  event: Record<string, unknown>
+): NonNullable<PrivateEventSetupSummary["eventSettings"]> {
+  return {
+    listing: event.listing === "link" ? "link" : "listed",
+    showGuestList: event.showGuestList !== false,
+    priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens === true,
+    planVisibleToGuests: event.planVisibleToGuests !== false,
+    externalBooking: (event.externalBooking ?? null) as NonNullable<
+      PrivateEventSetupSummary["eventSettings"]>["externalBooking"],
   };
 }
 

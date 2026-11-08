@@ -89,6 +89,89 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// Adds, edits, removes or reorders one run-of-show step through
+  /// `saveEventPlanStep`, fenced on the plan's live-control revision. The
+  /// first edit of a plan still on its playbook sends [baseSteps], the
+  /// steps the host is looking at. A retry with the same [requestId]
+  /// replays.
+  Future<void> saveEventPlanStep({
+    required String eventId,
+    required String requestId,
+    required int expectedLiveControlRevision,
+    required EventSuccessPlanStepOp op,
+    EventSuccessPlanStep? step,
+    String? stepId,
+    int? atIndex,
+    List<String>? orderedStepIds,
+    List<EventSuccessPlanStep>? baseSteps,
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      await functions
+          .httpsCallable('saveEventPlanStep')
+          .call<Object?>(
+            SaveEventPlanStepCallableRequest(
+              eventId: eventId,
+              requestId: requestId,
+              expectedLiveControlRevision: expectedLiveControlRevision,
+              op: op.name,
+              step: step?.toCommandJson(),
+              stepId: stepId,
+              atIndex: atIndex,
+              orderedStepIds: orderedStepIds,
+              baseSteps: baseSteps
+                  ?.map((step) => step.toCommandJson())
+                  .toList(growable: false),
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'save run of show step',
+      resource: _plansPath,
+    ),
+  );
+
+  /// Changes one crawl stop on the night and, with a [message], tells
+  /// everyone booked, through `changeEventCrawlStop`, fenced on the plan's
+  /// live-control revision. A retry with the same [requestId] replays both.
+  Future<void> changeEventCrawlStop({
+    required String eventId,
+    required String requestId,
+    required int expectedLiveControlRevision,
+    required String stopId,
+    required String title,
+    required String? address,
+    required String? message,
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      await functions
+          .httpsCallable('changeEventCrawlStop')
+          .call<Object?>(
+            ChangeEventCrawlStopCallableRequest(
+              eventId: eventId,
+              requestId: requestId,
+              expectedLiveControlRevision: expectedLiveControlRevision,
+              stopId: stopId,
+              stop: {'title': title, 'address': address},
+              message: message,
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'change crawl stop',
+      resource: _plansPath,
+    ),
+  );
+
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
@@ -105,6 +188,45 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'update live event step',
+      resource: _plansPath,
+    ),
+  );
+
+  /// Freezes the active step's clock. Pausing a paused step replays.
+  Future<void> pauseActiveStep({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'pauseActiveStep',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'pause live event step',
+      resource: _plansPath,
+    ),
+  );
+
+  /// Restarts the active step's clock where it stopped. Resuming a running
+  /// step replays.
+  Future<void> resumeActiveStep({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'resumeActiveStep',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'resume live event step',
       resource: _plansPath,
     ),
   );

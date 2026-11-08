@@ -29,6 +29,7 @@ class CreatePlanScreen extends StatelessWidget {
     onBlank: handlers.onBlank,
     onEdit: handlers.onEditStep,
     onAdd: handlers.onAddStep,
+    onPlanVisible: handlers.onPlanVisible,
   );
 
   @override
