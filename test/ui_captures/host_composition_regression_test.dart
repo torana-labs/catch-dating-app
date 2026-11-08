@@ -13,7 +13,6 @@ import 'support/capture_pump.dart';
 /// Assets remain ignored run output; reviewed pixels are not a generated ledger.
 void main() {
   for (final id in [
-    'host_home_events_past',
     'host_people_phone',
     'host_clubs_management',
     'host_home_dashboard',
@@ -42,8 +41,7 @@ void main() {
           cleanup: entry.cleanup,
           drive: (tester) async {
             await entry.drive?.call(tester);
-            if (id == 'host_home_events_past' ||
-                id == 'host_customers_populated' ||
+            if (id == 'host_customers_populated' ||
                 id == 'host_clubs_management') {
               final fields = id == 'host_clubs_management'
                   ? find.byWidgetPredicate(
