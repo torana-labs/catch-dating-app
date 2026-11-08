@@ -9396,6 +9396,16 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_live_cards"
   },
+  "eventSuccessCompanionDoublesSlot": "{timeRange} · Court {court} · You and {partner} against {opponentA} and {opponentB}",
+  "@eventSuccessCompanionDoublesSlot": {"description": "A guest's doubles game: time, court, partner and opponents.", "placeholders": {"timeRange": {}, "court": {"type": "int"}, "partner": {}, "opponentA": {}, "opponentB": {}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.companion_parts"},
+  "eventSuccessCompanionDoublesOpponent": "An opponent",
+  "@eventSuccessCompanionDoublesOpponent": {"description": "Fallback name for a doubles opponent whose profile is not loaded.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.companion_parts"},
+  "eventSuccessCompanionBenchSlot": "{timeRange} · Sitting out this round · mix in the common area",
+  "@eventSuccessCompanionBenchSlot": {"description": "A guest's doubles round on the bench.", "placeholders": {"timeRange": {}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.companion_parts"},
+  "eventSuccessCompanionPromptSkip": "Skip",
+  "@eventSuccessCompanionPromptSkip": {"description": "Button that puts a live prompt away for this step.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.companion_parts"},
+  "eventSuccessCompanionPromptSkipNote": "You can skip any prompt.",
+  "@eventSuccessCompanionPromptSkipNote": {"description": "Note beside the Skip button on every live prompt.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.companion_parts"},
   "eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername": "{timeRange} · {peerName}",
   "@eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).",
