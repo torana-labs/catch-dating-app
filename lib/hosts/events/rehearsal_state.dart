@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
-import 'package:catch_dating_app/hosts/events/parts/host_event_step_row.dart';
 import 'package:flutter/foundation.dart';
 
 /// Where the rehearsal screen is: reading, practising, ended, or unable to

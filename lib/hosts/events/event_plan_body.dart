@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
-import 'package:catch_dating_app/hosts/events/parts/host_event_step_row.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

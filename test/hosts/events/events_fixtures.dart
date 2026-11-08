@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_basics.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
+import 'package:catch_dating_app/contexts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -14,7 +15,6 @@ import 'package:catch_dating_app/hosts/events/event_publish_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
-import 'package:catch_dating_app/hosts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 

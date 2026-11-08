@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
-import 'package:catch_dating_app/hosts/events/parts/host_event_step_row.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
