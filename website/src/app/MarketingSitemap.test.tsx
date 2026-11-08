@@ -34,10 +34,10 @@ describe("consolidated public sitemap", () => {
     expect(screen.getByText(/submission does not book a call or grant access/)).toBeTruthy();
     expect(pageMetaForHostPath("/host/apply/")?.canonicalPath).toBe("/host/apply/");
   });
-  it("routes Catch for weddings and its application under one page key, each noindex until the application can be sent", () => {
+  it("routes Catch for weddings and its application under one page key; the landing is indexed, the application is not", () => {
     for (const pathname of ["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"]) expect(getPageKey(pathname)).toBe("weddings");
     expect(pageMeta.weddings.canonicalPath).toBe("/weddings/");
-    expect(pageMeta.weddings.robots).toBe("noindex, follow");
+    expect(pageMeta.weddings.robots).toBeUndefined();
     expect(pageMetaForWeddingsPath("/weddings/apply")?.canonicalPath).toBe("/weddings/apply/");
     expect(pageMetaForWeddingsPath("/weddings/apply/")?.robots).toBe("noindex, follow");
     expect(pageMetaForWeddingsPath("/weddings/")).toBeNull();

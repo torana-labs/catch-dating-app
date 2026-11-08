@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
@@ -26,7 +25,7 @@ class HostResponsesBody extends StatelessWidget {
   /// The clock "2 days ago" reads from.
   final DateTime now;
   final ValueChanged<HostResponsesView> onView;
-  final ValueChanged<HostApplicationReviewStatus> onFilter;
+  final ValueChanged<HostResponsesFilter> onFilter;
   final ValueChanged<HostFormInboxEntry> onOpen;
   final VoidCallback onLoadMore;
 
@@ -62,16 +61,20 @@ class HostResponsesBody extends StatelessWidget {
           _HostResponsesResults(state: state)
         else ...[
           if (filter != null)
-            CatchPageTabBar<HostApplicationReviewStatus>.segmented(
+            CatchPageTabBar<HostResponsesFilter>.segmented(
               selected: filter,
               size: CatchPageTabBarSize.sm,
               fill: false,
               label: l10n.hostFormsResponsesShow,
               options: [
-                for (final status in hostResponsesFilters)
+                for (final option in HostResponsesFilter.values)
                   CatchOption(
-                    value: status,
-                    label: hostFormReviewText(l10n, status),
+                    value: option,
+                    label: switch (option.reviewStatus) {
+                      final status? => hostFormReviewText(l10n, status),
+                      null => l10n.hostFormsOfferStatusOffered,
+                    },
+                    count: state.counts[option],
                   ),
               ],
               onChanged: onFilter,

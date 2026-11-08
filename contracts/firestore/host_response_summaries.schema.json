@@ -50,6 +50,53 @@
     "version": {
       "const": 1,
       "x-catch-ownership": "server-only"
+    },
+    "reviewStatus": {
+      "description": "Optional query copy of row.application.reviewStatus for the per-status filters and counts. Absent (read as none) on older views and on responses without an application.",
+      "$ref": "../callable_responses/list_organizer_applications_response.schema.json#/definitions/application/properties/reviewStatus",
+      "x-catch-ownership": "server-only"
+    },
+    "offer": {
+      "description": "Optional derived state of the latest non-draft event offer made from this entry's application (organizerEventOffers.applicationId), recomputed when the offer changes. Absent or null reads as no offer.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "eventId",
+            "offeredAtMillis"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "offered",
+                "withdrawn",
+                "expired"
+              ]
+            },
+            "eventId": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "offeredAtMillis": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
     }
   }
 }

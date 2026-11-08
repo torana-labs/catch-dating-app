@@ -1040,6 +1040,8 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+export {onHostResponseSummaryOfferChanged} from
+  "./hostReadModels/responseOfferTriggers";
 export {onHostGuestViewEventChanged, onHostGuestViewPlanChanged,
   onHostGuestViewAttendeeChanged, onHostGuestViewGuestChanged,
   onHostGuestViewMembershipChanged, onHostGuestViewOrganizerChanged,

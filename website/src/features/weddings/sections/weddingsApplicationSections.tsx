@@ -129,6 +129,7 @@ function StepTwo({application}: {application: WeddingsApplicationController}) {
       <CatchButton fill label={two.send} onPressed={application.canSend ? () => void application.send() : null} status={application.sending ? "loading" : "idle"} />
       {application.error ? <CatchText role="alert" tone="danger" variant="body-small">{application.error}</CatchText> : null}
       <CatchText tone="secondary" variant="body-small">{two.reply}</CatchText>
+      <CatchText tone="secondary" variant="body-small">{two.consent}</CatchText>
     </CatchStack>
   );
 }

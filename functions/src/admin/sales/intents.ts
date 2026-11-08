@@ -202,6 +202,10 @@ export async function listSalesInboundIntents(
       organizerId: value.organizerId,
       evidenceStatus: "self_reported",
       hostApplication: value.hostApplication ?? null,
+      // Optional on the intent; absent reads as an events Host enquiry.
+      programme: value.programme ?? null,
+      programmeApplication: value.programmeApplication ?? null,
+      hasPhone: typeof value.phone === "string",
     };
   });
   const last = snap.docs[limit - 1];

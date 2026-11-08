@@ -105,6 +105,13 @@ test("claims, enquiries, access and imported events project to their own types",
     fullName: "Harbor Social Club", city: "mumbai", createdAt: "2026-10-30T10:00:00.000Z"});
   assert.equal(enquiry?.type, "enquiry");
   assert.equal(enquiry?.cameFrom, "Host website");
+  const weddings = projectInboxSource("salesInboundIntent", "intent-w", {source: "website",
+    status: "needs_identity_review", fullName: "Meher Shah", city: "udaipur", programme: "weddings",
+    programmeApplication: {planningCompany: "Meher Shah Weddings", weddingDate: "2026-12-12"},
+    createdAt: "2026-10-30T10:00:00.000Z"});
+  assert.equal(weddings?.cameFrom, "Weddings website");
+  assert.equal(weddings?.subtitle, "Weddings pilot: Meher Shah Weddings, wedding from 2026-12-12");
+  assert.equal(weddings?.journey[0]?.title, "Weddings pilot application from the website");
   const access = projectInboxSource("accessApplication", "uid-9", {status: "invited", role: "host", city: "in-mh-mumbai",
     submissionCount: 1, submittedAt: "2026-10-29T10:00:00.000Z", reviewedAt: "2026-10-30T10:00:00.000Z", reviewerUid: "dev"},
   {personName: "Meher"});
