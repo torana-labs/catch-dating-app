@@ -1,9 +1,11 @@
 name: Deploy backend
 
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
-# and Storage rules). Dev deploys on every backend-relevant merge; prod then
-# deploys the same commit automatically once dev succeeds (the prod
-# environment has no required reviewer since 30 Oct 2026). Each deploy
+# and Storage rules). In sprint mode nothing deploys on merge: the owner's rule
+# is one full backend deploy a week, so the window run (dispatch, full) ships
+# everything merged since the last one, dev first, then prod automatically
+# once dev succeeds (the prod environment has no required reviewer since
+# 30 Oct 2026). Each deploy
 # rebuilds only the Functions codebases whose code, parameters or secrets
 # changed; the Firebase CLI skips the rest. A run that would update more than
 # 200 Functions stops before changing anything until one is run with
@@ -11,28 +13,9 @@ name: Deploy backend
 # staging, optionally as a full deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - functions/**
-      - operations/**
-      - contracts/**
-      - tool/contracts/generate_schema_contracts.mjs
-      - tool/contracts/lib/schema_specs.mjs
-      - tool/contracts/schema_spec_exceptions.json
-      - tool/contracts/schema_spec_order.json
-      - firestore.rules
-      - firestore.indexes.json
-      - storage.rules
-      - firebase.json
-      - .firebaserc
-      - tool/admin/generate_admin_action_catalog.mjs
-      - tool/lib/admin_registries.mjs
-      - tool/deploy_firebase_targets.sh
-      - tool/firebase_with_env.sh
-      - tool/firebase/**
-      - .github/workflows/backend-deploy.yml
-      - .github/workflows/_backend-deploy.yml
+  # Sprint mode (8 Nov 2026): a merge to main no longer deploys. The backend
+  # ships in the one weekly window run (dispatch with full=true on the
+  # window day; #1552 schedules it). Restore the push trigger with CI.
   workflow_dispatch:
     inputs:
       environment:
