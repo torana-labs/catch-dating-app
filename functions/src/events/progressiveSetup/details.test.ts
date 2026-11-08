@@ -387,3 +387,10 @@ test("private guest notes persist and clear through revision-checked saves",
     assert.deepEqual(store.rows.get("events/event1")?.eventFormat, cleared);
     assert.equal(store.rows.get("events/event1")?.publicationState, "private");
   });
+
+test("the plan's guest visibility saves with the details", async () => {
+  const {store, command, save} = await setup();
+  await save({...command, requestId: "details-plan",
+    details: {planVisibleToGuests: false}});
+  assert.equal(store.rows.get("events/event1")!.planVisibleToGuests, false);
+});

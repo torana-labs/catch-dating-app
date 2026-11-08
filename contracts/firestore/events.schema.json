@@ -500,6 +500,11 @@
       "type": "boolean",
       "description": "Whether the price stays hidden until booking opens. Missing reads as false.",
       "x-catch-ownership": "callable-owned"
+    },
+    "planVisibleToGuests": {
+      "type": "boolean",
+      "description": "Whether booked guests see the plan for the night (eventSuccessPlans) on their phones. Missing reads as true, so events from before the choice keep their live guide; false shows it to the event's managers only.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [

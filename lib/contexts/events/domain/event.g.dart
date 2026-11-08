@@ -86,6 +86,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   showGuestList: json['showGuestList'] as bool? ?? true,
   priceHiddenUntilBookingOpens:
       json['priceHiddenUntilBookingOpens'] as bool? ?? false,
+  planVisibleToGuests: json['planVisibleToGuests'] as bool? ?? true,
   constraints: json['constraints'] == null
       ? const EventConstraints()
       : EventConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -159,6 +160,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'listing': _$EventListingEnumMap[instance.listing]!,
   'showGuestList': instance.showGuestList,
   'priceHiddenUntilBookingOpens': instance.priceHiddenUntilBookingOpens,
+  'planVisibleToGuests': instance.planVisibleToGuests,
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'eventOrigin': ?instance.eventOrigin?.toJson(),

@@ -38,9 +38,13 @@ class PrivateEventDetailsPatch {
     this.admissionTerms,
     this.distanceKm,
     this.pace,
+    this.planVisibleToGuests,
   });
 
   final List<EventItineraryItem>? itinerary;
+
+  /// Whether booked guests see the plan for the night; null leaves it.
+  final bool? planVisibleToGuests;
   final List<UploadedPhoto>? eventPhotos;
   final String? description;
   final PrivateEventAdmissionTerms? admissionTerms;
@@ -61,7 +65,8 @@ class PrivateEventDetailsPatch {
         eventPhotos == null &&
         admissionTerms == null &&
         distanceKm == null &&
-        pace == null) {
+        pace == null &&
+        planVisibleToGuests == null) {
       return false;
     }
     if (itinerary != null && !isValidEventItinerary(itinerary!)) return false;
@@ -160,6 +165,7 @@ class PrivateEventDetailsPatch {
     if (admissionTerms != null) 'admissionTerms': admissionTerms!.toJson(),
     if (distanceKm != null) 'distanceKm': distanceKm,
     if (pace != null) 'pace': pace,
+    if (planVisibleToGuests != null) 'planVisibleToGuests': planVisibleToGuests,
     if (durationMinutes != null)
       'durationMinutes': durationMinutes!.toJson((value) => value),
     if (venue != null) 'venue': venue!.toJson((value) => {'name': value}),
@@ -180,8 +186,13 @@ class PrivateEventDetailsPatch {
       'admissionTerms',
       'distanceKm',
       'pace',
+      'planVisibleToGuests',
     }).isNotEmpty) {
       throw const FormatException('Unknown private event detail');
+    }
+    if (json['planVisibleToGuests'] != null &&
+        json['planVisibleToGuests'] is! bool) {
+      throw const FormatException('Invalid plan visibility');
     }
     EventSetupValue<T> parse<T>(
       Object? raw,
@@ -232,6 +243,7 @@ class PrivateEventDetailsPatch {
                 .toList(),
       distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       pace: json['pace'] as String?,
+      planVisibleToGuests: json['planVisibleToGuests'] as bool?,
       admissionTerms: json['admissionTerms'] == null
           ? null
           : PrivateEventAdmissionTerms.fromResponse(json['admissionTerms']),

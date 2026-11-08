@@ -244,6 +244,10 @@
           "items": {
             "$ref": "../embedded/uploaded_photo.schema.json"
           }
+        },
+        "planVisibleToGuests": {
+          "type": "boolean",
+          "description": "Whether booked guests see the plan for the night."
         }
       },
       "minProperties": 1

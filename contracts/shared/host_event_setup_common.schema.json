@@ -80,14 +80,15 @@
       }
     },
     "eventSettings": {
-      "description": "Who can see and book the event and how guests experience it, with each field's read-time default applied (listing listed, showGuestList true, priceHiddenUntilBookingOpens false).",
+      "description": "Who can see and book the event and how guests experience it, with each field's read-time default applied (listing listed, showGuestList true, priceHiddenUntilBookingOpens false, planVisibleToGuests true).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["listing", "showGuestList", "priceHiddenUntilBookingOpens"],
+      "required": ["listing", "showGuestList", "priceHiddenUntilBookingOpens", "planVisibleToGuests"],
       "properties": {
         "listing": {"type": "string", "enum": ["listed", "link"]},
         "showGuestList": {"type": "boolean"},
-        "priceHiddenUntilBookingOpens": {"type": "boolean"}
+        "priceHiddenUntilBookingOpens": {"type": "boolean"},
+        "planVisibleToGuests": {"type": "boolean"}
       }
     },
     "publicationReadinessWhenFuture": {

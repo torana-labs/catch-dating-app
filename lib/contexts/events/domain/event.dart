@@ -116,6 +116,7 @@ abstract class Event with _$Event {
     EventListing listing,
     @Default(true) bool showGuestList,
     @Default(false) bool priceHiddenUntilBookingOpens,
+    @Default(true) bool planVisibleToGuests,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,

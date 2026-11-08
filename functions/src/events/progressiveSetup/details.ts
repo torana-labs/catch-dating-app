@@ -166,6 +166,9 @@ export async function updatePrivateEventDetails(params: {
       set("distanceKm", command.details.distanceKm);
     }
     if (command.details.pace !== undefined) set("pace", command.details.pace);
+    if (command.details.planVisibleToGuests !== undefined) {
+      set("planVisibleToGuests", command.details.planVisibleToGuests);
+    }
     if (command.details.itinerary !== undefined) {
       set("itinerary", normalizeEventItinerary(command.details.itinerary));
     }

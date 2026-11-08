@@ -167,6 +167,7 @@ export function projectEventSettings(
     listing: event.listing === "link" ? "link" : "listed",
     showGuestList: event.showGuestList !== false,
     priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens === true,
+    planVisibleToGuests: event.planVisibleToGuests !== false,
   };
 }
 

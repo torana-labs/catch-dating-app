@@ -99,7 +99,7 @@ class CreateFlowState {
     this.published = false,
     this.waitlist = true,
     this.approveEach = false,
-    this.planVisible = false,
+    this.planVisible = true,
     this.repeatWeekly = false,
     this.seriesEventIds = const <String>[],
     this.error,

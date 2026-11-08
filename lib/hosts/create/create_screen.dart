@@ -242,6 +242,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           controller.edit((d) => d.copyWith(admissionPreset: value.preset)),
       onWaitlist: controller.setWaitlist,
       onApproveEach: controller.setApproveEach,
+      onPlanVisible: controller.setPlanVisible,
       onTemplate: () => controller.useTemplate(
         createPlanTemplate(
           context.l10n,

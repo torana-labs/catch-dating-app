@@ -110,5 +110,6 @@
   "discoveryMaxAge": 45,
   "listing": "link",
   "showGuestList": false,
-  "priceHiddenUntilBookingOpens": true
+  "priceHiddenUntilBookingOpens": true,
+  "planVisibleToGuests": false
 }

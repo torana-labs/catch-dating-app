@@ -492,6 +492,11 @@ const SPECS = [
           "default": "false"
         },
         {
+          "name": "planVisibleToGuests",
+          "dartType": "bool",
+          "default": "true"
+        },
+        {
           "name": "constraints",
           "dartType": "EventConstraints",
           "default": "EventConstraints()"

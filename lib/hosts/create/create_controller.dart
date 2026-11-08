@@ -199,6 +199,8 @@ class CreateController extends _$CreateController {
 
   void setApproveEach(bool on) => state = state.copyWith(approveEach: on);
 
+  void setPlanVisible(bool on) => state = state.copyWith(planVisible: on);
+
   void goTo(CreateStep step) {
     if (state.working || step == CreateStep.share) return;
     state = state.copyWith(step: step, problems: const {}, clearError: true);
@@ -493,6 +495,7 @@ class CreateController extends _$CreateController {
         meetingLocation: patch.meetingLocation,
         itinerary: patch.itinerary,
         admissionTerms: patch.admissionTerms,
+        planVisibleToGuests: patch.planVisibleToGuests,
       );
       if (!patch.isValid) return;
     }
@@ -572,11 +575,12 @@ class CreateController extends _$CreateController {
   Future<void> _publish() async {
     final eventId = state.eventId;
     if (eventId == null) return;
-    if (state.draft.itinerary.isNotEmpty) {
-      await _saveDetails(
-        PrivateEventDetailsPatch(itinerary: state.draft.itinerary),
-      );
-    }
+    await _saveDetails(
+      PrivateEventDetailsPatch(
+        itinerary: state.draft.itinerary.isEmpty ? null : state.draft.itinerary,
+        planVisibleToGuests: state.planVisible,
+      ),
+    );
     var current = await _untilPublication(
       eventId,
       (s) => (s.canChange && s.event != null) || s.error != null,

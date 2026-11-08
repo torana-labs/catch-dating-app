@@ -172,6 +172,7 @@ class PrivateEventSettings {
     this.listing = 'listed',
     this.showGuestList = true,
     this.priceHiddenUntilBookingOpens = false,
+    this.planVisibleToGuests = true,
   });
 
   /// `listed` (on the organizer's page, Explore and search) or `link` (only
@@ -179,6 +180,9 @@ class PrivateEventSettings {
   final String listing;
   final bool showGuestList;
   final bool priceHiddenUntilBookingOpens;
+
+  /// Whether booked guests see the plan for the night.
+  final bool planVisibleToGuests;
 
   bool get linkOnly => listing == 'link';
 
@@ -189,15 +193,18 @@ class PrivateEventSettings {
     final listing = data['listing'];
     final showGuestList = data['showGuestList'];
     final priceHidden = data['priceHiddenUntilBookingOpens'];
+    final planVisible = data['planVisibleToGuests'] ?? true;
     if (!const {'listed', 'link'}.contains(listing) ||
         showGuestList is! bool ||
-        priceHidden is! bool) {
+        priceHidden is! bool ||
+        planVisible is! bool) {
       throw const FormatException('Invalid event settings');
     }
     return PrivateEventSettings(
       listing: listing as String,
       showGuestList: showGuestList,
       priceHiddenUntilBookingOpens: priceHidden,
+      planVisibleToGuests: planVisible,
     );
   }
 }
