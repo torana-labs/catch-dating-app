@@ -4682,13 +4682,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_route_loading_screen"
   },
-  "hostsDraftPickerSheetMessageDeleteDraft": "Delete draft",
-  "@hostsDraftPickerSheetMessageDeleteDraft": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
   "hostsEventDetailsStepTitleEventName": "Event name",
   "@hostsEventDetailsStepTitleEventName": {
     "description": "Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).",
@@ -11575,196 +11568,9 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
-  "hostsHostEventsListTextEvents": "Events",
-  "@hostsHostEventsListTextEvents": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
   "hostsHostEventsListLabelNewEvent": "Create event",
   "@hostsHostEventsListLabelNewEvent": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostsHostEventEntrySheetSectionContinueExisting": "Continue",
-  "@hostsHostEventEntrySheetSectionContinueExisting": {
-    "description": "Section label for resuming existing event work.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostsHostEventEntrySheetSectionStartNew": "Start new",
-  "@hostsHostEventEntrySheetSectionStartNew": {
-    "description": "Section label for beginning a new event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostsHostEventEntrySheetTitleContinueDraft": "Continue draft",
-  "@hostsHostEventEntrySheetTitleContinueDraft": {
-    "description": "Action title for resuming a saved event draft.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostsHostEventEntrySheetTitleRepeatLastEvent": "Repeat last event",
-  "@hostsHostEventEntrySheetTitleRepeatLastEvent": {
-    "description": "Action title for reusing the most recent eligible event setup.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostsHostEventEntrySheetBodySavedDraftCount": "{count, plural, =1{1 saved draft} other{{count} saved drafts}}",
-  "@hostsHostEventEntrySheetBodySavedDraftCount": {
-    "description": "Supporting copy showing how many event drafts are available.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "2"
-      }
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostsHostEventEntrySheetBodyReuseEventSetup": "Reuse the setup from {eventTitle} and choose a new date.",
-  "@hostsHostEventEntrySheetBodyReuseEventSetup": {
-    "description": "Supporting copy for the repeat-event action.",
-    "placeholders": {
-      "eventTitle": {
-        "type": "String",
-        "example": "Sunday Social"
-      }
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
-  },
-  "hostEventsUpcomingTab": "Upcoming",
-  "@hostEventsUpcomingTab": {
-    "description": "Peer view containing live and upcoming events.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list"
-  },
-  "hostEventsPastTab": "Past",
-  "@hostEventsPastTab": {
-    "description": "Peer view containing completed events.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list"
-  },
-  "hostEventsPastEmptyTitle": "No past events yet",
-  "@hostEventsPastEmptyTitle": {
-    "description": "Empty completed event inventory title.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list"
-  },
-  "hostEventsPastEmptyBody": "Completed events will appear here with their attendance history.",
-  "@hostEventsPastEmptyBody": {
-    "description": "Empty completed event inventory explanation.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list"
-  },
-  "hostEventsTodayDate": "Today · {date}",
-  "@hostEventsTodayDate": {
-    "description": "Day section heading for events starting today.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "hostEventsLiveSchedule": "Live · {schedule}",
-  "@hostEventsLiveSchedule": {
-    "description": "Live event timing and meeting location.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list",
-    "placeholders": {
-      "schedule": {
-        "type": "String"
-      }
-    }
-  },
-  "hostEventsAttended": "{count} attended",
-  "@hostEventsAttended": {
-    "description": "Actual attendance count for a completed event.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hostEventsRegisteredCapacity": "{count} of {capacity} registered",
-  "@hostEventsRegisteredCapacity": {
-    "description": "Registrations relative to event capacity, not attendance.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "capacity": {
-        "type": "int"
-      }
-    }
-  },
-  "hostEventsRegistered": "{count} registered",
-  "@hostEventsRegistered": {
-    "description": "Registration count when an event has no positive capacity.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_events_list",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hostEventsTimelineLoadMoreSchedule": "Load more events",
-  "@hostEventsTimelineLoadMoreSchedule": {
-    "description": "Loads the next cursor page of live or upcoming Host events.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostEventsTimelineLoadMoreHistory": "Load older events",
-  "@hostEventsTimelineLoadMoreHistory": {
-    "description": "Loads the next cursor page of completed Host events.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostEventsRowUnpublished": "Not published",
-  "@hostEventsRowUnpublished": {
-    "description": "Row status for an organizer event that finished setup but is not published to the platform.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostEventsRowSetupPending": "Setup in progress",
-  "@hostEventsRowSetupPending": {
-    "description": "Row status for an organizer event still being configured.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostEventsRowCancelled": "Cancelled",
-  "@hostEventsRowCancelled": {
-    "description": "Row status for a cancelled event shown inside the shared events history.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
@@ -14986,37 +14792,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.calendar.calendar_screen_state"
-  },
-  "hostsHostHomeScreenStateVisiblecopyRepeatLast": "Repeat last",
-  "@hostsHostHomeScreenStateVisiblecopyRepeatLast": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
-  "hostsHostHomeScreenStateVisiblecopyRepeatLabel": "Repeat ‘{label}’",
-  "@hostsHostHomeScreenStateVisiblecopyRepeatLabel": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).",
-    "placeholders": {
-      "label": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
-  "hostsHostHomeScreenStateEmptytitleNoUpcomingEvents": "No upcoming events",
-  "@hostsHostHomeScreenStateEmptytitleNoUpcomingEvents": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyTitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
-  "hostsHostHomeScreenStateEmptybodyCreateYourNextEvent": "Create your next event to start filling this list.",
-  "@hostsHostHomeScreenStateEmptybodyCreateYourNextEvent": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyBody).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
   },
   "hostsHostHomeScreenStateTitleReviewWaitlist": "Review waitlist",
   "@hostsHostHomeScreenStateTitleReviewWaitlist": {
@@ -19181,37 +18956,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "public_profile.presentation.public_profile_screen_state"
-  },
-  "hostsDraftPickerSheetVisiblecopyDeleteDraft": "Delete draft?",
-  "@hostsDraftPickerSheetVisiblecopyDeleteDraft": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetLabelCancel": "Cancel",
-  "@hostsDraftPickerSheetLabelCancel": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetLabelDelete": "Delete",
-  "@hostsDraftPickerSheetLabelDelete": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetVisiblecopyThisWillPermanentlyDelete": "This will permanently delete \"{summary}\".",
-  "@hostsDraftPickerSheetVisiblecopyThisWillPermanentlyDelete": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).",
-    "placeholders": {
-      "summary": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
   },
   "swipesProfileCardContentTextHeightCm": "{height} cm",
   "@swipesProfileCardContentTextHeightCm": {
@@ -28157,8 +27901,6 @@
   "@programsArrivalsOutboxPending": {"description": "Program operations copy: programsArrivalsOutboxPending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
   "programsArrivalsOutboxReview": "{pending} pending, {review} need review before they can sync.",
   "@programsArrivalsOutboxReview": {"description": "Program operations copy: programsArrivalsOutboxReview.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"pending": {"type": "int"}, "review": {"type": "int"}}},
-  "hostDraftSavedAt": "Saved {time}",
-  "@hostDraftSavedAt": {"description": "Supporting saved time for an event draft.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "hostResponseFilterSelectionLimit": "Choose up to {count} options per question.",
   "@hostResponseFilterSelectionLimit": {"description": "Shown only when a response filter selection exceeds the API limit.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "eventMatchingTitle": "Use form answers for event matching",
@@ -28253,8 +27995,6 @@
   "@hostsOperationalRosterFieldCity": {"description": "Optional Host roster import city mapping field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import"},
   "hostsOperationalRosterIssueInvalidCity": "Row {row}: choose a supported city or leave it blank.",
   "@hostsOperationalRosterIssueInvalidCity": {"description": "Unsupported imported city is shown as a row-specific issue.", "placeholders": {"row": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import"},
-  "hostsPrivateEventEntryBody": "Save the basics, then add guests, registration and payments as needed.",
-  "@hostsPrivateEventEntryBody": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventCity": "City",
   "@hostsPrivateEventCity": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventTimezone": "Timezone",
@@ -28437,8 +28177,6 @@
   "@hostsEventDefaultsRetryUpdate": {"description": "Replays the same manager defaults update.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsPrivateEventRetryDefaultsRead": "Retry organizer defaults read",
   "@hostsPrivateEventRetryDefaultsRead": {"description": "Retries the manager-authorized defaults read before private event inheritance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
-  "hostsPrivateEventContinueSaved": "Continue saved event",
-  "@hostsPrivateEventContinueSaved": {"description": "Private event idempotent save and saved-event continuation copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsEventPreferencePending": "Previous settings save unresolved",
   "@hostsEventPreferencePending": {"description": "Pending private event preferences save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsEventPreferencePendingBody": "Catch may already have saved these settings. Retry the same request before changing them.",
@@ -28623,34 +28361,6 @@
   "@hostFormPaymentCatchSetupRequired": {"description": "Host form payment setup: hostFormPaymentCatchSetupRequired", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
   "hostFormPaymentCollectionUnavailable": "The selected collection method is not ready. Ask Catch to review your payment configuration.",
   "@hostFormPaymentCollectionUnavailable": {"description": "Selected form collection method is disabled or unsupported.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
-  "programsListTitle": "Programs",
-  "@programsListTitle": {"description": "Program workspace copy: programsListTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListCreateLabel": "New program",
-  "@programsListCreateLabel": {"description": "Program workspace copy: programsListCreateLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListRowActions": "Program actions",
-  "@programsListRowActions": {"description": "Program workspace copy: programsListRowActions.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListArchiveAction": "Archive program",
-  "@programsListArchiveAction": {"description": "Program workspace copy: programsListArchiveAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListUnarchiveAction": "Unarchive",
-  "@programsListUnarchiveAction": {"description": "Program workspace copy: programsListUnarchiveAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListArchiveConfirmTitle": "Archive {title}?",
-  "@programsListArchiveConfirmTitle": {"description": "Program workspace copy: programsListArchiveConfirmTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"title": {"type": "String"}}},
-  "programsListArchiveConfirmMessage": "The program keeps working read-only. Guest identity details are anonymized on {date} unless you unarchive first.",
-  "@programsListArchiveConfirmMessage": {"description": "Program workspace copy: programsListArchiveConfirmMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"date": {"type": "String"}}},
-  "programsListUnarchiveConfirmTitle": "Unarchive {title}?",
-  "@programsListUnarchiveConfirmTitle": {"description": "Program workspace copy: programsListUnarchiveConfirmTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"title": {"type": "String"}}},
-  "programsListUnarchiveConfirmMessage": "The program returns to its previous status and edits work again.",
-  "@programsListUnarchiveConfirmMessage": {"description": "Program workspace copy: programsListUnarchiveConfirmMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListArchiveDone": "Archived. Guest details anonymize on {date}.",
-  "@programsListArchiveDone": {"description": "Program workspace copy: programsListArchiveDone.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"date": {"type": "String"}}},
-  "programsListUnarchiveDone": "Program restored.",
-  "@programsListUnarchiveDone": {"description": "Program workspace copy: programsListUnarchiveDone.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListAnonymizesOn": "Anonymizes {date}",
-  "@programsListAnonymizesOn": {"description": "Program workspace copy: programsListAnonymizesOn.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace", "placeholders": {"date": {"type": "String"}}},
-  "programsListRestoreWindowExpiredReason": "The restore window has ended.",
-  "@programsListRestoreWindowExpiredReason": {"description": "Explains why a program cannot be restored after its archive grace deadline.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListAnonymized": "Anonymized",
-  "@programsListAnonymized": {"description": "Program workspace copy: programsListAnonymized.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsWorkspaceFunctionSave": "Save",
   "@programsWorkspaceFunctionSave": {"description": "Program workspace copy: programsWorkspaceFunctionSave.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsGuestsTitle": "Guests & RSVP",
@@ -28932,89 +28642,6 @@
   "@hostOfferPaymentReviewTitle": {"description": "Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostOfferPaymentReviewBody": "New offers will use these terms",
   "@hostOfferPaymentReviewBody": {"description": "Manager-only offer payment setup for one event; staged edits save through a server-reviewed command.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
-  "programsEntryTitle": "Create",
-  "@programsEntryTitle": {
-    "description": "Host program creation and Events inventory: programsEntryTitle.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEntryEventTab": "Event",
-  "@programsEntryEventTab": {
-    "description": "Host program creation and Events inventory: programsEntryEventTab.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEntryProgramTab": "Program",
-  "@programsEntryProgramTab": {
-    "description": "Host program creation and Events inventory: programsEntryProgramTab.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEntryProgramBody": "Coordinate a multi-day program and manage its events, travel and guest RSVP.",
-  "@programsEntryProgramBody": {
-    "description": "Host program creation and Events inventory: programsEntryProgramBody.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEventRowLabel": "Program",
-  "@programsEventRowLabel": {
-    "description": "Host program creation and Events inventory: programsEventRowLabel.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEventDateRange": "{start} – {end}",
-  "@programsEventDateRange": {
-    "description": "Host program creation and Events inventory: programsEventDateRange.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create",
-    "placeholders": {
-      "start": {
-        "type": "String"
-      },
-      "end": {
-        "type": "String"
-      }
-    }
-  },
-  "programsEventCount": "{count, plural, =0{No events} =1{1 event} other{{count} events}}",
-  "@programsEventCount": {
-    "description": "Host program creation and Events inventory: programsEventCount.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "programsEventCountUnavailable": "Event count unavailable",
-  "@programsEventCountUnavailable": {
-    "description": "Host program creation and Events inventory: programsEventCountUnavailable.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEventArchived": "Archived",
-  "@programsEventArchived": {
-    "description": "Host program creation and Events inventory: programsEventArchived.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation.program_create"
-  },
-  "programsEventsLoadMore": "Load more programs",
-  "@programsEventsLoadMore": {
-    "description": "Loads the next bounded program inventory page in Events.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "programs.presentation"
-  },
   "hostsOperationalRosterIntakeReviewTitle": "Review guest changes",
   "@hostsOperationalRosterIntakeReviewTitle": {"description": "Title for the saved Host roster intake review sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"},
   "hostsOperationalRosterIntakeResume": "Resume saved review",

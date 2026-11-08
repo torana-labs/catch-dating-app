@@ -2546,9 +2546,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Loading organizer';
 
   @override
-  String get hostsDraftPickerSheetMessageDeleteDraft => 'Delete draft';
-
-  @override
   String get hostsEventDetailsStepTitleEventName => 'Event name';
 
   @override
@@ -6453,97 +6450,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create organizer';
 
   @override
-  String get hostsHostEventsListTextEvents => 'Events';
-
-  @override
   String get hostsHostEventsListLabelNewEvent => 'Create event';
-
-  @override
-  String get hostsHostEventEntrySheetSectionContinueExisting => 'Continue';
-
-  @override
-  String get hostsHostEventEntrySheetSectionStartNew => 'Start new';
-
-  @override
-  String get hostsHostEventEntrySheetTitleContinueDraft => 'Continue draft';
-
-  @override
-  String get hostsHostEventEntrySheetTitleRepeatLastEvent =>
-      'Repeat last event';
-
-  @override
-  String hostsHostEventEntrySheetBodySavedDraftCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count saved drafts',
-      one: '1 saved draft',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostsHostEventEntrySheetBodyReuseEventSetup({
-    required String eventTitle,
-  }) {
-    return 'Reuse the setup from $eventTitle and choose a new date.';
-  }
-
-  @override
-  String get hostEventsUpcomingTab => 'Upcoming';
-
-  @override
-  String get hostEventsPastTab => 'Past';
-
-  @override
-  String get hostEventsPastEmptyTitle => 'No past events yet';
-
-  @override
-  String get hostEventsPastEmptyBody =>
-      'Completed events will appear here with their attendance history.';
-
-  @override
-  String hostEventsTodayDate({required String date}) {
-    return 'Today · $date';
-  }
-
-  @override
-  String hostEventsLiveSchedule({required String schedule}) {
-    return 'Live · $schedule';
-  }
-
-  @override
-  String hostEventsAttended({required int count}) {
-    return '$count attended';
-  }
-
-  @override
-  String hostEventsRegisteredCapacity({
-    required int count,
-    required int capacity,
-  }) {
-    return '$count of $capacity registered';
-  }
-
-  @override
-  String hostEventsRegistered({required int count}) {
-    return '$count registered';
-  }
-
-  @override
-  String get hostEventsTimelineLoadMoreSchedule => 'Load more events';
-
-  @override
-  String get hostEventsTimelineLoadMoreHistory => 'Load older events';
-
-  @override
-  String get hostEventsRowUnpublished => 'Not published';
-
-  @override
-  String get hostEventsRowSetupPending => 'Setup in progress';
-
-  @override
-  String get hostEventsRowCancelled => 'Cancelled';
 
   @override
   String get hostsHostEventsScaffoldTitleCreateYourFirstOrganizer =>
@@ -8312,24 +8219,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsCalendarScreenStateBadgelabelJoined => 'JOINED';
-
-  @override
-  String get hostsHostHomeScreenStateVisiblecopyRepeatLast => 'Repeat last';
-
-  @override
-  String hostsHostHomeScreenStateVisiblecopyRepeatLabel({
-    required Object label,
-  }) {
-    return 'Repeat ‘$label’';
-  }
-
-  @override
-  String get hostsHostHomeScreenStateEmptytitleNoUpcomingEvents =>
-      'No upcoming events';
-
-  @override
-  String get hostsHostHomeScreenStateEmptybodyCreateYourNextEvent =>
-      'Create your next event to start filling this list.';
 
   @override
   String get hostsHostHomeScreenStateTitleReviewWaitlist => 'Review waitlist';
@@ -10744,22 +10633,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get publicProfilePublicProfileScreenStateTitleProfile => 'Profile';
-
-  @override
-  String get hostsDraftPickerSheetVisiblecopyDeleteDraft => 'Delete draft?';
-
-  @override
-  String get hostsDraftPickerSheetLabelCancel => 'Cancel';
-
-  @override
-  String get hostsDraftPickerSheetLabelDelete => 'Delete';
-
-  @override
-  String hostsDraftPickerSheetVisiblecopyThisWillPermanentlyDelete({
-    required Object summary,
-  }) {
-    return 'This will permanently delete \"$summary\".';
-  }
 
   @override
   String swipesProfileCardContentTextHeightCm({required Object height}) {
@@ -20848,11 +20721,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostDraftSavedAt({required String time}) {
-    return 'Saved $time';
-  }
-
-  @override
   String hostResponseFilterSelectionLimit({required int count}) {
     return 'Choose up to $count options per question.';
   }
@@ -21011,10 +20879,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsOperationalRosterIssueInvalidCity({required int row}) {
     return 'Row $row: choose a supported city or leave it blank.';
   }
-
-  @override
-  String get hostsPrivateEventEntryBody =>
-      'Save the basics, then add guests, registration and payments as needed.';
 
   @override
   String get hostsPrivateEventCity => 'City';
@@ -21324,9 +21188,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventRetryDefaultsRead =>
       'Retry organizer defaults read';
-
-  @override
-  String get hostsPrivateEventContinueSaved => 'Continue saved event';
 
   @override
   String get hostsEventPreferencePending => 'Previous settings save unresolved';
@@ -21656,60 +21517,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormPaymentCollectionUnavailable =>
       'The selected collection method is not ready. Ask Catch to review your payment configuration.';
-
-  @override
-  String get programsListTitle => 'Programs';
-
-  @override
-  String get programsListCreateLabel => 'New program';
-
-  @override
-  String get programsListRowActions => 'Program actions';
-
-  @override
-  String get programsListArchiveAction => 'Archive program';
-
-  @override
-  String get programsListUnarchiveAction => 'Unarchive';
-
-  @override
-  String programsListArchiveConfirmTitle({required String title}) {
-    return 'Archive $title?';
-  }
-
-  @override
-  String programsListArchiveConfirmMessage({required String date}) {
-    return 'The program keeps working read-only. Guest identity details are anonymized on $date unless you unarchive first.';
-  }
-
-  @override
-  String programsListUnarchiveConfirmTitle({required String title}) {
-    return 'Unarchive $title?';
-  }
-
-  @override
-  String get programsListUnarchiveConfirmMessage =>
-      'The program returns to its previous status and edits work again.';
-
-  @override
-  String programsListArchiveDone({required String date}) {
-    return 'Archived. Guest details anonymize on $date.';
-  }
-
-  @override
-  String get programsListUnarchiveDone => 'Program restored.';
-
-  @override
-  String programsListAnonymizesOn({required String date}) {
-    return 'Anonymizes $date';
-  }
-
-  @override
-  String get programsListRestoreWindowExpiredReason =>
-      'The restore window has ended.';
-
-  @override
-  String get programsListAnonymized => 'Anonymized';
 
   @override
   String get programsWorkspaceFunctionSave => 'Save';
@@ -22093,48 +21900,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostOfferPaymentReviewBody => 'New offers will use these terms';
-
-  @override
-  String get programsEntryTitle => 'Create';
-
-  @override
-  String get programsEntryEventTab => 'Event';
-
-  @override
-  String get programsEntryProgramTab => 'Program';
-
-  @override
-  String get programsEntryProgramBody =>
-      'Coordinate a multi-day program and manage its events, travel and guest RSVP.';
-
-  @override
-  String get programsEventRowLabel => 'Program';
-
-  @override
-  String programsEventDateRange({required String start, required String end}) {
-    return '$start – $end';
-  }
-
-  @override
-  String programsEventCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count events',
-      one: '1 event',
-      zero: 'No events',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get programsEventCountUnavailable => 'Event count unavailable';
-
-  @override
-  String get programsEventArchived => 'Archived';
-
-  @override
-  String get programsEventsLoadMore => 'Load more programs';
 
   @override
   String get hostsOperationalRosterIntakeReviewTitle => 'Review guest changes';
