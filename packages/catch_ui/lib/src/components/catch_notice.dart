@@ -18,13 +18,15 @@ class CatchNotice extends StatelessWidget {
     required this.dismissLabel,
     this.onDismiss,
   }) : _inline = false,
-       _action = null;
+       _action = null,
+       _footer = null;
 
   /// The system Notice: a tinted block in the flow (help, a warning, a
   /// result) with its icon, an optional [title] and the [body] copy.
   /// [CatchNoticeTone.status] is the system's info tone, in indigo, and
   /// [CatchNoticeTone.neutral] the grey tile. An [action] draws a quiet small
-  /// button under the copy.
+  /// button under the copy; a [footer] takes its place for anything more,
+  /// such as a row of two buttons ("Call them", "Tell the planner").
   CatchNotice.inline({
     super.key,
     required String body,
@@ -32,6 +34,7 @@ class CatchNotice extends StatelessWidget {
     CatchNoticeTone tone = CatchNoticeTone.status,
     IconData? icon,
     CatchNoticeAction? action,
+    Widget? footer,
   }) : notice = title == null
            ? CatchNoticeData(id: body, title: body, tone: tone, icon: icon)
            : CatchNoticeData(
@@ -46,11 +49,15 @@ class CatchNotice extends StatelessWidget {
        // The public argument stays `action`; the field is private.
        // ignore: prefer_initializing_formals
        _action = action,
+       // The public argument stays `footer`; the field is private.
+       // ignore: prefer_initializing_formals
+       _footer = footer,
        _inline = true;
 
   final CatchNoticeData notice;
   final bool _inline;
   final CatchNoticeAction? _action;
+  final Widget? _footer;
 
   /// Caller-resolved accessibility copy for the optional dismiss control.
   final String dismissLabel;
@@ -243,6 +250,7 @@ class CatchNotice extends StatelessWidget {
             CatchNoticeTone.neutral => CatchIcons.info,
           };
     final action = _action;
+    final footer = _footer;
     final message = notice.message;
     final title = message == null ? null : notice.title;
     final body = message ?? notice.title;
@@ -282,7 +290,12 @@ class CatchNotice extends StatelessWidget {
                       if (title != null)
                         CatchText(title, variant: CatchTextVariant.titleRow),
                       CatchText(body, variant: CatchTextVariant.bodySmall),
-                      if (action != null)
+                      if (footer != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: CatchSpacing.s2),
+                          child: footer,
+                        )
+                      else if (action != null)
                         Align(
                           alignment: AlignmentDirectional.centerStart,
                           child: CatchButton(
