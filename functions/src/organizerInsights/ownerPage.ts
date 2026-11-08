@@ -20,6 +20,8 @@ import {
 } from "../shared/generated/validators/manageOrganizerOwnerPageOutput";
 import {adminOwnerLinks, storedOwnerLinks} from "../organizers/organizerLinks";
 import {createOrganizerPostHandler} from "../organizers/organizerPosts";
+import type {CreateOrganizerPostCallableResponse} from
+  "../shared/generated/createOrganizerPostCallableResponse";
 import {requireOwnerViewCapability} from "./ownerAccess";
 import {
   followerMessageLimit,
@@ -51,7 +53,8 @@ const defaultDeps: OwnerPageDeps = {
  * reorder, pin, schedule) through the same owner-link policy the admin
  * editor uses; the page read model rebuilds from the organiser write.
  * sendFollowerMessage sends one follower update through createOrganizerPost
- * after reserving one of the month's two sends.
+ * after reserving one of the month's two sends; with channels it also goes
+ * on WhatsApp, as the same message and the same monthly send.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {OwnerPageDeps} deps Injectable dependencies.
  * @return {Promise<ManageOrganizerOwnerPageCallableResponse>} The result.
@@ -151,12 +154,15 @@ async function sendFollowerMessage(
   const now = deps.now();
   const reservation = await reserveFollowerMessage(db, {
     organizerId: data.organizerId, requestId: data.requestId, now});
+  let sent: Partial<CreateOrganizerPostCallableResponse> | null = null;
   try {
-    await deps.sendFollowerUpdate({...request, data: {
+    sent = await deps.sendFollowerUpdate({...request, data: {
       organizerId: data.organizerId,
       requestId: data.requestId,
       text: data.text,
-    }});
+      ...(data.channels?.includes("whatsapp") ?
+        {channels: ["app", "whatsapp"]} : {}),
+    }}) as Partial<CreateOrganizerPostCallableResponse> | null;
   } catch (error) {
     if (!reservation.replay) {
       await releaseFollowerMessage(db, {organizerId: data.organizerId,
@@ -166,7 +172,11 @@ async function sendFollowerMessage(
   }
   return {action: "sendFollowerMessage", idempotentReplay: reservation.replay,
     links: null, photoIds: null, followerMessages: {month: reservation.month,
-      limit: followerMessageLimit, used: reservation.used}};
+      limit: followerMessageLimit, used: reservation.used,
+      ...(sent && typeof sent.activityAvailableCount === "number" ? {
+        delivery: {appRecipientCount: sent.activityAvailableCount,
+          whatsapp: sent.whatsapp ?? null},
+      } : {})}};
 }
 
 function normalize(raw: unknown): unknown {

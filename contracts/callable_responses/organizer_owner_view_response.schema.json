@@ -216,6 +216,10 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 2
+        },
+        "whatsappAvailable": {
+          "type": "boolean",
+          "description": "True when the organiser's WhatsApp number is active and its organizer_follower_update template is approved, so a message can also go to followers who ticked WhatsApp updates. Absent reads as false."
         }
       }
     }

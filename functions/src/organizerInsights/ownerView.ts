@@ -22,6 +22,8 @@ import {
   validateOrganizerOwnerViewCallableResponse,
 } from "../shared/generated/validators/organizerOwnerViewOutput";
 import {adminOwnerLinks} from "../organizers/organizerLinks";
+import {findFollowerWhatsappSender} from
+  "../organizers/organizerFollowerWhatsappLeg";
 import {
   organizerInsightsCollection,
   organizerInsightsId,
@@ -41,12 +43,15 @@ export interface OwnerViewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   checkRateLimit?: typeof defaultCheckRateLimit;
+  /** Whether Message followers can also go on WhatsApp; absent reads no. */
+  findWhatsappSender?: typeof findFollowerWhatsappSender;
 }
 
 const defaultDeps: OwnerViewDeps = {
   firestore: () => admin.firestore(),
   now: () => new Date(),
   checkRateLimit: defaultCheckRateLimit,
+  findWhatsappSender: findFollowerWhatsappSender,
 };
 
 type Insights = OrganizerOwnerViewCallableResponse["insights"];
@@ -137,10 +142,14 @@ export async function getOrganizerOwnerViewHandler(
   const dayRefs = Array.from({length: insightsWindowDays}, (_, index) =>
     db.collection(organizerInsightsCollection).doc(organizerInsightsId(
       organizerId, utcDayKey(now, insightsWindowDays - index))));
-  const [quotaSnap, ...daySnaps] = await db.getAll(
+  const [whatsappSender, [quotaSnap, ...daySnaps]] = await Promise.all([
+    role === "analyst" ? Promise.resolve(null) :
+      deps.findWhatsappSender?.(db, organizerId) ?? Promise.resolve(null),
+    db.getAll(
     db.collection(followerMessageQuotasCollection)
       .doc(followerMessageQuotaId(organizerId, month)),
-    ...dayRefs);
+    ...dayRefs),
+  ]);
   const documents = daySnaps.map((snap) => {
     const data = snap.exists ? snap.data() as OrganizerInsightsDocument : null;
     return data?.organizerId === organizerId ? data : null;
@@ -159,7 +168,8 @@ export async function getOrganizerOwnerViewHandler(
     photos: (organizer.organizerPhotos ?? []).slice(0, 30).map((photo) => ({
       id: photo.id, url: photo.url, thumbnailUrl: photo.thumbnailUrl ?? null,
     })),
-    followerMessages: {month, limit: followerMessageLimit, used},
+    followerMessages: {month, limit: followerMessageLimit, used,
+      whatsappAvailable: whatsappSender !== null},
   };
   if (!validateOrganizerOwnerViewCallableResponse(response)) {
     throw new HttpsError("internal", "The owner view needs review.");
