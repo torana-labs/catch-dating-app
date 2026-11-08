@@ -284,6 +284,11 @@ class EventSuccessHostDraft {
         !selectedModuleIds.contains(EventSuccessModuleCatalog.microPods.id)) {
       issues.add('Live reveal needs a pod or rotation tool selected.');
     }
+    if (structureConfig.sensitiveAttributesNotOffered.isNotEmpty) {
+      issues.add(
+        'Gender and age band can only shape pairs, teams or tables. Remove them or change how people are grouped.',
+      );
+    }
     if (wingmanRequestsEnabled &&
         !selectedModuleIds.contains(
           EventSuccessModuleCatalog.wingmanRequests.id,

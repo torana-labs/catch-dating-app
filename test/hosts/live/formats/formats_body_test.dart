@@ -179,6 +179,47 @@ void main() {
     expect(rules, 1);
   });
 
+  testWidgets('court setup previews court time before rotations are made', (
+    tester,
+  ) async {
+    final state = hostFormatsCourtsSetupState(
+      plan: courtsPlan(),
+      eventMinutes: 120,
+      players: 40,
+      assignments: const [],
+    );
+    await _pump(
+      tester,
+      HostFormatsCourtsSetupBody(
+        state: state,
+        draft: state.saved.copyWith(courts: 3, minutes: 15),
+        onDraft: (_) {},
+        onRules: () {},
+        onRetry: () {},
+      ),
+      theme: CatchThemeMode.day,
+    );
+    final notice = find.byKey(const ValueKey('formats-setup-court-time'));
+    expect(notice, findsOneWidget);
+    // Singles: 6 play each round, 34 sit out; 48 games over 40 players.
+    expect(
+      find.descendant(
+        of: notice,
+        matching: find.text(
+          'About 18 min on court each · 34 on the bench per round',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: notice,
+        matching: find.text('Everyone plays 15 to 30 minutes over 8 rounds.'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('team mixing shows the tables, shuffles and switches openers', (
     tester,
   ) async {

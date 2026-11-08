@@ -60,6 +60,7 @@ class HostFormatsCourtsSetupBody extends StatelessWidget {
     final rounds = state.roundsFor(draft.minutes);
     final playing = state.playingFor(draft.courts);
     final out = state.players - playing;
+    final courtTime = state.courtTimeFor(draft);
     return CatchPageBody.screen(
       children: [
         CatchSurface(
@@ -125,6 +126,20 @@ class HostFormatsCourtsSetupBody extends StatelessWidget {
                     courts: draft.courts,
                   ),
             icon: CatchIcons.info,
+          ),
+        if (courtTime != null)
+          CatchNotice.inline(
+            key: const ValueKey<String>('formats-setup-court-time'),
+            title: l10n.hostFormatsCourtsFairTime(
+              minutes: courtTime.aboutMinutes,
+              bench: courtTime.benchPerRound,
+            ),
+            body: l10n.hostFormatsCourtsFairRange(
+              min: courtTime.minMinutes,
+              max: courtTime.maxMinutes,
+              rounds: courtTime.rounds,
+            ),
+            icon: CatchIcons.time,
           ),
         CatchSection(
           title: l10n.hostFormatsAimTitle,

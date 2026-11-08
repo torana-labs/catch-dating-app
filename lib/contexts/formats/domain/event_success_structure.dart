@@ -71,6 +71,27 @@ enum EventSuccessUnitKind implements Labelled {
 
   String countText(int count) =>
       '$count ${count == 1 ? singularLabel : label.toLowerCase()}';
+
+  /// Whether a host may opt this kind into the sensitive profile signals
+  /// (gender, age band). Pair, team and table formats may; always off by
+  /// default.
+  bool get offersSensitiveAttributes => switch (this) {
+    EventSuccessUnitKind.pairs ||
+    EventSuccessUnitKind.teams ||
+    EventSuccessUnitKind.tables => true,
+    EventSuccessUnitKind.wholeGroup || EventSuccessUnitKind.pods => false,
+  };
+
+  /// The arrival-group policy the engine uses when the structure saves none:
+  /// teams and tables keep people who booked together, other kinds ignore it.
+  EventSuccessArrivalGroupPolicy get defaultArrivalGroupPolicy =>
+      switch (this) {
+        EventSuccessUnitKind.teams || EventSuccessUnitKind.tables =>
+          EventSuccessArrivalGroupPolicy.keepTogether,
+        EventSuccessUnitKind.wholeGroup ||
+        EventSuccessUnitKind.pods ||
+        EventSuccessUnitKind.pairs => EventSuccessArrivalGroupPolicy.ignore,
+      };
 }
 
 enum EventSuccessTopology { set, sequence, adjacency }
@@ -197,6 +218,23 @@ enum EventSuccessActivityAssignmentAttribute implements Labelled {
 /// How guests who share an arrival group (a booking, friends, a couple)
 /// are placed. Null on the structure means the unit-kind default.
 enum EventSuccessArrivalGroupPolicy { keepTogether, spread, ignore }
+
+/// What the groups should do with one activity attribute. Each attribute
+/// is saved in at most one of the structure's balance, cluster or cover
+/// lists (docs/assignment_engine.md, "Objectives").
+enum EventSuccessAttributeObjective {
+  /// Not used to build the groups.
+  none,
+
+  /// Each group mirrors the room's mix.
+  balance,
+
+  /// Each group is as alike as possible.
+  cluster,
+
+  /// Each group holds as many different values as it can.
+  cover,
+}
 
 class EventSuccessStructureConfig {
   const EventSuccessStructureConfig({
@@ -377,6 +415,72 @@ class EventSuccessStructureConfig {
   final EventSuccessArrivalGroupPolicy? arrivalGroupPolicy;
 
   bool get rotates => rotationIntervalMinutes != null;
+
+  /// The arrival-group policy in effect: the saved one, or the unit-kind
+  /// default.
+  EventSuccessArrivalGroupPolicy get effectiveArrivalGroupPolicy =>
+      arrivalGroupPolicy ?? unitKind.defaultArrivalGroupPolicy;
+
+  /// The objective saved for [attribute].
+  EventSuccessAttributeObjective objectiveFor(
+    EventSuccessActivityAssignmentAttribute attribute,
+  ) {
+    if (coverActivityAttributes.contains(attribute)) {
+      return EventSuccessAttributeObjective.cover;
+    }
+    if (clusterActivityAttributes.contains(attribute)) {
+      return EventSuccessAttributeObjective.cluster;
+    }
+    if (balanceActivityAttributes.contains(attribute)) {
+      return EventSuccessAttributeObjective.balance;
+    }
+    return EventSuccessAttributeObjective.none;
+  }
+
+  /// This structure with [attribute] saved under [objective] only.
+  EventSuccessStructureConfig withObjective(
+    EventSuccessActivityAssignmentAttribute attribute,
+    EventSuccessAttributeObjective objective,
+  ) {
+    List<EventSuccessActivityAssignmentAttribute> place(
+      List<EventSuccessActivityAssignmentAttribute> current,
+      EventSuccessAttributeObjective list,
+    ) {
+      final next = {...current}..remove(attribute);
+      if (objective == list) next.add(attribute);
+      return List.unmodifiable(
+        EventSuccessActivityAssignmentAttribute.values.where(next.contains),
+      );
+    }
+
+    return copyWith(
+      balanceActivityAttributes: place(
+        balanceActivityAttributes,
+        EventSuccessAttributeObjective.balance,
+      ),
+      clusterActivityAttributes: place(
+        clusterActivityAttributes,
+        EventSuccessAttributeObjective.cluster,
+      ),
+      coverActivityAttributes: place(
+        coverActivityAttributes,
+        EventSuccessAttributeObjective.cover,
+      ),
+    );
+  }
+
+  /// Sensitive attributes saved on a unit kind that may not offer them.
+  List<EventSuccessActivityAssignmentAttribute>
+  get sensitiveAttributesNotOffered {
+    if (unitKind.offersSensitiveAttributes) return const [];
+    return EventSuccessActivityAssignmentAttribute.values
+        .where(
+          (attribute) =>
+              attribute.sensitive &&
+              objectiveFor(attribute) != EventSuccessAttributeObjective.none,
+        )
+        .toList(growable: false);
+  }
 
   bool get isLegacyDefault =>
       unitKind == EventSuccessUnitKind.pods &&
