@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_guests_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_body.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
@@ -205,10 +206,14 @@ class _HostEventWorkspaceActions {
       case HostEventView.overview:
         return;
       case HostEventView.guests:
-        context.pushNamed(
-          Routes.hostEventRosterScreen.name,
-          pathParameters: _path,
-          extra: event,
+        // The roster route is the door; the guest lists open beside it.
+        _push(
+          HostEventGuestsScreen(
+            request: HostEventRequest(
+              organizerId: organizerId,
+              eventId: event.id,
+            ),
+          ),
         );
       case HostEventView.live || HostEventView.report:
         context.pushNamed(
