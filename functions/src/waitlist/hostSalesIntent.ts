@@ -10,6 +10,11 @@ export interface HostSalesIntentInput {
   role: string;
   hostApplication: Record<string, unknown> | null;
   entryRoute: string | null;
+  /** Optional E.164 number; a phone-only applicant has no email. */
+  phone?: string | null;
+  /** The programme product, e.g. "weddings"; absent for events Hosts. */
+  programme?: "weddings" | null;
+  programmeApplication?: Record<string, unknown> | null;
 }
 
 /** A submission proposes a relationship without product authority. */
@@ -21,6 +26,12 @@ export function prepareHostSalesIntent(input: HostSalesIntentInput) {
     city: input.city,
     hostApplication: input.hostApplication,
     entryRoute: input.entryRoute,
+    // Present only when sent, so earlier submissions keep their replay hash.
+    ...(input.phone ? {phone: input.phone} : {}),
+    ...(input.programme ? {
+      programme: input.programme,
+      programmeApplication: input.programmeApplication ?? null,
+    } : {}),
   };
   const requestHash = digest(canonical(projection));
   // Older clients lack a request ID. Exact content is safely coalesced while

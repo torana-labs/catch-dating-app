@@ -32,9 +32,8 @@ export interface WeddingsStepTwoDraft {
 export type WeddingsApplication = WeddingsStepOneDraft & WeddingsStepTwoDraft;
 
 /**
- * Sends a finished application. The page has no intake front door that
- * accepts this application yet, so production renders without one and the
- * Send button stays disabled; stories and tests pass their own.
+ * Sends a finished application. Production posts it to the waitlist route
+ * (`weddingsSubmit.ts`); stories and tests pass their own.
  */
 export type WeddingsSubmit = (application: WeddingsApplication) => Promise<void>;
 

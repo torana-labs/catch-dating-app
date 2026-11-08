@@ -13,14 +13,42 @@ import {validateEventDocument} from
 import {preparePublishedEventPatch, publicationRegistrationPatch} from
   "./publicationReadiness";
 import {claimOrganizerScheduleInTransaction} from "../scheduleConflicts";
+import {preparePrivateListingTerms} from "./listingTerms";
+import {admissionChoicesFromPreferences, admissionChoicesPatch} from
+  "./admissionChoices";
 import {
   assertReceipt, authorizeSetupManager, hashRequest,
   receiptFor, requireRevision, ProgressiveSetupDependencies,
 } from "./service";
 
+type GuestAccessSettings = Pick<Command,
+  "listing" | "showGuestList" | "priceHiddenUntilBookingOpens">;
+
+/** The settings the command changes, with each field's read-time default:
+ * listing reads listed, showGuestList true, priceHiddenUntilBookingOpens false.
+ */
+export function guestAccessSettingsPatch(event: Record<string, unknown>,
+  command: GuestAccessSettings): Record<string, unknown> {
+  const patch: Record<string, unknown> = {};
+  const current = {
+    listing: event.listing ?? "listed",
+    showGuestList: event.showGuestList ?? true,
+    priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens ?? false,
+  };
+  for (const key of ["listing", "showGuestList",
+    "priceHiddenUntilBookingOpens"] as const) {
+    const value = command[key];
+    if (value !== undefined && value !== current[key]) patch[key] = value;
+  }
+  return patch;
+}
+
 /** Publication changes visibility. Registration is enabled separately.
  * The same transaction fences manager, revision, schedule and command replay.
  * Canonical event triggers own search and next-event projection retries.
+ * Publishing also applies the booking and waitlist choices saved in the
+ * event's preferences to its admission policy, with the seat ledger. The
+ * current publicationState with changed settings saves only the settings.
  */
 export async function setEventPublication(params: {
   actorUid: string;
@@ -41,12 +69,13 @@ export async function setEventPublication(params: {
     const eventRef = db.collection("events").doc(command.eventId);
     const receiptRef = receiptFor(db, actorUid, command.organizerId,
       command.requestId);
-    const [organizerSnap, deletedSnap, eventSnap, receiptSnap] =
-      await Promise.all([
-        tx.get(db.collection("organizers").doc(command.organizerId)),
-        tx.get(db.collection("deletedUsers").doc(actorUid)),
-        tx.get(eventRef), tx.get(receiptRef),
-      ]);
+    const [organizerSnap, deletedSnap, eventSnap, receiptSnap,
+      preferencesSnap] = await Promise.all([
+      tx.get(db.collection("organizers").doc(command.organizerId)),
+      tx.get(db.collection("deletedUsers").doc(actorUid)),
+      tx.get(eventRef), tx.get(receiptRef),
+      tx.get(db.collection("eventSetupPreferences").doc(command.eventId)),
+    ]);
     const organizer = authorizeSetupManager(organizerSnap, deletedSnap,
       actorUid);
     const event = eventSnap.data();
@@ -75,21 +104,30 @@ export async function setEventPublication(params: {
       throw new HttpsError("failed-precondition",
         "Event publication needs review.");
     }
-    if (event.publicationState === command.publicationState) {
+    const settings = guestAccessSettingsPatch(event, command);
+    const settingsOnly = event.publicationState === command.publicationState;
+    if (settingsOnly && Object.keys(settings).length === 0) {
       throw new HttpsError("failed-precondition",
         "This publication change has already been made. Refresh the event.");
     }
+    const nowMillis = (params.nowMillis ?? Date.now)();
     const patch: Record<string, unknown> = {
-      publicationState: command.publicationState,
+      ...settings,
       setupRevision: revision + 1,
-      ...publicationRegistrationPatch(event as EventDocument),
-      updatedAt: deps.timestampFromMillis((params.nowMillis ?? Date.now)()),
+      updatedAt: deps.timestampFromMillis(nowMillis),
     };
-    if (operation === "publish") {
-      Object.assign(patch, preparePublishedEventPatch({
-        event: event as EventDocument, organizer,
-        nowMillis: (params.nowMillis ?? Date.now)(),
-        timestampFromMillis: deps.timestampFromMillis}));
+    let admission: ReturnType<typeof admissionChoicesPatch> = null;
+    if (!settingsOnly) {
+      patch.publicationState = command.publicationState;
+      Object.assign(patch,
+        publicationRegistrationPatch(event as EventDocument));
+    }
+    if (!settingsOnly && operation === "publish") {
+      admission = admissionChoicesPatch(event as EventDocument,
+        admissionChoicesFromPreferences(preferencesSnap.data()));
+      Object.assign(patch, admission ?? {}, preparePublishedEventPatch({
+        event: {...event, ...admission} as EventDocument, organizer,
+        nowMillis, timestampFromMillis: deps.timestampFromMillis}));
     }
     // Validating the target enforces the complete published schema, and the
     // private schema when unpublishing. It never invents missing terms.
@@ -97,13 +135,25 @@ export async function setEventPublication(params: {
       throw new HttpsError("failed-precondition",
         "Complete the event details and admission terms before publishing.");
     }
-    if (operation === "publish") {
+    // Reads only; the ledger is written with the event below.
+    const ledger = admission ? await preparePrivateListingTerms({db, tx,
+      eventId: command.eventId, before: event as EventDocument,
+      after: {...event, ...admission} as EventDocument}) : null;
+    if (!settingsOnly && operation === "publish") {
       // This helper performs the final reads before writing schedule locks.
       await claimOrganizerScheduleInTransaction(tx, db, {
         organizerId: command.organizerId, eventId: command.eventId,
         startTimeMillis: event.startTime.toMillis(),
         endTimeMillis: event.endTime.toMillis(),
       });
+    }
+    if (ledger?.ledger) {
+      tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
+        ledger.ledger);
+    }
+    if (ledger?.fence) {
+      tx.create(db.collection("eventSeatMigrationFences")
+        .doc(command.eventId), ledger.fence);
     }
     tx.update(eventRef, patch);
     tx.create(receiptRef, {operation, actorUid,

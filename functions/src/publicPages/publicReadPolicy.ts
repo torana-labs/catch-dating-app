@@ -64,6 +64,13 @@ export function publicEventAuthorized(id: unknown, raw: unknown): boolean {
     !(data.organizerId && data.organizerId !== data.organizerId);
 }
 
+/** A link-only event keeps its own page for people with the link, but no
+ * list, index or recommendation names it. Missing listing reads as listed.
+ */
+export function publicEventListed(raw: unknown): boolean {
+  return object(raw)?.listing !== "link";
+}
+
 /** Public links must not carry embedded credentials or active schemes. */
 export function publicHttpsUrl(value: unknown): string | null {
   if (typeof value !== "string" || value.length > 4096) return null;

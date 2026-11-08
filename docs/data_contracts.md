@@ -2245,6 +2245,36 @@ state or setup revision is refused as invalid. Dev and prod are reseeded after
 the release that introduced this shape (pre-launch clean-schema mandate), so
 no event without it remains.
 
+Optional event settings carry read-time defaults, so no existing event needs
+a write: `listing` (`listed` | `link`, missing reads `listed`),
+`showGuestList` (missing reads true), `priceHiddenUntilBookingOpens` (missing
+reads false), `planVisibleToGuests` (missing reads true) and
+`externalBooking {provider, url}` (missing means tickets are sold on Catch).
+`setEventPublication` carries the first three: sending the current
+`publicationState` with a changed setting saves only the setting and leaves
+registration as it is. Link-only events keep their own event page but are left
+out of Explore (client filter: a list rule cannot exclude them without a
+field on every event), Algolia and the organizer page lists. The details
+command sets `planVisibleToGuests`, which the `eventSuccessPlans` read rule
+enforces for guests, and `externalBooking`, which keeps Catch registration
+closed and lets publishing skip Catch admission terms. Event preferences take
+two optional intents, `bookingMode` (`anyone` | `followersFirst` |
+`askFirst`) and `waitlistEnabled`; an omitted one keeps the saved choice, and
+a resolved one appears only once chosen or set as an organizer default.
+Publishing applies them to the admission policy with the seat ledger: askFirst
+is the existing host-approval path (`manualApprovalRequired`), and a disabled
+waitlist makes `joinEventWaitlist` refuse joins except join requests on an
+askFirst event. `followersFirst` is stored but not enforced yet. Organizer
+defaults add `startingPriceMinor`, `places`, `waitlistEnabled`,
+`bookingMode`, `refundPolicy` (`flexible` 24 h, `standard` 3 days, `strict`
+none), `askedAtBooking` question ids and `autoMessages {thankYou, arrival}`;
+unset keys leave the defaults hash unchanged. `createPrivateEventSeries`
+creates a weekly series (2 to 8 events) through `createPrivateEventSetup`,
+one receipt per event under `requestId-index`, writing `seriesId` and
+`seriesIndex`. The setup view's trigger-owned `facts` state `ticketsSold`,
+`grossMinor` and `arrivalMessage.ready` (the event-start reminder moment is
+armed).
+
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics` and `listPrivateEventSetups` payload contracts, and
 reads each event through its manager setup view (below). The manager inventory defaults to
@@ -3040,6 +3070,18 @@ review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
 read these summaries through the SDK. Form-scoped/filter-choice queries, answer
 filters, contact joins, review filters and text search keep the existing callable
 behavior until their own equivalent indexed read contracts are implemented.
+Each summary may also carry two optional query fields, absent on older views and
+read as none: `reviewStatus` (a copy of the application's review status) and
+`offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
+from the entry's application. `onHostResponseSummaryOfferChanged` recomputes them
+when an `organizerEventOffers` document changes; `--model response-offers` in
+`functions/scripts/backfill-host-read-models.cjs` backfills them. A form's
+Responses screen reads its Offered list and per-filter counts from these fields.
+
+`launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
+website submission needs an email or a phone. A weddings pilot application
+carries `programme: "weddings"` and `programmeApplication`; older intents carry
+neither and read as an events Host enquiry.
 
 Participant grant revocation and generic response withdrawal redact their
 verified summary (or delete an invalid view) in the **same transaction** as the authority change, including

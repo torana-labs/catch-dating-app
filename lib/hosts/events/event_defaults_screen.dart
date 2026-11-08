@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_controller.dart';
@@ -33,6 +34,29 @@ class HostEventDefaultsScreen extends ConsumerWidget {
       mutations: [HostEventCommands.defaultsMutation],
       errorContext: AppErrorContext.organizer,
     );
+    void saveDefaults(
+      ManagerEventSetupPreferences Function(ManagerEventSetupPreferences) next,
+    ) {
+      final current = ref
+          .read(managerEventSetupDefaultsViewProvider(organizerId))
+          .value
+          ?.defaults;
+      if (current == null) return;
+      unawaited(
+        HostEventCommands.defaultsMutation
+            .run(
+              ref,
+              (tx) => tx
+                  .get(hostEventCommandsProvider.notifier)
+                  .updateDefaults(
+                    current: current,
+                    next: next(current.preferences),
+                  ),
+            )
+            .then<void>((_) {}, onError: (Object _) {}),
+      );
+    }
+
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-event-defaults-screen'),
@@ -46,28 +70,10 @@ class HostEventDefaultsScreen extends ConsumerWidget {
         body: HostEventDefaultsBody(
           state: state,
           saving: saving,
-          onCollection: (option) {
-            final current = ref
-                .read(managerEventSetupDefaultsViewProvider(organizerId))
-                .value
-                ?.defaults;
-            if (current == null) return;
-            unawaited(
-              HostEventCommands.defaultsMutation
-                  .run(
-                    ref,
-                    (tx) => tx
-                        .get(hostEventCommandsProvider.notifier)
-                        .updateDefaults(
-                          current: current,
-                          next: current.preferences.copyWith(
-                            collectionPreference: option,
-                          ),
-                        ),
-                  )
-                  .then<void>((_) {}, onError: (Object _) {}),
-            );
-          },
+          onCollection: (option) => saveDefaults(
+            (preferences) => preferences.copyWith(collectionPreference: option),
+          ),
+          onChange: (next) => saveDefaults((_) => next),
           onEdit: () => unawaited(
             Navigator.of(context).push(
               MaterialPageRoute<void>(

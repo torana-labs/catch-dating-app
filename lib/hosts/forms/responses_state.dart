@@ -9,14 +9,21 @@ enum HostResponsesStatus { loading, content }
 /// The form views at the top of Responses.
 enum HostResponsesView { responses, questions, results }
 
-/// The review filters an application form offers, in board order.
-const hostResponsesFilters = <HostApplicationReviewStatus>[
-  HostApplicationReviewStatus.submitted,
-  HostApplicationReviewStatus.inReview,
-  HostApplicationReviewStatus.approved,
-  HostApplicationReviewStatus.waitlisted,
-  HostApplicationReviewStatus.declined,
-];
+/// The filters an application form offers, in board order: the review
+/// statuses, then Offered (a live event offer, not a review status).
+enum HostResponsesFilter {
+  submitted(HostApplicationReviewStatus.submitted),
+  inReview(HostApplicationReviewStatus.inReview),
+  approved(HostApplicationReviewStatus.approved),
+  offered(null),
+  waitlisted(HostApplicationReviewStatus.waitlisted),
+  declined(HostApplicationReviewStatus.declined);
+
+  const HostResponsesFilter(this.reviewStatus);
+
+  /// The review status this filter lists; null for Offered.
+  final HostApplicationReviewStatus? reviewStatus;
+}
 
 /// Everything Responses shows, as plain values.
 @immutable
@@ -26,6 +33,7 @@ class HostResponsesState {
     this.view = HostResponsesView.responses,
     this.forForm = true,
     this.filter,
+    this.counts = const <HostResponsesFilter, int>{},
     this.entries = const <HostFormInboxEntry>[],
     this.canLoadMore = false,
     this.loadingMore = false,
@@ -41,8 +49,11 @@ class HostResponsesState {
   /// views.
   final bool forForm;
 
-  /// The review filter; null on a form whose answers are not reviewed.
-  final HostApplicationReviewStatus? filter;
+  /// The filter; null on a form whose answers are not reviewed.
+  final HostResponsesFilter? filter;
+
+  /// How many answers each filter holds; empty until they are counted.
+  final Map<HostResponsesFilter, int> counts;
 
   /// The answers, newest first.
   final List<HostFormInboxEntry> entries;

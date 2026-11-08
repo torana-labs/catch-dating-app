@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_body.dart';
@@ -204,5 +205,44 @@ void main() {
       tester.getTopLeft(find.text('Your fullest nights')).dx,
       greaterThan(tester.getTopLeft(find.text('Bookings each week')).dx),
     );
+  });
+
+  testWidgets('four stats draw two to a row with Came back as a percentage', (
+    tester,
+  ) async {
+    final base = _content(HostInsightsRange.thirtyDays);
+    await _pump(
+      tester,
+      HostInsightsState(
+        status: base.status,
+        range: base.range,
+        stats: [
+          ...base.stats,
+          const HostInsightsStat(
+            kind: HostInsightsStatKind.cameBack,
+            value: 42,
+            previousValue: 35,
+            figure: HostAnalyticsFigure.percent,
+          ),
+          const HostInsightsStat(
+            kind: HostInsightsStatKind.followers,
+            value: 1204,
+          ),
+        ],
+        bars: base.bars,
+        sources: base.sources,
+        visits: base.visits,
+        linkClicks: base.linkClicks,
+        nights: base.nights,
+      ),
+    );
+    expect(find.text('Came back'), findsOneWidget);
+    expect(find.text('42%'), findsOneWidget);
+    expect(find.text('Up 20%'), findsOneWidget);
+    expect(find.text('Followers'), findsOneWidget);
+    expect(find.text('1,204'), findsOneWidget);
+    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+    expect(top('Came back'), greaterThan(top('312')));
+    expect(top('Followers'), top('Came back'));
   });
 }

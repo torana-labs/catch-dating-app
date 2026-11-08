@@ -59,6 +59,32 @@ bool isCanonicalPublicPaymentPageUrl(String value) {
 
 const _unchangedPreference = Object();
 
+/// The cancellation policies paid events can start with: flexible refunds up
+/// to 24 hours before, standard up to 3 days before, strict never.
+const eventRefundPolicies = <String>{'flexible', 'standard', 'strict'};
+
+/// Which automatic messages new events send.
+class EventAutoMessages {
+  const EventAutoMessages({required this.thankYou, required this.arrival});
+
+  /// The thank-you the morning after.
+  final bool thankYou;
+
+  /// The reminder the day before.
+  final bool arrival;
+
+  Map<String, Object?> toJson() => {'thankYou': thankYou, 'arrival': arrival};
+
+  @override
+  bool operator ==(Object other) =>
+      other is EventAutoMessages &&
+      other.thankYou == thankYou &&
+      other.arrival == arrival;
+
+  @override
+  int get hashCode => Object.hash(thankYou, arrival);
+}
+
 class ManagerEventSetupPreferences {
   const ManagerEventSetupPreferences({
     this.timezone,
@@ -70,6 +96,13 @@ class ManagerEventSetupPreferences {
     this.offerMessageTemplate,
     this.paymentInstructions,
     this.reusablePaymentPage,
+    this.bookingMode,
+    this.startingPriceMinor,
+    this.places,
+    this.waitlistEnabled,
+    this.refundPolicy,
+    this.askedAtBooking,
+    this.autoMessages,
   });
 
   final String? timezone;
@@ -81,6 +114,21 @@ class ManagerEventSetupPreferences {
   final String? offerMessageTemplate;
   final String? paymentInstructions;
   final ReusableOrganizerPaymentPage? reusablePaymentPage;
+
+  /// `anyone`, `followersFirst` or `askFirst`.
+  final String? bookingMode;
+
+  /// Price per place new events start with, in minor units.
+  final int? startingPriceMinor;
+  final int? places;
+  final bool? waitlistEnabled;
+
+  /// One of [eventRefundPolicies].
+  final String? refundPolicy;
+
+  /// Ids of the questions guests answer when they book.
+  final List<String>? askedAtBooking;
+  final EventAutoMessages? autoMessages;
 
   /// The private server projection is sparse: missing means no suggestion.
   /// A present null is invalid and must never be treated as a clear command.
@@ -97,6 +145,13 @@ class ManagerEventSetupPreferences {
       'offerMessageTemplate',
       'paymentInstructions',
       'reusablePaymentPage',
+      'bookingMode',
+      'startingPriceMinor',
+      'places',
+      'waitlistEnabled',
+      'refundPolicy',
+      'askedAtBooking',
+      'autoMessages',
     };
     if (json.keys.any((key) => !keys.contains(key)) ||
         json.values.any((value) => value == null)) {
@@ -123,7 +178,38 @@ class ManagerEventSetupPreferences {
             pageData['reusableForEvents'] != true)) {
       throw const FormatException('Invalid reusable payment page');
     }
+    final questions = json['askedAtBooking'];
+    final messages = json['autoMessages'];
+    if ((json['bookingMode'] != null && json['bookingMode'] is! String) ||
+        (json['startingPriceMinor'] != null &&
+            json['startingPriceMinor'] is! int) ||
+        (json['places'] != null && json['places'] is! int) ||
+        (json['waitlistEnabled'] != null && json['waitlistEnabled'] is! bool) ||
+        (json['refundPolicy'] != null && json['refundPolicy'] is! String) ||
+        (questions != null &&
+            (questions is! List || questions.any((id) => id is! String))) ||
+        (messages != null &&
+            (messages is! Map ||
+                messages.length != 2 ||
+                messages['thankYou'] is! bool ||
+                messages['arrival'] is! bool))) {
+      throw const FormatException('Invalid event defaults');
+    }
     final preferences = ManagerEventSetupPreferences(
+      bookingMode: json['bookingMode'] as String?,
+      startingPriceMinor: json['startingPriceMinor'] as int?,
+      places: json['places'] as int?,
+      waitlistEnabled: json['waitlistEnabled'] as bool?,
+      refundPolicy: json['refundPolicy'] as String?,
+      askedAtBooking: questions == null
+          ? null
+          : List<String>.unmodifiable(questions as List),
+      autoMessages: messages == null
+          ? null
+          : EventAutoMessages(
+              thankYou: (messages as Map)['thankYou'] as bool,
+              arrival: messages['arrival'] as bool,
+            ),
       timezone: json['timezone'] as String?,
       usualDurationMinutes: json['usualDurationMinutes'] as int?,
       preferredVenueId: json['preferredVenueId'] as String?,
@@ -163,7 +249,21 @@ class ManagerEventSetupPreferences {
               paymentInstructions!.length <= 1000)) &&
       (reusablePaymentPage == null ||
           (reusablePaymentPage!.reusableForEvents &&
-              isCanonicalPublicPaymentPageUrl(reusablePaymentPage!.url)));
+              isCanonicalPublicPaymentPageUrl(reusablePaymentPage!.url))) &&
+      (bookingMode == null ||
+          const {
+            'anyone',
+            'followersFirst',
+            'askFirst',
+          }.contains(bookingMode)) &&
+      (startingPriceMinor == null ||
+          (startingPriceMinor! >= 0 && startingPriceMinor! <= 100000000)) &&
+      (places == null || (places! >= 1 && places! <= 1000)) &&
+      (refundPolicy == null || eventRefundPolicies.contains(refundPolicy)) &&
+      (askedAtBooking == null ||
+          (askedAtBooking!.length <= 20 &&
+              askedAtBooking!.toSet().length == askedAtBooking!.length &&
+              askedAtBooking!.every(_validId)));
 
   Map<String, Object?> toSparseJson() => {
     if (timezone != null) 'timezone': timezone,
@@ -183,6 +283,13 @@ class ManagerEventSetupPreferences {
         'url': reusablePaymentPage!.url,
         'reusableForEvents': true,
       },
+    if (bookingMode != null) 'bookingMode': bookingMode,
+    if (startingPriceMinor != null) 'startingPriceMinor': startingPriceMinor,
+    if (places != null) 'places': places,
+    if (waitlistEnabled != null) 'waitlistEnabled': waitlistEnabled,
+    if (refundPolicy != null) 'refundPolicy': refundPolicy,
+    if (askedAtBooking != null) 'askedAtBooking': askedAtBooking,
+    if (autoMessages != null) 'autoMessages': autoMessages!.toJson(),
   };
 
   ManagerEventSetupPreferences copyWith({
@@ -195,7 +302,35 @@ class ManagerEventSetupPreferences {
     Object? offerMessageTemplate = _unchangedPreference,
     Object? paymentInstructions = _unchangedPreference,
     Object? reusablePaymentPage = _unchangedPreference,
+    Object? bookingMode = _unchangedPreference,
+    Object? startingPriceMinor = _unchangedPreference,
+    Object? places = _unchangedPreference,
+    Object? waitlistEnabled = _unchangedPreference,
+    Object? refundPolicy = _unchangedPreference,
+    Object? askedAtBooking = _unchangedPreference,
+    Object? autoMessages = _unchangedPreference,
   }) => ManagerEventSetupPreferences(
+    bookingMode: identical(bookingMode, _unchangedPreference)
+        ? this.bookingMode
+        : bookingMode as String?,
+    startingPriceMinor: identical(startingPriceMinor, _unchangedPreference)
+        ? this.startingPriceMinor
+        : startingPriceMinor as int?,
+    places: identical(places, _unchangedPreference)
+        ? this.places
+        : places as int?,
+    waitlistEnabled: identical(waitlistEnabled, _unchangedPreference)
+        ? this.waitlistEnabled
+        : waitlistEnabled as bool?,
+    refundPolicy: identical(refundPolicy, _unchangedPreference)
+        ? this.refundPolicy
+        : refundPolicy as String?,
+    askedAtBooking: identical(askedAtBooking, _unchangedPreference)
+        ? this.askedAtBooking
+        : askedAtBooking as List<String>?,
+    autoMessages: identical(autoMessages, _unchangedPreference)
+        ? this.autoMessages
+        : autoMessages as EventAutoMessages?,
     timezone: identical(timezone, _unchangedPreference)
         ? this.timezone
         : timezone as String?,

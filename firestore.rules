@@ -253,6 +253,11 @@ service cloud.firestore {
         );
     }
 
+    function eventPlanVisibleToGuests(eventId) {
+      return get(/databases/$(database)/documents/events/$(eventId))
+        .data.get('planVisibleToGuests', true) != false;
+    }
+
     function canReadEventSuccess(eventId) {
       return isAuthed()
         && (
@@ -2792,7 +2797,10 @@ service cloud.firestore {
     }
 
     match /eventSuccessPlans/{eventId} {
-      allow read: if canReadEventSuccess(eventId);
+      // Guests see the plan unless the host turned it off for the event;
+      // a missing planVisibleToGuests reads as visible.
+      allow read: if canReadEventSuccess(eventId)
+        && (isOrganizerHostForEvent(eventId) || eventPlanVisibleToGuests(eventId));
       allow create: if isAuthed()
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanCreateAllowed(eventId);

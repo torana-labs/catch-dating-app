@@ -226,3 +226,34 @@ test("private timezone overrides and clear never revives legacy timezone",
     assert.equal((await read(h.deps)).timezone, null);
     assert.deepEqual(h.rows.get("organizers/org1"), publicBefore);
   });
+
+test("the board defaults save, clear and validate", async () => {
+  const h = harness();
+  const before = await read(h.deps);
+  const result = await update(h.deps, {changes: {
+    startingPriceMinor: {mode: "set", value: 49900},
+    places: {mode: "set", value: 32},
+    waitlistEnabled: {mode: "set", value: true},
+    bookingMode: {mode: "set", value: "askFirst"},
+    refundPolicy: {mode: "set", value: "flexible"},
+    askedAtBooking: {mode: "set", value: ["food", "heard"]},
+    autoMessages: {mode: "set", value: {thankYou: true, arrival: false}},
+  }});
+  assert.deepEqual(result.current.preferences, {timezone: "Asia/Kolkata",
+    startingPriceMinor: 49900, places: 32, waitlistEnabled: true,
+    bookingMode: "askFirst", refundPolicy: "flexible",
+    askedAtBooking: ["food", "heard"],
+    autoMessages: {thankYou: true, arrival: false}});
+  assert.notEqual(result.current.preferencesHash, before.preferencesHash);
+  const cleared = await updateManagerEventSetupDefaults({actorUid: "host1",
+    deps: h.deps, command: {organizerId: "org1", requestId: "request_002",
+      expectedRevision: 1,
+      reviewedDefaultsHash: result.current.reviewedDefaultsHash,
+      changes: {places: {mode: "clear"}}}});
+  assert.equal(cleared.current.preferences.places, undefined);
+  await assert.rejects(updateManagerEventSetupDefaults({actorUid: "host1",
+    deps: h.deps, command: {organizerId: "org1", requestId: "request_003",
+      expectedRevision: 2,
+      reviewedDefaultsHash: cleared.current.reviewedDefaultsHash,
+      changes: {places: {mode: "set", value: 0}}}}), /Invalid Places/);
+});

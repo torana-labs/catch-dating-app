@@ -70,9 +70,10 @@ describe("Catch for weddings application", {timeout: 20_000}, () => {
     expect(screen.getByText("Udaipur · from 12 Dec · 150 to 400 guests")).toBeTruthy();
   });
 
-  it("keeps Send disabled while no intake front door is wired", () => {
+  it("enables Send through the waitlist route by default and shows the consent line", () => {
     render(<WeddingsApplicationPage initialStepOne={stepOne} />);
-    expect((screen.getByRole("button", {name: two.send}) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", {name: two.send}) as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.getByText(two.consent)).toBeTruthy();
   });
 
   it("sends both steps through the submitter and shows what happens next", async () => {

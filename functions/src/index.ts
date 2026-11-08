@@ -868,7 +868,7 @@ export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 
 export {
-  createPrivateEventSetup, updatePrivateEventBasics,
+  createPrivateEventSetup, createPrivateEventSeries, updatePrivateEventBasics,
   updatePrivateEventPreferences, listPrivateEventSetups,
   updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
   reconcilePrivateEventSeats,
@@ -1040,6 +1040,8 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+export {onHostResponseSummaryOfferChanged} from
+  "./hostReadModels/responseOfferTriggers";
 export {onHostGuestViewEventChanged, onHostGuestViewPlanChanged,
   onHostGuestViewAttendeeChanged, onHostGuestViewGuestChanged,
   onHostGuestViewMembershipChanged, onHostGuestViewOrganizerChanged,
@@ -1064,7 +1066,8 @@ export {onHostEventSetupViewEventChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
   onHostEventSetupViewEventOfferChanged, onHostEventSetupViewPaymentChanged,
-  onHostEventSetupViewPendingOrderChanged} from
+  onHostEventSetupViewPendingOrderChanged,
+  onHostEventSetupViewMomentChanged} from
   "./hostReadModels/eventSetupViewTriggers";
 export {onHostEventSetupDefaultViewDefaultsChanged,
   onHostEventSetupDefaultViewOrganizerChanged} from

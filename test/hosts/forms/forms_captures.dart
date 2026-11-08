@@ -185,7 +185,7 @@ Widget hostResponsesCapture() => _frame(
   body: HostResponsesBody(
     state: HostResponsesState(
       status: HostResponsesStatus.content,
-      filter: HostApplicationReviewStatus.submitted,
+      filter: HostResponsesFilter.submitted,
       entries: formEntries,
     ),
     now: formsNow,

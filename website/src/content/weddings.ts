@@ -318,6 +318,8 @@ export const weddingsCopy = {
     heard: {label: "How you heard about us", options: ["Another planner", "A hotel", "Instagram", `A ${brand.name} event`, "Search"], initial: "Another planner"},
     send: "Send our application",
     reply: "We reply on WhatsApp within two working days to book a 30-minute walkthrough.",
+    // The Host application's consent line, for a planner who gives a WhatsApp number and no email.
+    consent: "We review applications and follow up on this number if the wedding is a fit; sending does not book a call or grant access.",
   },
   sent: {
     badge: "Application sent",

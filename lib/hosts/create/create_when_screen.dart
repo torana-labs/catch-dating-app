@@ -43,6 +43,7 @@ class CreateWhenScreen extends StatelessWidget {
     onEnd: handlers.onEnd,
     onPlace: handlers.onPlace,
     onDirections: handlers.onDirections,
+    onRepeat: handlers.onRepeat,
   );
 
   @override

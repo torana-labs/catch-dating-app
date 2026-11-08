@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
 import 'package:flutter/foundation.dart';
@@ -10,7 +11,7 @@ enum HostInsightsRange { sevenDays, thirtyDays, ninetyDays }
 enum HostInsightsStatus { loading, content, error }
 
 /// The figures at the top of Insights.
-enum HostInsightsStatKind { bookings, ticketSales }
+enum HostInsightsStatKind { bookings, ticketSales, cameBack, followers }
 
 @immutable
 class HostInsightsStat {
@@ -19,6 +20,7 @@ class HostInsightsStat {
     required this.value,
     this.previousValue,
     this.currencyCode,
+    this.figure,
   });
 
   final HostInsightsStatKind kind;
@@ -29,6 +31,9 @@ class HostInsightsStat {
 
   /// Set for money in minor units.
   final String? currencyCode;
+
+  /// How the value is written; null is a count, or money with a currency.
+  final HostAnalyticsFigure? figure;
 }
 
 /// Everything the Insights body shows for one period, as plain values.

@@ -355,10 +355,14 @@ function projectClaim(sourceId: string, data: Data, context: InboxContext): Inbo
 function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
   const createdAt = iso(data.createdAt) ?? epoch;
   const partner = data.source === "partner";
+  // Optional; older intents carry no programme and read as an events Host.
+  const weddings = data.programme === "weddings";
   const status = String(data.status);
   const journey: JourneyStep[] = [{
     stepId: "received", occurredAt: createdAt,
-    title: partner ? "A partner nominated an organizer" : "Enquiry from the host website",
+    title: partner ? "A partner nominated an organizer" :
+      weddings ? "Weddings pilot application from the website" :
+        "Enquiry from the host website",
     detail: text(data.fullName), actorUid: text(data.partnerUid), tone: "ink",
   }];
   if (status === "linked") {
@@ -376,8 +380,10 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     sourceId,
     sourcePath: `${sourceCollections.salesInboundIntent}/${sourceId}`,
     title: text(data.fullName) ?? "Host enquiry",
-    subtitle: partner ? "Partner nomination" : "Wants to run events on Catch",
-    cameFrom: partner ? "Partner" : "Host website",
+    subtitle: partner ? "Partner nomination" :
+      weddings ? weddingsSubtitle(data) : "Wants to run events on Catch",
+    cameFrom: partner ? "Partner" : weddings ? "Weddings website" :
+      "Host website",
     nominatorUid: text(data.partnerUid),
     city: cityOf(text(data.city)),
     state: open ? {code: "new", label: "New", tone: "neutral"} :
@@ -389,6 +395,18 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     recommendation: null,
     journey,
   };
+}
+
+/** "Meher Shah Weddings · 12 Dec wedding" from the programme answers. */
+function weddingsSubtitle(data: Data): string {
+  const application = data.programmeApplication &&
+    typeof data.programmeApplication === "object" ?
+    data.programmeApplication as Data : {};
+  const parts = [text(application.planningCompany),
+    text(application.weddingDate) ? `wedding from ${
+      text(application.weddingDate)}` : null].filter(Boolean);
+  return parts.length ? `Weddings pilot: ${parts.join(", ")}` :
+    "Wants to run a wedding on Catch";
 }
 
 const accessStates: Record<string, InboxState> = {

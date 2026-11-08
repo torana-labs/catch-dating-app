@@ -33,6 +33,20 @@
         "private",
         "published"
       ]
+    },
+    "listing": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "link"
+      ]
+    },
+    "showGuestList": {
+      "type": "boolean"
+    },
+    "priceHiddenUntilBookingOpens": {
+      "type": "boolean"
     }
-  }
+  },
+  "description": "Changes who can see and book an event. publicationState is the publication boundary; listing, showGuestList and priceHiddenUntilBookingOpens are optional settings saved with it. Sending the current publicationState with at least one changed setting saves only the settings and leaves registration as it is."
 }

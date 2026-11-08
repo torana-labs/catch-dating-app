@@ -175,6 +175,8 @@ export function buildEventSearchRecord(
   organizer: OrganizerDocument
 ): AlgoliaEventSearchRecord | null {
   if (!isEventPubliclyAccessible(event)) return null;
+  // Link-only events are never searchable; missing listing reads as listed.
+  if (event.listing === "link") return null;
   const startTimeEpoch = timestampEpochSeconds(event.startTime);
   const discoveryMarketId = normalizeSearchMarketId(
     event.discoveryMarketId ?? organizer.locationMarketId ?? organizer.location

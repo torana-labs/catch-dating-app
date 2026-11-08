@@ -74,6 +74,20 @@ interface AnalyticsRecords {
    * link mart could not be read.
    */
   linkRows?: HostAnalyticsLinkRow[] | null;
+  /**
+   * Follow edges of the organizers in scope (active and ended), or null when
+   * they could not be read. Absent: no followers card (admin builder tests).
+   */
+  follows?: FollowRecord[] | null;
+  /** True when an organizer had more follow edges than one read returns. */
+  followsTruncated?: boolean;
+}
+
+/** One organizerFollows edge, reduced to what the followers card counts. */
+export interface FollowRecord {
+  status: string;
+  followedAt: Date | null;
+  unfollowedAt: Date | null;
 }
 
 interface EventAttendeeRecord {
@@ -119,6 +133,7 @@ const maxHostEventsPerOrganizer = 500;
 const maxAdminOrganizers = 100;
 const maxAdminEvents = 1000;
 const hostAnalyticsSnapshotCollection = "hostAnalyticsSnapshots";
+const maxFollowEdgesPerOrganizer = 5000;
 export const hostAnalyticsSnapshotTtlMs = 15 * 60 * 1000;
 
 const defaultDeps: HostAnalyticsDeps = {
@@ -446,6 +461,18 @@ export function buildHostAnalyticsFromRecords(
         previousReviews.newReviews
       ),
       metricCard(
+        "cameBackRate",
+        "Came back",
+        percentage(totals.repeat, totals.booked),
+        "percent",
+        sourceStatus,
+        "Booked guests who had been to one of your events before.",
+        percentage(previousTotals.repeat, previousTotals.booked)
+      ),
+      ...(records.follows === undefined ? [] :
+        [followersCard(records.follows, records.followsTruncated === true,
+          range, now)]),
+      metricCard(
         "connections",
         "Connections",
         totals.matches,
@@ -530,7 +557,8 @@ async function loadHostAnalytics(
     if (cached !== null) return cached;
   }
   const events = await resolveEvents(db, payload, organizers, range, scope);
-  const [martRows, operationalAttendees, registrationAnalytics, linkRows] =
+  const [martRows, operationalAttendees, registrationAnalytics, linkRows,
+    followRead] =
     await Promise.all([
       deps.bigQuerySource.loadRows(
         {
@@ -563,9 +591,16 @@ async function loadHostAnalytics(
         console.warn("Owner link click rows unavailable.", error);
         return null;
       }),
+      loadFollowRecords(db, organizers.map((organizer) => organizer.id))
+        .catch((error) => {
+          console.warn("Organizer follow edges unavailable.", error);
+          return null;
+        }),
     ]);
   const response = buildHostAnalyticsFromRecords(
-    {organizers, events, martRows, operationalAttendees, linkRows},
+    {organizers, events, martRows, operationalAttendees, linkRows,
+      follows: followRead?.follows ?? null,
+      followsTruncated: followRead?.truncated ?? false},
     range,
     now
   );
@@ -595,6 +630,8 @@ export function hostAnalyticsSnapshotId(
 ): string {
   const scopeHash = createHash("sha256").update(JSON.stringify({
     registrationReadoutVersion: 2,
+    // Bumped when cards are added so cached responses without them expire.
+    summaryCardsVersion: 2,
     organizerId: payload.organizerId ?? null,
     eventId: payload.eventId ?? null,
     organizerIds: organizers.map((organizer) => organizer.id).sort(),
@@ -837,6 +874,72 @@ async function loadOperationalAttendees(
   })));
 }
 
+/**
+ * Reads every follow edge of the organizers in scope by organizer id alone
+ * (a single-field index), so ended follows can still date the start count.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string[]} organizerIds Organizers in scope.
+ * @return {Promise<object>} Follow edges and whether a read was capped.
+ */
+async function loadFollowRecords(
+  db: FirebaseFirestore.Firestore,
+  organizerIds: string[]
+): Promise<{follows: FollowRecord[]; truncated: boolean}> {
+  const snapshots = await Promise.all(uniqueStrings(organizerIds).map((id) =>
+    db.collection("organizerFollows")
+      .where("organizerId", "==", id)
+      .select("status", "followedAt", "unfollowedAt")
+      .limit(maxFollowEdgesPerOrganizer)
+      .get()));
+  return {
+    follows: snapshots.flatMap((snapshot) => snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        status: String(data.status),
+        followedAt: timestampToDate(data.followedAt),
+        unfollowedAt: timestampToDate(data.unfollowedAt),
+      };
+    })),
+    truncated: snapshots.some((snapshot) =>
+      snapshot.docs.length >= maxFollowEdgesPerOrganizer),
+  };
+}
+
+/**
+ * Followers at the end of the range (or now), compared with followers at its
+ * start. An edge counts at time T when it was followed before T and had not
+ * ended by T; a re-follow carries its latest followedAt.
+ * @param {FollowRecord[]|null} follows Follow edges, or null when unread.
+ * @param {boolean} truncated Whether an organizer's edges were capped.
+ * @param {AnalyticsRange} range Analytics range.
+ * @param {Date} now Current time.
+ * @return {object} The followers metric card.
+ */
+export function followersCard(
+  follows: FollowRecord[] | null,
+  truncated: boolean,
+  range: AnalyticsRange,
+  now: Date
+): HostAnalyticsCallableResponse["summaryCards"][number] {
+  const caption = "People following your organiser page.";
+  if (follows === null) {
+    return metricCard("followers", "Followers", 0, "count", "missing",
+      caption);
+  }
+  const end = Math.min(range.endExclusive.getTime(), now.getTime());
+  const start = range.start.getTime();
+  const followingAt = (at: number) => follows.filter((follow) => {
+    const followedAt = follow.followedAt?.getTime();
+    if (followedAt === undefined || followedAt >= at) return false;
+    const endedAt = follow.status === "active" ? null :
+      follow.unfollowedAt?.getTime() ?? 0;
+    return endedAt === null || endedAt >= at;
+  }).length;
+  return metricCard("followers", "Followers",
+    followingAt(end), "count", truncated ? "partial" : "ready", caption,
+    followingAt(start));
+}
+
 async function getOrganizerRecord(
   db: FirebaseFirestore.Firestore,
   organizerId: string
@@ -1075,6 +1178,7 @@ function summarizeEventMetrics(events: EventMetricAccumulator[]) {
     paymentCompleted: sum.paymentCompleted + event.paymentCompletedCount,
     matches: sum.matches + event.mutualMatchCount,
     chats: sum.chats + event.chatStartedCount,
+    repeat: sum.repeat + event.repeatAttendeeCount,
     operationalAttendees:
       sum.operationalAttendees + event.operationalAttendeeCount,
     operationalCheckedIn:
@@ -1088,6 +1192,7 @@ function summarizeEventMetrics(events: EventMetricAccumulator[]) {
     paymentCompleted: 0,
     matches: 0,
     chats: 0,
+    repeat: 0,
     operationalAttendees: 0,
     operationalCheckedIn: 0,
   });
