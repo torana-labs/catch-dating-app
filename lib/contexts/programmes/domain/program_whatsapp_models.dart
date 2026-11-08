@@ -11,14 +11,21 @@ enum ProgramWhatsappThreadState { needsYou, handled }
 
 /// Why a thread was passed to the planner.
 enum ProgramWhatsappEscalation {
-  notInFacts,
-  askedForPerson,
-  sentMedia,
-  distressed,
-  unknownSender,
   assistantOff,
-  budgetReached,
-  other,
+  plannerHandling,
+  outsideWindow,
+  media,
+  askedForPerson,
+  distress,
+  giftsOrMoney,
+  changeRequest,
+  notInFacts,
+  budgetExhausted,
+  providerError,
+  unsafeAnswer,
+  factsUnavailable,
+  uncertainRetry,
+  unknownSender,
 }
 
 enum ProgramWhatsappDirection { inbound, outbound }
@@ -38,7 +45,7 @@ enum ProgramWhatsappMessageStatus {
 }
 
 /// Languages the assistant may answer in.
-enum ProgramAssistantLanguage { en, hi, ta, te, bn, mr, gu, kn, ml, pa, ur }
+enum ProgramAssistantLanguage { en, hi, gu, mr, ta }
 
 /// What guests are told about when the planner replies.
 enum ProgramAssistantReplyWithin { hour, fourHours, sameDay }
@@ -53,11 +60,10 @@ enum ProgramAssistantAttachment { tickets, ids }
 
 /// The fixed list of things the assistant never does.
 enum ProgramAssistantNeverDoes {
+  changesBookings,
   sharesOtherGuests,
-  promisesChanges,
-  handlesPayments,
-  givesMedicalOrLegalAdvice,
-  sharesStaffContacts,
+  guesses,
+  promisesForPlanner,
 }
 
 List<T> _enumList<T extends Enum>(Object? value, List<T> values) => [
@@ -487,4 +493,32 @@ class ProgramAssistantSettingsChange {
     if (attachmentReads case final value?)
       'attachmentReads': [for (final item in value) item.name],
   };
+}
+
+/// What "Try it" would do with a guest's question.
+enum ProgramAssistantPreviewOutcome { answer, passedOn, unavailable }
+
+/// `previewProgramAssistantReply`: the answer or why it would pass it on.
+class ProgramAssistantPreview {
+  const ProgramAssistantPreview({
+    required this.outcome,
+    required this.reply,
+    required this.reason,
+  });
+
+  factory ProgramAssistantPreview.fromCallableData(Object? value) {
+    final map = requiredMap(value, 'assistant preview');
+    return ProgramAssistantPreview(
+      outcome: nullableEnum(
+        map['outcome'],
+        ProgramAssistantPreviewOutcome.values,
+      )!,
+      reply: map['reply'] as String?,
+      reason: nullableEnum(map['reason'], ProgramWhatsappEscalation.values),
+    );
+  }
+
+  final ProgramAssistantPreviewOutcome outcome;
+  final String? reply;
+  final ProgramWhatsappEscalation? reason;
 }

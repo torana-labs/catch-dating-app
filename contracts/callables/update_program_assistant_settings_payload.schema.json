@@ -30,15 +30,9 @@
         "enum": [
           "en",
           "hi",
-          "ta",
-          "te",
-          "bn",
-          "mr",
           "gu",
-          "kn",
-          "ml",
-          "pa",
-          "ur"
+          "mr",
+          "ta"
         ]
       },
       "description": "Languages the assistant may reply in; the first is the fallback."

@@ -40,6 +40,7 @@ void main() {
         settings: plannerAssistantSettings,
         onChange: changes.add,
         onRetry: () {},
+        onTry: (_) {},
       ),
     );
     expect(find.text('+91 98765 01234'), findsOneWidget);
@@ -59,13 +60,13 @@ void main() {
     expect(changes.last.replyWithin, ProgramAssistantReplyWithin.hour);
     await tester.tap(
       find.byKey(
-        const ValueKey<String>('host-programme-assistant-language-ta'),
+        const ValueKey<String>('host-programme-assistant-language-gu'),
       ),
     );
     expect(changes.last.languages, [
       ProgramAssistantLanguage.en,
       ProgramAssistantLanguage.hi,
-      ProgramAssistantLanguage.ta,
+      ProgramAssistantLanguage.gu,
     ]);
     await tester.ensureVisible(
       find.byKey(const ValueKey<String>('host-programme-assistant-topic-rsvp')),

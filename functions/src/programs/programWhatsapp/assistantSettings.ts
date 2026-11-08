@@ -54,8 +54,7 @@ export type AssistantSettings = Pick<ProgramAssistantSettingsDocument,
 
 /** The fixed list; clients can read it but never change it. */
 export const ASSISTANT_NEVER_DOES: AssistantSettings["neverDoes"] = [
-  "sharesOtherGuests", "promisesChanges", "handlesPayments",
-  "givesMedicalOrLegalAdvice", "sharesStaffContacts",
+  "changesBookings", "sharesOtherGuests", "guesses", "promisesForPlanner",
 ];
 
 /** What a programme without a settings document runs on. */

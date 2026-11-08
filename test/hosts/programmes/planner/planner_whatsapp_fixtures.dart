@@ -67,7 +67,7 @@ final plannerWhatsappInboxData = <String, Object?>{
       'Sent an attachment',
       'needsYou',
       _at(7, 12),
-      escalation: 'sentMedia',
+      escalation: 'media',
     ),
     _row(
       'u-0123',
@@ -168,11 +168,10 @@ final plannerAssistantSettings = ProgramAssistantSettings.fromCallableData({
   'replyWithin': 'sameDay',
   'escalationStaffUids': ['meher', 'sana'],
   'neverDoes': [
+    'changesBookings',
     'sharesOtherGuests',
-    'promisesChanges',
-    'handlesPayments',
-    'givesMedicalOrLegalAdvice',
-    'sharesStaffContacts',
+    'guesses',
+    'promisesForPlanner',
   ],
   'tone': 'warm',
   'dailyTokenBudget': 200000,

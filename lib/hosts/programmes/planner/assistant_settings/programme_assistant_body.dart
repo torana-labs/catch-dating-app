@@ -20,11 +20,21 @@ class HostProgrammeAssistantBody extends StatelessWidget {
     required this.settings,
     required this.onChange,
     required this.onRetry,
+    required this.onTry,
+    this.preview,
+    this.previewing = false,
     this.busy = false,
   });
 
   final HostProgrammeStatus status;
   final ProgramAssistantSettings? settings;
+
+  /// Asks the assistant a guest's question without sending anything.
+  final ValueChanged<String> onTry;
+
+  /// The last "Try it" result, if any.
+  final ProgramAssistantPreview? preview;
+  final bool previewing;
 
   /// Saves one change; the screen fences it with the settings revision.
   final ValueChanged<ProgramAssistantSettingsChange> onChange;
@@ -320,6 +330,23 @@ class HostProgrammeAssistantBody extends StatelessWidget {
           ],
         ),
         CatchSection(
+          title: l10n.hostProgrammeInboxTryIt,
+          dividers: CatchSectionPlacement.none,
+          children: [
+            CatchComposerInput(
+              key: const ValueKey<String>('host-programme-assistant-try'),
+              placeholder: l10n.hostProgrammeInboxTryItAsk,
+              sendLabel: l10n.hostProgrammeInboxTryItSend,
+              onSend: previewing ? null : onTry,
+            ),
+            if (preview case final result?)
+              HostProgrammeAssistantPreview(
+                preview: result,
+                senderName: sender?.verifiedName,
+              ),
+          ],
+        ),
+        CatchSection(
           title: l10n.hostProgrammeInboxNeverDoes,
           children: [
             for (final rule in settings.neverDoes)
@@ -328,11 +355,6 @@ class HostProgrammeAssistantBody extends StatelessWidget {
                 title: hostProgrammeAssistantNeverDoesText(l10n, rule),
                 onTap: null,
               ),
-            CatchIndexRow(
-              icon: CatchIcons.block,
-              title: l10n.hostProgrammeInboxNeverGuesses,
-              onTap: null,
-            ),
           ],
         ),
       ],
@@ -344,14 +366,52 @@ String hostProgrammeAssistantNeverDoesText(
   AppLocalizations l10n,
   ProgramAssistantNeverDoes rule,
 ) => switch (rule) {
-  ProgramAssistantNeverDoes.promisesChanges =>
+  ProgramAssistantNeverDoes.changesBookings =>
     l10n.hostProgrammeInboxNeverPromises,
   ProgramAssistantNeverDoes.sharesOtherGuests =>
     l10n.hostProgrammeInboxNeverShares,
-  ProgramAssistantNeverDoes.handlesPayments =>
-    l10n.hostProgrammeInboxNeverPayments,
-  ProgramAssistantNeverDoes.givesMedicalOrLegalAdvice =>
-    l10n.hostProgrammeInboxNeverAdvice,
-  ProgramAssistantNeverDoes.sharesStaffContacts =>
-    l10n.hostProgrammeInboxNeverStaff,
+  ProgramAssistantNeverDoes.guesses => l10n.hostProgrammeInboxNeverGuesses,
+  ProgramAssistantNeverDoes.promisesForPlanner =>
+    l10n.hostProgrammeInboxNeverPromisesForPlanner,
 };
+
+/// One "Try it" result: the answer as the guest would see it, or what the
+/// assistant would do instead.
+class HostProgrammeAssistantPreview extends StatelessWidget {
+  const HostProgrammeAssistantPreview({
+    super.key,
+    required this.preview,
+    required this.senderName,
+  });
+
+  final ProgramAssistantPreview preview;
+  final String? senderName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final reply = preview.reply;
+    if (preview.outcome == ProgramAssistantPreviewOutcome.answer &&
+        reply != null) {
+      return CatchChatBubble(
+        key: const ValueKey<String>('host-programme-assistant-try-answer'),
+        text: reply,
+        author: CatchChatAuthor(
+          name: senderName ?? l10n.hostProgrammeInboxAssistantTitle,
+        ),
+      );
+    }
+    return CatchNotice.inline(
+      key: const ValueKey<String>('host-programme-assistant-try-passed'),
+      tone: CatchNoticeTone.neutral,
+      icon: CatchIcons.flag,
+      body: preview.outcome == ProgramAssistantPreviewOutcome.unavailable
+          ? l10n.hostProgrammeInboxTryItOff
+          : [
+              l10n.hostProgrammeInboxTryItPassed,
+              if (preview.reason case final reason?)
+                hostProgrammeInboxEscalationText(l10n, reason),
+            ].join(' '),
+    );
+  }
+}

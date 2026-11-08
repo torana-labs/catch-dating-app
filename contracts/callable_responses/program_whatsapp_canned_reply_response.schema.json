@@ -53,15 +53,9 @@
                 "enum": [
                   "en",
                   "hi",
-                  "ta",
-                  "te",
-                  "bn",
-                  "mr",
                   "gu",
-                  "kn",
-                  "ml",
-                  "pa",
-                  "ur"
+                  "mr",
+                  "ta"
                 ]
               },
               "text": {

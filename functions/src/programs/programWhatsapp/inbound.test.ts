@@ -7,7 +7,6 @@ import {hashEndpoint} from "../../organizers/organizerCampaignModel";
 import {processOrganizerMessagingWebhookEvent} from
   "../../organizers/organizerWhatsappWebhook";
 import {routeProgramWhatsappInbound} from "./inbound";
-import {handleProgramInboundMessage} from "./inboundTrigger";
 import {
   guestHash,
   inboundEvent,
@@ -51,7 +50,7 @@ test("media is recorded by reference and passed to the planner", async () => {
   await routeProgramWhatsappInbound(asDb(db),
     inboundEvent({body: null}), now);
   const thread = db.getDoc("programWhatsappThreads/program-1_household-1")!;
-  assert.equal(thread.escalationReason, "sentMedia");
+  assert.equal(thread.escalationReason, "media");
   assert.equal(thread.lastMessagePreview, "Sent an attachment");
 });
 
@@ -114,16 +113,3 @@ test("the webhook processor routes a guest before the CRM path", async () => {
   assert.equal(db.getDoc("organizerContactChannelStates/state-1")!
     .lastInboundAt, undefined);
 });
-
-test("the trigger stub leaves assistant threads waiting for lane W2",
-  async () => {
-    const db = new FakeFirestore(whatsappSeed());
-    const route = await routeProgramWhatsappInbound(asDb(db),
-      inboundEvent({}), now);
-    const messageId = route.kind === "routed" ? route.messageId! : "";
-    await handleProgramInboundMessage(asDb(db), messageId,
-      db.getDoc(`programWhatsappMessages/${messageId}`) as never,
-      now.toMillis());
-    assert.equal(db.getDoc("programWhatsappThreads/program-1_household-1")!
-      .state, "needsYou");
-  });

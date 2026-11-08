@@ -252,6 +252,8 @@ const retentionCollections = [
   "programWhatsappCannedReplies",
   "programAssistantSettings",
   "programWhatsappEndpointIndex",
+  "programAssistantRuns",
+  "programAssistantBudgets",
 ] as const;
 
 function shortId(docId: string): string {
@@ -296,6 +298,9 @@ function retentionScrub(
   case "programAssistantSettings":
   case "programWhatsappEndpointIndex":
     return null; // Planner settings and the derived phone index.
+  case "programAssistantRuns":
+  case "programAssistantBudgets":
+    return null; // Assistant audit rows and daily ledgers (no guest text).
   case "programVendorBills":
     // Keep the commercial totals; the free text may name guests.
     return {

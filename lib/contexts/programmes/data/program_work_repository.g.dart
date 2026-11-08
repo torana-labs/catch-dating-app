@@ -855,6 +855,62 @@ final class ProgramPhotosViewFamily extends $Family
   String toString() => r'programPhotosViewProvider';
 }
 
+/// The guest inbox and assistant settings commands, so presentation code
+/// never reaches into the repository provider itself.
+
+@ProviderFor(programmeInboxCommands)
+final programmeInboxCommandsProvider = ProgrammeInboxCommandsProvider._();
+
+/// The guest inbox and assistant settings commands, so presentation code
+/// never reaches into the repository provider itself.
+
+final class ProgrammeInboxCommandsProvider
+    extends
+        $FunctionalProvider<
+          ProgramWorkRepository,
+          ProgramWorkRepository,
+          ProgramWorkRepository
+        >
+    with $Provider<ProgramWorkRepository> {
+  /// The guest inbox and assistant settings commands, so presentation code
+  /// never reaches into the repository provider itself.
+  ProgrammeInboxCommandsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'programmeInboxCommandsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$programmeInboxCommandsHash();
+
+  @$internal
+  @override
+  $ProviderElement<ProgramWorkRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ProgramWorkRepository create(Ref ref) {
+    return programmeInboxCommands(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProgramWorkRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProgramWorkRepository>(value),
+    );
+  }
+}
+
+String _$programmeInboxCommandsHash() =>
+    r'6e9249961f2c67699c62a3575d281d45845871a2';
+
 /// One inbox segment, from the live read or a bounded snapshot.
 
 @ProviderFor(programWhatsappInbox)

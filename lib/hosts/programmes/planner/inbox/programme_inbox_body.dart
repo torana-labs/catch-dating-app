@@ -474,15 +474,25 @@ String hostProgrammeInboxEscalationText(
     l10n.hostProgrammeInboxPassedNotInFacts,
   ProgramWhatsappEscalation.askedForPerson =>
     l10n.hostProgrammeInboxPassedPerson,
-  ProgramWhatsappEscalation.sentMedia => l10n.hostProgrammeInboxPassedMedia,
-  ProgramWhatsappEscalation.distressed =>
-    l10n.hostProgrammeInboxPassedDistressed,
+  ProgramWhatsappEscalation.media => l10n.hostProgrammeInboxPassedMedia,
+  ProgramWhatsappEscalation.distress => l10n.hostProgrammeInboxPassedDistressed,
   ProgramWhatsappEscalation.unknownSender =>
     l10n.hostProgrammeInboxPassedUnknown,
   ProgramWhatsappEscalation.assistantOff => l10n.hostProgrammeInboxPassedOff,
-  ProgramWhatsappEscalation.budgetReached =>
+  ProgramWhatsappEscalation.budgetExhausted =>
     l10n.hostProgrammeInboxPassedBudget,
-  ProgramWhatsappEscalation.other => l10n.hostProgrammeInboxPassedOther,
+  ProgramWhatsappEscalation.outsideWindow =>
+    l10n.hostProgrammeInboxPassedWindow,
+  ProgramWhatsappEscalation.giftsOrMoney => l10n.hostProgrammeInboxPassedMoney,
+  ProgramWhatsappEscalation.changeRequest =>
+    l10n.hostProgrammeInboxPassedChange,
+  ProgramWhatsappEscalation.plannerHandling =>
+    l10n.hostProgrammeInboxPassedPlanner,
+  ProgramWhatsappEscalation.providerError ||
+  ProgramWhatsappEscalation.unsafeAnswer ||
+  ProgramWhatsappEscalation.factsUnavailable ||
+  ProgramWhatsappEscalation.uncertainRetry =>
+    l10n.hostProgrammeInboxPassedOther,
 };
 
 CatchChatBubbleStatus? hostProgrammeInboxBubbleStatus(
@@ -503,13 +513,7 @@ String hostProgrammeInboxLanguageName(
 ) => switch (language) {
   ProgramAssistantLanguage.en => l10n.hostProgrammeInboxLanguageEn,
   ProgramAssistantLanguage.hi => l10n.hostProgrammeInboxLanguageHi,
-  ProgramAssistantLanguage.ta => l10n.hostProgrammeInboxLanguageTa,
-  ProgramAssistantLanguage.te => l10n.hostProgrammeInboxLanguageTe,
-  ProgramAssistantLanguage.bn => l10n.hostProgrammeInboxLanguageBn,
-  ProgramAssistantLanguage.mr => l10n.hostProgrammeInboxLanguageMr,
   ProgramAssistantLanguage.gu => l10n.hostProgrammeInboxLanguageGu,
-  ProgramAssistantLanguage.kn => l10n.hostProgrammeInboxLanguageKn,
-  ProgramAssistantLanguage.ml => l10n.hostProgrammeInboxLanguageMl,
-  ProgramAssistantLanguage.pa => l10n.hostProgrammeInboxLanguagePa,
-  ProgramAssistantLanguage.ur => l10n.hostProgrammeInboxLanguageUr,
+  ProgramAssistantLanguage.mr => l10n.hostProgrammeInboxLanguageMr,
+  ProgramAssistantLanguage.ta => l10n.hostProgrammeInboxLanguageTa,
 };

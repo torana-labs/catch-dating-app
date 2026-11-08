@@ -159,6 +159,30 @@ extension ProgramWhatsappRepositoryApi on ProgramWorkRepository {
   );
 }
 
+/// "Try it": what the assistant would answer, sending nothing.
+extension ProgramAssistantPreviewApi on ProgramWorkRepository {
+  Future<ProgramAssistantPreview> previewAssistantReply({
+    required String programId,
+    required String text,
+    required String requestId,
+  }) => _call(
+    name: 'previewProgramAssistantReply',
+    payload: PreviewProgramAssistantReplyCallableRequest(
+      programId: programId,
+      requestId: requestId,
+      text: text,
+    ).toJson(),
+    action: 'try the assistant',
+    parse: ProgramAssistantPreview.fromCallableData,
+  );
+}
+
+/// The guest inbox and assistant settings commands, so presentation code
+/// never reaches into the repository provider itself.
+@riverpod
+ProgramWorkRepository programmeInboxCommands(Ref ref) =>
+    ref.watch(programWorkRepositoryProvider);
+
 /// One inbox segment, from the live read or a bounded snapshot.
 @riverpod
 Future<ProgramReadView<ProgramWhatsappInbox>> programWhatsappInbox(

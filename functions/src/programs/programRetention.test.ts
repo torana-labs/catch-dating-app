@@ -905,7 +905,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 34);
+      Array<{collection: string}>).length, 36);
   });
 
 test("mismatched evidence scope blocks retention completion",
@@ -979,6 +979,8 @@ test("retention deletes the programme's WhatsApp threads and settings",
       "programWhatsappCannedReplies/program-1_bus-times",
       "programAssistantSettings/program-1",
       "programWhatsappEndpointIndex/program-1_" + "a".repeat(64),
+      "programAssistantRuns/par_1",
+      "programAssistantBudgets/program-1_2026-12-12",
     ];
     const db = new FakeFirestore({
       ...retentionSeed(),

@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_body.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -33,6 +32,39 @@ class HostProgrammeAssistantScreen extends ConsumerStatefulWidget {
 class _HostProgrammeAssistantScreenState
     extends ConsumerState<HostProgrammeAssistantScreen> {
   bool _busy = false;
+  bool _previewing = false;
+  ProgramAssistantPreview? _preview;
+
+  Future<void> _try(String text) async {
+    final l10n = context.l10n;
+    setState(() => _previewing = true);
+    ProgramAssistantPreview? result;
+    try {
+      result = await ref
+          .read(programmeInboxCommandsProvider)
+          .previewAssistantReply(
+            programId: widget.programId,
+            text: text,
+            requestId:
+                'try-${DateTime.now().microsecondsSinceEpoch}-'
+                '${_random.nextInt(1 << 30)}',
+          );
+    } on Object {
+      result = null;
+    }
+    if (!mounted) return;
+    setState(() {
+      _previewing = false;
+      if (result != null) _preview = result;
+    });
+    if (result == null) {
+      showCatchNotice(
+        context,
+        l10n.hostProgrammeInboxTryItFailed,
+        tone: CatchNoticeTone.danger,
+      );
+    }
+  }
 
   Future<void> _change(
     ProgramAssistantSettings current,
@@ -91,6 +123,9 @@ class _HostProgrammeAssistantScreenState
               : HostProgrammeStatus.ready,
           settings: settings,
           busy: _busy,
+          preview: _preview,
+          previewing: _previewing,
+          onTry: (text) => unawaited(_try(text)),
           onChange: (change) {
             if (settings != null) unawaited(_change(settings, change));
           },

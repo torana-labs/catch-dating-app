@@ -108,7 +108,7 @@ export async function persistProgramInboundMessage(params: {
       state: "needsYou",
       language: existing?.language ?? null,
       escalationReason: target.unknownSender ? "unknownSender" :
-        media ? "sentMedia" : null,
+        media ? "media" : null,
       lastMessagePreview: isLatest ? preview : existing!.lastMessagePreview,
       lastMessageDirection: isLatest ? "inbound" :
         existing!.lastMessageDirection,

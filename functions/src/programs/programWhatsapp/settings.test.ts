@@ -77,12 +77,12 @@ test("assistant settings start from the defaults and keep never-does fixed",
     assert.equal(initial.sender?.connectionId, "conn-1");
     assert.equal(initial.sender?.boundToProgramme, true);
     const updated = await updateProgramAssistantSettingsHandler(request({
-      programId: "program-1", enabled: true, languages: ["hi", "en", "ta"],
+      programId: "program-1", enabled: true, languages: ["hi", "en", "gu"],
       replyWithin: "hour", expectedRevision: 0,
       requestId: "settings-cmd-1"}, "manager-1"), deps(db));
     assert.equal(updated.revision, 1);
     assert.equal(updated.replyWithin, "hour");
-    assert.equal(updated.neverDoes.length, 5);
+    assert.equal(updated.neverDoes.length, 4);
     assert.equal(validateSettings(
       db.getDoc("programAssistantSettings/program-1")), true,
     JSON.stringify(validateSettings.errors));

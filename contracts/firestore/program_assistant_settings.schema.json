@@ -50,15 +50,9 @@
         "enum": [
           "en",
           "hi",
-          "ta",
-          "te",
-          "bn",
-          "mr",
           "gu",
-          "kn",
-          "ml",
-          "pa",
-          "ur"
+          "mr",
+          "ta"
         ]
       },
       "description": "Languages the assistant may reply in; the first is the fallback.",
@@ -88,16 +82,15 @@
     },
     "neverDoes": {
       "type": "array",
-      "maxItems": 5,
+      "maxItems": 4,
       "uniqueItems": true,
       "items": {
         "type": "string",
         "enum": [
+          "changesBookings",
           "sharesOtherGuests",
-          "promisesChanges",
-          "handlesPayments",
-          "givesMedicalOrLegalAdvice",
-          "sharesStaffContacts"
+          "guesses",
+          "promisesForPlanner"
         ]
       },
       "description": "The fixed list of things the assistant never does; written by the server, never by clients.",

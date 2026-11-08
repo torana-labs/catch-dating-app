@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_body.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
@@ -138,7 +139,8 @@ class _HostProgrammeInboxScreenState
     );
     final inbox = read.value?.value;
     final threadId = _threadId;
-    final threadRead = threadId == null
+    final CatchAsyncState<ProgramReadView<ProgramWhatsappThread>>? threadRead =
+        threadId == null
         ? null
         : catchAsyncStateFromAsyncValue(
             ref.watch(
@@ -174,11 +176,12 @@ class _HostProgrammeInboxScreenState
           filter: _filter,
           selectedThreadId: threadId,
           thread: thread,
-          threadStatus: threadRead == null || threadRead.hasError
-              ? HostProgrammeStatus.error
-              : thread == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          threadStatus: switch (threadRead?.status) {
+            CatchAsyncStatus.data when thread != null =>
+              HostProgrammeStatus.ready,
+            CatchAsyncStatus.loading => HostProgrammeStatus.loading,
+            _ => HostProgrammeStatus.error,
+          },
           cannedReplies: [
             for (final reply in canned)
               if (!reply.archived) reply,

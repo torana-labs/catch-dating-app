@@ -11,11 +11,10 @@
     "staff-1"
   ],
   "neverDoes": [
+    "changesBookings",
     "sharesOtherGuests",
-    "promisesChanges",
-    "handlesPayments",
-    "givesMedicalOrLegalAdvice",
-    "sharesStaffContacts"
+    "guesses",
+    "promisesForPlanner"
   ],
   "tone": "warm",
   "dailyTokenBudget": 200000,

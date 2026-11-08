@@ -101,15 +101,9 @@
           "enum": [
             "en",
             "hi",
-            "ta",
-            "te",
-            "bn",
-            "mr",
             "gu",
-            "kn",
-            "ml",
-            "pa",
-            "ur",
+            "mr",
+            "ta",
             null
           ]
         },
@@ -119,16 +113,24 @@
             "null"
           ],
           "enum": [
-            "notInFacts",
-            "askedForPerson",
-            "sentMedia",
-            "distressed",
-            "unknownSender",
             "assistantOff",
-            "budgetReached",
-            "other",
+            "plannerHandling",
+            "outsideWindow",
+            "media",
+            "askedForPerson",
+            "distress",
+            "giftsOrMoney",
+            "changeRequest",
+            "notInFacts",
+            "budgetExhausted",
+            "providerError",
+            "unsafeAnswer",
+            "factsUnavailable",
+            "uncertainRetry",
+            "unknownSender",
             null
-          ]
+          ],
+          "description": "Why the thread was passed to the planner: the assistant's reasons (functions/src/programs/assistant/policy.ts ESCALATION_REASONS) plus unknownSender."
         },
         "lastMessagePreview": {
           "type": "string",

@@ -1,3 +1,7 @@
+/* firestore-index: programWhatsappMessages (
+  threadId:ASCENDING,
+  createdAtMillis:DESCENDING
+) */
 /* eslint-disable max-len */
 // handleProgramWhatsappInbound: what the wedding assistant does with one
 // guest message. Lane W1's onProgramWhatsappInboundMessageCreated trigger
@@ -244,7 +248,7 @@ async function recentHistory(db: FirebaseFirestore.Firestore, threadId: string,
   current: HistoryMessage): Promise<HistoryMessage[]> {
   try {
     const snap = await db.collection(PROGRAM_WHATSAPP_MESSAGES)
-      .where("threadId", "==", threadId).orderBy("createdAt", "desc").limit(6).get();
+      .where("threadId", "==", threadId).orderBy("createdAtMillis", "desc").limit(6).get();
     const rows = snap.docs.map((doc) => messageView(doc.id, doc.data()))
       .filter((row) => row !== null && row.kind === "text" && row.text)
       .map((row) => ({direction: row!.direction, text: row!.text!}))
