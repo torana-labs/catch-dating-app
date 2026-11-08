@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_event_runtime_host_help_payload.schema.json",
+  "title": "RequestEventRuntimeHostHelpCallablePayload",
+  "description": "A ready no-download participant asks the host for practical help. It opens an event-lead case the live console reads from hostEventCaseViews. A checked-in guest needs nothing more; anyone else proves they are at the venue with the live venue-session token, as checkInEventRuntime does. Safety concerns go through Help and safety, not here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["publicRuntimeId", "requestId", "category"],
+  "properties": {
+    "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"},
+    "category": {"type": "string", "enum": ["eventLogistics", "accessibility", "other"]},
+    "venueSessionToken": {"type": "string", "minLength": 64, "maxLength": 2048}
+  }
+}
