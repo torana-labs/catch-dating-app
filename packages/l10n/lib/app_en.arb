@@ -29393,6 +29393,8 @@
   "@doorScanNotBooked": {"description": "Scanner notice: the scanned ticket belongs to a guest who is invited or on the waitlist, not booked.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door"},
   "doorScanUnavailable": "Could not read that ticket. Try again.",
   "@doorScanUnavailable": {"description": "Scanner notice: the ticket lookup failed for a reason other than the ticket itself.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door"},
+  "doorTeamWithYou": "On the door with you: {names}",
+  "@doorTeamWithYou": {"description": "Door line naming the other managers and staff whose door is open now.", "placeholders": {"names": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door"},
   "doorGuestPlaces": "{count, plural, =1{1 place} other{{count} places}}",
   "@doorGuestPlaces": {"description": "Door row meta: places the guest-list row holds, shown when more than one.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.door"},
   "doorScanPlaces": "places",

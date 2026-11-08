@@ -94,11 +94,13 @@ DoorState doorBoardState({
   DoorFilter filter = DoorFilter.arriving,
   String query = '',
   int needsReview = 0,
+  List<String> team = const <String>[],
 }) => DoorState(
   status: DoorStatus.content,
   filter: filter,
   query: query,
   needsReview: needsReview,
+  team: team,
   guests: [
     const HostDoorGuest(
       attendeeId: 'dp',

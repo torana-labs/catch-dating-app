@@ -29,6 +29,7 @@ class DoorState {
     this.query = '',
     this.needsReview = 0,
     this.scannedAttendeeId,
+    this.team = const <String>[],
     this.error,
     this.stackTrace,
   });
@@ -53,6 +54,10 @@ class DoorState {
 
   /// The guest the last scanned ticket checked in.
   final String? scannedAttendeeId;
+
+  /// The names of the other managers and staff on the door now, from the
+  /// presence listener.
+  final List<String> team;
   final Object? error;
   final StackTrace? stackTrace;
 
@@ -85,6 +90,7 @@ class DoorState {
     query: query ?? this.query,
     needsReview: needsReview,
     scannedAttendeeId: scannedAttendeeId,
+    team: team,
     error: error,
     stackTrace: stackTrace,
   );

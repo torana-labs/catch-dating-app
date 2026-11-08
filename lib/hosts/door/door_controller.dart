@@ -1,8 +1,10 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_staff_presence_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_ticket_code_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
@@ -183,6 +185,16 @@ class DoorSession extends _$DoorSession {
     return null;
   }
 
+  /// Says this phone's manager or staff member is on the door. A refused or
+  /// failed heartbeat only leaves them out of the others' door team.
+  Future<void> heartbeat() async {
+    try {
+      await ref.read(eventStaffPresenceRepositoryProvider).heartbeat(eventId);
+    } on Object {
+      return;
+    }
+  }
+
   /// Lets the success sheet go, for the next ticket.
   void clearScanned() => state = state.copyWith(clearScanned: true);
 
@@ -341,8 +353,24 @@ DoorState doorController(Ref ref, String eventId) {
     query: session.query,
     needsReview: session.outbox.needsReviewCount,
     scannedAttendeeId: session.scannedAttendeeId,
+    team: doorTeam(
+      presence: ref.watch(watchEventStaffPresenceProvider(eventId)).value,
+      selfUid: ref.watch(uidProvider).value,
+      now: DateTime.now(),
+    ),
   );
 }
+
+/// The other managers and staff on the door at [now], most recent first: a
+/// lapsed heartbeat or this phone's own row is left out.
+List<String> doorTeam({
+  required List<EventStaffPresence>? presence,
+  required String? selfUid,
+  required DateTime now,
+}) => [
+  for (final row in presence ?? const <EventStaffPresence>[])
+    if (row.uid != selfUid && row.isCurrentAt(now)) row.displayName,
+];
 
 /// Starts the door's listeners again after the guest list failed.
 void retryDoorReads(WidgetRef ref, String eventId) {

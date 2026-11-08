@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 /// The door in board order: how many are in, the meter and who is still to
 /// come, the search beside the scan button, the filters with their counts
 /// and the guests. On a window wide enough for the operations layout the
-/// guests take the main pane and the scanner tile, the last arrival and the
-/// counts take the side.
+/// guests take the main pane and the scanner tile, the last arrival, the
+/// counts and who else is on the door take the side.
 class DoorBody extends StatelessWidget {
   const DoorBody({
     super.key,
@@ -64,6 +64,14 @@ class DoorBody extends StatelessWidget {
       variant: CatchTextVariant.bodySmall,
       tone: CatchTextTone.secondary,
     );
+    final team = state.team.isEmpty
+        ? null
+        : CatchText(
+            l10n.doorTeamWithYou(names: state.team.join(', ')),
+            key: const ValueKey<String>('door-team'),
+            variant: CatchTextVariant.bodySmall,
+            tone: CatchTextTone.secondary,
+          );
     final search = CatchSearchField(
       key: const ValueKey<String>('door-search'),
       copy: catchSearchFieldCopy(l10n),
@@ -141,7 +149,7 @@ class DoorBody extends StatelessWidget {
           children: [
             CatchStack(
               gap: CatchStackGap.g8,
-              children: [headline, meter, sentence],
+              children: [headline, meter, sentence, ?team],
             ),
             CatchStack(
               direction: CatchStackDirection.row,
@@ -246,6 +254,7 @@ class DoorBody extends StatelessWidget {
                     ),
                   ],
                 ),
+                ?team,
               ],
             ),
           ),

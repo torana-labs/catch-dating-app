@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_staff_presence_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_ticket_code_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
@@ -76,6 +78,19 @@ EventTicketResolution _ticket(
   status: status,
   attendanceRevision: 0,
   partySize: 1,
+);
+
+EventStaffPresence _presence(
+  String uid,
+  String name, {
+  Duration left = const Duration(minutes: 1),
+}) => EventStaffPresence(
+  eventId: doorEventId,
+  uid: uid,
+  displayName: name,
+  role: EventStaffPresenceRole.operator,
+  lastSeenAt: doorNow,
+  expiresAt: doorNow.add(left),
 );
 
 HostAttendanceOutboxEntry _entry(
@@ -221,6 +236,23 @@ void main() {
     });
   });
 
+  test('the door team is everyone else whose heartbeat has not lapsed', () {
+    expect(
+      doorTeam(
+        presence: [
+          _presence('host-1', 'Me'),
+          _presence('staff-1', 'Kabir'),
+          _presence('staff-2', 'Gone', left: const Duration(minutes: -1)),
+          _presence('staff-3', 'Priya'),
+        ],
+        selfUid: 'host-1',
+        now: doorNow,
+      ),
+      ['Kabir', 'Priya'],
+    );
+    expect(doorTeam(presence: null, selfUid: null, now: doorNow), isEmpty);
+  });
+
   group('doorController', () {
     late StreamController<List<EventAttendee>> attendees;
     late _FakeRoster roster;
@@ -250,6 +282,10 @@ void main() {
           ).overrideWith((ref) => Stream.value(null)),
           hostOperationalRosterControllerProvider.overrideWithValue(roster),
           eventTicketCodeRepositoryProvider.overrideWithValue(tickets),
+          watchEventStaffPresenceProvider(
+            doorEventId,
+          ).overrideWith((ref) => Stream.value([_presence('host-1', 'Me')])),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
         ],
       );
       addTearDown(attendees.close);

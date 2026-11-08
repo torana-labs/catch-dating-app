@@ -58,7 +58,12 @@ class DoorScreen extends ConsumerStatefulWidget {
 }
 
 class _DoorScreenState extends ConsumerState<DoorScreen> {
+  /// How often an open door says its host is still on it; presence lapses
+  /// after two missed beats.
+  static const _heartbeatEvery = Duration(seconds: 45);
+
   var _scanning = false;
+  Timer? _heartbeat;
 
   DoorSession get _session =>
       ref.read(doorSessionProvider(widget.eventId).notifier);
@@ -70,13 +75,24 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
       if (!mounted) return;
       if (widget.initialFilter case final filter?) _session.setFilter(filter);
       unawaited(_guard(_session.loadOutbox));
+      unawaited(_session.heartbeat());
     });
+    _heartbeat = Timer.periodic(
+      _heartbeatEvery,
+      (_) => unawaited(_session.heartbeat()),
+    );
     ref.listenManual(appConnectivityProvider, (_, next) {
       final results = next.asData?.value;
       if (results != null && !connectivityResultsAreOffline(results)) {
         unawaited(_guard(_session.flushOutbox));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _heartbeat?.cancel();
+    super.dispose();
   }
 
   @override

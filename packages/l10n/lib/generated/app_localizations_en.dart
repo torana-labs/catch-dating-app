@@ -23226,6 +23226,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doorScanUnavailable => 'Could not read that ticket. Try again.';
 
   @override
+  String doorTeamWithYou({required String names}) {
+    return 'On the door with you: $names';
+  }
+
+  @override
   String doorGuestPlaces({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

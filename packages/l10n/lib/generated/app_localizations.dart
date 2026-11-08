@@ -37469,6 +37469,12 @@ abstract class AppLocalizations {
   /// **'Could not read that ticket. Try again.'**
   String get doorScanUnavailable;
 
+  /// Door line naming the other managers and staff whose door is open now.
+  ///
+  /// In en, this message translates to:
+  /// **'On the door with you: {names}'**
+  String doorTeamWithYou({required String names});
+
   /// Door row meta: places the guest-list row holds, shown when more than one.
   ///
   /// In en, this message translates to:
