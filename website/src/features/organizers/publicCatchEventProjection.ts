@@ -115,7 +115,10 @@ export function projectPublicCatchEventSnapshot(snapshot: {
 }): LivePublicCatchEvent[] | null {
   if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites || snapshot.size > 400) return null;
   return snapshot.docs.flatMap((document) => {
-    const projected = projectLivePublicCatchEvent(document.id, document.data());
+    const data = document.data();
+    // The live listing feed leaves out link-only events, as the server lists do.
+    if (record(data)?.listing === "link") return [];
+    const projected = projectLivePublicCatchEvent(document.id, data);
     // A live listing arranges events for a page, as the server repositories do.
     return projected ? [{...projected, event: withoutDatingFraming(projected.event)}] : [];
   });

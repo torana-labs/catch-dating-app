@@ -129,3 +129,21 @@ it("reflects edited and cleared host guest notes without stale fallbacks", () =>
     expect(JSON.stringify(record)).not.toContain("Private marker");
   }
 });
+it("leaves link-only events out of the live listing feed", () => {
+  const source = {metadata: {fromCache: false, hasPendingWrites: false}, size: 2, docs: [
+    {id: "listed", data: () => base()}, {id: "secret", data: () => ({...base(), listing: "link"})}]};
+  expect(snapshot(source)?.map((row) => row.event.id)).toEqual(["listed"]);
+});
+
+it("projects the host's guest settings only when they differ from the defaults", () => {
+  expect(project("event", base())?.event).not.toHaveProperty("showGuestList");
+  const settings = project("event", {...base(), showGuestList: false, priceHiddenUntilBookingOpens: true,
+    publicRegistrationEnabled: false, externalBooking: {provider: "luma", url: "https://lu.ma/run"}})?.event;
+  expect(settings).toMatchObject({showGuestList: false, priceHidden: true,
+    externalBooking: {provider: "luma", url: "https://lu.ma/run"}});
+  // An open registration shows the price; an http ticket link is dropped.
+  const open = project("event", {...base(), priceHiddenUntilBookingOpens: true,
+    externalBooking: {provider: "luma", url: "http://lu.ma/run"}})?.event;
+  expect(open).not.toHaveProperty("priceHidden");
+  expect(open).not.toHaveProperty("externalBooking");
+});

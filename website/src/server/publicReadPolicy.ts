@@ -47,6 +47,13 @@ export function publicEventAuthorized(id: unknown, raw: unknown): boolean {
     !(data.organizerId && data.organizerId !== data.organizerId);
 }
 
+/** A link-only event keeps its own page for people with the link, but no
+ * list, index or sitemap names it. Missing listing reads as listed. Mirrors
+ * publicEventListed in functions/src/publicPages/publicReadPolicy.ts. */
+export function publicEventListed(raw: unknown): boolean {
+  return object(raw)?.listing !== "link";
+}
+
 export {publicJsonLd} from "../shared/next/publicJsonLd.ts";
 
 /** URLs emitted in public links must not carry embedded credentials or active schemes. */

@@ -181,6 +181,20 @@ describe("per-route reads", () => {
     expect(await assembleEventDetailCatalog(fakeReader(world).reader, "alpha-run", readAt)).toBeNull();
   });
 
+  it("leave link-only events off every list while their own page still serves them", async () => {
+    const world = catalogWorld();
+    world.events["alpha-secret"] = catchEvent("alpha", {listing: "link"});
+    const full = await assemblePublicCatalog(fakeReader(world).reader, readAt);
+    expect(full.listings.find((listing) => listing.id === "alpha")?.catchEvents?.map((event) => event.id))
+      .toEqual(["alpha-run"]);
+    const detail = await assembleOrganizerDetailFromSources(fakeReader(world).reader, "/organizers/alpha/", readAt);
+    expect(detail?.catalog.listings.find((listing) => listing.id === "alpha")?.catchEvents?.map((event) => event.id))
+      .toEqual(["alpha-run"]);
+    const page = await assembleEventDetailFromSources(fakeReader(world).reader, "alpha-secret", readAt);
+    expect(page?.listings.flatMap((listing) => listing.catchEvents?.map((event) => event.id) ?? []))
+      .toContain("alpha-secret");
+  });
+
   it("read an event page with document gets, not catalog queries", async () => {
     const {reader, reads} = fakeReader(catalogWorld());
     const detail = await assembleEventDetailFromSources(reader, "beta-dinner", readAt);
