@@ -4769,7 +4769,8 @@
       "id": "shared_photo_tile",
       "kind": "supporting-component",
       "routeIds": [
-        "organizer_listing_canonical"
+        "organizer_listing_canonical",
+        "programme_hampers"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPhotoTile.tsx",
@@ -4790,7 +4791,12 @@
           "placeholder"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
+      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style."
     },
     {
       "id": "shared_preview_card",
@@ -5165,7 +5171,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery"
+        "visitor_discovery",
+        "programme_ids"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChoiceInput.tsx",
@@ -5179,13 +5186,8 @@
           "default"
         ]
       },
-      "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices.",
-      "comparedWith": [
-        "catch.chip",
-        "catch.option_card",
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchChoiceTile for its described choices, CatchChip for its filter chips and CatchText for its legend; it is a choice group that arranges those parts, not an option card, a chip or a text style."
+      "notes": "Implements catch.chip.field: the library's choice group (Flutter's CatchChoiceInput), which arranges CatchChip filter chips, CatchChoiceTile described choices and a CatchText legend. The homepage's format filter, Explore's view, format and date choices and the guest ID page's kind of ID.",
+      "componentId": "catch.chip.field"
     },
     {
       "id": "web_ui_catch_search_field",
