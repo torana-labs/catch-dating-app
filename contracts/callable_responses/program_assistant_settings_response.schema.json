@@ -1,0 +1,218 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_assistant_settings_response.schema.json",
+  "title": "ProgramAssistantSettingsCallableResponse",
+  "description": "One programme's assistant settings (defaults when none are saved), its WhatsApp number and the staff who can take escalations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "enabled",
+    "languages",
+    "replyWithin",
+    "escalationStaffUids",
+    "neverDoes",
+    "tone",
+    "dailyTokenBudget",
+    "answerTopics",
+    "attachmentReads",
+    "revision",
+    "usesDefaults",
+    "sender",
+    "staff"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether the assistant answers this wedding's guests. The PROGRAM_ASSISTANT_ENABLED param must also be true."
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "en",
+          "hi",
+          "ta",
+          "te",
+          "bn",
+          "mr",
+          "gu",
+          "kn",
+          "ml",
+          "pa",
+          "ur"
+        ]
+      },
+      "description": "Languages the assistant may reply in; the first is the fallback."
+    },
+    "replyWithin": {
+      "type": "string",
+      "enum": [
+        "hour",
+        "fourHours",
+        "sameDay"
+      ],
+      "description": "What guests are told about when the planner replies to anything passed on."
+    },
+    "escalationStaffUids": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Programme staff told when a thread is passed to the planner."
+    },
+    "neverDoes": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "sharesOtherGuests",
+          "promisesChanges",
+          "handlesPayments",
+          "givesMedicalOrLegalAdvice",
+          "sharesStaffContacts"
+        ]
+      },
+      "description": "The fixed list of things the assistant never does; written by the server, never by clients."
+    },
+    "tone": {
+      "type": "string",
+      "enum": [
+        "warm",
+        "formal",
+        "brief"
+      ]
+    },
+    "dailyTokenBudget": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 5000000,
+      "description": "Per-programme daily model token cap."
+    },
+    "answerTopics": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "schedule",
+          "venues",
+          "dressCode",
+          "travel",
+          "stay",
+          "rsvp"
+        ]
+      },
+      "description": "What the assistant may answer from the household's itinerary."
+    },
+    "attachmentReads": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "tickets",
+          "ids"
+        ]
+      },
+      "description": "Attachments the assistant may read. Media is not downloaded yet; these are stored for the planner's choice."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "usesDefaults": {
+      "type": "boolean"
+    },
+    "sender": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "connectionId",
+        "displayPhoneNumber",
+        "verifiedName",
+        "status",
+        "boundToProgramme"
+      ],
+      "properties": {
+        "connectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayPhoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "verifiedName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "boundToProgramme": {
+          "type": "boolean",
+          "description": "False when the programme falls back to the organiser's first active number."
+        }
+      },
+      "description": "The wedding's WhatsApp number, or null when none is connected."
+    },
+    "staff": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          }
+        }
+      },
+      "description": "Programme staff who can be chosen for escalation."
+    }
+  }
+}

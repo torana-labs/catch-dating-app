@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_whatsapp_thread_handling_response.schema.json",
+  "title": "ProgramWhatsappThreadHandlingCallableResponse",
+  "description": "Who answers a thread after a take-over or hand-back.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "threadId",
+    "handledBy",
+    "state",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "handledBy": {
+      "type": "string",
+      "enum": [
+        "assistant",
+        "planner"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "needsYou",
+        "handled"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

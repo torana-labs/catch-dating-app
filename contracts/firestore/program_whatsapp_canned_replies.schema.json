@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_whatsapp_canned_replies.schema.json",
+  "title": "ProgramWhatsappCannedReplyDocument",
+  "description": "One saved reply the planner can send from the inbox, with a text per language, at programWhatsappCannedReplies/{programId}_{cannedReplyId}. Server-only; deleted by the programme retention sweep.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programWhatsappCannedReplies",
+  "x-firestore-path": "programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
+  "x-owner": "upsertProgramWhatsappCannedReply callable",
+  "required": [
+    "programId",
+    "organizerId",
+    "cannedReplyId",
+    "label",
+    "variants",
+    "sortOrder",
+    "archived",
+    "updatedByUid",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "revision",
+    "lastRequestId",
+    "lastRequestHash"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cannedReplyId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,47}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "x-catch-ownership": "callable-owned"
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "language",
+          "text"
+        ],
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "ta",
+              "te",
+              "bn",
+              "mr",
+              "gu",
+              "kn",
+              "ml",
+              "pa",
+              "ur"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "archived": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}
