@@ -5,11 +5,22 @@ import {
   scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {AssignmentTopology} from "./assignmentTopology";
+import {
+  planAssignmentRounds,
+  type PlannedRound,
+  type PlannerArrivalGroupPolicy,
+  type PlannerAttributeMode,
+  type PlannerAttributeObjective,
+  type PlannerExplainability,
+  type PlannerTimeLedgerEntry,
+  type PlannerUnitSpec,
+} from "./assignmentPlanner";
 import {assignmentFeatureGroupBalanceCost,
   assignmentFeaturePairAdjustment,
   buildAssignmentFeatureScoringContext,
   type AssignmentFeatureRule,
-  type EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+  type EventAssignmentFeatureSnapshot,
+  type NormalizedFeatureValue} from "./assignmentFeatureScoring";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
@@ -132,6 +143,9 @@ export interface AssignmentEngineExplainability {
   relaxedConstraintCount: number;
   violatedConstraintCount: number;
   constraintRelaxations: AssignmentConstraintRelaxation[];
+  engineCore: AssignmentEngineCore;
+  /** Shape-planner metrics; null when the legacy scorer ran. */
+  planner: PlannerExplainability | null;
 }
 
 export interface AssignmentEngineContext<T extends AssignmentParticipant> {
@@ -153,7 +167,53 @@ export interface AssignmentEngineContext<T extends AssignmentParticipant> {
     rules: AssignmentFeatureRule[];
     snapshots: EventAssignmentFeatureSnapshot[];
   };
+  /**
+   * Generic objectives over `activityAttributes` keys. The caller decides
+   * which attribute keys a participant carries; sensitive profile keys such
+   * as gender or age band are only present when the event opted in.
+   */
+  attributeObjectives?: AssignmentAttributeObjectiveConfig[];
+  /** How shared arrival groups (friends, couples, bookings) are treated. */
+  arrivalGroupPolicy?: PlannerArrivalGroupPolicy;
+  /** Spread people who arrived alone evenly across units. */
+  spreadSoloArrivals?: boolean;
+  /** Who already met, partnered or sat beside whom, and court time so far. */
+  history?: AssignmentHistoryInput;
+  /** Deterministic tie-break seed; normally the event id. */
+  seed?: string;
 }
+
+export interface AssignmentAttributeObjectiveConfig {
+  attribute: string;
+  mode: PlannerAttributeMode;
+  /** 0-100; defaults to 20, the host feature default. */
+  weight?: number;
+}
+
+export interface AssignmentHistoryInput {
+  pairMeetingCounts?: Record<string, number>;
+  partnerCounts?: Record<string, number>;
+  opponentCounts?: Record<string, number>;
+  neighborCounts?: Record<string, number>;
+  assignedMinutesByUid?: Record<string, number>;
+}
+
+/** One unit in the uniform round response. */
+export interface AssignmentPlanUnit<T extends AssignmentParticipant> {
+  unitIndex: number;
+  members: T[];
+  subunits?: T[][];
+  seatOrder?: string[];
+}
+
+/** One round in the uniform response: units plus an explicit bench. */
+export interface AssignmentPlanRound<T extends AssignmentParticipant> {
+  roundIndex: number;
+  units: Array<AssignmentPlanUnit<T>>;
+  bench: T[];
+}
+
+export type AssignmentEngineCore = "shapePlanner" | "legacyScorer";
 
 export type AssignmentRotationRepeatStrategy =
   "avoid" |
@@ -180,6 +240,12 @@ export interface AssignmentEngineResult<T extends AssignmentParticipant> {
   rotationRounds: Array<OptimizedRotationRound<T>>;
   exclusionLedger: AssignmentExclusionLedger;
   explainability: AssignmentEngineExplainability;
+  /** Uniform shape for every format: rounds -> units -> members + bench. */
+  plannedRounds: Array<AssignmentPlanRound<T>>;
+  /** Cumulative on-unit and bench time per uid across the planned rounds. */
+  timeLedger: Record<string, PlannerTimeLedgerEntry>;
+  /** Updated meeting history to persist for the next round or occurrence. */
+  history: Required<Omit<AssignmentHistoryInput, "assignedMinutesByUid">>;
 }
 
 export interface AssignmentExclusionLedger {
@@ -281,8 +347,19 @@ export function runAssignmentEngine<
     (params.rotationRoundCount ?? 0) > 0;
 
   let plan: AssignmentPlanCore<T>;
+  let shaped: ShapePlannerOutcome<T> | null = null;
   if (assignmentResolution.status === "unsupported") {
     plan = {groups: [], groupRounds: [], rotationRounds: []};
+  } else if (usesShapePlanner(params, assignmentAlgorithm, constraints)) {
+    shaped = runShapePlanner({
+      params,
+      constraints,
+      rotationPolicy,
+      compatibilityPolicy,
+      questionnaireMode,
+      matchingObjective: effectiveMatchingObjective.objective,
+    });
+    plan = shaped.plan;
   } else if (shouldBuildPairRotations) {
     plan = {
       groups: [],
@@ -343,6 +420,8 @@ export function runAssignmentEngine<
     constraints,
   });
 
+  const plannedRounds = shaped?.plannedRounds ??
+    plannedRoundsFromLegacyPlan(plan, params.participants);
   return {
     ...plan,
     assignmentAlgorithm,
@@ -351,7 +430,16 @@ export function runAssignmentEngine<
     effectiveMatchingObjective: effectiveMatchingObjective.objective,
     assignmentResolution,
     exclusionLedger,
+    plannedRounds,
+    timeLedger: shaped?.timeLedger ?? timeLedgerForRounds(
+      plannedRounds,
+      params.participants,
+      constraints.exclusionIntervalMinutes
+    ),
+    history: shaped?.history ?? historyForRounds(plannedRounds),
     explainability: buildAssignmentEngineExplainability({
+      engineCore: shaped === null ? "legacyScorer" : "shapePlanner",
+      planner: shaped?.explainability ?? null,
       plan,
       participants: params.participants,
       blockedPairs: params.blockedPairs,
@@ -570,6 +658,8 @@ function accrueRoundExclusion(params: {
 function buildAssignmentEngineExplainability<
   T extends AssignmentParticipant
 >(params: {
+  engineCore: AssignmentEngineCore;
+  planner: PlannerExplainability | null;
   plan: AssignmentPlanCore<T>;
   participants: T[];
   blockedPairs: Set<string>;
@@ -716,6 +806,8 @@ function buildAssignmentEngineExplainability<
       "violated"
     ),
     constraintRelaxations: [...constraintRelaxations],
+    engineCore: params.engineCore,
+    planner: params.planner,
   };
 }
 
@@ -2670,4 +2762,426 @@ function canJoinGroup<T extends AssignmentParticipant>(
   return group.every((member) =>
     !blockedPairs.has(assignmentPairKey(participant.uid, member.uid))
   ) && canJoinHostConstrainedGroup(participant.uid, group, constraints);
+}
+
+interface ShapePlannerOutcome<T extends AssignmentParticipant> {
+  plan: AssignmentPlanCore<T>;
+  plannedRounds: Array<AssignmentPlanRound<T>>;
+  timeLedger: Record<string, PlannerTimeLedgerEntry>;
+  history: AssignmentEngineResult<T>["history"];
+  explainability: PlannerExplainability;
+}
+
+const DEFAULT_ATTRIBUTE_OBJECTIVE_WEIGHT = 20;
+const LEGACY_ACTIVITY_OBJECTIVE_WEIGHT = 40;
+
+/**
+ * Returns whether a request needs the shape planner. Team balancing, table
+ * seating, generic attribute objectives, cross-section coverage, explicit
+ * history and seat-bounded resources (doubles courts, tables) all run there.
+ * Legacy pod and pair requests keep their pinned scorer until parity work
+ * moves them (docs/assignment_engine.md, Migration).
+ * @param {AssignmentEngineContext<T>} params Engine request.
+ * @param {EventSuccessAssignmentAlgorithm} algorithm Effective algorithm.
+ * @param {NormalizedAssignmentConstraints} constraints Constraints.
+ * @return {boolean} Whether the shape planner runs.
+ */
+function usesShapePlanner<T extends AssignmentParticipant>(
+  params: AssignmentEngineContext<T>,
+  algorithm: EventSuccessAssignmentAlgorithm,
+  constraints: NormalizedAssignmentConstraints
+): boolean {
+  if (algorithm === "teamBalancer" || algorithm === "tableSeating") {
+    return true;
+  }
+  if ((params.attributeObjectives?.length ?? 0) > 0) return true;
+  if (params.history !== undefined) return true;
+  if (constraints.softFeatures?.rules.some((rule) =>
+    rule.mode === "coverAcrossGroups") === true) return true;
+  const capacity = params.topology.resourceCapacity;
+  return (params.topology.topology ?? "set") !== "sequence" &&
+    capacity !== null && capacity !== undefined &&
+    capacity.seatsPerUnit !== null && capacity.concurrentUnits !== null;
+}
+
+/**
+ * Runs the shape planner and maps its rounds to the legacy result fields.
+ * @param {object} input Planner adapter inputs.
+ * @return {ShapePlannerOutcome<T>} Plan and uniform round response.
+ */
+function runShapePlanner<T extends AssignmentParticipant>(input: {
+  params: AssignmentEngineContext<T>;
+  constraints: NormalizedAssignmentConstraints;
+  rotationPolicy: NormalizedAssignmentRotationPolicy;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  questionnaireMode: QuestionnaireScoringMode;
+  matchingObjective: EventSuccessMatchingObjective;
+}): ShapePlannerOutcome<T> {
+  const {params, constraints} = input;
+  const topology = params.topology;
+  const rotating = topology.rotationsEnabled &&
+    (params.rotationRoundCount ?? 0) > 0;
+  const units = plannerUnitSpec(topology);
+  const result = planAssignmentRounds({
+    participants: params.participants,
+    units,
+    rounds: rotating ? params.rotationRoundCount ?? 0 : 1,
+    roundMinutes: rotating ? constraints.exclusionIntervalMinutes : 0,
+    blockedPairs: params.blockedPairs,
+    constraints,
+    attributes: plannerAttributeObjectives(
+      params,
+      constraints,
+      input.matchingObjective
+    ),
+    arrivalGroupPolicy: params.arrivalGroupPolicy ??
+      (topology.unitKind === "teams" || topology.unitKind === "tables" ?
+        "keepTogether" : "ignore"),
+    spreadSoloArrivals: params.spreadSoloArrivals ??
+      topology.unitKind === "teams",
+    repeatPolicy: input.rotationPolicy,
+    pairScore: plannerPairScore<T>(
+      input.matchingObjective,
+      input.compatibilityPolicy
+    ),
+    history: params.history === undefined ? undefined : {
+      pairMeetingCounts: recordMap(params.history.pairMeetingCounts),
+      partnerCounts: recordMap(params.history.partnerCounts),
+      opponentCounts: recordMap(params.history.opponentCounts),
+      neighborCounts: recordMap(params.history.neighborCounts),
+      assignedMinutesByUid: recordMap(params.history.assignedMinutesByUid),
+    },
+    seed: params.seed ?? params.softFeatures?.eventId ?? "catch",
+  });
+
+  const plannedRounds = result.rounds.map((round) =>
+    toPlanRound(round));
+  const scoring = {
+    questionnaireMode: input.questionnaireMode,
+    compatibilityPolicy: input.compatibilityPolicy,
+    matchingObjective: input.matchingObjective,
+  };
+  let plan: AssignmentPlanCore<T>;
+  if (!rotating) {
+    plan = {
+      groups: (result.rounds[0]?.units ?? []).map((unit, index) =>
+        groupSummary({group: unit.members, index, ...scoring})),
+      groupRounds: [],
+      rotationRounds: [],
+    };
+  } else if (
+    units.subunitSize === undefined &&
+    result.rounds.every((round) =>
+      round.units.every((unit) => unit.members.length === 2))
+  ) {
+    plan = {
+      groups: [],
+      groupRounds: [],
+      rotationRounds: result.rounds.map((round) => ({
+        roundIndex: round.roundIndex,
+        pairs: round.units.map((unit) => {
+          const [a, b] = unit.members;
+          const scored = scorePairForOptimizer(a, b, {
+            ...scoring,
+            allowOrientationFallback: true,
+          });
+          return {
+            a,
+            b,
+            score: scored.score,
+            compatibility: scored.compatibility,
+            mutualInterest: scored.mutualInterest,
+            orientationCompatible: scored.orientationCompatible,
+          };
+        }),
+      })),
+    };
+  } else {
+    plan = {
+      groups: [],
+      groupRounds: result.rounds.map((round) => ({
+        roundIndex: round.roundIndex,
+        groups: round.units.map((unit, index) =>
+          groupSummary({group: unit.members, index, ...scoring})),
+      })),
+      rotationRounds: [],
+    };
+  }
+  return {
+    plan,
+    plannedRounds,
+    timeLedger: result.ledger,
+    history: result.history,
+    explainability: result.explainability,
+  };
+}
+
+/**
+ * Translates the saved topology into a planner unit shape.
+ * @param {AssignmentTopology} topology Resolved topology.
+ * @return {PlannerUnitSpec} Unit shape.
+ */
+export function plannerUnitSpec(topology: AssignmentTopology):
+  PlannerUnitSpec {
+  const capacity = topology.resourceCapacity ?? null;
+  const seats = capacity?.seatsPerUnit ?? null;
+  const concurrent = capacity?.concurrentUnits ?? null;
+  const seatOrder = topology.topology === "adjacency";
+  const pairsOnResource = topology.unitKind === "pairs" &&
+    seats !== null && seats > 2 && seats % 2 === 0;
+  const flexibleMinimum = seats === null ? 1 :
+    Math.max(2, Math.ceil(seats * 2 / 3));
+  if (seats !== null && concurrent !== null) {
+    return {
+      resource: {
+        count: concurrent,
+        seatsPerUnit: seats,
+        minSeats: pairsOnResource ? seats : flexibleMinimum,
+      },
+      ...(pairsOnResource ? {subunitSize: 2} : {}),
+      ...(seatOrder ? {seatOrder} : {}),
+    };
+  }
+  if (seats !== null) {
+    return {
+      size: seats,
+      minSize: flexibleMinimum,
+      maxSize: seats,
+      ...(pairsOnResource ? {subunitSize: 2} : {}),
+      ...(seatOrder ? {seatOrder} : {}),
+    };
+  }
+  return {
+    count: Math.max(1, topology.groupCount),
+    ...(seatOrder ? {seatOrder} : {}),
+  };
+}
+
+/**
+ * Builds generic attribute objectives from saved activity controls, explicit
+ * objective configs and consent-checked form-answer features.
+ * @return {PlannerAttributeObjective[]} Objectives.
+ */
+function plannerAttributeObjectives<T extends AssignmentParticipant>(
+  params: AssignmentEngineContext<T>,
+  constraints: NormalizedAssignmentConstraints,
+  matchingObjective: EventSuccessMatchingObjective
+): PlannerAttributeObjective[] {
+  const objectives: PlannerAttributeObjective[] = [];
+  const activityObjective = (
+    attribute: string,
+    mode: PlannerAttributeMode,
+    weight: number
+  ): PlannerAttributeObjective => {
+    const valuesByUid = new Map<string, NormalizedFeatureValue>();
+    for (const participant of params.participants) {
+      const value = activityValue(participant, attribute);
+      if (value !== null) {
+        valuesByUid.set(participant.uid, {kind: "category", value});
+      }
+    }
+    return {id: `activity:${attribute}`, mode, weight, valuesByUid};
+  };
+  const balanceMode: PlannerAttributeMode = matchingObjective === "spread" ?
+    "cover" : "balance";
+  for (const attribute of constraints.balanceActivityAttributes) {
+    objectives.push(activityObjective(attribute, balanceMode,
+      LEGACY_ACTIVITY_OBJECTIVE_WEIGHT));
+  }
+  for (const attribute of constraints.clusterActivityAttributes) {
+    objectives.push(activityObjective(attribute, "cluster",
+      LEGACY_ACTIVITY_OBJECTIVE_WEIGHT));
+  }
+  for (const config of params.attributeObjectives ?? []) {
+    const attribute = config.attribute.trim();
+    if (attribute.length === 0) continue;
+    const weight = Math.max(0, Math.min(100,
+      config.weight ?? DEFAULT_ATTRIBUTE_OBJECTIVE_WEIGHT));
+    objectives.push(activityObjective(attribute, config.mode, weight));
+  }
+  const features = constraints.softFeatures;
+  for (const rule of features?.rules ?? []) {
+    const valuesByUid = new Map<string, NormalizedFeatureValue>();
+    for (const [uid, byFeature] of features?.valuesByUid ?? []) {
+      const value = byFeature.get(rule.featureId);
+      if (value !== undefined) valuesByUid.set(uid, value);
+    }
+    objectives.push({
+      id: `feature:${rule.featureId}`,
+      mode: featureModeToPlannerMode(rule.mode),
+      weight: rule.weight,
+      valuesByUid,
+    });
+  }
+  return objectives;
+}
+
+/** Maps a host feature mode onto the generic planner vocabulary. */
+function featureModeToPlannerMode(
+  mode: AssignmentFeatureRule["mode"]
+): PlannerAttributeMode {
+  switch (mode) {
+  case "preferSimilar":
+    return "cluster";
+  case "preferDifferent":
+    return "diversify";
+  case "balanceAcrossGroups":
+    return "balance";
+  case "coverAcrossGroups":
+    return "cover";
+  }
+}
+
+/**
+ * Returns the opt-in pair objective. Romantic scoring exists only when the
+ * effective objective is romantic, which already requires the
+ * `mutualInterestOnly` signal policy; questionnaire affinity and novelty
+ * require `questionnaireClueOnly`.
+ * @param {EventSuccessMatchingObjective} objective Effective objective.
+ * @param {EventSuccessCompatibilityPolicy} policy Signal policy.
+ * @return {Function | undefined} Pair score, higher is better.
+ */
+function plannerPairScore<T extends AssignmentParticipant>(
+  objective: EventSuccessMatchingObjective,
+  policy: EventSuccessCompatibilityPolicy
+): ((a: T, b: T) => number) | undefined {
+  if (objective === "romantic" && policy === "mutualInterestOnly") {
+    return (a, b) => scoreDatingCompatibilityPair(a, b, {
+      questionnaireMode: "off",
+      allowOrientationFallback: false,
+    }).score;
+  }
+  if ((objective === "affinity" || objective === "novelty") &&
+      policy === "questionnaireClueOnly") {
+    return (a, b) => scoreQuestionnaireObjectivePair(a, b, objective).score;
+  }
+  return undefined;
+}
+
+function toPlanRound<T extends AssignmentParticipant>(
+  round: PlannedRound<T>
+): AssignmentPlanRound<T> {
+  return {
+    roundIndex: round.roundIndex,
+    units: round.units.map((unit) => ({
+      unitIndex: unit.unitIndex,
+      members: unit.members,
+      ...(unit.subunits === undefined ? {} : {subunits: unit.subunits}),
+      ...(unit.seatOrder === undefined ? {} : {seatOrder: unit.seatOrder}),
+    })),
+    bench: round.bench,
+  };
+}
+
+/**
+ * Projects legacy groups, group rounds or pair rounds into the uniform shape.
+ * @param {AssignmentPlanCore<T>} plan Legacy plan.
+ * @param {Array<T>} participants Eligible participants.
+ * @return {Array<AssignmentPlanRound<T>>} Uniform rounds.
+ */
+function plannedRoundsFromLegacyPlan<T extends AssignmentParticipant>(
+  plan: AssignmentPlanCore<T>,
+  participants: T[]
+): Array<AssignmentPlanRound<T>> {
+  const unitsByRound: Array<{roundIndex: number; units: T[][]}> = [];
+  if (plan.groups.length > 0) {
+    unitsByRound.push({roundIndex: 0,
+      units: plan.groups.map((group) => group.participants)});
+  }
+  for (const round of plan.groupRounds) {
+    unitsByRound.push({roundIndex: round.roundIndex,
+      units: round.groups.map((group) => group.participants)});
+  }
+  for (const round of plan.rotationRounds) {
+    unitsByRound.push({roundIndex: round.roundIndex,
+      units: round.pairs.map((pair) => [pair.a, pair.b])});
+  }
+  return unitsByRound.map(({roundIndex, units}) => {
+    const assigned = new Set(units.flat().map((person) => person.uid));
+    return {
+      roundIndex,
+      units: units.map((members, unitIndex) => ({unitIndex, members})),
+      bench: participants.filter((person) => !assigned.has(person.uid)),
+    };
+  });
+}
+
+/**
+ * Builds the per-uid time ledger for uniform rounds.
+ * @param {Array<AssignmentPlanRound<T>>} rounds Uniform rounds.
+ * @param {Array<T>} participants Eligible participants.
+ * @param {number} roundMinutes Minutes per round.
+ * @return {Record<string, PlannerTimeLedgerEntry>} Ledger.
+ */
+function timeLedgerForRounds<T extends AssignmentParticipant>(
+  rounds: Array<AssignmentPlanRound<T>>,
+  participants: T[],
+  roundMinutes: number
+): Record<string, PlannerTimeLedgerEntry> {
+  const ledger: Record<string, PlannerTimeLedgerEntry> = {};
+  const streak = new Map<string, number>();
+  for (const person of [...participants].sort((a, b) =>
+    a.uid.localeCompare(b.uid))) {
+    ledger[person.uid] = {
+      assignedMinutes: 0,
+      benchMinutes: 0,
+      assignedRounds: 0,
+      benchRounds: 0,
+      longestBenchStreak: 0,
+    };
+  }
+  for (const round of rounds) {
+    for (const unit of round.units) {
+      for (const member of unit.members) {
+        const entry = ledger[member.uid];
+        if (entry === undefined) continue;
+        entry.assignedMinutes += roundMinutes;
+        entry.assignedRounds++;
+        streak.set(member.uid, 0);
+      }
+    }
+    for (const person of round.bench) {
+      const entry = ledger[person.uid];
+      if (entry === undefined) continue;
+      entry.benchMinutes += roundMinutes;
+      entry.benchRounds++;
+      const next = (streak.get(person.uid) ?? 0) + 1;
+      streak.set(person.uid, next);
+      entry.longestBenchStreak = Math.max(entry.longestBenchStreak, next);
+    }
+  }
+  return ledger;
+}
+
+/**
+ * Counts unit co-membership history from uniform rounds.
+ * @param {Array<AssignmentPlanRound<T>>} rounds Uniform rounds.
+ * @return {object} History records.
+ */
+function historyForRounds<T extends AssignmentParticipant>(
+  rounds: Array<AssignmentPlanRound<T>>
+): AssignmentEngineResult<T>["history"] {
+  const pairMeetingCounts: Record<string, number> = {};
+  for (const round of rounds) {
+    for (const unit of round.units) {
+      for (const key of groupPairKeys(unit.members)) {
+        pairMeetingCounts[key] = (pairMeetingCounts[key] ?? 0) + 1;
+      }
+    }
+  }
+  return {
+    pairMeetingCounts: Object.fromEntries(Object.entries(pairMeetingCounts)
+      .sort(([a], [b]) => a.localeCompare(b))),
+    partnerCounts: {},
+    opponentCounts: {},
+    neighborCounts: {},
+  };
+}
+
+function recordMap(
+  record: Record<string, number> | undefined
+): Map<string, number> | undefined {
+  if (record === undefined) return undefined;
+  return new Map(Object.entries(record)
+    .filter(([key, value]) => key.length > 0 && Number.isFinite(value)));
 }

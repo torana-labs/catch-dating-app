@@ -51,10 +51,16 @@ import {
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
 import {
+  arrivalGroupPolicyForStructureConfig,
   assignmentConstraintsForStructureConfig,
+  attributeObjectivesForStructureConfig,
   AssignmentPrimitiveStructureConfig,
+  optInProfileAttributesForStructureConfig,
   rotationPolicyForStructureConfig,
+  withOptInProfileAttributes,
 } from "./assignmentPrimitiveControls";
+import type {PlannerArrivalGroupPolicy} from "./assignmentPlanner";
+import type {AssignmentAttributeObjectiveConfig} from "./assignmentOptimizer";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
 import {loadAuthorizedAssignmentFeatures,
   recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
@@ -299,6 +305,10 @@ export async function generateEventSuccessPodsHandler(
   const roster = await loadEventSuccessRoster(db, eventId,
     plan.assignmentFeatureRules?.length ? 1000 : undefined);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
+  const optInProfileAttributes =
+    optInProfileAttributesForStructureConfig(plan.structureConfig);
+  const ageReferenceMillis = optionalTimestampMillis(event.startTime) ??
+    Date.now();
   const participants = roster
     .map((participant): ActiveParticipant => ({
       uid: participant.uid,
@@ -306,7 +316,13 @@ export async function generateEventSuccessPodsHandler(
       gender: participant.gender,
       interestedInGenders: participant.interestedInGenders,
       arrivalGroup: participant.arrivalGroup,
-      activityAttributes: participant.activityAttributes,
+      activityAttributes: withOptInProfileAttributes({
+        attributes: participant.activityAttributes,
+        optIn: optInProfileAttributes,
+        gender: participant.gender,
+        dateOfBirth: participant.profile.dateOfBirth,
+        atMillis: ageReferenceMillis,
+      }),
     }))
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
@@ -351,6 +367,11 @@ export async function generateEventSuccessPodsHandler(
     timing,
     softFeatures: {eventId, organizerId: event.organizerId,
       rules: featureRules, snapshots: featureSnapshots},
+    attributeObjectives:
+      attributeObjectivesForStructureConfig(plan.structureConfig),
+    arrivalGroupPolicy:
+      arrivalGroupPolicyForStructureConfig(plan.structureConfig),
+    seed: eventId,
   });
   const assignments = buildAssignments({
     eventId,
@@ -639,6 +660,20 @@ function eventTimingFor(event: EventDocument): EventTiming {
   return {startMillis, endMillis};
 }
 
+/** Reads a timestamp-like value without throwing; null when unusable. */
+function optionalTimestampMillis(value: unknown): number | null {
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    "toMillis" in value &&
+    typeof value.toMillis === "function"
+  ) {
+    const millis = value.toMillis();
+    if (typeof millis === "number" && Number.isFinite(millis)) return millis;
+  }
+  return null;
+}
+
 /**
  * Converts a Firestore timestamp-like value to millis.
  * @param {unknown} value Raw timestamp-like value.
@@ -677,6 +712,9 @@ function buildPods(params: {
   softFeatures?: {eventId: string; organizerId: string;
     rules: AssignmentFeatureRule[];
     snapshots: EventAssignmentFeatureSnapshot[]};
+  attributeObjectives?: AssignmentAttributeObjectiveConfig[];
+  arrivalGroupPolicy?: PlannerArrivalGroupPolicy;
+  seed?: string;
 }): BuiltPods {
   if (params.participants.length === 0) {
     return {groups: [], groupRounds: [], podCount: 0};
@@ -701,6 +739,9 @@ function buildPods(params: {
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
     softFeatures: params.softFeatures,
+    attributeObjectives: params.attributeObjectives,
+    arrivalGroupPolicy: params.arrivalGroupPolicy,
+    seed: params.seed,
   });
   const groupRounds = [
     ...plan.groupRounds,

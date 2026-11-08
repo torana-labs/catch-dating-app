@@ -4,18 +4,25 @@ import {runningPreferencesFromUserProfileDoc} from
   "../shared/profileProjection";
 import type {AssignmentConstraintConfig} from "./assignmentConstraints";
 import type {
+  AssignmentAttributeObjectiveConfig,
   AssignmentRotationPolicy,
   AssignmentRotationRepeatStrategy,
 } from "./assignmentOptimizer";
+import type {PlannerArrivalGroupPolicy} from "./assignmentPlanner";
 
 export type AssignmentPrimitiveActivityAttribute =
-  "paceBand" | "skillBand" | "roleBand";
+  "paceBand" | "skillBand" | "roleBand" | "gender" | "ageBand";
+
+/** Profile signals an event must name explicitly before they are read. */
+export type AssignmentOptInProfileAttribute = "gender" | "ageBand";
 
 export interface AssignmentPrimitiveStructureConfig {
   rotationRepeatStrategy?: unknown;
   maxPairMeetings?: unknown;
   balanceActivityAttributes?: unknown;
   clusterActivityAttributes?: unknown;
+  coverActivityAttributes?: unknown;
+  arrivalGroupPolicy?: unknown;
 }
 
 const VALID_ACTIVITY_ATTRIBUTES =
@@ -23,7 +30,11 @@ const VALID_ACTIVITY_ATTRIBUTES =
     "paceBand",
     "skillBand",
     "roleBand",
+    "gender",
+    "ageBand",
   ]);
+const OPT_IN_PROFILE_ATTRIBUTES =
+  new Set<AssignmentOptInProfileAttribute>(["gender", "ageBand"]);
 const DEFAULT_MAX_PAIR_MEETINGS = 2;
 const CURRENT_RUN_PREFERENCES_VERSION = 1;
 const DEFAULT_PACE_MIN_SECS_PER_KM = 300;
@@ -71,6 +82,117 @@ export function assignmentConstraintsForStructureConfig(
       clusterAttributes,
     },
   };
+}
+
+/**
+ * Maps saved cover controls to generic objectives. Balance and cluster stay
+ * on the constraint path so legacy pod and pair events keep their scorer.
+ * @param {AssignmentPrimitiveStructureConfig} config Saved structure config.
+ * @return {AssignmentAttributeObjectiveConfig[]} Objective configs.
+ */
+export function attributeObjectivesForStructureConfig(
+  config?: AssignmentPrimitiveStructureConfig
+): AssignmentAttributeObjectiveConfig[] {
+  const claimed = new Set([
+    ...sanitizeActivityAttributes(config?.balanceActivityAttributes),
+    ...sanitizeActivityAttributes(config?.clusterActivityAttributes),
+  ]);
+  return sanitizeActivityAttributes(config?.coverActivityAttributes, claimed)
+    .map((attribute) => ({attribute, mode: "cover", weight: 40}));
+}
+
+/**
+ * Reads the saved arrival-group policy; undefined means unit-kind default.
+ * @param {AssignmentPrimitiveStructureConfig} config Saved structure config.
+ * @return {PlannerArrivalGroupPolicy | undefined} Policy.
+ */
+export function arrivalGroupPolicyForStructureConfig(
+  config?: AssignmentPrimitiveStructureConfig
+): PlannerArrivalGroupPolicy | undefined {
+  const value = config?.arrivalGroupPolicy;
+  return value === "keepTogether" || value === "spread" ||
+    value === "ignore" ? value : undefined;
+}
+
+/**
+ * Returns the sensitive profile attributes this event explicitly named.
+ * Nothing is returned for an event that did not opt in.
+ * @param {AssignmentPrimitiveStructureConfig} config Saved structure config.
+ * @return {Set<AssignmentOptInProfileAttribute>} Opted-in attributes.
+ */
+export function optInProfileAttributesForStructureConfig(
+  config?: AssignmentPrimitiveStructureConfig
+): Set<AssignmentOptInProfileAttribute> {
+  const named = new Set<AssignmentOptInProfileAttribute>();
+  for (const raw of [
+    config?.balanceActivityAttributes,
+    config?.clusterActivityAttributes,
+    config?.coverActivityAttributes,
+  ]) {
+    for (const attribute of sanitizeActivityAttributes(raw)) {
+      if (OPT_IN_PROFILE_ATTRIBUTES.has(
+        attribute as AssignmentOptInProfileAttribute
+      )) {
+        named.add(attribute as AssignmentOptInProfileAttribute);
+      }
+    }
+  }
+  return named;
+}
+
+/**
+ * Adds opted-in profile signals to a participant's attribute bag. Absent
+ * opt-in, the bag is returned unchanged, so gender and age never reach the
+ * engine for an event that did not name them.
+ * @param {object} params Participant signals and the opted-in set.
+ * @return {Record<string, string | number | boolean | null>} Attributes.
+ */
+export function withOptInProfileAttributes(params: {
+  attributes: Record<string, string | number | boolean | null>;
+  optIn: ReadonlySet<AssignmentOptInProfileAttribute>;
+  gender?: string;
+  dateOfBirth?: {toDate(): Date} | null;
+  atMillis: number;
+}): Record<string, string | number | boolean | null> {
+  if (params.optIn.size === 0) return params.attributes;
+  const next = {...params.attributes};
+  if (params.optIn.has("gender") && params.gender !== undefined &&
+      params.gender.length > 0) {
+    next.gender = params.gender;
+  }
+  if (params.optIn.has("ageBand")) {
+    const band = ageBandAt(params.dateOfBirth, params.atMillis);
+    if (band !== null) next.ageBand = band;
+  }
+  return next;
+}
+
+/**
+ * Buckets an age into coarse bands so the engine never sees a birth date.
+ * @param {object | null | undefined} dateOfBirth Firestore timestamp.
+ * @param {number} atMillis Reference instant (event start).
+ * @return {string | null} Age band or null when unknown.
+ */
+export function ageBandAt(
+  dateOfBirth: {toDate(): Date} | null | undefined,
+  atMillis: number
+): string | null {
+  if (dateOfBirth === null || dateOfBirth === undefined ||
+      typeof dateOfBirth.toDate !== "function") return null;
+  const birth = dateOfBirth.toDate();
+  if (Number.isNaN(birth.getTime())) return null;
+  const at = new Date(atMillis);
+  let age = at.getUTCFullYear() - birth.getUTCFullYear();
+  if (at.getUTCMonth() < birth.getUTCMonth() ||
+      (at.getUTCMonth() === birth.getUTCMonth() &&
+        at.getUTCDate() < birth.getUTCDate())) age--;
+  if (age < 18 || age > 120) return null;
+  if (age < 25) return "18-24";
+  if (age < 30) return "25-29";
+  if (age < 35) return "30-34";
+  if (age < 40) return "35-39";
+  if (age < 50) return "40-49";
+  return "50+";
 }
 
 /**

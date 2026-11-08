@@ -96,7 +96,8 @@ export function assertPairRotationTopology(
   if (topology === "adjacency") {
     throw new HttpsError(
       "failed-precondition",
-      "Seat adjacency and table seating are not implemented yet."
+      "Seat adjacency belongs to table seating. " +
+        "Use group assignments for tables."
     );
   }
   const unitKind = normalizedUnitKind(plan);

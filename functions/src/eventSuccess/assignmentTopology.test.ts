@@ -93,7 +93,7 @@ test("pair rotation wrapper accepts only two-person units", () => {
         },
       }),
     (error) => {
-      isHttpsError(error, "failed-precondition", "not implemented");
+      isHttpsError(error, "failed-precondition", "table seating");
       return true;
     }
   );

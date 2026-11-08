@@ -420,11 +420,10 @@ test("resolution table covers every legal variable combination", () => {
   assert.equal(new Set(keys).size, expectedCount);
   for (const entry of EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE) {
     const supported = entry.topology === "set" ?
-      entry.assignmentAlgorithm === "pacePods" ||
-        entry.assignmentAlgorithm === "socialPods" ||
+      entry.assignmentAlgorithm !== "none" :
+      entry.topology === "sequence" ?
         entry.assignmentAlgorithm === "pairRotations" :
-      entry.topology === "sequence" &&
-        entry.assignmentAlgorithm === "pairRotations";
+        entry.assignmentAlgorithm === "tableSeating";
     if (!supported) {
       assert.equal(entry.status, "unsupported");
       assert.ok(entry.reason.length > 0);
@@ -468,9 +467,29 @@ test("sequence and adjacency never fall back to neighbouring engines", () => {
   assert.match(sequenceTeam.assignmentResolution.reason, /pair rotations/i);
   assert.deepEqual(sequenceTeam.rotationRounds, []);
   assert.deepEqual(sequenceTeam.groups, []);
-  assert.equal(adjacencyTable.assignmentResolution.status, "unsupported");
-  assert.match(adjacencyTable.assignmentResolution.reason, /not implemented/i);
-  assert.deepEqual(adjacencyTable.groups, []);
+  // Adjacency is table seating's own engine, not a neighbouring fallback.
+  assert.equal(adjacencyTable.assignmentResolution.status, "supported");
+  assert.equal(adjacencyTable.explainability.engineCore, "shapePlanner");
+  assert.equal(adjacencyTable.plannedRounds[0].units[0].seatOrder?.length, 4);
+  const adjacencyPods = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "pods",
+      unitSize: 4,
+      groupCount: 1,
+      maxGroupSize: 4,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+      topology: "adjacency",
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+  });
+  assert.equal(adjacencyPods.assignmentResolution.status, "unsupported");
+  assert.match(adjacencyPods.assignmentResolution.reason, /table seating/i);
+  assert.deepEqual(adjacencyPods.groups, []);
 });
 
 test("matching objectives cannot read signals forbidden by policy", () => {
@@ -529,7 +548,7 @@ test("coverage is the engine default even when profile signals exist", () => {
   assert.equal(plan.explainability.matchingObjectiveFallbackReason, null);
 });
 
-test("table seating resolves unsupported instead of running micro-pods", () => {
+test("table seating runs its own engine instead of micro-pods", () => {
   const plan = runAssignmentEngine({
     participants: [
       participant("man-1", "man", ["woman"]),
@@ -551,20 +570,18 @@ test("table seating resolves unsupported instead of running micro-pods", () => {
   });
 
   assert.equal(plan.assignmentAlgorithm, "tableSeating");
-  assert.equal(plan.assignmentResolution.status, "unsupported");
-  assert.match(plan.assignmentResolution.reason, /not implemented/i);
-  assert.equal(plan.groups.length, 0);
+  assert.equal(plan.assignmentResolution.status, "supported");
+  assert.equal(plan.explainability.engineCore, "shapePlanner");
+  assert.equal(plan.groups.length, 1);
   assert.equal(plan.explainability.unitKind, "tables");
   assert.equal(plan.explainability.targetUnitSize, 4);
   assert.equal(plan.explainability.targetGroupCount, 1);
   assert.equal(plan.explainability.participantCount, 4);
-  assert.equal(plan.explainability.assignedParticipantCount, 0);
-  assert.equal(plan.explainability.unassignedParticipantCount, 4);
-  assert.equal(plan.explainability.generatedStaticGroupCount, 0);
-  assert.equal(plan.explainability.assignmentResolutionStatus, "unsupported");
-  assert.ok(plan.explainability.constraintRelaxations.includes(
-    "unassigned_participants"
-  ));
+  assert.equal(plan.explainability.assignedParticipantCount, 4);
+  assert.equal(plan.explainability.unassignedParticipantCount, 0);
+  assert.equal(plan.explainability.generatedStaticGroupCount, 1);
+  assert.equal(plan.explainability.assignmentResolutionStatus, "supported");
+  assert.equal(plan.plannedRounds[0].bench.length, 0);
 });
 
 test("micro-pods balance romantic dyads across equal-sized groups", () => {
@@ -1100,7 +1117,7 @@ test("activity attributes report missing data relaxations", () => {
   ));
 });
 
-test("team balancer resolves unsupported instead of running micro-pods", () => {
+test("team balancer runs its own engine instead of micro-pods", () => {
   const plan = optimizeEventSuccessAssignments({
     participants: [
       participant("gay-man-1", "man", ["man"]),
@@ -1124,44 +1141,51 @@ test("team balancer resolves unsupported instead of running micro-pods", () => {
     matchingObjective: "balance",
   });
 
-  assert.equal(plan.assignmentResolution.status, "unsupported");
-  assert.match(plan.assignmentResolution.reason, /team balancing/i);
+  assert.equal(plan.assignmentResolution.status, "supported");
+  assert.match(plan.assignmentResolution.reason, /teams/i);
+  assert.equal(plan.explainability.engineCore, "shapePlanner");
+  // `balance` needs an assignment attribute; none is configured, so the
+  // honest fallback is coverage, never a romantic reading of the profiles.
+  assert.equal(plan.effectiveMatchingObjective, "coverage");
   assert.equal(plan.rotationRounds.length, 0);
-  assert.equal(plan.groups.length, 0);
-  assert.equal(plan.explainability.unassignedParticipantCount, 6);
+  assert.deepEqual(plan.groups.map((group) => group.participants.length),
+    [3, 3]);
+  assert.equal(plan.explainability.unassignedParticipantCount, 0);
 });
 
-test("table seating stays unsupported for rotating table topology", () => {
-  const plan = optimizeEventSuccessAssignments({
-    participants: [
-      participant("man-1", "man", ["woman"]),
-      participant("man-2", "man", ["woman"]),
-      participant("man-3", "man", ["woman"]),
-      participant("woman-1", "woman", ["man"]),
-      participant("woman-2", "woman", ["man"]),
-      participant("woman-3", "woman", ["man"]),
-    ],
-    blockedPairs: new Set(),
-    topology: {
-      unitKind: "tables",
-      unitSize: 3,
-      groupCount: 2,
-      maxGroupSize: 3,
-      rotationIntervalMinutes: 20,
-      rotationsEnabled: true,
-    },
-    assignmentAlgorithm: "tableSeating",
-    compatibilityPolicy: "mutualInterestOnly",
-    matchingObjective: "affinity",
-    rotationRoundCount: 2,
+test("table seating rotates tables by course without repeating tablemates",
+  () => {
+    const plan = optimizeEventSuccessAssignments({
+      participants: [
+        participant("man-1", "man", ["woman"]),
+        participant("man-2", "man", ["woman"]),
+        participant("man-3", "man", ["woman"]),
+        participant("woman-1", "woman", ["man"]),
+        participant("woman-2", "woman", ["man"]),
+        participant("woman-3", "woman", ["man"]),
+      ],
+      blockedPairs: new Set(),
+      topology: {
+        unitKind: "tables",
+        unitSize: 3,
+        groupCount: 2,
+        maxGroupSize: 3,
+        rotationIntervalMinutes: 20,
+        rotationsEnabled: true,
+      },
+      assignmentAlgorithm: "tableSeating",
+      compatibilityPolicy: "mutualInterestOnly",
+      matchingObjective: "affinity",
+      rotationRoundCount: 2,
+    });
+
+    assert.equal(plan.assignmentResolution.status, "supported");
+    assert.equal(plan.groups.length, 0);
+    assert.equal(plan.rotationRounds.length, 0);
+    assert.equal(plan.groupRounds.length, 2);
+    assert.ok(plan.groupRounds.every((round) =>
+      round.groups.every((group) => group.participants.length === 3)));
   });
-
-  assert.equal(plan.assignmentResolution.status, "unsupported");
-  assert.match(plan.assignmentResolution.reason, /seat adjacency/i);
-  assert.equal(plan.groups.length, 0);
-  assert.equal(plan.rotationRounds.length, 0);
-  assert.equal(plan.groupRounds.length, 0);
-});
 
 test("fallback rotations pair socially when no romantic dyad exists", () => {
   const rounds = buildOptimizedRotationRounds({
