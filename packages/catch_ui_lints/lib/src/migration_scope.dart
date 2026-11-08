@@ -12,11 +12,12 @@ bool migrationScope(String relative) =>
 
 // A lint fixture stands for the path under its run folder.
 final _probeRun = RegExp(r'^tool/catch_ui_lints_probe/[^/]+/\d+/(?:arch/)?');
-// lib/hosts/today, create, insights, live, onboarding, door, organizer and forms
-// are host destinations redrawn in place until the host router moves into
+// lib/hosts/today, create, insights, live, onboarding, door, organizer, forms
+// and events (all but its legacy presentation folder, which still holds the
+// routed moments screens) are host destinations redrawn in place until the host router moves into
 // apps/host; they hold the same rules as an app package.
 final _newRoot = RegExp(
-  r'^(?:apps/[^/]+/lib|lib/pages|lib/hosts/(?:today|create|insights|live|onboarding|door|organizer|forms|people|programmes))/',
+  r'^(?:apps/[^/]+/lib|lib/pages|lib/hosts/(?:today|create|insights|live|onboarding|door|organizer|forms|people|programmes|events(?!/presentation/)))/',
 );
 
 /// These two predate D24 and are redrawn in P6, so they keep what the rest of

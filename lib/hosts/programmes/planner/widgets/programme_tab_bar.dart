@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 enum HostProgrammeView { schedule, guests, travel, team }
 
 /// Schedule, Guests, Travel and Team as one segmented control.
-class HostProgrammeViews extends StatelessWidget {
-  const HostProgrammeViews({
+class HostProgrammeTabBar extends StatelessWidget {
+  const HostProgrammeTabBar({
     super.key,
     required this.selected,
     required this.onView,

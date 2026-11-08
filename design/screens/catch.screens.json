@@ -288,33 +288,11 @@
           "routes": [
             "hostEventsScreen"
           ],
-          "file": "lib/hosts/events/presentation/host_events_screen.dart",
-          "symbol": "HostEventsScreen",
+          "file": "lib/hosts/events/events_screen.dart",
+          "symbol": "_HostEventsTabScreenState",
           "family": "root",
-          "expression": "CatchRootScreenScaffold.standard",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostEventsScreen"
-          ],
-          "file": "lib/hosts/events/presentation/host_events_screen.dart",
-          "symbol": "_HostEventsRouteScaffoldState",
-          "family": "root",
-          "expression": "CatchRootScreenScaffold.standard",
-          "bodyGeometry": "standard",
-          "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostEventsScreen"
-          ],
-          "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-          "symbol": "_HostEventsOrganizerSectionState",
-          "family": "root",
-          "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         }
       ],
@@ -498,6 +476,32 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "full-bleed",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/live/live_screen.dart",
+          "symbol": "_HostLiveScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/insights/host_event_report_screen.dart",
+          "symbol": "HostEventReportScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
@@ -1869,6 +1873,162 @@
         }
       ],
       "reason": "The route-path map editor is a pushed route with canonical compact chrome and a full-bleed map body."
+    },
+    "HostEventCloseOutScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/event_close_out_screen.dart",
+          "symbol": "_HostEventCloseOutScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event workspace pushes close out as a system pushed screen."
+    },
+    "HostEventGuestsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/event_guests_screen.dart",
+          "symbol": "_HostEventGuestsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event workspace pushes the guest lists beside the door as a system pushed screen."
+    },
+    "HostEventPlanScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/event_plan_screen.dart",
+          "symbol": "_HostEventPlanScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event workspace pushes the plan as a system pushed screen."
+    },
+    "HostFormatsCourtsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_courts_screen.dart",
+          "symbol": "_HostFormatsCourtsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the court board as a system pushed screen."
+    },
+    "HostFormatsCourtsSetupScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_courts_setup_screen.dart",
+          "symbol": "_HostFormatsCourtsSetupScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The court board pushes its setup as a system pushed screen."
+    },
+    "HostFormatsMixScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_mix_screen.dart",
+          "symbol": "_HostFormatsMixScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the mix board as a system pushed screen."
+    },
+    "HostFormatsRulesScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_rules_screen.dart",
+          "symbol": "_HostFormatsRulesScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The format boards push the rules as a system pushed screen."
+    },
+    "HostLiveNeedsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/live_needs_screen.dart",
+          "symbol": "HostLiveNeedsScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes what needs the host as a system pushed screen."
+    },
+    "HostLiveRoomScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/live_room_screen.dart",
+          "symbol": "HostLiveRoomScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the room as a system pushed screen."
+    },
+    "HostLiveScoresScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/live_scores_screen.dart",
+          "symbol": "_HostLiveScoresScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the scores as a system pushed screen."
+    },
+    "HostEventRehearsalScreen": {
+      "owners": [
+        {
+          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
+          "symbol": "_HostEventRehearsalScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "mixed",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The rehearsal start screen pushes the routed rehearsal surface."
+    },
+    "HostOrganizerEventDefaultsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
+          "symbol": "HostOrganizerSpokeScaffold",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Event defaults push the organizer defaults spoke, which owns its routed scaffold."
     }
   },
   "screens": [

@@ -15,8 +15,6 @@ export 'package:catch_dating_app/contexts/insights/domain/host_report_export.dar
 export 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 export 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 
-export 'events/presentation/host_events_screen.dart'; // public-api: route entry point exposed to app routing
-export 'events/presentation/host_events_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/edit_hosted_event_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_management/create/create_event_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_management/create/create_event_draft_controller.dart'; // public-api: command seam for route-owned actions

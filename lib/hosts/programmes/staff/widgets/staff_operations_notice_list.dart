@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 /// The notices a staff screen leads with when it is not plainly live: the
 /// saved copy it shows offline, the work this phone has not sent, and the
 /// last send or journal failure.
-class StaffOperationsNotices extends StatelessWidget {
-  const StaffOperationsNotices({
+class StaffOperationsNoticeList extends StatelessWidget {
+  const StaffOperationsNoticeList({
     super.key,
     required this.outbox,
     required this.busy,

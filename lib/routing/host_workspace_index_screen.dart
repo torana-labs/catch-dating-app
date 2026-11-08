@@ -8,7 +8,6 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     required this.root,
     required this.uri,
     this.initialEvent,
-    this.initialProgramAnchor,
     this.initialOrganizerId,
   });
   final Routes root;
@@ -21,15 +20,11 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     root: root,
     uri: _hostWorkspaceUri(root, state),
     initialEvent: _routeEventExtra(state),
-    initialProgramAnchor: state.extra is OrganizerProgramListAnchor
-        ? state.extra as OrganizerProgramListAnchor
-        : null,
     initialOrganizerId: _routeOrganizerIdExtra(state),
   );
 
   final Uri uri;
   final Event? initialEvent;
-  final OrganizerProgramListAnchor? initialProgramAnchor;
   final String? initialOrganizerId;
 
   @override
@@ -45,11 +40,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
         spec: HostDirectoryWorkspace<({String organizerId, String eventId})>(
           index: root == Routes.hostTodayScreen
               ? HostTodayScreen(initialOrganizerId: organizerId)
-              : HostEventsScreen(
-                  initialOrganizerId: organizerId,
-                  initialProgramId: uri.queryParameters['programId'],
-                  initialProgramAnchor: initialProgramAnchor,
-                ),
+              : HostEventsTabScreen(initialOrganizerId: organizerId),
           selection: organizerId == null || eventId == null
               ? null
               : (organizerId: organizerId, eventId: eventId),

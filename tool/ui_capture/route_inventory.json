@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 22,
-    "imperativePageTargetCount": 15
+    "imperativePageRouteCount": 23,
+    "imperativePageTargetCount": 19
   },
   "routes": [
     {
@@ -1966,6 +1966,33 @@
       "fullscreenDialogExpression": null
     },
     {
+      "siteId": "material-page:lib/hosts/live/formats/formats_courts_screen.dart:fb9bc9b42f6bfc1d070f84310fbbf5e5281220d49110f755bdcd7fcd36216c3e:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostFormatsCourtsSetupScreen(event:widget.event))",
+      "sourcePath": "lib/hosts/live/formats/formats_courts_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsCourtsSetupScreen(event:widget.event)",
+      "presentationTarget": "HostFormatsCourtsSetupScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/formats/formats_courts_setup_screen.dart:a5ce33fd7a1e09571e116939155502130dfa13207a775fcea213c3e5a6bb42ec:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostFormatsRulesScreen(event:event))",
+      "sourcePath": "lib/hosts/live/formats/formats_courts_setup_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsRulesScreen(event:event)",
+      "presentationTarget": "HostFormatsRulesScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/formats/formats_pods_screen.dart:a5ce33fd7a1e09571e116939155502130dfa13207a775fcea213c3e5a6bb42ec:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostFormatsRulesScreen(event:event))",
+      "sourcePath": "lib/hosts/live/formats/formats_pods_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsRulesScreen(event:event)",
+      "presentationTarget": "HostFormatsRulesScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
       "siteId": "material-page:lib/hosts/live/live_screen.dart:1af948f0cef3e2af19335a64f32e4e7e046cd7df455c2ae12a8227407d85d4e6:1",
       "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostLiveScoresScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now))",
       "sourcePath": "lib/hosts/live/live_screen.dart",
@@ -1990,6 +2017,24 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostLiveNeedsScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now)",
       "presentationTarget": "HostLiveNeedsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:aeea7a07fc3da0659e51d349cced07d745a53f0628988395970b9ceb3a5bdbdd:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostFormatsCourtsScreen(event:event,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsCourtsScreen(event:event,now:now)",
+      "presentationTarget": "HostFormatsCourtsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:ef89e29def8da4fe432e2c5455d130d42fef6531e09451768f4e94117f64d2e2:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostFormatsMixScreen(event:event,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsMixScreen(event:event,now:now)",
+      "presentationTarget": "HostFormatsMixScreen",
       "fullscreenDialogExpression": null
     },
     {

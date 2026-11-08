@@ -15,7 +15,6 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -35,6 +34,7 @@ import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
+import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_screen.dart';

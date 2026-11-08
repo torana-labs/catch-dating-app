@@ -238,12 +238,14 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
   ) async {
     setState(() => _mediaPending = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_PageEditScreenState._runMedia:await:update watch CAT156 -- The media save runs through the organizer edit mutation, which owns its pending and error; the widget keeps only the local spinner flag around it. Move the flag into the mutation state in the CAT156 migration.
       final result = await HostOrganizerEditController.updateMediaMutation.run(
         ref,
         (_) => update(),
       );
       if (result.hasFailures && mounted) {
         showCatchNotice(context, context.l10n.hostOrganizerPagePhotoFailed);
+        // provider-graph: ownership-widget-async:_PageEditScreenState._runMedia:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Discarding unsaved media after a failed save is cleanup through the organizer edit controller; the widget publishes only its local spinner flag. Move the flag into the mutation state in the CAT156 migration.
         await ref
             .read(hostOrganizerEditControllerProvider)
             .discardOrganizerMedia(

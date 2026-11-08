@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -15,6 +17,7 @@ import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +27,8 @@ import 'package:go_router/go_router.dart';
 /// It resolves who is signed in and which organizer is selected, keeps the
 /// chosen list, watches [hostEventsControllerProvider] and turns the body's
 /// callbacks into navigation: an event opens its workspace, a draft opens
-/// creation where it stopped, New opens creation.
+/// creation where it stopped, New opens creation. Drafts and past events are
+/// read again when either returns.
 class HostEventsTabScreen extends ConsumerStatefulWidget {
   const HostEventsTabScreen({super.key, this.initialOrganizerId, this.now});
 
@@ -120,7 +124,9 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
               label: l10n.hostEventsNew,
               leading: CatchIcon(CatchIcons.add),
               size: CatchButtonSize.md,
-              onPressed: organizer == null ? null : () => _create(organizer),
+              onPressed: organizer == null
+                  ? null
+                  : () => unawaited(_create(organizer)),
             ),
           ],
         ),
@@ -141,10 +147,12 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
     tab: _tab,
     onTab: (tab) => setState(() => _tab = tab),
     onOpenEvent: (event) {
-      if (organizer != null) _openEvent(organizer, event);
+      if (organizer != null) unawaited(_openEvent(organizer, event));
     },
     onOpenDraft: (item) {
-      if (organizer != null) _create(organizer, savedEventId: item.eventId);
+      if (organizer != null) {
+        unawaited(_create(organizer, savedEventId: item.eventId));
+      }
     },
     onOpenProgramme: (programme) => context.pushNamed(
       Routes.hostProgramWorkspaceScreen.name,
@@ -162,20 +170,40 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
     },
   );
 
-  void _openEvent(Organizer organizer, Event event) => context.pushNamed(
-    Routes.hostAppEventManageScreen.name,
-    pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
-    extra: event,
-  );
+  /// Reads drafts and past events again once the tab is shown. The pushed
+  /// route's future completes as its exit starts, while this tab's
+  /// listeners are still paused; reading again then would rebuild them
+  /// mid-frame when they resume, so it waits for the tab to tick again.
+  void _refreshHistoryWhenShown() {
+    if (!mounted) return;
+    if (TickerMode.getValuesNotifier(context).value.enabled) {
+      refreshHostEventsHistory(ref);
+      return;
+    }
+    SchedulerBinding.instance.addPostFrameCallback(
+      (_) => _refreshHistoryWhenShown(),
+    );
+  }
 
-  void _create(Organizer organizer, {String? savedEventId}) =>
-      context.pushNamed(
-        Routes.hostCreateEventScreen.name,
-        pathParameters: {'organizerId': organizer.id},
-        extra: HostCreateEventRouteArguments(
-          initialOrganizer: organizer,
-          initialSavedEventId: savedEventId,
-          promptForDrafts: savedEventId == null,
-        ),
-      );
+  Future<void> _openEvent(Organizer organizer, Event event) async {
+    await context.pushNamed<void>(
+      Routes.hostAppEventManageScreen.name,
+      pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
+      extra: event,
+    );
+    _refreshHistoryWhenShown();
+  }
+
+  Future<void> _create(Organizer organizer, {String? savedEventId}) async {
+    await context.pushNamed<void>(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'organizerId': organizer.id},
+      extra: HostCreateEventRouteArguments(
+        initialOrganizer: organizer,
+        initialSavedEventId: savedEventId,
+        promptForDrafts: savedEventId == null,
+      ),
+    );
+    _refreshHistoryWhenShown();
+  }
 }

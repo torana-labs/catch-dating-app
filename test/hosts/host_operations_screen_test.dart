@@ -30,7 +30,6 @@ import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.d
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
@@ -51,7 +50,6 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.d
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
-import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -60,7 +58,6 @@ import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

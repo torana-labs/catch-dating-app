@@ -9,6 +9,8 @@ import 'package:catch_dating_app/hosts/onboarding/setup_payments_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
+import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,25 +79,45 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
     final setup = ref.read(hostSetupControllerProvider.notifier);
     final draft = ref.read(hostSetupControllerProvider).draft;
     setup.next();
+    // The draft save is best effort: a failure is logged, and the next step
+    // saves again.
     unawaited(
-      CreateOrganizerDraftController.saveDraftMutation
-          .run(
-            ref,
-            (tx) => tx
-                .get(createOrganizerDraftControllerProvider.notifier)
-                .saveDraft(draft),
-          )
-          .catchError((Object _) => null),
+      app_ops.runLoggingAppErrors(
+        () => CreateOrganizerDraftController.saveDraftMutation.run(
+          ref,
+          (tx) => tx
+              .get(createOrganizerDraftControllerProvider.notifier)
+              .saveDraft(draft),
+        ),
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.localPersistence,
+          action: 'save the organizer setup draft',
+          resource: 'create_organizer_draft',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      ),
     );
   }
 
   Future<void> _pickLogo() async {
     final PickedOrganizerProfileImage? picked;
     try {
+      // provider-graph: ownership-widget-async:_HostSetupScreenState._pickLogo:await:createOrganizerControllerProvider.pickProfileImage watch CAT156 -- A platform image pick through the organizer create controller; the picked file is local form media until create sends it, and a failed pick is logged. Mechanical media feedback, not business state.
       picked = await ref
           .read(createOrganizerControllerProvider.notifier)
           .pickProfileImage();
-    } catch (_) {
+    } catch (error, stackTrace) {
+      // A cancelled or failed pick keeps the current logo.
+      app_ops.logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.plugin,
+          action: 'pick the organizer logo',
+          resource: 'organizer_profile_image',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
       return;
     }
     if (!mounted || picked == null) return;

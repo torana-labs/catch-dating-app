@@ -9,7 +9,7 @@ import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_body.dart
 import 'package:catch_dating_app/hosts/programmes/staff/staff_arrivals_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_operations.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_arrival_sheet.dart';
-import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notices.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notice_list.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
@@ -126,12 +126,12 @@ class _StaffArrivalsScreenState extends ConsumerState<StaffArrivalsScreen>
         body: StaffArrivalsBody(
           state: state,
           notices:
-              StaffOperationsNotices.shows(
+              StaffOperationsNoticeList.shows(
                 outbox: operations.outbox,
                 savedAt: state.savedAt,
                 errorMessage: errorMessage,
               )
-              ? StaffOperationsNotices(
+              ? StaffOperationsNoticeList(
                   savedAt: state.savedAt,
                   outbox: operations.outbox,
                   busy: operations.busy,

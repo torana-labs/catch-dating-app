@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/contexts/programmes/parts/staff_dispatch_car.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/staff_dispatch_car_card.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -76,7 +76,7 @@ class StaffDispatchBody extends StatelessWidget {
             message: l10n.hostStaffDispatchEmptyBody,
           ),
         for (final car in state.cars)
-          StaffDispatchCar(
+          StaffDispatchCarCard(
             group: car.group,
             parties: car.parties,
             seats: car.seats,

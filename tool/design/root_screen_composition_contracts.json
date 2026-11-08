@@ -154,11 +154,9 @@
         },
         {
           "text": "_ => throw StateError"
-        }
-      ],
-      "forbids": [
+        },
         {
-          "text": "HostTaskWorkspace("
+          "text": "spec: HostTaskWorkspace(content: hostPeopleScreenForUri(uri))"
         }
       ]
     },

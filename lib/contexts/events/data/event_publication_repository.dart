@@ -1,6 +1,10 @@
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_publication_repository.g.dart';
 
 class EventPublicationRequest {
   const EventPublicationRequest({
@@ -126,3 +130,8 @@ bool isDefinitivePublicationRejection(
       details['expectedSetupRevision'] == request.expectedSetupRevision &&
       details['publicationState'] == request.publicationState;
 }
+
+/// The EventPublicationRepository over the app's callable functions.
+@riverpod
+EventPublicationRepository eventPublicationRepository(Ref ref) =>
+    EventPublicationRepository(ref.watch(firebaseFunctionsProvider));

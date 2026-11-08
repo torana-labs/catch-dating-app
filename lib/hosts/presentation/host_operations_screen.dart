@@ -73,9 +73,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-export 'package:catch_dating_app/hosts/events/presentation/host_events_screen.dart';
-export 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
-export 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
 part 'host_operations/host_loading_screen.dart';

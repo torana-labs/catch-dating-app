@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_household_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -32,7 +32,7 @@ class HostProgrammeGuestsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     if (state.status != HostProgrammeStatus.ready || state.guests == null) {
-      return HostProgrammeStateView(
+      return HostProgrammeStateBody(
         status: state.status == HostProgrammeStatus.ready && state.error != null
             ? HostProgrammeStatus.error
             : state.status == HostProgrammeStatus.ready
@@ -46,7 +46,7 @@ class HostProgrammeGuestsBody extends StatelessWidget {
     return CatchPageBody.screen(
       gap: CatchPageBodyGap.tight,
       children: [
-        HostProgrammeViews(selected: HostProgrammeView.guests, onView: onView),
+        HostProgrammeTabBar(selected: HostProgrammeView.guests, onView: onView),
         CatchStack(
           gap: CatchStackGap.g4,
           children: [
@@ -73,12 +73,12 @@ class HostProgrammeGuestsBody extends StatelessWidget {
           fullWidth: true,
           onPressed: onImport,
         ),
-        HostProgrammeGuestFilters(
+        HostProgrammeGuestFilterTabBar(
           state: state,
           filter: filter,
           onFilter: onFilter,
         ),
-        const ProgrammeReplyKey(),
+        const ProgrammeReplyKeyRow(),
         CatchSection(
           title: l10n.hostProgrammeGuestsGridTitle,
           note: l10n.hostProgrammeGuestsGridNote,
@@ -87,7 +87,7 @@ class HostProgrammeGuestsBody extends StatelessWidget {
               : l10n.hostProgrammeGuestsFilterEmpty,
           children: [
             if (shown.isNotEmpty)
-              ProgrammeGridKicker(
+              ProgrammeGridHeader(
                 names: [for (final f in state.functions) f.name],
               ),
             for (final household in shown)
@@ -106,8 +106,8 @@ class HostProgrammeGuestsBody extends StatelessWidget {
 }
 
 /// All and No reply, each with its count.
-class HostProgrammeGuestFilters extends StatelessWidget {
-  const HostProgrammeGuestFilters({
+class HostProgrammeGuestFilterTabBar extends StatelessWidget {
+  const HostProgrammeGuestFilterTabBar({
     super.key,
     required this.state,
     required this.filter,

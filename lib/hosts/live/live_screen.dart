@@ -295,21 +295,22 @@ class HostLiveActions {
       case HostLiveView.format:
         final format = hostLiveFormatView(event);
         if (format == null) return;
-        _push(
-          MaterialPageRoute<void>(
-            settings: const RouteSettings(name: hostLiveSubscreenRouteName),
-            builder: (_) => switch (format) {
-              HostLiveFormatView.courts => HostFormatsCourtsScreen(
-                event: event,
-                now: now,
+        switch (format) {
+          case HostLiveFormatView.courts:
+            _push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+                builder: (_) => HostFormatsCourtsScreen(event: event, now: now),
               ),
-              HostLiveFormatView.mix => HostFormatsMixScreen(
-                event: event,
-                now: now,
+            );
+          case HostLiveFormatView.mix:
+            _push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+                builder: (_) => HostFormatsMixScreen(event: event, now: now),
               ),
-            },
-          ),
-        );
+            );
+        }
       case HostLiveView.room:
         _push(
           MaterialPageRoute<void>(

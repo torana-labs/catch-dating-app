@@ -17,6 +17,6 @@ class FormatsTableRow extends StatelessWidget {
     subtitle: context.l10n.hostFormatsPeopleCount(count: people.length),
     onTap: null,
     density: CatchIndexRowSize.compact,
-    footer: FormatsPlayers(players: people),
+    footer: FormatsPlayersRow(players: people),
   );
 }

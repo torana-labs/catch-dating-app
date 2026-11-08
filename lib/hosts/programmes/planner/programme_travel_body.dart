@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,7 +41,7 @@ class HostProgrammeTravelBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     if (state.status != HostProgrammeStatus.ready) {
-      return HostProgrammeStateView(status: state.status, onRetry: onRetry);
+      return HostProgrammeStateBody(status: state.status, onRetry: onRetry);
     }
     final detail = state.programme.detail!;
     final busiest = state.busiest;
@@ -50,7 +50,7 @@ class HostProgrammeTravelBody extends StatelessWidget {
     final trips = state.trips?.trips ?? const <ProgramTripSummary>[];
     return CatchPageBody.screen(
       children: [
-        HostProgrammeViews(selected: HostProgrammeView.travel, onView: onView),
+        HostProgrammeTabBar(selected: HostProgrammeView.travel, onView: onView),
         CatchStack(
           direction: CatchStackDirection.row,
           equal: true,

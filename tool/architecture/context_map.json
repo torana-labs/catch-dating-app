@@ -57,7 +57,8 @@
 
     {"path": "lib/event_policies/", "context": "events"},
     {"path": "lib/events/", "context": "events"},
-    {"path": "lib/hosts/events/", "context": "events"},
+    {"path": "lib/hosts/events/presentation/", "context": "events"},
+    {"path": "lib/hosts/events/", "layer": "app"},
     {"path": "lib/locations/", "context": "events"},
 
     {"path": "lib/payments/", "context": "payments"},
@@ -84,6 +85,7 @@
     {"path": "lib/programs/", "context": "programmes"},
 
     {"path": "lib/hosts/create/", "layer": "app"},
+    {"path": "lib/hosts/door/", "layer": "app"},
     {"path": "lib/hosts/today/", "layer": "app"},
     {"path": "lib/hosts/live/", "layer": "app"},
     {"path": "lib/hosts/insights/", "layer": "app"},

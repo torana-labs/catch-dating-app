@@ -193,8 +193,6 @@ import 'package:widgetbook_workspace/geometry/field_transition_prototype.dart'
     as _widgetbook_workspace_geometry_field_transition_prototype;
 import 'package:widgetbook_workspace/geometry/specimens/buttons.dart'
     as _widgetbook_workspace_geometry_specimens_buttons;
-import 'package:widgetbook_workspace/geometry/specimens/event_modal.dart'
-    as _widgetbook_workspace_geometry_specimens_event_modal;
 import 'package:widgetbook_workspace/geometry/specimens/fields.dart'
     as _widgetbook_workspace_geometry_specimens_fields;
 import 'package:widgetbook_workspace/geometry/specimens/menus.dart'
@@ -611,8 +609,6 @@ import 'package:widgetbook_workspace/profiles/catalog/tabs.dart'
     as _widgetbook_workspace_profiles_catalog_tabs;
 import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
-import 'package:widgetbook_workspace/programs/program_create_use_cases.dart'
-    as _widgetbook_workspace_programs_program_create_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases_rooms.dart'
@@ -6275,11 +6271,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'CatchSection',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Create event modal · production',
-            builder: _widgetbook_workspace_geometry_specimens_event_modal
-                .createEventModalSectionComparison,
-          ),
-          _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
             builder: _widgetbook_workspace_geometry_specimens_fields
                 .fieldAndSectionGeometryMatrix,
@@ -10240,17 +10231,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host create event',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'DraftCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Draft card states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_details
-                        .draftCardCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventAgeRangeField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10280,17 +10260,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_routes
                         .hostCreateEventRouteStateViewCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostEventEntrySheet',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Draft sheet states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_details
-                        .draftPickerSheetCatalogStates,
               ),
             ],
           ),
@@ -10583,29 +10552,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventsOrganizerSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host event section states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_home_sections
-                            .hostHomeEventSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventsScreen',
+                name: 'HostOrganizerAvatar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host home route states',
                     builder: _widgetbook_workspace_hosts_operations_home_routes
                         .hostHomeRouteStates,
                   ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerAvatar',
-                useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Navigation identity states',
                     builder: _widgetbook_workspace_hosts_operations_home_routes
@@ -11781,28 +11734,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventSummarySectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventsOrganizerCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostEventsOrganizerCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventsTimelineBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_home_sections
-                            .hostStrictHostEventsTimelinePageCatalogStates,
                   ),
                 ],
               ),
@@ -13217,21 +13148,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Row states',
                 builder: _widgetbook_workspace_programs_use_cases_rooms
                     .programUnplacedGuestRowStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'Program workspace',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramEventsRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Inventory row',
-                builder: _widgetbook_workspace_programs_program_create_use_cases
-                    .programEventsRowStates,
               ),
             ],
           ),

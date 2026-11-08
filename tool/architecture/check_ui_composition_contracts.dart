@@ -3866,6 +3866,18 @@ final class _ResolvedLayoutOwnerTerminalProof {
       if (node case final InstanceCreationExpression creation) {
         final signature = _resolvedInstanceCreationSignature(creation);
         if (acceptedSignatures.contains(signature)) return true;
+        // A registered same-family owner is accepted as built, before its
+        // child or builder arguments are read as a transparent wrapper's.
+        if (creation.constructorName.element case final element?) {
+          final declaration = _reachTargetForElement(
+            element,
+            root,
+          )?.declaration;
+          if (declaration != null &&
+              acceptedOwnerBindings.contains(declaration)) {
+            return true;
+          }
+        }
         if (signature == 'Stack') {
           return await _resolvedStackEveryTerminalUses(
             creation.argumentList,

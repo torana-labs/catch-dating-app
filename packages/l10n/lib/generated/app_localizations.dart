@@ -1030,7 +1030,7 @@ abstract class AppLocalizations {
   /// Organiser setup description placeholder.
   ///
   /// In en, this message translates to:
-  /// **'Quiz nights and supper clubs around Bandra, most weeks.'**
+  /// **'Quiz nights and suppers around Bandra, most weeks.'**
   String get hostOnboardingDetailsAboutPlaceholder;
 
   /// Organiser setup label over the format chips.
@@ -4241,12 +4241,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading organizer'**
   String get hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Delete draft'**
-  String get hostsDraftPickerSheetMessageDeleteDraft;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
@@ -10191,142 +10185,11 @@ abstract class AppLocalizations {
   /// **'Create organizer'**
   String get hostsHostOrganizersScaffoldLabelCreateOrganizer;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Events'**
-  String get hostsHostEventsListTextEvents;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Create event'**
   String get hostsHostEventsListLabelNewEvent;
-
-  /// Section label for resuming existing event work.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get hostsHostEventEntrySheetSectionContinueExisting;
-
-  /// Section label for beginning a new event.
-  ///
-  /// In en, this message translates to:
-  /// **'Start new'**
-  String get hostsHostEventEntrySheetSectionStartNew;
-
-  /// Action title for resuming a saved event draft.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue draft'**
-  String get hostsHostEventEntrySheetTitleContinueDraft;
-
-  /// Action title for reusing the most recent eligible event setup.
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat last event'**
-  String get hostsHostEventEntrySheetTitleRepeatLastEvent;
-
-  /// Supporting copy showing how many event drafts are available.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 saved draft} other{{count} saved drafts}}'**
-  String hostsHostEventEntrySheetBodySavedDraftCount({required int count});
-
-  /// Supporting copy for the repeat-event action.
-  ///
-  /// In en, this message translates to:
-  /// **'Reuse the setup from {eventTitle} and choose a new date.'**
-  String hostsHostEventEntrySheetBodyReuseEventSetup({
-    required String eventTitle,
-  });
-
-  /// Peer view containing live and upcoming events.
-  ///
-  /// In en, this message translates to:
-  /// **'Upcoming'**
-  String get hostEventsUpcomingTab;
-
-  /// Peer view containing completed events.
-  ///
-  /// In en, this message translates to:
-  /// **'Past'**
-  String get hostEventsPastTab;
-
-  /// Empty completed event inventory title.
-  ///
-  /// In en, this message translates to:
-  /// **'No past events yet'**
-  String get hostEventsPastEmptyTitle;
-
-  /// Empty completed event inventory explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Completed events will appear here with their attendance history.'**
-  String get hostEventsPastEmptyBody;
-
-  /// Day section heading for events starting today.
-  ///
-  /// In en, this message translates to:
-  /// **'Today · {date}'**
-  String hostEventsTodayDate({required String date});
-
-  /// Live event timing and meeting location.
-  ///
-  /// In en, this message translates to:
-  /// **'Live · {schedule}'**
-  String hostEventsLiveSchedule({required String schedule});
-
-  /// Actual attendance count for a completed event.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} attended'**
-  String hostEventsAttended({required int count});
-
-  /// Registrations relative to event capacity, not attendance.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} of {capacity} registered'**
-  String hostEventsRegisteredCapacity({
-    required int count,
-    required int capacity,
-  });
-
-  /// Registration count when an event has no positive capacity.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} registered'**
-  String hostEventsRegistered({required int count});
-
-  /// Loads the next cursor page of live or upcoming Host events.
-  ///
-  /// In en, this message translates to:
-  /// **'Load more events'**
-  String get hostEventsTimelineLoadMoreSchedule;
-
-  /// Loads the next cursor page of completed Host events.
-  ///
-  /// In en, this message translates to:
-  /// **'Load older events'**
-  String get hostEventsTimelineLoadMoreHistory;
-
-  /// Row status for an organizer event that finished setup but is not published to the platform.
-  ///
-  /// In en, this message translates to:
-  /// **'Not published'**
-  String get hostEventsRowUnpublished;
-
-  /// Row status for an organizer event still being configured.
-  ///
-  /// In en, this message translates to:
-  /// **'Setup in progress'**
-  String get hostEventsRowSetupPending;
-
-  /// Row status for a cancelled event shown inside the shared events history.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancelled'**
-  String get hostEventsRowCancelled;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).
   ///
@@ -13081,32 +12944,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JOINED'**
   String get eventsCalendarScreenStateBadgelabelJoined;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat last'**
-  String get hostsHostHomeScreenStateVisiblecopyRepeatLast;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat ‘{label}’'**
-  String hostsHostHomeScreenStateVisiblecopyRepeatLabel({
-    required Object label,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyTitle).
-  ///
-  /// In en, this message translates to:
-  /// **'No upcoming events'**
-  String get hostsHostHomeScreenStateEmptytitleNoUpcomingEvents;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (emptyBody).
-  ///
-  /// In en, this message translates to:
-  /// **'Create your next event to start filling this list.'**
-  String get hostsHostHomeScreenStateEmptybodyCreateYourNextEvent;
 
   /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (title).
   ///
@@ -16723,32 +16560,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get publicProfilePublicProfileScreenStateTitleProfile;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Delete draft?'**
-  String get hostsDraftPickerSheetVisiblecopyDeleteDraft;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get hostsDraftPickerSheetLabelCancel;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get hostsDraftPickerSheetLabelDelete;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'This will permanently delete \"{summary}\".'**
-  String hostsDraftPickerSheetVisiblecopyThisWillPermanentlyDelete({
-    required Object summary,
-  });
 
   /// Product copy used by lib/swipes/shared/profile_surface/profile_card_content.dart (text).
   ///
@@ -20778,7 +20589,7 @@ abstract class AppLocalizations {
   /// Form page section note.
   ///
   /// In en, this message translates to:
-  /// **'{count} to review'**
+  /// **'{count, plural, other{{count} to review}}'**
   String hostFormsWaitingNote({required int count});
 
   /// Form page: no answers to review.
@@ -33554,12 +33365,6 @@ abstract class AppLocalizations {
     required int review,
   });
 
-  /// Supporting saved time for an event draft.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved {time}'**
-  String hostDraftSavedAt({required String time});
-
   /// Shown only when a response filter selection exceeds the API limit.
   ///
   /// In en, this message translates to:
@@ -33841,12 +33646,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Row {row}: choose a supported city or leave it blank.'**
   String hostsOperationalRosterIssueInvalidCity({required int row});
-
-  /// Copy for the progressive private event setup flow.
-  ///
-  /// In en, this message translates to:
-  /// **'Save the basics, then add guests, registration and payments as needed.'**
-  String get hostsPrivateEventEntryBody;
 
   /// Copy for the progressive private event setup flow.
   ///
@@ -34393,12 +34192,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry organizer defaults read'**
   String get hostsPrivateEventRetryDefaultsRead;
-
-  /// Private event idempotent save and saved-event continuation copy.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue saved event'**
-  String get hostsPrivateEventContinueSaved;
 
   /// Pending private event preferences save.
   ///
@@ -34951,90 +34744,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The selected collection method is not ready. Ask Catch to review your payment configuration.'**
   String get hostFormPaymentCollectionUnavailable;
-
-  /// Program workspace copy: programsListTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Programs'**
-  String get programsListTitle;
-
-  /// Program workspace copy: programsListCreateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'New program'**
-  String get programsListCreateLabel;
-
-  /// Program workspace copy: programsListRowActions.
-  ///
-  /// In en, this message translates to:
-  /// **'Program actions'**
-  String get programsListRowActions;
-
-  /// Program workspace copy: programsListArchiveAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Archive program'**
-  String get programsListArchiveAction;
-
-  /// Program workspace copy: programsListUnarchiveAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Unarchive'**
-  String get programsListUnarchiveAction;
-
-  /// Program workspace copy: programsListArchiveConfirmTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Archive {title}?'**
-  String programsListArchiveConfirmTitle({required String title});
-
-  /// Program workspace copy: programsListArchiveConfirmMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'The program keeps working read-only. Guest identity details are anonymized on {date} unless you unarchive first.'**
-  String programsListArchiveConfirmMessage({required String date});
-
-  /// Program workspace copy: programsListUnarchiveConfirmTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Unarchive {title}?'**
-  String programsListUnarchiveConfirmTitle({required String title});
-
-  /// Program workspace copy: programsListUnarchiveConfirmMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'The program returns to its previous status and edits work again.'**
-  String get programsListUnarchiveConfirmMessage;
-
-  /// Program workspace copy: programsListArchiveDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Archived. Guest details anonymize on {date}.'**
-  String programsListArchiveDone({required String date});
-
-  /// Program workspace copy: programsListUnarchiveDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Program restored.'**
-  String get programsListUnarchiveDone;
-
-  /// Program workspace copy: programsListAnonymizesOn.
-  ///
-  /// In en, this message translates to:
-  /// **'Anonymizes {date}'**
-  String programsListAnonymizesOn({required String date});
-
-  /// Explains why a program cannot be restored after its archive grace deadline.
-  ///
-  /// In en, this message translates to:
-  /// **'The restore window has ended.'**
-  String get programsListRestoreWindowExpiredReason;
-
-  /// Program workspace copy: programsListAnonymized.
-  ///
-  /// In en, this message translates to:
-  /// **'Anonymized'**
-  String get programsListAnonymized;
 
   /// Program workspace copy: programsWorkspaceFunctionSave.
   ///
@@ -35689,66 +35398,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New offers will use these terms'**
   String get hostOfferPaymentReviewBody;
-
-  /// Host program creation and Events inventory: programsEntryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Create'**
-  String get programsEntryTitle;
-
-  /// Host program creation and Events inventory: programsEntryEventTab.
-  ///
-  /// In en, this message translates to:
-  /// **'Event'**
-  String get programsEntryEventTab;
-
-  /// Host program creation and Events inventory: programsEntryProgramTab.
-  ///
-  /// In en, this message translates to:
-  /// **'Program'**
-  String get programsEntryProgramTab;
-
-  /// Host program creation and Events inventory: programsEntryProgramBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Coordinate a multi-day program and manage its events, travel and guest RSVP.'**
-  String get programsEntryProgramBody;
-
-  /// Host program creation and Events inventory: programsEventRowLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Program'**
-  String get programsEventRowLabel;
-
-  /// Host program creation and Events inventory: programsEventDateRange.
-  ///
-  /// In en, this message translates to:
-  /// **'{start} – {end}'**
-  String programsEventDateRange({required String start, required String end});
-
-  /// Host program creation and Events inventory: programsEventCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
-  String programsEventCount({required int count});
-
-  /// Host program creation and Events inventory: programsEventCountUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'Event count unavailable'**
-  String get programsEventCountUnavailable;
-
-  /// Host program creation and Events inventory: programsEventArchived.
-  ///
-  /// In en, this message translates to:
-  /// **'Archived'**
-  String get programsEventArchived;
-
-  /// Loads the next bounded program inventory page in Events.
-  ///
-  /// In en, this message translates to:
-  /// **'Load more programs'**
-  String get programsEventsLoadMore;
 
   /// Title for the saved Host roster intake review sheet.
   ///
@@ -42867,7 +42516,7 @@ abstract class AppLocalizations {
   /// Avatar row overflow count.
   ///
   /// In en, this message translates to:
-  /// **'{count} more'**
+  /// **'{count, plural, other{{count} more}}'**
   String hostFormatsMore({required int count});
 
   /// Two first names joined.
@@ -42879,7 +42528,7 @@ abstract class AppLocalizations {
   /// Several first names joined.
   ///
   /// In en, this message translates to:
-  /// **'{first}, {second} and {count} more'**
+  /// **'{first}, {second} and {count, plural, other{{count} more}}'**
   String hostFormatsManyNames({
     required String first,
     required String second,
@@ -43018,7 +42667,7 @@ abstract class AppLocalizations {
   /// Sitting out section note.
   ///
   /// In en, this message translates to:
-  /// **'{count} this round'**
+  /// **'{count, plural, other{{count} this round}}'**
   String hostFormatsSittingOutNote({required int count});
 
   /// Sitting out section empty.
@@ -43484,7 +43133,7 @@ abstract class AppLocalizations {
   /// Not here yet note: people not shown.
   ///
   /// In en, this message translates to:
-  /// **'{count} more'**
+  /// **'{count, plural, other{{count} more}}'**
   String hostFormatsCrawlNotHereMore({required int count});
 
   /// Not here yet empty.

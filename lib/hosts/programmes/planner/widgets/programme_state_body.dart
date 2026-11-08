@@ -4,8 +4,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The programme while it loads, or when its read failed, with Try again.
-class HostProgrammeStateView extends StatelessWidget {
-  const HostProgrammeStateView({
+class HostProgrammeStateBody extends StatelessWidget {
+  const HostProgrammeStateBody({
     super.key,
     required this.status,
     required this.onRetry,

@@ -187,6 +187,7 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_StaffHotelDeskScreenState._run:await:command watch CAT156 -- Each desk command is a programme operations controller call passed in by the row; the widget tracks which row is busy and the last error for display only. Lift busy/error into the operations controller in the CAT156 migration.
       await command();
       if (!mounted) return;
       ref

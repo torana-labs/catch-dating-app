@@ -2,8 +2,8 @@ import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_househ
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_reply_badge.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -33,7 +33,7 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     if (state.status != HostProgrammeStatus.ready || state.guests == null) {
-      return HostProgrammeStateView(
+      return HostProgrammeStateBody(
         status: state.status == HostProgrammeStatus.ready && state.error != null
             ? HostProgrammeStatus.error
             : state.status == HostProgrammeStatus.ready
@@ -54,12 +54,12 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
           align: CatchStackAlign.center,
           wrap: true,
           children: [
-            HostProgrammeViews(
+            HostProgrammeTabBar(
               selected: HostProgrammeView.guests,
               onView: onView,
               fill: false,
             ),
-            HostProgrammeGuestFilters(
+            HostProgrammeGuestFilterTabBar(
               state: state,
               filter: filter,
               onFilter: onFilter,
@@ -109,7 +109,7 @@ class HostProgrammeGuestsDesktopBody extends StatelessWidget {
             ],
           ),
         ),
-        const ProgrammeReplyKey(),
+        const ProgrammeReplyKeyRow(),
         CatchText(
           l10n.hostProgrammeGuestsShowing(
             shown: shown.length,

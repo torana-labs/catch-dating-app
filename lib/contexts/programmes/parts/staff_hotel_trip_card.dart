@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 /// A car on its way to the hotel desk: the vehicle and plate, how far out it
 /// is, and each guest in it with the room the desk holds for them. Arrived
 /// records the car reaching the hotel.
-class StaffHotelTrip extends StatelessWidget {
-  const StaffHotelTrip({
+class StaffHotelTripCard extends StatelessWidget {
+  const StaffHotelTripCard({
     super.key,
     required this.trip,
     required this.now,

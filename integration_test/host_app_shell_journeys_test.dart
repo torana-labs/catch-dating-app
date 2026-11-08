@@ -4,11 +4,12 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/door/door_screen.dart';
+import 'package:catch_dating_app/hosts/events/events_screen.dart';
+import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
@@ -218,13 +219,7 @@ void main() {
 
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
-    await tapCatchButton(tester, 'Create event');
-    await tester.tap(
-      find.descendant(
-        of: find.byType(HostEventEntrySheet),
-        matching: find.text('Create event'),
-      ),
-    );
+    await tapCatchButton(tester, 'New');
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(CreateBasicsScreen), findsOneWidget);
     await tester.enterText(
@@ -262,9 +257,8 @@ void main() {
     );
     expect(find.byType(CreateTicketsScreen), findsOneWidget);
 
-    // Back walks the steps; Close on the first returns to the Events list
-    // kept mounted across the create flow, which re-reads the inventory.
-    final backFrom = backend.functions.calls.length;
+    // Back walks the steps; Close on the first returns to the Events tab,
+    // which reads its drafts again on return: the saved event is a draft.
     await tester.tap(find.byTooltip('Back'));
     await pumpAppShellFrames(tester);
     await tester.tap(find.byTooltip('Back'));
@@ -272,16 +266,11 @@ void main() {
     await tester.tap(find.byTooltip('Close'));
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(CreateBasicsScreen), findsNothing);
-    expect(
-      backend.functions.calls
-          .skip(backFrom)
-          .where((call) => call.name == 'listPrivateEventSetups')
-          .map((call) => (call.input! as Map)['scope']),
-      contains('upcoming'),
-    );
+    await tester.tap(find.text('Drafts'));
+    await pumpAppShellFrames(tester, frames: 20);
     expect(find.text('Rooftop supper club'), findsWidgets);
     final reopenFrom = backend.functions.calls.length;
-    await tester.tap(find.byKey(ValueKey('host-event-row-$eventId')));
+    await tester.tap(find.byKey(ValueKey('host-events-draft-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);
 
     expect(find.byType(CreateBasicsScreen), findsOneWidget);
@@ -337,7 +326,16 @@ void main() {
       initialRoute: '/host/events',
     );
 
-    await tester.tap(find.byKey(ValueKey('host-event-row-${event.id}')));
+    await tester.tap(find.byKey(ValueKey('host-events-tonight-${event.id}')));
+    await pumpAppShellFrames(tester, frames: 30);
+    // The event workspace's Live view runs a night that is on now; its
+    // Guests view is the door, where guests are checked in.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(HostEventTabBar),
+        matching: find.text('Live'),
+      ),
+    );
     await pumpAppShellFrames(tester, frames: 30);
     await tester.tap(
       find.descendant(
@@ -346,6 +344,7 @@ void main() {
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
+    expect(find.byType(DoorScreen), findsOneWidget);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
     expect(find.text('0 of 2 in'), findsOneWidget);
@@ -460,7 +459,7 @@ void main() {
 
 const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
-  'Events': HostEventsScreen,
+  'Events': HostEventsTabScreen,
   'People': HostPeopleScreen,
   'Organizer': OrganizerScreen,
 };

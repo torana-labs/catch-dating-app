@@ -6,7 +6,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_screen
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_screen.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';

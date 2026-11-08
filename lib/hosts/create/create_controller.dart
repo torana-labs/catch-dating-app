@@ -20,7 +20,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
-import 'package:flutter/foundation.dart';
+import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -219,7 +220,16 @@ class CreateController extends _$CreateController {
       );
     } catch (error, stackTrace) {
       // The event is live; a stale local draft only reappears in the list.
-      debugPrint('Could not delete the create draft: $error\n$stackTrace');
+      app_ops.logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.localPersistence,
+          action: 'delete the create draft after publishing',
+          resource: 'create_event_draft',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
     }
   }
 
@@ -300,7 +310,16 @@ class CreateController extends _$CreateController {
       timezone = defaults.timezone;
     } on Object catch (error, stackTrace) {
       // Without the defaults view the organizer's own city stands in.
-      debugPrint('Organizer defaults unavailable: $error\n$stackTrace');
+      app_ops.logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.ui,
+          action: 'read organizer defaults for a new event',
+          resource: 'organizer_event_defaults',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
     }
     final city = defaultCityOptions
         .where(
@@ -349,8 +368,8 @@ class CreateController extends _$CreateController {
       state = state.copyWith(eventId: receipt.eventId);
       await _persistDraft();
       _follow(receipt.eventId);
-      await _until(
-        privateEventDetailsControllerProvider(_scope(receipt.eventId)),
+      await _untilDetails(
+        receipt.eventId,
         (s) => (s.event?.setupRevision ?? 0) >= receipt.setupRevision,
       );
       return;
@@ -380,8 +399,8 @@ class CreateController extends _$CreateController {
     await commands.savePendingBasicsUpdate(request);
     final receipt = await commands.updatePrivateEventBasics(request);
     await commands.clearPendingBasicsUpdate(request);
-    await _until(
-      privateEventDetailsControllerProvider(_scope(eventId)),
+    await _untilDetails(
+      eventId,
       (s) => (s.event?.setupRevision ?? 0) >= receipt.setupRevision,
     );
   }
@@ -427,8 +446,10 @@ class CreateController extends _$CreateController {
   Future<void> _saveDetails(PrivateEventDetailsPatch patch) async {
     final eventId = state.eventId;
     if (eventId == null || !patch.isValid) return;
-    final provider = privateEventDetailsControllerProvider(_scope(eventId));
-    var current = await _until(provider, (s) => s.canEdit || s.error != null);
+    var current = await _untilDetails(
+      eventId,
+      (s) => s.canEdit || s.error != null,
+    );
     if (current.error != null) throw current.error!;
     if (patch.eventFormat != null && !current.canEditFormat) {
       patch = PrivateEventDetailsPatch(
@@ -440,9 +461,11 @@ class CreateController extends _$CreateController {
       );
       if (!patch.isValid) return;
     }
-    await ref.read(provider.notifier).save(patch);
-    current = await _until(
-      provider,
+    await ref
+        .read(privateEventDetailsControllerProvider(_scope(eventId)).notifier)
+        .save(patch);
+    current = await _untilDetails(
+      eventId,
       (s) => (s.pending == null && !s.saving) || s.error != null,
     );
     if (current.error != null) throw current.error!;
@@ -465,13 +488,17 @@ class CreateController extends _$CreateController {
     }
     final eventId = state.eventId;
     if (eventId == null) return;
-    final provider = privateEventPreferencesControllerProvider(_scope(eventId));
-    var current = await _until(provider, (s) => s.canEdit || s.error != null);
+    var current = await _untilPreferences(
+      eventId,
+      (s) => s.canEdit || s.error != null,
+    );
     if (current.error != null) throw current.error!;
     final intents = current.intents;
     if (intents.admissionPreset.value == state.admission.preset) return;
     await ref
-        .read(provider.notifier)
+        .read(
+          privateEventPreferencesControllerProvider(_scope(eventId)).notifier,
+        )
         .save(
           PrivateEventPreferenceIntents(
             usualDurationMinutes: intents.usualDurationMinutes,
@@ -486,8 +513,8 @@ class CreateController extends _$CreateController {
             expectedAmountMinor: intents.expectedAmountMinor,
           ),
         );
-    current = await _until(
-      provider,
+    current = await _untilPreferences(
+      eventId,
       (s) => (!s.hasPending && !s.saving) || s.error != null,
     );
     if (current.error != null) throw current.error!;
@@ -501,16 +528,17 @@ class CreateController extends _$CreateController {
         PrivateEventDetailsPatch(itinerary: state.draft.itinerary),
       );
     }
-    final provider = eventPublicationControllerProvider(_scope(eventId));
-    var current = await _until(
-      provider,
+    var current = await _untilPublication(
+      eventId,
       (s) => (s.canChange && s.event != null) || s.error != null,
     );
     if (current.error != null) throw current.error!;
     if (!current.canPublish) return;
-    await ref.read(provider.notifier).changeTo('published');
-    current = await _until(
-      provider,
+    await ref
+        .read(eventPublicationControllerProvider(_scope(eventId)).notifier)
+        .changeTo('published');
+    current = await _untilPublication(
+      eventId,
       (s) => s.event?.publicationState == 'published' || s.error != null,
     );
     if (current.error != null) throw current.error!;
@@ -637,13 +665,56 @@ class CreateController extends _$CreateController {
     );
   }
 
-  /// The first value of [provider] that [ready] accepts.
-  Future<T> _until<T>(ProviderListenable<T> provider, bool Function(T) ready) {
+  /// The first details state of [eventId] that [ready] accepts.
+  Future<PrivateEventDetailsState> _untilDetails(
+    String eventId,
+    bool Function(PrivateEventDetailsState) ready,
+  ) => _until(
+    (listener) => ref.listen(
+      privateEventDetailsControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
+
+  /// The first preferences state of [eventId] that [ready] accepts.
+  Future<EventPreferencesEditorState> _untilPreferences(
+    String eventId,
+    bool Function(EventPreferencesEditorState) ready,
+  ) => _until(
+    (listener) => ref.listen(
+      privateEventPreferencesControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
+
+  /// The first publication state of [eventId] that [ready] accepts.
+  Future<EventPublicationState> _untilPublication(
+    String eventId,
+    bool Function(EventPublicationState) ready,
+  ) => _until(
+    (listener) => ref.listen(
+      eventPublicationControllerProvider(_scope(eventId)),
+      listener,
+      fireImmediately: true,
+    ),
+    ready,
+  );
+
+  /// The first value that [ready] accepts from the subscription [listen]
+  /// opens; it closes once answered.
+  Future<T> _until<T>(
+    ProviderSubscription<T> Function(void Function(T?, T) listener) listen,
+    bool Function(T) ready,
+  ) {
     final done = Completer<T>();
     ProviderSubscription<T>? subscription;
-    subscription = ref.listen<T>(provider, (_, next) {
+    subscription = listen((_, next) {
       if (!done.isCompleted && ready(next)) done.complete(next);
-    }, fireImmediately: true);
+    });
     // Close once answered; the first value may already have answered.
     unawaited(done.future.whenComplete(() => subscription?.close()));
     return done.future;

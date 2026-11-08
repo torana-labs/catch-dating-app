@@ -40,8 +40,8 @@ class ProgrammeHouseholdRow extends StatelessWidget {
 }
 
 /// The function names over the grid's badges, cut to fit their column.
-class ProgrammeGridKicker extends StatelessWidget {
-  const ProgrammeGridKicker({super.key, required this.names});
+class ProgrammeGridHeader extends StatelessWidget {
+  const ProgrammeGridHeader({super.key, required this.names});
 
   final List<String> names;
 
@@ -63,8 +63,8 @@ class ProgrammeGridKicker extends StatelessWidget {
 }
 
 /// The reply key: what each badge in the grid means.
-class ProgrammeReplyKey extends StatelessWidget {
-  const ProgrammeReplyKey({super.key});
+class ProgrammeReplyKeyRow extends StatelessWidget {
+  const ProgrammeReplyKeyRow({super.key});
 
   @override
   Widget build(BuildContext context) {
