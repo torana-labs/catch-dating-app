@@ -12,12 +12,6 @@ String? _routeOrganizerIdExtra(GoRouterState state) => switch (state.extra) {
   _ => null,
 };
 
-HostSavedAudience? _routeAudienceExtra(GoRouterState state) =>
-    switch (state.extra) {
-      final HostSavedAudience audience => audience,
-      _ => null,
-    };
-
 String? _routeOrganizerQueryId(GoRouterState state) =>
     state.uri.queryParameters['organizerId'] ??
     state.uri.queryParameters['organizerId'];

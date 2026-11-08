@@ -101,14 +101,19 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
             ),
           ),
         ),
-        _ => hostAudienceScreenForUri(
-          uri,
-          initialContactDisplayName: initialContactDisplayName,
+        // People draws its own list and detail; a pushed People destination
+        // takes the pane, as the legacy screen did.
+        _ => HostNavigationWorkspace(
+          spec: HostTaskWorkspace(content: hostPeopleScreenForUri(uri)),
         ),
       },
-      Routes.hostInboxScreen => hostInboxScreenForUri(
-        uri,
-        initialOrganizerId: initialOrganizerId,
+      Routes.hostInboxScreen => HostNavigationWorkspace(
+        spec: HostTaskWorkspace(
+          content: hostMessagesScreenForUri(
+            uri,
+            initialOrganizerId: initialOrganizerId,
+          ),
+        ),
       ),
       // The rebuilt organizer screens sit in a task workspace so a pushed
       // organizer destination takes the pane, as the legacy screen did.
