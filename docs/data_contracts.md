@@ -4987,6 +4987,15 @@ Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent
 bills and everything only staff need (reminders, history, terms revisions).
 
+The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
+It starts at the organizer's first event, the start of the first non-cancelled
+event with a booking in `organizerGrowthFacts`, or at the first paid booking
+when no event is recorded, and lasts the effective terms' `trial.days`. Bills
+and status use the same computation. The owner reads it through
+`getOrganizerBillingStatus` (status only, no prices) and staff see it on one
+organizer's bills in `adminManageOrganizerBills`. Nothing gates features when
+the trial ends; the next billing period is billed.
+
 `nominatorCredits/{billId}` is written in the transaction that marks a bill
 paid: the organizer's first nominator earns the credit rate on what was paid
 before GST, when their role earns credit, the organizer claimed within the

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_billing_status_response.schema.json",
+  "title": "GetOrganizerBillingStatusCallableResponse",
+  "description": "Where one organizer stands with Catch's billing, as its owner sees it. Status only: no prices or purchase links, so the native Host app can show it under App Store guideline 3.1.3(f).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "trial"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "trial": {"$ref": "../embedded/organizer_trial_status.schema.json"}
+  }
+}
