@@ -10,6 +10,7 @@ enum CommunicationRouteId {
   catchChat,
   catchEventAnnouncement,
   organizerFollowerUpdate,
+  organizerFollowerWhatsapp,
   catchEventSms,
   catchEventRcs,
   organizerEventWhatsapp,
@@ -40,6 +41,7 @@ enum CommunicationConsentScope {
   organizerMarketing,
   followPreference,
   catchMessaging,
+  followerUpdates,
 }
 
 enum CommunicationAudienceScope {
@@ -178,6 +180,20 @@ const communicationRouteCatalog =
             observability: CommunicationObservability.catchActivity,
             requiresHostFinalSend: false,
             supportsReplies: false,
+            supportsScheduling: false,
+          ),
+      CommunicationRouteId.organizerFollowerWhatsapp:
+          CommunicationRouteCapability(
+            id: CommunicationRouteId.organizerFollowerWhatsapp,
+            transport: CommunicationTransport.whatsapp,
+            adapterKey: 'meta_whatsapp_business',
+            senderIdentity: CommunicationSenderIdentity.organizerManaged,
+            deliveryMode: CommunicationDeliveryMode.followerUpdate,
+            audienceScope: CommunicationAudienceScope.organizerFollowers,
+            consentScope: CommunicationConsentScope.followerUpdates,
+            observability: CommunicationObservability.providerReceipts,
+            requiresHostFinalSend: false,
+            supportsReplies: true,
             supportsScheduling: false,
           ),
       CommunicationRouteId.catchEventSms: CommunicationRouteCapability(

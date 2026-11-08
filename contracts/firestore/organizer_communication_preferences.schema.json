@@ -44,7 +44,11 @@
       "additionalProperties": false,
       "properties": {
         "eventOperations": {"$ref": "#/definitions/channelPreference"},
-        "marketing": {"$ref": "#/definitions/channelPreference"}
+        "marketing": {"$ref": "#/definitions/channelPreference"},
+        "followerUpdates": {
+          "$ref": "#/definitions/channelPreference",
+          "description": "Organiser follower updates on WhatsApp (route organizerFollowerWhatsapp). Granted only by an explicit WhatsApp tick on follow-by-phone, bound to the verified phone in endpointE164. Absent reads as unknown."
+        }
       }
     },
     "channelPreference": {
@@ -88,7 +92,7 @@
         },
         "source": {
           "type": ["string", "null"],
-          "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete"],
+          "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete", "organizerFollowByPhone"],
           "x-catch-ownership": "server-only"
         },
         "sourceEventId": {

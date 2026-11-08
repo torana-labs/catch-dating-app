@@ -16,6 +16,7 @@ export type CommunicationRouteDefinition = Readonly<{
     | "catchChat"
     | "catchEventAnnouncement"
     | "organizerFollowerUpdate"
+    | "organizerFollowerWhatsapp"
     | "catchEventSms"
     | "catchEventRcs"
     | "organizerEventWhatsapp"
@@ -48,7 +49,8 @@ export type CommunicationRouteDefinition = Readonly<{
     | "organizerMarketing"
     | "followPreference"
     | "catchMessaging"
-    | "programService";
+    | "programService"
+    | "followerUpdates";
   observability: "none" | "catchActivity" | "providerReceipts";
   requiresHostFinalSend: boolean;
   supportsReplies: boolean;
@@ -147,6 +149,23 @@ export const communicationRoutes = {
     supportsReplies: false,
     supportsScheduling: false,
   },
+  // Follower updates on the organiser's own WhatsApp number. Following is a
+  // push preference only; this route needs the separate followerUpdates
+  // WhatsApp purpose, a verified phone, an active sender and an approved
+  // organizer_follower_update template.
+  organizerFollowerWhatsapp: {
+    id: "organizerFollowerWhatsapp",
+    transport: "whatsapp",
+    adapterKey: "meta_whatsapp_business",
+    senderIdentity: "organizerManaged",
+    deliveryMode: "followerUpdate",
+    audienceScope: "organizerFollowers",
+    consentScope: "followerUpdates",
+    observability: "providerReceipts",
+    requiresHostFinalSend: false,
+    supportsReplies: true,
+    supportsScheduling: false,
+  },
   catchEventSms: {
     id: "catchEventSms",
     transport: "sms",
@@ -221,3 +240,6 @@ export const communicationRoutes = {
 
 export const organizerWhatsappCampaignRoute =
   communicationRoutes.organizerWhatsappCampaign;
+
+export const organizerFollowerWhatsappRoute =
+  communicationRoutes.organizerFollowerWhatsapp;
