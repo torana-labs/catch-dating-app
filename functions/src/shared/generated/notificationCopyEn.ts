@@ -61,6 +61,12 @@ export const notificationCopyEn = {
     "body": "Open the live guide for your {eventLabel} from {locationName}.",
     "audience": "consumer",
     "owner": "product"
+  },
+  "organizerRazorpayRevoked": {
+    "title": "Reconnect Razorpay",
+    "body": "{organizerName} can't take payments until you reconnect Razorpay in Catch.",
+    "audience": "host",
+    "owner": "product"
   }
 } as const;
 

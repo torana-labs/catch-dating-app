@@ -1,3 +1,5 @@
+import {watchConnectionAuthorization} from
+  "../formPayments/razorpayAuthorizationRevocation";
 import {HttpsError} from "firebase-functions/v2/https";
 import {assertPaymentRouteSnapshot} from "../paymentRouting";
 import {razorpayCollectionRoutingDefaults,
@@ -38,7 +40,9 @@ export async function eventPaymentProviderFor(input: {
   } else if (snapshot.selection.route === "razorpayOAuth") {
     const runtime = await deps.oauth(snapshot.configurationVersion);
     if (runtime.mode !== snapshot.selection.mode) unavailable();
-    provider = runtime.provider;
+    // A 401 on the organizer's token means it revoked Catch's access.
+    provider = watchConnectionAuthorization(runtime.provider,
+      snapshot.bindingId);
     resolve = async () => {
       const credential = await runtime.credentials.access({
         organizerId: snapshot.organizerId, connectionId: snapshot.bindingId,

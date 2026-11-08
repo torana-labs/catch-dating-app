@@ -35,3 +35,13 @@ export async function formPaymentRuntime(configurationVersion?: string) {
   return {...runtime, configurationVersion: runtime.version,
     db, credentials, processor, connections};
 }
+
+/**
+ * The partner app's webhook secret and mode from the newest partner config.
+ * @return {Promise<object>} Secret (null on a v1 config) and mode.
+ */
+export async function formPaymentPartnerWebhookConfig():
+  Promise<{webhookSecret: string | null; mode: "test" | "live"}> {
+  const runtime = await runtimeConfig().load();
+  return {webhookSecret: runtime.partnerWebhookSecret, mode: runtime.mode};
+}
