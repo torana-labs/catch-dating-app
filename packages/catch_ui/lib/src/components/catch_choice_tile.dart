@@ -15,6 +15,11 @@ import 'package:flutter/material.dart';
 /// date in a strip. add: dashed, to add one more (a photo, a step).
 enum CatchChoiceTileVariant { row, tile, day, add }
 
+/// How a system card stands out at rest. [attention] draws the games yellow
+/// ring (this one needs the host); [vacant] a dashed edge for an empty slot
+/// that can be taken (a free room).
+enum CatchChoiceTileEmphasis { regular, attention, vacant }
+
 /// One mutually exclusive choice with optional explanatory copy.
 ///
 /// The whole tile is one checked target, including its subtitle. The owning
@@ -24,7 +29,8 @@ enum CatchChoiceTileVariant { row, tile, day, add }
 /// selection takes an ink outline, or the [format] colour when one is given;
 /// a selected day fills with ink. An add card is a dashed button and has no
 /// checked state. Without a [variant] the tile keeps its leading radio, as
-/// before.
+/// before. [emphasis] marks a system card that needs the host or is vacant;
+/// the selected outline and the focus ring still win.
 class CatchChoiceTile extends StatefulWidget {
   const CatchChoiceTile({
     super.key,
@@ -39,6 +45,7 @@ class CatchChoiceTile extends StatefulWidget {
     this.format,
     this.icon,
     this.meta,
+    this.emphasis = CatchChoiceTileEmphasis.regular,
   });
 
   final String title;
@@ -58,6 +65,10 @@ class CatchChoiceTile extends StatefulWidget {
 
   /// A small mark, such as "4 of 4": at the end of a row, in a tile's corner.
   final String? meta;
+
+  /// A system card only: [CatchChoiceTileEmphasis.attention] or
+  /// [CatchChoiceTileEmphasis.vacant] at rest.
+  final CatchChoiceTileEmphasis emphasis;
 
   @override
   State<CatchChoiceTile> createState() => _CatchChoiceTileState();
@@ -195,7 +206,11 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
         ? Border.all(color: t.focus, width: CatchStroke.focus)
         : selected
         ? Border.all(color: t.ink, width: CatchStroke.selected)
-        : variant == CatchChoiceTileVariant.add || onTile
+        : widget.emphasis == CatchChoiceTileEmphasis.attention
+        ? Border.all(color: t.formatGames, width: CatchStroke.selected)
+        : variant == CatchChoiceTileVariant.add ||
+              widget.emphasis == CatchChoiceTileEmphasis.vacant ||
+              onTile
         ? null
         : ground.isNight
         ? Border.all(color: t.line)
@@ -328,7 +343,13 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
         ),
       ),
     );
-    if (variant == CatchChoiceTileVariant.add) {
+    final dashed =
+        variant == CatchChoiceTileVariant.add ||
+        (widget.emphasis == CatchChoiceTileEmphasis.vacant &&
+            border == null &&
+            !formatFill &&
+            !dayFill);
+    if (dashed) {
       card = CustomPaint(
         foregroundPainter: CatchDashedOutlinePainter(
           color: t.controlLine,
