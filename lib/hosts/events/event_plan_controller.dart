@@ -62,6 +62,8 @@ HostEventPlanState hostEventPlanController(Ref ref, HostEventRequest request) {
     options: Map.unmodifiable(hostEventPlanOptions(plan)),
     editable:
         plan.status == EventSuccessPlanStatus.setup && plan.frozenAt == null,
+    stepsEditable: plan.status != EventSuccessPlanStatus.complete,
+    liveControlRevision: plan.liveControlRevision,
   );
 }
 

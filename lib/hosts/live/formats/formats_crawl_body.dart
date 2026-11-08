@@ -134,6 +134,7 @@ class HostFormatsCrawlBody extends StatelessWidget {
                 startsAt: item.startsAt,
                 status: state.stopStatus(index, now),
                 format: CatchFormat.nightsOut,
+                address: item.changed ? item.address : null,
               ),
           ],
         ),

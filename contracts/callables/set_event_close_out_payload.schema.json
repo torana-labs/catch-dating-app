@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_close_out_payload.schema.json",
+  "title": "SetEventCloseOutCallablePayload",
+  "description": "The host's after-the-night choices accepted by setEventCloseOut: the thank-you send (an event-scope moment, armed or paused), whether stay-in-touch picks open and whether no-shows hear about the next night. Fenced on the close-out's revision (0 before the first save) and replay-safe on requestId.",
+  "x-callable-aliases": ["setEventCloseOut"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "eventId", "requestId", "expectedRevision", "thankYou", "openStayInTouchPicks", "noShowNote"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"},
+    "expectedRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "thankYou": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sendAtLocal"],
+          "properties": {
+            "sendAtLocal": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+              "description": "Local wall-clock time the morning after the night ends (the same day when it ends before 5 AM), in the moments scope zone."
+            }
+          }
+        }
+      ]
+    },
+    "openStayInTouchPicks": {"type": "boolean"},
+    "noShowNote": {"type": "boolean"}
+  }
+}

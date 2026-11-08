@@ -11,7 +11,8 @@ import 'package:flutter/widgets.dart';
 /// everyone.
 ///
 /// The sheet holds only the leave choice; the screen sends the message.
-/// There is no Change for the stop: no command changes a stop on the night.
+/// Change on the stop opens the stop editor; a stop changed tonight says so
+/// above the stop.
 class HostFormatsCrawlMoveSheet extends StatelessWidget {
   const HostFormatsCrawlMoveSheet({
     super.key,
@@ -21,6 +22,8 @@ class HostFormatsCrawlMoveSheet extends StatelessWidget {
     required this.leave,
     required this.onLeave,
     required this.onSend,
+    this.onChange,
+    this.stopNumber,
     this.sending = false,
   });
 
@@ -35,13 +38,19 @@ class HostFormatsCrawlMoveSheet extends StatelessWidget {
 
   /// Sends [message] to everyone booked.
   final ValueChanged<String> onSend;
+
+  /// Opens the editor for the next stop; null when stops cannot change.
+  final VoidCallback? onChange;
+
+  /// The next stop's place on the route, for the changed notice.
+  final int? stopNumber;
   final bool sending;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final message = hostFormatsMoveMessage(context, to: to, leave: leave);
-    final where = to.stop.location?.address?.trim();
+    final where = to.address;
     return CatchSheet.contained(
       key: const ValueKey<String>('formats-crawl-move-sheet'),
       title: l10n.hostFormatsMoveTitle,
@@ -55,6 +64,14 @@ class HostFormatsCrawlMoveSheet extends StatelessWidget {
       child: CatchStack(
         gap: CatchStackGap.g16,
         children: [
+          if (to.changed)
+            CatchNotice.inline(
+              key: const ValueKey<String>('formats-crawl-stop-changed'),
+              body: l10n.hostFormatsStopChanged(
+                number: stopNumber ?? 0,
+                stop: to.stop.title,
+              ),
+            ),
           if (from?.stop.location != null && to.stop.location != null)
             _MoveMap(from: from!, to: to),
           CatchSurface(
@@ -62,12 +79,19 @@ class HostFormatsCrawlMoveSheet extends StatelessWidget {
               children: [
                 CatchIndexRow(
                   title: to.stop.title,
-                  subtitle: where == null || where.isEmpty
-                      ? to.stop.location?.name
-                      : where,
+                  subtitle: where ?? to.stop.location?.name,
                   titleMaxLines: 2,
                   onTap: null,
                   density: CatchIndexRowSize.roomy,
+                  trailing: onChange == null
+                      ? null
+                      : CatchButton(
+                          key: const ValueKey<String>('formats-crawl-change'),
+                          label: l10n.hostFormatsStopChange,
+                          variant: CatchButtonVariant.quiet,
+                          size: CatchButtonSize.sm,
+                          onPressed: sending ? null : onChange,
+                        ),
                 ),
                 CatchIndexRow(
                   title: l10n.hostFormatsMoveLeave,
@@ -163,9 +187,8 @@ String hostFormatsMoveMessage(
   required HostFormatsLeave leave,
 }) {
   final l10n = context.l10n;
-  final location = to.stop.location;
-  final where = location?.address?.trim();
-  final place = where == null || where.isEmpty
+  final where = to.address;
+  final place = where == null
       ? to.stop.title
       : l10n.hostFormatsMovePlace(stop: to.stop.title, address: where);
   final when = switch (leave) {

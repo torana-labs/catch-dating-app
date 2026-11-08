@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_body.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_crawl_commands_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_state.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_ticker.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_top_bar.dart';
+import 'package:catch_dating_app/hosts/live/formats/widgets/formats_crawl_change_sheet.dart';
 import 'package:catch_dating_app/hosts/live/formats/widgets/formats_crawl_move_sheet.dart';
 import 'package:catch_dating_app/hosts/people/compose_controller.dart';
 import 'package:catch_dating_app/hosts/people/compose_state.dart';
@@ -27,8 +30,9 @@ import 'package:go_router/go_router.dart';
 /// It watches [hostFormatsCrawlControllerProvider]. Send and move everyone
 /// is the existing event broadcast (`sendEventBroadcast` through
 /// `HostComposeCommands`) to everyone booked, with the next stop and when
-/// to leave. No command moves a group to a stop or changes a stop, so the
-/// broadcast is the whole move. Message opens the compose screen.
+/// to leave. Change on the next stop opens the stop editor, whose send is
+/// one `changeEventCrawlStop`: the stop changes on tonight's plan and
+/// everyone booked is told. Message opens the compose screen.
 class HostFormatsCrawlScreen extends ConsumerStatefulWidget {
   const HostFormatsCrawlScreen({
     super.key,
@@ -58,6 +62,12 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
   HostFormatsLeave _leave = HostFormatsLeave.inTen;
   String? _requestId;
 
+  /// The stop editor is up over the move sheet.
+  bool _changing = false;
+
+  /// One request id per stop change, so a retry cannot apply it twice.
+  String? _changeRequestId;
+
   @override
   DateTime? get fixedNow => widget.now;
 
@@ -69,10 +79,16 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
       hostFormatsCrawlControllerProvider(widget.organizer, event),
     );
     final sending = ref.watch(HostComposeCommands.sendMutation).isPending;
+    final changingStop = ref
+        .watch(HostFormatsCrawlCommands.changeStopMutation)
+        .isPending;
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [HostComposeCommands.sendMutation],
+      mutations: [
+        HostComposeCommands.sendMutation,
+        HostFormatsCrawlCommands.changeStopMutation,
+      ],
       errorContext: AppErrorContext.event,
     );
     final next = state.status == HostFormatsCrawlStatus.running
@@ -84,7 +100,14 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
     return PopScope(
       canPop: !_moving,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && _moving) setState(() => _moving = false);
+        if (didPop) return;
+        setState(() {
+          if (_changing) {
+            _changing = false;
+          } else {
+            _moving = false;
+          }
+        });
       },
       child: CatchRoot(
         theme: CatchThemeMode.night,
@@ -109,10 +132,30 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
                 _requestId = null;
               }),
               onMessage: _compose,
-              onRetry: () =>
-                  ref.invalidate(watchEventAttendeesProvider(event.id)),
+              onRetry: () {
+                ref.invalidate(watchEventAttendeesProvider(event.id));
+                ref.invalidate(watchEventSuccessPlanProvider(event.id));
+              },
             ),
-            overlay: _moving && next != null
+            overlay: _moving && _changing && next != null
+                ? HostFormatsCrawlChangeSheet(
+                    key: ValueKey<String>(
+                      'formats-crawl-change-${next.stop.id}',
+                    ),
+                    stop: next,
+                    number: state.stops.indexOf(next) + 1,
+                    sending: changingStop,
+                    onChange: (title, address, message) => unawaited(
+                      _changeStop(
+                        state,
+                        next,
+                        title: title,
+                        address: address,
+                        message: message,
+                      ),
+                    ),
+                  )
+                : _moving && next != null
                 ? HostFormatsCrawlMoveSheet(
                     from: current < 0 ? null : state.stops[current],
                     to: next,
@@ -124,6 +167,13 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
                       _requestId = null;
                     }),
                     onSend: (message) => unawaited(_send(message)),
+                    stopNumber: state.stops.indexOf(next) + 1,
+                    onChange: state.canChangeStops
+                        ? () => setState(() {
+                            _changing = true;
+                            _changeRequestId = null;
+                          })
+                        : null,
                   )
                 : null,
           ),
@@ -137,6 +187,44 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
     queryParameters: {'eventId': widget.event.id},
     extra: widget.organizer,
   );
+
+  Future<void> _changeStop(
+    HostFormatsCrawlState state,
+    HostFormatsStop stop, {
+    required String title,
+    required String? address,
+    required String message,
+  }) async {
+    final revision = state.liveControlRevision;
+    if (revision == null) return;
+    final changed = context.l10n.hostFormatsStopChangeSent;
+    final requestId = _changeRequestId ??= hostFormatsCrawlRequestId();
+    try {
+      await HostFormatsCrawlCommands.changeStopMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostFormatsCrawlCommandsProvider.notifier)
+            .changeStop(
+              eventId: widget.event.id,
+              requestId: requestId,
+              expectedLiveControlRevision: revision,
+              stopId: stop.stop.id,
+              title: title,
+              address: address,
+              message: message,
+            ),
+      );
+    } on Object {
+      // The mutation's error shows as a notice.
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _changing = false;
+      _changeRequestId = null;
+    });
+    showCatchNotice(context, changed);
+  }
 
   Future<void> _send(String message) async {
     final commands = ref.read(hostComposeCommandsProvider);
@@ -167,3 +255,7 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
     showCatchNotice(context, sent);
   }
 }
+
+/// A fresh request id for one crawl stop change.
+String hostFormatsCrawlRequestId() =>
+    'crawl-${DateTime.now().microsecondsSinceEpoch}';

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/change_event_crawl_stop_response.schema.json",
+  "title": "ChangeEventCrawlStopCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "liveControlRevision", "replayed", "recipientCount"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "liveControlRevision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "replayed": {"type": "boolean"},
+    "recipientCount": {"type": ["integer", "null"], "minimum": 0, "description": "Everyone the broadcast reached; null when no message was sent."}
+  }
+}

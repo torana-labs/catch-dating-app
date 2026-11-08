@@ -1,0 +1,8 @@
+{
+  "eventId": "event_123",
+  "requestId": "crawl-stop-0001",
+  "expectedLiveControlRevision": 6,
+  "stopId": "stop-3",
+  "stop": {"title": "The Daily", "address": "Bandra West"},
+  "message": "Stop 3 changed: we're heading to The Daily, Bandra West instead."
+}

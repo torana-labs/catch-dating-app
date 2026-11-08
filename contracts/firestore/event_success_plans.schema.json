@@ -141,6 +141,25 @@
       "maximum": 100,
       "x-catch-ownership": "callable-owned"
     },
+    "stepOverrides": {
+      "$ref": "../shared/event_success_run_of_show.schema.json#/definitions/planSteps",
+      "description": "The host's run of show once a step was added, edited, removed or reordered through saveEventPlanStep. Missing on older plans: the run of show derives from the playbook.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "stepStartedAtMs": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Server time the active step started, moved later by any paused span on resume. Missing or null on older plans: time left follows the schedule.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "pausedAtMs": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Server time the active step was paused; missing or null while it runs.",
+      "x-catch-ownership": "callable-owned"
+    },
     "liveControlRevision": {
       "type": "integer",
       "minimum": 0,
@@ -215,6 +234,23 @@
     },
     "completedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "crawlStopChanges": {
+      "type": "array",
+      "maxItems": 40,
+      "description": "Stops the host changed on the night through changeEventCrawlStop, keyed by itinerary item id. Missing on older plans: the route is the itinerary as published.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stopId", "title", "address", "changedAtMs"],
+        "properties": {
+          "stopId": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[A-Za-z0-9_-]+$"},
+          "title": {"type": "string", "minLength": 1, "maxLength": 80},
+          "address": {"type": ["string", "null"], "maxLength": 200},
+          "changedAtMs": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+        }
+      },
       "x-catch-ownership": "callable-owned"
     },
     "synthetic": {

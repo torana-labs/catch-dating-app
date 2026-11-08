@@ -1,0 +1,9 @@
+{
+  "organizerId": "org_123",
+  "eventId": "event_123",
+  "requestId": "close-out-0001",
+  "expectedRevision": 0,
+  "thankYou": {"sendAtLocal": "10:00"},
+  "openStayInTouchPicks": true,
+  "noShowNote": false
+}

@@ -16,6 +16,7 @@ class FormatsStopRow extends StatelessWidget {
     required this.startsAt,
     required this.status,
     this.format,
+    this.address,
   });
 
   final EventItineraryItem stop;
@@ -25,10 +26,14 @@ class FormatsStopRow extends StatelessWidget {
   final LivePlanStepStatus status;
   final CatchFormat? format;
 
+  /// Where the stop is now, when that is not its location's address: a
+  /// stop changed on the night.
+  final String? address;
+
   @override
   Widget build(BuildContext context) {
     final location = stop.location;
-    final where = location?.address?.trim();
+    final where = (address ?? location?.address)?.trim();
     return CatchIndexRow(
       title: stop.title,
       subtitle: where == null || where.isEmpty ? location?.name : where,
