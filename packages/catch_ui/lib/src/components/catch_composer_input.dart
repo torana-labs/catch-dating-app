@@ -16,8 +16,8 @@ import 'package:flutter/material.dart';
 /// one the composer owns it. A [closedNote] replaces the field in a chat that
 /// no longer takes messages. [placeholder] and [sendLabel] are
 /// caller-localized.
-class CatchChatInput extends StatefulWidget {
-  const CatchChatInput({
+class CatchComposerInput extends StatefulWidget {
+  const CatchComposerInput({
     super.key,
     required this.placeholder,
     required this.sendLabel,
@@ -39,10 +39,10 @@ class CatchChatInput extends StatefulWidget {
   final String? closedNote;
 
   @override
-  State<CatchChatInput> createState() => _CatchChatInputState();
+  State<CatchComposerInput> createState() => _CatchComposerInputState();
 }
 
-class _CatchChatInputState extends State<CatchChatInput> {
+class _CatchComposerInputState extends State<CatchComposerInput> {
   TextEditingController? _owned;
 
   TextEditingController get _controller =>
