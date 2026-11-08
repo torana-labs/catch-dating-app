@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -42,8 +43,8 @@ void main() {
     expect(opened, 'sangeet');
     await tester.tap(find.text('3 households haven’t replied'));
     expect(waiting, 1);
-    await tester.tap(find.text('Guests').last);
-    expect(view, HostProgrammeView.guests);
+    await tester.tap(find.text('Travel'));
+    expect(view, HostProgrammeView.travel);
   });
 
   testWidgets('the workspace shows the error with Try again', (tester) async {
@@ -234,7 +235,7 @@ void main() {
       find.byKey(const ValueKey('host-programme-trip-T-041')),
       findsNothing,
     );
-    await tester.tap(find.text('Royal Cabs').first);
+    await tester.tap(find.widgetWithText(CatchChip, 'Royal Cabs'));
     expect(filter, const HostProgrammeTripFilter.vendor('Royal Cabs'));
   });
 }
