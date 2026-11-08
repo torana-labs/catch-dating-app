@@ -21,6 +21,7 @@ import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -334,6 +335,7 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
           CatchField.input(
             copy: copy,
             title: l10n.hostOrganizerProfileName,
+            contract: CatchContractConstraints.hostProfileDocumentDisplayName,
             initialValue: _draft.name,
             onChanged: (value) => setState(
               () => _draft = _HostProfileDraft(
@@ -346,6 +348,7 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
           CatchField.input(
             copy: copy,
             title: l10n.hostOrganizerProfileRole,
+            contract: CatchContractConstraints.hostProfileDocumentRoleTitle,
             initialValue: _draft.role,
             onChanged: (value) => _draft = _HostProfileDraft(
               name: _draft.name,
@@ -356,6 +359,7 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
           CatchField.input(
             copy: copy,
             title: l10n.hostOrganizerProfileBio,
+            contract: CatchContractConstraints.hostProfileDocumentBio,
             initialValue: _draft.bio,
             minLines: 3,
             onChanged: (value) => _draft = _HostProfileDraft(

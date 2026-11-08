@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -24,6 +25,8 @@ class HostFormNewBody extends StatelessWidget {
         title: l10n.hostFormsKindApplication,
         subtitle: l10n.hostFormsKindApplicationNote,
         variant: CatchChoiceTileVariant.row,
+        contractExemption:
+            'A loading skeleton: it has no tap and writes no field.',
       );
       return CatchPageBody.screen(
         variant: CatchPageBodyVariant.fixed,
@@ -75,6 +78,8 @@ class HostFormNewBody extends StatelessWidget {
                   meta: choice.title == null
                       ? null
                       : hostFormKindLabel(l10n, choice.purpose),
+                  contract: CatchContractConstraints
+                      .createOrganizerFormCallablePayloadTemplateId,
                   selected: choice.templateId == state.selectedTemplateId,
                   onTap: state.creating
                       ? null

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -49,6 +50,8 @@ class CreateBasicsBody extends StatelessWidget {
           key: ValueKey<String>('create-add-photo-$i'),
           variant: CatchChoiceTileVariant.add,
           title: context.l10n.hostCreateAddPhoto,
+          contract: CatchContractConstraints
+              .updatePrivateEventDetailsCallablePayloadDetailsEventPhotos,
           onTap: addPhoto,
         ),
     ];
@@ -91,6 +94,8 @@ class CreateBasicsBody extends StatelessWidget {
             key: const ValueKey<String>('create-name'),
             copy: copy,
             title: context.l10n.hostCreateName,
+            contract: CatchContractConstraints
+                .createPrivateEventSetupCallablePayloadBasicsName,
             initialValue: draft.name ?? '',
             onChanged: onName,
             textInputAction: TextInputAction.next,
@@ -143,6 +148,8 @@ class CreateBasicsBody extends StatelessWidget {
               key: const ValueKey<String>('create-distance'),
               copy: copy,
               title: context.l10n.hostCreateDistance,
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
               initialValue: draft.distance ?? '',
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -181,6 +188,8 @@ class CreateBasicsBody extends StatelessWidget {
             key: const ValueKey<String>('create-description'),
             copy: copy,
             title: context.l10n.hostCreateWhatsItLike,
+            contract: CatchContractConstraints
+                .updatePrivateEventDetailsCallablePayloadDetailsDescription,
             initialValue: draft.description ?? '',
             onChanged: onDescription,
             minLines: 3,

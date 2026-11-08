@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -70,6 +71,8 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
               key: ValueKey<String>('create-plan-step-title-${_step.id}'),
               copy: copy,
               title: context.l10n.hostCreateStepWhat,
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsTitle,
               initialValue: _step.title,
               maxLength: 80,
               onChanged: (value) =>
@@ -81,6 +84,8 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
               key: ValueKey<String>('create-plan-step-note-${_step.id}'),
               copy: copy,
               title: context.l10n.hostCreateStepNote,
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDescription,
               initialValue: _step.description ?? '',
               maxLength: 160,
               onChanged: (value) => setState(
@@ -94,6 +99,8 @@ class _CreatePlanStepSheetState extends State<CreatePlanStepSheet> {
             child: CatchField.stepper(
               copy: copy,
               title: context.l10n.hostCreateMinutes,
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDurationMinutes,
               value: _step.durationMinutes ?? 30,
               min: 5,
               max: 600,

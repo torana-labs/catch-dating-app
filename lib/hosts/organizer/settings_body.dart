@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/organizer/settings_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -40,6 +41,8 @@ class OrganizerSettingsBody extends StatelessWidget {
                   key: const ValueKey<String>('settings-notify-messages'),
                   value: messagesOn,
                   semanticLabel: l10n.hostOrganizerSettingsNotifyMessages,
+                  contract: CatchContractConstraints
+                      .updateUserProfilePatchPrefsMessages,
                   onChanged: busy ? null : onMessages,
                 ),
                 onTap: null,
