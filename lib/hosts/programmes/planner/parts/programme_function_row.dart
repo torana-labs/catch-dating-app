@@ -29,12 +29,9 @@ class ProgrammeFunctionRow extends StatelessWidget {
     return CatchIndexRow(
       time: AppTimeFormatters.time(function.startsAt),
       title: function.name,
-      status: cancelled
-          ? l10n.hostProgrammeFunctionCancelled
-          : function.venueName,
-      statusTone: cancelled
-          ? CatchIndexRowTone.danger
-          : CatchIndexRowTone.neutral,
+      status: cancelled ? l10n.hostProgrammeFunctionCancelled : null,
+      statusTone: CatchIndexRowTone.danger,
+      meta: function.venueName,
       subtitle: replies == null || cancelled
           ? null
           : l10n.hostProgrammeFunctionReplies(

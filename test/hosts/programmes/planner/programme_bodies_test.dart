@@ -11,10 +11,13 @@ import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_view
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/catch_test_fonts.dart';
 import 'planner_fixtures.dart';
 import 'planner_test_pump.dart';
 
 void main() {
+  setUpAll(loadCatchTestFonts);
+
   testWidgets('the workspace lists each day and opens a function', (
     tester,
   ) async {
@@ -39,7 +42,7 @@ void main() {
     expect(opened, 'sangeet');
     await tester.tap(find.text('3 households haven’t replied'));
     expect(waiting, 1);
-    await tester.tap(find.text('Guests'));
+    await tester.tap(find.text('Guests').last);
     expect(view, HostProgrammeView.guests);
   });
 
@@ -149,7 +152,7 @@ void main() {
       ),
     );
     expect(find.text('Kamla Mehra'), findsOneWidget);
-    expect(find.text('Replied for everyone'), findsNothing);
+    expect(find.text('Replied for everyone'), findsOneWidget);
     await tester.tap(
       find.byKey(const ValueKey('host-programme-household-link')),
     );
