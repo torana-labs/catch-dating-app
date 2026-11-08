@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
@@ -12,9 +10,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -25,6 +21,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_pat
 import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsSection;
+import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_count_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
@@ -45,9 +42,6 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/host_or
 import 'package:catch_dating_app/hosts/presentation/payments/host_organizer_bills_section.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/organizers/organizers.dart'
     show OrganizerDetailReadOnlyPreview;
@@ -73,7 +67,6 @@ import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.da
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -85,15 +78,11 @@ export 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 export 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
-part 'host_operations/host_analytics_formatters.dart';
-part 'host_operations/host_analytics_period_input.dart';
-part 'host_operations/host_analytics_trend_section.dart';
 part 'host_operations/host_loading_screen.dart';
 part 'host_operations/host_organizer_edit_body.dart';
 part 'host_operations/host_organizer_edit_helpers.dart';
 part 'host_operations/host_organizer_edit_rows.dart';
 part 'host_operations/host_organizer_event_defaults_screen.dart';
-part 'host_operations/host_organizer_insights_section.dart';
 part 'host_operations/host_organizer_live_guide_screen.dart';
 part 'host_operations/host_organizer_media_rail.dart';
 part 'host_operations/host_organizer_memberships_screen.dart';

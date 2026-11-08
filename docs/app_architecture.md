@@ -3048,7 +3048,7 @@ create session (`createController`, keyed by the screen's `CreateFlowArgs`),
 the pickers, the contained sheets and navigation, and renders one step screen
 per step on phones (`CreateBasicsScreen`, `CreateWhenScreen`,
 `CreateTicketsScreen`, `CreatePlanScreen`, `CreateShareScreen`, each a
-`CreateStepFrame` with the step top bar and the bar dock) or
+`CreateStepLayout` with the step top bar and the bar dock) or
 `CreateEditorScreen` (the editor pane layout with the step list and the live
 poster) on expanded windows. The bodies take `CreateFlowState` and
 `CreateHandlers` and watch nothing; the draft is the form, and every write is

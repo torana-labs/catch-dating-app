@@ -35,8 +35,14 @@ export const registryPath = "design/components/catch.components.json";
 const barrelPath = "packages/catch_ui/lib/catch_ui.dart";
 const libraryRoot = "packages/catch_ui/lib";
 const migrationScopePath = "packages/catch_ui_lints/lib/src/migration_scope.dart";
-// lib/hosts/today is a host destination redrawn in place (migration_scope.dart).
-const newRootFolders = ["lib/pages", "lib/hosts/today"];
+// lib/hosts/today, insights and live are host destinations redrawn in place
+// (migration_scope.dart).
+const newRootFolders = [
+  "lib/pages",
+  "lib/hosts/today",
+  "lib/hosts/insights",
+  "lib/hosts/live",
+];
 
 /** Blanks comments and string bodies, keeping every offset and line. */
 export function maskDart(source) {

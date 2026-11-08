@@ -1199,6 +1199,503 @@
     "x-surface": "hosts.today",
     "x-max-chars": 20
   },
+  "hostInsightsPeriodLabel": "Period",
+  "@hostInsightsPeriodLabel": {
+    "description": "Insights segmented control label: which period the numbers cover.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 16
+  },
+  "hostInsightsPeriodSevenDays": "7 days",
+  "@hostInsightsPeriodSevenDays": {
+    "description": "Insights period option: the last seven days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsPeriodThirtyDays": "30 days",
+  "@hostInsightsPeriodThirtyDays": {
+    "description": "Insights period option: the last thirty days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsPeriodNinetyDays": "90 days",
+  "@hostInsightsPeriodNinetyDays": {
+    "description": "Insights period option: the last ninety days.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 12
+  },
+  "hostInsightsBookingsEachWeek": "Bookings each week",
+  "@hostInsightsBookingsEachWeek": {
+    "description": "Insights section title over the weekly bookings chart.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsBookingsEachDay": "Bookings each day",
+  "@hostInsightsBookingsEachDay": {
+    "description": "Insights section title over the daily bookings chart (seven-day view).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsBookingsEmpty": "No bookings in this period.",
+  "@hostInsightsBookingsEmpty": {
+    "description": "Insights bookings chart copy when the period has no bookings.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 48
+  },
+  "hostInsightsSourcesTitle": "Where visitors came from",
+  "@hostInsightsSourcesTitle": {
+    "description": "Insights section title over the share of page visitors by where they came from (Instagram, WhatsApp and so on).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 32
+  },
+  "hostInsightsVisits": "{count, plural, =1{Your page had 1 visit} other{Your page had {count} visits}}",
+  "@hostInsightsVisits": {
+    "description": "Insights row: visits to the organizer page in the period.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 40
+  },
+  "hostInsightsLinkClicks": "{count, plural, =1{1 link click} other{{count} link clicks}}",
+  "@hostInsightsLinkClicks": {
+    "description": "Insights row subtitle: clicks on the organizer page links in the period.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 32
+  },
+  "hostInsightsFullestNightsTitle": "Your fullest nights",
+  "@hostInsightsFullestNightsTitle": {
+    "description": "Insights section title over the events that filled best in the period.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 28
+  },
+  "hostInsightsFullestNightsEmpty": "No events in this period yet.",
+  "@hostInsightsFullestNightsEmpty": {
+    "description": "Insights fullest nights copy when the period has no booked events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 48
+  },
+  "hostInsightsNightBooked": "{booked} booked",
+  "@hostInsightsNightBooked": {
+    "description": "Insights night row meta when the event has no capacity: places booked.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 20
+  },
+  "hostInsightsNightBookedOf": "{booked} of {capacity}",
+  "@hostInsightsNightBookedOf": {
+    "description": "Insights night row meta: places booked out of the capacity.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "capacity": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 20
+  },
+  "hostInsightsNightRated": "{booked} · rated {rating}",
+  "@hostInsightsNightRated": {
+    "description": "Insights night row meta with the average guest rating.",
+    "placeholders": {
+      "booked": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 36
+  },
+  "hostInsightsNightFill": "{percent}%",
+  "@hostInsightsNightFill": {
+    "description": "Insights night row status: how full the event was.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.insights",
+    "x-max-chars": 6
+  },
+  "hostEventReportWhen": "{date} · {start} to {end}",
+  "@hostEventReportWhen": {
+    "description": "Event report kicker: the event's date and its start and end times.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 48
+  },
+  "hostEventReportHowItWent": "How it went",
+  "@hostEventReportHowItWent": {
+    "description": "Event report line under the event title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportCame": "Came",
+  "@hostEventReportCame": {
+    "description": "Event report stat label: guests who checked in.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventReportMoreThanBooked": "{count} more than booked",
+  "@hostEventReportMoreThanBooked": {
+    "description": "Event report Came note when more guests checked in than booked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportOfBooked": "of {booked} booked",
+  "@hostEventReportOfBooked": {
+    "description": "Event report Came note: out of the guests who booked.",
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportPayments": "{count, plural, =1{from 1 payment} other{from {count} payments}}",
+  "@hostEventReportPayments": {
+    "description": "Event report Ticket sales note: completed payments behind the total.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportFirstTime": "first time with you",
+  "@hostEventReportFirstTime": {
+    "description": "Event report New faces note.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportRating": "Rating",
+  "@hostEventReportRating": {
+    "description": "Event report stat label: the average guest rating.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventReportRatedBy": "{count, plural, =1{from 1 guest} other{from {count} guests}}",
+  "@hostEventReportRatedBy": {
+    "description": "Event report Rating note: how many guests rated the event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportNotRated": "No ratings yet",
+  "@hostEventReportNotRated": {
+    "description": "Event report Rating note before any guest rated the event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportMoreFaces": "+{count}",
+  "@hostEventReportMoreFaces": {
+    "description": "Event report faces: how many more guests than the faces shown.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 6
+  },
+  "hostEventReportStayInTouchTitle": "{count, plural, =1{One pair wants to stay in touch} other{{count} pairs want to stay in touch}}",
+  "@hostEventReportStayInTouchTitle": {
+    "description": "Event report: pairs of guests who matched with each other after the event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 40
+  },
+  "hostEventReportStayInTouchBody": "They matched after the event. Only they see who.",
+  "@hostEventReportStayInTouchBody": {
+    "description": "Event report line under the stay-in-touch count.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 60
+  },
+  "hostEventReportReviewsTitle": "What guests said",
+  "@hostEventReportReviewsTitle": {
+    "description": "Event report section title over the guest reviews.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventReportAllReviews": "All {count}",
+  "@hostEventReportAllReviews": {
+    "description": "Event report reviews action: open every review.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventReportReviewsEmpty": "No reviews yet.",
+  "@hostEventReportReviewsEmpty": {
+    "description": "Event report reviews copy before any guest reviewed the event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 40
+  },
+  "hostEventReportReviewAnonymous": "A guest",
+  "@hostEventReportReviewAnonymous": {
+    "description": "Event report review row title for an anonymous review.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportReviewSemantics": "{name}, {rating} of 5 stars",
+  "@hostEventReportReviewSemantics": {
+    "description": "Event report review row, read aloud: the reviewer and the stars.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 48
+  },
+  "hostEventReportReviewBookedOnCatch": "Booked on Catch",
+  "@hostEventReportReviewBookedOnCatch": {
+    "description": "Event report review row meta: the reviewer booked through Catch.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportNextPlaces": "Next {day} · {places} places",
+  "@hostEventReportNextPlaces": {
+    "description": "Event report spotlight kicker: the organizer's next event and its places.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "places": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportBringBackTitle": "{when, select, tonight{Bring tonight’s {count} back} other{Bring these {count} back}}",
+  "@hostEventReportBringBackTitle": {
+    "description": "Event report spotlight title: invite the guests who came to the next event.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "when": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportBringBackBody": "Message everyone who came about {event}.",
+  "@hostEventReportBringBackBody": {
+    "description": "Event report spotlight line: the guests who came hear about the next event.",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 80
+  },
+  "hostEventReportInviteAll": "Invite all {count}",
+  "@hostEventReportInviteAll": {
+    "description": "Event report spotlight button: message every guest who came.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportChoose": "Choose",
+  "@hostEventReportChoose": {
+    "description": "Event report spotlight button: pick which guests to invite.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventReportDownloadsTitle": "Downloads",
+  "@hostEventReportDownloadsTitle": {
+    "description": "Event report section title over the CSV exports.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventReportDownloadGuestList": "Guest list and check-ins",
+  "@hostEventReportDownloadGuestList": {
+    "description": "Event report export row: the guest list with check-ins.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportDownloadPayments": "Bookings and payments",
+  "@hostEventReportDownloadPayments": {
+    "description": "Event report export row: bookings with their payments.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventReportDownloadCsv": "CSV",
+  "@hostEventReportDownloadCsv": {
+    "description": "Event report export row value: the file type.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 6
+  },
+  "hostEventReportShare": "Share the report",
+  "@hostEventReportShare": {
+    "description": "Event report top bar action, read aloud: share a summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventReportShareText": "{event}: {came} came, {newFaces} for the first time.",
+  "@hostEventReportShareText": {
+    "description": "Event report shared summary text.",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      },
+      "came": {
+        "type": "int"
+      },
+      "newFaces": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 120
+  },
   "hostTodayCountBooked": "Booked",
   "@hostTodayCountBooked": {
     "description": "Today event poster count label: guests booked.",
@@ -12112,7 +12609,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
-  "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit, Insights, and Preview.",
+  "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit and Preview.",
   "@hostsHostOrganizersScaffoldBodyDragLeftOrRight": {
     "description": "Accessibility hint for switching Host Clubs workspace pages.",
     "x-audience": "host",

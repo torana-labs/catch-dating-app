@@ -39,9 +39,6 @@ Widget _hostOrganizerPreviewFor(String focus) {
   final team = organizer.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostOrganizerInsightsSection' => HostOrganizerInsightsSection(
-      organizer: organizer,
-    ),
     'HostOrganizerSectionList' => HostOrganizerSectionList(
       organizer: organizer,
     ),
@@ -99,15 +96,6 @@ Widget _hostOrganizerPreviewFor(String focus) {
     _ => Text('No exact preview registered for $focus.'),
   };
 }
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerInsightsSection,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerInsightsSectionCatalogStates(
-  BuildContext context,
-) => _hostOrganizerExactCatalog(context, 'HostOrganizerInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

@@ -105,21 +105,11 @@ void registerHostWorkspacePagingTest() {
     );
 
     final pager = find.byType(TabBarView);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
-    );
     expect(find.byType(HostOrganizerEditBody), findsOneWidget);
-    expect(find.byType(HostOrganizerInsightsSection), findsNothing);
-
-    await tester.drag(pager, const Offset(-320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
     );
-    expect(find.byType(HostOrganizerEditBody), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
@@ -128,18 +118,11 @@ void registerHostWorkspacePagingTest() {
       findsOneWidget,
     );
     expect(find.text('Open public preview'), findsNothing);
-
-    await tester.drag(pager, const Offset(320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
+    expect(find.byType(HostOrganizerEditBody), findsNothing);
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
     expect(find.byType(HostOrganizerEditBody), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
-    );
   });
 }
 
@@ -273,9 +256,7 @@ class _FakeHostAuthRepository extends Fake implements AuthRepository {
 }
 
 final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
-  const _EmptyHostAnalyticsRepository({this.topEvents = const []});
-
-  final List<HostAnalyticsEventRow> topEvents;
+  const _EmptyHostAnalyticsRepository();
 
   @override
   Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
@@ -283,7 +264,7 @@ final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
       generatedAt: DateTime(2026, 7, 10),
       summaryCards: const [],
       trend: const [],
-      topEvents: topEvents,
+      topEvents: const [],
       reviewSummary: const HostAnalyticsReviewSummary(
         newReviews: 0,
         publishedReviews: 0,
@@ -306,34 +287,6 @@ final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
     );
   }
 }
-
-HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
-    HostAnalyticsEventRow(
-      eventId: eventId,
-      organizerId: 'exact-club',
-      title: 'Top event',
-      startTime: DateTime(2026, 7, 8, 19),
-      status: 'completed',
-      bookedCount: 20,
-      checkedInCount: 18,
-      waitlistedCount: 2,
-      fillRate: 1,
-      checkInRate: 0.9,
-      grossRevenueMinor: 0,
-      currency: 'INR',
-      checkoutStartedCount: 0,
-      checkoutDropoffCount: 0,
-      paymentCompletedCount: 0,
-      paymentFailedCount: 0,
-      paymentRefundedCount: 0,
-      reviewCount: 2,
-      averageRating: 4.5,
-      demandCount: 24,
-      inviteOpenCount: 3,
-      mutualMatchCount: 4,
-      chatStartedCount: 2,
-      repeatAttendeeCount: 5,
-    );
 
 List _hostOrganizerOverrides({
   List<Organizer> owned = const [],

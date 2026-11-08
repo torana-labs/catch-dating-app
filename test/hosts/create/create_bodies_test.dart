@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
-import 'package:catch_dating_app/hosts/create/widgets/create_editor_panes.dart';
+import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -264,7 +264,7 @@ void main() {
               state: _state(step: CreateStep.when),
               onStep: steps.add,
             ),
-            CreatePreviewPane(
+            CreateEditorPreview(
               state: _state(),
               stillToSet: const ['When and where', 'Tickets'],
             ),

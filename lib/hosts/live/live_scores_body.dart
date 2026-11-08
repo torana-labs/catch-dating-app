@@ -72,7 +72,7 @@ class HostLiveScoresBody extends StatelessWidget {
           final byTotal = b.total.compareTo(a.total);
           return byTotal != 0 ? byTotal : a.unit.label.compareTo(b.unit.label);
         });
-    final views = HostLiveViews(
+    final views = HostLiveViewTabBar(
       selected: HostLiveView.scores,
       scores: true,
       onView: onView,

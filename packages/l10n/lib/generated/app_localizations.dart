@@ -1552,6 +1552,302 @@ abstract class AppLocalizations {
   /// **'Same as before'**
   String get hostTodayStatSame;
 
+  /// Insights segmented control label: which period the numbers cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get hostInsightsPeriodLabel;
+
+  /// Insights period option: the last seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get hostInsightsPeriodSevenDays;
+
+  /// Insights period option: the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get hostInsightsPeriodThirtyDays;
+
+  /// Insights period option: the last ninety days.
+  ///
+  /// In en, this message translates to:
+  /// **'90 days'**
+  String get hostInsightsPeriodNinetyDays;
+
+  /// Insights section title over the weekly bookings chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings each week'**
+  String get hostInsightsBookingsEachWeek;
+
+  /// Insights section title over the daily bookings chart (seven-day view).
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings each day'**
+  String get hostInsightsBookingsEachDay;
+
+  /// Insights bookings chart copy when the period has no bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings in this period.'**
+  String get hostInsightsBookingsEmpty;
+
+  /// Insights section title over the share of page visitors by where they came from (Instagram, WhatsApp and so on).
+  ///
+  /// In en, this message translates to:
+  /// **'Where visitors came from'**
+  String get hostInsightsSourcesTitle;
+
+  /// Insights row: visits to the organizer page in the period.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Your page had 1 visit} other{Your page had {count} visits}}'**
+  String hostInsightsVisits({required int count});
+
+  /// Insights row subtitle: clicks on the organizer page links in the period.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 link click} other{{count} link clicks}}'**
+  String hostInsightsLinkClicks({required int count});
+
+  /// Insights section title over the events that filled best in the period.
+  ///
+  /// In en, this message translates to:
+  /// **'Your fullest nights'**
+  String get hostInsightsFullestNightsTitle;
+
+  /// Insights fullest nights copy when the period has no booked events.
+  ///
+  /// In en, this message translates to:
+  /// **'No events in this period yet.'**
+  String get hostInsightsFullestNightsEmpty;
+
+  /// Insights night row meta when the event has no capacity: places booked.
+  ///
+  /// In en, this message translates to:
+  /// **'{booked} booked'**
+  String hostInsightsNightBooked({required int booked});
+
+  /// Insights night row meta: places booked out of the capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{booked} of {capacity}'**
+  String hostInsightsNightBookedOf({
+    required int booked,
+    required int capacity,
+  });
+
+  /// Insights night row meta with the average guest rating.
+  ///
+  /// In en, this message translates to:
+  /// **'{booked} · rated {rating}'**
+  String hostInsightsNightRated({
+    required String booked,
+    required String rating,
+  });
+
+  /// Insights night row status: how full the event was.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String hostInsightsNightFill({required int percent});
+
+  /// Event report kicker: the event's date and its start and end times.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {start} to {end}'**
+  String hostEventReportWhen({
+    required String date,
+    required String start,
+    required String end,
+  });
+
+  /// Event report line under the event title.
+  ///
+  /// In en, this message translates to:
+  /// **'How it went'**
+  String get hostEventReportHowItWent;
+
+  /// Event report stat label: guests who checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Came'**
+  String get hostEventReportCame;
+
+  /// Event report Came note when more guests checked in than booked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more than booked'**
+  String hostEventReportMoreThanBooked({required int count});
+
+  /// Event report Came note: out of the guests who booked.
+  ///
+  /// In en, this message translates to:
+  /// **'of {booked} booked'**
+  String hostEventReportOfBooked({required int booked});
+
+  /// Event report Ticket sales note: completed payments behind the total.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{from 1 payment} other{from {count} payments}}'**
+  String hostEventReportPayments({required int count});
+
+  /// Event report New faces note.
+  ///
+  /// In en, this message translates to:
+  /// **'first time with you'**
+  String get hostEventReportFirstTime;
+
+  /// Event report stat label: the average guest rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get hostEventReportRating;
+
+  /// Event report Rating note: how many guests rated the event.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{from 1 guest} other{from {count} guests}}'**
+  String hostEventReportRatedBy({required int count});
+
+  /// Event report Rating note before any guest rated the event.
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings yet'**
+  String get hostEventReportNotRated;
+
+  /// Event report faces: how many more guests than the faces shown.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count}'**
+  String hostEventReportMoreFaces({required int count});
+
+  /// Event report: pairs of guests who matched with each other after the event.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One pair wants to stay in touch} other{{count} pairs want to stay in touch}}'**
+  String hostEventReportStayInTouchTitle({required int count});
+
+  /// Event report line under the stay-in-touch count.
+  ///
+  /// In en, this message translates to:
+  /// **'They matched after the event. Only they see who.'**
+  String get hostEventReportStayInTouchBody;
+
+  /// Event report section title over the guest reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'What guests said'**
+  String get hostEventReportReviewsTitle;
+
+  /// Event report reviews action: open every review.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count}'**
+  String hostEventReportAllReviews({required int count});
+
+  /// Event report reviews copy before any guest reviewed the event.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet.'**
+  String get hostEventReportReviewsEmpty;
+
+  /// Event report review row title for an anonymous review.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest'**
+  String get hostEventReportReviewAnonymous;
+
+  /// Event report review row, read aloud: the reviewer and the stars.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, {rating} of 5 stars'**
+  String hostEventReportReviewSemantics({
+    required String name,
+    required int rating,
+  });
+
+  /// Event report review row meta: the reviewer booked through Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked on Catch'**
+  String get hostEventReportReviewBookedOnCatch;
+
+  /// Event report spotlight kicker: the organizer's next event and its places.
+  ///
+  /// In en, this message translates to:
+  /// **'Next {day} · {places} places'**
+  String hostEventReportNextPlaces({required String day, required int places});
+
+  /// Event report spotlight title: invite the guests who came to the next event.
+  ///
+  /// In en, this message translates to:
+  /// **'{when, select, tonight{Bring tonight’s {count} back} other{Bring these {count} back}}'**
+  String hostEventReportBringBackTitle({
+    required int count,
+    required String when,
+  });
+
+  /// Event report spotlight line: the guests who came hear about the next event.
+  ///
+  /// In en, this message translates to:
+  /// **'Message everyone who came about {event}.'**
+  String hostEventReportBringBackBody({required String event});
+
+  /// Event report spotlight button: message every guest who came.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite all {count}'**
+  String hostEventReportInviteAll({required int count});
+
+  /// Event report spotlight button: pick which guests to invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get hostEventReportChoose;
+
+  /// Event report section title over the CSV exports.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get hostEventReportDownloadsTitle;
+
+  /// Event report export row: the guest list with check-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list and check-ins'**
+  String get hostEventReportDownloadGuestList;
+
+  /// Event report export row: bookings with their payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings and payments'**
+  String get hostEventReportDownloadPayments;
+
+  /// Event report export row value: the file type.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV'**
+  String get hostEventReportDownloadCsv;
+
+  /// Event report top bar action, read aloud: share a summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the report'**
+  String get hostEventReportShare;
+
+  /// Event report shared summary text.
+  ///
+  /// In en, this message translates to:
+  /// **'{event}: {came} came, {newFaces} for the first time.'**
+  String hostEventReportShareText({
+    required String event,
+    required int came,
+    required int newFaces,
+  });
+
   /// Today event poster count label: guests booked.
   ///
   /// In en, this message translates to:
@@ -10921,7 +11217,7 @@ abstract class AppLocalizations {
   /// Accessibility hint for switching Host Clubs workspace pages.
   ///
   /// In en, this message translates to:
-  /// **'Drag left or right to switch between Edit, Insights, and Preview.'**
+  /// **'Drag left or right to switch between Edit and Preview.'**
   String get hostsHostOrganizersScaffoldBodyDragLeftOrRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).
