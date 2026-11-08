@@ -1,5 +1,7 @@
 import type {ManageWebsiteAccountCallablePayload} from "../../functions/src/shared/generated/manageWebsiteAccountCallablePayload";
 import type {ManageWebsiteAccountCallableResponse} from "../../functions/src/shared/generated/manageWebsiteAccountCallableResponse";
+import type {FollowOrganizerByPhoneCallablePayload} from "../../functions/src/shared/generated/followOrganizerByPhoneCallablePayload";
+import type {FollowOrganizerByPhoneCallableResponse} from "../../functions/src/shared/generated/followOrganizerByPhoneCallableResponse";
 import type {WithdrawParticipantMessagingPermissionCallablePayload} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload";
 import type {WithdrawParticipantMessagingPermissionCallableResponse} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import type {GetEventTicketCodeCallableResponse} from "../../functions/src/shared/generated/getEventTicketCodeCallableResponse";
@@ -1524,6 +1526,21 @@ export function setWebsiteOrganizerFollow(organizerId: string, following: boolea
   return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");
 }
 
+/**
+ * Follow with just a phone number (CAT-253). Call after the phone code
+ * signed in or linked the verified phone; the token is refreshed first so it
+ * carries that phone. whatsappUpdates is the follower's own tick.
+ */
+export async function followWebsiteOrganizerByPhone(
+  payload: FollowOrganizerByPhoneCallablePayload
+): Promise<FollowOrganizerByPhoneCallableResponse> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !claimFirebaseConfigured) {
+    throw new Error("Organizer following are not configured for this build.");
+  }
+  await runtime.auth.currentUser?.getIdToken(true);
+  return invokeWebsiteCallable("followOrganizerByPhone", payload, claimFirebaseConfigured, "Organizer following");
+}
 export type WebsiteAccount = ManageWebsiteAccountCallableResponse;
 export type WebsiteAccountSection = NonNullable<Extract<ManageWebsiteAccountCallablePayload, {action: "read"}>["sections"]>[number];
 export type WebsiteEventTicketCode = GetEventTicketCodeCallableResponse;

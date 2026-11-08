@@ -28,7 +28,7 @@ export const organizerFollowerUpdateTemplateName = "organizer_follower_update";
 export const followerWhatsappTermsVersion = "follower-whatsapp-v1";
 const followerWhatsappConsentCopy = {
   [followerWhatsappTermsVersion]:
-    "Send me this organiser's updates on WhatsApp. Reply STOP to stop.",
+    "Send me this organiser\u2019s updates on WhatsApp. Reply STOP to stop.",
 } as const;
 
 type ChannelPreference = OrganizerCommunicationPreferenceDocument["whatsapp"];

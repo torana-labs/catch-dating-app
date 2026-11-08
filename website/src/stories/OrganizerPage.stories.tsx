@@ -41,10 +41,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Storybook-only backends that show the follow sheet and review form, which
-// production hides until follow by phone (CAT-253) and reviews (CAT-169) land.
+// Storybook-only backends: the follow sheet without Firebase, and the review
+// form, which production hides until reviews (CAT-169) land.
 const previewBackends: OrganizerPageBackends = {
-  followByPhone: {confirm: async () => undefined, sendCode: async () => undefined},
+  followByPhone: {sendCode: async () => ({confirm: async () => undefined, clear: () => undefined}),
+    follow: async () => undefined},
   submitReview: async () => undefined,
 };
 

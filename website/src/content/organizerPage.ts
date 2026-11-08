@@ -14,7 +14,7 @@ export const organizerPageCopy = {
   follow: "Follow",
   following: "Following",
   share: "Share",
-  followNote: "Follow with just your phone number. New dates arrive on WhatsApp.",
+  followNote: "Follow with just your phone number. New dates can come on WhatsApp.",
   coverAlt: (name: string) => `A night with ${name}`,
   shareCaption: "Print it on a poster or show it at the start line.",
   copyLink: "Copy link",
@@ -31,7 +31,11 @@ export const organizerPageCopy = {
     codeBody: (phone: string) => `Sent to ${phone}.`,
     confirm: "Follow",
     doneTitle: (name: string) => `You’re following ${name}.`,
-    doneBody: "We’ll message you when a new plan opens, at most twice a month.",
+    doneBody: (whatsapp: boolean) => (whatsapp ?
+      "We’ll message you on WhatsApp when a new plan opens, at most a few times a month." :
+      "Their new plans will show in Catch when you sign in with this number."),
+    /** Must match the reviewed consent copy follower-whatsapp-v1 on the server. */
+    whatsappTick: "Send me this organiser’s updates on WhatsApp. Reply STOP to stop.",
     invalidPhone: "Enter a 10-digit mobile number",
     invalidCode: "Enter the 6-digit code",
     failed: "That didn’t work. Try again in a moment.",
