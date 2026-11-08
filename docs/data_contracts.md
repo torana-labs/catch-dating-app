@@ -3070,6 +3070,18 @@ review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
 read these summaries through the SDK. Form-scoped/filter-choice queries, answer
 filters, contact joins, review filters and text search keep the existing callable
 behavior until their own equivalent indexed read contracts are implemented.
+Each summary may also carry two optional query fields, absent on older views and
+read as none: `reviewStatus` (a copy of the application's review status) and
+`offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
+from the entry's application. `onHostResponseSummaryOfferChanged` recomputes them
+when an `organizerEventOffers` document changes; `--model response-offers` in
+`functions/scripts/backfill-host-read-models.cjs` backfills them. A form's
+Responses screen reads its Offered list and per-filter counts from these fields.
+
+`launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
+website submission needs an email or a phone. A weddings pilot application
+carries `programme: "weddings"` and `programmeApplication`; older intents carry
+neither and read as an events Host enquiry.
 
 Participant grant revocation and generic response withdrawal redact their
 verified summary (or delete an invalid view) in the **same transaction** as the authority change, including
