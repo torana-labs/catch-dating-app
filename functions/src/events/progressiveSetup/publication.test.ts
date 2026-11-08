@@ -335,3 +335,20 @@ test("tickets sold elsewhere publish without Catch admission terms",
     assert.equal(validateEventDocument(published), true,
       JSON.stringify(validateEventDocument.errors));
   });
+
+test("publishing with followers first sets when everyone can book",
+  async () => {
+    const h = setup();
+    Object.assign(h.store.get("events/event1")!, {bookedCount: 0,
+      checkedInCount: 0, waitlistedCount: 0, genderCounts: {},
+      cohortCounts: {}, waitlistedCohortCounts: {}});
+    h.store.put("eventSetupPreferences/event1", {organizerId: "org1",
+      eventId: "event1", revision: 1, preferences: {
+        bookingMode: {value: "followersFirst", source: "event"}}});
+    await h.run();
+    const event = h.store.get("events/event1")!;
+    assert.equal(event.followersFirstUntilMs,
+      1_900_000_000_000 - 24 * 60 * 60 * 1000);
+    assert.equal(validateEventDocument(event), true,
+      JSON.stringify(validateEventDocument.errors));
+  });

@@ -383,7 +383,11 @@ void main() {
         ),
       );
       await tester.tap(find.text('Ask first'));
-      expect(modes, [HostEventBookingMode.askFirst]);
+      await tester.tap(find.text('Followers first'));
+      expect(modes, [
+        HostEventBookingMode.askFirst,
+        HostEventBookingMode.followersFirst,
+      ]);
     });
 
     testWidgets('not written yet', (tester) async {

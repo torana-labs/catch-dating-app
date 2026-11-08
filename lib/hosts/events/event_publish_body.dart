@@ -130,10 +130,25 @@ class HostEventPublishBody extends StatelessWidget {
                 subtitle: state.canChangeBooking
                     ? HostEventSettingsCopy.anyoneBody
                     : HostEventSettingsCopy.bookingLocked,
-                selected: state.bookingMode != HostEventBookingMode.askFirst,
+                selected:
+                    state.bookingMode == null ||
+                    state.bookingMode == HostEventBookingMode.anyone,
                 contractExemption:
                     'A booking choice committed by the preferences command.',
                 onTap: book(HostEventBookingMode.anyone),
+              ),
+              CatchChoiceTile(
+                key: const ValueKey<String>(
+                  'host-event-publish-book-followers',
+                ),
+                variant: CatchChoiceTileVariant.row,
+                title: HostEventSettingsCopy.followersFirst,
+                subtitle: HostEventSettingsCopy.followersFirstBody,
+                selected:
+                    state.bookingMode == HostEventBookingMode.followersFirst,
+                contractExemption:
+                    'A booking choice committed by the preferences command.',
+                onTap: book(HostEventBookingMode.followersFirst),
               ),
               CatchChoiceTile(
                 key: const ValueKey<String>('host-event-publish-book-ask'),

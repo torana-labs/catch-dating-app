@@ -1,3 +1,4 @@
+import {assertFollowersFirstAllows} from "./followersFirst";
 import {assertPublicEventAge} from "../profiles/eventProfileRequirements";
 import {publicGuestMembership} from "./publicRegistration/authority";
 import {assertPublicRegistrationPolicy, publicRegistrationMode} from
@@ -895,6 +896,9 @@ export async function registerPublicEventHandler(
       now.toMillis());
     await assertPublicEventAge({db, tx, uid, event,
       nowMillis: now.toMillis()});
+    await assertFollowersFirstAllows({db, tx,
+      event: event as {organizerId: string}, userId: uid,
+      nowMillis: now.toMillis(), bypass: false});
     assertPublicRegistrationPolicy(event, organizer, "free", now.toMillis(),
       await publicGuestMembership({db, tx, event, uid,
         nowMillis: now.toMillis()}));

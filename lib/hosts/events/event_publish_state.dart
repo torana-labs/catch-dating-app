@@ -8,8 +8,9 @@ enum HostEventPublishStatus { loading, ready, missing, error }
 /// only the organizer's team while it is unpublished.
 enum HostEventVisibility { everyone, link, team }
 
-/// Who can book: first come first served, or the host approves each guest.
-enum HostEventBookingMode { anyone, askFirst }
+/// Who can book: first come first served, the organiser's followers before
+/// everyone else, or the host approves each guest.
+enum HostEventBookingMode { anyone, followersFirst, askFirst }
 
 /// Everything the publication screen shows, as plain values.
 @immutable

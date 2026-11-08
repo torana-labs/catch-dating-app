@@ -511,6 +511,13 @@
       "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
       "x-catch-ownership": "callable-owned"
     },
+    "followersFirstUntilMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8640000000000000,
+      "description": "While now is before this time (epoch milliseconds), only the organiser's followers can book; then everyone can. Publishing with the followersFirst booking choice sets it to the start less 24 hours; another choice removes it. Missing means anyone can book.",
+      "x-catch-ownership": "callable-owned"
+    },
     "seriesId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "description": "The weekly series this event was created in by createPrivateEventSeries. Missing for a single event.",

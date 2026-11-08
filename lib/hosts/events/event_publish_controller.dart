@@ -59,7 +59,8 @@ HostEventPublishState hostEventPublishController(
     priceHiddenUntilBookingOpens: settings.priceHiddenUntilBookingOpens,
     bookingMode: switch (booking) {
       'askFirst' => HostEventBookingMode.askFirst,
-      'anyone' || 'followersFirst' => HostEventBookingMode.anyone,
+      'followersFirst' => HostEventBookingMode.followersFirst,
+      'anyone' => HostEventBookingMode.anyone,
       _ => null,
     },
     canChangeBooking:

@@ -1,3 +1,4 @@
+import {assertFollowersFirstAllows} from "../followersFirst";
 import * as admin from "firebase-admin";
 import {
   HttpsError,
@@ -126,6 +127,9 @@ export async function managePublicEventCheckoutHandler(
         tx,
         eventId: data.eventId,
       });
+      await assertFollowersFirstAllows({db, tx,
+        event: event as {organizerId: string}, userId: uid,
+        nowMillis: deps.now(), bypass: false});
       return {organizerId: event.organizerId!, quote: publicCheckoutQuote(
         data.eventId,
         event,
@@ -185,6 +189,9 @@ export async function managePublicEventCheckoutHandler(
             tx,
             eventId: data.eventId,
           });
+          await assertFollowersFirstAllows({db, tx,
+            event: source.event as {organizerId: string}, userId: uid,
+            nowMillis: deps.now(), bypass: false});
           const quote = publicCheckoutQuote(
             data.eventId,
             source.event,

@@ -1,5 +1,7 @@
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {HttpsError} from "firebase-functions/v2/https";
+import {FieldValue} from "firebase-admin/firestore";
+import {followersFirstChoice} from "../followersFirst";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {SetEventPublicationCallablePayload as Command} from
@@ -117,21 +119,31 @@ export async function setEventPublication(params: {
       updatedAt: deps.timestampFromMillis(nowMillis),
     };
     let admission: ReturnType<typeof admissionChoicesPatch> = null;
+    // Fields the write removes; validation reads the event without them.
+    const removals: string[] = [];
     if (!settingsOnly) {
       patch.publicationState = command.publicationState;
       Object.assign(patch,
         publicationRegistrationPatch(event as EventDocument));
     }
     if (!settingsOnly && operation === "publish") {
-      admission = admissionChoicesPatch(event as EventDocument,
-        admissionChoicesFromPreferences(preferencesSnap.data()));
+      const choices = admissionChoicesFromPreferences(preferencesSnap.data());
+      admission = admissionChoicesPatch(event as EventDocument, choices);
+      const followers = followersFirstChoice(event, choices.bookingMode);
+      if (followers && "set" in followers) {
+        patch.followersFirstUntilMs = followers.set;
+      } else if (followers) {
+        removals.push("followersFirstUntilMs");
+      }
       Object.assign(patch, admission ?? {}, preparePublishedEventPatch({
         event: {...event, ...admission} as EventDocument, organizer,
         nowMillis, timestampFromMillis: deps.timestampFromMillis}));
     }
     // Validating the target enforces the complete published schema, and the
     // private schema when unpublishing. It never invents missing terms.
-    if (!validateEventDocument({...event, ...patch})) {
+    const target: Record<string, unknown> = {...event, ...patch};
+    for (const key of removals) delete target[key];
+    if (!validateEventDocument(target)) {
       throw new HttpsError("failed-precondition",
         "Complete the event details and admission terms before publishing.");
     }
@@ -155,7 +167,8 @@ export async function setEventPublication(params: {
       tx.create(db.collection("eventSeatMigrationFences")
         .doc(command.eventId), ledger.fence);
     }
-    tx.update(eventRef, patch);
+    tx.update(eventRef, {...patch, ...Object.fromEntries(removals.map(
+      (key) => [key, FieldValue.delete()]))});
     tx.create(receiptRef, {operation, actorUid,
       organizerId: command.organizerId, eventId: command.eventId,
       requestHash: hash, appliedRevision: revision + 1,
