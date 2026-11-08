@@ -20,6 +20,7 @@ class HostFormState {
     this.waitingPending = false,
     this.lettingIn = const <String>{},
     this.busy = false,
+    this.letInFailed = false,
   });
 
   const HostFormState.loading() : this(status: HostFormStatus.loading);
@@ -45,6 +46,9 @@ class HostFormState {
 
   /// A publish or another form command is running.
   final bool busy;
+
+  /// Letting someone in failed.
+  final bool letInFailed;
 
   bool get isDraft => form?.status == HostFormLifecycleStatus.draft;
 

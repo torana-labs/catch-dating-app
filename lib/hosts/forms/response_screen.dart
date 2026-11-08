@@ -80,16 +80,19 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     );
     final detail = value.value;
     final application = detail?.application;
-    final busy =
-        ref.watch(hostFormReviewMutation(_reviewKey(detail))).isPending ||
-        ref.watch(hostFormConversionMutation(_conversionKey(detail))).isPending;
+    final review = ref.watch(hostFormReviewMutation(_reviewKey(detail)));
+    final conversion = ref.watch(
+      hostFormConversionMutation(_conversionKey(detail)),
+    );
+    final busy = review.isPending || conversion.isPending;
+    final failed = review.hasError || conversion.hasError;
     if (application != null && _noteRevision != application.revision) {
       _noteRevision = application.revision;
       _note.text = application.reviewNote ?? '';
     }
     final state = detail == null
         ? const HostResponseState.loading()
-        : _state(l10n, detail, busy: busy);
+        : _state(l10n, detail, busy: busy, failed: failed);
     final body = value.hasError && detail == null
         ? CatchLocalizedErrorState(
             value.error!,
@@ -153,6 +156,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     AppLocalizations l10n,
     HostResponseReviewDetail detail, {
     required bool busy,
+    required bool failed,
   }) {
     final response = detail.response;
     final application = detail.application;
@@ -230,6 +234,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
           application!.reviewStatus != HostApplicationReviewStatus.declined,
       canMessage: email != null || phone != null,
       busy: busy,
+      failed: failed,
     );
   }
 

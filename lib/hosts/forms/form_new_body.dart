@@ -52,6 +52,11 @@ class HostFormNewBody extends StatelessWidget {
               : l10n.hostFormsNewQuestion,
           variant: CatchTextVariant.pageTitle,
         ),
+        if (state.failed)
+          CatchNotice.inline(
+            body: l10n.hostFormsNewFailed,
+            tone: CatchNoticeTone.danger,
+          ),
         if (state.choices.isEmpty)
           CatchText(l10n.hostFormsNewNoTemplates, tone: CatchTextTone.secondary)
         else

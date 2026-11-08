@@ -79,6 +79,16 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         : catchAsyncStateFromAsyncValue(
             ref.watch(hostFormResponsesControllerProvider(_waiting(uid))),
           );
+    final lettingIn = <String>{};
+    var letInFailed = false;
+    for (final entry
+        in waitingValue?.value?.inboxEntries ?? const <HostFormInboxEntry>[]) {
+      final id = entry.application?.applicationId;
+      if (id == null) continue;
+      final review = ref.watch(hostFormReviewMutation(id));
+      if (review.isPending) lettingIn.add(id);
+      if (review.hasError) letInFailed = true;
+    }
     final state = editor == null
         ? const HostFormState.loading()
         : HostFormState(
@@ -99,13 +109,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   entry,
             ],
             waitingPending: waitingValue?.value == null,
-            lettingIn: {
-              for (final entry
-                  in waitingValue?.value?.inboxEntries ??
-                      const <HostFormInboxEntry>[])
-                if (entry.application?.applicationId case final id?)
-                  if (ref.watch(hostFormReviewMutation(id)).isPending) id,
-            },
+            lettingIn: lettingIn,
+            letInFailed: letInFailed,
             busy: editor.operationInProgress,
           );
     final body = editorValue.hasError && editor == null

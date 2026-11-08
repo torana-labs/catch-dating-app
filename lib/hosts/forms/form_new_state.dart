@@ -33,6 +33,7 @@ class HostFormNewState {
     this.templates = false,
     this.selectedTemplateId,
     this.creating = false,
+    this.failed = false,
   });
 
   final HostFormNewStatus status;
@@ -44,6 +45,9 @@ class HostFormNewState {
 
   /// The form is being made from the chosen template.
   final bool creating;
+
+  /// Making the form failed.
+  final bool failed;
 
   /// One kind per purpose the templates offer, in template order; a kind
   /// starts from the first template made for it, the blank form last.

@@ -51,6 +51,7 @@ class HostResponseState {
     this.canDecline = false,
     this.canMessage = false,
     this.busy = false,
+    this.failed = false,
   });
 
   const HostResponseState.loading() : this(status: HostResponseStatus.loading);
@@ -81,4 +82,7 @@ class HostResponseState {
 
   /// A review or conversion is running.
   final bool busy;
+
+  /// The last review or conversion failed.
+  final bool failed;
 }

@@ -36,7 +36,8 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final creating = ref.watch(hostFormCreateMutation).isPending;
+    final create = ref.watch(hostFormCreateMutation);
+    final creating = create.isPending;
     final provider = hostFormTemplatesProvider(widget.organizerId);
     final value = catchAsyncStateFromAsyncValue(ref.watch(provider));
     final all = value.value;
@@ -56,6 +57,7 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
       templates: _templates,
       selectedTemplateId: selected,
       creating: creating,
+      failed: create.hasError,
     );
     final body = value.hasError && all == null
         ? CatchLocalizedErrorState(

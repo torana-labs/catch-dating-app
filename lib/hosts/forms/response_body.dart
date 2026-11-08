@@ -94,6 +94,11 @@ class HostResponseBody extends StatelessWidget {
             ),
           ],
         ),
+        if (state.failed)
+          CatchNotice.inline(
+            body: l10n.hostFormsResponseFailed,
+            tone: CatchNoticeTone.danger,
+          ),
         CatchSection(
           title: l10n.hostFormsResponseAnswers,
           empty: l10n.hostFormsResponseNoAnswers,

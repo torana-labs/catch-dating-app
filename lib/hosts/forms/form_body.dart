@@ -132,6 +132,11 @@ class HostFormBody extends StatelessWidget {
               ),
             ],
           ),
+        if (state.letInFailed)
+          CatchNotice.inline(
+            body: l10n.hostFormsLetInFailed,
+            tone: CatchNoticeTone.danger,
+          ),
         CatchSection(
           title: l10n.hostFormsWaitingTitle,
           note: state.waiting.isEmpty
