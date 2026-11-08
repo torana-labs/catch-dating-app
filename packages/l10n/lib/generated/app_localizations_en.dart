@@ -27309,4 +27309,674 @@ class AppLocalizationsEn extends AppLocalizations {
   String doorScanNights({required int count}) {
     return 'Night $count';
   }
+
+  @override
+  String hostEventsRowMeta({
+    required Object time,
+    required int booked,
+    required int capacity,
+  }) {
+    return '$time · $booked of $capacity booked';
+  }
+
+  @override
+  String hostEventsRowMetaWaiting({
+    required Object time,
+    required int booked,
+    required int capacity,
+    required int waiting,
+  }) {
+    return '$time · $booked of $capacity booked · $waiting waiting';
+  }
+
+  @override
+  String get hostEventsRowWasCancelled => 'Cancelled';
+
+  @override
+  String get hostEventsRowTonight => 'Tonight';
+
+  @override
+  String get hostEventsRowFull => 'Full';
+
+  @override
+  String hostEventsRowLeft({required int count}) {
+    return '$count left';
+  }
+
+  @override
+  String hostEventsRowCame({required int count}) {
+    return '$count came';
+  }
+
+  @override
+  String get hostEventsBooked => 'Booked';
+
+  @override
+  String get hostEventsDraftUntitled => 'Untitled event';
+
+  @override
+  String hostEventsDraftReady({required Object time}) {
+    return '$time · ready to publish';
+  }
+
+  @override
+  String hostEventsDraftDetails({required Object time}) {
+    return '$time · details to add';
+  }
+
+  @override
+  String get hostEventsDraftStatus => 'Draft';
+
+  @override
+  String hostEventsProgrammeDates({required Object from, required Object to}) {
+    return '$from to $to';
+  }
+
+  @override
+  String hostEventsProgrammeFunctions({required int count}) {
+    return '$count functions';
+  }
+
+  @override
+  String get hostEventsTitle => 'Events';
+
+  @override
+  String get hostEventsNew => 'New';
+
+  @override
+  String get hostEventsErrorTitle => 'Your events could not load';
+
+  @override
+  String get hostEventsErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostEventsRetry => 'Try again';
+
+  @override
+  String get hostEventsTabsLabel => 'Which events';
+
+  @override
+  String get hostEventsTabUpcoming => 'Upcoming';
+
+  @override
+  String get hostEventsTabDrafts => 'Drafts';
+
+  @override
+  String get hostEventsTabPast => 'Past';
+
+  @override
+  String get hostEventsTonightTitle => 'Tonight';
+
+  @override
+  String get hostEventsProgrammesTitle => 'Programmes';
+
+  @override
+  String get hostEventsNewProgramme => 'New programme';
+
+  @override
+  String get hostEventsThisWeekTitle => 'This week';
+
+  @override
+  String get hostEventsThisWeekEmpty => 'Nothing else this week.';
+
+  @override
+  String get hostEventsUpcomingEmpty => 'Nothing coming up yet.';
+
+  @override
+  String hostEventsLaterIn({required Object month}) {
+    return 'Later in $month';
+  }
+
+  @override
+  String get hostEventsStillLoading => 'Still loading';
+
+  @override
+  String get hostEventsHistoryFailed => 'These events could not load.';
+
+  @override
+  String get hostEventsDraftsEmpty => 'No drafts.';
+
+  @override
+  String get hostEventsPastEmpty => 'No past events yet.';
+
+  @override
+  String get hostEventsNoOrganizerTitle => 'Create your first organiser';
+
+  @override
+  String get hostEventsNoOrganizerBody =>
+      'Events belong to an organiser. Create one to start.';
+
+  @override
+  String get hostEventsCreateOrganizer => 'Create organiser';
+
+  @override
+  String get hostEventsViewsLabel => 'Event views';
+
+  @override
+  String get hostEventsViewOverview => 'Overview';
+
+  @override
+  String get hostEventsViewGuests => 'Guests';
+
+  @override
+  String get hostEventsViewLive => 'Live';
+
+  @override
+  String get hostEventsViewReport => 'Report';
+
+  @override
+  String get hostEventsMissingTitle => 'This event is not here any more';
+
+  @override
+  String get hostEventsMissingBody =>
+      'It may have been deleted, or it belongs to another organiser.';
+
+  @override
+  String get hostEventsWorkspaceErrorTitle => 'This event could not load';
+
+  @override
+  String get hostEventsDeniedTitle =>
+      'Only the organiser\'s hosts can manage this event';
+
+  @override
+  String get hostEventsDeniedBody =>
+      'Ask an organiser host to add you to the team.';
+
+  @override
+  String get hostEventsBackToEvents => 'Back to Events';
+
+  @override
+  String get hostEventsCancelEvent => 'Cancel this event';
+
+  @override
+  String get hostEventsReadyTitle => 'Ready for tonight';
+
+  @override
+  String hostEventsReadyNote({required int done, required int total}) {
+    return '$done of $total done';
+  }
+
+  @override
+  String get hostEventsReadyPlanSet => 'The plan is set';
+
+  @override
+  String get hostEventsReadyPlanMissing => 'No plan yet';
+
+  @override
+  String hostEventsReadyPlanSteps({required int count, required Object time}) {
+    return '$count steps, from doors at $time';
+  }
+
+  @override
+  String get hostEventsReadyPlanMissingBody => 'Choose a format and its steps';
+
+  @override
+  String hostEventsReadyDoor({required Object name}) {
+    return '$name is on the door';
+  }
+
+  @override
+  String get hostEventsReadyDoorBody => 'Checking people in from a phone';
+
+  @override
+  String get hostEventsReadyDoorNobody => 'Nobody is on the door yet';
+
+  @override
+  String get hostEventsReadyDoorChecking => 'Checking your team';
+
+  @override
+  String get hostEventsReadyDoorNobodyBody =>
+      'Give someone on your team the door';
+
+  @override
+  String get hostEventsReadyPractise => 'Practise the live screens';
+
+  @override
+  String get hostEventsReadyPractiseBody =>
+      'With pretend guests and your real plan';
+
+  @override
+  String get hostEventsReadyPractiseAction => 'Practise';
+
+  @override
+  String get hostEventsLinkPlan => 'Plan for the night';
+
+  @override
+  String get hostEventsLinkPlanBody => 'Format, run of show, teams and tables';
+
+  @override
+  String hostEventsSteps({required int count}) {
+    return '$count steps';
+  }
+
+  @override
+  String get hostEventsLinkPublish => 'Who can see and book';
+
+  @override
+  String get hostEventsPublishEveryone => 'Everyone';
+
+  @override
+  String get hostEventsPublishInvite => 'Only people you invite';
+
+  @override
+  String get hostEventsLinkCloseOut => 'After the night';
+
+  @override
+  String get hostEventsLinkCloseOutBody => 'Close out attendance';
+
+  @override
+  String hostEventsOnWaitlist({required int count}) {
+    return '$count on the waitlist';
+  }
+
+  @override
+  String get hostEventsTicketSales => 'Ticket sales';
+
+  @override
+  String get hostEventsEdit => 'Edit the event';
+
+  @override
+  String get hostEventsEditBody => 'Details, tickets and the plan';
+
+  @override
+  String get hostEventsTeam => 'Your team tonight';
+
+  @override
+  String get hostEventsTeamNobody => 'Nobody on the door yet';
+
+  @override
+  String hostEventsTeamDoor({required Object names}) {
+    return '$names on the door';
+  }
+
+  @override
+  String hostEventsTeamMore({required int count}) {
+    return '$count more';
+  }
+
+  @override
+  String get hostEventsMenuLabel => 'Event actions';
+
+  @override
+  String get hostEventsMenuEdit => 'Edit event';
+
+  @override
+  String get hostEventsMenuDuplicate => 'Duplicate';
+
+  @override
+  String get hostEventsMenuCancel => 'Cancel event';
+
+  @override
+  String get hostEventsCancelTitle => 'Cancel this event?';
+
+  @override
+  String get hostEventsCancelBody =>
+      'It leaves every schedule, and guests are told and refunded under your cancellation policy. Their bookings, payments and history stay.';
+
+  @override
+  String get hostEventsCancelKeep => 'Keep the event';
+
+  @override
+  String get hostEventsCancelConfirm => 'Cancel event';
+
+  @override
+  String get hostEventsCancelled => 'Event cancelled';
+
+  @override
+  String hostEventsStepGuestsSee({required Object what}) {
+    return 'Guests see: $what';
+  }
+
+  @override
+  String get hostEventsPlanEmptyTitle => 'No plan for this night yet';
+
+  @override
+  String get hostEventsPlanEmptyBody =>
+      'Choose a format when you edit the event, and its steps appear here.';
+
+  @override
+  String hostEventsPlanKicker({required Object format}) {
+    return '$format · Catch prepares';
+  }
+
+  @override
+  String hostEventsPlanUnits({required Object kind, required int size}) {
+    return '$kind of $size';
+  }
+
+  @override
+  String get hostEventsPlanStepsLabel => 'steps';
+
+  @override
+  String get hostEventsPlanEndsLabel => 'ends';
+
+  @override
+  String get hostEventsPlanNoteEditable =>
+      'The steps come from the format. The night\'s options stay yours to change until doors open.';
+
+  @override
+  String get hostEventsPlanNoteLocked =>
+      'The plan is locked now that the night has started.';
+
+  @override
+  String get hostEventsPlanRunOfShow => 'Run of show';
+
+  @override
+  String get hostEventsPlanRunOfShowEmpty => 'This format has no steps.';
+
+  @override
+  String get hostEventsPlanTeamsTitle => 'Teams and tables';
+
+  @override
+  String hostEventsPlanTeamsCounted({
+    required int count,
+    required Object kind,
+    required int size,
+  }) {
+    return '$count $kind of $size.';
+  }
+
+  @override
+  String hostEventsPlanTeamsSized({required Object kind, required int size}) {
+    return '$kind of $size, as many as the night needs.';
+  }
+
+  @override
+  String get hostEventsPlanOnTheNight => 'On the night';
+
+  @override
+  String get hostEventsPlanIntroductions =>
+      'Guests can ask you for an introduction';
+
+  @override
+  String get hostEventsPlanIntroductionsBody =>
+      'Requests come to you during the night';
+
+  @override
+  String get hostEventsPlanOpeners => 'Suggested openers on guests\' phones';
+
+  @override
+  String get hostEventsPlanOpenersBody =>
+      'A line to start with, for each person they meet';
+
+  @override
+  String get hostEventsPlanAnswersPair => 'Answers decide who meets whom';
+
+  @override
+  String get hostEventsPlanAnswersPairBody =>
+      'When guests answer the questions before the night';
+
+  @override
+  String get hostEventsPlanRehearse => 'Rehearse';
+
+  @override
+  String get hostEventsPlanSave => 'Save the plan';
+
+  @override
+  String get hostEventsPlanUndo => 'Undo';
+
+  @override
+  String get hostEventsPlanSaved => 'Plan saved';
+
+  @override
+  String get hostEventsCloseOutTitle => 'Close out the night';
+
+  @override
+  String get hostEventsCloseOutRowNote => 'No check-in';
+
+  @override
+  String get hostEventsCloseOutCame => 'Came';
+
+  @override
+  String get hostEventsCloseOutNoShow => 'Didn\'t come';
+
+  @override
+  String hostEventsCloseOutCameCount({required int count}) {
+    return '$count came';
+  }
+
+  @override
+  String hostEventsCloseOutOfBooked({required int count}) {
+    return 'of $count booked';
+  }
+
+  @override
+  String hostEventsCloseOutWhy({required int count}) {
+    return 'Check the $count people nobody checked in. It decides the report and who can review.';
+  }
+
+  @override
+  String get hostEventsCloseOutAllDone =>
+      'Everyone who booked is accounted for.';
+
+  @override
+  String get hostEventsCloseOutNotCheckedIn => 'Not checked in';
+
+  @override
+  String get hostEventsCloseOutEmpty => 'Everyone who booked was checked in.';
+
+  @override
+  String get hostEventsGuestFirstTime => 'First time';
+
+  @override
+  String hostEventsGuestNights({required int count}) {
+    return 'Night $count with you';
+  }
+
+  @override
+  String get hostEventsGuestNew => 'New';
+
+  @override
+  String get hostEventsGuestsStatBooked => 'booked';
+
+  @override
+  String get hostEventsGuestsStatLeft => 'places left';
+
+  @override
+  String get hostEventsGuestsStatWaitlist => 'waitlist';
+
+  @override
+  String get hostEventsGuestsStatFirstTime => 'first time';
+
+  @override
+  String get hostEventsGuestsListsLabel => 'Show';
+
+  @override
+  String get hostEventsGuestsBooked => 'Booked';
+
+  @override
+  String get hostEventsGuestsAsked => 'Asked';
+
+  @override
+  String get hostEventsGuestsWaitlist => 'Waitlist';
+
+  @override
+  String get hostEventsGuestsCancelled => 'Cancelled';
+
+  @override
+  String get hostEventsGuestsEmpty => 'Nobody here yet.';
+
+  @override
+  String get hostEventsGuestsLetIn => 'Let in';
+
+  @override
+  String get hostEventsGuestsOffer => 'Offer';
+
+  @override
+  String hostEventsGuestsMessageAll({required int count}) {
+    return 'Message all $count';
+  }
+
+  @override
+  String get hostEventsGuestsDownload => 'Download the list';
+
+  @override
+  String get hostEventsGuestsDownloaded => 'Guest list ready to share';
+
+  @override
+  String get hostEventsGuestsDownloadFailed =>
+      'The list could not be made. Try again.';
+
+  @override
+  String get hostEventsPublishPendingTitle =>
+      'This event is still being prepared';
+
+  @override
+  String get hostEventsPublishPendingBody =>
+      'Who can see it can be changed in a moment.';
+
+  @override
+  String get hostEventsPublishWhoCanFind => 'Who can find it';
+
+  @override
+  String get hostEventsPublishEveryoneBody =>
+      'On your page and in Catch Explore';
+
+  @override
+  String get hostEventsPublishNotReady =>
+      'Finish the event\'s details to publish it';
+
+  @override
+  String get hostEventsPublishTeam => 'Only your team';
+
+  @override
+  String get hostEventsPublishTeamBody =>
+      'Unpublished. Nobody else can find or book it.';
+
+  @override
+  String get hostEventsDefaultsTitle => 'Event defaults';
+
+  @override
+  String get hostEventsDefaultsKicker => 'Every new event starts with these';
+
+  @override
+  String get hostEventsDefaultsErrorTitle =>
+      'Your event defaults could not load';
+
+  @override
+  String get hostEventsDefaultsPendingTitle =>
+      'Your defaults are being prepared';
+
+  @override
+  String get hostEventsDefaultsPendingBody => 'They appear here in a moment.';
+
+  @override
+  String get hostEventsDefaultsNotSet => 'Not set';
+
+  @override
+  String get hostEventsDefaultsEdit => 'Edit';
+
+  @override
+  String get hostEventsDefaultsEachEvent => 'Each event';
+
+  @override
+  String get hostEventsDefaultsLength => 'Usual length';
+
+  @override
+  String get hostEventsDefaultsLengthBody => 'You can change it per event';
+
+  @override
+  String get hostEventsDefaultsTimezone => 'Time zone';
+
+  @override
+  String get hostEventsDefaultsVenue => 'Usual venue';
+
+  @override
+  String get hostEventsDefaultsVenueSet => 'Chosen';
+
+  @override
+  String get hostEventsDefaultsOffers => 'Offers';
+
+  @override
+  String get hostEventsDefaultsOfferHolds => 'An offer holds a place for';
+
+  @override
+  String get hostEventsDefaultsOfferHoldsBody =>
+      'Then it goes to the next person';
+
+  @override
+  String get hostEventsDefaultsOfferMessage => 'Offer message';
+
+  @override
+  String get hostEventsDefaultsHowGuestsPay => 'How guests pay';
+
+  @override
+  String get hostEventsDefaultsHowGuestsPayBody =>
+      'New events start with this. You can change it per event.';
+
+  @override
+  String get hostEventsDefaultsCheckout => 'Catch checkout';
+
+  @override
+  String get hostEventsDefaultsCheckoutBody =>
+      'Guests pay when they book, to your Razorpay';
+
+  @override
+  String get hostEventsDefaultsPage => 'Your payment page';
+
+  @override
+  String get hostEventsDefaultsPageBody => 'One page you reuse for every guest';
+
+  @override
+  String get hostEventsDefaultsRequest => 'A request to each guest';
+
+  @override
+  String get hostEventsDefaultsRequestBody =>
+      'You send each guest their own request';
+
+  @override
+  String get hostEventsDefaultsManual => 'Your own instructions';
+
+  @override
+  String get hostEventsDefaultsManualBody =>
+      'Guests follow the steps you write';
+
+  @override
+  String get hostEventsDefaultsPayments => 'Payments';
+
+  @override
+  String get hostEventsDefaultsCurrency => 'Currency';
+
+  @override
+  String get hostEventsDefaultsInstructions => 'Payment instructions';
+
+  @override
+  String get hostEventsDefaultsPaymentPage => 'Payment page';
+
+  @override
+  String get hostEventsRehearsalScreenTitle => 'Rehearsal';
+
+  @override
+  String get hostEventsRehearsalClose => 'Close';
+
+  @override
+  String get hostEventsRehearsalErrorTitle => 'This rehearsal could not load';
+
+  @override
+  String get hostEventsRehearsalBadge =>
+      'Practice · nothing is sent or charged';
+
+  @override
+  String get hostEventsRehearsalTitle => 'Run tonight before it happens.';
+
+  @override
+  String get hostEventsRehearsalEndedTitle => 'This rehearsal is over.';
+
+  @override
+  String hostEventsRehearsalBody({required int count}) {
+    return '$count made-up guests, your real plan. Real guests never see a rehearsal.';
+  }
+
+  @override
+  String get hostEventsRehearsalNoSteps =>
+      'This plan has no steps to practise.';
+
+  @override
+  String get hostEventsRehearsalOpenDoor => 'Open the practice door';
+
+  @override
+  String get hostEventsRehearsalEnd => 'End rehearsal';
+
+  @override
+  String get hostEventsBack => 'Back';
 }
