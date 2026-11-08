@@ -977,6 +977,217 @@
       "notes": "Rating over its distribution and the latest reviews, each marked Booked on Catch or Unverified. The review form (CAT-169) is built and hidden behind OrganizerPageBackends.submitReview."
     },
     {
+      "id": "owner_view",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerView.tsx",
+      "exportName": "OwnerView",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchPageTabBar.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerPagePhone",
+        "states": [
+          "owner-closed",
+          "analyst-tabs"
+        ]
+      },
+      "notes": "The owner bar (#1109) on a claimed organiser's own page, for its team: role, a Manage button, and the tabs the role allows (owner: insights, links, page, audience, settings; editor: no about or tracking; analyst: insights and Open in Catch Host). Nothing renders for visitors. Drawn from the system; no board."
+    },
+    {
+      "id": "owner_sign_in_prompt",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerView.tsx",
+      "exportName": "OwnerSignInPrompt",
+      "css": [
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "SignedOutPhone",
+        "states": [
+          "signed-out"
+        ]
+      },
+      "notes": "One quiet line above a claimed page's footer for a signed-out visitor who may be its organiser; it opens today's website sign-in (signInForClaim) until the P4.8a sign-in sheet replaces it."
+    },
+    {
+      "id": "owner_insights_panel",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerInsightsPanel.tsx",
+      "exportName": "OwnerInsightsPanel",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchMetricSection.module.css",
+        "packages/web-ui/src/components/CatchBarIndicator.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerInsightsPhone",
+        "states": [
+          "owner",
+          "thirty-days",
+          "waiting"
+        ]
+      },
+      "notes": "Thirty days from the nightly organizerInsights roll-up: visits, link clicks, booking clicks and new followers, visits per week, and where link clicks came from."
+    },
+    {
+      "id": "owner_links_panel",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerLinksPanel.tsx",
+      "exportName": "OwnerLinksPanel",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchIconAction.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerLinksPhone",
+        "states": [
+          "owner",
+          "click-counts",
+          "pinned-and-scheduled"
+        ]
+      },
+      "notes": "The link editor: each owner link with its 30-day clicks; add, edit, reorder, pin and schedule, saved in one replace through manageOrganizerOwnerPage and the owner-link policy."
+    },
+    {
+      "id": "owner_page_panel",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerPagePanel.tsx",
+      "exportName": "OwnerPagePanel",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchPhotoTile.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerPageToolsPhone",
+        "states": [
+          "owner",
+          "about-and-photos",
+          "editor-photos-only"
+        ]
+      },
+      "notes": "About (owner, through updateOrganizer) and the photo order with the cover first (owner and editors, through manageOrganizerOwnerPage). Uploads and removals stay in Catch Host."
+    },
+    {
+      "id": "owner_audience_panel",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerAudiencePanel.tsx",
+      "exportName": "OwnerAudiencePanel",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStarRating.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerAudiencePhone",
+        "states": [
+          "owner",
+          "message-followers",
+          "review-replies",
+          "messages-used-up"
+        ]
+      },
+      "notes": "Message followers (a follower update, twice a calendar month at most, enforced on the server) and review replies through setReviewResponse."
+    },
+    {
+      "id": "owner_settings_panel",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/owner",
+      "source": "website/src/features/organizers/owner/OwnerSettingsPanel.tsx",
+      "exportName": "OwnerSettingsPanel",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OwnerView.stories.tsx",
+        "exportName": "OwnerSettingsPhone",
+        "states": [
+          "owner",
+          "address-domain-tracking",
+          "open-in-host",
+          "editor-host-only",
+          "analyst-host-only"
+        ]
+      },
+      "notes": "The page address and custom domain (coming), Meta Pixel and GA4 through the existing tracking settings (owner only), and upcoming Catch events with Open in Catch Host."
+    },
+    {
       "id": "organizer_about_section",
       "kind": "section",
       "routeIds": [
