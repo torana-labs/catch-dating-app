@@ -859,6 +859,22 @@ export {
   upsertProgramHamper,
 } from "./programs/hampers";
 export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
+export {
+  getProgramAssistantSettings,
+  getProgramWhatsappThread,
+  listProgramWhatsappCannedReplies,
+  listProgramWhatsappThreads,
+  sendProgramWhatsappReply,
+  setProgramWhatsappThreadHandling,
+  updateProgramAssistantSettings,
+  upsertProgramWhatsappCannedReply,
+} from "./programs/programWhatsapp/callables";
+export {
+  onProgramGuestWhatsappEndpointWritten,
+  onProgramHouseholdWhatsappEndpointWritten,
+} from "./programs/programWhatsapp/endpointIndex";
+export {onProgramWhatsappInboundMessageCreated} from
+  "./programs/programWhatsapp/inboundTrigger";
 export {previewProgramAssistantReply} from "./programs/assistant/preview";
 export {getProgramDeparturesRoster} from
   "./transport/programDepartures";

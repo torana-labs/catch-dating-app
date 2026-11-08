@@ -17,7 +17,9 @@ the programme WhatsApp inbox (`functions/src/programs/programWhatsapp/`).
 ## How a message is handled
 
 `handleProgramWhatsappInbound(event, deps)` runs for each inbound guest
-message, called by `onProgramWhatsappInboundMessageCreated`. In order:
+message, called by `onProgramWhatsappInboundMessageCreated`. The inbox stores
+times as integer millis (`serviceWindowExpiresAtMillis`, `createdAtMillis`);
+the assistant reads those, and still accepts a timestamp. In order:
 
 1. **The planner has taken the thread** (`handledBy: planner`): nothing
    happens. The run is recorded as skipped.
