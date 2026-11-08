@@ -1,9 +1,10 @@
 import {describe, expect, it} from "vitest";
 import {householdRsvpViewFixture} from "../../content/householdRsvp";
-import {programmeFixtures} from "../../content/programmes";
+import {programmeFixtures, programmeLinkCopy} from "../../content/programmes";
 import {itineraryOf, joinNames} from "./programmeItineraryModel";
 import {roomIdCount, roomIdLinks, roomingListCsv} from "./programmeHotelHandoverModel";
-import {programmeLinkFailure, programmeLinkScreen, programmeUploadProblem} from "./programmeLinkModel";
+import {programmeFormat, programmeMadeWith} from "./programmeBrandingModel";
+import {programmeDaysToGo, programmeLinkFailure, programmeLinkScreen, programmeUploadProblem} from "./programmeLinkModel";
 
 describe("programme link model", () => {
   it("sorts failed reads into invalid, expired and network", () => {
@@ -46,5 +47,20 @@ describe("programme link model", () => {
     expect(csv).toContain("214,Neha Mehra,");
     expect(csv).not.toContain("3307");
     expect(csv).not.toContain("https://");
+  });
+
+  it("paints in the planner's colour and credits them, else rani and Catch alone", () => {
+    expect(programmeFormat(undefined)).toBe("nightsOut");
+    expect(programmeFormat({color: "marigold", coverImagePath: null, creditLine: null})).toBe("dinner");
+    expect(programmeFormat({color: "haldi", coverImagePath: null, creditLine: null})).toBe("run");
+    expect(programmeMadeWith(undefined)).toBe(programmeLinkCopy.madeWith);
+    expect(programmeMadeWith(programmeFixtures.family.branding)).toBe(programmeLinkCopy.madeWithCredit("Meher Shah Weddings"));
+  });
+
+  it("counts the days to go in the programme's zone", () => {
+    const {serverTimeMillis, startsAtMillis, timezone} = programmeFixtures.family;
+    expect(programmeDaysToGo(serverTimeMillis, startsAtMillis, timezone)).toBe(45);
+    expect(programmeDaysToGo(startsAtMillis, startsAtMillis, timezone)).toBe(0);
+    expect(programmeDaysToGo(0, 1, "Not/AZone")).toBeNull();
   });
 });

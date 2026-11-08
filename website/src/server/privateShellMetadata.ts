@@ -8,6 +8,7 @@ const families = {
   rsvp: "household_rsvp", f: "public_form", demo: "sales_demo",
   itinerary: "programme_link", ids: "programme_link", hotel: "programme_link",
   trip: "programme_link", runsheet: "programme_link", hampers: "programme_link",
+  family: "programme_link",
 } as const;
 
 /** Only a public route-family enum enters the rewrite; never the credential URL. */

@@ -103,7 +103,7 @@ export function pageMetaForEvent(event: EventDetailRecord): PageMeta {
 }
 
 /** The programme's token links: guests, hotels, drivers, vendors and porters. */
-export const programmeLinkRoots = ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers"] as const;
+export const programmeLinkRoots = ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers", "family"] as const;
 
 export function isProgrammeLinkPath(pathname: string): boolean {
   return programmeLinkRoots.some((root) => pathname.startsWith(`/${root}/`));

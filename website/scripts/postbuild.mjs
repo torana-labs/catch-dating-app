@@ -67,6 +67,7 @@ writeRoute("/hotel/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
 writeRoute("/trip/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
 writeRoute("/runsheet/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
 writeRoute("/hampers/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
+writeRoute("/family/", staticRouteMeta(websiteMeta, "programme_link", baseUrl));
 writeRoute("/f/", staticRouteMeta(websiteMeta, "public_form", baseUrl));
 writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
 writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));

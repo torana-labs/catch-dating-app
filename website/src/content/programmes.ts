@@ -2,8 +2,9 @@ import {brand} from "./brand.ts";
 
 // The programme's token links (P4.10): the household itinerary and ID page,
 // the hotel front desk's rooming list, a driver's trip, a vendor's run sheet
-// and the porters' hampers. Copy follows the RbProgItinerary, RbProgIdGuest,
-// RbProgHotelHandover, RbProgDriver, RbProgRunSheet and RbProgHampers boards.
+// the porters' hampers and the family's view-only counts. Copy follows the
+// RbProgItinerary, RbProgIdGuest, RbProgHotelHandover, RbProgDriver,
+// RbProgRunSheet, RbProgHampers and RbHostProgramShare boards.
 
 /** What every programme link says while it loads, or when it cannot open. */
 export const programmeLinkCopy = {
@@ -19,6 +20,8 @@ export const programmeLinkCopy = {
   refresh: "Try again",
   refreshing: "Trying again…",
   madeWith: `Made with ${brand.name}`,
+  /** "Made with Catch · Meher Shah Weddings" when the planner set a credit line. */
+  madeWithCredit: (credit: string) => `Made with ${brand.name} · ${credit}`,
   viewOnly: "View only",
   mainLabel: "Programme link",
 };
@@ -160,6 +163,29 @@ export const programmeHampersCopy = {
   selected: (room: string) => room,
 };
 
+export const programmeFamilyCopy = {
+  sharedBy: "Shared by your planner",
+  kicker: (dates: string, daysToGo: number | null) =>
+    daysToGo === null || daysToGo < 0 ? dates :
+      `${dates} · ${daysToGo === 0 ? "today" : daysToGo === 1 ? "1 day to go" : `${daysToGo} days to go`}`,
+  dates: (first: string, last: string) => first === last ? first : `${first} to ${last}`,
+  updated: (time: string) => `Updated at ${time}. Numbers change as guests reply.`,
+  guests: "Guests",
+  guestsNote: (households: number) => households === 1 ? "in 1 household" : `in ${households} households`,
+  replied: "Households replied",
+  repliedNote: (waiting: number) => waiting === 0 ? "Everyone has replied" : `${waiting} still to reply`,
+  coming: "Who's coming to what",
+  comingLine: (when: string, venue: string | null) => venue ? `${when} · ${venue}` : when,
+  comingProgress: (name: string, coming: number, invited: number) => `${name}: ${coming} of ${invited} invited`,
+  noFunctions: "No functions planned yet.",
+  caterer: "For the caterer",
+  heads: (name: string) => name,
+  waiting: "Still to hear from",
+  waitingLine: (households: number) => households === 0 ? "Every household has replied." :
+    households === 1 ? "1 household hasn't replied yet." : `${households} households haven't replied yet.`,
+  numbersOnly: "This link shows numbers only. Names, phone numbers and rooms stay with your planner.",
+};
+
 const base = 1_800_500_000_000;
 const hour = 3_600_000;
 
@@ -236,6 +262,24 @@ export const programmeFixtures = {
   },
   /** The run sheet's clock in stories: the Sangeet is on. */
   runSheetNow: base + 5 * hour,
+  family: {
+    programId: "fixture-program",
+    programTitle: "Aditi & Kabir",
+    timezone: "Asia/Kolkata",
+    startsAtMillis: base,
+    endsAtMillis: base + 52 * hour,
+    serverTimeMillis: base - 45 * 24 * hour,
+    guestCount: 312,
+    householdCount: 118,
+    householdsRepliedCount: 80,
+    functions: [
+      {functionId: "f-mehendi", name: "Mehendi", startsAtMillis: base, venueName: "Garden lawn", invitedCount: 240, rsvpAttending: 184, rsvpMaybe: 12, rsvpPending: 30, expectedHeads: 201},
+      {functionId: "f-sangeet", name: "Sangeet", startsAtMillis: base + 4 * hour, venueName: "Durbar hall", invitedCount: 312, rsvpAttending: 266, rsvpMaybe: 9, rsvpPending: 28, expectedHeads: 290},
+      {functionId: "f-wedding", name: "Wedding", startsAtMillis: base + 27 * hour, venueName: "Lakeside", invitedCount: 312, rsvpAttending: 298, rsvpMaybe: 2, rsvpPending: 10, expectedHeads: 321},
+    ],
+    branding: {color: "marigold" as const, coverImagePath: null, creditLine: "Meher Shah Weddings"},
+    expiresAtMillis: base + 76 * hour,
+  },
   hampers: {
     programId: "fixture-program",
     hotelId: "fixture-hotel",

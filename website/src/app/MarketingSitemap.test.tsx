@@ -58,7 +58,7 @@ describe("consolidated public sitemap", () => {
     expect(getPageKey("/host/unknown/")).toBe("not_found");
   });
   it("routes the programme's token links under one noindex page key", () => {
-    for (const pathname of ["/itinerary/t.s/", "/ids/t.s/", "/hotel/t.s/", "/trip/t.s/", "/runsheet/t.s/", "/hampers/t.s/"]) {
+    for (const pathname of ["/itinerary/t.s/", "/ids/t.s/", "/hotel/t.s/", "/trip/t.s/", "/runsheet/t.s/", "/hampers/t.s/", "/family/t.s/"]) {
       expect(getPageKey(pathname)).toBe("programme_link");
       expect(retiredMarketingDestination({pathname, search: "", hash: ""})).toBeNull();
     }

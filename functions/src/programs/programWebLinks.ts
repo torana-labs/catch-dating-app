@@ -49,7 +49,7 @@ import {validateGetProgramVendorRunSheetCallablePayload} from
 // token or the other way round. Tokens carry ids and an expiry only.
 
 export type WebLinkKind = "driverTrip" | "vendorRunSheet" |
-  "hotelHandover" | "hamperPorter";
+  "hotelHandover" | "hamperPorter" | "family";
 
 export interface WebLinkPayload {
   v: 1;
@@ -66,6 +66,9 @@ const DRIVER_LINK_MILLIS = DAY;
 const VENDOR_LINK_MAX_MILLIS = 14 * DAY;
 /** A porter's hamper link covers the arrival rush. */
 const PORTER_LINK_MILLIS = 2 * DAY;
+/** The family's link is shared weeks ahead: it lasts to the day after the
+ *  programme, four months at most. */
+const FAMILY_LINK_MAX_MILLIS = 120 * DAY;
 
 function sign(kind: WebLinkKind, encoded: string, secret: string): string {
   return createHmac("sha256", secret)
@@ -127,14 +130,14 @@ export interface WebLinkDeps {
   secret: () => string;
 }
 
-const defaultDeps: WebLinkDeps = {
+export const defaultWebLinkDeps: WebLinkDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
   now: () => admin.firestore.Timestamp.now(),
   secret: () => householdRsvpSecret.value(),
 };
 
-function verifyOrThrow(token: string, kind: WebLinkKind,
+export function verifyWebLinkOrThrow(token: string, kind: WebLinkKind,
   deps: WebLinkDeps): WebLinkPayload {
   const result = verifyWebLinkToken(token, kind, deps.secret(),
     deps.now().toMillis());
@@ -148,13 +151,14 @@ function verifyOrThrow(token: string, kind: WebLinkKind,
 }
 
 /**
- * Mints a driver or vendor link. Dispatchers (and managers) mint driver
- * links for a trip of this programme; managers mint vendor links for a
- * vendor bound to this programme.
+ * Mints a driver, vendor, hotel or family link. Dispatchers (and managers)
+ * mint driver links for a trip of this programme; managers mint vendor
+ * links for a vendor bound to this programme, and the family link for the
+ * programme itself (subjectId = programId).
  */
 export async function issueProgramWebLinkHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramWebLinkCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<IssueProgramWebLinkCallablePayload>(
@@ -196,6 +200,18 @@ export async function issueProgramWebLinkHandler(
     expiresAtMillis = data.kind === "hamperPorter" ?
       now + PORTER_LINK_MILLIS :
       Math.min(Math.max(programEnd, now + DAY), now + VENDOR_LINK_MAX_MILLIS);
+  } else if (data.kind === "family") {
+    if (access.role !== "manager") {
+      throw new HttpsError("permission-denied",
+        "Only a programme manager can share the family link.");
+    }
+    if (data.subjectId !== data.programId) {
+      throw new HttpsError("invalid-argument",
+        "A family link is for the programme itself.");
+    }
+    const programEnd = staffTimestampMillis(access.program.endsAt) + DAY;
+    expiresAtMillis = Math.min(Math.max(programEnd, now + DAY),
+      now + FAMILY_LINK_MAX_MILLIS);
   } else {
     if (access.role !== "manager") {
       throw new HttpsError("permission-denied",
@@ -226,11 +242,11 @@ export async function issueProgramWebLinkHandler(
 /** A driver's trip through their link: route, car and passengers. */
 export async function getProgramDriverTripHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramDriverTripCallableResponse> {
   const data = validateCallableWithAjv<GetProgramDriverTripCallablePayload>(
     request, validateGetProgramDriverTripCallablePayload);
-  const link = verifyOrThrow(data.token, "driverTrip", deps);
+  const link = verifyWebLinkOrThrow(data.token, "driverTrip", deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `driverTrip:${link.subjectId}`,
     "getProgramDriverTrip", {maxRequests: 120, windowMs: 60 * 1000});
@@ -301,12 +317,12 @@ export async function getProgramDriverTripHandler(
 /** A vendor's run sheet: the functions in order and their trips. */
 export async function getProgramVendorRunSheetHandler(
   request: CallableRequest<unknown>,
-  deps: WebLinkDeps = defaultDeps,
+  deps: WebLinkDeps = defaultWebLinkDeps,
 ): Promise<ProgramVendorRunSheetCallableResponse> {
   const data =
     validateCallableWithAjv<GetProgramVendorRunSheetCallablePayload>(
       request, validateGetProgramVendorRunSheetCallablePayload);
-  const link = verifyOrThrow(data.token, "vendorRunSheet", deps);
+  const link = verifyWebLinkOrThrow(data.token, "vendorRunSheet", deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `vendorRunSheet:${link.subjectId}`,
     "getProgramVendorRunSheet", {maxRequests: 120, windowMs: 60 * 1000});

@@ -82,6 +82,19 @@ export function programmeDayTime(millis: number, timeZone?: string): string {
   return `${programmeDay(millis, timeZone)} · ${programmeTime(millis, timeZone)}`;
 }
 
+/** Whole local days from one moment to another ("45 days to go"), or null for a bad zone. */
+export function programmeDaysToGo(fromMillis: number, toMillis: number, timeZone?: string): number | null {
+  try {
+    const dayOf = (millis: number) => Date.parse(`${new Intl.DateTimeFormat("en-CA", {
+      timeZone, year: "numeric", month: "2-digit", day: "2-digit",
+    }).format(new Date(millis))}T00:00:00Z`);
+    const days = Math.round((dayOf(toMillis) - dayOf(fromMillis)) / 86_400_000);
+    return Number.isFinite(days) ? days : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Items grouped by their local day, in time order. */
 export function programmeDays<T>(items: readonly T[], millisOf: (item: T) => number, timeZone?: string):
   {day: string; items: T[]}[] {

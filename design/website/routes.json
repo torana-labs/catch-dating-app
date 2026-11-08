@@ -538,6 +538,37 @@
       }
     },
     {
+      "id": "programme_family",
+      "kind": "clientDynamic",
+      "pathPattern": "/family/:linkToken/",
+      "pageKey": "programme_link",
+      "source": "website/src/features/programmes/ProgrammeFamilyPage.tsx",
+      "metaKey": "programme_link",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The family's view-only counts (RbHostProgramShare) by a family link: the spotlight in the programme's colour, guests and households replied, who is coming to each function, heads for the caterer and how many households have still to reply, read through getProgramFamilyView. Counts and function names only. Private token link: noindex, out of the sitemap, no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "ready",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "ready",
+            "unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "public_form",
       "kind": "clientDynamic",
       "pathPattern": "/f/:publicFormId/",

@@ -153,6 +153,9 @@ enum ProgramWebLinkKind {
   vendorRunSheet,
   hotelHandover,
   hamperPorter,
+
+  /// The family's counts-only page; its subject is the programme itself.
+  family,
 }
 
 // keepalive: one stateless callable facade shared by the planner screens.

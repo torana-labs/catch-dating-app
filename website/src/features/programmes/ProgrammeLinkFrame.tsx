@@ -12,6 +12,7 @@ import {
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {programmeLinkCopy as copy} from "../../content/programmes";
+import {programmeFormat, programmeMadeWith, type ProgrammeBranding} from "./programmeBrandingModel";
 import type {ProgrammeLinkScreen} from "./programmeLinkModel";
 
 /**
@@ -19,6 +20,8 @@ import type {ProgrammeLinkScreen} from "./programmeLinkModel";
  * ground: the site top bar with the programme's (or the hotel's) name, one
  * reading column (the hotel's wide table on desktop), the loading and
  * unavailable states, and the made-with line. The ready content is the page's.
+ * A programme's branding, once its read returns it, sets the format colour
+ * and adds the planner's credit to the made-with line.
  */
 export function ProgrammeLinkFrame<T>({
   title,
@@ -27,9 +30,11 @@ export function ProgrammeLinkFrame<T>({
   refresh,
   refreshing,
   wide = false,
+  branding,
   children,
 }: {
   title: string | null;
+  branding?: ProgrammeBranding | null;
   actions?: ReactNode;
   screen: ProgrammeLinkScreen<T>;
   refresh: () => void;
@@ -69,14 +74,14 @@ export function ProgrammeLinkFrame<T>({
     body = children(screen.view);
   }
   return (
-    <CatchRoot format="nightsOut" theme="day">
+    <CatchRoot format={programmeFormat(branding)} theme="day">
       <CatchTopBar actions={actions} title={title ?? copy.brand} variant="site" />
       <CatchPageBody aria-label={copy.mainLabel} as="main" gutter={false} pb="s0" pt="s4">
         <CatchPaneLayout
           main={
             <CatchStack gap="section">
               {body}
-              <CatchText align="center" tone="secondary" variant="body-meta">{copy.madeWith}</CatchText>
+              <CatchText align="center" tone="secondary" variant="body-meta">{programmeMadeWith(branding)}</CatchText>
             </CatchStack>
           }
           pattern={wide ? "wide-table" : "reading"}

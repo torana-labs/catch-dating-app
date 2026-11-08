@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_family_view_response.schema.json",
+  "title": "ProgramFamilyViewCallableResponse",
+  "description": "The family's view-only page through a family link: the programme's title, dates and branding, headcounts, who is coming to each function, heads per function for the caterer and how many households have still to reply. Counts and function names only: no guest or household names, phone numbers, rooms or notes leave the server.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramFamilyView"
+  ],
+  "required": [
+    "programId",
+    "programTitle",
+    "timezone",
+    "startsAtMillis",
+    "endsAtMillis",
+    "serverTimeMillis",
+    "guestCount",
+    "householdCount",
+    "householdsRepliedCount",
+    "functions",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "timezone": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "guestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "householdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "householdsRepliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Households with at least one member who replied."
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "startsAtMillis",
+          "venueName",
+          "invitedCount",
+          "rsvpAttending",
+          "rsvpMaybe",
+          "rsvpPending",
+          "expectedHeads"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "venueName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "invitedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Guests invited to this function."
+          },
+          "rsvpAttending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpMaybe": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "rsvpPending": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Invited guests who have not replied for this function."
+          },
+          "expectedHeads": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000,
+            "description": "Heads coming, party sizes included: the caterer's number."
+          }
+        }
+      }
+    },
+    "branding": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

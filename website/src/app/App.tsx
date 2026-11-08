@@ -68,6 +68,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/programmes/ProgrammeDriverTripPage.tsx",
   "../features/programmes/ProgrammeRunSheetPage.tsx",
   "../features/programmes/ProgrammeHampersPage.tsx",
+  "../features/programmes/ProgrammeFamilyPage.tsx",
   "../features/forms/PublicFormPage.tsx",
   "../features/organizers/HostListingPage.tsx",
   "../features/host/HostApplicationPage.tsx",
@@ -146,6 +147,9 @@ const ProgrammeRunSheetPage = route(async () => ({
 const ProgrammeHampersPage = route(async () => ({
   default: (await import("../features/programmes/ProgrammeHampersPage")).ProgrammeHampersPage,
 }), "../features/programmes/ProgrammeHampersPage", "ProgrammeHampersPage");
+const ProgrammeFamilyPage = route(async () => ({
+  default: (await import("../features/programmes/ProgrammeFamilyPage")).ProgrammeFamilyPage,
+}), "../features/programmes/ProgrammeFamilyPage", "ProgrammeFamilyPage");
 const PublicFormPage = route(async () => ({
   default: (await import("../features/forms/PublicFormPage")).PublicFormPage,
 }), "../features/forms/PublicFormPage", "PublicFormPage");
@@ -326,6 +330,10 @@ function CanonicalMarketingRouteShell() {
           <Route
             path={marketingRoutePaths.programme_hampers}
             element={<ProgrammeLinkRoute page={ProgrammeHampersPage} param="linkToken" />}
+          />
+          <Route
+            path={marketingRoutePaths.programme_family}
+            element={<ProgrammeLinkRoute page={ProgrammeFamilyPage} param="linkToken" />}
           />
           <Route
             path={marketingRoutePaths.public_form}

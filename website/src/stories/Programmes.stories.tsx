@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {householdRsvpViewFixture} from "../content/householdRsvp";
 import {programmeFixtures as fixtures} from "../content/programmes";
 import {ProgrammeDriverTripView} from "../features/programmes/ProgrammeDriverTripPage";
+import {ProgrammeFamilyView} from "../features/programmes/ProgrammeFamilyPage";
 import {ProgrammeGuestIdsView} from "../features/programmes/ProgrammeGuestIdsPage";
 import {ProgrammeHampersView} from "../features/programmes/ProgrammeHampersPage";
 import {ProgrammeHotelHandoverView} from "../features/programmes/ProgrammeHotelHandoverPage";
@@ -11,7 +12,7 @@ import type {GuestIdDraft} from "../features/programmes/useProgrammeGuestIdsCont
 import type {HampersDraft} from "../features/programmes/useProgrammeHampersController";
 
 // The programme's token links, each a board on the white ground: the
-// itinerary, IDs, driver, run sheet and hampers at the boards' phone width
+// itinerary, IDs, driver, run sheet, hampers and family at the boards' phone width
 // (390) and the hotel handover at 1280. Every fixture is synthetic.
 const viewports = {
   programmePhone: {name: "Programme link · phone 390", styles: {width: "390px", height: "900px"}, type: "mobile"},
@@ -193,4 +194,25 @@ export const HampersPicked: Story = {
 export const HampersUnavailable: Story = {
   parameters: {catchComponent: {id: "programme_hampers_view", routeIds: ["programme_hampers"], states: ["unavailable"]}},
   render: () => <ProgrammeHampersView draft={hamperDraft} screen={unavailable} {...read} {...hamperActions} />,
+};
+
+// Family: the view-only counts in the planner's marigold, 45 days out.
+const familyStates = ["ready", "unavailable"];
+const familyReady = {kind: "ready", view: fixtures.family} as const;
+export const Family: Story = {
+  name: "/family/:linkToken/",
+  parameters: {
+    catchRoute: {id: "programme_family", path: "/family/fixture-programme-token.signature00/",
+      reviewStates: familyStates, stateCoverage: {storybook: familyStates, manual: []}},
+    catchComponent: {id: "route_programme_family", routeIds: ["programme_family"], states: familyStates},
+  },
+  render: () => <ProgrammeFamilyView screen={familyReady} {...read} />,
+};
+export const FamilyReady: Story = {
+  parameters: {catchComponent: {id: "programme_family_view", routeIds: ["programme_family"], states: ["ready"]}},
+  render: () => <ProgrammeFamilyView screen={familyReady} {...read} />,
+};
+export const FamilyUnavailable: Story = {
+  parameters: {catchComponent: {id: "programme_family_view", routeIds: ["programme_family"], states: ["unavailable"]}},
+  render: () => <ProgrammeFamilyView screen={unavailable} {...read} />,
 };

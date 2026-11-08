@@ -20,7 +20,7 @@ export const ALLOWED_CRAWLERS = Object.freeze([
 // Paths no crawler reads: private flows, tokens and transactional pages.
 export const PRIVATE_PATHS = Object.freeze(["/api/", "/_legacy/", "/booking/", "/offer/", "/join/",
   "/event-update/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/demo/", "/claim/",
-  "/itinerary/", "/ids/", "/hotel/", "/trip/", "/runsheet/", "/hampers/"]);
+  "/itinerary/", "/ids/", "/hotel/", "/trip/", "/runsheet/", "/hampers/", "/family/"]);
 
 export function robotsPolicy(indexing: boolean): MetadataRoute.Robots {
   if (!indexing) return {rules: {userAgent: "*", disallow: "/"}};
