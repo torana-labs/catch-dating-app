@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_owner_page_payload.schema.json",
+  "title": "ManageOrganizerOwnerPageCallablePayload",
+  "description": "Callable payload accepted by manageOrganizerOwnerPage, the website owner view's writes that no existing command covers. setLinks replaces the page's owner links (add, reorder, pin, schedule) through the same owner-link policy as adminUpdateOrganizerDetails. setPhotoOrder reorders the page's existing photos (the first becomes the cover); it never adds or removes one. sendFollowerMessage sends one follower update through createOrganizerPost, at most twice a calendar month per organiser. About goes through updateOrganizer, review replies through setReviewResponse and tracking through setOrganizerTrackingSettings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "action"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "action": {
+          "const": "setLinks"
+        }
+      },
+      "required": [
+        "links"
+      ]
+    },
+    {
+      "properties": {
+        "action": {
+          "const": "setPhotoOrder"
+        }
+      },
+      "required": [
+        "photoIds"
+      ]
+    },
+    {
+      "properties": {
+        "action": {
+          "const": "sendFollowerMessage"
+        }
+      },
+      "required": [
+        "text"
+      ]
+    }
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "setLinks",
+        "setPhotoOrder",
+        "sendFollowerMessage"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "Replaces the organiser page links, in display order. An empty array removes them.",
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/ownerLinkInput"
+      }
+    },
+    "photoIds": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "description": "Every existing photo id, in the new order.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[A-Za-z0-9_-]+$"
+      }
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  }
+}

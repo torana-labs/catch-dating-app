@@ -4565,6 +4565,42 @@
       ]
     },
     {
+      "id": "organizerInsights",
+      "path": "organizerInsights/{insightId}",
+      "rulesMatch": "/organizerInsights/{insightId}",
+      "typescriptInterface": "OrganizerInsightsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer insights and follower message quotas server-only"
+      ],
+      "owner": "organizer insights roll-up (website owner view)",
+      "read": "server only; getOrganizerOwnerView projection for the organiser's team",
+      "write": "server only; nightly roll-up and backfill",
+      "exportedFunctions": [
+        "rollupOrganizerInsightsDaily",
+        "getOrganizerOwnerView"
+      ]
+    },
+    {
+      "id": "organizerFollowerMessageQuotas",
+      "path": "organizerFollowerMessageQuotas/{quotaId}",
+      "rulesMatch": "/organizerFollowerMessageQuotas/{quotaId}",
+      "typescriptInterface": "OrganizerFollowerMessageQuotaDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer insights and follower message quotas server-only"
+      ],
+      "owner": "website owner view Message followers",
+      "read": "server only; getOrganizerOwnerView usage count",
+      "write": "server only; manageOrganizerOwnerPage transaction",
+      "exportedFunctions": [
+        "manageOrganizerOwnerPage",
+        "getOrganizerOwnerView"
+      ]
+    },
+    {
       "id": "catchWhatsappWebhookEvents",
       "path": "catchWhatsappWebhookEvents/{eventId}",
       "rulesMatch": "/catchWhatsappWebhookEvents/{eventId}",

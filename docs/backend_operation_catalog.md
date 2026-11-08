@@ -894,6 +894,20 @@ singles/mixer and unknown event classifications remain excluded. Saving an ID
 does not constitute connecting a provider or permission to transmit advertising
 activity. These exports do not establish deployment or production enablement.
 
+### Organizer owner view (#1109)
+
+`getOrganizerOwnerView` (read) and `manageOrganizerOwnerPage` (setLinks,
+setPhotoOrder, sendFollowerMessage) serve the website owner view. Both require
+auth, App Check, generated payload validation and a per-user rate limit, and
+derive the role from the organiser document (owner, editor for managers and
+hosts; analyst reserved). setLinks reuses the owner-link policy of
+`adminUpdateOrganizerDetails`; setPhotoOrder only permutes stored photos;
+sendFollowerMessage reserves one of two monthly sends in a transaction, then
+calls `createOrganizerPost` (whose weekly quota still applies) and releases the
+slot if that fails. `rollupOrganizerInsightsDaily` runs at 03:30 IST and writes
+yesterday's UTC `organizerInsights`; `functions/scripts/backfill-organizer-insights.cjs`
+fills up to 30 days (dry run unless `--apply`).
+
 
 ## Catch-owned controlled support reply (CAT16)
 

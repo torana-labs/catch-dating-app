@@ -2222,6 +2222,25 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps organizer insights and follower message quotas server-only", async () => {
+      for (const [collectionName, documentId] of [
+        ["organizerInsights", "organizer-1_20261107"],
+        ["organizerFollowerMessageQuotas", "organizer-1_202611"],
+      ]) {
+        await seed([collectionName, documentId], {organizerId: "organizer-1"});
+        for (const db of [authedDb("owner-1"), authedDb("owner-2"),
+          testEnv.unauthenticatedContext().firestore()]) {
+          const ref = doc(db, collectionName, documentId);
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {organizerId: "organizer-2"}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"),
+            {organizerId: "organizer-1"}));
+          await assertFails(getDocs(collection(db, collectionName)));
+        }
+      }
+    });
+
     it("keeps organizer event setup defaults and receipts server-only", async () => {
       for (const collectionName of ["organizerEventSetupDefaults",
         "organizerEventSetupDefaultReceipts",
