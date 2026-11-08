@@ -120,16 +120,16 @@ export async function completeRun(db: FirebaseFirestore.Firestore,
   });
 }
 
-/** Records a run that never reached the model (no reservation). */
+/** Records a run that never reached the model (no reservation), once. */
 export async function recordRun(db: FirebaseFirestore.Firestore,
-  run: ProgramAssistantRun): Promise<ProgramAssistantRun> {
+  run: ProgramAssistantRun): Promise<{created: boolean; run: ProgramAssistantRun}> {
   const ref = db.collection(PROGRAM_ASSISTANT_RUNS).doc(run.runId);
   return db.runTransaction(async (tx) => {
     const prior = await tx.get(ref);
-    if (prior.exists) return prior.data() as ProgramAssistantRun;
+    if (prior.exists) return {created: false, run: prior.data() as ProgramAssistantRun};
     const stored = requireValidRun({...run, reservedTokens: 0});
     tx.create(ref, stored);
-    return stored;
+    return {created: true, run: stored};
   });
 }
 
