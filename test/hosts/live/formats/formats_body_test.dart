@@ -169,7 +169,7 @@ void main() {
           )
           .last,
     );
-    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump();
     expect(drafts.last.courts, 5);
     await tester.tap(
       find.byKey(const ValueKey('formats-setup-aim-closeGames')),
@@ -232,7 +232,12 @@ void main() {
     expect(find.text('Ritu Kapoor'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('formats-crawl-move')));
     expect(moved, 1);
-    await tester.tap(find.text('Message').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('formats-missing-Ritu Kapoor')),
+        matching: find.text('Message'),
+      ),
+    );
     expect(messaged, 1);
   });
 
@@ -250,7 +255,12 @@ void main() {
     );
     expect(find.text('Around 6:30 a km'), findsOneWidget);
     expect(find.text('Send pods to runners'), findsNothing);
-    await tester.tap(find.text('Steady').last);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('formats-unplaced-attendee-anika')),
+        matching: find.text('Steady'),
+      ),
+    );
     expect(placed, [('Anika Rao', 'Steady')]);
     expect(
       const HostFormatsPodsState(status: HostFormatsPodsStatus.ready).smallest,

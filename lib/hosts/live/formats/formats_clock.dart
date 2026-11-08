@@ -7,4 +7,4 @@ String formatsClock(Duration value) {
 
 /// A pace or a length given in whole seconds, as a clock: "6:00".
 String formatsClockSeconds(int seconds) =>
-    formatsClock(Duration(seconds: seconds));
+    '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
