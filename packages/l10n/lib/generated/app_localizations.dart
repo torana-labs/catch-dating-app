@@ -42825,6 +42825,42 @@ abstract class AppLocalizations {
   /// **'Courts'**
   String get hostFormatsViewCourts;
 
+  /// Someone sitting out: their court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} min on court · {off} off'**
+  String hostFormatsCourtMinutes({required int on, required int off});
+
+  /// Fairness stat label: the gap between the most and least court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'most court time apart'**
+  String get hostFormatsStatCourtTimeApart;
+
+  /// A short minutes value for a stat.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String hostFormatsMinutesShort({required int minutes});
+
+  /// Between two doubles partnerships on one court.
+  ///
+  /// In en, this message translates to:
+  /// **'against'**
+  String get hostFormatsAgainst;
+
+  /// Live console view: the crawl's stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops'**
+  String get hostFormatsViewStops;
+
+  /// Live console view: pace pods.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods'**
+  String get hostFormatsViewPods;
+
   /// Live console view: mixing the teams.
   ///
   /// In en, this message translates to:
@@ -43000,12 +43036,6 @@ abstract class AppLocalizations {
   /// **'Everyone plays this round.'**
   String get hostFormatsSittingOutNone;
 
-  /// Someone sitting out: their morning so far.
-  ///
-  /// In en, this message translates to:
-  /// **'Sat out {out} · played {played}'**
-  String hostFormatsSatOut({required int out, required int played});
-
   /// Someone sitting out plays the next round.
   ///
   /// In en, this message translates to:
@@ -43035,12 +43065,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'repeat partners'**
   String get hostFormatsStatRepeats;
-
-  /// Fairness stat label.
-  ///
-  /// In en, this message translates to:
-  /// **'sat out at most'**
-  String get hostFormatsStatMostSatOut;
 
   /// Court board tablet section: the next round.
   ///

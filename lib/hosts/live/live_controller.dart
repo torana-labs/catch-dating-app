@@ -186,11 +186,14 @@ HostLiveState hostLiveController(Ref ref, Event event) {
 }
 
 /// The formats board a night runs on: court rotations get the court
-/// board, team nights get team mixing.
+/// board, team nights get team mixing, a route with stops gets the crawl
+/// board, and pace pods get the pods board.
 HostLiveFormatView? hostLiveFormatView(Event event) =>
     switch (event.eventFormat.interactionModel) {
       EventInteractionModel.pairedRotations => HostLiveFormatView.courts,
       EventInteractionModel.teamRotations => HostLiveFormatView.mix,
+      EventInteractionModel.routeStops => HostLiveFormatView.crawl,
+      EventInteractionModel.pacePods => HostLiveFormatView.pods,
       _ => null,
     };
 

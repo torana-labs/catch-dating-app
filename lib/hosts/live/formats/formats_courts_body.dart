@@ -95,9 +95,9 @@ class HostFormatsCourtsBody extends StatelessWidget {
           FormatsPersonRow(
             key: ValueKey<String>('formats-sitter-${sitter.name}'),
             name: sitter.name,
-            subtitle: l10n.hostFormatsSatOut(
-              out: sitter.satOut,
-              played: sitter.played,
+            subtitle: l10n.hostFormatsCourtMinutes(
+              on: sitter.minutesOn,
+              off: sitter.minutesOff,
             ),
             status: expanded
                 ? null
@@ -133,6 +133,7 @@ class HostFormatsCourtsBody extends StatelessWidget {
                   key: ValueKey<String>('formats-court-${court.index}'),
                   index: court.index,
                   players: court.players,
+                  opponents: court.opponents,
                   status: clock,
                 ),
             ],
@@ -266,6 +267,7 @@ class HostFormatsCourtsBody extends StatelessWidget {
                   key: ValueKey<String>('formats-court-${court.index}'),
                   index: court.index,
                   players: court.players,
+                  opponents: court.opponents,
                   status: clock,
                 ),
             ],
@@ -290,8 +292,10 @@ class HostFormatsCourtsBody extends StatelessWidget {
                     mode: CatchMetricTileMode.plain,
                   ),
                   CatchMetricTile.stat(
-                    label: l10n.hostFormatsStatMostSatOut,
-                    value: '${state.mostSatOut}',
+                    label: l10n.hostFormatsStatCourtTimeApart,
+                    value: l10n.hostFormatsMinutesShort(
+                      minutes: state.courtTimeApartMinutes,
+                    ),
                     mode: CatchMetricTileMode.plain,
                   ),
                 ],
