@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_state.dart';
-import 'package:catch_dating_app/hosts/events/event_settings_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -78,10 +77,10 @@ class HostEventDefaultsBody extends StatelessWidget {
         gap: CatchStackGap.g16,
         children: [
           CatchSection(
-            title: HostEventSettingsCopy.tickets,
+            title: context.l10n.hostEventSettingsTickets,
             children: [
               CatchIndexRow(
-                title: HostEventSettingsCopy.startingPrice,
+                title: context.l10n.hostEventSettingsStartingPrice,
                 onTap: null,
                 trailing: CatchStepper(
                   key: const ValueKey<String>('host-event-defaults-price'),
@@ -90,8 +89,10 @@ class HostEventDefaultsBody extends StatelessWidget {
                   max: 1000000,
                   step: 50,
                   valueLabelBuilder: (value) => '₹${value.toInt()}',
-                  decreaseSemanticLabel: HostEventSettingsCopy.lowerPrice,
-                  increaseSemanticLabel: HostEventSettingsCopy.raisePrice,
+                  decreaseSemanticLabel:
+                      context.l10n.hostEventSettingsLowerPrice,
+                  increaseSemanticLabel:
+                      context.l10n.hostEventSettingsRaisePrice,
                   enabled: change != null,
                   onChanged: (value) => change?.call(
                     preferences.copyWith(
@@ -101,28 +102,30 @@ class HostEventDefaultsBody extends StatelessWidget {
                 ),
               ),
               CatchIndexRow(
-                title: HostEventSettingsCopy.places,
+                title: context.l10n.hostEventSettingsPlaces,
                 onTap: null,
                 trailing: CatchStepper(
                   key: const ValueKey<String>('host-event-defaults-places'),
                   value: preferences.places ?? 30,
                   min: 1,
                   max: 1000,
-                  decreaseSemanticLabel: HostEventSettingsCopy.fewerPlaces,
-                  increaseSemanticLabel: HostEventSettingsCopy.morePlaces,
+                  decreaseSemanticLabel:
+                      context.l10n.hostEventSettingsFewerPlaces,
+                  increaseSemanticLabel:
+                      context.l10n.hostEventSettingsMorePlaces,
                   enabled: change != null,
                   onChanged: (value) =>
                       change?.call(preferences.copyWith(places: value.toInt())),
                 ),
               ),
               CatchIndexRow(
-                title: HostEventSettingsCopy.waitlistWhenFull,
-                subtitle: HostEventSettingsCopy.waitlistWhenFullBody,
+                title: context.l10n.hostEventSettingsWaitlistWhenFull,
+                subtitle: context.l10n.hostEventSettingsWaitlistWhenFullBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-defaults-waitlist'),
                   value: preferences.waitlistEnabled ?? true,
-                  semanticLabel: HostEventSettingsCopy.waitlistWhenFull,
+                  semanticLabel: context.l10n.hostEventSettingsWaitlistWhenFull,
                   contractExemption:
                       'An organizer default committed by its own command.',
                   onChanged: change == null
@@ -132,13 +135,13 @@ class HostEventDefaultsBody extends StatelessWidget {
                 ),
               ),
               CatchIndexRow(
-                title: HostEventSettingsCopy.askToJoin,
-                subtitle: HostEventSettingsCopy.askToJoinBody,
+                title: context.l10n.hostEventSettingsAskToJoin,
+                subtitle: context.l10n.hostEventSettingsAskToJoinBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-defaults-ask'),
                   value: preferences.bookingMode == 'askFirst',
-                  semanticLabel: HostEventSettingsCopy.askToJoin,
+                  semanticLabel: context.l10n.hostEventSettingsAskToJoin,
                   contractExemption:
                       'An organizer default committed by its own command.',
                   onChanged: change == null
@@ -155,30 +158,30 @@ class HostEventDefaultsBody extends StatelessWidget {
           CatchStack(
             gap: CatchStackGap.g8,
             children: [
-              const CatchText(
-                HostEventSettingsCopy.refunds,
+              CatchText(
+                context.l10n.hostEventSettingsRefunds,
                 variant: CatchTextVariant.sectionTitle,
               ),
-              const CatchText(
-                HostEventSettingsCopy.refundsBody,
+              CatchText(
+                context.l10n.hostEventSettingsRefundsBody,
                 variant: CatchTextVariant.bodySmall,
                 tone: CatchTextTone.secondary,
               ),
-              for (final (policy, title, note) in const [
+              for (final (policy, title, note) in [
                 (
                   'flexible',
-                  HostEventSettingsCopy.refund24h,
-                  HostEventSettingsCopy.refund24hBody,
+                  context.l10n.hostEventSettingsRefund24h,
+                  context.l10n.hostEventSettingsRefund24hBody,
                 ),
                 (
                   'standard',
-                  HostEventSettingsCopy.refund3d,
-                  HostEventSettingsCopy.refund3dBody,
+                  context.l10n.hostEventSettingsRefund3d,
+                  context.l10n.hostEventSettingsRefund3dBody,
                 ),
                 (
                   'strict',
-                  HostEventSettingsCopy.refundNone,
-                  HostEventSettingsCopy.refundNoneBody,
+                  context.l10n.hostEventSettingsRefundNone,
+                  context.l10n.hostEventSettingsRefundNoneBody,
                 ),
               ])
                 CatchChoiceTile(
@@ -197,30 +200,30 @@ class HostEventDefaultsBody extends StatelessWidget {
             ],
           ),
           CatchSection(
-            title: HostEventSettingsCopy.askedAtBooking,
+            title: context.l10n.hostEventSettingsAskedAtBooking,
             children: [
               CatchIndexRow(
-                title: HostEventSettingsCopy.askedAtBooking,
+                title: context.l10n.hostEventSettingsAskedAtBooking,
                 value: questions.isEmpty
                     ? notSet
-                    : HostEventSettingsCopy.askedAtBookingCount(
-                        questions.length,
+                    : context.l10n.hostEventSettingsAskedAtBookingCount(
+                        count: questions.length,
                       ),
                 onTap: null,
               ),
             ],
           ),
           CatchSection(
-            title: HostEventSettingsCopy.messages,
+            title: context.l10n.hostEventSettingsMessages,
             children: [
               CatchIndexRow(
-                title: HostEventSettingsCopy.thankYou,
-                subtitle: HostEventSettingsCopy.thankYouBody,
+                title: context.l10n.hostEventSettingsThankYou,
+                subtitle: context.l10n.hostEventSettingsThankYouBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-defaults-thanks'),
                   value: messages.thankYou,
-                  semanticLabel: HostEventSettingsCopy.thankYou,
+                  semanticLabel: context.l10n.hostEventSettingsThankYou,
                   contractExemption:
                       'An organizer default committed by its own command.',
                   onChanged: change == null
@@ -236,13 +239,13 @@ class HostEventDefaultsBody extends StatelessWidget {
                 ),
               ),
               CatchIndexRow(
-                title: HostEventSettingsCopy.arrival,
-                subtitle: HostEventSettingsCopy.arrivalBody,
+                title: context.l10n.hostEventSettingsArrival,
+                subtitle: context.l10n.hostEventSettingsArrivalBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-defaults-arrival'),
                   value: messages.arrival,
-                  semanticLabel: HostEventSettingsCopy.arrival,
+                  semanticLabel: context.l10n.hostEventSettingsArrival,
                   contractExemption:
                       'An organizer default committed by its own command.',
                   onChanged: change == null

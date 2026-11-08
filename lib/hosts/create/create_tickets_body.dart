@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
-import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -73,9 +72,9 @@ class CreateTicketsBody extends StatelessWidget {
             child: CatchField.input(
               key: const ValueKey<String>('create-booking-link'),
               copy: copy,
-              title: CreateSettingsCopy.bookingLink,
+              title: context.l10n.hostCreateBookingLink,
               initialValue: draft.externalEventUrl ?? '',
-              placeholder: CreateSettingsCopy.bookingLinkHint,
+              placeholder: context.l10n.hostCreateBookingLinkHint,
               keyboardType: TextInputType.url,
               onChanged: onBookingLink!,
             ),
@@ -149,26 +148,26 @@ class CreateTicketsBody extends StatelessWidget {
             gap: CatchStackGap.none,
             children: [
               CatchIndexRow(
-                title: CreateSettingsCopy.waitlist,
-                subtitle: CreateSettingsCopy.waitlistBody,
+                title: context.l10n.hostCreateWaitlist,
+                subtitle: context.l10n.hostCreateWaitlistBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('create-waitlist'),
                   value: state.waitlist,
-                  semanticLabel: CreateSettingsCopy.waitlist,
+                  semanticLabel: context.l10n.hostCreateWaitlist,
                   contractExemption:
                       'An event preference saved with the tickets step.',
                   onChanged: onWaitlist,
                 ),
               ),
               CatchIndexRow(
-                title: CreateSettingsCopy.approveEach,
-                subtitle: CreateSettingsCopy.approveEachBody,
+                title: context.l10n.hostCreateApproveEach,
+                subtitle: context.l10n.hostCreateApproveEachBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('create-approve-each'),
                   value: state.approveEach,
-                  semanticLabel: CreateSettingsCopy.approveEach,
+                  semanticLabel: context.l10n.hostCreateApproveEach,
                   contractExemption:
                       'An event preference saved with the tickets step.',
                   onChanged: onApproveEach,

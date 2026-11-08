@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/hosts/events/event_publish_state.dart';
-import 'package:catch_dating_app/hosts/events/event_settings_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -95,9 +94,9 @@ class HostEventPublishBody extends StatelessWidget {
               CatchChoiceTile(
                 key: const ValueKey<String>('host-event-publish-link'),
                 variant: CatchChoiceTileVariant.row,
-                title: HostEventSettingsCopy.linkTitle,
+                title: context.l10n.hostEventSettingsLinkTitle,
                 subtitle: canReach
-                    ? HostEventSettingsCopy.linkBody
+                    ? context.l10n.hostEventSettingsLinkBody
                     : l10n.hostEventsPublishNotReady,
                 selected: visibility == HostEventVisibility.link,
                 contractExemption:
@@ -119,15 +118,15 @@ class HostEventPublishBody extends StatelessWidget {
           CatchStack(
             gap: CatchStackGap.g8,
             children: [
-              const CatchText(
-                HostEventSettingsCopy.whoCanBook,
+              CatchText(
+                context.l10n.hostEventSettingsWhoCanBook,
                 variant: CatchTextVariant.labelAction,
               ),
               CatchChoiceTile(
                 key: const ValueKey<String>('host-event-publish-book-anyone'),
                 variant: CatchChoiceTileVariant.row,
-                title: HostEventSettingsCopy.anyone,
-                subtitle: HostEventSettingsCopy.anyoneBody,
+                title: context.l10n.hostEventSettingsAnyone,
+                subtitle: context.l10n.hostEventSettingsAnyoneBody,
                 selected:
                     state.bookingMode == null ||
                     state.bookingMode == HostEventBookingMode.anyone,
@@ -140,8 +139,8 @@ class HostEventPublishBody extends StatelessWidget {
                   'host-event-publish-book-followers',
                 ),
                 variant: CatchChoiceTileVariant.row,
-                title: HostEventSettingsCopy.followersFirst,
-                subtitle: HostEventSettingsCopy.followersFirstBody,
+                title: context.l10n.hostEventSettingsFollowersFirst,
+                subtitle: context.l10n.hostEventSettingsFollowersFirstBody,
                 selected:
                     state.bookingMode == HostEventBookingMode.followersFirst,
                 contractExemption:
@@ -151,8 +150,8 @@ class HostEventPublishBody extends StatelessWidget {
               CatchChoiceTile(
                 key: const ValueKey<String>('host-event-publish-book-ask'),
                 variant: CatchChoiceTileVariant.row,
-                title: HostEventSettingsCopy.askFirst,
-                subtitle: HostEventSettingsCopy.askFirstBody,
+                title: context.l10n.hostEventSettingsAskFirst,
+                subtitle: context.l10n.hostEventSettingsAskFirstBody,
                 selected: state.bookingMode == HostEventBookingMode.askFirst,
                 contractExemption:
                     'A booking choice committed by its own command.',
@@ -164,25 +163,25 @@ class HostEventPublishBody extends StatelessWidget {
             gap: CatchStackGap.none,
             children: [
               CatchIndexRow(
-                title: HostEventSettingsCopy.showGuestList,
-                subtitle: HostEventSettingsCopy.showGuestListBody,
+                title: context.l10n.hostEventSettingsShowGuestList,
+                subtitle: context.l10n.hostEventSettingsShowGuestListBody,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-publish-guest-list'),
                   value: state.showGuestList,
-                  semanticLabel: HostEventSettingsCopy.showGuestList,
+                  semanticLabel: context.l10n.hostEventSettingsShowGuestList,
                   contractExemption:
                       'An event setting committed by the publication command.',
                   onChanged: canChoose ? onShowGuestList : null,
                 ),
               ),
               CatchIndexRow(
-                title: HostEventSettingsCopy.hidePrice,
+                title: context.l10n.hostEventSettingsHidePrice,
                 onTap: null,
                 trailing: CatchToggleInput(
                   key: const ValueKey<String>('host-event-publish-hide-price'),
                   value: state.priceHiddenUntilBookingOpens,
-                  semanticLabel: HostEventSettingsCopy.hidePrice,
+                  semanticLabel: context.l10n.hostEventSettingsHidePrice,
                   contractExemption:
                       'An event setting committed by the publication command.',
                   onChanged: canChoose ? onHidePrice : null,

@@ -28497,4 +28497,187 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostProgrammeBrandingCoverFailed =>
       'That photo couldn’t be uploaded. Try again.';
+
+  @override
+  String get hostEventSettingsLinkTitle => 'People with the link';
+
+  @override
+  String get hostEventSettingsLinkBody => 'Not listed anywhere';
+
+  @override
+  String get hostEventSettingsWhoCanBook => 'Who can book';
+
+  @override
+  String get hostEventSettingsAnyone => 'Anyone';
+
+  @override
+  String get hostEventSettingsAnyoneBody => 'First come, first served';
+
+  @override
+  String get hostEventSettingsFollowersFirst => 'Followers first';
+
+  @override
+  String get hostEventSettingsFollowersFirstBody =>
+      'Your followers can book first; everyone else from the day before';
+
+  @override
+  String get hostEventSettingsAskFirst => 'Ask first';
+
+  @override
+  String get hostEventSettingsAskFirstBody => 'You approve each guest first';
+
+  @override
+  String get hostEventSettingsShowGuestList => 'Show who else is going';
+
+  @override
+  String get hostEventSettingsShowGuestListBody =>
+      'Guests see a count; friends see names in the app';
+
+  @override
+  String get hostEventSettingsHidePrice => 'Hide the price until booking opens';
+
+  @override
+  String get hostEventSettingsTickets => 'Tickets';
+
+  @override
+  String get hostEventSettingsStartingPrice => 'Starting price';
+
+  @override
+  String get hostEventSettingsPlaces => 'Places';
+
+  @override
+  String get hostEventSettingsLowerPrice => 'Lower the starting price';
+
+  @override
+  String get hostEventSettingsRaisePrice => 'Raise the starting price';
+
+  @override
+  String get hostEventSettingsFewerPlaces => 'Fewer places';
+
+  @override
+  String get hostEventSettingsMorePlaces => 'More places';
+
+  @override
+  String get hostEventSettingsWaitlistWhenFull => 'Waitlist when full';
+
+  @override
+  String get hostEventSettingsWaitlistWhenFullBody =>
+      'A place offered to the next person when someone cancels';
+
+  @override
+  String get hostEventSettingsAskToJoin => 'Ask to join instead of booking';
+
+  @override
+  String get hostEventSettingsAskToJoinBody => 'You approve each guest first';
+
+  @override
+  String get hostEventSettingsRefunds => 'Refunds';
+
+  @override
+  String get hostEventSettingsRefundsBody =>
+      'Guests see this before they pay and on their ticket.';
+
+  @override
+  String get hostEventSettingsRefund24h => 'Up to 24 hours before';
+
+  @override
+  String get hostEventSettingsRefund24hBody => 'Most guests expect this';
+
+  @override
+  String get hostEventSettingsRefund3d => 'Up to 3 days before';
+
+  @override
+  String get hostEventSettingsRefund3dBody =>
+      'Good for suppers, where you buy food ahead';
+
+  @override
+  String get hostEventSettingsRefundNone => 'No refunds';
+
+  @override
+  String get hostEventSettingsRefundNoneBody =>
+      'Guests can still pass a ticket to a friend';
+
+  @override
+  String get hostEventSettingsAskedAtBooking => 'Asked at booking';
+
+  @override
+  String get hostEventSettingsMessages => 'Messages';
+
+  @override
+  String get hostEventSettingsThankYou => 'Thanks the morning after';
+
+  @override
+  String get hostEventSettingsThankYouBody => 'With photos and a rating';
+
+  @override
+  String get hostEventSettingsArrival => 'Reminder the day before';
+
+  @override
+  String get hostEventSettingsArrivalBody =>
+      'On WhatsApp, billed at cost · with the plan and the door';
+
+  @override
+  String get hostEventSettingsArrivalReady => 'Arrival message is ready';
+
+  @override
+  String get hostEventSettingsArrivalNotReady =>
+      'Arrival message is not set up';
+
+  @override
+  String get hostCreateBookingLink => 'Where guests buy tickets';
+
+  @override
+  String get hostCreateBookingLinkHint => 'https://';
+
+  @override
+  String get hostCreateWaitlistBody => 'You offer freed places in order';
+
+  @override
+  String get hostCreateApproveEach => 'You approve each request';
+
+  @override
+  String get hostCreateApproveEachBody => 'People ask to join; you let them in';
+
+  @override
+  String get hostCreatePlanVisible => 'Guests see the plan';
+
+  @override
+  String get hostCreateRepeat => 'Every week';
+
+  @override
+  String get hostCreateWaitlist => 'Waitlist when it\'s full';
+
+  @override
+  String get hostCreatePlanVisibleBody =>
+      'On their phones, with the step that\'s on now';
+
+  @override
+  String get hostCreateRepeatBody => 'We\'ll set up the next 8 for you to edit';
+
+  @override
+  String hostEventSettingsAskedAtBookingCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions',
+      one: '1 question',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostEventSettingsTicketsSold({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets sold',
+      one: '1 ticket sold',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostCreateRepeatOn({required Object weekday}) {
+    return 'Every $weekday';
+  }
 }

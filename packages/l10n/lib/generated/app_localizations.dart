@@ -45760,6 +45760,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That photo couldn’t be uploaded. Try again.'**
   String get hostProgrammeBrandingCoverFailed;
+
+  /// Publication choice: people with the link only.
+  ///
+  /// In en, this message translates to:
+  /// **'People with the link'**
+  String get hostEventSettingsLinkTitle;
+
+  /// Publication choice subtitle: not listed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not listed anywhere'**
+  String get hostEventSettingsLinkBody;
+
+  /// Who can book choice group label.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can book'**
+  String get hostEventSettingsWhoCanBook;
+
+  /// Who can book choice: anyone.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get hostEventSettingsAnyone;
+
+  /// Who can book choice subtitle: anyone.
+  ///
+  /// In en, this message translates to:
+  /// **'First come, first served'**
+  String get hostEventSettingsAnyoneBody;
+
+  /// Who can book choice: followers before everyone else.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers first'**
+  String get hostEventSettingsFollowersFirst;
+
+  /// Who can book choice subtitle: followers first.
+  ///
+  /// In en, this message translates to:
+  /// **'Your followers can book first; everyone else from the day before'**
+  String get hostEventSettingsFollowersFirstBody;
+
+  /// Who can book choice: the host approves each guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask first'**
+  String get hostEventSettingsAskFirst;
+
+  /// Who can book choice subtitle: ask first.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each guest first'**
+  String get hostEventSettingsAskFirstBody;
+
+  /// Event setting switch: show the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Show who else is going'**
+  String get hostEventSettingsShowGuestList;
+
+  /// Event setting subtitle: what guests see of the guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see a count; friends see names in the app'**
+  String get hostEventSettingsShowGuestListBody;
+
+  /// Event setting switch: hide the price until booking opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the price until booking opens'**
+  String get hostEventSettingsHidePrice;
+
+  /// Event defaults section title: tickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets'**
+  String get hostEventSettingsTickets;
+
+  /// Event defaults stepper: starting price.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting price'**
+  String get hostEventSettingsStartingPrice;
+
+  /// Event defaults stepper: places.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hostEventSettingsPlaces;
+
+  /// Stepper semantic label: lower the price.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower the starting price'**
+  String get hostEventSettingsLowerPrice;
+
+  /// Stepper semantic label: raise the price.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise the starting price'**
+  String get hostEventSettingsRaisePrice;
+
+  /// Stepper semantic label: fewer places.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer places'**
+  String get hostEventSettingsFewerPlaces;
+
+  /// Stepper semantic label: more places.
+  ///
+  /// In en, this message translates to:
+  /// **'More places'**
+  String get hostEventSettingsMorePlaces;
+
+  /// Event defaults switch: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist when full'**
+  String get hostEventSettingsWaitlistWhenFull;
+
+  /// Event defaults subtitle: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'A place offered to the next person when someone cancels'**
+  String get hostEventSettingsWaitlistWhenFullBody;
+
+  /// Event defaults switch: ask to join.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to join instead of booking'**
+  String get hostEventSettingsAskToJoin;
+
+  /// Event defaults subtitle: ask to join.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each guest first'**
+  String get hostEventSettingsAskToJoinBody;
+
+  /// Event defaults section title: refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get hostEventSettingsRefunds;
+
+  /// Event defaults refunds explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see this before they pay and on their ticket.'**
+  String get hostEventSettingsRefundsBody;
+
+  /// Refund choice: up to 24 hours before.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 24 hours before'**
+  String get hostEventSettingsRefund24h;
+
+  /// Refund choice subtitle: 24 hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Most guests expect this'**
+  String get hostEventSettingsRefund24hBody;
+
+  /// Refund choice: up to 3 days before.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 3 days before'**
+  String get hostEventSettingsRefund3d;
+
+  /// Refund choice subtitle: 3 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Good for suppers, where you buy food ahead'**
+  String get hostEventSettingsRefund3dBody;
+
+  /// Refund choice: no refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'No refunds'**
+  String get hostEventSettingsRefundNone;
+
+  /// Refund choice subtitle: no refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can still pass a ticket to a friend'**
+  String get hostEventSettingsRefundNoneBody;
+
+  /// Event defaults row: questions asked at booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked at booking'**
+  String get hostEventSettingsAskedAtBooking;
+
+  /// Event defaults section title: messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostEventSettingsMessages;
+
+  /// Event defaults switch: thank-you message.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks the morning after'**
+  String get hostEventSettingsThankYou;
+
+  /// Event defaults subtitle: thank-you message.
+  ///
+  /// In en, this message translates to:
+  /// **'With photos and a rating'**
+  String get hostEventSettingsThankYouBody;
+
+  /// Event defaults switch: arrival reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder the day before'**
+  String get hostEventSettingsArrival;
+
+  /// Event defaults subtitle: arrival reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'On WhatsApp, billed at cost · with the plan and the door'**
+  String get hostEventSettingsArrivalBody;
+
+  /// Workspace checklist: the arrival message is armed.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival message is ready'**
+  String get hostEventSettingsArrivalReady;
+
+  /// Workspace checklist: the arrival message is not armed.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival message is not set up'**
+  String get hostEventSettingsArrivalNotReady;
+
+  /// Create tickets field: where guests buy tickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Where guests buy tickets'**
+  String get hostCreateBookingLink;
+
+  /// Create tickets field placeholder for the booking link.
+  ///
+  /// In en, this message translates to:
+  /// **'https://'**
+  String get hostCreateBookingLinkHint;
+
+  /// Create tickets subtitle: waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'You offer freed places in order'**
+  String get hostCreateWaitlistBody;
+
+  /// Create tickets switch: approve each request.
+  ///
+  /// In en, this message translates to:
+  /// **'You approve each request'**
+  String get hostCreateApproveEach;
+
+  /// Create tickets subtitle: approve each request.
+  ///
+  /// In en, this message translates to:
+  /// **'People ask to join; you let them in'**
+  String get hostCreateApproveEachBody;
+
+  /// Create plan switch: guests see the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests see the plan'**
+  String get hostCreatePlanVisible;
+
+  /// Create when switch semantic label: repeat weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Every week'**
+  String get hostCreateRepeat;
+
+  /// Create tickets switch: waitlist when full.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist when it\'\'s full'**
+  String get hostCreateWaitlist;
+
+  /// Create plan subtitle: guests see the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'On their phones, with the step that\'\'s on now'**
+  String get hostCreatePlanVisibleBody;
+
+  /// Create when subtitle: the series it sets up.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'\'ll set up the next 8 for you to edit'**
+  String get hostCreateRepeatBody;
+
+  /// Event defaults: how many questions guests answer at booking.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 question} other{{count} questions}}'**
+  String hostEventSettingsAskedAtBookingCount({required int count});
+
+  /// Workspace ticket sales: tickets sold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 ticket sold} other{{count} tickets sold}}'**
+  String hostEventSettingsTicketsSold({required int count});
+
+  /// Create when switch: repeat on the event's weekday.
+  ///
+  /// In en, this message translates to:
+  /// **'Every {weekday}'**
+  String hostCreateRepeatOn({required Object weekday});
 }
 
 class _AppLocalizationsDelegate

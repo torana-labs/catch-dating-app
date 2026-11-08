@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
-import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
@@ -226,7 +225,7 @@ void main() {
           onApproveEach: approve.add,
         ),
       );
-      expect(find.text(CreateSettingsCopy.waitlist), findsOneWidget);
+      expect(find.text("Waitlist when it's full"), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey<String>('create-waitlist')));
       await tester.tap(
         find.byKey(const ValueKey<String>('create-approve-each')),
