@@ -80,32 +80,33 @@ function request(data: Data, token: Data = {phone_number: phone}) {
     CallableRequest<unknown>;
 }
 
-test("a verified phone follows and the tick grants follower WhatsApp", async () => {
-  const {store, deps} = setup();
-  const result = await followOrganizerByPhoneHandler(request({
-    organizerId: "org-1", requestId: "req-1", whatsappUpdates: true,
-    termsVersion: "follower-whatsapp-v1"}), deps);
-  assert.equal(result.whatsappUpdates, "optedIn");
-  assert.equal(result.idempotentReplay, false);
-  assert.equal(store.docs.get("organizers/org-1")?.followerCount, 5);
-  const follow = [...store.docs.entries()]
-    .find(([path]) => path.startsWith("organizerFollows/"))?.[1];
-  assert.equal(follow?.status, "active");
-  const preference = store.docs.get("organizerCommunicationPreferences/" +
+test("a verified phone follows; the tick grants follower WhatsApp",
+  async () => {
+    const {store, deps} = setup();
+    const result = await followOrganizerByPhoneHandler(request({
+      organizerId: "org-1", requestId: "req-1", whatsappUpdates: true,
+      termsVersion: "follower-whatsapp-v1"}), deps);
+    assert.equal(result.whatsappUpdates, "optedIn");
+    assert.equal(result.idempotentReplay, false);
+    assert.equal(store.docs.get("organizers/org-1")?.followerCount, 5);
+    const follow = [...store.docs.entries()]
+      .find(([path]) => path.startsWith("organizerFollows/"))?.[1];
+    assert.equal(follow?.status, "active");
+    const preference = store.docs.get("organizerCommunicationPreferences/" +
     organizerCommunicationPreferenceId("org-1", "uid-1"));
-  assert.equal(effectiveFollowerWhatsappStatus(preference as never, phone),
-    "optedIn");
-  const receipt = store.docs.get(
-    `organizerCommunicationPermissionReceipts/${result.receiptId}`);
-  assert.equal(receipt?.purpose, "followerUpdates");
-  assert.equal(receipt?.endpointE164, phone);
+    assert.equal(effectiveFollowerWhatsappStatus(preference as never, phone),
+      "optedIn");
+    const receipt = store.docs.get(
+      `organizerCommunicationPermissionReceipts/${result.receiptId}`);
+    assert.equal(receipt?.purpose, "followerUpdates");
+    assert.equal(receipt?.endpointE164, phone);
 
-  const replay = await followOrganizerByPhoneHandler(request({
-    organizerId: "org-1", requestId: "req-1", whatsappUpdates: true,
-    termsVersion: "follower-whatsapp-v1"}), deps);
-  assert.equal(replay.idempotentReplay, true);
-  assert.equal(store.docs.get("organizers/org-1")?.followerCount, 5);
-});
+    const replay = await followOrganizerByPhoneHandler(request({
+      organizerId: "org-1", requestId: "req-1", whatsappUpdates: true,
+      termsVersion: "follower-whatsapp-v1"}), deps);
+    assert.equal(replay.idempotentReplay, true);
+    assert.equal(store.docs.get("organizers/org-1")?.followerCount, 5);
+  });
 
 test("without the tick the follow carries no WhatsApp permission", async () => {
   const {store, deps} = setup();

@@ -114,73 +114,78 @@ function grantFor(store: Store, uid: string, endpoint = phone) {
     updatedAt: Timestamp.fromMillis(10_000)});
 }
 
-test("the sender is the active connection with the approved template", async () => {
-  const store = seed();
-  const sender = await findFollowerWhatsappSender(db(store), "org-1");
-  assert.equal(sender?.connectionId, "conn-1");
-  assert.equal(sender?.templateId, "tpl-1");
-  store.docs.set("organizerMessageTemplates/tpl-1", {
-    ...store.docs.get("organizerMessageTemplates/tpl-1")!, status: "PENDING"});
-  assert.equal(await findFollowerWhatsappSender(db(store), "org-1"), null);
-});
+test("the sender is the active connection with the approved template",
+  async () => {
+    const store = seed();
+    const sender = await findFollowerWhatsappSender(db(store), "org-1");
+    assert.equal(sender?.connectionId, "conn-1");
+    assert.equal(sender?.templateId, "tpl-1");
+    store.docs.set("organizerMessageTemplates/tpl-1", {
+      ...store.docs.get("organizerMessageTemplates/tpl-1")!,
+      status: "PENDING"});
+    assert.equal(await findFollowerWhatsappSender(db(store), "org-1"), null);
+  });
 
-test("a page queues only consented followers on their verified phone", async () => {
-  const store = seed();
-  const sender = (await findFollowerWhatsappSender(db(store), "org-1"))!;
-  const campaignId = followerWhatsappCampaignId("post-1");
-  const campaign = followerWhatsappCampaign({organizerId: "org-1",
-    authorUid: "author", postId: "post-1", text: "Sunday\nrun", sender, now});
-  assert.deepEqual(campaign.templateVariables, {update_text: "Sunday run"});
-  assert.equal(campaign.status, "approved");
-  store.docs.set(`organizerCampaigns/${campaignId}`, campaign as never);
-  grantFor(store, "fan");
-  grantFor(store, "moved", "+919800000000");
-  grantFor(store, "stopped");
-  store.docs.set("organizerWhatsappEndpointStops/" +
+test("a page queues only consented followers on their verified phone",
+  async () => {
+    const store = seed();
+    const sender = (await findFollowerWhatsappSender(db(store), "org-1"))!;
+    const campaignId = followerWhatsappCampaignId("post-1");
+    const campaign = followerWhatsappCampaign({organizerId: "org-1",
+      authorUid: "author", postId: "post-1", text: "Sunday\nrun", sender, now});
+    assert.deepEqual(campaign.templateVariables, {update_text: "Sunday run"});
+    assert.equal(campaign.status, "approved");
+    store.docs.set(`organizerCampaigns/${campaignId}`, campaign as never);
+    grantFor(store, "fan");
+    grantFor(store, "moved", "+919800000000");
+    grantFor(store, "stopped");
+    store.docs.set("organizerWhatsappEndpointStops/" +
     whatsappStopId("org-1", hashEndpoint("+919811111111")),
-  {stoppedAt: 20_000});
-  grantFor(store, "stopped", "+919811111111");
-  const operation = {organizerId: "org-1", postId: "post-1",
-    authorUid: "author", whatsapp: initialFollowerWhatsappLeg(campaignId)} as
+    {stoppedAt: 20_000});
+    grantFor(store, "stopped", "+919811111111");
+    const operation = {organizerId: "org-1", postId: "post-1",
+      authorUid: "author", whatsapp: initialFollowerWhatsappLeg(campaignId)} as
     unknown as OrganizerPostDeliveryOperationDocument;
-  const decide = (await prepareFollowerWhatsappPage({db: db(store), now,
-    operation, follows: [], deps: {
-      verifiedPhones: async () => new Map([["fan", phone],
-        ["moved", phone], ["stopped", "+919811111111"], ["silent", phone],
-        ["nophone", null]]),
-      hasBlockingRelationship: async () => false,
-    }}))!;
-  const follow = (uid: string) => ({uid} as OrganizerFollowDocument);
-  const fan = await decide(follow("fan"));
-  assert.equal(fan.kind, "queued");
-  if (fan.kind === "queued") {
-    assert.equal(fan.recipient.endpointE164, phone);
-    assert.equal(fan.recipient.contactId, null);
-    assert.equal(fan.recipient.followerRecipient?.uid, "fan");
-    assert.equal(fan.recipient.status, "pending");
-  }
-  for (const uid of ["moved", "stopped", "silent", "nophone", "author"]) {
-    assert.equal((await decide(follow(uid))).kind, "skipped", uid);
-  }
-});
+    const decide = (await prepareFollowerWhatsappPage({db: db(store), now,
+      operation, follows: [], deps: {
+        verifiedPhones: async () => new Map([["fan", phone],
+          ["moved", phone], ["stopped", "+919811111111"], ["silent", phone],
+          ["nophone", null]]),
+        hasBlockingRelationship: async () => false,
+      }}))!;
+    const follow = (uid: string) => ({uid} as OrganizerFollowDocument);
+    const fan = await decide(follow("fan"));
+    assert.equal(fan.kind, "queued");
+    if (fan.kind === "queued") {
+      assert.equal(fan.recipient.endpointE164, phone);
+      assert.equal(fan.recipient.contactId, null);
+      assert.equal(fan.recipient.followerRecipient?.uid, "fan");
+      assert.equal(fan.recipient.status, "pending");
+    }
+    for (const uid of ["moved", "stopped", "silent", "nophone", "author"]) {
+      assert.equal((await decide(follow(uid))).kind, "skipped", uid);
+    }
+  });
 
-test("send time withholds unfollowed, withdrawn or stopped followers", async () => {
-  const store = seed();
-  grantFor(store, "fan");
-  const recipient = {followerRecipient: {uid: "fan", postId: "post-1",
-    permissionReceiptId: "ocpr_fan"}, endpointE164: phone,
+test("send time withholds unfollowed, withdrawn or stopped followers",
+  async () => {
+    const store = seed();
+    grantFor(store, "fan");
+    const recipient = {followerRecipient: {uid: "fan", postId: "post-1",
+      permissionReceiptId: "ocpr_fan"}, endpointE164: phone,
     endpointHash: hashEndpoint(phone)} as never;
-  const check = () => store.runTransaction((tx) =>
-    followerRecipientSuppression({tx: tx as never, db: db(store),
-      organizerId: "org-1", recipient}));
-  assert.equal(await check(), "optedOut");
-  store.docs.set("organizerFollows/" + organizerRelationshipId("org-1", "fan"),
-    {status: "active"});
-  assert.equal(await check(), null);
-  store.docs.set("organizerWhatsappEndpointStops/" +
+    const check = () => store.runTransaction((tx) =>
+      followerRecipientSuppression({tx: tx as never, db: db(store),
+        organizerId: "org-1", recipient}));
+    assert.equal(await check(), "optedOut");
+    store.docs.set(
+      "organizerFollows/" + organizerRelationshipId("org-1", "fan"),
+      {status: "active"});
+    assert.equal(await check(), null);
+    store.docs.set("organizerWhatsappEndpointStops/" +
     whatsappStopId("org-1", hashEndpoint(phone)), {stoppedAt: 90_000});
-  assert.equal(await check(), "optedOut");
-});
+    assert.equal(await check(), "optedOut");
+  });
 
 test("the leg mirrors campaign delivery counts and settles", async () => {
   const store = seed();

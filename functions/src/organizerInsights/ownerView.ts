@@ -146,9 +146,9 @@ export async function getOrganizerOwnerViewHandler(
     role === "analyst" ? Promise.resolve(null) :
       deps.findWhatsappSender?.(db, organizerId) ?? Promise.resolve(null),
     db.getAll(
-    db.collection(followerMessageQuotasCollection)
-      .doc(followerMessageQuotaId(organizerId, month)),
-    ...dayRefs),
+      db.collection(followerMessageQuotasCollection)
+        .doc(followerMessageQuotaId(organizerId, month)),
+      ...dayRefs),
   ]);
   const documents = daySnaps.map((snap) => {
     const data = snap.exists ? snap.data() as OrganizerInsightsDocument : null;

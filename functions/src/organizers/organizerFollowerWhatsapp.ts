@@ -37,7 +37,8 @@ export const organizerFollowerUpdateTemplateSpec = {
   language: "en",
   parameterFormat: "NAMED",
   body: "New from us:\n\n{{update_text}}\n\nReply STOP to stop these updates.",
-  exampleUpdateText: "Sunday 7am run from Cubbon Park is open. Book on our page.",
+  exampleUpdateText:
+    "Sunday 7am run from Cubbon Park is open. Book on our page.",
 } as const;
 
 /** Reviewed consent copy for the follow-by-phone WhatsApp tick. */

@@ -133,7 +133,8 @@ export async function followOrganizerByPhoneHandler(
     }), {merge: true});
 
     if (!receipt || !receiptRef) {
-      return {following: true as const, whatsappUpdates: "notRequested" as const,
+      return {following: true as const,
+        whatsappUpdates: "notRequested" as const,
         receiptId: null, idempotentReplay: false};
     }
     if (replaySnap?.exists) {
