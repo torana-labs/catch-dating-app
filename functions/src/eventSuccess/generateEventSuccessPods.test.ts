@@ -663,7 +663,7 @@ test("configured consented answers influence published pod groups",
     });
   });
 
-test("rejects unimplemented custom team formats honestly", async () => {
+test("custom team formats generate balanced teams", async () => {
   const {firestore, deps} = harness({
     "events/event-1": {
       organizerId: "club-1",
@@ -707,18 +707,17 @@ test("rejects unimplemented custom team formats honestly", async () => {
     "users/straight-woman-2": user("woman", ["man"]),
   });
 
-  await assert.rejects(
-    generateEventSuccessPodsHandler(callableRequest("host-1"), deps),
-    (error: unknown) => {
-      isHttpsError(error, "failed-precondition", "Team balancing");
-      return true;
-    }
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
   );
 
-  assert.equal(
-    firestore.get("eventSuccessAssignments/event-1_micro_pods_gay-man-1"),
-    undefined
-  );
+  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
+  const assignment = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_gay-man-1"
+  ) as {unitKind?: string; peerUids?: string[]} | undefined;
+  assert.equal(assignment?.unitKind, "teams");
+  assert.equal(assignment?.peerUids?.length, 2);
 });
 
 test("rejects a format with no assignment algorithm", async () => {

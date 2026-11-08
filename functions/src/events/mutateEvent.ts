@@ -95,6 +95,7 @@ import {
 import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
+  isEventSuccessAccountability,
   isEventSuccessAssignmentAlgorithm,
   isEventSuccessCompatibilityPolicy,
   isEventSuccessDurationShape,
@@ -1285,6 +1286,8 @@ function defaultEventSuccessPlaybookIdFor(
     return "pub_quiz_team_mixer";
   case "seatedTable":
     return "dinner_table_mixer";
+  case "routeStops":
+    return "bar_crawl_route";
   case "freeFormMixer":
     return primitives.compatibilityPolicy === "mutualInterestOnly" ?
       "algorithmic_mixer_reveal" :
@@ -1323,6 +1326,13 @@ function defaultEventSuccessModuleIdsFor(
     return [...base, "guided_rotations", "live_reveal"];
   case "teamRotations":
     return [...base, "micro_pods", "live_reveal"];
+  case "seatedTable":
+    // Tables and course changes come from the group assignment tool.
+    // Phone-light: conversation cards are a host opt-in at dinner.
+    return [...base.filter((moduleId) => moduleId !== "social_missions"),
+      "micro_pods"];
+  case "routeStops":
+    return [...base, "first_hello_check_in"];
   case "freeFormMixer":
     return primitives.compatibilityPolicy === "mutualInterestOnly" ?
       [...base, "guided_rotations", "live_reveal",
@@ -1469,6 +1479,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessUnitOutcome(raw?.unitOutcome)) {
     normalized.unitOutcome = raw.unitOutcome;
+  }
+  if (isEventSuccessAccountability(raw?.accountability)) {
+    normalized.accountability = raw.accountability;
   }
   if (isEventSuccessDurationShape(raw?.durationShape)) {
     normalized.durationShape = raw.durationShape;
@@ -1655,6 +1668,7 @@ function defaultInteractionModelFor(
   case "dinner":
     return "seatedTable";
   case "barCrawl":
+    return "routeStops";
   case "singlesMixer":
     return "freeFormMixer";
   case "openActivity":

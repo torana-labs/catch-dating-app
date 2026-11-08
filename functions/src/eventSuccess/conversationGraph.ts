@@ -206,6 +206,7 @@ export function conversationGraphPrompt(
   case "pairedRotations":
     return "Who were your opponents or partners?";
   case "freeFormMixer":
+  case "routeStops":
   case "hostLedProgram":
   case "openFormat":
   default:

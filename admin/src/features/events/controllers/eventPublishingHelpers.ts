@@ -62,6 +62,7 @@ export const eventInteractionModelOptions: AdminEventInteractionModel[] = [
   "teamRotations",
   "seatedTable",
   "freeFormMixer",
+  "routeStops",
   "hostLedProgram",
   "openFormat",
 ];

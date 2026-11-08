@@ -93,6 +93,12 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessAttributePaceTogether = 'Pace together';
   static const eventSuccessAttributeSkillTogether = 'Skill together';
   static const eventSuccessAttributeRoleTogether = 'Role together';
+  static const eventSuccessAttributeGender = 'Gender (opt-in)';
+  static const eventSuccessAttributeAgeBand = 'Age band (opt-in)';
+  static const eventSuccessAttributeSpreadGender = 'Mix genders (opt-in)';
+  static const eventSuccessAttributeSpreadAgeBand = 'Spread ages (opt-in)';
+  static const eventSuccessAttributeGenderTogether = 'Gender together (opt-in)';
+  static const eventSuccessAttributeAgeBandTogether = 'Similar ages together (opt-in)';
   static const eventSuccessRecommendationDefaultOn = 'Default on';
   static const eventSuccessRecommendationRecommended = 'Recommended';
   static const eventSuccessRecommendationOptional = 'Optional';
@@ -103,6 +109,7 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessPromptTeamRotations = 'Find someone on your team and ask what brought them here.';
   static const eventSuccessPromptSeatedTable = 'Ask someone at your table what made them say yes to tonight.';
   static const eventSuccessPromptFreeFormMixer = 'Find someone nearby and ask what answer from tonight surprised them.';
+  static const eventSuccessPromptRouteStops = 'On the way to the next stop, ask someone which stop they would come back to.';
   static const eventSuccessPromptOpenFormat = 'Find someone near you and ask what brought them here.';
   static const eventSuccessSetupNeedsWork = 'Needs work';
   static const eventSuccessSetupReadyForLaunch = 'Ready for launch';

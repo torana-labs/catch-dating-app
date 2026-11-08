@@ -152,6 +152,8 @@ String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyASeatedFormatAnd,
     EventInteractionModel.freeFormMixer =>
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyHostNudgesKeepThe,
+    EventInteractionModel.routeStops =>
+      l10n.eventsEventDetailDesignPrimitivesVisiblecopyAFirstHelloMixes,
     EventInteractionModel.hostLedProgram =>
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostRunsThe,
     EventInteractionModel.openFormat =>

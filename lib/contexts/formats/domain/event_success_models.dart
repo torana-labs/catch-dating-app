@@ -46,7 +46,7 @@ enum EventSuccessStage {
   final String label;
 }
 
-enum EventSuccessDurationShape { continuous, rounds, courses, segments }
+enum EventSuccessDurationShape { continuous, rounds, courses, segments, stops }
 
 enum EventSuccessModuleType {
   formatTemplate,

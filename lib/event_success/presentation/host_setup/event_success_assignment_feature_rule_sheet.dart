@@ -116,14 +116,17 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                 title: l10n.eventMatchingHostPreference,
                 contract: CatchContractConstraints
                     .configureEventAssignmentFeaturesCallablePayloadRulesItemsMode,
-                values: const [
+                values: [
                   'preferSimilar',
                   'preferDifferent',
                   'balanceAcrossGroups',
+                  if (_kind == 'category' || _kind == 'set')
+                    'coverAcrossGroups',
                 ],
                 itemLabelBuilder: (mode) => switch (mode) {
                   'preferDifferent' => l10n.eventMatchingHostDifferent,
                   'balanceAcrossGroups' => l10n.eventMatchingHostBalance,
+                  'coverAcrossGroups' => l10n.eventMatchingHostCover,
                   _ => l10n.eventMatchingHostSimilar,
                 },
                 value: _mode,

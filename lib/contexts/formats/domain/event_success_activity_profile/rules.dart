@@ -13,6 +13,7 @@ EventSuccessPlaybook _playbookForFormat(
       EventSuccessPlaybookLibrary.pickleball,
     EventInteractionModel.teamRotations => EventSuccessPlaybookLibrary.pubQuiz,
     EventInteractionModel.seatedTable => EventSuccessPlaybookLibrary.dinner,
+    EventInteractionModel.routeStops => EventSuccessPlaybookLibrary.barCrawl,
     EventInteractionModel.freeFormMixer =>
       compatibilityPolicy == EventSuccessCompatibilityPolicy.mutualInterestOnly
           ? EventSuccessPlaybookLibrary.algorithmicMixer
@@ -40,6 +41,7 @@ EventSuccessDurationShape _durationShapeFor(
       EventInteractionModel.teamRotations ||
       EventInteractionModel.freeFormMixer => EventSuccessDurationShape.rounds,
       EventInteractionModel.seatedTable => EventSuccessDurationShape.courses,
+      EventInteractionModel.routeStops => EventSuccessDurationShape.stops,
       EventInteractionModel.hostLedProgram ||
       EventInteractionModel.openFormat => EventSuccessDurationShape.continuous,
     };
@@ -109,14 +111,31 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.discouraged;
     case EventInteractionModel.seatedTable:
+      // Tables, and their course-by-course changes, come from the group
+      // assignment tool. Guided rotations are two-person pairs only.
       base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
           EventSuccessRecommendationLevel.recommended;
-      base[EventSuccessModuleCatalog.guidedRotations.id] =
-          EventSuccessRecommendationLevel.recommended;
+      base[EventSuccessModuleCatalog.microPods.id] =
+          EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.liveReveal.id] =
           EventSuccessRecommendationLevel.recommended;
+      base[EventSuccessModuleCatalog.guidedRotations.id] =
+          EventSuccessRecommendationLevel.discouraged;
+      // Phone-light by design: guests check in and see their seat once, and
+      // conversation cards stay a host opt-in.
+      base[EventSuccessModuleCatalog.socialMissions.id] =
+          EventSuccessRecommendationLevel.recommended;
+    case EventInteractionModel.routeStops:
+      base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
+          EventSuccessRecommendationLevel.defaultOn;
+      base[EventSuccessModuleCatalog.guidedRotations.id] =
+          EventSuccessRecommendationLevel.unsupported;
+      base[EventSuccessModuleCatalog.liveReveal.id] =
+          EventSuccessRecommendationLevel.discouraged;
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.discouraged;
+      base[EventSuccessModuleCatalog.compatibilityQuestionnaire.id] =
+          EventSuccessRecommendationLevel.optional;
     case EventInteractionModel.freeFormMixer:
       base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
           EventSuccessRecommendationLevel.recommended;
@@ -187,9 +206,13 @@ EventSuccessPhoneAvailability _phoneAvailabilityFor(
       EventSuccessPhoneAvailability.arrivalAndPostEventOnly,
     EventInteractionModel.pairedRotations ||
     EventInteractionModel.teamRotations ||
-    EventInteractionModel.seatedTable ||
-    EventInteractionModel.freeFormMixer =>
+    EventInteractionModel.freeFormMixer ||
+    EventInteractionModel.routeStops =>
       EventSuccessPhoneAvailability.plannedPauses,
+    // Phones are at the table, but the format keeps them away by norm rather
+    // than by gating dinner moments to steps.
+    EventInteractionModel.seatedTable =>
+      EventSuccessPhoneAvailability.continuous,
     EventInteractionModel.hostLedProgram =>
       format.activityKind.isMovementHeavy
           ? EventSuccessPhoneAvailability.hostOnlyLive
@@ -211,6 +234,7 @@ EventSuccessRotationSuitability _rotationSuitabilityFor(
   final interactionModel = format.interactionModel;
   return switch (interactionModel) {
     EventInteractionModel.pacePods ||
+    EventInteractionModel.routeStops ||
     EventInteractionModel.hostLedProgram ||
     EventInteractionModel.openFormat => EventSuccessRotationSuitability.none,
     EventInteractionModel.pairedRotations ||
@@ -241,6 +265,7 @@ EventSuccessAssignmentAlgorithm _assignmentAlgorithmFor(
       EventSuccessAssignmentAlgorithm.tableSeating,
     EventInteractionModel.freeFormMixer =>
       EventSuccessAssignmentAlgorithm.socialPods,
+    EventInteractionModel.routeStops ||
     EventInteractionModel.hostLedProgram ||
     EventInteractionModel.openFormat => EventSuccessAssignmentAlgorithm.none,
   };
@@ -263,7 +288,8 @@ EventSuccessCompatibilityPolicy _compatibilityPolicyFor(
           : EventSuccessCompatibilityPolicy.questionnaireClueOnly,
     EventInteractionModel.teamRotations ||
     EventInteractionModel.seatedTable ||
-    EventInteractionModel.pairedRotations =>
+    EventInteractionModel.pairedRotations ||
+    EventInteractionModel.routeStops =>
       EventSuccessCompatibilityPolicy.questionnaireClueOnly,
     EventInteractionModel.pacePods =>
       EventSuccessCompatibilityPolicy.socialCohortBalance,
@@ -293,6 +319,7 @@ EventSuccessMatchingObjective _matchingObjectiveFor(
       compatibilityPolicy == EventSuccessCompatibilityPolicy.mutualInterestOnly
           ? EventSuccessMatchingObjective.romantic
           : EventSuccessMatchingObjective.coverage,
+    EventInteractionModel.routeStops ||
     EventInteractionModel.hostLedProgram ||
     EventInteractionModel.openFormat => EventSuccessMatchingObjective.coverage,
   };
@@ -314,6 +341,7 @@ EventSuccessUnitOutcome _unitOutcomeFor(
     EventInteractionModel.pairedRotations => EventSuccessUnitOutcome.rank,
     EventInteractionModel.seatedTable ||
     EventInteractionModel.freeFormMixer ||
+    EventInteractionModel.routeStops ||
     EventInteractionModel.hostLedProgram ||
     EventInteractionModel.openFormat => EventSuccessUnitOutcome.none,
   };
@@ -329,9 +357,16 @@ EventSuccessAccountability _accountabilityFor(
     EventSuccessAccountability.values,
   );
   if (override != null) return override;
-  return interactionModel == EventInteractionModel.pacePods
-      ? EventSuccessAccountability.sweep
-      : EventSuccessAccountability.none;
+  return switch (interactionModel) {
+    EventInteractionModel.pacePods ||
+    EventInteractionModel.routeStops => EventSuccessAccountability.sweep,
+    EventInteractionModel.pairedRotations ||
+    EventInteractionModel.teamRotations ||
+    EventInteractionModel.seatedTable ||
+    EventInteractionModel.freeFormMixer ||
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessAccountability.none,
+  };
 }
 
 EventSuccessAssignmentResolution _assignmentResolutionFor(
@@ -345,20 +380,20 @@ EventSuccessAssignmentResolution _assignmentResolutionFor(
         support: EventSuccessAssignmentSupport.supported,
         reason: 'This assignment algorithm is implemented.',
       ),
+    EventSuccessAssignmentAlgorithm.teamBalancer =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.supported,
+        reason: 'Teams are balanced and solo arrivals are spread.',
+      ),
+    EventSuccessAssignmentAlgorithm.tableSeating =>
+      const EventSuccessAssignmentResolution(
+        support: EventSuccessAssignmentSupport.supported,
+        reason: 'Tables are seated by the shared assignment engine.',
+      ),
     EventSuccessAssignmentAlgorithm.none =>
       const EventSuccessAssignmentResolution(
         support: EventSuccessAssignmentSupport.unsupported,
         reason: 'This format does not select an assignment algorithm.',
-      ),
-    EventSuccessAssignmentAlgorithm.teamBalancer =>
-      const EventSuccessAssignmentResolution(
-        support: EventSuccessAssignmentSupport.unsupported,
-        reason: 'Team balancing is not implemented yet.',
-      ),
-    EventSuccessAssignmentAlgorithm.tableSeating =>
-      const EventSuccessAssignmentResolution(
-        support: EventSuccessAssignmentSupport.unsupported,
-        reason: 'Table seating and seat adjacency are not implemented yet.',
       ),
   };
 }
@@ -468,6 +503,22 @@ Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
             'Tables already define the room structure; a separate pod toggle adds confusion.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Answers are useful for seating clues and soft table placement.',
+        EventSuccessModuleCatalog.socialMissions.id:
+            'Off by default so phones stay away at the table. Turn it on for optional conversation cards.',
+      };
+    case EventInteractionModel.routeStops:
+      return {
+        ...common,
+        EventSuccessModuleCatalog.firstHelloCheckIn.id:
+            'Guests meet one person and check each other in, so the first group mixes before the first stop.',
+        EventSuccessModuleCatalog.guidedRotations.id:
+            'Timed partner rotations fight a group that is moving between venues.',
+        EventSuccessModuleCatalog.liveReveal.id:
+            'A route has no pods or rotations to reveal, so the ceremony stays off by default.',
+        EventSuccessModuleCatalog.microPods.id:
+            'The group moves together; a pod layer adds logistics at every stop.',
+        EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
+            'Optional answers can add clues for follow-up without changing the route.',
       };
     case EventInteractionModel.freeFormMixer:
       return {
@@ -517,7 +568,9 @@ String _summaryFor(EventInteractionModel interactionModel) {
     EventInteractionModel.teamRotations =>
       'Plan around teams. Balance arrivals, reveal teams, and use prompts between rounds.',
     EventInteractionModel.seatedTable =>
-      'Plan around tables. Add rotations only when the host has a clear course or seat-change cadence.',
+      'Plan around tables and keep phones away: guests check in and see their seat once, then nothing needs a phone. Add rotations only when the host has a clear course or seat-change cadence.',
+    EventInteractionModel.routeStops =>
+      'Plan around the route. A first hello mixes the group, phones come out only between stops, and the host marks who returned or departed at each departure and in an end-of-night sweep.',
     EventInteractionModel.freeFormMixer =>
       'Create kinetic reveal moments with countdowns, clues, and structured rounds while keeping interest private.',
     EventInteractionModel.hostLedProgram =>

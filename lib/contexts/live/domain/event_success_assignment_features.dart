@@ -102,7 +102,9 @@ final class EventSuccessAssignmentFeatureRule {
           'preferSimilar',
           'preferDifferent',
           'balanceAcrossGroups',
+          'coverAcrossGroups',
         }.contains(mode) ||
+        (mode == 'coverAcrossGroups' && kind != 'category' && kind != 'set') ||
         !weight.isFinite ||
         weight < 0 ||
         weight > 100) {

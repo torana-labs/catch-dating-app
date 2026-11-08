@@ -23,6 +23,7 @@ import {
   eventRuntimeParticipantId,
   getEventRuntimeBootstrapHandler,
   optionalRuntimeFieldIds,
+  publicRuntimeInteractionModel,
   requiredRuntimeFieldIds,
   submitEventRuntimeProfileHandler,
 } from "./eventRuntime";
@@ -366,6 +367,12 @@ function code(error: unknown, expected: string): boolean {
   return error instanceof HttpsError && error.code === expected;
 }
 
+test("guest web runtime keeps the night-out presentation for crawls", () => {
+  assert.equal(publicRuntimeInteractionModel("routeStops"), "freeFormMixer");
+  assert.equal(publicRuntimeInteractionModel("seatedTable"), "seatedTable");
+  assert.equal(publicRuntimeInteractionModel("pacePods"), "pacePods");
+});
+
 test("runtime entry requires one variable-bound pre-event payload", () => {
   const formats = [
     ["pacePods", "paceBand"],
@@ -373,6 +380,7 @@ test("runtime entry requires one variable-bound pre-event payload", () => {
     ["seatedTable", "dietaryAndSeatingNotes"],
     ["freeFormMixer", "questionnaireAnswerIds"],
     ["teamRotations", "teamName"],
+    ["routeStops", null],
     ["openFormat", null],
   ] as const;
   for (const [interactionModel, expectedField] of formats) {

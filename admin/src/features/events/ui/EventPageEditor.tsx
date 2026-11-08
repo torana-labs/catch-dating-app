@@ -52,6 +52,7 @@ const interactionLabels: Record<AdminEventInteractionModel, string> = {
   teamRotations: "In teams",
   seatedTable: "Seated at a table",
   freeFormMixer: "Mixing with everyone",
+  routeStops: "Moving between stops",
   hostLedProgram: "Led by the host",
   openFormat: "However they like",
 };

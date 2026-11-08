@@ -7,6 +7,7 @@ enum EventInteractionModel implements Labelled {
   teamRotations('Team rotations'),
   seatedTable('Seated table'),
   freeFormMixer('Free-form mixer'),
+  routeStops('Route with stops'),
   hostLedProgram('Host-led program'),
   openFormat('Open format');
 
@@ -145,7 +146,8 @@ enum ActivityKind implements Labelled {
     badminton => EventInteractionModel.pairedRotations,
     pubQuiz => EventInteractionModel.teamRotations,
     dinner => EventInteractionModel.seatedTable,
-    barCrawl || singlesMixer => EventInteractionModel.freeFormMixer,
+    barCrawl => EventInteractionModel.routeStops,
+    singlesMixer => EventInteractionModel.freeFormMixer,
     openActivity => EventInteractionModel.openFormat,
   };
 
@@ -160,7 +162,7 @@ enum ActivityKind implements Labelled {
     pickleball || padel || tennis || badminton => 'pickleball_rotations',
     pubQuiz => 'pub_quiz_team_mixer',
     dinner => 'dinner_table_mixer',
-    barCrawl => 'host_led_social',
+    barCrawl => 'bar_crawl_route',
     singlesMixer => 'algorithmic_mixer_reveal',
     openActivity => 'host_led_social',
   };
