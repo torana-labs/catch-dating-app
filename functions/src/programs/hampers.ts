@@ -16,6 +16,7 @@ import {
   deleteProgramFiles,
   READ_URL_MILLIS,
   requireProgramAsset,
+  requireValid,
   signedReadUrl,
   type ProgramAssetDeps,
 } from "./programAssets";
@@ -35,6 +36,12 @@ import {validateUpsertProgramHamperCallablePayload} from
 import {validateGetProgramHamperWebViewCallablePayload} from
   "../shared/generated/validators/getProgramHamperWebViewInput";
 
+import {validateProgramHamperCallableResponse} from
+  "../shared/generated/validators/programHamperOutput";
+import {validateProgramHamperDocument} from
+  "../shared/generated/validators/programHamperDocument";
+import {validateProgramHamperWebViewCallableResponse} from
+  "../shared/generated/validators/programHamperWebViewOutput";
 // Welcome hampers (#1582 item 6): one per hotel room. Porters work
 // through a hamperPorter link (no sign-in); hotel desk staff through the
 // app. Rooms come from the programme's live stays at the hotel.
@@ -162,12 +169,13 @@ export async function upsertProgramHamperHandler(
     };
     replaced = current?.photoPath && current.photoPath !== next.photoPath ?
       current.photoPath : null;
-    tx.set(ref, next);
+    tx.set(ref, requireValid(validateProgramHamperDocument, next, "hamper"));
     return next;
   });
   await deleteProgramFiles(bucket, [replaced]);
-  return {programId, hotelId, roomKey: result.roomKey,
-    status: result.status, revision: result.revision};
+  return requireValid(validateProgramHamperCallableResponse,
+    {programId, hotelId, roomKey: result.roomKey, status: result.status,
+      revision: result.revision}, "hamper result");
 }
 
 /** The porters' hamper list for one hotel. */
@@ -246,7 +254,7 @@ export async function getProgramHamperWebViewHandler(
     }));
   list.sort((a, b) => (a.roomLabel ?? "~").localeCompare(b.roomLabel ?? "~",
     undefined, {numeric: true}));
-  return {
+  return requireValid(validateProgramHamperWebViewCallableResponse, {
     programId,
     hotelId,
     hotelName: String(hotel.name ?? ""),
@@ -256,7 +264,7 @@ export async function getProgramHamperWebViewHandler(
     rooms: list,
     urlsExpireAtMillis,
     expiresAtMillis: link.payload.expiresAtMillis,
-  };
+  }, "hamper list");
 }
 
 const hamperLimits = {timeoutSeconds: 60, maxInstances: 20};

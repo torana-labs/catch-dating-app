@@ -19,6 +19,8 @@ import type {ProgramAssetUploadCallableResponse} from
   "../shared/generated/programAssetUploadCallableResponse";
 import {validateCreateProgramAssetUploadCallablePayload} from
   "../shared/generated/validators/createProgramAssetUploadInput";
+import {validateProgramAssetUploadCallableResponse} from
+  "../shared/generated/validators/programAssetUploadOutput";
 
 // Programme files (guest IDs, hamper photos, function photos, the
 // branding cover) live at programs/{programId}/{folder}/{assetId}.
@@ -184,7 +186,7 @@ export async function createProgramAssetUploadHandler(
         ["eq", "$x-goog-meta-subject", authority.subject],
       ],
     });
-  return {
+  return requireValid(validateProgramAssetUploadCallableResponse, {
     programId: authority.programId,
     kind,
     assetId,
@@ -192,7 +194,7 @@ export async function createProgramAssetUploadHandler(
     uploadUrl: signed.url,
     uploadFields: signed.fields,
     expiresAtMillis,
-  };
+  }, "upload");
 }
 
 export interface VerifiedProgramAsset {
@@ -238,6 +240,15 @@ export async function requireProgramAsset(params: {
   }
   return {storagePath, contentType: metadata.contentType as string,
     sizeBytes};
+}
+
+/** Contract check on a response or document before it leaves or lands. */
+export function requireValid<T>(validate: (value: unknown) => boolean,
+  value: T, label: string): T {
+  if (!validate(value)) {
+    throw new HttpsError("internal", `Invalid ${label}.`);
+  }
+  return value;
 }
 
 /** A short-lived read URL, or null for an absent path. */

@@ -15,6 +15,7 @@ import {
   defaultProgramAssetDeps,
   READ_URL_MILLIS,
   requireProgramAsset,
+  requireValid,
   signedReadUrl,
   type ProgramAssetDeps,
 } from "./programAssets";
@@ -34,6 +35,12 @@ import {validateUpsertProgramPhotoCallablePayload} from
 import {validateListProgramPhotosCallablePayload} from
   "../shared/generated/validators/listProgramPhotosInput";
 
+import {validateProgramPhotoCallableResponse} from
+  "../shared/generated/validators/programPhotoOutput";
+import {validateProgramPhotoDocument} from
+  "../shared/generated/validators/programPhotoDocument";
+import {validateProgramPhotosCallableResponse} from
+  "../shared/generated/validators/programPhotosOutput";
 // Programme photos (#1582 item 8): function albums in private Storage,
 // shown to the planner's team through short-lived signed URLs.
 
@@ -125,12 +132,13 @@ export async function upsertProgramPhotoHandler(
       lastRequestId: data.requestId,
       lastRequestHash: requestHash,
     };
-    tx.set(ref, next);
+    tx.set(ref, requireValid(validateProgramPhotoDocument, next, "photo"));
     return next;
   });
-  return {programId: data.programId, photoId: stored.photoId,
-    functionId: stored.functionId, status: stored.status,
-    revision: stored.revision};
+  return requireValid(validateProgramPhotoCallableResponse,
+    {programId: data.programId, photoId: stored.photoId,
+      functionId: stored.functionId, status: stored.status,
+      revision: stored.revision}, "photo result");
 }
 
 /** Albums per function, one album's photos and the guest page cover. */
@@ -187,7 +195,7 @@ export async function listProgramPhotosHandler(
     photos.filter((photo) => photo.functionId === data.functionId) : photos)
     .slice(0, PHOTOS_SHOWN);
   const coverPath = access.program.branding?.coverImagePath ?? null;
-  return {
+  return requireValid(validateProgramPhotosCallableResponse, {
     programId: data.programId,
     functionId: data.functionId ?? null,
     coverUrl: await sign(coverPath),
@@ -202,7 +210,7 @@ export async function listProgramPhotosHandler(
       revision: photo.revision,
     }))),
     urlsExpireAtMillis,
-  };
+  }, "photos");
 }
 
 const photoLimits = {timeoutSeconds: 60, maxInstances: 20};

@@ -22,6 +22,11 @@ import type {ProgramVendorBillCallableResponse} from
   "../shared/generated/programVendorBillCallableResponse";
 import {validateReconcileProgramVendorBillCallablePayload} from
   "../shared/generated/validators/reconcileProgramVendorBillInput";
+import {validateProgramVendorBillCallableResponse} from
+  "../shared/generated/validators/programVendorBillOutput";
+import {validateProgramVendorBillDocument} from
+  "../shared/generated/validators/programVendorBillDocument";
+import {requireValid} from "./programAssets";
 
 /* firestore-index: transportTrips (
   programId:ASCENDING,
@@ -95,8 +100,10 @@ export function checkBillLines(
     else if (seen.has(trip.tripId)) check = "duplicate";
     else if (trip.voided) check = "voided";
     else if (trip.recordedMinor === null) check = "noRate";
-    else check = trip.recordedMinor === line.billedMinor ?
-      "matches" : "amountDiffers";
+    else {
+      check = trip.recordedMinor === line.billedMinor ?
+        "matches" : "amountDiffers";
+    }
     if (trip) seen.add(trip.tripId);
     return {
       lineId: `line-${index + 1}`,
@@ -162,7 +169,7 @@ function respond(params: {programId: string; vendorId: string;
   const live = [...trips.values()].filter((trip) => !trip.voided);
   const currency = bill?.currency ??
     live.find((trip) => trip.currency)?.currency ?? "INR";
-  return {
+  return requireValid(validateProgramVendorBillCallableResponse, {
     programId: params.programId,
     vendorId: params.vendorId,
     vendorName: params.vendorName,
@@ -189,7 +196,7 @@ function respond(params: {programId: string; vendorId: string;
         plateDisplay: trip.plateDisplay,
         destinationLabel: trip.destinationLabel,
         recordedMinor: trip.recordedMinor})),
-  };
+  }, "vendor bill");
 }
 
 /** Reviews, checks, questions or approves one vendor's bill. */
@@ -299,7 +306,8 @@ export async function reconcileProgramVendorBillHandler(
       lastRequestId: data.requestId!,
       lastRequestHash: requestHash,
     };
-    tx.set(ref, next);
+    tx.set(ref, requireValid(validateProgramVendorBillDocument, next,
+      "vendor bill"));
     return next;
   });
   return respond({programId: data.programId, vendorId: data.vendorId,

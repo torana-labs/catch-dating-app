@@ -21,6 +21,7 @@ import {
   deleteProgramFiles,
   READ_URL_MILLIS,
   requireProgramAsset,
+  requireValid,
   signedReadUrl,
   type ProgramAssetDeps,
 } from "./programAssets";
@@ -50,6 +51,14 @@ import {validateListProgramIdTrackerCallablePayload} from
 import {validateGetProgramHotelHandoverCallablePayload} from
   "../shared/generated/validators/getProgramHotelHandoverInput";
 
+import {validateProgramGuestIdCallableResponse} from
+  "../shared/generated/validators/programGuestIdOutput";
+import {validateProgramGuestIdDocument} from
+  "../shared/generated/validators/programGuestIdDocument";
+import {validateProgramIdTrackerCallableResponse} from
+  "../shared/generated/validators/programIdTrackerOutput";
+import {validateProgramHotelHandoverCallableResponse} from
+  "../shared/generated/validators/programHotelHandoverOutput";
 // Guest IDs for the hotels (#1582 item 3). The household submits through
 // its RSVP link; guest relations check each one; the hotel front desk
 // reads accepted IDs through a hotelHandover link. Only the last four
@@ -69,8 +78,9 @@ type GuestIdDeps = ProgramAssetDeps;
 
 function guestIdReply(doc: Pick<ProgramGuestIdDocument, "programId" |
   "guestId" | "status" | "revision">): ProgramGuestIdCallableResponse {
-  return {programId: doc.programId, guestId: doc.guestId,
-    status: doc.status, revision: doc.revision};
+  return requireValid(validateProgramGuestIdCallableResponse,
+    {programId: doc.programId, guestId: doc.guestId, status: doc.status,
+      revision: doc.revision}, "guest ID result");
 }
 
 /** A household saves one member's ID through its RSVP link. */
@@ -168,7 +178,8 @@ export async function submitProgramGuestIdHandler(
     const kept = new Set([next.frontPath, next.backPath, next.visaPath]);
     replaced = current ? [current.frontPath, current.backPath,
       current.visaPath].filter((path) => path && !kept.has(path)) : [];
-    tx.set(ref, next);
+    tx.set(ref, requireValid(validateProgramGuestIdDocument, next,
+      "guest ID"));
     return guestIdReply(next);
   });
   await deleteProgramFiles(bucket, replaced);
@@ -223,7 +234,8 @@ export async function decideProgramGuestIdHandler(
       lastRequestId: data.requestId,
       lastRequestHash: requestHash,
     };
-    tx.set(ref, next);
+    tx.set(ref, requireValid(validateProgramGuestIdDocument, next,
+      "guest ID"));
     return guestIdReply(next);
   });
 }
@@ -346,7 +358,7 @@ export async function listProgramIdTrackerHandler(
       revision: id?.revision ?? 0,
     };
   }));
-  return {
+  return requireValid(validateProgramIdTrackerCallableResponse, {
     programId: data.programId,
     hotelId: data.hotelId ?? null,
     counts,
@@ -355,7 +367,7 @@ export async function listProgramIdTrackerHandler(
     rows,
     urlsExpireAtMillis: rows.some((row) => row.frontUrl) ?
       urlsExpireAtMillis : null,
-  };
+  }, "ID tracker");
 }
 
 /** The hotel front desk's rooming list with guest IDs. */
@@ -447,7 +459,7 @@ export async function getProgramHotelHandoverHandler(
   }
   const organizer = organizerSnap.data() as Record<string, unknown> |
     undefined;
-  return {
+  return requireValid(validateProgramHotelHandoverCallableResponse, {
     programId,
     hotelId,
     hotelName: String(hotel.name ?? ""),
@@ -461,7 +473,7 @@ export async function getProgramHotelHandoverHandler(
         undefined, {numeric: true})),
     urlsExpireAtMillis,
     expiresAtMillis: link.payload.expiresAtMillis,
-  };
+  }, "hotel handover");
 }
 
 const guestIdLimits = {timeoutSeconds: 60, maxInstances: 20};
