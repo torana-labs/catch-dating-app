@@ -244,6 +244,7 @@ const retentionCollections = [
   "programGuestIds",
   "programAlerts",
   "programVendorBills",
+  "programHampers",
 ] as const;
 
 function shortId(docId: string): string {
@@ -277,6 +278,8 @@ function retentionScrub(
     return null; // ID records exist only for the stay; files go below.
   case "programAlerts":
     return null; // Resolutions name staff and have no use after the event.
+  case "programHampers":
+    return null; // Room-level records with photos; files go below.
   case "programVendorBills":
     // Keep the commercial totals; the free text may name guests.
     return {

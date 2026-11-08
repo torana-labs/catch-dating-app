@@ -18,6 +18,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_work_repository.g.dart';
 part 'program_bills_repository.dart';
+part 'program_hampers_repository.dart';
 part 'program_ids_repository.dart';
 part 'program_work_repository_door.dart';
 part 'program_work_repository_live.dart';

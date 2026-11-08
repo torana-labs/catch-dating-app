@@ -898,7 +898,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 26);
+      Array<{collection: string}>).length, 27);
   });
 
 test("mismatched evidence scope blocks retention completion",
