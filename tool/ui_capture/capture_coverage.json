@@ -712,13 +712,9 @@
     },
     {
       "routeId": "hostEventsScreen",
-      "status": "captured",
+      "status": "planned",
       "priority": "P1",
-      "captureIds": [
-        "host_home_events_list",
-        "host_home_events_past"
-      ],
-      "reason": "The first-class Host Events branch is captured through the real five-destination Host shell and compared against the pinned full-shell Events source reference."
+      "reason": "The Host Events branch's full-shell list and past captures retired with the legacy events root (#1599); the system Events destination needs its own captures."
     },
     {
       "routeId": "hostAudienceScreen",
@@ -1304,10 +1300,9 @@
         "host_create_not_found",
         "host_create_unauthorized",
         "host_create_map_picker_offline",
-        "host_media_gallery_manager",
-        "host_create_draft_delete_confirmation"
+        "host_media_gallery_manager"
       ],
-      "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, inherited organizer identity, picked event photos, the shared 24-photo scalable gallery manager, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+      "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, inherited organizer identity, picked event photos, the shared 24-photo scalable gallery manager, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
       "routeId": "hostEventRehearsalStartScreen",
