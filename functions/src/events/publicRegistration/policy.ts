@@ -65,6 +65,10 @@ export function assertPublicRegistrationAvailability(
   mode: Exclude<RegistrationMode, "closed">, nowMillis: number,
 ): void {
   requirePublicConfiguredEvent(event);
+  // Tickets sold elsewhere keep Catch registration closed.
+  if (event.externalBooking !== undefined) {
+    registrationUnavailable("Guests book this event on its own page.");
+  }
   if (
     !Number.isSafeInteger(nowMillis) ||
     nowMillis <= 0 ||

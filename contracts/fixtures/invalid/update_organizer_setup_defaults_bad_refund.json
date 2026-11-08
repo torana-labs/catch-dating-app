@@ -1,0 +1,12 @@
+{
+  "organizerId": "org1",
+  "requestId": "defaults-board-1",
+  "expectedRevision": 0,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "changes": {
+    "refundPolicy": {
+      "mode": "set",
+      "value": "askEachTime"
+    }
+  }
+}

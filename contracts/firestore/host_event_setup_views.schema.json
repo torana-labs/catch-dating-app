@@ -36,6 +36,23 @@
       ],
       "description": "The manager projection; null only when the first evaluation was already invalid.",
       "x-catch-ownership": "server-only"
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ticketsSold", "grossMinor", "arrivalMessage"],
+      "description": "Trigger-owned facts the workspace shows. ticketsSold is the event's bookedCount. grossMinor is completed app payments plus captured or admitted checkout and offer payments, less their refunds, in minor units. arrivalMessage.ready is whether the event-start reminder moment is armed. Optional: views written before it existed leave it out.",
+      "x-catch-ownership": "trigger-owned",
+      "properties": {
+        "ticketsSold": {"type": "integer", "minimum": 0},
+        "grossMinor": {"type": "integer", "minimum": 0},
+        "arrivalMessage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ready"],
+          "properties": {"ready": {"type": "boolean"}}
+        }
+      }
     }
   }
 }

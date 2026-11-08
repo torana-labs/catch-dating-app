@@ -11,6 +11,13 @@ export type AdmissionPreset =
   "openCapacity" | "inviteOnly" | "balancedSingles" |
   "fixedCohortCaps";
 
+/** The cancellation policy paid events start with: flexible refunds up to
+ * 24 hours before, standard up to 3 days before, strict never. */
+export type RefundPolicy = "flexible" | "standard" | "strict";
+
+/** Who can book. askFirst sends sign-ups to the host for approval. */
+export type BookingMode = "anyone" | "followersFirst" | "askFirst";
+
 /**
  * Manager-authorized resolution projection, not an organizer document schema.
  * Public hostDefaults may supply safe fields. Payment instructions, reusable
@@ -34,6 +41,13 @@ export interface OrganizerEventDefaults {
       url: string;
       reusableForEvents: true;
     };
+    bookingMode?: BookingMode;
+    startingPriceMinor?: number;
+    places?: number;
+    waitlistEnabled?: boolean;
+    refundPolicy?: RefundPolicy;
+    askedAtBooking?: string[];
+    autoMessages?: {thankYou: boolean; arrival: boolean};
   };
 }
 
@@ -54,6 +68,10 @@ export interface EventPreferenceIntents {
   reusablePaymentPage: PreferenceIntent<ReusablePaymentPage>;
   /** Event amount never inherits from organizer defaults. */
   expectedAmountMinor: Exclude<PreferenceIntent<number>, {mode: "inherit"}>;
+  /** Optional: commands from older clients omit it, and it reads inherit. */
+  bookingMode?: PreferenceIntent<BookingMode>;
+  /** Optional, like bookingMode. */
+  waitlistEnabled?: PreferenceIntent<boolean>;
 }
 
 export interface ResolvedPreference<T> {
@@ -74,6 +92,9 @@ export interface ResolvedEventPreferences {
   paymentInstructions: ResolvedPreference<string>;
   reusablePaymentPage: ResolvedPreference<ReusablePaymentPage>;
   expectedAmountMinor: ResolvedPreference<number>;
+  /** Present only when the saving command carried the intent. */
+  bookingMode?: ResolvedPreference<BookingMode>;
+  waitlistEnabled?: ResolvedPreference<boolean>;
 }
 
 export interface EventPaymentTerms {

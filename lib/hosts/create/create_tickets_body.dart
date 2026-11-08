@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -19,6 +20,9 @@ class CreateTicketsBody extends StatelessWidget {
     required this.onPrice,
     required this.onPlaces,
     required this.onAdmission,
+    this.onWaitlist,
+    this.onApproveEach,
+    this.onBookingLink,
     this.showTitle = false,
   });
 
@@ -27,6 +31,11 @@ class CreateTicketsBody extends StatelessWidget {
   final ValueChanged<String> onPrice;
   final ValueChanged<int> onPlaces;
   final ValueChanged<CreateAdmission> onAdmission;
+  final ValueChanged<bool>? onWaitlist;
+  final ValueChanged<bool>? onApproveEach;
+
+  /// The page where guests buy tickets when they are sold elsewhere.
+  final ValueChanged<String>? onBookingLink;
   final bool showTitle;
 
   @override
@@ -59,6 +68,18 @@ class CreateTicketsBody extends StatelessWidget {
           selected: elsewhere,
           onChanged: onSellElsewhere,
         ),
+        if (elsewhere && onBookingLink != null)
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('create-booking-link'),
+              copy: copy,
+              title: CreateSettingsCopy.bookingLink,
+              initialValue: draft.externalEventUrl ?? '',
+              placeholder: CreateSettingsCopy.bookingLinkHint,
+              keyboardType: TextInputType.url,
+              onChanged: onBookingLink!,
+            ),
+          ),
         if (!elsewhere)
           CatchStack(
             direction: CatchStackDirection.row,
@@ -123,6 +144,38 @@ class CreateTicketsBody extends StatelessWidget {
               ),
           ],
         ),
+        if (!elsewhere)
+          CatchStack(
+            gap: CatchStackGap.none,
+            children: [
+              CatchIndexRow(
+                title: CreateSettingsCopy.waitlist,
+                subtitle: CreateSettingsCopy.waitlistBody,
+                onTap: null,
+                trailing: CatchToggleInput(
+                  key: const ValueKey<String>('create-waitlist'),
+                  value: state.waitlist,
+                  semanticLabel: CreateSettingsCopy.waitlist,
+                  contractExemption:
+                      'An event preference saved with the tickets step.',
+                  onChanged: onWaitlist,
+                ),
+              ),
+              CatchIndexRow(
+                title: CreateSettingsCopy.approveEach,
+                subtitle: CreateSettingsCopy.approveEachBody,
+                onTap: null,
+                trailing: CatchToggleInput(
+                  key: const ValueKey<String>('create-approve-each'),
+                  value: state.approveEach,
+                  semanticLabel: CreateSettingsCopy.approveEach,
+                  contractExemption:
+                      'An event preference saved with the tickets step.',
+                  onChanged: onApproveEach,
+                ),
+              ),
+            ],
+          ),
         if (!elsewhere)
           CatchNotice.inline(body: context.l10n.hostCreatePayoutNotice),
       ],

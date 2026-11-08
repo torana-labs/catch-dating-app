@@ -1,0 +1,10 @@
+{
+  "organizerId": "org1",
+  "eventId": "event1",
+  "requestId": "details-plan-1",
+  "expectedSetupRevision": 2,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "details": {
+    "planVisibleToGuests": false
+  }
+}

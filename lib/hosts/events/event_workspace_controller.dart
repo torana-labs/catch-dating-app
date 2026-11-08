@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
@@ -42,7 +43,8 @@ Future<HostEventStaffList> hostEventWorkspaceStaff(Ref ref, String eventId) =>
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff
-/// read; ticket sales from the cached host report.
+/// read; ticket sales and the arrival message from the setup view's facts,
+/// with the cached host report standing in for sales before they exist.
 @riverpod
 HostEventWorkspaceState hostEventWorkspaceController(
   Ref ref,
@@ -70,6 +72,15 @@ HostEventWorkspaceState hostEventWorkspaceController(
   final roster = ref.watch(hostEventRosterInsightsProvider(event.id)).value;
   final attendees = ref.watch(watchEventAttendeesProvider(event.id)).value;
   final plan = ref.watch(watchEventSuccessPlanProvider(event.id)).value;
+  final facts = ref
+      .watch(
+        privateEventSetupViewProvider(
+          organizerId: request.organizerId,
+          eventId: request.eventId,
+        ),
+      )
+      .value
+      ?.facts;
   final staff = catchAsyncStateFromAsyncValue(
     ref.watch(hostEventWorkspaceStaffProvider(event.id)),
   );
@@ -103,7 +114,9 @@ HostEventWorkspaceState hostEventWorkspaceController(
         if (member.status == HostEventStaffStatus.active) member.displayName,
     ],
     doorChecked: staff.value != null || staff.hasError,
-    ticketSalesMinor: _ticketSales(ref, event),
+    ticketSalesMinor: facts?.grossMinor ?? _ticketSales(ref, event),
+    ticketsSold: facts?.ticketsSold,
+    arrivalReady: facts?.arrivalReady,
   );
 }
 

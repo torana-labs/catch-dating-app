@@ -236,3 +236,24 @@ test("stale rejection identifies only the exact uncommitted settings request",
     });
     assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
   });
+
+test("a command without the booking intent keeps the saved choice",
+  async () => {
+    const h = await setup();
+    await h.save({intents: {...h.command.intents,
+      bookingMode: {mode: "set", value: "askFirst"}}});
+    const first = h.rows.get("eventSetupPreferences/event1")
+      ?.preferences as Row;
+    assert.deepEqual(first.bookingMode, {value: "askFirst", source: "event"});
+    await h.save({requestId: "preferences-2", expectedSetupRevision: 2,
+      expectedPreferencesRevision: 1});
+    const second = h.rows.get("eventSetupPreferences/event1")
+      ?.preferences as Row;
+    assert.deepEqual(second.bookingMode, {value: "askFirst", source: "event"});
+    await h.save({requestId: "preferences-3", expectedSetupRevision: 3,
+      expectedPreferencesRevision: 2, intents: {...h.command.intents,
+        bookingMode: {mode: "clear"}}});
+    const third = h.rows.get("eventSetupPreferences/event1")
+      ?.preferences as Row;
+    assert.deepEqual(third.bookingMode, {value: null, source: "cleared"});
+  });

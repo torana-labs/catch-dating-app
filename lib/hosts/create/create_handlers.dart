@@ -36,6 +36,11 @@ class CreateHandlers {
     required this.onShareStory,
     required this.onShareWhatsApp,
     required this.onDone,
+    this.onWaitlist,
+    this.onApproveEach,
+    this.onPlanVisible,
+    this.onRepeat,
+    this.onBookingLink,
   });
 
   /// Back a step, or close on the first.
@@ -72,4 +77,9 @@ class CreateHandlers {
 
   /// Share is done: back to Today.
   final VoidCallback onDone;
+  final ValueChanged<bool>? onWaitlist;
+  final ValueChanged<bool>? onApproveEach;
+  final ValueChanged<bool>? onPlanVisible;
+  final ValueChanged<bool>? onRepeat;
+  final ValueChanged<String>? onBookingLink;
 }

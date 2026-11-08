@@ -1,0 +1,42 @@
+{
+  "organizerId": "org1",
+  "requestId": "defaults-board-1",
+  "expectedRevision": 0,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "changes": {
+    "startingPriceMinor": {
+      "mode": "set",
+      "value": 49900
+    },
+    "places": {
+      "mode": "set",
+      "value": 32
+    },
+    "waitlistEnabled": {
+      "mode": "set",
+      "value": true
+    },
+    "bookingMode": {
+      "mode": "set",
+      "value": "askFirst"
+    },
+    "refundPolicy": {
+      "mode": "set",
+      "value": "flexible"
+    },
+    "askedAtBooking": {
+      "mode": "set",
+      "value": [
+        "food",
+        "heard"
+      ]
+    },
+    "autoMessages": {
+      "mode": "set",
+      "value": {
+        "thankYou": true,
+        "arrival": true
+      }
+    }
+  }
+}
