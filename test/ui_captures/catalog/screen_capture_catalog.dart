@@ -323,6 +323,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
 import '../../hosts/forms/forms_captures.dart';
+import '../../hosts/live/formats/formats_captures.dart';
 import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../hosts/organizer/organizer_captures.dart';
@@ -11449,6 +11450,98 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) =>
         _AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_courts_setup_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) => _AppRoleCapture(
+      role: AppRole.host,
+      child: hostFormatsCourtsSetupCapture(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_courts_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsCourtsCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_courts_tablet',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLiveTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsCourtsCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_mix_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsMixCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_crawl_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsCrawlCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_crawl_move_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) => _AppRoleCapture(
+      role: AppRole.host,
+      child: hostFormatsCrawlCapture(moving: true),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_pods_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsPodsCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_formats_rules_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: _hostLivePhone,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostFormatsCaptureOverrides(),
+    ],
+    builder: (context) =>
+        _AppRoleCapture(role: AppRole.host, child: hostFormatsRulesCapture()),
   ),
   ScreenCaptureEntry(
     id: 'host_insights_phone',

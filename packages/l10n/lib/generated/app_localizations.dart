@@ -51536,6 +51536,1095 @@ abstract class AppLocalizations {
     required int created,
     required int updated,
   });
+
+  /// Formats live top bar back label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the event'**
+  String get hostFormatsBackToEvent;
+
+  /// Formats setup top bar back label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostFormatsBack;
+
+  /// Formats setup top bar kicker: the event and its day.
+  ///
+  /// In en, this message translates to:
+  /// **'{event} · {day}'**
+  String hostFormatsSetupKicker({required String event, required String day});
+
+  /// Formats screen read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load this'**
+  String get hostFormatsErrorTitle;
+
+  /// Formats screen read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostFormatsErrorBody;
+
+  /// Formats screen retry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostFormatsRetry;
+
+  /// Formats screen with no saved plan: title.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan for this event yet'**
+  String get hostFormatsNoPlanTitle;
+
+  /// Formats screen with no saved plan: body.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the plan for the night first, then set this up.'**
+  String get hostFormatsNoPlanBody;
+
+  /// Live console view: the court board.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts'**
+  String get hostFormatsViewCourts;
+
+  /// Live console view: mixing the teams.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams'**
+  String get hostFormatsViewTeams;
+
+  /// One court on the court board.
+  ///
+  /// In en, this message translates to:
+  /// **'Court {number}'**
+  String hostFormatsCourt({required int number});
+
+  /// Avatar row overflow count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more'**
+  String hostFormatsMore({required int count});
+
+  /// Two first names joined.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String hostFormatsTwoNames({required String first, required String second});
+
+  /// Several first names joined.
+  ///
+  /// In en, this message translates to:
+  /// **'{first}, {second} and {count} more'**
+  String hostFormatsManyNames({
+    required String first,
+    required String second,
+    required int count,
+  });
+
+  /// How many sit at a new table.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostFormatsPeopleCount({required int count});
+
+  /// Court board top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'{players} players · {courts, plural, =1{1 court} other{{courts} courts}}'**
+  String hostFormatsCourtsKicker({required int players, required int courts});
+
+  /// Court board action: open the court setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up'**
+  String get hostFormatsCourtsSetUp;
+
+  /// Court board before rotations are made: title.
+  ///
+  /// In en, this message translates to:
+  /// **'No rotations yet'**
+  String get hostFormatsCourtsEmptyTitle;
+
+  /// Court board before rotations are made: body.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the courts and make the rotations, then run them here.'**
+  String get hostFormatsCourtsEmptyBody;
+
+  /// Time left in the game.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String hostFormatsLeft({required String time});
+
+  /// Time past the end of the game.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} over'**
+  String hostFormatsOver({required String time});
+
+  /// Court board kicker: the round on court.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {number} of {total}'**
+  String hostFormatsRound({required int number, required int total});
+
+  /// Court board kicker before the first round.
+  ///
+  /// In en, this message translates to:
+  /// **'Round 1 of {total} · up first'**
+  String hostFormatsRoundFirst({required int total});
+
+  /// Court board tablet headline.
+  ///
+  /// In en, this message translates to:
+  /// **'{round} · rotate in {time}'**
+  String hostFormatsRoundRotateIn({
+    required String round,
+    required String time,
+  });
+
+  /// Court board headline: time to the next rotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate in {time}'**
+  String hostFormatsRotateIn({required String time});
+
+  /// Court board headline before the first round.
+  ///
+  /// In en, this message translates to:
+  /// **'Round 1 is ready'**
+  String get hostFormatsFirstRoundReady;
+
+  /// Court board headline on the last round.
+  ///
+  /// In en, this message translates to:
+  /// **'Last round'**
+  String get hostFormatsLastRound;
+
+  /// Court board meter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Time in this game'**
+  String get hostFormatsTimeInGame;
+
+  /// Court board action: send the next round to phones.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate now'**
+  String get hostFormatsRotateNow;
+
+  /// Court board action: send the first round to phones.
+  ///
+  /// In en, this message translates to:
+  /// **'Start round 1'**
+  String get hostFormatsStartFirstRound;
+
+  /// Rotate confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Send round {number}?'**
+  String hostFormatsRotateConfirmTitle({required int number});
+
+  /// Rotate confirmation body.
+  ///
+  /// In en, this message translates to:
+  /// **'Every player’s phone shows their next court. This can’t be taken back.'**
+  String get hostFormatsRotateConfirmBody;
+
+  /// Rotate confirmation action.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the round'**
+  String get hostFormatsRotateConfirm;
+
+  /// Court board section: who plays this round.
+  ///
+  /// In en, this message translates to:
+  /// **'On court'**
+  String get hostFormatsOnCourt;
+
+  /// Court board section: who sits out this round.
+  ///
+  /// In en, this message translates to:
+  /// **'Sitting out'**
+  String get hostFormatsSittingOut;
+
+  /// Sitting out section note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} this round'**
+  String hostFormatsSittingOutNote({required int count});
+
+  /// Sitting out section empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone plays this round.'**
+  String get hostFormatsSittingOutNone;
+
+  /// Someone sitting out: their morning so far.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat out {out} · played {played}'**
+  String hostFormatsSatOut({required int out, required int played});
+
+  /// Someone sitting out plays the next round.
+  ///
+  /// In en, this message translates to:
+  /// **'Plays next'**
+  String get hostFormatsPlaysNext;
+
+  /// Someone sitting out sits out the next round too.
+  ///
+  /// In en, this message translates to:
+  /// **'Out again next round'**
+  String get hostFormatsOutAgain;
+
+  /// Court board section: fairness stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair so far'**
+  String get hostFormatsFairSoFar;
+
+  /// Fairness stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'new partners each, so far'**
+  String get hostFormatsStatNewPartners;
+
+  /// Fairness stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'repeat partners'**
+  String get hostFormatsStatRepeats;
+
+  /// Fairness stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'sat out at most'**
+  String get hostFormatsStatMostSatOut;
+
+  /// Court board tablet section: the next round.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get hostFormatsComingUp;
+
+  /// Coming up row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Next round'**
+  String get hostFormatsNextRound;
+
+  /// Coming up row on the last round.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the last round.'**
+  String get hostFormatsNextRoundNone;
+
+  /// Coming up row when nobody changes.
+  ///
+  /// In en, this message translates to:
+  /// **'The same players stay on.'**
+  String get hostFormatsNextRoundSame;
+
+  /// Coming up row: who comes on.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} come on'**
+  String hostFormatsNextRoundOn({required String names});
+
+  /// Coming up row: who goes off.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} sit out'**
+  String hostFormatsNextRoundOff({required String names});
+
+  /// Coming up row: who comes on and who goes off.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} come on; {off} sit out'**
+  String hostFormatsNextRoundSwap({required String on, required String off});
+
+  /// Court setup title.
+  ///
+  /// In en, this message translates to:
+  /// **'Court rotations'**
+  String get hostFormatsCourtsSetupTitle;
+
+  /// Court setup row: how many courts.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts'**
+  String get hostFormatsCourtsCourts;
+
+  /// Court setup row note.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts booked for the event'**
+  String get hostFormatsCourtsCourtsNote;
+
+  /// Court setup row: minutes a game.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes a game'**
+  String get hostFormatsCourtsMinutes;
+
+  /// Court setup row note.
+  ///
+  /// In en, this message translates to:
+  /// **'Then everyone rotates'**
+  String get hostFormatsCourtsMinutesNote;
+
+  /// Court setup row: rounds that fit.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounds'**
+  String get hostFormatsCourtsRounds;
+
+  /// Court setup row note.
+  ///
+  /// In en, this message translates to:
+  /// **'What fits the event at this length'**
+  String get hostFormatsCourtsRoundsNote;
+
+  /// Stepper decrease label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer courts'**
+  String get hostFormatsFewerCourts;
+
+  /// Stepper increase label.
+  ///
+  /// In en, this message translates to:
+  /// **'More courts'**
+  String get hostFormatsMoreCourts;
+
+  /// Stepper decrease label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shorter games'**
+  String get hostFormatsShorterGames;
+
+  /// Stepper increase label.
+  ///
+  /// In en, this message translates to:
+  /// **'Longer games'**
+  String get hostFormatsLongerGames;
+
+  /// Court setup notice: who plays and who sits out.
+  ///
+  /// In en, this message translates to:
+  /// **'{players} players on {courts, plural, =1{1 court} other{{courts} courts}}: {playing} play, {out} sit out each round. Sitting out is shared evenly, so nobody sits out twice before everyone has once.'**
+  String hostFormatsCourtsSplit({
+    required int players,
+    required int courts,
+    required int playing,
+    required int out,
+  });
+
+  /// Court setup notice when nobody sits out.
+  ///
+  /// In en, this message translates to:
+  /// **'{players} players on {courts, plural, =1{1 court} other{{courts} courts}}: everyone plays every round.'**
+  String hostFormatsCourtsEveryonePlays({
+    required int players,
+    required int courts,
+  });
+
+  /// Court setup section: the aim.
+  ///
+  /// In en, this message translates to:
+  /// **'What matters most'**
+  String get hostFormatsAimTitle;
+
+  /// Aim choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet as many people as possible'**
+  String get hostFormatsAimMeetMany;
+
+  /// Aim choice note.
+  ///
+  /// In en, this message translates to:
+  /// **'New partners every round'**
+  String get hostFormatsAimMeetManyNote;
+
+  /// Aim choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Close games'**
+  String get hostFormatsAimCloseGames;
+
+  /// Aim choice note.
+  ///
+  /// In en, this message translates to:
+  /// **'Mix people of a similar level'**
+  String get hostFormatsAimCloseGamesNote;
+
+  /// Setup section: grouping by answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Use form answers'**
+  String get hostFormatsUseAnswers;
+
+  /// Section action: open grouping.
+  ///
+  /// In en, this message translates to:
+  /// **'All rules'**
+  String get hostFormatsAllRules;
+
+  /// Setup row: open grouping.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers that shape the groups'**
+  String get hostFormatsUseAnswersRow;
+
+  /// Setup row note.
+  ///
+  /// In en, this message translates to:
+  /// **'Only from guests who agreed'**
+  String get hostFormatsUseAnswersNote;
+
+  /// Court setup preview kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get hostFormatsPreview;
+
+  /// Preview stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'new partners each'**
+  String get hostFormatsPreviewPartners;
+
+  /// Preview stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'rounds played each'**
+  String get hostFormatsPreviewRounds;
+
+  /// Preview before rotations are made.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview round 1 to see how fair the rotations are.'**
+  String get hostFormatsPreviewNone;
+
+  /// Court setup dock primary action.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rotations'**
+  String get hostFormatsSaveRotations;
+
+  /// Court setup dock secondary action: make the rotations.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview round 1'**
+  String get hostFormatsPreviewFirstRound;
+
+  /// Notice after saving the court setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Court setup saved'**
+  String get hostFormatsRotationsSaved;
+
+  /// Notice after making the rotations.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotations made'**
+  String get hostFormatsRotationsMade;
+
+  /// Team mixing kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of {total} · {time}'**
+  String hostFormatsMixKicker({
+    required int index,
+    required int total,
+    required String time,
+  });
+
+  /// Team mixing kicker with no plan step.
+  ///
+  /// In en, this message translates to:
+  /// **'Half-time'**
+  String get hostFormatsMixKickerPlain;
+
+  /// Team mixing headline.
+  ///
+  /// In en, this message translates to:
+  /// **'Mix the teams'**
+  String get hostFormatsMixTitle;
+
+  /// Team mixing note.
+  ///
+  /// In en, this message translates to:
+  /// **'People move to new tables so everyone meets someone new, and friends who booked together stay apart.'**
+  String get hostFormatsMixBody;
+
+  /// Team mixing stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'people seated'**
+  String get hostFormatsStatSeated;
+
+  /// Team mixing stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'tables'**
+  String get hostFormatsStatTables;
+
+  /// Team mixing stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'at each table'**
+  String get hostFormatsStatPerTable;
+
+  /// Team mixing section.
+  ///
+  /// In en, this message translates to:
+  /// **'New tables'**
+  String get hostFormatsNewTables;
+
+  /// New tables empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No tables yet. Shuffle to make them.'**
+  String get hostFormatsNewTablesNone;
+
+  /// Team mixing action: make the tables again.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle again'**
+  String get hostFormatsShuffleAgain;
+
+  /// Team mixing switch.
+  ///
+  /// In en, this message translates to:
+  /// **'A first hello on every phone'**
+  String get hostFormatsOpeners;
+
+  /// Team mixing switch note.
+  ///
+  /// In en, this message translates to:
+  /// **'One question to ask someone new'**
+  String get hostFormatsOpenersNote;
+
+  /// Team mixing reveal action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal new tables · {seconds} s countdown'**
+  String hostFormatsReveal({required int seconds});
+
+  /// Team mixing reveal action with no countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal new tables'**
+  String get hostFormatsRevealNow;
+
+  /// Team mixing after the reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'New tables are on every phone'**
+  String get hostFormatsRevealDone;
+
+  /// Countdown label during the reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Phones are counting down'**
+  String get hostFormatsRevealCounting;
+
+  /// Team mixing dock secondary action.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get hostFormatsNotYet;
+
+  /// Crawl top bar kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'{host} · {count, plural, =1{1 person} other{{count} people}}'**
+  String hostFormatsCrawlTopKicker({required String host, required int count});
+
+  /// Crawl board with no stops: title.
+  ///
+  /// In en, this message translates to:
+  /// **'No stops on the route'**
+  String get hostFormatsCrawlNoRouteTitle;
+
+  /// Crawl board with no stops: body.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the stops to the event plan to run the crawl here.'**
+  String get hostFormatsCrawlNoRouteBody;
+
+  /// Crawl kicker before the first stop.
+  ///
+  /// In en, this message translates to:
+  /// **'{total, plural, =1{1 stop} other{{total} stops}} · first up'**
+  String hostFormatsCrawlBefore({required int total});
+
+  /// Crawl kicker: the stop the group is at.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop {number} of {total} · here since {time}'**
+  String hostFormatsCrawlKicker({
+    required int number,
+    required int total,
+    required String time,
+  });
+
+  /// Crawl kicker: when the group leaves.
+  ///
+  /// In en, this message translates to:
+  /// **'leave {time}'**
+  String hostFormatsCrawlLeave({required String time});
+
+  /// Crawl meter label: checked in of booked.
+  ///
+  /// In en, this message translates to:
+  /// **'With the crawl: {here} of {total}'**
+  String hostFormatsCrawlWithUs({required int here, required int total});
+
+  /// Crawl action: open the move sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Move everyone to {stop}'**
+  String hostFormatsCrawlMove({required String stop});
+
+  /// Crawl section: the stops.
+  ///
+  /// In en, this message translates to:
+  /// **'The route'**
+  String get hostFormatsCrawlRoute;
+
+  /// Crawl section: arrival groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get hostFormatsCrawlGroups;
+
+  /// Crawl group status.
+  ///
+  /// In en, this message translates to:
+  /// **'{here} of {total} here'**
+  String hostFormatsCrawlGroupHere({required int here, required int total});
+
+  /// Crawl section: booked guests not checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Not here yet'**
+  String get hostFormatsCrawlNotHere;
+
+  /// Not here yet note: people not shown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more'**
+  String hostFormatsCrawlNotHereMore({required int count});
+
+  /// Not here yet empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone booked is with the crawl.'**
+  String get hostFormatsCrawlEveryoneHere;
+
+  /// Row action: open the compose screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostFormatsMessage;
+
+  /// Move sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to the next stop'**
+  String get hostFormatsMoveTitle;
+
+  /// Move sheet row: when to leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get hostFormatsMoveLeave;
+
+  /// Leave choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostFormatsLeaveNow;
+
+  /// Leave choice.
+  ///
+  /// In en, this message translates to:
+  /// **'In 10 min'**
+  String get hostFormatsLeaveInTen;
+
+  /// Move sheet map label.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking route from {from} to {to}'**
+  String hostFormatsMoveMap({required String from, required String to});
+
+  /// Move sheet action: send the message.
+  ///
+  /// In en, this message translates to:
+  /// **'Send and move everyone'**
+  String get hostFormatsMoveSend;
+
+  /// Notice after the move message is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone has the next stop'**
+  String get hostFormatsMoveSent;
+
+  /// Move message: the stop and its address.
+  ///
+  /// In en, this message translates to:
+  /// **'{stop}, {address}'**
+  String hostFormatsMovePlace({required String stop, required String address});
+
+  /// Move message: leaving now.
+  ///
+  /// In en, this message translates to:
+  /// **'We leave now.'**
+  String get hostFormatsMoveWhenNow;
+
+  /// Move message: leaving in ten minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'We leave in 10 minutes.'**
+  String get hostFormatsMoveWhenTen;
+
+  /// Move message: leaving at a time.
+  ///
+  /// In en, this message translates to:
+  /// **'We leave at {time}.'**
+  String hostFormatsMoveWhenAt({required String time});
+
+  /// Move message sent to everyone booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Next stop: {place}. {when}'**
+  String hostFormatsMoveMessage({required String place, required String when});
+
+  /// Pace pods title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace pods'**
+  String get hostFormatsPodsTitle;
+
+  /// Pace pods with no pace groups: title.
+  ///
+  /// In en, this message translates to:
+  /// **'No pods on this run'**
+  String get hostFormatsPodsNoneTitle;
+
+  /// Pace pods with no pace groups: body.
+  ///
+  /// In en, this message translates to:
+  /// **'Add pace groups to the route to put runners in pods.'**
+  String get hostFormatsPodsNoneBody;
+
+  /// Pace pods intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods follow the pace groups on the route. Move anyone; the pod leader sees the change.'**
+  String get hostFormatsPodsIntro;
+
+  /// Pace pods stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'runners'**
+  String get hostFormatsStatRunners;
+
+  /// Pace pods stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'pods'**
+  String get hostFormatsStatPods;
+
+  /// Pace pods stat label.
+  ///
+  /// In en, this message translates to:
+  /// **'no pod yet'**
+  String get hostFormatsStatNoPod;
+
+  /// A pod target pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Around {pace} a km'**
+  String hostFormatsPodPace({required String pace});
+
+  /// Runners in a pod.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 runner} other{{count} runners}}'**
+  String hostFormatsRunnersCount({required int count});
+
+  /// A pod with no runners.
+  ///
+  /// In en, this message translates to:
+  /// **'No runners yet'**
+  String get hostFormatsPodEmpty;
+
+  /// Pace pods section: runners with no pod.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a pod'**
+  String get hostFormatsNeedsPod;
+
+  /// Needs a pod empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Every runner has a pod.'**
+  String get hostFormatsNeedsPodNone;
+
+  /// Section note while reads are still answering.
+  ///
+  /// In en, this message translates to:
+  /// **'Still checking'**
+  String get hostFormatsChecking;
+
+  /// A runner with no pod.
+  ///
+  /// In en, this message translates to:
+  /// **'No pod yet'**
+  String get hostFormatsNoPaceYet;
+
+  /// A runner whose membership cannot be changed now.
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t be moved right now'**
+  String get hostFormatsCannotMove;
+
+  /// Notice after placing a runner.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is in {pod}'**
+  String hostFormatsPlaced({required String name, required String pod});
+
+  /// Section: grouping rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules'**
+  String get hostFormatsRules;
+
+  /// Pace pods row: open grouping.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers that shape the pods'**
+  String get hostFormatsPodsRulesRow;
+
+  /// Grouping title.
+  ///
+  /// In en, this message translates to:
+  /// **'Grouping'**
+  String get hostFormatsRulesTitle;
+
+  /// Grouping section: rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers that shape the groups'**
+  String get hostFormatsRulesAnswers;
+
+  /// Section action: add a rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostFormatsAdd;
+
+  /// Grouping empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No answers are used yet. Add one to shape the groups.'**
+  String get hostFormatsRulesNone;
+
+  /// Grouping with nothing to use.
+  ///
+  /// In en, this message translates to:
+  /// **'The booking form has no choice or number questions to use.'**
+  String get hostFormatsRulesNoQuestions;
+
+  /// Grouping consent notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent'**
+  String get hostFormatsConsentTitle;
+
+  /// Grouping consent notice body.
+  ///
+  /// In en, this message translates to:
+  /// **'Answers are used only for this event, only from people who said yes, and never shown to other guests. People who said no are grouped without them.'**
+  String get hostFormatsConsentBody;
+
+  /// Notice after saving the rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Grouping saved'**
+  String get hostFormatsRulesSaved;
+
+  /// A rule row line.
+  ///
+  /// In en, this message translates to:
+  /// **'{form} · {how} · {strength}'**
+  String hostFormatsRuleLine({
+    required String form,
+    required String how,
+    required String strength,
+  });
+
+  /// A rule row: guests who agreed.
+  ///
+  /// In en, this message translates to:
+  /// **'{agreed} of {total} agreed'**
+  String hostFormatsRuleAgreed({required int agreed, required int total});
+
+  /// Rule use.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep similar together'**
+  String get hostFormatsRuleSimilar;
+
+  /// Rule use note.
+  ///
+  /// In en, this message translates to:
+  /// **'People with the same answer share a group'**
+  String get hostFormatsRuleSimilarNote;
+
+  /// Rule use.
+  ///
+  /// In en, this message translates to:
+  /// **'Mix different'**
+  String get hostFormatsRuleDifferent;
+
+  /// Rule use note.
+  ///
+  /// In en, this message translates to:
+  /// **'People with different answers share a group'**
+  String get hostFormatsRuleDifferentNote;
+
+  /// Rule use.
+  ///
+  /// In en, this message translates to:
+  /// **'Spread evenly'**
+  String get hostFormatsRuleSpread;
+
+  /// Rule use note.
+  ///
+  /// In en, this message translates to:
+  /// **'Same share of each answer in every group'**
+  String get hostFormatsRuleSpreadNote;
+
+  /// Rule strength.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get hostFormatsRuleLight;
+
+  /// Rule strength.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get hostFormatsRuleMedium;
+
+  /// Rule strength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get hostFormatsRuleStrong;
+
+  /// Rule sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an answer'**
+  String get hostFormatsRuleSheetTitle;
+
+  /// Rule sheet field: the question.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get hostFormatsRuleQuestion;
+
+  /// Rule sheet: where the question comes from and its answers.
+  ///
+  /// In en, this message translates to:
+  /// **'From {form} · {answers}'**
+  String hostFormatsRuleSource({required String form, required String answers});
+
+  /// Rule sheet section.
+  ///
+  /// In en, this message translates to:
+  /// **'How to use it'**
+  String get hostFormatsRuleHow;
+
+  /// Rule sheet slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'How much it matters'**
+  String get hostFormatsRuleMatters;
+
+  /// Rule sheet action: add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add this rule'**
+  String get hostFormatsRuleAdd;
+
+  /// Rule sheet action: save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this rule'**
+  String get hostFormatsRuleSave;
+
+  /// Rule sheet action: remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this rule'**
+  String get hostFormatsRuleRemove;
+
+  /// Rule sheet validation.
+  ///
+  /// In en, this message translates to:
+  /// **'This question can’t be used this way. Try another use.'**
+  String get hostFormatsRuleInvalid;
+
+  /// Event plan section: the format screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Formats'**
+  String get hostFormatsPlanSection;
+
+  /// Event plan link note.
+  ///
+  /// In en, this message translates to:
+  /// **'Courts, minutes a game and what matters most'**
+  String get hostFormatsPlanCourtsNote;
+
+  /// Event plan link note.
+  ///
+  /// In en, this message translates to:
+  /// **'Runners in pods by pace'**
+  String get hostFormatsPlanPodsNote;
+
+  /// Event plan link: the crawl board.
+  ///
+  /// In en, this message translates to:
+  /// **'The crawl, live'**
+  String get hostFormatsPlanCrawl;
+
+  /// Event plan link note.
+  ///
+  /// In en, this message translates to:
+  /// **'The route, the groups and moving everyone'**
+  String get hostFormatsPlanCrawlNote;
+
+  /// Event plan link note.
+  ///
+  /// In en, this message translates to:
+  /// **'Use booking answers to shape groups'**
+  String get hostFormatsPlanRulesNote;
 }
 
 class _AppLocalizationsDelegate

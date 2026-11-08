@@ -31937,4 +31937,708 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$created new guests, $updated updated.';
   }
+
+  @override
+  String get hostFormatsBackToEvent => 'Back to the event';
+
+  @override
+  String get hostFormatsBack => 'Back';
+
+  @override
+  String hostFormatsSetupKicker({required String event, required String day}) {
+    return '$event · $day';
+  }
+
+  @override
+  String get hostFormatsErrorTitle => 'We couldn’t load this';
+
+  @override
+  String get hostFormatsErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostFormatsRetry => 'Try again';
+
+  @override
+  String get hostFormatsNoPlanTitle => 'No plan for this event yet';
+
+  @override
+  String get hostFormatsNoPlanBody =>
+      'Save the plan for the night first, then set this up.';
+
+  @override
+  String get hostFormatsViewCourts => 'Courts';
+
+  @override
+  String get hostFormatsViewTeams => 'Teams';
+
+  @override
+  String hostFormatsCourt({required int number}) {
+    return 'Court $number';
+  }
+
+  @override
+  String hostFormatsMore({required int count}) {
+    return '$count more';
+  }
+
+  @override
+  String hostFormatsTwoNames({required String first, required String second}) {
+    return '$first and $second';
+  }
+
+  @override
+  String hostFormatsManyNames({
+    required String first,
+    required String second,
+    required int count,
+  }) {
+    return '$first, $second and $count more';
+  }
+
+  @override
+  String hostFormatsPeopleCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormatsCourtsKicker({required int players, required int courts}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      courts,
+      locale: localeName,
+      other: '$courts courts',
+      one: '1 court',
+    );
+    return '$players players · $_temp0';
+  }
+
+  @override
+  String get hostFormatsCourtsSetUp => 'Set up';
+
+  @override
+  String get hostFormatsCourtsEmptyTitle => 'No rotations yet';
+
+  @override
+  String get hostFormatsCourtsEmptyBody =>
+      'Set up the courts and make the rotations, then run them here.';
+
+  @override
+  String hostFormatsLeft({required String time}) {
+    return '$time left';
+  }
+
+  @override
+  String hostFormatsOver({required String time}) {
+    return '$time over';
+  }
+
+  @override
+  String hostFormatsRound({required int number, required int total}) {
+    return 'Round $number of $total';
+  }
+
+  @override
+  String hostFormatsRoundFirst({required int total}) {
+    return 'Round 1 of $total · up first';
+  }
+
+  @override
+  String hostFormatsRoundRotateIn({
+    required String round,
+    required String time,
+  }) {
+    return '$round · rotate in $time';
+  }
+
+  @override
+  String hostFormatsRotateIn({required String time}) {
+    return 'Rotate in $time';
+  }
+
+  @override
+  String get hostFormatsFirstRoundReady => 'Round 1 is ready';
+
+  @override
+  String get hostFormatsLastRound => 'Last round';
+
+  @override
+  String get hostFormatsTimeInGame => 'Time in this game';
+
+  @override
+  String get hostFormatsRotateNow => 'Rotate now';
+
+  @override
+  String get hostFormatsStartFirstRound => 'Start round 1';
+
+  @override
+  String hostFormatsRotateConfirmTitle({required int number}) {
+    return 'Send round $number?';
+  }
+
+  @override
+  String get hostFormatsRotateConfirmBody =>
+      'Every player’s phone shows their next court. This can’t be taken back.';
+
+  @override
+  String get hostFormatsRotateConfirm => 'Send the round';
+
+  @override
+  String get hostFormatsOnCourt => 'On court';
+
+  @override
+  String get hostFormatsSittingOut => 'Sitting out';
+
+  @override
+  String hostFormatsSittingOutNote({required int count}) {
+    return '$count this round';
+  }
+
+  @override
+  String get hostFormatsSittingOutNone => 'Everyone plays this round.';
+
+  @override
+  String hostFormatsSatOut({required int out, required int played}) {
+    return 'Sat out $out · played $played';
+  }
+
+  @override
+  String get hostFormatsPlaysNext => 'Plays next';
+
+  @override
+  String get hostFormatsOutAgain => 'Out again next round';
+
+  @override
+  String get hostFormatsFairSoFar => 'Fair so far';
+
+  @override
+  String get hostFormatsStatNewPartners => 'new partners each, so far';
+
+  @override
+  String get hostFormatsStatRepeats => 'repeat partners';
+
+  @override
+  String get hostFormatsStatMostSatOut => 'sat out at most';
+
+  @override
+  String get hostFormatsComingUp => 'Coming up';
+
+  @override
+  String get hostFormatsNextRound => 'Next round';
+
+  @override
+  String get hostFormatsNextRoundNone => 'This is the last round.';
+
+  @override
+  String get hostFormatsNextRoundSame => 'The same players stay on.';
+
+  @override
+  String hostFormatsNextRoundOn({required String names}) {
+    return '$names come on';
+  }
+
+  @override
+  String hostFormatsNextRoundOff({required String names}) {
+    return '$names sit out';
+  }
+
+  @override
+  String hostFormatsNextRoundSwap({required String on, required String off}) {
+    return '$on come on; $off sit out';
+  }
+
+  @override
+  String get hostFormatsCourtsSetupTitle => 'Court rotations';
+
+  @override
+  String get hostFormatsCourtsCourts => 'Courts';
+
+  @override
+  String get hostFormatsCourtsCourtsNote => 'Courts booked for the event';
+
+  @override
+  String get hostFormatsCourtsMinutes => 'Minutes a game';
+
+  @override
+  String get hostFormatsCourtsMinutesNote => 'Then everyone rotates';
+
+  @override
+  String get hostFormatsCourtsRounds => 'Rounds';
+
+  @override
+  String get hostFormatsCourtsRoundsNote =>
+      'What fits the event at this length';
+
+  @override
+  String get hostFormatsFewerCourts => 'Fewer courts';
+
+  @override
+  String get hostFormatsMoreCourts => 'More courts';
+
+  @override
+  String get hostFormatsShorterGames => 'Shorter games';
+
+  @override
+  String get hostFormatsLongerGames => 'Longer games';
+
+  @override
+  String hostFormatsCourtsSplit({
+    required int players,
+    required int courts,
+    required int playing,
+    required int out,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      courts,
+      locale: localeName,
+      other: '$courts courts',
+      one: '1 court',
+    );
+    return '$players players on $_temp0: $playing play, $out sit out each round. Sitting out is shared evenly, so nobody sits out twice before everyone has once.';
+  }
+
+  @override
+  String hostFormatsCourtsEveryonePlays({
+    required int players,
+    required int courts,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      courts,
+      locale: localeName,
+      other: '$courts courts',
+      one: '1 court',
+    );
+    return '$players players on $_temp0: everyone plays every round.';
+  }
+
+  @override
+  String get hostFormatsAimTitle => 'What matters most';
+
+  @override
+  String get hostFormatsAimMeetMany => 'Meet as many people as possible';
+
+  @override
+  String get hostFormatsAimMeetManyNote => 'New partners every round';
+
+  @override
+  String get hostFormatsAimCloseGames => 'Close games';
+
+  @override
+  String get hostFormatsAimCloseGamesNote => 'Mix people of a similar level';
+
+  @override
+  String get hostFormatsUseAnswers => 'Use form answers';
+
+  @override
+  String get hostFormatsAllRules => 'All rules';
+
+  @override
+  String get hostFormatsUseAnswersRow => 'Answers that shape the groups';
+
+  @override
+  String get hostFormatsUseAnswersNote => 'Only from guests who agreed';
+
+  @override
+  String get hostFormatsPreview => 'Preview';
+
+  @override
+  String get hostFormatsPreviewPartners => 'new partners each';
+
+  @override
+  String get hostFormatsPreviewRounds => 'rounds played each';
+
+  @override
+  String get hostFormatsPreviewNone =>
+      'Preview round 1 to see how fair the rotations are.';
+
+  @override
+  String get hostFormatsSaveRotations => 'Save rotations';
+
+  @override
+  String get hostFormatsPreviewFirstRound => 'Preview round 1';
+
+  @override
+  String get hostFormatsRotationsSaved => 'Court setup saved';
+
+  @override
+  String get hostFormatsRotationsMade => 'Rotations made';
+
+  @override
+  String hostFormatsMixKicker({
+    required int index,
+    required int total,
+    required String time,
+  }) {
+    return 'Step $index of $total · $time';
+  }
+
+  @override
+  String get hostFormatsMixKickerPlain => 'Half-time';
+
+  @override
+  String get hostFormatsMixTitle => 'Mix the teams';
+
+  @override
+  String get hostFormatsMixBody =>
+      'People move to new tables so everyone meets someone new, and friends who booked together stay apart.';
+
+  @override
+  String get hostFormatsStatSeated => 'people seated';
+
+  @override
+  String get hostFormatsStatTables => 'tables';
+
+  @override
+  String get hostFormatsStatPerTable => 'at each table';
+
+  @override
+  String get hostFormatsNewTables => 'New tables';
+
+  @override
+  String get hostFormatsNewTablesNone => 'No tables yet. Shuffle to make them.';
+
+  @override
+  String get hostFormatsShuffleAgain => 'Shuffle again';
+
+  @override
+  String get hostFormatsOpeners => 'A first hello on every phone';
+
+  @override
+  String get hostFormatsOpenersNote => 'One question to ask someone new';
+
+  @override
+  String hostFormatsReveal({required int seconds}) {
+    return 'Reveal new tables · $seconds s countdown';
+  }
+
+  @override
+  String get hostFormatsRevealNow => 'Reveal new tables';
+
+  @override
+  String get hostFormatsRevealDone => 'New tables are on every phone';
+
+  @override
+  String get hostFormatsRevealCounting => 'Phones are counting down';
+
+  @override
+  String get hostFormatsNotYet => 'Not yet';
+
+  @override
+  String hostFormatsCrawlTopKicker({required String host, required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$host · $_temp0';
+  }
+
+  @override
+  String get hostFormatsCrawlNoRouteTitle => 'No stops on the route';
+
+  @override
+  String get hostFormatsCrawlNoRouteBody =>
+      'Add the stops to the event plan to run the crawl here.';
+
+  @override
+  String hostFormatsCrawlBefore({required int total}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: '$total stops',
+      one: '1 stop',
+    );
+    return '$_temp0 · first up';
+  }
+
+  @override
+  String hostFormatsCrawlKicker({
+    required int number,
+    required int total,
+    required String time,
+  }) {
+    return 'Stop $number of $total · here since $time';
+  }
+
+  @override
+  String hostFormatsCrawlLeave({required String time}) {
+    return 'leave $time';
+  }
+
+  @override
+  String hostFormatsCrawlWithUs({required int here, required int total}) {
+    return 'With the crawl: $here of $total';
+  }
+
+  @override
+  String hostFormatsCrawlMove({required String stop}) {
+    return 'Move everyone to $stop';
+  }
+
+  @override
+  String get hostFormatsCrawlRoute => 'The route';
+
+  @override
+  String get hostFormatsCrawlGroups => 'Groups';
+
+  @override
+  String hostFormatsCrawlGroupHere({required int here, required int total}) {
+    return '$here of $total here';
+  }
+
+  @override
+  String get hostFormatsCrawlNotHere => 'Not here yet';
+
+  @override
+  String hostFormatsCrawlNotHereMore({required int count}) {
+    return '$count more';
+  }
+
+  @override
+  String get hostFormatsCrawlEveryoneHere =>
+      'Everyone booked is with the crawl.';
+
+  @override
+  String get hostFormatsMessage => 'Message';
+
+  @override
+  String get hostFormatsMoveTitle => 'Move to the next stop';
+
+  @override
+  String get hostFormatsMoveLeave => 'Leave';
+
+  @override
+  String get hostFormatsLeaveNow => 'Now';
+
+  @override
+  String get hostFormatsLeaveInTen => 'In 10 min';
+
+  @override
+  String hostFormatsMoveMap({required String from, required String to}) {
+    return 'Walking route from $from to $to';
+  }
+
+  @override
+  String get hostFormatsMoveSend => 'Send and move everyone';
+
+  @override
+  String get hostFormatsMoveSent => 'Everyone has the next stop';
+
+  @override
+  String hostFormatsMovePlace({required String stop, required String address}) {
+    return '$stop, $address';
+  }
+
+  @override
+  String get hostFormatsMoveWhenNow => 'We leave now.';
+
+  @override
+  String get hostFormatsMoveWhenTen => 'We leave in 10 minutes.';
+
+  @override
+  String hostFormatsMoveWhenAt({required String time}) {
+    return 'We leave at $time.';
+  }
+
+  @override
+  String hostFormatsMoveMessage({required String place, required String when}) {
+    return 'Next stop: $place. $when';
+  }
+
+  @override
+  String get hostFormatsPodsTitle => 'Pace pods';
+
+  @override
+  String get hostFormatsPodsNoneTitle => 'No pods on this run';
+
+  @override
+  String get hostFormatsPodsNoneBody =>
+      'Add pace groups to the route to put runners in pods.';
+
+  @override
+  String get hostFormatsPodsIntro =>
+      'Pods follow the pace groups on the route. Move anyone; the pod leader sees the change.';
+
+  @override
+  String get hostFormatsStatRunners => 'runners';
+
+  @override
+  String get hostFormatsStatPods => 'pods';
+
+  @override
+  String get hostFormatsStatNoPod => 'no pod yet';
+
+  @override
+  String hostFormatsPodPace({required String pace}) {
+    return 'Around $pace a km';
+  }
+
+  @override
+  String hostFormatsRunnersCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count runners',
+      one: '1 runner',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormatsPodEmpty => 'No runners yet';
+
+  @override
+  String get hostFormatsNeedsPod => 'Needs a pod';
+
+  @override
+  String get hostFormatsNeedsPodNone => 'Every runner has a pod.';
+
+  @override
+  String get hostFormatsChecking => 'Still checking';
+
+  @override
+  String get hostFormatsNoPaceYet => 'No pod yet';
+
+  @override
+  String get hostFormatsCannotMove => 'Can’t be moved right now';
+
+  @override
+  String hostFormatsPlaced({required String name, required String pod}) {
+    return '$name is in $pod';
+  }
+
+  @override
+  String get hostFormatsRules => 'Rules';
+
+  @override
+  String get hostFormatsPodsRulesRow => 'Answers that shape the pods';
+
+  @override
+  String get hostFormatsRulesTitle => 'Grouping';
+
+  @override
+  String get hostFormatsRulesAnswers => 'Answers that shape the groups';
+
+  @override
+  String get hostFormatsAdd => 'Add';
+
+  @override
+  String get hostFormatsRulesNone =>
+      'No answers are used yet. Add one to shape the groups.';
+
+  @override
+  String get hostFormatsRulesNoQuestions =>
+      'The booking form has no choice or number questions to use.';
+
+  @override
+  String get hostFormatsConsentTitle => 'Consent';
+
+  @override
+  String get hostFormatsConsentBody =>
+      'Answers are used only for this event, only from people who said yes, and never shown to other guests. People who said no are grouped without them.';
+
+  @override
+  String get hostFormatsRulesSaved => 'Grouping saved';
+
+  @override
+  String hostFormatsRuleLine({
+    required String form,
+    required String how,
+    required String strength,
+  }) {
+    return '$form · $how · $strength';
+  }
+
+  @override
+  String hostFormatsRuleAgreed({required int agreed, required int total}) {
+    return '$agreed of $total agreed';
+  }
+
+  @override
+  String get hostFormatsRuleSimilar => 'Keep similar together';
+
+  @override
+  String get hostFormatsRuleSimilarNote =>
+      'People with the same answer share a group';
+
+  @override
+  String get hostFormatsRuleDifferent => 'Mix different';
+
+  @override
+  String get hostFormatsRuleDifferentNote =>
+      'People with different answers share a group';
+
+  @override
+  String get hostFormatsRuleSpread => 'Spread evenly';
+
+  @override
+  String get hostFormatsRuleSpreadNote =>
+      'Same share of each answer in every group';
+
+  @override
+  String get hostFormatsRuleLight => 'Light';
+
+  @override
+  String get hostFormatsRuleMedium => 'Medium';
+
+  @override
+  String get hostFormatsRuleStrong => 'Strong';
+
+  @override
+  String get hostFormatsRuleSheetTitle => 'Use an answer';
+
+  @override
+  String get hostFormatsRuleQuestion => 'Question';
+
+  @override
+  String hostFormatsRuleSource({
+    required String form,
+    required String answers,
+  }) {
+    return 'From $form · $answers';
+  }
+
+  @override
+  String get hostFormatsRuleHow => 'How to use it';
+
+  @override
+  String get hostFormatsRuleMatters => 'How much it matters';
+
+  @override
+  String get hostFormatsRuleAdd => 'Add this rule';
+
+  @override
+  String get hostFormatsRuleSave => 'Save this rule';
+
+  @override
+  String get hostFormatsRuleRemove => 'Remove this rule';
+
+  @override
+  String get hostFormatsRuleInvalid =>
+      'This question can’t be used this way. Try another use.';
+
+  @override
+  String get hostFormatsPlanSection => 'Formats';
+
+  @override
+  String get hostFormatsPlanCourtsNote =>
+      'Courts, minutes a game and what matters most';
+
+  @override
+  String get hostFormatsPlanPodsNote => 'Runners in pods by pace';
+
+  @override
+  String get hostFormatsPlanCrawl => 'The crawl, live';
+
+  @override
+  String get hostFormatsPlanCrawlNote =>
+      'The route, the groups and moving everyone';
+
+  @override
+  String get hostFormatsPlanRulesNote => 'Use booking answers to shape groups';
 }
