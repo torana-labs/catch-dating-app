@@ -1052,9 +1052,12 @@
     },
     {
       "routeId": "hostWorkTripsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Trip ledger lands with this slice; route captures are scheduled with the program golden pass."
+      "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+      "captureIds": [
+        "host_programme_trips_desktop"
+      ]
     },
     {
       "routeId": "hostWorkGuestsScreen",
@@ -1095,27 +1098,43 @@
     },
     {
       "routeId": "hostCreateProgramScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
+      "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+      "captureIds": [
+        "host_programme_create_phone"
+      ]
     },
     {
       "routeId": "hostProgramWorkspaceScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Organizer program workspace route lands with the W1 slice; route captures are scheduled with the program golden pass."
+      "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+      "captureIds": [
+        "host_programme_phone",
+        "host_programme_function_phone",
+        "host_programme_household_phone",
+        "host_programme_travel_phone"
+      ]
     },
     {
       "routeId": "hostProgramLodgingScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Private lodging route has focused routed controller/screen/setup editor and board tests covering configuration, membership, manual proposals, publication, stale revisions and session fences. Deterministic loaded, no-configuration, scoped hotel desk and uncertain-write retry route captures remain planned; the twelve existing marketing captures do not cover this route."
+      "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+      "captureIds": [
+        "host_programme_rooms_desktop"
+      ]
     },
     {
       "routeId": "hostProgramGuestsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Organizer program workspace route lands with the W1 slice; route captures are scheduled with the program golden pass."
+      "reason": "P5.7a planner screens on the system render from deterministic planner fixtures.",
+      "captureIds": [
+        "host_programme_guests_phone",
+        "host_programme_guests_desktop"
+      ]
     },
     {
       "routeId": "hostProgramTeamScreen",

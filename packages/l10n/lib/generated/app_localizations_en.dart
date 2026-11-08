@@ -30826,4 +30826,1115 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostStaffAlertsWhatBody =>
       'Flight changes, guests reaching a hotel after a function has started, cars waiting too long and help requests from guests. Each one goes to the people whose job it touches.';
+
+  @override
+  String get hostProgrammeViewsLabel => 'Programme views';
+
+  @override
+  String get hostProgrammeViewSchedule => 'Schedule';
+
+  @override
+  String get hostProgrammeViewGuests => 'Guests';
+
+  @override
+  String get hostProgrammeViewTravel => 'Travel';
+
+  @override
+  String get hostProgrammeViewTeam => 'Team';
+
+  @override
+  String hostProgrammeCellCount({required int coming, required int invited}) {
+    return '$coming/$invited';
+  }
+
+  @override
+  String get hostProgrammeCellMaybe => 'Maybe';
+
+  @override
+  String get hostProgrammeCellNoReply => '?';
+
+  @override
+  String get hostProgrammeCellNotInvited => '–';
+
+  @override
+  String get hostProgrammeKeyEveryone => 'Everyone';
+
+  @override
+  String get hostProgrammeKeySome => 'Some of them';
+
+  @override
+  String get hostProgrammeKeyMaybe => 'Deciding';
+
+  @override
+  String get hostProgrammeKeyNoReply => 'No reply';
+
+  @override
+  String get hostProgrammeKeyNone => 'Not coming';
+
+  @override
+  String get hostProgrammeKeyNotInvited => 'Not invited';
+
+  @override
+  String get hostProgrammeReplyYes => 'Yes';
+
+  @override
+  String get hostProgrammeReplyNo => 'No';
+
+  @override
+  String get hostProgrammeRetry => 'Try again';
+
+  @override
+  String get hostProgrammeErrorTitle => 'We couldn’t load this programme';
+
+  @override
+  String get hostProgrammeErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostProgrammeBack => 'Back to Events';
+
+  @override
+  String get hostProgrammeBackToProgramme => 'Back to the programme';
+
+  @override
+  String hostProgrammeDaysToGo({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days to go',
+      one: 'Tomorrow',
+      zero: 'Today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostProgrammeDates({required Object from, required Object to}) {
+    return '$from to $to';
+  }
+
+  @override
+  String hostProgrammeKicker({
+    required Object dates,
+    required Object timezone,
+  }) {
+    return '$dates · $timezone';
+  }
+
+  @override
+  String get hostProgrammeKindWedding => 'Wedding';
+
+  @override
+  String get hostProgrammeKindCorporate => 'Offsite';
+
+  @override
+  String get hostProgrammeKindSocial => 'Social';
+
+  @override
+  String get hostProgrammeKindOther => 'Programme';
+
+  @override
+  String get hostProgrammeStatGuests => 'Guests';
+
+  @override
+  String get hostProgrammeStatHouseholds => 'Households';
+
+  @override
+  String get hostProgrammeStatFlying => 'Flying in';
+
+  @override
+  String get hostProgrammeStatStaff => 'Staff';
+
+  @override
+  String hostProgrammeWaitingTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count households haven’t replied',
+      one: '1 household hasn’t replied',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeWaitingBody => 'Send their RSVP links from Guests.';
+
+  @override
+  String hostProgrammeFunctionReplies({
+    required int coming,
+    required int invited,
+    required int waiting,
+  }) {
+    return '$coming of $invited coming · $waiting not replied';
+  }
+
+  @override
+  String hostProgrammeFunctionRepliesLabel({
+    required Object name,
+    required int coming,
+    required int invited,
+  }) {
+    return '$name: $coming of $invited coming';
+  }
+
+  @override
+  String get hostProgrammeFunctionCancelled => 'Cancelled';
+
+  @override
+  String get hostProgrammeAddFunction => 'Add a function';
+
+  @override
+  String get hostProgrammeScheduleEmpty =>
+      'No functions yet. Add the first one.';
+
+  @override
+  String get hostProgrammeSave => 'Save';
+
+  @override
+  String get hostProgrammeEdit => 'Edit';
+
+  @override
+  String get hostProgrammeOn => 'On';
+
+  @override
+  String get hostProgrammeOff => 'Off';
+
+  @override
+  String get hostProgrammeFunctionEditTitle => 'Edit the function';
+
+  @override
+  String get hostProgrammeFunctionName => 'Name';
+
+  @override
+  String get hostProgrammeFunctionNamePlaceholder => 'Sangeet';
+
+  @override
+  String get hostProgrammeFunctionVenue => 'Venue';
+
+  @override
+  String get hostProgrammeFunctionDay => 'Day';
+
+  @override
+  String get hostProgrammeFunctionStarts => 'Starts';
+
+  @override
+  String get hostProgrammeFunctionEnds => 'Ends';
+
+  @override
+  String get hostProgrammeFunctionSaved => 'Function saved';
+
+  @override
+  String get hostProgrammeFunctionMissing =>
+      'This function is no longer on the schedule';
+
+  @override
+  String hostProgrammeFunctionMeter({required Object name}) {
+    return 'Replies to the $name';
+  }
+
+  @override
+  String get hostProgrammeFunctionComing => 'Coming';
+
+  @override
+  String get hostProgrammeFunctionMaybe => 'Maybe';
+
+  @override
+  String get hostProgrammeFunctionNoReply => 'No reply';
+
+  @override
+  String get hostProgrammeFunctionInvitedTitle => 'Who’s invited';
+
+  @override
+  String get hostProgrammeFunctionInvitedNote => 'Changing this sends nothing';
+
+  @override
+  String get hostProgrammeFunctionEveryone => 'Everyone';
+
+  @override
+  String get hostProgrammeFunctionEveryoneBody => 'Every guest on the list';
+
+  @override
+  String get hostProgrammeFunctionHandPicked => 'Hand-picked';
+
+  @override
+  String get hostProgrammeFunctionHandPickedBody =>
+      'Only the guests invited now';
+
+  @override
+  String get hostProgrammeFunctionWearTitle => 'What to wear';
+
+  @override
+  String get hostProgrammeFunctionNightTitle => 'On the night';
+
+  @override
+  String get hostProgrammeFunctionOpenDoor => 'Open the door';
+
+  @override
+  String get hostProgrammeFunctionCheckIn => 'Check guests in at the door';
+
+  @override
+  String hostProgrammeFunctionCheckedIn({required int count}) {
+    return '$count checked in';
+  }
+
+  @override
+  String get hostProgrammeFunctionWhereTitle => 'Where';
+
+  @override
+  String hostProgrammeFunctionCancel({required Object name}) {
+    return 'Cancel the $name';
+  }
+
+  @override
+  String get hostProgrammeFunctionCancelBody =>
+      'Guests stay on the list. Their replies to it are kept.';
+
+  @override
+  String get hostProgrammeFunctionCancelConfirm => 'Cancel it';
+
+  @override
+  String hostProgrammeFunctionWhen({
+    required Object day,
+    required Object from,
+    required Object to,
+  }) {
+    return '$day · $from to $to';
+  }
+
+  @override
+  String hostProgrammeGuestCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests',
+      one: '1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostProgrammeGuestsTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count households',
+      one: '1 household',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostProgrammeGuestsSummary({
+    required int guests,
+    required int replied,
+    required int waiting,
+  }) {
+    return '$guests guests · $replied replied for everyone · $waiting still to reply';
+  }
+
+  @override
+  String get hostProgrammeGuestsImport => 'Import a list';
+
+  @override
+  String get hostProgrammeGuestsGridTitle => 'Who comes to what';
+
+  @override
+  String get hostProgrammeGuestsGridNote => 'People per household';
+
+  @override
+  String get hostProgrammeGuestsEmpty =>
+      'No guests yet. Import the list to start.';
+
+  @override
+  String get hostProgrammeGuestsFilterEmpty => 'Nobody matches this filter.';
+
+  @override
+  String get hostProgrammeGuestsAll => 'All';
+
+  @override
+  String get hostProgrammeGuestsColumnHousehold => 'Household';
+
+  @override
+  String get hostProgrammeGuestsColumnGroups => 'Side and groups';
+
+  @override
+  String hostProgrammeGuestsShowing({required int shown, required int total}) {
+    return 'Showing $shown of $total households';
+  }
+
+  @override
+  String get hostProgrammeShareFamily => 'Share with the family';
+
+  @override
+  String get hostProgrammeAddGuests => 'Add guests';
+
+  @override
+  String get hostProgrammeHouseholdMissing =>
+      'This household is no longer on the list';
+
+  @override
+  String get hostProgrammeHouseholdReplied => 'Replied for everyone';
+
+  @override
+  String get hostProgrammeHouseholdWaiting => 'Still to reply';
+
+  @override
+  String get hostProgrammeCall => 'Call';
+
+  @override
+  String get hostProgrammeHouseholdSendLink => 'Send their link again';
+
+  @override
+  String get hostProgrammeBackToGuests => 'Back to the guests';
+
+  @override
+  String hostProgrammeHouseholdLinkSubject({required Object household}) {
+    return 'Your RSVP link, $household';
+  }
+
+  @override
+  String get hostProgrammeAdd => 'Add';
+
+  @override
+  String hostProgrammePeople({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeTravelFlying => 'Flying in';
+
+  @override
+  String get hostProgrammeTravelWithFlight => 'Shared a flight';
+
+  @override
+  String get hostProgrammeTravelMissing => 'Still missing';
+
+  @override
+  String get hostProgrammeTravelNeedsYou => 'Needs you';
+
+  @override
+  String hostProgrammeTravelBusiest({required Object day}) {
+    return '$day, the busiest day';
+  }
+
+  @override
+  String hostProgrammeTravelChart({required Object day}) {
+    return 'People landing every two hours on $day';
+  }
+
+  @override
+  String get hostProgrammeTravelByDay => 'Arrivals by day';
+
+  @override
+  String get hostProgrammeTravelByDayEmpty => 'No landing times yet.';
+
+  @override
+  String get hostProgrammeTravelBusiestBadge => 'Busiest';
+
+  @override
+  String get hostProgrammeTravelPickups => 'Pickup points';
+
+  @override
+  String get hostProgrammeTravelPickupsEmpty => 'No pickup points yet.';
+
+  @override
+  String get hostProgrammeTravelHotels => 'Hotels';
+
+  @override
+  String get hostProgrammeTravelHotelsEmpty => 'No hotels yet.';
+
+  @override
+  String get hostProgrammeTravelRooms => 'Rooms';
+
+  @override
+  String get hostProgrammeTravelRoomsBody =>
+      'Who is in which room, and who is waiting';
+
+  @override
+  String get hostProgrammeTravelCars => 'Cars';
+
+  @override
+  String get hostProgrammeTravelAddVendor => 'Add a vendor';
+
+  @override
+  String get hostProgrammeTravelCarsEmpty => 'No cars suggested yet.';
+
+  @override
+  String hostProgrammeTravelCarLine({
+    required Object hotel,
+    required Object time,
+  }) {
+    return 'To $hotel · from $time';
+  }
+
+  @override
+  String get hostProgrammeTravelTrips => 'Car trips';
+
+  @override
+  String hostProgrammeTravelTripsBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count trips so far',
+      one: '1 trip so far',
+      zero: 'No trips yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeTravelDesk => 'Open the live airport desk';
+
+  @override
+  String get hostProgrammeTravelNoFlight => 'No flight yet';
+
+  @override
+  String hostProgrammeTravelDiverted({required Object flight}) {
+    return '$flight diverted';
+  }
+
+  @override
+  String hostProgrammeTravelCancelled({required Object flight}) {
+    return '$flight cancelled';
+  }
+
+  @override
+  String hostProgrammeTravelNoTime({required Object flight}) {
+    return '$flight · no landing time';
+  }
+
+  @override
+  String get hostProgrammeSetupHotel => 'Hotel';
+
+  @override
+  String get hostProgrammeSetupAddress => 'Address';
+
+  @override
+  String get hostProgrammeSetupReception => 'Front desk phone';
+
+  @override
+  String get hostProgrammeSetupKind => 'Kind';
+
+  @override
+  String get hostProgrammeSetupAirport => 'Airport';
+
+  @override
+  String get hostProgrammeSetupStation => 'Station';
+
+  @override
+  String get hostProgrammeSetupVenue => 'Venue';
+
+  @override
+  String get hostProgrammeSetupOther => 'Other';
+
+  @override
+  String get hostProgrammeSetupWhere => 'Where';
+
+  @override
+  String get hostProgrammeSetupCode => 'Airport code';
+
+  @override
+  String get hostProgrammeSetupTerminal => 'Terminal';
+
+  @override
+  String get hostProgrammeSetupGreeters => 'Where greeters stand';
+
+  @override
+  String get hostProgrammeSetupInstructions => 'Notes for the greeters';
+
+  @override
+  String get hostProgrammeSetupVendor => 'Vendor';
+
+  @override
+  String get hostProgrammeSetupContact => 'Contact';
+
+  @override
+  String get hostProgrammeSetupPhone => 'Phone';
+
+  @override
+  String get hostProgrammeSetupPhoneHelp =>
+      'With the country code, like +91 98765 43210';
+
+  @override
+  String get hostProgrammeSetupVendors => 'Vendors';
+
+  @override
+  String get hostProgrammeSetupVendorsEmpty => 'No vendors yet.';
+
+  @override
+  String get hostProgrammeSetupVendorHere => 'On this programme';
+
+  @override
+  String get hostProgrammeSetupPickupTitle => 'Pickup point';
+
+  @override
+  String get hostProgrammeSetupVendorTitle => 'Car vendor';
+
+  @override
+  String get hostProgrammeSetupSaved => 'Saved';
+
+  @override
+  String get hostProgrammeRoomsTitle => 'Rooms';
+
+  @override
+  String get hostProgrammeRoomsHotelDetails => 'Hotel details';
+
+  @override
+  String get hostProgrammeRoomsNoHotel => 'Add a hotel first, from Travel.';
+
+  @override
+  String get hostProgrammeRoomsHeld => 'Rooms held';
+
+  @override
+  String get hostProgrammeRoomsPlacedStat => 'Placed';
+
+  @override
+  String get hostProgrammeRoomsWaiting => 'Waiting';
+
+  @override
+  String get hostProgrammeRoomsHotels => 'Hotels';
+
+  @override
+  String get hostProgrammeRoomsWaitingTitle => 'Waiting for a room';
+
+  @override
+  String get hostProgrammeRoomsWaitingEmpty => 'Everyone has a room.';
+
+  @override
+  String get hostProgrammeRoomsHowTo =>
+      'Pick a guest, then a free room in a block to place them.';
+
+  @override
+  String hostProgrammeRoomsSuggestAll({required int count}) {
+    return 'Suggest for all $count';
+  }
+
+  @override
+  String get hostProgrammeRoomsMeter => 'Rooms in the blocks';
+
+  @override
+  String get hostProgrammeRoomsFree => 'Free';
+
+  @override
+  String get hostProgrammeRoomsNoBlocks => 'No room blocks at this hotel yet.';
+
+  @override
+  String get hostProgrammeRoomsSuggestion => 'Suggestion';
+
+  @override
+  String hostProgrammeRoomsSuggestionBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count waiting guests have a block that fits.',
+      one: '1 waiting guest has a block that fits.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeRoomsPlaceThem => 'Place them';
+
+  @override
+  String get hostProgrammeRoomsCheckedIn => 'In';
+
+  @override
+  String hostProgrammeRoomsBlockNote({
+    required int placed,
+    required int total,
+  }) {
+    return '$placed of $total placed';
+  }
+
+  @override
+  String hostProgrammeRoomsPlaced({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests placed',
+      one: '1 guest placed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeCreateTitle => 'New programme';
+
+  @override
+  String get hostProgrammeCreateClose => 'Close';
+
+  @override
+  String get hostProgrammeCreateWhat => 'What are you planning?';
+
+  @override
+  String get hostProgrammeCreateOffsite => 'Offsite or conference';
+
+  @override
+  String get hostProgrammeCreateOther => 'Something else';
+
+  @override
+  String get hostProgrammeCreateName => 'Name';
+
+  @override
+  String get hostProgrammeCreateNameWedding => 'Aditi and Kabir’s wedding';
+
+  @override
+  String get hostProgrammeCreateNamePlaceholder => 'Bain offsite';
+
+  @override
+  String get hostProgrammeCreateFirstDay => 'First day';
+
+  @override
+  String get hostProgrammeCreateLastDay => 'Last day';
+
+  @override
+  String get hostProgrammeCreatePick => 'Pick a day';
+
+  @override
+  String get hostProgrammeCreateTimezone => 'Time zone';
+
+  @override
+  String get hostProgrammeCreateTimezoneHelp =>
+      'Every function time is in this zone.';
+
+  @override
+  String get hostProgrammeCreateRequired => 'Needed';
+
+  @override
+  String get hostProgrammeCreateTooLong => 'That’s too long';
+
+  @override
+  String get hostProgrammeCreateTimezoneInvalid =>
+      'Pick a time zone from the list';
+
+  @override
+  String get hostProgrammeCreateDateInvalid => 'Pick a day in range';
+
+  @override
+  String get hostProgrammeCreateEndAfterStart =>
+      'The last day comes after the first';
+
+  @override
+  String hostProgrammeCreateUseDay({required Object day}) {
+    return 'Use $day';
+  }
+
+  @override
+  String get hostProgrammeCreateSubmit => 'Create the programme';
+
+  @override
+  String get hostProgrammeCreateCancel => 'Cancel';
+
+  @override
+  String get hostProgrammeCreateLeaveTitle => 'Leave this programme?';
+
+  @override
+  String get hostProgrammeCreateLeaveDraft => 'Your draft stays on this phone.';
+
+  @override
+  String get hostProgrammeCreateLeavePending =>
+      'It may already be created. Come back to finish confirming it.';
+
+  @override
+  String get hostProgrammeCreateLeave => 'Leave';
+
+  @override
+  String get hostProgrammeCreateActorChanged =>
+      'You switched account or organiser. Start again from Events.';
+
+  @override
+  String hostProgrammePercent({required int value}) {
+    return '$value%';
+  }
+
+  @override
+  String get hostProgrammeAttendanceTopBar => 'Attendance';
+
+  @override
+  String get hostProgrammeAttendanceTitle => 'Who came to what';
+
+  @override
+  String get hostProgrammeAttendanceCheckIns => 'Check-ins';
+
+  @override
+  String get hostProgrammeAttendanceCame => 'Of replies came';
+
+  @override
+  String get hostProgrammeAttendanceWalkIns => 'Walk-ins';
+
+  @override
+  String get hostProgrammeAttendanceByFunction => 'By function';
+
+  @override
+  String hostProgrammeAttendanceLine({
+    required int came,
+    required int coming,
+    required int missed,
+  }) {
+    return '$came came of $coming coming · $missed missed';
+  }
+
+  @override
+  String get hostProgrammeAttendanceWrapUp => 'Wrapping up';
+
+  @override
+  String get hostProgrammeAttendanceExport => 'Attendance for every function';
+
+  @override
+  String get hostProgrammeAttendanceExportBody =>
+      'Replies against the door, as a spreadsheet';
+
+  @override
+  String get hostProgrammeAttendanceExportAction => 'Export';
+
+  @override
+  String hostProgrammeAttendanceExportSubject({required Object programme}) {
+    return 'Attendance · $programme';
+  }
+
+  @override
+  String get hostProgrammeAttendanceArchive =>
+      'Close and archive the programme';
+
+  @override
+  String get hostProgrammeAttendanceArchiveBody =>
+      'Guest details are anonymised after the retention window.';
+
+  @override
+  String get hostProgrammeAttendanceArchiveAction => 'Close';
+
+  @override
+  String get hostProgrammeAttendanceArchived => 'Programme archived';
+
+  @override
+  String get hostProgrammeShareKicker => 'Shared with you';
+
+  @override
+  String get hostProgrammeShareViewOnly => 'View only';
+
+  @override
+  String hostProgrammeShareUpdated({required Object time}) {
+    return 'Counted at $time. Numbers change as guests reply.';
+  }
+
+  @override
+  String get hostProgrammeShareComing => 'Who’s coming to what';
+
+  @override
+  String hostProgrammeShareComingLine({
+    required int coming,
+    required int invited,
+    required int maybe,
+  }) {
+    return '$coming of $invited coming · $maybe maybe';
+  }
+
+  @override
+  String get hostProgrammeShareCaterer => 'For the caterer';
+
+  @override
+  String hostProgrammeShareHeads({
+    required Object function,
+    required int count,
+  }) {
+    return '$function $count';
+  }
+
+  @override
+  String get hostProgrammeShareWaiting => 'Still to hear from';
+
+  @override
+  String get hostProgrammeShareWaitingEmpty => 'Everyone has replied.';
+
+  @override
+  String hostProgrammeShareArrived({required int arrived, required int total}) {
+    return '$arrived of $total arrived';
+  }
+
+  @override
+  String get hostProgrammeTripsTrips => 'Trips';
+
+  @override
+  String get hostProgrammeTripsPeople => 'People moved';
+
+  @override
+  String get hostProgrammeTripsNeedsLook => 'Need a look';
+
+  @override
+  String get hostProgrammeTripsNeedsLookNote => 'Voided or late';
+
+  @override
+  String get hostProgrammeTripsVendors => 'Vendors';
+
+  @override
+  String get hostProgrammeTripsExport => 'Export for the vendors';
+
+  @override
+  String hostProgrammeTripsExportSubject({required Object programme}) {
+    return 'Car trips · $programme';
+  }
+
+  @override
+  String get hostProgrammeTripsColumnTrip => 'Trip';
+
+  @override
+  String get hostProgrammeTripsColumnLeft => 'Left';
+
+  @override
+  String get hostProgrammeTripsColumnVendor => 'Vendor';
+
+  @override
+  String get hostProgrammeTripsColumnRoute => 'To';
+
+  @override
+  String get hostProgrammeTripsColumnPeople => 'People';
+
+  @override
+  String get hostProgrammeTripsColumnState => 'State';
+
+  @override
+  String get hostProgrammeTripsNoVendor => 'No vendor';
+
+  @override
+  String get hostProgrammeTripsEmpty => 'No trips match this filter.';
+
+  @override
+  String get hostProgrammeTripsArrived => 'Arrived';
+
+  @override
+  String get hostProgrammeTripsVoided => 'Voided';
+
+  @override
+  String get hostProgrammeTripsCancelled => 'Cancelled';
+
+  @override
+  String get hostProgrammeTripsLate => 'Late';
+
+  @override
+  String get hostProgrammeTripsOnTheRoad => 'On the road';
+
+  @override
+  String get hostProgrammeTripsMarkArrived => 'Mark arrived';
+
+  @override
+  String get hostProgrammeTripsVoidReason => 'Why void it?';
+
+  @override
+  String get hostProgrammeTripsVoid => 'Void this trip';
+
+  @override
+  String get hostProgrammeDutyAdmin => 'Runs the programme';
+
+  @override
+  String get hostProgrammeDutyCoordinator => 'Coordinator';
+
+  @override
+  String get hostProgrammeDutyGuestRelations => 'Guest replies';
+
+  @override
+  String get hostProgrammeDutyCommunications => 'Messages';
+
+  @override
+  String get hostProgrammeDutyDoor => 'Door';
+
+  @override
+  String get hostProgrammeDutyLead => 'Function lead';
+
+  @override
+  String get hostProgrammeDutyGreeter => 'Airport greeter';
+
+  @override
+  String get hostProgrammeDutyHotelDesk => 'Hotel desk';
+
+  @override
+  String get hostProgrammeDutyDispatcher => 'Dispatch';
+
+  @override
+  String get hostProgrammeDutyReconciliation => 'Bills and reports';
+
+  @override
+  String get hostProgrammeDutyFamily => 'Family view';
+
+  @override
+  String get hostProgrammeTeamPeople => 'People';
+
+  @override
+  String get hostProgrammeTeamJoined => 'Joined';
+
+  @override
+  String get hostProgrammeTeamWaiting => 'Invited';
+
+  @override
+  String get hostProgrammeTeamNotice =>
+      'Staff see only the guests their job needs. Their access ends on its own.';
+
+  @override
+  String get hostProgrammeTeamEmpty =>
+      'Nobody on the team yet. Invite the first person.';
+
+  @override
+  String get hostProgrammeTeamRunning => 'Running the programme';
+
+  @override
+  String get hostProgrammeTeamGuests => 'Guests and replies';
+
+  @override
+  String get hostProgrammeTeamAirport => 'Airport and cars';
+
+  @override
+  String get hostProgrammeTeamHotels => 'Hotel desks';
+
+  @override
+  String get hostProgrammeTeamDoors => 'Doors and functions';
+
+  @override
+  String get hostProgrammeTeamFamily => 'Family';
+
+  @override
+  String get hostProgrammeTeamJoinedBadge => 'Joined';
+
+  @override
+  String get hostProgrammeTeamInvitedBadge => 'Invited · not opened';
+
+  @override
+  String get hostProgrammeTeamExpiredBadge => 'Access ended';
+
+  @override
+  String get hostProgrammeTeamRemovedBadge => 'Removed';
+
+  @override
+  String get hostProgrammeTeamRemove => 'Remove';
+
+  @override
+  String hostProgrammeTeamRemoveTitle({required Object name}) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get hostProgrammeTeamRemoveBody => 'They lose access straight away.';
+
+  @override
+  String get hostProgrammeTeamInvite => 'Invite someone';
+
+  @override
+  String get hostProgrammeTeamInviteShort => 'Invite';
+
+  @override
+  String get hostProgrammeTeamInviteSend => 'Send the invite';
+
+  @override
+  String get hostProgrammeTeamName => 'Name';
+
+  @override
+  String get hostProgrammeTeamJob => 'Job';
+
+  @override
+  String hostProgrammeTeamInvited({required Object name}) {
+    return '$name is invited';
+  }
+
+  @override
+  String get hostProgrammeImportTitle => 'Add the guest list';
+
+  @override
+  String get hostProgrammeImportNoFile => 'No file yet';
+
+  @override
+  String get hostProgrammeImportFileHelp =>
+      'A CSV or Excel file, one guest per row';
+
+  @override
+  String hostProgrammeImportRows({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeImportPick => 'Pick a file';
+
+  @override
+  String get hostProgrammeImportChange => 'Change';
+
+  @override
+  String hostProgrammeImportFound({
+    required int guests,
+    required int households,
+  }) {
+    return '$guests guests in $households households';
+  }
+
+  @override
+  String get hostProgrammeImportColumns => 'What each column is';
+
+  @override
+  String get hostProgrammeImportSkip => 'Skip it';
+
+  @override
+  String hostProgrammeImportIssues({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count need a look',
+      one: '1 needs a look',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeImportIssuesNote => 'Or fix them later';
+
+  @override
+  String hostProgrammeImportRow({required int row}) {
+    return 'Row $row';
+  }
+
+  @override
+  String get hostProgrammeImportName => 'Name';
+
+  @override
+  String get hostProgrammeImportGroups => 'Side and groups';
+
+  @override
+  String get hostProgrammeImportFlight => 'Flight';
+
+  @override
+  String get hostProgrammeImportLands => 'Lands at';
+
+  @override
+  String get hostProgrammeImportCheck => 'Check the list';
+
+  @override
+  String hostProgrammeImportAdd({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add $count guests',
+      one: 'Add 1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostProgrammeImportBack => 'Back to the guests';
+
+  @override
+  String get hostProgrammeImportDone => 'Guest list added';
+
+  @override
+  String hostProgrammeImportDoneBody({
+    required int created,
+    required int updated,
+  }) {
+    return '$created new guests, $updated updated.';
+  }
 }
