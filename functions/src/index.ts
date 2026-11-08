@@ -243,6 +243,7 @@ export {
   setOrganizerNotificationPreference,
   unfollowOrganizer,
 } from "./organizers/follows";
+export {followOrganizerByPhone} from "./organizers/followOrganizerByPhone";
 export {
   addOrganizerManager,
   removeOrganizerManager,

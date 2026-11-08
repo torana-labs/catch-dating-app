@@ -75,7 +75,14 @@
         "pushFailedCount": {"type": "integer", "minimum": 0},
         "pushUnknownCount": {"type": "integer", "minimum": 0},
         "createdAtMillis": {"type": "integer", "minimum": 0},
-        "activityAtMillis": {"type": "integer", "minimum": 0}
+        "activityAtMillis": {"type": "integer", "minimum": 0},
+        "whatsapp": {
+          "anyOf": [
+            {"$ref": "../callable_responses/create_organizer_post_response.schema.json#/definitions/whatsappCounts"},
+            {"type": "null"}
+          ],
+          "description": "The update's WhatsApp leg; absent or null when it went to the app only."
+        }
       }
     }
   }

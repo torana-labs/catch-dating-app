@@ -55,6 +55,26 @@
     "leaseExpiresAt": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}, {"type": "null"}], "x-catch-ownership": "server-only"},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
-    "completedAt": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}, {"type": "null"}], "x-catch-ownership": "server-only"}
+    "completedAt": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}, {"type": "null"}], "x-catch-ownership": "server-only"},
+    "channels": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "enum": ["app", "whatsapp"]}, "description": "Channels this follower update goes out on. Absent reads as [\"app\"] (Home, Activity and push).", "x-catch-ownership": "server-only"},
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The WhatsApp leg (route organizerFollowerWhatsapp), present only when channels includes whatsapp. Recipients are frozen into the campaign engine (organizerCampaigns/{campaignId} with recipientSource organizerFollowers) while follower pages are read; counts mirror that campaign's delivery counts.",
+      "required": ["campaignId", "status", "queuedCount", "skippedCount", "sentCount", "deliveredCount", "readCount", "failedCount", "suppressedCount", "syncedAt"],
+      "properties": {
+        "campaignId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "status": {"type": "string", "enum": ["collecting", "sending", "completed"], "description": "collecting while follower pages are read; sending once the campaign is scheduled; completed when no recipient is pending or sending."},
+        "queuedCount": {"type": "integer", "minimum": 0, "description": "Followers frozen as WhatsApp recipients (consent, verified phone, not stopped)."},
+        "skippedCount": {"type": "integer", "minimum": 0, "description": "Followers without follower WhatsApp consent bound to their verified phone, or otherwise not reachable on WhatsApp."},
+        "sentCount": {"type": "integer", "minimum": 0},
+        "deliveredCount": {"type": "integer", "minimum": 0},
+        "readCount": {"type": "integer", "minimum": 0},
+        "failedCount": {"type": "integer", "minimum": 0},
+        "suppressedCount": {"type": "integer", "minimum": 0},
+        "syncedAt": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}, {"type": "null"}]}
+      },
+      "x-catch-ownership": "server-only"
+    }
   }
 }

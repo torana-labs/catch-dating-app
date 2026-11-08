@@ -27,16 +27,17 @@
       "required": ["kind"],
       "description": "Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.",
       "properties": {
-        "kind": {"type": "string", "enum": ["savedAudience", "programSelection"]},
+        "kind": {"type": "string", "enum": ["savedAudience", "programSelection", "organizerFollowers"], "description": "organizerFollowers is the WhatsApp leg of one follower update (organizerPostId); its recipients are frozen from organizerFollows with followerUpdates consent."},
         "programId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "description": "Required when kind=programSelection; ignored otherwise."},
         "functionIds": {"type": ["array", "null"], "maxItems": 32, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "description": "Restricts to guests invited to these functions; null or empty means every function in the program."},
         "rsvpStatuses": {"type": ["array", "null"], "maxItems": 4, "uniqueItems": true, "items": {"$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"}, "description": "Restricts to matching per-function RSVP states; null or empty means every status."},
         "householdDedupe": {"type": ["boolean", "null"], "description": "When true, one message is sent per household primary contact instead of per guest. Default false."}
       }
     },
+    "organizerPostId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "description": "The follower update this campaign delivers on WhatsApp when recipientSource.kind is organizerFollowers. Absent elsewhere."},
     "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "templateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "templateVariables": {"type": "object", "maxProperties": 20, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "additionalProperties": {"type": "string", "minLength": 1, "maxLength": 240}},
+    "templateVariables": {"type": "object", "maxProperties": 20, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "additionalProperties": {"type": "string", "minLength": 1, "maxLength": 1000}, "description": "Values are at most 240 characters on campaigns authored in Host; a follower update carries its text (up to 500) in the one body variable."},
     "eventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "inviteDestinationKind": {"type": ["string", "null"], "enum": [null, "catchEvent", "eventRuntime", "externalBooking", "marketingLanding"]},
     "scheduledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},

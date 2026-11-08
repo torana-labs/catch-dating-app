@@ -339,6 +339,8 @@
     "FetchSwipeCandidatesCallableResponse",
     "FinalizeOrganizerFormAssetCallablePayload",
     "FindOrganizerFormPaymentCallablePayload",
+    "FollowOrganizerByPhoneCallablePayload",
+    "FollowOrganizerByPhoneCallableResponse",
     "GenerateSalesPartnerOutreachCallablePayload",
     "GetCrossPathsSuggestionsCallablePayload",
     "GetCrossPathsSuggestionsCallableResponse",

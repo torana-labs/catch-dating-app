@@ -31,7 +31,21 @@ Widget hostFollowerUpdateComposerSheetStates(BuildContext context) =>
           organizer: HostOperationsFixtures.primaryOrganizer,
           remainingQuota: 2,
           requestIdFactory: () => 'widgetbook-follower-update',
-          onSubmitPost: ({required requestId, required text}) async {},
+          onSubmitPost:
+              ({required requestId, required text, required whatsapp}) async =>
+                  null,
+        ),
+      ),
+      (
+        'WhatsApp ready',
+        HostFollowerUpdateComposerSheet(
+          organizer: HostOperationsFixtures.primaryOrganizer,
+          remainingQuota: 2,
+          whatsappAvailable: true,
+          requestIdFactory: () => 'widgetbook-follower-update',
+          onSubmitPost:
+              ({required requestId, required text, required whatsapp}) async =>
+                  null,
         ),
       ),
     ]);

@@ -74,6 +74,27 @@ test("message followers sends twice a month, replays reuse a slot",
       ["m1", "m2"]);
   });
 
+test("a WhatsApp message is the same send and reports both channels",
+  async () => {
+    const {deps, sent, docs} = fixture(async (request) => {
+      sent.push(request.data);
+      return {activityAvailableCount: 12, whatsapp: {status: "collecting",
+        queuedCount: 4, skippedCount: 8, sentCount: 0, deliveredCount: 0,
+        failedCount: 0}};
+    });
+    const result = await manageOrganizerOwnerPageHandler(ownerViewRequest({
+      organizerId: "org-1", requestId: "w1", action: "sendFollowerMessage",
+      text: "New date", channels: ["app", "whatsapp"]}), deps);
+    assert.deepEqual(sent[0], {organizerId: "org-1", requestId: "w1",
+      text: "New date", channels: ["app", "whatsapp"]});
+    assert.equal(result.followerMessages?.used, 1);
+    assert.deepEqual(result.followerMessages?.delivery, {
+      appRecipientCount: 12, whatsapp: {status: "collecting", queuedCount: 4,
+        skippedCount: 8, sentCount: 0, deliveredCount: 0, failedCount: 0}});
+    assert.deepEqual(
+      docs["organizerFollowerMessageQuotas/org-1_202612"].requestIds, ["w1"]);
+  });
+
 test("a failed send gives its slot back", async () => {
   const {deps, docs} = fixture(async () => {
     throw new HttpsError("resource-exhausted", "Weekly posts used.");

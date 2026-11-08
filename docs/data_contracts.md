@@ -4735,7 +4735,12 @@ not be stored as an unversioned remote document.
 
 Organizer follower posts live under
 `organizers/{organizerId}/posts/{postId}` and are created only by the
-`createOrganizerPost` callable. Clients may read authenticated posts, but
+`createOrganizerPost` callable. A post with `channels: ["app", "whatsapp"]`
+also goes to followers whose `followerUpdates` WhatsApp purpose is bound to
+their verified phone, through a follower campaign
+(`recipientSource.kind = organizerFollowers`, `organizerPostId`); the
+operation's optional `whatsapp` leg mirrors that campaign's counts, and
+recipient receipts carry an optional `whatsappStatus`. Clients may read authenticated posts, but
 direct writes are denied. The callable verifies organizer-manager authority,
 validates optional linked events against the same organizer, enforces the
 rolling three-posts-per-seven-days quota, writes the canonical post, and fans

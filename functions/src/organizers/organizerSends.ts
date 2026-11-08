@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {followerWhatsappResponse} from "./organizerFollowerWhatsappLeg";
 import {
   CallableRequest,
   HttpsError,
@@ -111,7 +112,9 @@ export async function listOrganizerCampaignsHandler(
   const campaigns = campaignSnapshot.docs.map((snapshot) => ({
     id: snapshot.id,
     data: snapshot.data() as OrganizerCampaignDocument,
-  })).filter((row) => row.data.organizerId === data.organizerId);
+  })).filter((row) => row.data.organizerId === data.organizerId &&
+    // A follower update's WhatsApp leg is shown on its follower update row.
+    row.data.recipientSource?.kind !== "organizerFollowers");
   const templateIds = [...new Set(campaigns.map((row) => row.data.templateId))];
   const savedAudienceIds = [...new Set(campaigns.flatMap((row) =>
     row.data.savedAudienceId ? [row.data.savedAudienceId] : [],
@@ -204,6 +207,8 @@ export async function listOrganizerCampaignsHandler(
           pushUnknownCount: operation?.pushUnknownCount ?? 0,
           createdAtMillis: post.createdAt.toMillis(),
           activityAtMillis: post.createdAt.toMillis(),
+          ...(operation?.whatsapp ?
+            {whatsapp: followerWhatsappResponse(operation.whatsapp)} : {}),
         };
       }),
   ]);

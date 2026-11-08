@@ -57,7 +57,7 @@ test("the owner reads insights, links, about and every capability",
       ["tickets", "community"]);
     assert.equal(view.about, "Trivia on Tuesdays.");
     assert.deepEqual(view.followerMessages,
-      {month: "2026-11", limit: 2, used: 1});
+      {month: "2026-11", limit: 2, used: 1, whatsappAvailable: false});
   });
 
 test("a manager is an editor without about or settings", async () => {
