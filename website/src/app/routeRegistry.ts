@@ -16,6 +16,12 @@ export type MarketingRouteId =
   | "event_rehearsal"
   | "event_invite"
   | "household_rsvp"
+  | "programme_itinerary"
+  | "programme_ids"
+  | "programme_hotel"
+  | "programme_trip"
+  | "programme_runsheet"
+  | "programme_hampers"
   | "public_form"
   | "claim"
   | "claim_lookup"
@@ -51,6 +57,12 @@ export const marketingRouteDefinitions = [
   {id: "event_rehearsal", path: "/rehearse/:publicRehearsalId"},
   {id: "event_invite", path: "/invite/:inviteToken"},
   {id: "household_rsvp", path: "/rsvp/:householdToken"},
+  {id: "programme_itinerary", path: "/itinerary/:householdToken"},
+  {id: "programme_ids", path: "/ids/:householdToken"},
+  {id: "programme_hotel", path: "/hotel/:linkToken"},
+  {id: "programme_trip", path: "/trip/:linkToken"},
+  {id: "programme_runsheet", path: "/runsheet/:linkToken"},
+  {id: "programme_hampers", path: "/hampers/:linkToken"},
   {id: "public_form", path: "/f/:publicFormId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},

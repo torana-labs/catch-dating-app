@@ -846,6 +846,7 @@ export {
 export {createProgramAssetUpload} from "./programs/programAssets";
 export {
   decideProgramGuestId,
+  getProgramGuestIdStatus,
   getProgramHotelHandover,
   listProgramIdTracker,
   submitProgramGuestId,

@@ -123,6 +123,22 @@ import type {GetProgramHouseholdRsvpViewCallablePayload} from "../../functions/s
 import type {ProgramHouseholdRsvpViewCallableResponse} from "../../functions/src/shared/generated/programHouseholdRsvpViewCallableResponse";
 import type {SubmitProgramHouseholdRsvpCallablePayload} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallablePayload";
 import type {SubmitProgramHouseholdRsvpCallableResponse} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallableResponse";
+import type {GetProgramGuestIdStatusCallablePayload} from "../../functions/src/shared/generated/getProgramGuestIdStatusCallablePayload";
+import type {ProgramGuestIdStatusCallableResponse} from "../../functions/src/shared/generated/programGuestIdStatusCallableResponse";
+import type {CreateProgramAssetUploadCallablePayload} from "../../functions/src/shared/generated/createProgramAssetUploadCallablePayload";
+import type {ProgramAssetUploadCallableResponse} from "../../functions/src/shared/generated/programAssetUploadCallableResponse";
+import type {SubmitProgramGuestIdCallablePayload} from "../../functions/src/shared/generated/submitProgramGuestIdCallablePayload";
+import type {ProgramGuestIdCallableResponse} from "../../functions/src/shared/generated/programGuestIdCallableResponse";
+import type {GetProgramHotelHandoverCallablePayload} from "../../functions/src/shared/generated/getProgramHotelHandoverCallablePayload";
+import type {ProgramHotelHandoverCallableResponse} from "../../functions/src/shared/generated/programHotelHandoverCallableResponse";
+import type {GetProgramDriverTripCallablePayload} from "../../functions/src/shared/generated/getProgramDriverTripCallablePayload";
+import type {ProgramDriverTripCallableResponse} from "../../functions/src/shared/generated/programDriverTripCallableResponse";
+import type {GetProgramVendorRunSheetCallablePayload} from "../../functions/src/shared/generated/getProgramVendorRunSheetCallablePayload";
+import type {ProgramVendorRunSheetCallableResponse} from "../../functions/src/shared/generated/programVendorRunSheetCallableResponse";
+import type {GetProgramHamperWebViewCallablePayload} from "../../functions/src/shared/generated/getProgramHamperWebViewCallablePayload";
+import type {ProgramHamperWebViewCallableResponse} from "../../functions/src/shared/generated/programHamperWebViewCallableResponse";
+import type {UpsertProgramHamperCallablePayload} from "../../functions/src/shared/generated/upsertProgramHamperCallablePayload";
+import type {ProgramHamperCallableResponse} from "../../functions/src/shared/generated/programHamperCallableResponse";
 import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
 import type {FindOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallablePayload";
 import type {FindOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallableResponse";
@@ -1319,6 +1335,91 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
   if (!projectId) return null;
   return `https://asia-south1-${projectId}.cloudfunctions.net/` +
     `programHouseholdItineraryIcs?token=${encodeURIComponent(token)}`;
+}
+
+/** The programme's token links (P4.10): each read takes the link's own signed token. */
+export type {
+  ProgramAssetUploadCallableResponse,
+  ProgramDriverTripCallableResponse,
+  ProgramGuestIdStatusCallableResponse,
+  ProgramHamperWebViewCallableResponse,
+  ProgramHotelHandoverCallableResponse,
+  ProgramHouseholdRsvpViewCallableResponse,
+  ProgramVendorRunSheetCallableResponse,
+  SubmitProgramGuestIdCallablePayload,
+  UpsertProgramHamperCallablePayload,
+};
+
+export async function getProgramGuestIdStatus(
+  payload: GetProgramGuestIdStatusCallablePayload
+): Promise<ProgramGuestIdStatusCallableResponse> {
+  return invokeWebsiteCallable("getProgramGuestIdStatus", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function createProgramAssetUpload(
+  payload: CreateProgramAssetUploadCallablePayload
+): Promise<ProgramAssetUploadCallableResponse> {
+  return invokeWebsiteCallable("createProgramAssetUpload", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+/** POSTs one file to the signed policy createProgramAssetUpload returned. */
+export async function uploadProgramAsset(
+  intent: ProgramAssetUploadCallableResponse,
+  file: Blob
+): Promise<void> {
+  const body = new FormData();
+  for (const [key, value] of Object.entries(intent.uploadFields)) {
+    body.append(key, value);
+  }
+  body.append("file", file);
+  const response = await fetch(intent.uploadUrl, {method: "POST", body});
+  if (!response.ok) {
+    throw new Error("The secure file upload failed. Please try again.");
+  }
+}
+
+export async function submitProgramGuestId(
+  payload: SubmitProgramGuestIdCallablePayload
+): Promise<ProgramGuestIdCallableResponse> {
+  return invokeWebsiteCallable("submitProgramGuestId", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function getProgramHotelHandover(
+  payload: GetProgramHotelHandoverCallablePayload
+): Promise<ProgramHotelHandoverCallableResponse> {
+  return invokeWebsiteCallable("getProgramHotelHandover", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function getProgramDriverTrip(
+  payload: GetProgramDriverTripCallablePayload
+): Promise<ProgramDriverTripCallableResponse> {
+  return invokeWebsiteCallable("getProgramDriverTrip", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function getProgramVendorRunSheet(
+  payload: GetProgramVendorRunSheetCallablePayload
+): Promise<ProgramVendorRunSheetCallableResponse> {
+  return invokeWebsiteCallable("getProgramVendorRunSheet", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function getProgramHamperWebView(
+  payload: GetProgramHamperWebViewCallablePayload
+): Promise<ProgramHamperWebViewCallableResponse> {
+  return invokeWebsiteCallable("getProgramHamperWebView", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function upsertProgramHamper(
+  payload: UpsertProgramHamperCallablePayload
+): Promise<ProgramHamperCallableResponse> {
+  return invokeWebsiteCallable("upsertProgramHamper", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
 }
 
 export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {

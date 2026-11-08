@@ -112,6 +112,13 @@
       "twitterDescription": "Your invited functions and household RSVP.",
       "robots": "noindex, follow"
     },
+    "programme_link": {
+      "title": "Your wedding link | Catch",
+      "description": "A private link from your wedding planner: an itinerary, IDs for the hotel, a rooming list, a trip, a run sheet or the welcome hampers.",
+      "canonicalPath": "/weddings/",
+      "twitterDescription": "A private link from your wedding planner.",
+      "robots": "noindex, follow"
+    },
     "event_offer": {
       "title": "Your event invitation | Catch",
       "description": "Verify your phone to open your private event invitation and check your booking.",
