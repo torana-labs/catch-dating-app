@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
-import 'package:catch_dating_app/hosts/events/event_commands.dart';
+import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_body.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'

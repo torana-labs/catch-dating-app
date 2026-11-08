@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
-import 'package:catch_dating_app/contexts/programmes/parts/staff_dispatch_car.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/staff_dispatch_car_card.dart';
 import 'package:flutter/foundation.dart';
 
 /// One suggested car with its parties named from the roster and whether

@@ -23,8 +23,8 @@ class StaffDispatchParty {
 /// A car the plan suggests: the vehicle and its seats, where it goes, how
 /// full it is, the parties in it and Dispatch, or Waiting for N more while
 /// someone in it is still inside the terminal.
-class StaffDispatchCar extends StatelessWidget {
-  const StaffDispatchCar({
+class StaffDispatchCarCard extends StatelessWidget {
+  const StaffDispatchCarCard({
     super.key,
     required this.group,
     required this.parties,

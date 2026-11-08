@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -39,7 +39,7 @@ class HostProgrammeFunctionBody extends StatelessWidget {
     final l10n = context.l10n;
     final function = state.function(functionId);
     if (state.status != HostProgrammeStatus.ready) {
-      return HostProgrammeStateView(status: state.status, onRetry: onRetry);
+      return HostProgrammeStateBody(status: state.status, onRetry: onRetry);
     }
     if (function == null) {
       return CatchPageBody.screen(

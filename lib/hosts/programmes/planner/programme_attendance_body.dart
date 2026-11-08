@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -33,7 +33,7 @@ class HostProgrammeAttendanceBody extends StatelessWidget {
     final l10n = context.l10n;
     final report = state.value;
     if (state.status != HostProgrammeStatus.ready || report == null) {
-      return HostProgrammeStateView(status: state.status, onRetry: onRetry);
+      return HostProgrammeStateBody(status: state.status, onRetry: onRetry);
     }
     final checkIns = report.functions.fold(
       0,

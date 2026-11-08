@@ -228,6 +228,7 @@ class _SettingsScreenState extends ConsumerState<OrganizerSettingsScreen> {
     setState(() => _opening = true);
     var opened = false;
     try {
+      // provider-graph: ownership-widget-async:_SettingsScreenState._open:await:externalLinkControllerProvider.openExternal watch CAT156 -- Opening an external link through the platform link controller; the widget holds only a local opening flag to stop double taps. Mechanical launcher feedback.
       opened = await ref.read(externalLinkControllerProvider).openExternal(uri);
     } on Object {
       // The notice below is the visible result of a failed launch.

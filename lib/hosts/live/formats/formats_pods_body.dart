@@ -120,7 +120,7 @@ class HostFormatsPodsBody extends StatelessWidget {
                   ],
                 ),
                 if (pod.runners.isNotEmpty)
-                  FormatsPlayers(players: pod.runners)
+                  FormatsPlayersRow(players: pod.runners)
                 else
                   CatchText(
                     l10n.hostFormatsPodEmpty,

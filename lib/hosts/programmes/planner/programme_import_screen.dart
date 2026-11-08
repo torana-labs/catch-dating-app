@@ -88,6 +88,7 @@ class _HostProgrammeImportScreenState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_HostProgrammeImportScreenState._run:await:programWorkspaceControllerProvider.importManifest watch CAT156 -- The workspace controller imports the manifest; the widget keeps the dry-run result, pending flag and error to draw the preview. Move them into a generated import controller in the CAT156 migration.
       final result = await ref
           .read(programWorkspaceControllerProvider.notifier)
           .importManifest(

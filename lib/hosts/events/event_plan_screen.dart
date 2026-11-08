@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
-import 'package:catch_dating_app/hosts/events/event_commands.dart';
+import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_body.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';

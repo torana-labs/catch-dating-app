@@ -10,11 +10,10 @@ import 'package:catch_dating_app/contexts/live/data/event_success_repository.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'event_commands.g.dart';
+part 'event_commands_controller.g.dart';
 
 /// The commands the event screens commit. Every one is an existing
 /// command; none invalidates a read, since each screen reads through a
@@ -64,15 +63,17 @@ class HostEventCommands extends _$HostEventCommands {
     required bool published,
   }) async {
     requireSignedInUid(ref, action: 'change who can see the event');
-    await EventPublicationRepository(ref.read(firebaseFunctionsProvider)).set(
-      EventPublicationRequest(
-        organizerId: organizerId,
-        eventId: eventId,
-        requestId: hostEventRequestId(),
-        expectedSetupRevision: expectedSetupRevision,
-        publicationState: published ? 'published' : 'private',
-      ),
-    );
+    await ref
+        .read(eventPublicationRepositoryProvider)
+        .set(
+          EventPublicationRequest(
+            organizerId: organizerId,
+            eventId: eventId,
+            requestId: hostEventRequestId(),
+            expectedSetupRevision: expectedSetupRevision,
+            publicationState: published ? 'published' : 'private',
+          ),
+        );
   }
 
   /// Records whether a guest came, through the attendance outbox as the
@@ -107,15 +108,15 @@ class HostEventCommands extends _$HostEventCommands {
     required ManagerEventSetupPreferences next,
   }) async {
     requireSignedInUid(ref, action: 'save event defaults');
-    await ManagerEventSetupDefaultsRepository(
-      ref.read(firebaseFunctionsProvider),
-    ).update(
-      ManagerEventSetupDefaultsUpdateRequest.forChange(
-        current: current,
-        requestId: hostEventRequestId(),
-        next: next,
-      ),
-    );
+    await ref
+        .read(managerEventSetupDefaultsRepositoryProvider)
+        .update(
+          ManagerEventSetupDefaultsUpdateRequest.forChange(
+            current: current,
+            requestId: hostEventRequestId(),
+            next: next,
+          ),
+        );
   }
 }
 

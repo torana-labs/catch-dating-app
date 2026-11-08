@@ -90,6 +90,7 @@ class _HostFormatsPodsScreenState extends ConsumerState<HostFormatsPodsScreen> {
       controller
         ..open(review)
         ..select(AssistancePlaceGroup(pod.id));
+      // provider-graph: ownership-widget-async:_HostFormatsPodsScreenState._place:await:eventAssistanceMembershipControllerProvider.submit watch CAT156 -- The membership controller owns the write and its error; the widget keeps the set of runners being placed so their rows show pending. Move the pending set into the controller in the CAT156 migration.
       await controller.submit();
       if (mounted) showCatchNotice(context, placed);
     } on Object catch (error) {

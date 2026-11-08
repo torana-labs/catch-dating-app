@@ -176,7 +176,7 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
   /// mid-frame when they resume, so it waits for the tab to tick again.
   void _refreshHistoryWhenShown() {
     if (!mounted) return;
-    if (TickerMode.getNotifier(context).value) {
+    if (TickerMode.getValuesNotifier(context).value.enabled) {
       refreshHostEventsHistory(ref);
       return;
     }

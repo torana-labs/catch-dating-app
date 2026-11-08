@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_body.d
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_body.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';

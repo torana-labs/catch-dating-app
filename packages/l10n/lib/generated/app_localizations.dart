@@ -1030,7 +1030,7 @@ abstract class AppLocalizations {
   /// Organiser setup description placeholder.
   ///
   /// In en, this message translates to:
-  /// **'Quiz nights and supper clubs around Bandra, most weeks.'**
+  /// **'Quiz nights and suppers around Bandra, most weeks.'**
   String get hostOnboardingDetailsAboutPlaceholder;
 
   /// Organiser setup label over the format chips.
@@ -20778,7 +20778,7 @@ abstract class AppLocalizations {
   /// Form page section note.
   ///
   /// In en, this message translates to:
-  /// **'{count} to review'**
+  /// **'{count, plural, other{{count} to review}}'**
   String hostFormsWaitingNote({required int count});
 
   /// Form page: no answers to review.
@@ -42867,7 +42867,7 @@ abstract class AppLocalizations {
   /// Avatar row overflow count.
   ///
   /// In en, this message translates to:
-  /// **'{count} more'**
+  /// **'{count, plural, other{{count} more}}'**
   String hostFormatsMore({required int count});
 
   /// Two first names joined.
@@ -42879,7 +42879,7 @@ abstract class AppLocalizations {
   /// Several first names joined.
   ///
   /// In en, this message translates to:
-  /// **'{first}, {second} and {count} more'**
+  /// **'{first}, {second} and {count, plural, other{{count} more}}'**
   String hostFormatsManyNames({
     required String first,
     required String second,
@@ -43018,7 +43018,7 @@ abstract class AppLocalizations {
   /// Sitting out section note.
   ///
   /// In en, this message translates to:
-  /// **'{count} this round'**
+  /// **'{count, plural, other{{count} this round}}'**
   String hostFormatsSittingOutNote({required int count});
 
   /// Sitting out section empty.
@@ -43484,7 +43484,7 @@ abstract class AppLocalizations {
   /// Not here yet note: people not shown.
   ///
   /// In en, this message translates to:
-  /// **'{count} more'**
+  /// **'{count, plural, other{{count} more}}'**
   String hostFormatsCrawlNotHereMore({required int count});
 
   /// Not here yet empty.

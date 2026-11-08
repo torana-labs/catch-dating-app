@@ -558,7 +558,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostOnboardingDetailsAboutPlaceholder =>
-      'Quiz nights and supper clubs around Bandra, most weeks.';
+      'Quiz nights and suppers around Bandra, most weeks.';
 
   @override
   String get hostOnboardingDetailsFormats => 'What you run';
@@ -13325,7 +13325,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormsWaitingNote({required int count}) {
-    return '$count to review';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count to review',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -26558,7 +26563,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormatsMore({required int count}) {
-    return '$count more';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -26572,7 +26582,12 @@ class AppLocalizationsEn extends AppLocalizations {
     required String second,
     required int count,
   }) {
-    return '$first, $second and $count more';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more',
+    );
+    return '$first, $second and $_temp0';
   }
 
   @override
@@ -26675,7 +26690,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormatsSittingOutNote({required int count}) {
-    return '$count this round';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count this round',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -26976,7 +26996,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormatsCrawlNotHereMore({required int count}) {
-    return '$count more';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more',
+    );
+    return '$_temp0';
   }
 
   @override

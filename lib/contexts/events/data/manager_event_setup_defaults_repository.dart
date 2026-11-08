@@ -3,11 +3,15 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_prefer
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'manager_event_setup_defaults_view.dart';
 export 'read_models/host_event_setup_default_view_reads.dart'
     show managerEventSetupDefaultsViewProvider;
+
+part 'manager_event_setup_defaults_repository.g.dart';
 
 final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
@@ -337,3 +341,9 @@ class ManagerEventSetupDefaultsRepository {
     );
   }
 }
+
+/// The ManagerEventSetupDefaultsRepository over the app's callable functions.
+@riverpod
+ManagerEventSetupDefaultsRepository managerEventSetupDefaultsRepository(
+  Ref ref,
+) => ManagerEventSetupDefaultsRepository(ref.watch(firebaseFunctionsProvider));

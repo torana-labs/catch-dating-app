@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/programmes/staff/staff_door_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_door_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_operations.dart';
-import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notices.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notice_list.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_walk_in_sheet.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -120,12 +120,12 @@ class _StaffDoorScreenState extends ConsumerState<StaffDoorScreen>
           state: state,
           party: _party,
           notices:
-              StaffOperationsNotices.shows(
+              StaffOperationsNoticeList.shows(
                 outbox: operations.outbox,
                 savedAt: state.savedAt,
                 errorMessage: errorMessage,
               )
-              ? StaffOperationsNotices(
+              ? StaffOperationsNoticeList(
                   savedAt: state.savedAt,
                   outbox: operations.outbox,
                   busy: operations.busy,

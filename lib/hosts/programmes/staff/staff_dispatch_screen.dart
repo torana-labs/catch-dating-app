@@ -10,7 +10,7 @@ import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_body.dart
 import 'package:catch_dating_app/hosts/programmes/staff/staff_dispatch_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_operations.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_dispatch_sheet.dart';
-import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notices.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/widgets/staff_operations_notice_list.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -254,12 +254,12 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
           state: state,
           busy: operations.busy,
           notices:
-              StaffOperationsNotices.shows(
+              StaffOperationsNoticeList.shows(
                 outbox: operations.outbox,
                 savedAt: state.savedAt,
                 errorMessage: errorMessage,
               )
-              ? StaffOperationsNotices(
+              ? StaffOperationsNoticeList(
                   savedAt: state.savedAt,
                   outbox: operations.outbox,
                   busy: operations.busy,
@@ -344,7 +344,6 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
           'Program access expired. Refresh this view.',
         );
       }
-      // provider-graph: ownership-widget-async:_StaffDispatchScreenState._dispatch:await:programOperationsControllerProvider.dispatch planned CAT156 -- Owns pending/error and roster/access-generation checks around the existing operations outbox seam. Preserve access deadlines, actor generation and durable dispatch recovery.
       final accepted =
           await operationsController(accountId)?.dispatch(
             roster: view.value,

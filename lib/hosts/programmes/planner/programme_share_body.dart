@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -28,7 +28,7 @@ class HostProgrammeShareBody extends StatelessWidget {
     if (state.status != HostProgrammeStatus.ready ||
         counts == null ||
         access == null) {
-      return HostProgrammeStateView(status: state.status, onRetry: onRetry);
+      return HostProgrammeStateBody(status: state.status, onRetry: onRetry);
     }
     final functions = counts.functions;
     final waiting = functions.where((f) => f.rsvpPending > 0).toList();

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_household_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_reply_badge.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -35,7 +35,7 @@ class HostProgrammeHouseholdBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     if (state.status != HostProgrammeStatus.ready || state.guests == null) {
-      return HostProgrammeStateView(
+      return HostProgrammeStateBody(
         status: state.status == HostProgrammeStatus.ready
             ? HostProgrammeStatus.loading
             : state.status,
@@ -99,7 +99,7 @@ class HostProgrammeHouseholdBody extends StatelessWidget {
         CatchSection(
           title: l10n.hostProgrammeGuestsGridTitle,
           children: [
-            ProgrammeGridKicker(names: [for (final f in functions) f.name]),
+            ProgrammeGridHeader(names: [for (final f in functions) f.name]),
             for (final member in household.members)
               CatchIndexRow(
                 key: ValueKey<String>(

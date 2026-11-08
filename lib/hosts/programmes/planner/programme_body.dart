@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_function_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_views.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -34,15 +34,15 @@ class HostProgrammeBody extends StatelessWidget {
     final l10n = context.l10n;
     final program = state.program;
     if (state.status != HostProgrammeStatus.ready || program == null) {
-      return HostProgrammeStateView(status: state.status, onRetry: onRetry);
+      return HostProgrammeStateBody(status: state.status, onRetry: onRetry);
     }
     final waiting = state.guests == null ? 0 : state.waitingHouseholds;
     final days = state.days;
     return CatchPageBody.screen(
       gap: CatchPageBodyGap.tight,
       children: [
-        HostProgrammeSpotlight(state: state),
-        HostProgrammeViews(
+        HostProgrammeSpotlightHeader(state: state),
+        HostProgrammeTabBar(
           selected: HostProgrammeView.schedule,
           onView: onView,
         ),
@@ -101,8 +101,8 @@ class HostProgrammeBody extends StatelessWidget {
 
 /// The programme's spotlight: its dates and kind, its name and four
 /// numbers (guests, households, flying in, staff).
-class HostProgrammeSpotlight extends StatelessWidget {
-  const HostProgrammeSpotlight({super.key, required this.state});
+class HostProgrammeSpotlightHeader extends StatelessWidget {
+  const HostProgrammeSpotlightHeader({super.key, required this.state});
 
   final HostProgrammeState state;
 

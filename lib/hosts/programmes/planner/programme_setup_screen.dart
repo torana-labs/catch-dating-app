@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_body.d
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_vendor_controller.dart';
-import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_view.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -133,7 +133,7 @@ class _HostProgrammeSetupScreenState
                 vendors: vendors,
                 onChanged: (draft) => setState(() => _draft = draft),
               )
-            : HostProgrammeStateView(
+            : HostProgrammeStateBody(
                 status: state.status,
                 onRetry: () => refreshHostProgramme(ref, widget.programId),
               ),

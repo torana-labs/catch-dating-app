@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/contexts/programmes/parts/staff_hotel_trip.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/staff_hotel_trip_card.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
@@ -109,7 +109,7 @@ class StaffHotelDeskBody extends StatelessWidget {
               : null,
           children: [
             for (final trip in state.onTheWay)
-              StaffHotelTrip(
+              StaffHotelTripCard(
                 trip: trip,
                 now: now,
                 rooms: state.rooms,

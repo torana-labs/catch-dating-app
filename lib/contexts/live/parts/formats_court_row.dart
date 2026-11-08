@@ -28,7 +28,7 @@ class FormatsCourtRow extends StatelessWidget {
       onTap: null,
       density: CatchIndexRowSize.compact,
       status: status,
-      footer: FormatsPlayers(players: players),
+      footer: FormatsPlayersRow(players: players),
     );
   }
 }
@@ -66,7 +66,7 @@ class FormatsCourtTile extends StatelessWidget {
               if (status != null) CatchBadge(label: status),
             ],
           ),
-          FormatsPlayers(
+          FormatsPlayersRow(
             players: players,
             size: GeneratedCatchSizeTokens.avatarMd,
           ),
@@ -78,8 +78,8 @@ class FormatsCourtTile extends StatelessWidget {
 
 /// A few people as overlapping avatars and their first names: "Aanya and
 /// Dev".
-class FormatsPlayers extends StatelessWidget {
-  const FormatsPlayers({
+class FormatsPlayersRow extends StatelessWidget {
+  const FormatsPlayersRow({
     super.key,
     required this.players,
     this.size = GeneratedCatchSizeTokens.avatarSm,
