@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_assistant_settings.schema.json",
+  "title": "ProgramAssistantSettingsDocument",
+  "description": "How one programme's WhatsApp assistant behaves, at programAssistantSettings/{programId}. Absent means the defaults: off, English and Hindi, reply within four hours, no escalation staff, warm tone, 200000 tokens a day, every answer topic, no attachment reads. Read by the assistant (lane W2). Server-only; deleted by the programme retention sweep.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAssistantSettings",
+  "x-firestore-path": "programAssistantSettings/{programId}",
+  "x-owner": "updateProgramAssistantSettings callable",
+  "required": [
+    "programId",
+    "organizerId",
+    "enabled",
+    "languages",
+    "replyWithin",
+    "escalationStaffUids",
+    "neverDoes",
+    "tone",
+    "dailyTokenBudget",
+    "answerTopics",
+    "attachmentReads",
+    "updatedByUid",
+    "updatedAtMillis",
+    "revision",
+    "lastRequestId",
+    "lastRequestHash"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether the assistant answers this wedding's guests. The PROGRAM_ASSISTANT_ENABLED param must also be true.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "en",
+          "hi",
+          "gu",
+          "mr",
+          "ta"
+        ]
+      },
+      "description": "Languages the assistant may reply in; the first is the fallback.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "replyWithin": {
+      "type": "string",
+      "enum": [
+        "hour",
+        "fourHours",
+        "sameDay"
+      ],
+      "description": "What guests are told about when the planner replies to anything passed on.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "escalationStaffUids": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Programme staff told when a thread is passed to the planner.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "neverDoes": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "changesBookings",
+          "sharesOtherGuests",
+          "guesses",
+          "promisesForPlanner"
+        ]
+      },
+      "description": "The fixed list of things the assistant never does; written by the server, never by clients.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "tone": {
+      "type": "string",
+      "enum": [
+        "warm",
+        "formal",
+        "brief"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "dailyTokenBudget": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 5000000,
+      "description": "Per-programme daily model token cap.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "answerTopics": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "schedule",
+          "venues",
+          "dressCode",
+          "travel",
+          "stay",
+          "rsvp"
+        ]
+      },
+      "description": "What the assistant may answer from the household's itinerary.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "attachmentReads": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "tickets",
+          "ids"
+        ]
+      },
+      "description": "Attachments the assistant may read. Media is not downloaded yet; these are stored for the planner's choice.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

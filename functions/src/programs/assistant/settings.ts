@@ -67,7 +67,7 @@ export function threadView(threadId: string, raw: unknown): ThreadView | null {
     householdId: row.householdId,
     // A thread nobody has taken over is the assistant's.
     handledBy: row.handledBy === "planner" ? "planner" : "assistant",
-    serviceWindowExpiresAtMillis: staffTimestampMillis(row.serviceWindowExpiresAt) || 0,
+    serviceWindowExpiresAtMillis: millisField(row.serviceWindowExpiresAtMillis, row.serviceWindowExpiresAt),
     unknownSender: row.unknownSender === true,
   };
 }
@@ -93,6 +93,17 @@ export function messageView(messageId: string, raw: unknown): MessageView | null
     kind: typeof row.kind === "string" ? row.kind : "text",
     text: typeof row.text === "string" ? row.text : null,
     author: typeof row.author === "string" ? row.author : "",
-    createdAtMillis: staffTimestampMillis(row.createdAt) || 0,
+    createdAtMillis: millisField(row.createdAtMillis, row.createdAt),
   };
+}
+
+/** W1 stores times as integer millis; a timestamp is still accepted. */
+function millisField(millis: unknown, timestamp: unknown): number {
+  if (typeof millis === "number" && Number.isSafeInteger(millis) && millis >= 0) return millis;
+  if (!timestamp || typeof timestamp !== "object") return 0;
+  try {
+    return staffTimestampMillis(timestamp);
+  } catch {
+    return 0;
+  }
 }

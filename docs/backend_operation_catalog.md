@@ -520,6 +520,30 @@ board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
 
+## Programme WhatsApp threads, replies and the assistant settings
+
+Wedding guests message the programme's own WhatsApp number (an organiser
+sender connection bound through `updateOrganizerProgram`
+`whatsappSenderConnectionId`; unbound programmes fall back to the
+organiser's first active sender). The organiser webhook's inbound
+processing resolves the programme and the household
+(`programWhatsappEndpointIndex`, kept by triggers on `programHouseholds` and
+`programGuests`) before any CRM matching and stores the message in the
+household's `programWhatsappThreads` thread; a STOP revokes the household's
+messaging consent and keeps the organiser suppression path.
+`listProgramWhatsappThreads`, `getProgramWhatsappThread` and
+`setProgramWhatsappThreadHandling` are the planner inbox (managers and the
+communications duty). `sendProgramWhatsappReply` sends free text only inside
+the 24-hour window: a `programWhatsappReplyOperations` reservation precedes
+the Meta call, an uncertain outcome stays unknown, and a
+`programWhatsappDispatches` record (`kind: service`) routes delivery
+receipts back to the message. `sendProgramServiceReply` is the same path for
+the assistant (lane W2). `listProgramWhatsappCannedReplies` /
+`upsertProgramWhatsappCannedReply` keep saved replies;
+`getProgramAssistantSettings` / `updateProgramAssistantSettings` keep
+`programAssistantSettings` (managers and coordinators).
+`onProgramWhatsappInboundMessageCreated` is the assistant's trigger point.
+
 ## Programme guest IDs, hampers, photos and vendor bills
 
 `createProgramAssetUpload` signs one upload of a programme file (guest ID,

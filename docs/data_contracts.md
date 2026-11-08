@@ -4362,6 +4362,35 @@ optional `branding` field (absent when unset). The family link
 (`getProgramFamilyView`) is counts only: function names and headcounts,
 never guest or household names, phone numbers, rooms or notes.
 
+### Programme WhatsApp Threads
+
+`organizerPrograms.whatsappSenderConnectionId` (optional; absent or null
+falls back to the organiser's first active WhatsApp sender) binds a
+wedding's own number. Six new server-only collections hold the guest
+conversation; clients reach them only through callables.
+`programWhatsappEndpointIndex/{programId}_{endpointHash}` maps the sha256 of
+an E.164 number to `{householdId, guestId}` (claimants kept so a shared
+number is marked `ambiguous`), maintained by triggers on `programHouseholds`
+and `programGuests` and seeded by
+`functions/scripts/backfill-program-whatsapp-endpoint-index.cjs`; it holds
+no raw number. `programWhatsappThreads/{programId}_{householdId}` (unknown
+senders: `{programId}_u-{hash}`) carries the 24-hour window, `handledBy`
+(`assistant` | `planner`), `state` (`needsYou` | `handled`), the guest's
+language, the last message preview and the escalation reason.
+`programWhatsappMessages/{messageId}` holds one message (text up to 4096
+characters; media by reference only), its author and delivery status.
+`programWhatsappReplyOperations` reserve each free-text reply before the
+Meta call. `programWhatsappCannedReplies` hold saved replies per language
+and `programAssistantSettings/{programId}` the assistant settings (absent
+means the defaults). `programWhatsappDispatches` gains an optional `kind`
+(`template` | `service`); a service reply's `templateDocumentId` and
+`templateHash` are null.
+
+Privacy: the organiser webhook never persists a raw phone number, so an
+unknown sender's thread cannot be answered until the number is added to a
+household. The retention sweep deletes all six collections with the
+archived programme.
+
 ### Programme Guest IDs, Hampers, Photos And Vendor Bills
 
 Four server-only collections hold programme records that clients reach only

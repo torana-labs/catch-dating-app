@@ -242,6 +242,25 @@ export function programBrandingFor(
   };
 }
 
+/** A wedding's own number must be a WhatsApp sender of the same organiser.
+ *  Pending or degraded numbers may be bound; sends still require active. */
+async function requireProgramSenderConnection(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  connectionId: string,
+  organizerId: string,
+): Promise<void> {
+  const snap = await tx.get(
+    db.collection("organizerSenderConnections").doc(connectionId));
+  const connection = snap.data() as
+    {organizerId?: unknown; channel?: unknown} | undefined;
+  if (!connection || connection.organizerId !== organizerId ||
+      connection.channel !== "whatsapp") {
+    throw new HttpsError("failed-precondition",
+      "Connect this WhatsApp number to the organiser first.");
+  }
+}
+
 export async function updateOrganizerProgramHandler(
   request: CallableRequest<unknown>,
   deps: ProgramDeps = defaultDeps
@@ -321,6 +340,13 @@ export async function updateOrganizerProgramHandler(
     if (data.branding !== undefined) {
       update.branding = data.branding === null ? null :
         programBrandingFor(data.programId, data.branding);
+    }
+    if (data.whatsappSenderConnectionId !== undefined) {
+      if (data.whatsappSenderConnectionId !== null) {
+        await requireProgramSenderConnection(db, tx,
+          data.whatsappSenderConnectionId, program.organizerId);
+      }
+      update.whatsappSenderConnectionId = data.whatsappSenderConnectionId;
     }
     committedRevision = update.revision as number;
     tx.update(ref, update);
