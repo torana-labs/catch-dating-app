@@ -37,6 +37,19 @@ class HostProgrammeMessagesScreen extends ConsumerWidget {
           back: CatchTopBarBack(label: l10n.hostProgrammeBackToProgramme),
           kicker: programme.program?.title,
           title: l10n.hostProgrammeMessagesTitle,
+          actions: [
+            CatchIconAction(
+              key: const ValueKey<String>('host-programme-open-inbox'),
+              tooltip: l10n.hostProgrammeInboxOpen,
+              variant: CatchIconActionVariant.plain,
+              child: CatchIcon(CatchIcons.conversations),
+              onPressed: () => openHostProgrammePage(
+                context,
+                programId,
+                HostProgrammePage.inbox,
+              ),
+            ),
+          ],
         ),
         body: HostProgrammeMessagesBody(
           status: status,

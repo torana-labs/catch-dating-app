@@ -855,6 +855,375 @@ final class ProgramPhotosViewFamily extends $Family
   String toString() => r'programPhotosViewProvider';
 }
 
+/// One inbox segment, from the live read or a bounded snapshot.
+
+@ProviderFor(programWhatsappInbox)
+final programWhatsappInboxProvider = ProgramWhatsappInboxFamily._();
+
+/// One inbox segment, from the live read or a bounded snapshot.
+
+final class ProgramWhatsappInboxProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramWhatsappInbox>>,
+          ProgramReadView<ProgramWhatsappInbox>,
+          FutureOr<ProgramReadView<ProgramWhatsappInbox>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramWhatsappInbox>>,
+        $FutureProvider<ProgramReadView<ProgramWhatsappInbox>> {
+  /// One inbox segment, from the live read or a bounded snapshot.
+  ProgramWhatsappInboxProvider._({
+    required ProgramWhatsappInboxFamily super.from,
+    required (String, ProgramWhatsappFilter) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programWhatsappInboxProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programWhatsappInboxHash();
+
+  @override
+  String toString() {
+    return r'programWhatsappInboxProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramWhatsappInbox>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramWhatsappInbox>> create(Ref ref) {
+    final argument = this.argument as (String, ProgramWhatsappFilter);
+    return programWhatsappInbox(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramWhatsappInboxProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programWhatsappInboxHash() =>
+    r'8a41cd1419e5354ac4c2ea134b569836e8767d14';
+
+/// One inbox segment, from the live read or a bounded snapshot.
+
+final class ProgramWhatsappInboxFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramWhatsappInbox>>,
+          (String, ProgramWhatsappFilter)
+        > {
+  ProgramWhatsappInboxFamily._()
+    : super(
+        retry: null,
+        name: r'programWhatsappInboxProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One inbox segment, from the live read or a bounded snapshot.
+
+  ProgramWhatsappInboxProvider call(
+    String programId,
+    ProgramWhatsappFilter filter,
+  ) =>
+      ProgramWhatsappInboxProvider._(argument: (programId, filter), from: this);
+
+  @override
+  String toString() => r'programWhatsappInboxProvider';
+}
+
+/// One conversation, from the live read or a bounded snapshot.
+
+@ProviderFor(programWhatsappThread)
+final programWhatsappThreadProvider = ProgramWhatsappThreadFamily._();
+
+/// One conversation, from the live read or a bounded snapshot.
+
+final class ProgramWhatsappThreadProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramWhatsappThread>>,
+          ProgramReadView<ProgramWhatsappThread>,
+          FutureOr<ProgramReadView<ProgramWhatsappThread>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramWhatsappThread>>,
+        $FutureProvider<ProgramReadView<ProgramWhatsappThread>> {
+  /// One conversation, from the live read or a bounded snapshot.
+  ProgramWhatsappThreadProvider._({
+    required ProgramWhatsappThreadFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programWhatsappThreadProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programWhatsappThreadHash();
+
+  @override
+  String toString() {
+    return r'programWhatsappThreadProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramWhatsappThread>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramWhatsappThread>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programWhatsappThread(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramWhatsappThreadProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programWhatsappThreadHash() =>
+    r'1bea45390c5f583051d290006811bbdf831b5653';
+
+/// One conversation, from the live read or a bounded snapshot.
+
+final class ProgramWhatsappThreadFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramWhatsappThread>>,
+          (String, String)
+        > {
+  ProgramWhatsappThreadFamily._()
+    : super(
+        retry: null,
+        name: r'programWhatsappThreadProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One conversation, from the live read or a bounded snapshot.
+
+  ProgramWhatsappThreadProvider call(String programId, String threadId) =>
+      ProgramWhatsappThreadProvider._(
+        argument: (programId, threadId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programWhatsappThreadProvider';
+}
+
+/// The programme's saved replies.
+
+@ProviderFor(programCannedReplies)
+final programCannedRepliesProvider = ProgramCannedRepliesFamily._();
+
+/// The programme's saved replies.
+
+final class ProgramCannedRepliesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<List<ProgramCannedReply>>>,
+          ProgramReadView<List<ProgramCannedReply>>,
+          FutureOr<ProgramReadView<List<ProgramCannedReply>>>
+        >
+    with
+        $FutureModifier<ProgramReadView<List<ProgramCannedReply>>>,
+        $FutureProvider<ProgramReadView<List<ProgramCannedReply>>> {
+  /// The programme's saved replies.
+  ProgramCannedRepliesProvider._({
+    required ProgramCannedRepliesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programCannedRepliesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programCannedRepliesHash();
+
+  @override
+  String toString() {
+    return r'programCannedRepliesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<List<ProgramCannedReply>>>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<List<ProgramCannedReply>>> create(Ref ref) {
+    final argument = this.argument as String;
+    return programCannedReplies(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramCannedRepliesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programCannedRepliesHash() =>
+    r'58d66f21999e2695d6e1f574a3b98e53f0bdc5dc';
+
+/// The programme's saved replies.
+
+final class ProgramCannedRepliesFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<List<ProgramCannedReply>>>,
+          String
+        > {
+  ProgramCannedRepliesFamily._()
+    : super(
+        retry: null,
+        name: r'programCannedRepliesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The programme's saved replies.
+
+  ProgramCannedRepliesProvider call(String programId) =>
+      ProgramCannedRepliesProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programCannedRepliesProvider';
+}
+
+/// The assistant settings and the wedding's number.
+
+@ProviderFor(programAssistantSettings)
+final programAssistantSettingsProvider = ProgramAssistantSettingsFamily._();
+
+/// The assistant settings and the wedding's number.
+
+final class ProgramAssistantSettingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramAssistantSettings>>,
+          ProgramReadView<ProgramAssistantSettings>,
+          FutureOr<ProgramReadView<ProgramAssistantSettings>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramAssistantSettings>>,
+        $FutureProvider<ProgramReadView<ProgramAssistantSettings>> {
+  /// The assistant settings and the wedding's number.
+  ProgramAssistantSettingsProvider._({
+    required ProgramAssistantSettingsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programAssistantSettingsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programAssistantSettingsHash();
+
+  @override
+  String toString() {
+    return r'programAssistantSettingsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramAssistantSettings>>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramAssistantSettings>> create(Ref ref) {
+    final argument = this.argument as String;
+    return programAssistantSettings(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramAssistantSettingsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programAssistantSettingsHash() =>
+    r'a4f8b07aebe56df70af8fed478e435b526e7790b';
+
+/// The assistant settings and the wedding's number.
+
+final class ProgramAssistantSettingsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramAssistantSettings>>,
+          String
+        > {
+  ProgramAssistantSettingsFamily._()
+    : super(
+        retry: null,
+        name: r'programAssistantSettingsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The assistant settings and the wedding's number.
+
+  ProgramAssistantSettingsProvider call(String programId) =>
+      ProgramAssistantSettingsProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programAssistantSettingsProvider';
+}
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
 

@@ -9277,6 +9277,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => plannerPhotosCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_programme_inbox_desktop',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerInboxCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_inbox_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerInboxListCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_assistant_phone',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerAssistantCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_programmes_home_phone',
     routeIds: const <String>['hostProgramsScreen'],
     device: CaptureDevice.claudePhone390,
