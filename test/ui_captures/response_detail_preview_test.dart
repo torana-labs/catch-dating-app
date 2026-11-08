@@ -8,57 +8,41 @@ import 'support/capture_device.dart';
 import 'support/capture_pump.dart';
 
 void main() {
-  testWidgets(
-    'captures response detail configurations',
-    (tester) async {
-      for (final id in [
-        'host_form_response_application',
-        'host_form_response_intake',
-        'host_form_response_withdrawn',
-        'host_form_response_large_text',
-        'host_application_detail',
-        'host_response_review_submitted',
-        'host_response_review_imported',
-        'host_response_review_revoked',
-        'host_response_review_notes',
-      ]) {
-        final entry = findScreenCapture(
-          id == 'host_response_review_notes'
-              ? 'host_response_review_submitted'
-              : id,
-        );
-        await captureCatchWidget(
-          tester,
-          id: id,
-          builder: entry.builder,
-          drive: id.endsWith('_notes')
-              ? (tester) async {
-                  final note = find.byWidgetPredicate(
-                    (widget) =>
-                        widget is CatchField &&
-                        widget.title == 'Private review note',
-                  );
-                  expect(find.text('Save review note'), findsNothing);
-                  await tester.ensureVisible(note);
-                  await tester.tap(note);
-                  await pumpFeatureUi(tester);
-                  expect(find.text('Save review note'), findsOneWidget);
-                }
-              : null,
-          providerOverrides: entry.providerOverrides,
-          device: CaptureDevice.iphone17Pro,
-          includeOverlays: true,
-          textScale: id.endsWith('large_text') ? 2 : 1,
-          outputDirectory: Directory(
-            const String.fromEnvironment(
-              'CAPTURE_OUTPUT_DIR',
-              defaultValue: 'artifacts/response-detail-review/after',
-            ),
+  testWidgets('captures response detail configurations', (tester) async {
+    // The legacy response-detail captures retired with their screen; the
+    // application route renders the system response screen.
+    for (final id in ['host_application_detail']) {
+      final entry = findScreenCapture(id);
+      await captureCatchWidget(
+        tester,
+        id: id,
+        builder: entry.builder,
+        drive: id.endsWith('_notes')
+            ? (tester) async {
+                final note = find.byWidgetPredicate(
+                  (widget) =>
+                      widget is CatchField &&
+                      widget.title == 'Private review note',
+                );
+                expect(find.text('Save review note'), findsNothing);
+                await tester.ensureVisible(note);
+                await tester.tap(note);
+                await pumpFeatureUi(tester);
+                expect(find.text('Save review note'), findsOneWidget);
+              }
+            : null,
+        providerOverrides: entry.providerOverrides,
+        device: CaptureDevice.iphone17Pro,
+        includeOverlays: true,
+        textScale: id.endsWith('large_text') ? 2 : 1,
+        outputDirectory: Directory(
+          const String.fromEnvironment(
+            'CAPTURE_OUTPUT_DIR',
+            defaultValue: 'artifacts/response-detail-review/after',
           ),
-        );
-        expect(tester.takeException(), isNull);
-      }
-    },
-    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-  );
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    }
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 }
