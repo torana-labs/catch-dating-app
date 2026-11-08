@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_live_board_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_body.dart';
@@ -186,5 +188,33 @@ void main() {
     expect(actions, [ProgramAlertAction.claim]);
     await tester.tap(find.text('All alerts'));
     expect(all, 1);
+  });
+
+  test('branding reads its default and the stored look', () {
+    expect(ProgramBranding.fromMap(null).color, ProgramBrandColor.rani);
+    expect(plannerBrandedProgram.branding.color, ProgramBrandColor.marigold);
+    expect(plannerBrandedProgram.branding.creditLine, 'Meher Shah Weddings');
+  });
+
+  testWidgets('branding picks a colour and hides the credit', (tester) async {
+    ProgramBranding? changed;
+    bool? shown;
+    await pumpPlannerBody(
+      tester,
+      HostProgrammeBrandingBody(
+        program: plannerBrandedProgram,
+        branding: plannerBrandedProgram.branding,
+        showCredit: true,
+        onChanged: (value) => changed = value,
+        onShowCredit: (value) => shown = value,
+      ),
+    );
+    expect(find.text('Planned by Meher Shah Weddings'), findsOneWidget);
+    await tester.tap(find.text('Haldi yellow'));
+    expect(changed?.color, ProgramBrandColor.haldi);
+    await tester.tap(
+      find.byKey(const ValueKey('host-programme-branding-show')),
+    );
+    expect(shown, isFalse);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 
 import 'planner_fixtures.dart';
 
@@ -106,3 +107,29 @@ final plannerMessages = ProgramPlannedMessages.fromCallableData({
   ],
   'senderConnectionId': 'wa-meher',
 });
+
+/// The boards' wedding with marigold branding and Meher's credit.
+final plannerBrandedProgram = OrganizerProgramDetail.fromCallableData({
+  'program': {
+    'programId': plannerProgramId,
+    'organizerId': plannerOrganizerId,
+    'kind': 'wedding',
+    'title': 'Aditi and Kabir’s wedding',
+    'timezone': 'Asia/Kolkata',
+    'status': 'active',
+    'startsAtMillis': DateTime(2026, 12, 12).millisecondsSinceEpoch,
+    'endsAtMillis': DateTime(2026, 12, 14, 23, 59).millisecondsSinceEpoch,
+    'capabilities': <String>[],
+    'transportSettings': null,
+    'revision': 4,
+    'branding': {
+      'color': 'marigold',
+      'coverImagePath': null,
+      'creditLine': 'Meher Shah Weddings',
+    },
+  },
+  'functions': <Object?>[],
+  'pickupPoints': <Object?>[],
+  'hotels': <Object?>[],
+  'counts': <String, Object?>{},
+}).program;

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_create_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
@@ -119,3 +120,6 @@ Widget plannerMessageCapture() =>
 
 Widget plannerLiveBoardCapture() =>
     const HostProgrammeLiveBoardScreen(programId: plannerProgramId);
+
+Widget plannerBrandingCapture() =>
+    const HostProgrammeBrandingScreen(programId: plannerProgramId);

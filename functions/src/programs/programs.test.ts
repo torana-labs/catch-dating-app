@@ -127,6 +127,31 @@ test("creator reopens and edits only their program after organizer-role loss",
     assert.deepEqual(db.docs, before);
   });
 
+test("branding is set, read back and cleared through the update", async () => {
+  const db = new FakeFirestore(baseSeed());
+  const branding = {color: "marigold",
+    coverImagePath: "programs/program-1/branding/cover.jpg",
+    creditLine: "  Meher Shah Weddings "};
+  await assert.rejects(updateOrganizerProgramHandler(request({
+    programId: "program-1", expectedRevision: 3,
+    branding: {...branding, coverImagePath: "programs/other/branding/x.jpg"},
+  }, "manager-1"), deps(db)), code("invalid-argument"));
+  const edited = await updateOrganizerProgramHandler(request({
+    programId: "program-1", expectedRevision: 3, branding,
+  }, "manager-1"), deps(db));
+  const detail = await getOrganizerProgramHandler(
+    request({programId: "program-1"}, "manager-1"), deps(db));
+  assert.deepEqual(detail.program.branding, {...branding,
+    creditLine: "Meher Shah Weddings"});
+  await updateOrganizerProgramHandler(request({
+    programId: "program-1", expectedRevision: edited.revision,
+    branding: null,
+  }, "manager-1"), deps(db));
+  const cleared = await getOrganizerProgramHandler(
+    request({programId: "program-1"}, "manager-1"), deps(db));
+  assert.equal(cleared.program.branding, undefined);
+});
+
 test("organizer-only managers keep setup but have no archive or restore action",
   async () => {
     const db = new FakeFirestore(baseSeed());

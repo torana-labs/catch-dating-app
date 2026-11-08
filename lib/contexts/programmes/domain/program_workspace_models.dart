@@ -167,6 +167,7 @@ class OrganizerProgramSettings {
     required this.capabilities,
     required this.revision,
     this.transportSettings,
+    this.branding = ProgramBranding.standard,
   });
 
   final String programId;
@@ -180,6 +181,9 @@ class OrganizerProgramSettings {
   final List<String> capabilities;
   final Map<String, Object?>? transportSettings;
   final int revision;
+
+  /// How guest pages look; the standard look when none is stored.
+  final ProgramBranding branding;
 }
 
 class OrganizerFunctionDetail {
@@ -269,6 +273,7 @@ class OrganizerProgramDetail {
         transportSettings:
             programMap['transportSettings'] as Map<String, Object?>?,
         revision: requiredInt(programMap, 'revision'),
+        branding: ProgramBranding.fromMap(programMap['branding']),
       ),
       functions: mapList(
         map['functions'],
@@ -553,4 +558,55 @@ class ProgramManifestImportResult {
   final int groupsCreated;
   final List<({int index, String message})> rowErrors;
   final bool alreadyApplied;
+}
+
+/// The guest pages' accent colours.
+enum ProgramBrandColor { rani, marigold, mehendi, rose, haldi }
+
+/// How a programme's guest pages look: colour, cover photo and the
+/// planner's credit.
+class ProgramBranding {
+  const ProgramBranding({
+    required this.color,
+    required this.coverImagePath,
+    required this.creditLine,
+  });
+
+  /// Read-time default for programmes without branding.
+  static const standard = ProgramBranding(
+    color: ProgramBrandColor.rani,
+    coverImagePath: null,
+    creditLine: null,
+  );
+
+  factory ProgramBranding.fromMap(Object? value) {
+    if (value is! Map<Object?, Object?>) return standard;
+    return ProgramBranding(
+      color:
+          nullableEnum(value['color'], ProgramBrandColor.values) ??
+          ProgramBrandColor.rani,
+      coverImagePath: value['coverImagePath'] as String?,
+      creditLine: value['creditLine'] as String?,
+    );
+  }
+
+  final ProgramBrandColor color;
+  final String? coverImagePath;
+  final String? creditLine;
+
+  Map<String, Object?> toJson() => {
+    'color': color.name,
+    'coverImagePath': coverImagePath,
+    'creditLine': creditLine,
+  };
+
+  ProgramBranding copyWith({
+    ProgramBrandColor? color,
+    String? creditLine,
+    bool clearCredit = false,
+  }) => ProgramBranding(
+    color: color ?? this.color,
+    coverImagePath: coverImagePath,
+    creditLine: clearCredit ? null : creditLine ?? this.creditLine,
+  );
 }

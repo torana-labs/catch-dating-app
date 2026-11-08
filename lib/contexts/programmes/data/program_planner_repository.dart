@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -9,7 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'program_planner_repository.g.dart';
 
 /// The planner's programme-wide reads and commands that are not setup:
-/// planned messages (programme moments). Reads are callables, like every
+/// planned messages (programme moments) and how guest pages look. Reads are callables, like every
 /// programme read.
 class ProgramPlannerRepository {
   const ProgramPlannerRepository(this._functions);
@@ -73,6 +74,22 @@ class ProgramPlannerRepository {
       parse: _momentId,
     );
   }
+
+  /// Saves how the guest pages look, fenced by the programme revision.
+  Future<int> saveBranding({
+    required String programId,
+    required int expectedRevision,
+    required ProgramBranding branding,
+  }) => _call(
+    name: 'updateOrganizerProgram',
+    payload: UpdateOrganizerProgramCallableRequest(
+      programId: programId,
+      expectedRevision: expectedRevision,
+      branding: branding.toJson(),
+    ).toJson(),
+    action: 'save how guest pages look',
+    parse: (data) => ProgramMutationResult.fromCallableData(data).revision,
+  );
 
   static String _momentId(Object? data) {
     if (data is Map<Object?, Object?> &&

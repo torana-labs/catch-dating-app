@@ -45,6 +45,17 @@ class HostProgrammeScreen extends ConsumerWidget {
                 : context.goNamed(Routes.hostEventsScreen.name),
           ),
           actions: [
+            CatchIconAction(
+              key: const ValueKey<String>('host-programme-open-branding'),
+              tooltip: l10n.hostProgrammeBrandingTitle,
+              variant: CatchIconActionVariant.plain,
+              child: CatchIcon(CatchIcons.brand),
+              onPressed: () => openHostProgrammePage(
+                context,
+                programId,
+                HostProgrammePage.branding,
+              ),
+            ),
             if (days != null && days >= 0)
               CatchBadge(label: l10n.hostProgrammeDaysToGo(count: days)),
           ],

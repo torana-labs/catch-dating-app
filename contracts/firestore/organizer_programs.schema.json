@@ -149,6 +149,47 @@
   "anonymizedAt": {
    "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
    "description": "Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained."
-  }
+  },
+   "branding": {
+     "type": ["object", "null"],
+     "additionalProperties": false,
+     "required": [
+       "color",
+       "coverImagePath",
+       "creditLine"
+     ],
+     "properties": {
+       "color": {
+         "type": "string",
+         "enum": [
+           "rani",
+           "marigold",
+           "mehendi",
+           "rose",
+           "haldi"
+         ],
+         "description": "The guest pages accent colour."
+       },
+       "coverImagePath": {
+         "type": [
+           "string",
+           "null"
+         ],
+         "maxLength": 300,
+         "pattern": "^programs/[A-Za-z0-9_-]{1,180}/branding/[A-Za-z0-9._-]{1,100}$",
+         "description": "Storage path of the cover photo under the programme branding folder, or null for none."
+       },
+       "creditLine": {
+         "type": [
+           "string",
+           "null"
+         ],
+         "minLength": 1,
+         "maxLength": 120,
+         "description": "The planner credit on guest pages, or null to hide it."
+       }
+     },
+     "description": "How guest pages look. Optional; null once cleared. Programmes without it read as rani with no cover and no credit."
+   }
  }
 }
