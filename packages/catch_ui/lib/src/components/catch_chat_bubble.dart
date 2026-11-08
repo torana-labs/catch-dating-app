@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_timestamped_message_text.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
@@ -15,6 +16,27 @@ enum CatchChatBubbleVariant { mine, theirs, host, system }
 /// (which draws in the danger tone).
 enum CatchChatBubbleStatus { sending, sent, failed, read }
 
+/// Who wrote a message in a group chat: the [name] drawn over the first
+/// bubble of a run (with a caller-localized [note] such as "host" after it)
+/// and the avatar beside it, from [imageUrl] or the [initials] on a palette
+/// [color].
+@immutable
+class CatchChatAuthor {
+  const CatchChatAuthor({
+    required this.name,
+    this.note,
+    this.imageUrl,
+    this.initials,
+    this.color,
+  });
+
+  final String name;
+  final String? note;
+  final String? imageUrl;
+  final String? initials;
+  final CatchAvatarColor? color;
+}
+
 /// The system ChatMessage: one message in a group or one-to-one chat.
 ///
 /// The [text] sits in a bubble with the caller-formatted [time] on its last
@@ -23,6 +45,9 @@ enum CatchChatBubbleStatus { sending, sent, failed, read }
 /// [leading] takes the avatar of a [CatchChatBubbleVariant.theirs] sender;
 /// a [continued] message from the same sender keeps the avatar column empty
 /// and sits closer to the one before it. [format] colours a host bubble.
+/// An [author] names a theirs or host sender over the first bubble of a run
+/// and draws their avatar when there is no [leading]. [footer] goes under
+/// the bubble: an attachment, a card, buttons.
 class CatchChatBubble extends StatelessWidget {
   const CatchChatBubble({
     super.key,
@@ -33,6 +58,8 @@ class CatchChatBubble extends StatelessWidget {
     this.leading,
     this.continued = false,
     this.format = CatchFormat.games,
+    this.author,
+    this.footer,
   });
 
   final String text;
@@ -44,6 +71,8 @@ class CatchChatBubble extends StatelessWidget {
   final Widget? leading;
   final bool continued;
   final CatchFormat format;
+  final CatchChatAuthor? author;
+  final Widget? footer;
 
   /// The width of the avatar column beside a theirs message.
   static const double leadingWidth = GeneratedCatchSizeTokens.avatarSm;
@@ -107,6 +136,8 @@ class CatchChatBubble extends StatelessWidget {
       ),
     );
     final status = this.status;
+    final author = this.author;
+    final footer = this.footer;
     final column = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: mine
@@ -114,7 +145,17 @@ class CatchChatBubble extends StatelessWidget {
           : CrossAxisAlignment.start,
       spacing: CatchSpacing.s1,
       children: [
+        if (author != null && !continued && !mine)
+          CatchText(
+            author.note == null
+                ? author.name
+                : '${author.name} · ${author.note}',
+            variant: CatchTextVariant.labelKicker,
+            tone: CatchTextTone.secondary,
+            maxLines: 1,
+          ),
         bubble,
+        ?footer,
         if (mine && status != null)
           Icon(
             switch (status) {
@@ -148,7 +189,18 @@ class CatchChatBubble extends StatelessWidget {
               if (variant == CatchChatBubbleVariant.theirs)
                 SizedBox(
                   width: leadingWidth,
-                  child: continued ? null : leading,
+                  child: continued
+                      ? null
+                      : leading ??
+                            (author == null
+                                ? null
+                                : CatchAvatar.system(
+                                    size: CatchAvatarSize.sm,
+                                    name: author.name,
+                                    imageUrl: author.imageUrl,
+                                    initials: author.initials,
+                                    color: author.color,
+                                  )),
                 ),
               Flexible(
                 child: ConstrainedBox(

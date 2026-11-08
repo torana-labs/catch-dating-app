@@ -10,6 +10,11 @@ import 'package:flutter/material.dart';
 /// decision bar at the foot of a detail pane.
 enum CatchDockPlacement { auto, bar, card, pane }
 
+/// How the primary dock action is filled: [primary] ink, or [accent] the
+/// event colour of the nearest CatchRoot (games when it has none), for the
+/// one moment that belongs to the format (reveal the tables).
+enum CatchDockActionEmphasis { primary, accent }
+
 /// One dock action.
 @immutable
 class CatchDockAction {
@@ -18,6 +23,7 @@ class CatchDockAction {
     this.onPressed,
     this.icon,
     this.loading = false,
+    this.emphasis = CatchDockActionEmphasis.primary,
   });
 
   final String label;
@@ -28,6 +34,9 @@ class CatchDockAction {
   /// A leading icon.
   final IconData? icon;
   final bool loading;
+
+  /// The primary action only.
+  final CatchDockActionEmphasis emphasis;
 }
 
 /// The one-line note above a pane dock's actions ("Why? Only your team sees
@@ -57,7 +66,8 @@ class CatchDockNote {
 /// dock puts the note field above a row of what comes next (or the summary)
 /// and the actions: the refusing action as a quiet danger button, the
 /// secondary, then the primary. Inside a CatchScreen the dock sits below the
-/// body, so the body never runs under it.
+/// body, so the body never runs under it. A [header] sits above the actions
+/// in every placement: an offline notice, upload progress.
 class CatchDock extends StatelessWidget {
   const CatchDock({
     super.key,
@@ -68,6 +78,7 @@ class CatchDock extends StatelessWidget {
     this.danger,
     this.note,
     this.next,
+    this.header,
   });
 
   final CatchDockAction primary;
@@ -87,6 +98,10 @@ class CatchDock extends StatelessWidget {
   /// `pane` only: what happens after the decision ("Then: Harbor Social · 3
   /// left"), in place of the summary.
   final Widget? next;
+
+  /// Above the actions: a status line such as "Offline · 3 check-ins to
+  /// send".
+  final Widget? header;
 
   /// [placement] resolved against the CatchRoot size class.
   CatchDockPlacement placementOf(BuildContext context) =>
@@ -111,6 +126,10 @@ class CatchDock extends StatelessWidget {
     final danger = this.danger;
     final note = this.note;
     final lead = place == CatchDockPlacement.pane ? next ?? summary : summary;
+    final header = this.header;
+    final accent = primary.emphasis == CatchDockActionEmphasis.accent
+        ? CatchRootScope.maybeOf(context)?.format ?? CatchFormat.games
+        : null;
 
     if (place == CatchDockPlacement.pane) {
       return DecoratedBox(
@@ -128,6 +147,7 @@ class CatchDock extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: CatchSpacing.s3,
             children: [
+              ?header,
               if (note != null)
                 CatchTextInput(
                   controller: note.controller,
@@ -167,6 +187,8 @@ class CatchDock extends StatelessWidget {
                         label: primary.label,
                         onPressed: primary.onPressed,
                         size: CatchButtonSize.md,
+                        backgroundColor: accent?.accent,
+                        foregroundColor: accent?.ink,
                         status: primary.loading
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
@@ -203,6 +225,8 @@ class CatchDock extends StatelessWidget {
       onPressed: primary.onPressed,
       size: CatchButtonSize.lg,
       fullWidth: true,
+      backgroundColor: accent?.accent,
+      foregroundColor: accent?.ink,
       status: primary.loading
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,
@@ -223,7 +247,7 @@ class CatchDock extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             spacing: CatchSpacing.micro10,
-            children: [?first, primaryButton],
+            children: [?header, ?first, primaryButton],
           ),
         ),
       );
@@ -240,20 +264,28 @@ class CatchDock extends StatelessWidget {
         ),
         // The summary or secondary takes its own width, up to half the bar;
         // the primary fills the rest.
-        child: LayoutBuilder(
-          builder: (context, constraints) => Row(
-            spacing: CatchSpacing.micro10,
-            children: [
-              if (first != null)
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: constraints.maxWidth / 2,
-                  ),
-                  child: first,
-                ),
-              Expanded(child: primaryButton),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          spacing: CatchSpacing.s2,
+          children: [
+            ?header,
+            LayoutBuilder(
+              builder: (context, constraints) => Row(
+                spacing: CatchSpacing.micro10,
+                children: [
+                  if (first != null)
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth / 2,
+                      ),
+                      child: first,
+                    ),
+                  Expanded(child: primaryButton),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

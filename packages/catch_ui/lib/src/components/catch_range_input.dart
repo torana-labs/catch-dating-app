@@ -1,6 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
+import 'package:catch_ui/src/components/catch_slider_input.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -66,31 +67,8 @@ class CatchRangeInput extends StatelessWidget {
       'CatchRangeInput values must stay inside contract-derived bounds.',
     );
     final slider = SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        // Design-system RangeSlider: 4px line2 track, ink active fill, a 24px
-        // surface knob lifted off the track (no M3 seed tones).
-        trackHeight: CatchSpacing.s1,
-        activeTrackColor: t.primary,
-        inactiveTrackColor: t.line2,
-        thumbColor: t.surface,
-        rangeThumbShape: const RoundRangeSliderThumbShape(
-          enabledThumbRadius: CatchSpacing.s3,
-          elevation: CatchElevation.physicalControl,
-        ),
-        overlayColor: t.primary.withValues(
-          alpha: CatchOpacity.controlOverlayPressed,
-        ),
-        // The native render object derives its hit height from the largest
-        // slider part. A surrounding minimum-height box alone does not enlarge
-        // that gesture owner; the overlay shape does.
-        overlayShape: RoundSliderOverlayShape(
-          overlayRadius: CatchPlatformTokens.minimumInteractiveExtent / 2,
-        ),
-        activeTickMarkColor: Colors.transparent,
-        inactiveTickMarkColor: Colors.transparent,
-        disabledActiveTickMarkColor: Colors.transparent,
-        disabledInactiveTickMarkColor: Colors.transparent,
-      ),
+      // Design-system RangeSlider: the track CatchSliderInput draws.
+      data: CatchSliderInput.themeOf(context),
       child: RangeSlider(
         min: effectiveMin,
         max: effectiveMax,
