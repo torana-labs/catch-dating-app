@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart';
 
 /// The event's views as one segmented control: Overview, Guests, Live and
 /// Report.
-class HostEventViews extends StatelessWidget {
-  const HostEventViews({
+class HostEventTabBar extends StatelessWidget {
+  const HostEventTabBar({
     super.key,
     required this.selected,
     required this.onView,

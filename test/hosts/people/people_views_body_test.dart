@@ -6,7 +6,7 @@ import 'package:catch_dating_app/hosts/people/messages_body.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_body.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

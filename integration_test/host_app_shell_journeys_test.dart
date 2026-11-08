@@ -6,10 +6,10 @@ import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/people/messages_screen.dart';
+import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
@@ -119,7 +119,10 @@ void main() {
       initialRoute: '/host/inbox',
     );
 
-    expect(find.byType(HostInboxScreen, skipOffstage: false), findsOneWidget);
+    expect(
+      find.byType(HostMessagesScreen, skipOffstage: false),
+      findsOneWidget,
+    );
     expect(_navigation(tester).active, HostShellDestination.people);
     expectHostSurfaceLoaded(tester, backend, surface: 'People inbox');
     await unmountHostAppShell(tester);
@@ -458,7 +461,7 @@ void main() {
 const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
   'Events': HostEventsScreen,
-  'People': HostCustomersScreen,
+  'People': HostPeopleScreen,
   'Organizer': OrganizerScreen,
 };
 

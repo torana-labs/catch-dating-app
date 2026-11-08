@@ -61,7 +61,7 @@ class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
     final Widget body;
     OrganizerPageEditState? state;
     if (scope == null || organizer == null) {
-      body = HostOrganizerScopeFallback(
+      body = HostOrganizerScopeBody(
         gap: read.gap,
         error: read.error,
         onRetry: () => retryHostOrganizerScope(ref),

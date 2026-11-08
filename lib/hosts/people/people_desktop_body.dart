@@ -4,7 +4,7 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_body.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_list.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -72,7 +72,7 @@ class HostPeopleDesktopBody extends StatelessWidget {
                 onPressed: onCompose,
               ),
             ),
-            HostPeopleTabs(selected: HostPeopleView.people, onView: onView),
+            HostPeopleTabBar(selected: HostPeopleView.people, onView: onView),
             CatchSearchField.expanded(
               copy: catchSearchFieldCopy(l10n),
               value: state.search,

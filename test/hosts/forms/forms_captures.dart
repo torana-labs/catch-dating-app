@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
-import 'package:catch_dating_app/hosts/forms/form_body.dart';
+import 'package:catch_dating_app/hosts/forms/form_detail_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
 import 'package:catch_dating_app/hosts/forms/form_questions_body.dart';
@@ -73,7 +73,7 @@ Widget hostFormCapture() => _frame(
     back: CatchTopBarBack(label: l10n.hostFormsBack, onPressed: () {}),
     action: CatchTopBarAction(label: l10n.hostFormsSettings, onPressed: () {}),
   ),
-  body: HostFormBody(
+  body: HostFormDetailBody(
     state: HostFormState(
       status: HostFormStatus.content,
       form: formSummary(),

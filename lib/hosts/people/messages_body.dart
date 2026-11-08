@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/messaging/parts/messaging_thread_row.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
-import 'package:catch_dating_app/hosts/people/widgets/people_tabs.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -73,7 +73,7 @@ class HostMessagesBody extends StatelessWidget {
       variant: CatchPageBodyVariant.fixed,
       gap: CatchPageBodyGap.tight,
       children: [
-        HostPeopleTabs(selected: HostPeopleView.messages, onView: onView),
+        HostPeopleTabBar(selected: HostPeopleView.messages, onView: onView),
         CatchStack(
           direction: CatchStackDirection.row,
           gap: CatchStackGap.g6,

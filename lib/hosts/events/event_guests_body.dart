@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_guest_row.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
-import 'package:catch_dating_app/hosts/events/widgets/host_event_views.dart';
+import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -69,7 +69,7 @@ class HostEventGuestsBody extends StatelessWidget {
       child: CatchStack(
         gap: CatchStackGap.g16,
         children: [
-          HostEventViews(selected: HostEventView.guests, onView: onView),
+          HostEventTabBar(selected: HostEventView.guests, onView: onView),
           CatchStack(
             direction: CatchStackDirection.row,
             equal: true,

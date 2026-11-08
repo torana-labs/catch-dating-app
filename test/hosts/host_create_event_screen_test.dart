@@ -29,13 +29,13 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
+import 'package:catch_dating_app/hosts/create/create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
@@ -168,34 +168,33 @@ void main() {
       expect(find.text('Event basics'), findsNothing);
     });
 
-    testWidgets(
-      'route hydrates the private create flow from initial club extra',
-      (tester) async {
-        final initialOrganizer = buildOrganizer(
-          id: 'club-extra',
-          name: 'Extra Hydration Club',
-        );
+    testWidgets('route hydrates the create flow from initial club extra', (
+      tester,
+    ) async {
+      final initialOrganizer = buildOrganizer(
+        id: 'club-extra',
+        name: 'Extra Hydration Club',
+      );
 
-        await pumpEventsTestApp(
-          tester,
-          HostCreateEventRouteScreen(
-            organizerId: initialOrganizer.id,
-            initialOrganizer: initialOrganizer,
-          ),
-          overrides: [
-            fetchOrganizerProvider(
-              initialOrganizer.id,
-            ).overrideWithValue(const AsyncLoading<Organizer?>()),
-          ],
-          signedInUid: 'host-1',
-        );
-        await _pumpTestAnimation(tester);
+      await pumpEventsTestApp(
+        tester,
+        HostCreateEventRouteScreen(
+          organizerId: initialOrganizer.id,
+          initialOrganizer: initialOrganizer,
+        ),
+        overrides: [
+          fetchOrganizerProvider(
+            initialOrganizer.id,
+          ).overrideWithValue(const AsyncLoading<Organizer?>()),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpTestAnimation(tester);
 
-        expect(find.byType(PrivateEventCreateScreen), findsOneWidget);
-        expect(find.text('Loading club'), findsNothing);
-        expect(find.text('Host access required'), findsNothing);
-      },
-    );
+      expect(find.byType(CreateScreen), findsOneWidget);
+      expect(find.text('Loading club'), findsNothing);
+      expect(find.text('Host access required'), findsNothing);
+    });
 
     testWidgets('route rejects an initial club that disagrees with its path', (
       tester,

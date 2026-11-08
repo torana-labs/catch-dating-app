@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_event_poster.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
-import 'package:catch_dating_app/hosts/events/widgets/host_event_views.dart';
+import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -88,7 +88,7 @@ class HostEventWorkspaceBody extends StatelessWidget {
             newFaces: state.newFaces,
             people: state.people,
           ),
-          HostEventViews(selected: HostEventView.overview, onView: onView),
+          HostEventTabBar(selected: HostEventView.overview, onView: onView),
           if (!over && !cancelled) _ready(context, event),
           _links(context, event),
           _stats(context, event),

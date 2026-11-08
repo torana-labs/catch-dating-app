@@ -41,7 +41,7 @@ class OrganizerScreen extends ConsumerWidget {
         scope?.organizer;
     final Widget body;
     if (scope == null || organizer == null) {
-      body = HostOrganizerScopeFallback(
+      body = HostOrganizerScopeBody(
         gap: read.gap,
         error: read.error,
         onRetry: () => retryHostOrganizerScope(ref),
@@ -194,8 +194,8 @@ class OrganizerScreen extends ConsumerWidget {
 
 /// What an organizer screen shows before it has an organizer: the loading
 /// shape, sign-in, a read error, or the first organizer to create.
-class HostOrganizerScopeFallback extends StatelessWidget {
-  const HostOrganizerScopeFallback({
+class HostOrganizerScopeBody extends StatelessWidget {
+  const HostOrganizerScopeBody({
     super.key,
     required this.gap,
     required this.error,

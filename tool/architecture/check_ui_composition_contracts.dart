@@ -63,6 +63,10 @@ const _screenScaffoldExpressions = <String>{
   'CatchScaffold.workspace',
 };
 
+/// The design system's screen frame. Redrawn host destinations compose it as
+/// both their root and their pushed screens.
+const _systemScreenExpression = 'CatchScreen';
+
 const catchRootScreenPageScrollExpressions = <String>{
   'CatchRootScreenPageScrollView.standard',
   'CatchRootScreenPageScrollView.sections',
@@ -90,6 +94,7 @@ const catchScreenLayoutOwnerExpressions = <String>{
   ..._rootScrollExpressions,
   'CatchRouteScaffold',
   ..._screenScaffoldExpressions,
+  _systemScreenExpression,
 };
 
 const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
@@ -141,8 +146,9 @@ const _familyExpressions = <String, Set<String>>{
     ..._rootScaffoldExpressions,
     ..._rootScrollExpressions,
     'CatchNavigationViewport',
+    _systemScreenExpression,
   },
-  'pushed-route': <String>{'CatchRouteScaffold'},
+  'pushed-route': <String>{'CatchRouteScaffold', _systemScreenExpression},
   'media-hero': <String>{'CatchScaffold.workspace'},
   'immersive': <String>{'CatchScaffold.workspace'},
   'adaptive-workspace': <String>{

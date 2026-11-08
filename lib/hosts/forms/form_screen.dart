@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
-import 'package:catch_dating_app/hosts/forms/form_body.dart';
+import 'package:catch_dating_app/hosts/forms/form_detail_body.dart';
 import 'package:catch_dating_app/hosts/forms/form_state.dart';
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -119,7 +119,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             context: AppErrorContext.forms,
             onRetry: notifier.reload,
           )
-        : HostFormBody(
+        : HostFormDetailBody(
             state: state,
             now: widget.now ?? DateTime.now(),
             onOpenResponse: _openResponse,

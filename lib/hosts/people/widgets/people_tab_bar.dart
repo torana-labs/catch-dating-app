@@ -7,8 +7,8 @@ enum HostPeopleView { people, messages, forms }
 
 /// People, Messages and Forms, the segmented control at the top of each
 /// view of the People tab.
-class HostPeopleTabs extends StatelessWidget {
-  const HostPeopleTabs({
+class HostPeopleTabBar extends StatelessWidget {
+  const HostPeopleTabBar({
     super.key,
     required this.selected,
     required this.onView,

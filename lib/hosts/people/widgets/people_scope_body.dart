@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart';
 
 /// What the People tab shows before an organizer is selected: loading, a
 /// sign-in prompt, no organizer to run yet, or a failed read.
-class HostPeopleScopeState extends StatelessWidget {
-  const HostPeopleScopeState({
+class HostPeopleScopeBody extends StatelessWidget {
+  const HostPeopleScopeBody({
     super.key,
     required this.organizer,
     required this.onRetry,
