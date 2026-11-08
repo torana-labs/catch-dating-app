@@ -206,9 +206,13 @@ void main() {
     }
   });
 
-  // Requests holds its own queue panes in CatchPaneLayout.
+  // Requests holds its own queue panes in CatchPaneLayout, and People (with
+  // its saved groups) its own list and detail.
   for (final view in HostAudienceView.values.where(
-    (view) => view != HostAudienceView.requests,
+    (view) =>
+        view != HostAudienceView.requests &&
+        view != HostAudienceView.people &&
+        view != HostAudienceView.audiences,
   )) {
     testWidgets(
       'Audience ${view.name} keeps its detail slot before data loads',
