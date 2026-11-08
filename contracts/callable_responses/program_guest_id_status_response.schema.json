@@ -58,6 +58,9 @@
           }
         }
       }
+    },
+    "branding": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
     }
   }
 }

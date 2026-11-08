@@ -181,3 +181,21 @@ export type HouseholdRsvpScreen =
     submitted: boolean;
     notice: string;
   };
+
+/**
+ * Where the RSVP page links on to: the household's weekend once someone has
+ * replied (this visit or before), and its ID page when the programme
+ * collects IDs for the hotels. Both reuse the RSVP link's own token.
+ */
+export function householdRsvpOnwardLinks(view: View, submitted: boolean, token: string | null):
+  {itinerary: string | null; ids: string | null} {
+  if (!token) return {itinerary: null, ids: null};
+  const path = encodeURIComponent(token);
+  const replied = submitted ||
+    view.members.some((member) => member.functions.some((fn) => fn.rsvpStatus !== "pending"));
+  return {
+    itinerary: replied ? `/itinerary/${path}/` : null,
+    ids: view.collectsGuestIds === true ? `/ids/${path}/` : null,
+  };
+}
+

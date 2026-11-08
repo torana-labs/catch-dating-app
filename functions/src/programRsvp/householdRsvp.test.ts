@@ -169,6 +169,21 @@ test("view exposes only the household members and invited functions",
     // g-2 has an invited row on the selectedGuests function.
     assert.deepEqual(g2.functions.map((f) => f.functionId),
       ["fn-sangeet", "fn-mehndi"]);
+    assert.equal(view.collectsGuestIds, false);
+    assert.equal("branding" in view, false);
+  });
+
+test("view says when the programme collects IDs and how it is branded",
+  async () => {
+    const db = new FakeFirestore(seed());
+    await db.doc("organizerPrograms/program-1").update({
+      capabilities: ["accommodation"],
+      branding: {color: "rose", coverImagePath: null, creditLine: null}});
+    const view = await getProgramHouseholdRsvpViewHandler(
+      request({token: token()}, "anonymous"), deps(db));
+    assert.equal(view.collectsGuestIds, true);
+    assert.deepEqual(view.branding,
+      {color: "rose", coverImagePath: null, creditLine: null});
   });
 
 test("submit lands member responses, rollups and explicit consent",

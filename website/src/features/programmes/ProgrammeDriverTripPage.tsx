@@ -32,7 +32,9 @@ export function ProgrammeDriverTripView({screen, refresh, refreshing}: {
   refreshing: boolean;
 }) {
   return (
-    <ProgrammeLinkFrame refresh={refresh} refreshing={refreshing} screen={screen}
+    <ProgrammeLinkFrame
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing} screen={screen}
       title={screen.kind === "ready" ? copy.topBar(screen.view.programTitle) : null}>
       {(trip) => {
         const directions = driverDirectionsUrl(trip);

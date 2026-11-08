@@ -130,6 +130,9 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "branding": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
     }
   }
 }

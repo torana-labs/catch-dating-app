@@ -98,3 +98,27 @@ test("links refuse unknown subjects and voided trips", async () => {
     request({token: driver.token}, "anyone"), linkDeps(db)),
   code("not-found"));
 });
+
+test("driver and vendor reads carry the programme's branding when set",
+  async () => {
+    const db = new FakeFirestore(seed());
+    const driver = await issueProgramWebLinkHandler(request({
+      programId: "program-1", kind: "driverTrip", subjectId: "trip-1",
+    }, "manager-1"), linkDeps(db));
+    const vendor = await issueProgramWebLinkHandler(request({
+      programId: "program-1", kind: "vendorRunSheet", subjectId: "shree",
+    }, "manager-1"), linkDeps(db));
+    const before = await getProgramDriverTripHandler(
+      request({token: driver.token}, "anyone"), linkDeps(db));
+    assert.equal("branding" in before, false);
+    await db.doc("organizerPrograms/program-1").update({branding: {
+      color: "mehendi", coverImagePath: null, creditLine: " Meher Shah "}});
+    const trip = await getProgramDriverTripHandler(
+      request({token: driver.token}, "anyone"), linkDeps(db));
+    const sheet = await getProgramVendorRunSheetHandler(
+      request({token: vendor.token}, "anyone"), linkDeps(db));
+    const expected = {color: "mehendi", coverImagePath: null,
+      creditLine: "Meher Shah"};
+    assert.deepEqual(trip.branding, expected);
+    assert.deepEqual(sheet.branding, expected);
+  });

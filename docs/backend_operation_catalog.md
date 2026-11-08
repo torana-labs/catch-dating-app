@@ -507,7 +507,13 @@ alerts for duties they hold; managers and coordinators see every alert.
 journeys from one hotel (hotel desk duty scoped). `issueProgramWebLink`
 mints expiring signed links that `getProgramDriverTrip` and
 `getProgramVendorRunSheet` read without sign-in; they reuse the household
-RSVP secret with a kind-separated HMAC and return no contact data.
+RSVP secret with a kind-separated HMAC and return no contact data. A
+manager's `family` link (subject = the programme) opens
+`getProgramFamilyView`: the stakeholder counts with function names, heads
+per function and households replied, with no guest or household names.
+The household RSVP view and every web link read return the programme's
+optional `branding`; the RSVP view also says whether the programme
+collects guest IDs (`collectsGuestIds`, from the accommodation capability).
 `listOrganizerMoments` adds per-moment plans (anchor, sent count, next run,
 board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied

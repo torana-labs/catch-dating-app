@@ -504,6 +504,47 @@
           "maximum": 9007199254740991
         }
       }
+    },
+    "programGuestBranding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "coverImagePath",
+        "creditLine"
+      ],
+      "properties": {
+        "color": {
+          "type": "string",
+          "enum": [
+            "rani",
+            "marigold",
+            "mehendi",
+            "rose",
+            "haldi"
+          ],
+          "description": "The guest pages accent colour."
+        },
+        "coverImagePath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "pattern": "^programs/[A-Za-z0-9_-]{1,180}/branding/[A-Za-z0-9._-]{1,100}$",
+          "description": "Storage path of the cover photo under the programme branding folder, or null for none."
+        },
+        "creditLine": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "The planner credit on guest pages, or null to hide it."
+        }
+      },
+      "description": "How the programme's web links look, as the planner set it on Branding. Optional on every guest, vendor and family read: absent when the programme has none, which reads as rani with no cover and no credit."
     }
   }
 }

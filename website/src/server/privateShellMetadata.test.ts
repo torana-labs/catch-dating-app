@@ -15,7 +15,7 @@ it("treats only the shell route itself as the terminal rewrite target", () => {
 it("maps credential routes to a public family enum only", () => {
   expect(privateShellFamily("/f/secret-token/")).toBe("f");
   expect(privateShellFamily("/rsvp/abc/")).toBe("rsvp");
-  for (const family of ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers"]) {
+  for (const family of ["itinerary", "ids", "hotel", "trip", "runsheet", "hampers", "family"]) {
     expect(privateShellFamily(`/${family}/signed.token/`)).toBe(family);
   }
   expect(privateShellFamily("/offer/")).toBe("offer");

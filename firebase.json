@@ -278,6 +278,10 @@
         {
           "source": "/hampers/**",
           "destination": "/hampers/index.html"
+        },
+        {
+          "source": "/family/**",
+          "destination": "/family/index.html"
         }
       ]
     },

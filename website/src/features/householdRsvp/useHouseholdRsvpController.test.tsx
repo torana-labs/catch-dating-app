@@ -11,7 +11,7 @@ vi.mock("../../firebase", () => ({
 import {useHouseholdRsvpController} from "./useHouseholdRsvpController";
 import {householdRsvpViewFixture} from "../../content/householdRsvp";
 import {draftFor, draftsFromView, householdRsvpCredential,
-  travelDraftFor} from "./householdRsvpModel";
+  householdRsvpOnwardLinks, travelDraftFor} from "./householdRsvpModel";
 import type {ProgramHouseholdRsvpViewCallableResponse} from "../../shared/contracts/generated/programHouseholdRsvpViewCallableResponse";
 const view: ProgramHouseholdRsvpViewCallableResponse = householdRsvpViewFixture;
 
@@ -222,5 +222,16 @@ describe("household RSVP controller", () => {
       expect(h.result.current.screen)
         .toEqual({kind: "unavailable", reason: "invalid"}));
     h.unmount();
+  });
+
+  it("links on to the weekend after a reply and to IDs when the programme collects them", () => {
+    const pending = {...householdRsvpViewFixture, members: householdRsvpViewFixture.members.map((member) => ({
+      ...member, functions: member.functions.map((fn) => ({...fn, rsvpStatus: "pending" as const}))}))};
+    expect(householdRsvpOnwardLinks(pending, false, "tok.sig")).toEqual({itinerary: null, ids: null});
+    expect(householdRsvpOnwardLinks(pending, true, "tok.sig")).toEqual({itinerary: "/itinerary/tok.sig/", ids: null});
+    expect(householdRsvpOnwardLinks(householdRsvpViewFixture, false, "tok.sig").itinerary).toBe("/itinerary/tok.sig/");
+    expect(householdRsvpOnwardLinks({...pending, collectsGuestIds: true}, false, "tok.sig"))
+      .toEqual({itinerary: null, ids: "/ids/tok.sig/"});
+    expect(householdRsvpOnwardLinks(householdRsvpViewFixture, true, null)).toEqual({itinerary: null, ids: null});
   });
 });

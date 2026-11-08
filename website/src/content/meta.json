@@ -114,7 +114,7 @@
     },
     "programme_link": {
       "title": "Your wedding link | Catch",
-      "description": "A private link from your wedding planner: an itinerary, IDs for the hotel, a rooming list, a trip, a run sheet or the welcome hampers.",
+      "description": "A private link from your wedding planner: an itinerary, IDs for the hotel, a rooming list, a trip, a run sheet, the welcome hampers or the family's view.",
       "canonicalPath": "/weddings/",
       "twitterDescription": "A private link from your wedding planner.",
       "robots": "noindex, follow"

@@ -132,6 +132,8 @@ import type {ProgramGuestIdCallableResponse} from "../../functions/src/shared/ge
 import type {GetProgramHotelHandoverCallablePayload} from "../../functions/src/shared/generated/getProgramHotelHandoverCallablePayload";
 import type {ProgramHotelHandoverCallableResponse} from "../../functions/src/shared/generated/programHotelHandoverCallableResponse";
 import type {GetProgramDriverTripCallablePayload} from "../../functions/src/shared/generated/getProgramDriverTripCallablePayload";
+import type {GetProgramFamilyViewCallablePayload} from "../../functions/src/shared/generated/getProgramFamilyViewCallablePayload";
+import type {ProgramFamilyViewCallableResponse} from "../../functions/src/shared/generated/programFamilyViewCallableResponse";
 import type {ProgramDriverTripCallableResponse} from "../../functions/src/shared/generated/programDriverTripCallableResponse";
 import type {GetProgramVendorRunSheetCallablePayload} from "../../functions/src/shared/generated/getProgramVendorRunSheetCallablePayload";
 import type {ProgramVendorRunSheetCallableResponse} from "../../functions/src/shared/generated/programVendorRunSheetCallableResponse";
@@ -1341,6 +1343,7 @@ export function programHouseholdItineraryIcsUrl(token: string): string | null {
 export type {
   ProgramAssetUploadCallableResponse,
   ProgramDriverTripCallableResponse,
+  ProgramFamilyViewCallableResponse,
   ProgramGuestIdStatusCallableResponse,
   ProgramHamperWebViewCallableResponse,
   ProgramHotelHandoverCallableResponse,
@@ -1405,6 +1408,13 @@ export async function getProgramVendorRunSheet(
   payload: GetProgramVendorRunSheetCallablePayload
 ): Promise<ProgramVendorRunSheetCallableResponse> {
   return invokeWebsiteCallable("getProgramVendorRunSheet", payload,
+    eventRuntimeFirebaseConfigured, "Programme links");
+}
+
+export async function getProgramFamilyView(
+  payload: GetProgramFamilyViewCallablePayload
+): Promise<ProgramFamilyViewCallableResponse> {
+  return invokeWebsiteCallable("getProgramFamilyView", payload,
     eventRuntimeFirebaseConfigured, "Programme links");
 }
 

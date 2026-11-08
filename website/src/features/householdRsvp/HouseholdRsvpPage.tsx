@@ -3,6 +3,7 @@ import {
   CatchCheckboxInput,
   CatchChip,
   CatchField,
+  CatchIndexRow,
   CatchLoadingIndicator,
   CatchPageBody,
   CatchPaneLayout,
@@ -19,6 +20,7 @@ import {programHouseholdItineraryIcsUrl} from "../../firebase";
 import {householdRsvpCopy as copy} from "../../content/householdRsvp";
 import {
   draftFor,
+  householdRsvpOnwardLinks,
   travelDraftFor,
   travelDraftIncomplete,
   type Credential,
@@ -31,6 +33,7 @@ import {
   type TravelKind,
 } from "./householdRsvpModel";
 import {useHouseholdRsvpController} from "./useHouseholdRsvpController";
+import {programmeCredit, programmeFormat} from "../../shared/domain/programmeBranding";
 
 export function HouseholdRsvpPage({credential}: {credential: Credential | null}) {
   const controller = useHouseholdRsvpController(credential);
@@ -342,8 +345,10 @@ export function HouseholdRsvpView({
     () => credential ? programHouseholdItineraryIcsUrl(credential.token) : null,
     [credential],
   );
+  const branding = screen.kind === "ready" ? screen.view.branding : undefined;
+  const credit = programmeCredit(branding);
   return (
-    <CatchRoot format="nightsOut" theme="day">
+    <CatchRoot format={programmeFormat(branding)} theme="day">
       <CatchTopBar title={screen.kind === "ready" ? screen.view.programTitle : copy.brand} variant="site" />
       <CatchPageBody as="main" gutter={false} pb="s0" pt="s4">
         <CatchPaneLayout
@@ -367,10 +372,10 @@ export function HouseholdRsvpView({
                   </CatchStack>
                 </>
               ) : (
-                <RsvpReady icsUrl={icsUrl} refresh={refresh} refreshing={refreshing} screen={screen}
+                <RsvpReady credential={credential} icsUrl={icsUrl} refresh={refresh} refreshing={refreshing} screen={screen}
                   setConsent={setConsent} setResponse={setResponse} setTravel={setTravel} submit={submit} />
               )}
-              <CatchText align="center" tone="secondary" variant="body-meta">{copy.madeWith}</CatchText>
+              <CatchText align="center" tone="secondary" variant="body-meta">{credit ? copy.madeWithCredit(credit) : copy.madeWith}</CatchText>
             </CatchStack>
           }
           pattern="reading"
@@ -380,7 +385,8 @@ export function HouseholdRsvpView({
   );
 }
 
-function RsvpReady({screen, icsUrl, setResponse, setConsent, setTravel, submit, refresh, refreshing}: {
+function RsvpReady({credential, screen, icsUrl, setResponse, setConsent, setTravel, submit, refresh, refreshing}: {
+  credential: Credential | null;
   screen: Extract<HouseholdRsvpScreen, {kind: "ready"}>;
   icsUrl: string | null;
   setResponse: (guestId: string, functionId: string, patch: Partial<ResponseDraft>) => void;
@@ -395,9 +401,10 @@ function RsvpReady({screen, icsUrl, setResponse, setConsent, setTravel, submit, 
   const travellers = view.members.filter((member) => member.functions.length > 0);
   const first = functions[0]?.fn.startsAtMillis;
   const last = functions.at(-1)?.fn.startsAtMillis;
+  const onward = householdRsvpOnwardLinks(view, screen.submitted, credential?.token ?? null);
   return (
     <>
-      <CatchSurface block="spotlight" color="nightsOut">
+      <CatchSurface block="spotlight" color={programmeFormat(view.branding)}>
         {first !== undefined && last !== undefined ? (
           <CatchText variant="label-kicker">
             {fill(copy.dates, {first: formatDay(first, view.timezone), last: formatDay(last, view.timezone)})}
@@ -441,6 +448,17 @@ function RsvpReady({screen, icsUrl, setResponse, setConsent, setTravel, submit, 
         </CatchStack>
       </CatchStack>
       <CatchText role="status" tone="secondary" variant="body-small">{screen.notice}</CatchText>
+      {onward.itinerary || onward.ids ? (
+        <CatchSection container="tile" title={copy.onwardHeading}>
+          {onward.itinerary ? (
+            <CatchIndexRow href={onward.itinerary} icon="event" iconTone={programmeFormat(view.branding)}
+              subtitle={copy.itineraryLinkBody} title={copy.itineraryLink} wrap />
+          ) : null}
+          {onward.ids ? (
+            <CatchIndexRow href={onward.ids} icon="protected" subtitle={copy.idsLinkBody} title={copy.idsLink} wrap />
+          ) : null}
+        </CatchSection>
+      ) : null}
     </>
   );
 }

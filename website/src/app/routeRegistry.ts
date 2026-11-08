@@ -22,6 +22,7 @@ export type MarketingRouteId =
   | "programme_trip"
   | "programme_runsheet"
   | "programme_hampers"
+  | "programme_family"
   | "public_form"
   | "claim"
   | "claim_lookup"
@@ -63,6 +64,7 @@ export const marketingRouteDefinitions = [
   {id: "programme_trip", path: "/trip/:linkToken"},
   {id: "programme_runsheet", path: "/runsheet/:linkToken"},
   {id: "programme_hampers", path: "/hampers/:linkToken"},
+  {id: "programme_family", path: "/family/:linkToken"},
   {id: "public_form", path: "/f/:publicFormId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},

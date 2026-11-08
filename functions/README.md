@@ -502,6 +502,7 @@ enter previews.
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `getProgramFamilyView` | `src/programs/familyView.ts` | The family's counts-only programme view (no names) by a family link. |
 | `getProgramGuestIdStatus` | `src/programs/guestIds.ts` | A household's members with their ID status (names and status only) by its RSVP link. |
 | `getProgramHamperWebView` | `src/programs/hampers.ts` | Porters' hamper list for one hotel by hamperPorter link. |
 | `getProgramHotelHandover` | `src/programs/guestIds.ts` | Hotel front desk rooming list with accepted IDs by hotelHandover link. |

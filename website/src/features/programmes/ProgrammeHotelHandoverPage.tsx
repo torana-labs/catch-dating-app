@@ -74,7 +74,9 @@ export function ProgrammeHotelHandoverView({screen, refresh, refreshing, downloa
   download: (view: HotelHandoverView) => void;
 }) {
   return (
-    <ProgrammeLinkFrame refresh={refresh} refreshing={refreshing} screen={screen}
+    <ProgrammeLinkFrame
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing} screen={screen}
       title={screen.kind === "ready" ? copy.topBar(screen.view.hotelName) : null} wide>
       {(view) => (
         <>

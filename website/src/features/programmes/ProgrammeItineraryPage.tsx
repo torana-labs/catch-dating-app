@@ -3,6 +3,7 @@ import {getProgramHouseholdRsvpView, programHouseholdItineraryIcsUrl} from "../.
 import {programmeItineraryCopy as copy} from "../../content/programmes";
 import type {ProgramHouseholdRsvpViewCallableResponse as View} from "../../firebase";
 import {ProgrammeLinkFrame} from "./ProgrammeLinkFrame";
+import {programmeFormat} from "./programmeBrandingModel";
 import {itineraryOf, type ItineraryLeg} from "./programmeItineraryModel";
 import {programmeDay, programmeDays, programmeTime, type ProgrammeLinkCredential, type ProgrammeLinkScreen} from "./programmeLinkModel";
 import {useProgrammeLinkRead} from "./useProgrammeLinkRead";
@@ -26,7 +27,9 @@ export function ProgrammeItineraryView({credential, screen, refresh, refreshing}
   refreshing: boolean;
 }) {
   return (
-    <ProgrammeLinkFrame refresh={refresh} refreshing={refreshing} screen={screen}
+    <ProgrammeLinkFrame
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing} screen={screen}
       title={screen.kind === "ready" ? screen.view.programTitle : null}>
       {(view) => <ItineraryReady credential={credential} view={view} />}
     </ProgrammeLinkFrame>
@@ -58,7 +61,7 @@ function ItineraryReady({credential, view}: {credential: ProgrammeLinkCredential
       {itinerary.arrivals.length > 0 ? (
         <CatchSection container="tile" title={copy.gettingThere}>
           {itinerary.arrivals.map((leg) => (
-            <CatchIndexRow density="regular" icon="arrivals" iconTone="nightsOut" key={leg.key}
+            <CatchIndexRow density="regular" icon="arrivals" iconTone={programmeFormat(view.branding)} key={leg.key}
               meta={copy.passengers(leg.passengers)} subtitle={copy.whoIsComing(leg.names)}
               title={legTitle(leg, zone, copy.lands)} wrap />
           ))}

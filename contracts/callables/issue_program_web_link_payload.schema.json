@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/issue_program_web_link_payload.schema.json",
   "title": "IssueProgramWebLinkCallablePayload",
-  "description": "Mint a signed, expiring web link for someone without a Catch account: a driver's trip (subjectId = tripId), a vendor's run sheet (subjectId = vendorId), a hotel front desk's rooming list and guest IDs (hotelHandover, subjectId = hotelId) or the hotel porters' hamper list (hamperPorter, subjectId = hotelId). Minting writes nothing; the token carries only ids and an expiry.",
+  "description": "Mint a signed, expiring web link for someone without a Catch account: a driver's trip (subjectId = tripId), a vendor's run sheet (subjectId = vendorId), a hotel front desk's rooming list and guest IDs (hotelHandover, subjectId = hotelId), the hotel porters' hamper list (hamperPorter, subjectId = hotelId) or the family's counts-only view (family, subjectId = programId). Minting writes nothing; the token carries only ids and an expiry.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -22,7 +22,8 @@
         "driverTrip",
         "vendorRunSheet",
         "hotelHandover",
-        "hamperPorter"
+        "hamperPorter",
+        "family"
       ]
     },
     "subjectId": {

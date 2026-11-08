@@ -50,7 +50,9 @@ export function ProgrammeRunSheetView({screen, refresh, refreshing, now}: {
   now: number;
 }) {
   return (
-    <ProgrammeLinkFrame actions={<CatchBadge label={programmeLinkCopy.viewOnly} />} refresh={refresh} refreshing={refreshing}
+    <ProgrammeLinkFrame actions={<CatchBadge label={programmeLinkCopy.viewOnly} />}
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing}
       screen={screen} title={screen.kind === "ready" ? copy.topBar(screen.view.programTitle) : null}>
       {(sheet) => {
         const states = cueStates(sheet.functions, now);

@@ -109,6 +109,14 @@ export const householdRsvpCopy = {
   dates: "{first} to {last}",
   greeting: "Hi {household}! Say who’s coming to each function. You can change it any time before the event.",
   madeWith: `Made with ${brand.name}`,
+  madeWithCredit: (credit: string) => `Made with ${brand.name} · ${credit}`,
+  // Onward links: the household's weekend after a reply, and its ID page
+  // when the programme collects IDs for the hotels.
+  onwardHeading: "Next",
+  itineraryLink: "See your weekend",
+  itineraryLinkBody: "Your functions, journeys and where you're staying",
+  idsLink: "Add IDs for the hotel",
+  idsLinkBody: "Check-in takes a minute when they're in",
   travelBlockTitle: (name: string, kindLabel: string) =>
     `${name} · ${kindLabel}`,
   travelArrival: "Arrival",

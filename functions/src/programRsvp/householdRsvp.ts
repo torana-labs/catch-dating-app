@@ -16,6 +16,7 @@ import {
   type ProgramAccess,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
+import {programGuestBrandingField} from "../programs/programBranding";
 import type {
   OrganizerProgramDocument,
   ProgramFunctionDocument,
@@ -362,6 +363,11 @@ export async function getProgramHouseholdRsvpViewHandler(
     messagingConsentGranted: household.messagingConsent?.granted === true,
     members,
     hotels,
+    // Guest IDs are for the hotels, so a programme that plans
+    // accommodation collects them through the household's ID page.
+    collectsGuestIds: (bundle.program.capabilities ?? [])
+      .includes("accommodation"),
+    ...programGuestBrandingField(bundle.program),
   };
 }
 

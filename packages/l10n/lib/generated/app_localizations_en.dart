@@ -28243,6 +28243,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostProgrammeFamilyLinkSubject({required Object programme}) {
+    return '$programme · numbers for the family';
+  }
+
+  @override
+  String get hostProgrammeFamilySendFailed =>
+      'The family link couldn’t be made. Try again.';
+
+  @override
   String get hostProgrammeBillTitle => 'Checking a bill';
 
   @override

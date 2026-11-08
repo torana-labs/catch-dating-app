@@ -54,7 +54,9 @@ export function ProgrammeGuestIdsView({screen, refresh, refreshing, draft, open,
   save: () => void;
 }) {
   return (
-    <ProgrammeLinkFrame refresh={refresh} refreshing={refreshing} screen={screen}
+    <ProgrammeLinkFrame
+      branding={screen.kind === "ready" ? screen.view.branding : undefined}
+      refresh={refresh} refreshing={refreshing} screen={screen}
       title={screen.kind === "ready" ? screen.view.programTitle : null}>
       {(view) => (
         <>

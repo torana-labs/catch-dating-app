@@ -66,6 +66,84 @@ async function collect<T>(
   return rows;
 }
 
+/** The rows the counts resolver reads, plus each function's document (the
+ *  family view names them). Fails closed past the read cap. */
+export async function loadStakeholderRows(
+  db: FirebaseFirestore.Firestore,
+  programId: string,
+): Promise<{
+  guests: StakeholderGuestRow[];
+  households: {householdId: string}[];
+  functions: StakeholderFunctionRow[];
+  functionGuests: StakeholderFunctionGuestRow[];
+  legs: StakeholderLegRow[];
+  functionDocs: Map<string, ProgramFunctionDocument>;
+}> {
+  const functionDocs = new Map<string, ProgramFunctionDocument>();
+  const [guests, households, functions, functionGuests, legs] =
+    await Promise.all([
+      collect<StakeholderGuestRow>(
+        db.collection("programGuests")
+          .where("programId", "==", programId),
+        "guests",
+        (snap) => {
+          const doc = snap.data() as ProgramGuestDocument;
+          return {
+            guestId: snap.id,
+            householdId: doc.householdId ?? null,
+            invitationStatus: doc.invitationStatus,
+          };
+        }),
+      collect(db.collection("programHouseholds")
+        .where("programId", "==", programId),
+      "households",
+      (snap) => ({householdId: snap.id})),
+      collect<StakeholderFunctionRow>(
+        db.collection("programFunctions")
+          .where("programId", "==", programId),
+        "functions",
+        (snap) => {
+          const doc = snap.data() as ProgramFunctionDocument;
+          functionDocs.set(snap.id, doc);
+          return {
+            functionId: snap.id,
+            invitationMode: doc.invitationMode ?? null,
+            status: doc.status,
+          };
+        }),
+      collect<StakeholderFunctionGuestRow>(
+        db.collection("programFunctionGuests")
+          .where("programId", "==", programId),
+        "function guest rows",
+        (snap) => {
+          const doc = snap.data() as ProgramFunctionGuestDocument;
+          return {
+            functionId: doc.functionId,
+            guestId: doc.guestId,
+            invited: doc.invited,
+            rsvpStatus: doc.rsvpStatus,
+            attendanceStatus: doc.attendanceStatus,
+            partySize: doc.partySize ?? null,
+          };
+        }),
+      collect<StakeholderLegRow>(
+        db.collection("programTravelLegs")
+          .where("programId", "==", programId),
+        "travel legs",
+        (snap) => {
+          const doc = snap.data() as ProgramTravelLegDocument;
+          return {
+            legId: snap.id,
+            guestId: doc.guestId,
+            destinationHotelId: doc.destinationHotelId ?? null,
+            passengers: doc.passengers,
+            readiness: doc.readiness,
+          };
+        }),
+    ]);
+  return {guests, households, functions, functionGuests, legs, functionDocs};
+}
+
 /**
  * Counts-only program overview for stakeholderViewer staff and managers.
  * Translates Firestore rows into the resolver's row shapes; the resolver
@@ -88,66 +166,8 @@ export async function getProgramStakeholderCountsHandler(
   const assignments = requireProgramDuty(access, "stakeholderViewer");
   const now = deps.now();
 
-  const [guests, households, functions, functionGuests, legs] =
-    await Promise.all([
-      collect<StakeholderGuestRow>(
-        db.collection("programGuests")
-          .where("programId", "==", data.programId),
-        "guests",
-        (snap) => {
-          const doc = snap.data() as ProgramGuestDocument;
-          return {
-            guestId: snap.id,
-            householdId: doc.householdId ?? null,
-            invitationStatus: doc.invitationStatus,
-          };
-        }),
-      collect(db.collection("programHouseholds")
-        .where("programId", "==", data.programId),
-      "households",
-      (snap) => ({householdId: snap.id})),
-      collect<StakeholderFunctionRow>(
-        db.collection("programFunctions")
-          .where("programId", "==", data.programId),
-        "functions",
-        (snap) => {
-          const doc = snap.data() as ProgramFunctionDocument;
-          return {
-            functionId: snap.id,
-            invitationMode: doc.invitationMode ?? null,
-            status: doc.status,
-          };
-        }),
-      collect<StakeholderFunctionGuestRow>(
-        db.collection("programFunctionGuests")
-          .where("programId", "==", data.programId),
-        "function guest rows",
-        (snap) => {
-          const doc = snap.data() as ProgramFunctionGuestDocument;
-          return {
-            functionId: doc.functionId,
-            guestId: doc.guestId,
-            invited: doc.invited,
-            rsvpStatus: doc.rsvpStatus,
-            attendanceStatus: doc.attendanceStatus,
-            partySize: doc.partySize ?? null,
-          };
-        }),
-      collect<StakeholderLegRow>(
-        db.collection("programTravelLegs")
-          .where("programId", "==", data.programId),
-        "travel legs",
-        (snap) => {
-          const doc = snap.data() as ProgramTravelLegDocument;
-          return {
-            legId: snap.id,
-            guestId: doc.guestId,
-            destinationHotelId: doc.destinationHotelId ?? null,
-            passengers: doc.passengers,
-            readiness: doc.readiness,
-          };
-        }),
-    ]);
+  const {guests, households, functions, functionGuests, legs} =
+    await loadStakeholderRows(db, data.programId);
 
   const counts = computeStakeholderCounts({
     guests, households, functions, functionGuests, legs,

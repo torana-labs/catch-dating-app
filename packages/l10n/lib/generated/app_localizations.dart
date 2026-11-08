@@ -45398,6 +45398,18 @@ abstract class AppLocalizations {
   /// **'Rooming list and guest IDs for {hotel}'**
   String hostProgrammeIdsLinkSubject({required Object hotel});
 
+  /// Share subject for the family's view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'{programme} · numbers for the family'**
+  String hostProgrammeFamilyLinkSubject({required Object programme});
+
+  /// Guest list: Share with the family error.
+  ///
+  /// In en, this message translates to:
+  /// **'The family link couldn’t be made. Try again.'**
+  String get hostProgrammeFamilySendFailed;
+
   /// Reconcile top bar title.
   ///
   /// In en, this message translates to:
