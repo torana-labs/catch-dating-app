@@ -64,7 +64,7 @@ function SignInMethods({sheet}: {sheet: SignInSheetController}) {
         <CatchStack gap={12}>
           <CatchField inputMode="inactive" keyboardType="phone" onChanged={noop} recipe="input" title={copy.phone} value={sheet.phone} />
           <CatchField autoComplete="one-time-code" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="number"
-            maxLength={6} onChanged={sheet.setCode} recipe="input" title={copy.code} value={sheet.code} />
+            onChanged={sheet.setCode} recipe="input" title={copy.code} value={sheet.code} />
           <CatchButton fullWidth label={copy.verify} onPressed={noop} status={busy} type="submit" />
           <CatchButton fullWidth label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone} variant="quiet" />
         </CatchStack>
