@@ -2,6 +2,9 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {
   OrganizerFollowerMessageQuotaDocument,
 } from "../shared/generated/organizerFollowerMessageQuotaDocument";
+import {
+  validateOrganizerFollowerMessageQuotaDocument,
+} from "../shared/generated/validators/organizerFollowerMessageQuotaDocument";
 
 /**
  * "Message followers" from the website owner view (#1109): at most two per
@@ -70,6 +73,10 @@ export async function reserveFollowerMessage(
       requestIds: [...requestIds, input.requestId],
       updatedAtMillis: input.now.getTime(),
     };
+    if (!validateOrganizerFollowerMessageQuotaDocument(next)) {
+      throw new HttpsError("internal", "The follower message allowance " +
+        "needs review.");
+    }
     tx.set(ref, next);
     return {month, used: next.requestIds.length, replay: false};
   });
