@@ -7,6 +7,7 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 /// Where a Travel row or link leads.
 enum HostProgrammeTravelLink { trips, rooms, addPickup, addHotel, addVendor }
@@ -103,7 +104,7 @@ class HostProgrammeTravelBody extends StatelessWidget {
                 bars: [
                   for (final (hour, people) in state.windows(busiest.day))
                     CatchBarIndicatorBar(
-                      label: AppTimeFormatters.time(
+                      label: DateFormat.j().format(
                         DateTime(
                           busiest.day.year,
                           busiest.day.month,

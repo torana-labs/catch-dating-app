@@ -118,6 +118,7 @@ class ProgrammeReplyKey extends StatelessWidget {
             direction: CatchStackDirection.row,
             gap: CatchStackGap.g4,
             align: CatchStackAlign.center,
+            wrap: true,
             children: [
               programmeCellBadge(l10n, cell),
               CatchText(

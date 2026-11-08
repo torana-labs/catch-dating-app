@@ -92,6 +92,19 @@ class _HostProgrammeRoomsScreenState
             HostProgrammePage.hotel,
             id: state.hotelId,
           ),
+          onOpenGuest: (guestId) {
+            final householdId = state.programme.guests?.guests
+                .where((guest) => guest.guestId == guestId)
+                .firstOrNull
+                ?.householdId;
+            if (householdId == null) return;
+            openHostProgrammePage(
+              context,
+              widget.programId,
+              HostProgrammePage.household,
+              id: householdId,
+            );
+          },
           onRetry: () =>
               refreshHostProgrammeRooms(ref, widget.programId, state.hotelId),
         ),

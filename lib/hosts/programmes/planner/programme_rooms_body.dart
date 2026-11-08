@@ -21,9 +21,13 @@ class HostProgrammeRoomsBody extends StatelessWidget {
     required this.onPlace,
     required this.onSuggestAll,
     required this.onHotelDetails,
+    required this.onOpenGuest,
     required this.onRetry,
     this.busy = false,
   });
+
+  /// Opens a placed guest's household.
+  final ValueChanged<String> onOpenGuest;
 
   final HostProgrammeRoomsState state;
 
@@ -154,6 +158,7 @@ class HostProgrammeRoomsBody extends StatelessWidget {
                 busy: busy,
                 onPlace: onPlace,
                 onSuggestAll: onSuggestAll,
+                onOpenGuest: onOpenGuest,
               ),
       ),
     );
@@ -173,7 +178,10 @@ class _HostProgrammeRoomsDetail extends StatelessWidget {
     required this.busy,
     required this.onPlace,
     required this.onSuggestAll,
+    required this.onOpenGuest,
   });
+
+  final ValueChanged<String> onOpenGuest;
 
   final HostProgrammeRoomsState state;
   final ProgramHotel hotel;
@@ -239,6 +247,7 @@ class _HostProgrammeRoomsDetail extends StatelessWidget {
             onPlace: placing && block.remainingRooms > 0
                 ? () => onPlace(block)
                 : null,
+            onOpenGuest: onOpenGuest,
           ),
         if (suggested.isNotEmpty)
           CatchNotice.inline(
@@ -266,11 +275,13 @@ class _HostProgrammeRoomBlock extends StatelessWidget {
     required this.state,
     required this.block,
     required this.onPlace,
+    required this.onOpenGuest,
   });
 
   final HostProgrammeRoomsState state;
   final ProgramRoomBlock block;
   final VoidCallback? onPlace;
+  final ValueChanged<String> onOpenGuest;
 
   static const _perRow = 4;
 
@@ -289,6 +300,7 @@ class _HostProgrammeRoomBlock extends StatelessWidget {
           meta: stay.status == ProgramStayStatus.checkedIn
               ? l10n.hostProgrammeRoomsCheckedIn
               : null,
+          onTap: () => onOpenGuest(stay.guestId),
         ),
       for (var free = 0; free < block.remainingRooms; free++)
         CatchChoiceTile(
@@ -320,12 +332,8 @@ class _HostProgrammeRoomBlock extends StatelessWidget {
         ),
     ];
     return CatchSection(
-      kicker: block.roomType == null
-          ? block.label
-          : l10n.hostProgrammeRoomsBlockKicker(
-              block: block.label,
-              type: block.roomType!,
-            ),
+      title: block.label,
+      kicker: block.roomType,
       note: l10n.hostProgrammeRoomsBlockNote(
         placed: block.assignedCount,
         total: block.totalRooms,

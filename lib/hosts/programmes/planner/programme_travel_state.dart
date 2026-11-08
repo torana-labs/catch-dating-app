@@ -82,10 +82,13 @@ class HostProgrammeTravelState {
     return best;
   }
 
-  /// People landing on [day] in two-hour windows from 6 AM, as
-  /// (window start hour, people).
+  /// People landing on [day] in six two-hour windows from 8 AM (earlier
+  /// landings count in the first, later ones in the last), as (window
+  /// start hour, people).
   List<(int, int)> windows(DateTime day) {
-    final counts = <int, int>{for (var hour = 6; hour < 24; hour += 2) hour: 0};
+    final counts = <int, int>{
+      for (var hour = 8; hour <= 18; hour += 2) hour: 0,
+    };
     for (final row in rows) {
       final at = row.curbAt;
       if (at == null ||
@@ -94,7 +97,7 @@ class HostProgrammeTravelState {
           at.day != day.day) {
         continue;
       }
-      final hour = (at.hour.clamp(6, 22) ~/ 2) * 2;
+      final hour = (at.hour.clamp(8, 19) ~/ 2) * 2;
       counts[hour] = (counts[hour] ?? 0) + row.passengers;
     }
     return [for (final entry in counts.entries) (entry.key, entry.value)];

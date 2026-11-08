@@ -108,9 +108,11 @@ class HostProgrammeFunctionBody extends StatelessWidget {
                     l10n.hostProgrammeFunctionHandPickedBody,
                 },
                 selected: invitation == option,
-                onTap: busy || cancelled || invitation == option
+                onTap: busy || cancelled
                     ? null
-                    : () => onInvitation(option),
+                    : () {
+                        if (invitation != option) onInvitation(option);
+                      },
               ),
           ],
         ),
