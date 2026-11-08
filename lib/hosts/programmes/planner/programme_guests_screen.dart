@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_body.dart';
@@ -5,7 +6,10 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_deskt
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/device/external_share.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -17,7 +21,9 @@ import 'package:go_router/go_router.dart';
 /// an expanded window): every household with its answer for each function.
 ///
 /// It watches [hostProgrammeControllerProvider], keeps the filter, opens a
-/// household, Import a list and the share view.
+/// household and Import a list, and Share with the family mints the
+/// family's view-only link (`/family/<token>`) and hands it to the share
+/// sheet.
 class HostProgrammeGuestsScreen extends ConsumerStatefulWidget {
   const HostProgrammeGuestsScreen({
     super.key,
@@ -36,6 +42,43 @@ class HostProgrammeGuestsScreen extends ConsumerStatefulWidget {
 class _HostProgrammeGuestsScreenState
     extends ConsumerState<HostProgrammeGuestsScreen> {
   late HostProgrammeGuestFilter _filter = widget.initialFilter;
+
+  Future<void> _shareWithFamily(String? title) async {
+    final l10n = context.l10n;
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box == null
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+    try {
+      final link = await ref
+          .read(programPlannerRepositoryProvider)
+          .issueWebLink(
+            programId: widget.programId,
+            kind: ProgramWebLinkKind.family,
+            subjectId: widget.programId,
+          );
+      final url = AppConfig.publicSiteUrl.resolve(
+        '/family/${Uri.encodeComponent(link.token)}',
+      );
+      await ref
+          .read(externalShareControllerProvider)
+          .shareText(
+            text: url.toString(),
+            subject: l10n.hostProgrammeFamilyLinkSubject(
+              programme: title ?? '',
+            ),
+            origin: origin,
+          );
+    } on Object {
+      if (mounted) {
+        showCatchNotice(
+          context,
+          l10n.hostProgrammeFamilySendFailed,
+          tone: CatchNoticeTone.danger,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +124,7 @@ class _HostProgrammeGuestsScreenState
                   CatchButton(
                     label: l10n.hostProgrammeShareFamily,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: () => context.pushNamed(
-                      Routes.hostWorkCountsScreen.name,
-                      pathParameters: {'programId': programId},
-                    ),
+                    onPressed: () => _shareWithFamily(program?.title),
                   ),
                   CatchButton(
                     label: l10n.hostProgrammeAddGuests,
