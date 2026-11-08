@@ -10828,6 +10828,89 @@
               "useCase": "Legacy",
               "reason": "Retired by P2.1, which gave CatchSurface to the system block; legacy screens call it until their redraw."
             }
+          },
+          {
+            "id": "catch.surface.host_events_programme",
+            "symbol": "HostEventsProgrammeTile",
+            "file": "lib/contexts/programmes/parts/host_events_programme_tile.dart",
+            "summary": "One programme on the Events tab as a pressable tile: its dates, its name and how many functions it holds.",
+            "states": [
+              "dated",
+              "undated",
+              "pressable"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.surface",
+              "parentConceptId": "catch.surface",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.surface"
+            },
+            "level": "L5",
+            "roleNoun": "Tile",
+            "naming": {
+              "useCase": "HostEventsProgramme",
+              "comparedWith": [
+                "catch.surface",
+                "catch.index_row"
+              ],
+              "reason": "Binds a programme list row to a pressable system tile in the Events programmes rail. CatchSurface owns the block, radius and press feedback; an index row would put a programme in the event list's date-led row anatomy, which it does not have."
+            }
+          },
+          {
+            "id": "catch.surface.staff_dispatch_car",
+            "symbol": "StaffDispatchCarCard",
+            "file": "lib/contexts/programmes/parts/staff_dispatch_car_card.dart",
+            "summary": "One suggested car at a pickup point as a system card: the vehicle and destination, the parties riding with whether each is ready, the seats, and Send.",
+            "states": [
+              "ready",
+              "waiting",
+              "sent"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.surface",
+              "parentConceptId": "catch.surface",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.surface"
+            },
+            "level": "L5",
+            "roleNoun": "Card",
+            "naming": {
+              "useCase": "StaffDispatchCar",
+              "comparedWith": [
+                "catch.surface",
+                "catch.index_row"
+              ],
+              "reason": "Binds a transport group suggestion and its parties to a system card with one dispatch action. CatchSurface owns the card block; the parties are system rows inside it. It paints nothing of its own."
+            }
+          },
+          {
+            "id": "catch.surface.staff_hotel_trip",
+            "symbol": "StaffHotelTripCard",
+            "file": "lib/contexts/programmes/parts/staff_hotel_trip_card.dart",
+            "summary": "One car on its way to the hotel as a system card: the vehicle and plate, when it arrives, who is in it with their rooms, and Arrived.",
+            "states": [
+              "en-route",
+              "busy"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.surface",
+              "parentConceptId": "catch.surface",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.surface"
+            },
+            "level": "L5",
+            "roleNoun": "Card",
+            "naming": {
+              "useCase": "StaffHotelTrip",
+              "comparedWith": [
+                "catch.surface",
+                "catch.index_row"
+              ],
+              "reason": "Binds a programme trip summary and the hotel's room map to a system card with one arrival action. CatchSurface owns the card block; the guests are system rows inside it. It paints nothing of its own."
+            }
           }
         ]
       },
@@ -17090,6 +17173,33 @@
               ],
               "reason": "The avatar parent owns photo loading, clipping and status. This member paints initials when no photo is available, preserving distinct quiet-person and activity-pigment recipes. Surface owns general box paint and interaction; it does not derive initials or render an avatar fallback."
             }
+          },
+          {
+            "id": "catch.person_avatar.formats_players",
+            "symbol": "FormatsPlayersRow",
+            "file": "lib/contexts/live/parts/formats_court_row.dart",
+            "summary": "The players on a court or in a team: the overlapping avatars and their first names on one line.",
+            "states": [
+              "pair",
+              "overflow"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.person_avatar"
+            },
+            "level": "L5",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "FormatsPlayers",
+              "comparedWith": [
+                "catch.person_avatar",
+                "catch.meta_row"
+              ],
+              "reason": "Binds a list of player names to the avatar stack and a one-line first-name label for the live formats boards. CatchAvatarRow owns the overlap, limit and overflow count; this member adds the names line and the formats overflow copy."
+            }
           }
         ],
         "accessibility": {
@@ -19958,7 +20068,67 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.index_row.host_event_guest",
+            "symbol": "HostEventGuestRow",
+            "file": "lib/contexts/audience/parts/host_event_guest_row.dart",
+            "summary": "One guest on an event's guest list as a compact system row: the avatar, the name, how many nights they have had with the organiser or the New badge, and the row's one action or a chevron.",
+            "states": [
+              "note",
+              "first-time",
+              "returning",
+              "action",
+              "chevron"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.index_row",
+              "parentConceptId": "catch.index_row",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.index_row"
+            },
+            "level": "L5",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "HostEventGuest",
+              "comparedWith": [
+                "catch.index_row",
+                "catch.person_avatar"
+              ],
+              "reason": "Binds an audience roster insight to the system row: the nights-with-you history, the first-time badge and the guest's one action. CatchIndexRow owns the row anatomy, density and tap target; this member adds no layout or painting of its own."
+            }
+          },
+          {
+            "id": "catch.index_row.host_event_close_out",
+            "symbol": "HostEventCloseOutRow",
+            "file": "lib/contexts/bookings/parts/host_event_close_out_row.dart",
+            "summary": "One booked guest nobody checked in, as a system row with Came and Didn't come.",
+            "states": [
+              "unmarked",
+              "came",
+              "no-show"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.index_row",
+              "parentConceptId": "catch.index_row",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.index_row"
+            },
+            "level": "L5",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "HostEventCloseOut",
+              "comparedWith": [
+                "catch.index_row",
+                "catch.button"
+              ],
+              "reason": "Binds a booking attendee to the system row with the two close-out marks. CatchIndexRow owns the anatomy and the action slot; this member supplies only the attendee's name, the close-out note and the marked state."
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [

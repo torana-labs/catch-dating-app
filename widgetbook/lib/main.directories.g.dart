@@ -245,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
+import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -9818,6 +9820,49 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Events',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Rows',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostEventCloseOutRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Unmarked and marked',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .hostEventCloseOutRowUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostEventGuestRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'With a note and an action',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .hostEventGuestRowUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostEventsProgrammeTile',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A programme with its functions',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .hostEventsProgrammeTileUseCase,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Inbox',
             children: [
               _widgetbook.WidgetbookFolder(
@@ -9977,6 +10022,136 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_person_messaging_use_cases
                                 .personConversationPreview,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Live',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Formats',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'FormatsPlayersRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Players on a court',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .formatsPlayersRowUseCase,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Programmes',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeGuestFilterTabBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'All guests and no reply',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .hostProgrammeGuestFilterTabBarUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeSpotlightHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'The wedding at a glance',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .hostProgrammeSpotlightHeaderUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeStateBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading and error',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .hostProgrammeStateBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostProgrammeTabBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Schedule, guests, travel and team',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .hostProgrammeTabBarUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgrammeGridHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Function names over the grid',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .programmeGridHeaderUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProgrammeReplyKeyRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reply key',
+                    builder:
+                        _widgetbook_workspace_hosts_host_system_parts_use_cases
+                            .programmeReplyKeyRowUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Staff',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffDispatchCarCard',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A car ready to send',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .staffDispatchCarCardUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffHotelTripCard',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A car on the way to the hotel',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .staffHotelTripCardUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'StaffOperationsNoticeList',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Saved copy and a failed sync',
+                        builder:
+                            _widgetbook_workspace_hosts_host_system_parts_use_cases
+                                .staffOperationsNoticeListUseCase,
                       ),
                     ],
                   ),
