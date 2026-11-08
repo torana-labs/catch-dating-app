@@ -37469,6 +37469,36 @@ abstract class AppLocalizations {
   /// **'Could not read that ticket. Try again.'**
   String get doorScanUnavailable;
 
+  /// Door row meta: places the guest-list row holds, shown when more than one.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 place} other{{count} places}}'**
+  String doorGuestPlaces({required int count});
+
+  /// Scanner success sheet stat label under the number of places the scanned ticket holds.
+  ///
+  /// In en, this message translates to:
+  /// **'places'**
+  String get doorScanPlaces;
+
+  /// Walk-in sheet field: how many places the walk-in holds, including themselves.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hostsOperationalRosterFieldPlaces;
+
+  /// Screen-reader label for the walk-in places stepper decrease button.
+  ///
+  /// In en, this message translates to:
+  /// **'One place fewer'**
+  String get hostsOperationalRosterPlacesFewer;
+
+  /// Screen-reader label for the walk-in places stepper increase button.
+  ///
+  /// In en, this message translates to:
+  /// **'One more place'**
+  String get hostsOperationalRosterPlacesMore;
+
   /// Line under the guest ticket QR the door staff scan to check the guest in.
   ///
   /// In en, this message translates to:

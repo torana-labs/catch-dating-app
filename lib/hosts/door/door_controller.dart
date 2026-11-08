@@ -422,6 +422,7 @@ List<HostDoorGuest> doorGuests({
         priorNights: label?.priorAttendedEventCount,
         paidMinor: attendee.revenueAmountMinor,
         paidCurrency: attendee.revenueCurrency,
+        partySize: attendee.partySize,
         checkedInAt: attendee.isCheckedIn ? attendee.checkedInAt : null,
         askedAt: participation?.waitlistedAt ?? participation?.createdAt,
         waitlistPosition: uid == null ? null : positions[uid],

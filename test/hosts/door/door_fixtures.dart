@@ -16,6 +16,7 @@ EventAttendee doorAttendee(
   DateTime? checkedInAt,
   int? paidMinor,
   int revision = 0,
+  int partySize = 1,
 }) => EventAttendee(
   id: id,
   eventId: doorEventId,
@@ -31,6 +32,7 @@ EventAttendee doorAttendee(
   revenueAmountMinor: paidMinor,
   revenueCurrency: paidMinor == null ? null : 'INR',
   attendanceRevision: revision,
+  partySize: partySize,
   createdAt: doorNow.subtract(const Duration(days: 2)),
   updatedAt: doorNow.subtract(const Duration(days: 2)),
 );

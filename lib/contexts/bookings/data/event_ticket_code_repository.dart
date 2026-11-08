@@ -81,6 +81,7 @@ class EventTicketResolution {
     required this.displayName,
     required this.status,
     required this.attendanceRevision,
+    required this.partySize,
   });
 
   factory EventTicketResolution.fromCallableData(Object? value) {
@@ -90,7 +91,8 @@ class EventTicketResolution {
       'displayName': final String displayName,
       'status': final String status,
       'attendanceRevision': final num attendanceRevision,
-    } when (value as Map).length == 5) {
+      'partySize': final num partySize,
+    } when (value as Map).length == 6) {
       final parsed = EventAttendeeStatus.values.asNameMap()[status];
       if (parsed != null && parsed != EventAttendeeStatus.cancelled) {
         return EventTicketResolution(
@@ -99,6 +101,7 @@ class EventTicketResolution {
           displayName: displayName,
           status: parsed,
           attendanceRevision: attendanceRevision.toInt(),
+          partySize: partySize.toInt(),
         );
       }
     }
@@ -110,6 +113,9 @@ class EventTicketResolution {
   final String displayName;
   final EventAttendeeStatus status;
   final int attendanceRevision;
+
+  /// Places the ticket holds at the door.
+  final int partySize;
 
   bool get isCheckedIn => status == EventAttendeeStatus.checkedIn;
 }

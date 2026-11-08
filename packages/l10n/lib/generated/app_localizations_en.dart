@@ -23226,6 +23226,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doorScanUnavailable => 'Could not read that ticket. Try again.';
 
   @override
+  String doorGuestPlaces({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count places',
+      one: '1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorScanPlaces => 'places';
+
+  @override
+  String get hostsOperationalRosterFieldPlaces => 'Places';
+
+  @override
+  String get hostsOperationalRosterPlacesFewer => 'One place fewer';
+
+  @override
+  String get hostsOperationalRosterPlacesMore => 'One more place';
+
+  @override
   String get eventTicketCodeHint => 'Show this at the door';
 
   @override

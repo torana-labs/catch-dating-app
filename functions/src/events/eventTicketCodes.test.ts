@@ -39,7 +39,7 @@ function seed(): Record<string, FakeData> {
     "events/event-1": {organizerId: "club-1", status: "active"},
     "organizers/club-1": {hostUserId: "host-1", ownerUserId: "host-1",
       hostUserIds: ["host-1"]},
-    "eventAttendees/att-1": attendee(),
+    "eventAttendees/att-1": attendee({partySize: 2}),
     "eventAttendees/att-2": attendee({linkedUid: "guest-2",
       status: "waitlisted", displayName: "Dev Mehta"}),
     "eventAttendees/att-3": attendee({linkedUid: "guest-3",
@@ -126,7 +126,8 @@ test("the door resolves a code for managers and attendance staff", async () => {
     const result = await resolveEventTicketCodeHandler(
       request({eventId: "event-1", ticketCode}, uid), deps(firestore));
     assert.deepEqual(result, {eventId: "event-1", attendeeId: "att-1",
-      displayName: "Asha Rao", status: "registered", attendanceRevision: 2});
+      displayName: "Asha Rao", status: "registered", attendanceRevision: 2,
+      partySize: 2});
   }
   for (const uid of ["viewer-1", "guest-1"]) {
     await assert.rejects(resolveEventTicketCodeHandler(

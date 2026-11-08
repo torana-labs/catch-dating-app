@@ -75,6 +75,7 @@ EventTicketResolution _ticket(
   displayName: attendeeId,
   status: status,
   attendanceRevision: 0,
+  partySize: 1,
 );
 
 HostAttendanceOutboxEntry _entry(
@@ -147,6 +148,20 @@ void main() {
       expect(guests[1].priorNights, 4);
       expect(guests[2].waitlistPosition, 1);
       expect(guests[2].canAct, isTrue);
+    });
+
+    test('a row that holds several places carries them to the door', () {
+      final guests = doorGuests(
+        attendees: [
+          doorAttendee('dp', 'Dev Patel', partySize: 3),
+          doorAttendee('rk', 'Rhea Kapoor'),
+        ],
+        participations: const [],
+        insights: null,
+        session: const DoorSessionState(),
+      );
+
+      expect(guests.map((guest) => guest.partySize), [3, 1]);
     });
 
     test('a pending outbox change flips the row and marks it syncing', () {

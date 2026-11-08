@@ -210,6 +210,7 @@ export async function resolveEventTicketCodeHandler(
     displayName: attendee.displayName,
     status: attendee.status,
     attendanceRevision: attendee.attendanceRevision ?? 0,
+    partySize: attendee.partySize ?? 1,
   };
   if (!validateResolveEventTicketCodeCallableResponse(response)) {
     throw new HttpsError("internal", "Ticket lookup failed its contract.");

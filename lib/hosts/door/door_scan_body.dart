@@ -51,7 +51,8 @@ class DoorScanBody extends StatelessWidget {
 }
 
 /// The floating success sheet after a scan checks a guest in: who, what
-/// they paid and whether it is their first night, with Next ticket and
+/// they paid, how many places they hold when more than one, and whether it
+/// is their first night, with Next ticket and
 /// Undo. It leaves the scanner behind it usable.
 class DoorScanResultSheet extends StatelessWidget {
   const DoorScanResultSheet({
@@ -106,6 +107,12 @@ class DoorScanResultSheet extends StatelessWidget {
                   ),
             mode: CatchMetricTileMode.plain,
           ),
+          if (guest.partySize > 1)
+            CatchMetricTile.stat(
+              label: l10n.doorScanPlaces,
+              value: '${guest.partySize}',
+              mode: CatchMetricTileMode.plain,
+            ),
           CatchMetricTile.stat(
             label: l10n.doorScanFirstNight,
             value: guest.firstTime

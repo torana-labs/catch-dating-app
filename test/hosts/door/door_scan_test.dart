@@ -85,6 +85,32 @@ void main() {
     await tester.tap(find.text('Undo'));
     expect(next, 1);
     expect(undo, 1);
+    // One place: the sheet does not count places.
+    expect(find.text('places'), findsNothing);
+  });
+
+  testWidgets('a ticket that holds several places says how many', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      DoorScanScreen(
+        eventId: 'tonight',
+        checkedIn: 20,
+        expected: 26,
+        camera: const SizedBox.expand(),
+        onClose: () {},
+        result: const HostDoorGuest(
+          attendeeId: 'dp',
+          name: 'Dev Patel',
+          status: HostDoorGuestStatus.checkedIn,
+          partySize: 3,
+        ),
+      ),
+    );
+
+    expect(find.text('places'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
   });
 
   testWidgets('a code that checks nobody in says why', (tester) async {
