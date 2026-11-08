@@ -3519,6 +3519,9 @@ Widget _doorScanCapture() => DoorScanScreen(
     firstTime: true,
     paidMinor: 99800,
     paidCurrency: 'INR',
+  ),
+);
+
 // The live console is drawn for a tall phone and a landscape tablet.
 const _hostLivePhone = CaptureDevice(
   id: 'host-live-phone-390x1240',
@@ -11229,6 +11232,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.auditTabletLandscape,
     providerOverrides: _doorCaptureOverrides(),
     builder: (context) => _doorCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_live_now_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
