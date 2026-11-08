@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/manage_website_account_response.schema.json",
   "title": "ManageWebsiteAccountCallableResponse",
-  "description": "Private account identity and optional own organizer-follow state.",
+  "description": "Private account identity, optional own organizer-follow state and, when requested, the account page sections. Each section is present only when its read was requested.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -90,6 +90,250 @@
           }
         }
       ]
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Own bookings from eventParticipations, newest start first; deleted rows are left out.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "eventName",
+          "organizerId",
+          "organizerName",
+          "startsAt",
+          "endsAt",
+          "venue",
+          "status",
+          "timing",
+          "passAvailable"
+        ],
+        "properties": {
+          "eventId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "eventName": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "startsAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "venue": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "signedUp",
+              "waitlisted",
+              "attended",
+              "cancelled"
+            ]
+          },
+          "timing": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "past"
+            ]
+          },
+          "passAvailable": {
+            "type": "boolean",
+            "description": "True for a signed-up place on an event that has not ended; the pass itself comes from getEventTicketCode."
+          }
+        }
+      }
+    },
+    "follows": {
+      "type": "array",
+      "maxItems": 100,
+      "description": "Active own organizer follows, newest first.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "path",
+          "followedAt"
+        ],
+        "properties": {
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "followedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Own reviews, newest first, with their verified state and any organizer reply.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reviewId",
+          "organizerId",
+          "organizerName",
+          "eventId",
+          "rating",
+          "comment",
+          "verified",
+          "moderationStatus",
+          "createdAt",
+          "ownerResponse"
+        ],
+        "properties": {
+          "reviewId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "moderationStatus": {
+            "type": "string",
+            "enum": [
+              "published",
+              "pending",
+              "rejected"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "ownerResponse": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Own per-organizer channel permissions. A channel reads optedIn only with complete evidence. whatsappReceiptId fences withdrawParticipantMessagingPermission.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "whatsapp",
+          "sms",
+          "whatsappReceiptId"
+        ],
+        "properties": {
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "whatsapp": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "optedIn",
+              "optedOut"
+            ]
+          },
+          "sms": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "optedIn",
+              "optedOut"
+            ]
+          },
+          "whatsappReceiptId": {
+            "anyOf": [
+              {
+                "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }
