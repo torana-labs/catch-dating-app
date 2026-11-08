@@ -1,0 +1,25 @@
+{
+  "organizerId": "org1",
+  "requestId": "series-request-1",
+  "template": {
+    "name": "Tuesday Trivia",
+    "city": {
+      "mode": "set",
+      "value": {
+        "cityId": "in-mh-mumbai",
+        "marketId": "in-mh-mumbai"
+      }
+    },
+    "localDate": "2030-03-19",
+    "localStartTime": "19:30",
+    "timezone": {
+      "mode": "set",
+      "value": "Asia/Kolkata"
+    }
+  },
+  "cadence": {
+    "kind": "weekly",
+    "weekday": "tuesday",
+    "count": 8
+  }
+}

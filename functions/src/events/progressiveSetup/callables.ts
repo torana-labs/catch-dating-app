@@ -20,6 +20,11 @@ import {
   updatePrivateEventBasics as updateBasics,
   ProgressiveSetupDependencies,
 } from "./service";
+import {createPrivateEventSeries as createSeries} from "./series";
+import {validateCreatePrivateEventSeriesCallablePayload} from
+  "../../shared/generated/validators/createPrivateEventSeriesInput";
+import {validatePrivateEventSeriesCallableResponse} from
+  "../../shared/generated/validators/privateEventSeriesOutput";
 import {updatePrivateEventPreferences as updatePreferences} from
   "./preferences";
 import {validateUpdatePrivateEventPreferencesCallablePayload} from
@@ -96,6 +101,28 @@ export async function updatePrivateEventBasicsHandler(
   });
   return updateBasics({actorUid, command, deps: deps.service(db)});
 }
+
+/** A weekly series has its own bucket: one request creates up to eight. */
+export async function createPrivateEventSeriesHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateCreatePrivateEventSeriesCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "createPrivateEventSeries", {
+    maxRequests: 5, windowMs: 10 * 60 * 1000,
+  });
+  const result = await createSeries({actorUid, command,
+    deps: deps.service(db)});
+  if (!validatePrivateEventSeriesCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event series result.");
+  }
+  return result;
+}
+
+export const createPrivateEventSeries = onCall(appCheckCallableOptions,
+  (request) => createPrivateEventSeriesHandler(request));
 
 export const createPrivateEventSetup = onCall(appCheckCallableOptions,
   (request) => createPrivateEventSetupHandler(request));

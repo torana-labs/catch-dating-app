@@ -284,6 +284,23 @@ void main() {
     },
   );
 
+  test('a series receipt lists its events in order', () {
+    final receipt = PrivateEventSeriesReceipt.fromResponse({
+      'seriesId': 'series-abc',
+      'eventIds': ['e1', 'e2'],
+      'replayed': false,
+    });
+    expect(receipt.eventIds, ['e1', 'e2']);
+    expect(
+      () => PrivateEventSeriesReceipt.fromResponse({
+        'seriesId': 'series-abc',
+        'eventIds': ['e1'],
+        'replayed': false,
+      }),
+      throwsFormatException,
+    );
+  });
+
   test('publication settings round-trip and the view reads defaults', () {
     const request = EventPublicationRequest(
       organizerId: 'org1',

@@ -22,6 +22,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -200,6 +201,8 @@ class CreateController extends _$CreateController {
   void setApproveEach(bool on) => state = state.copyWith(approveEach: on);
 
   void setPlanVisible(bool on) => state = state.copyWith(planVisible: on);
+
+  void setRepeatWeekly(bool on) => state = state.copyWith(repeatWeekly: on);
 
   void goTo(CreateStep step) {
     if (state.working || step == CreateStep.share) return;
@@ -574,6 +577,33 @@ class CreateController extends _$CreateController {
     if (current.error != null) throw current.error!;
   }
 
+  /// Every week: the next eight weeks are set up as private events to edit,
+  /// before this one publishes. The request id is fixed for the flow, so a
+  /// retry replays the series instead of making a second one.
+  Future<void> _createSeries() async {
+    if (!state.repeatWeekly || state.seriesEventIds.isNotEmpty) return;
+    final basics = await _basics();
+    final first = DateTime.parse('${basics.localDate}T00:00:00Z');
+    final next = first.add(const Duration(days: 7));
+    final receipt =
+        await PrivateEventSetupRepository(
+          ref.read(firebaseFunctionsProvider),
+        ).createSeries(
+          organizerId: args.organizer.id,
+          requestId: '$_requestId-series',
+          count: 8,
+          basics: PrivateEventBasics(
+            name: basics.name,
+            city: basics.city,
+            localDate: next.toIso8601String().substring(0, 10),
+            localStartTime: basics.localStartTime,
+            timezone: basics.timezone,
+          ),
+        );
+    if (!ref.mounted) return;
+    state = state.copyWith(seriesEventIds: receipt.eventIds);
+  }
+
   /// Selling elsewhere saves the booking page on the event; selling on Catch
   /// again clears a saved one.
   Future<void> _saveExternalBooking(EventDraft draft) async {
@@ -611,6 +641,7 @@ class CreateController extends _$CreateController {
         planVisibleToGuests: state.planVisible,
       ),
     );
+    await _createSeries();
     var current = await _untilPublication(
       eventId,
       (s) => (s.canChange && s.event != null) || s.error != null,

@@ -510,6 +510,18 @@
       "$ref": "../embedded/event_external_booking.schema.json",
       "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
       "x-catch-ownership": "callable-owned"
+    },
+    "seriesId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The weekly series this event was created in by createPrivateEventSeries. Missing for a single event.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "seriesIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "description": "The event's place in its series, from 0. Present with seriesId.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [
@@ -627,6 +639,25 @@
           "publicRegistrationEnabled": {
             "const": true
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "seriesId"
+        ]
+      },
+      "then": {
+        "required": [
+          "seriesIndex"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "seriesIndex"
+          ]
         }
       }
     }

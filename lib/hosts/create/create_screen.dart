@@ -243,6 +243,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       onWaitlist: controller.setWaitlist,
       onApproveEach: controller.setApproveEach,
       onPlanVisible: controller.setPlanVisible,
+      onRepeat: controller.setRepeatWeekly,
       onBookingLink: (value) =>
           controller.edit((d) => d.copyWith(externalEventUrl: value.trim())),
       onTemplate: () => controller.useTemplate(

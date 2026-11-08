@@ -164,6 +164,37 @@ class PrivateEventAdmissionTerms {
   }
 }
 
+/// The `createPrivateEventSeries` result: the series and its events in
+/// order.
+class PrivateEventSeriesReceipt {
+  const PrivateEventSeriesReceipt({
+    required this.seriesId,
+    required this.eventIds,
+    required this.replayed,
+  });
+
+  final String seriesId;
+  final List<String> eventIds;
+  final bool replayed;
+
+  factory PrivateEventSeriesReceipt.fromResponse(Object? raw) {
+    if (raw is! Map ||
+        raw.length != 3 ||
+        raw['seriesId'] is! String ||
+        raw['replayed'] is! bool ||
+        raw['eventIds'] is! List ||
+        (raw['eventIds'] as List).length < 2 ||
+        (raw['eventIds'] as List).any((id) => id is! String)) {
+      throw const FormatException('Invalid event series receipt');
+    }
+    return PrivateEventSeriesReceipt(
+      seriesId: raw['seriesId'] as String,
+      eventIds: List<String>.unmodifiable(raw['eventIds'] as List),
+      replayed: raw['replayed'] as bool,
+    );
+  }
+}
+
 /// Who can see and book the event and how guests experience it, as the setup
 /// view projects it with the read-time defaults applied. A view written
 /// before these settings existed reads as the defaults.
