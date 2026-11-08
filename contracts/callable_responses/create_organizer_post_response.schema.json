@@ -29,6 +29,29 @@
     "pushAcceptedCount": {"type": "integer", "minimum": 0},
     "pushFailedCount": {"type": "integer", "minimum": 0},
     "pushUnknownCount": {"type": "integer", "minimum": 0},
-    "idempotentReplay": {"type": "boolean"}
+    "idempotentReplay": {"type": "boolean"},
+    "channels": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "enum": ["app", "whatsapp"]}},
+    "whatsapp": {
+      "anyOf": [
+        {"$ref": "#/definitions/whatsappCounts"},
+        {"type": "null"}
+      ],
+      "description": "The WhatsApp leg's counts so far; null or absent when the update is app-only."
+    }
+  },
+  "definitions": {
+    "whatsappCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "queuedCount", "skippedCount", "sentCount", "deliveredCount", "failedCount"],
+      "properties": {
+        "status": {"type": "string", "enum": ["collecting", "sending", "completed"]},
+        "queuedCount": {"type": "integer", "minimum": 0},
+        "skippedCount": {"type": "integer", "minimum": 0},
+        "sentCount": {"type": "integer", "minimum": 0},
+        "deliveredCount": {"type": "integer", "minimum": 0},
+        "failedCount": {"type": "integer", "minimum": 0}
+      }
+    }
   }
 }

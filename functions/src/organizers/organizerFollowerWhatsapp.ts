@@ -24,6 +24,22 @@ export const followerWhatsappPurpose = "followerUpdates" as const;
 /** The Meta template each organiser submits on their own WABA. */
 export const organizerFollowerUpdateTemplateName = "organizer_follower_update";
 
+/**
+ * What each organiser submits for approval on their own WhatsApp Business
+ * account (runbook, not code: Catch only syncs it). Meta classes updates
+ * that announce new plans as marketing. The single named body variable
+ * carries the organiser's text after the outbound content policy; any
+ * variable name works as long as the template has exactly one.
+ */
+export const organizerFollowerUpdateTemplateSpec = {
+  name: organizerFollowerUpdateTemplateName,
+  category: "MARKETING",
+  language: "en",
+  parameterFormat: "NAMED",
+  body: "New from us:\n\n{{update_text}}\n\nReply STOP to stop these updates.",
+  exampleUpdateText: "Sunday 7am run from Cubbon Park is open. Book on our page.",
+} as const;
+
 /** Reviewed consent copy for the follow-by-phone WhatsApp tick. */
 export const followerWhatsappTermsVersion = "follower-whatsapp-v1";
 const followerWhatsappConsentCopy = {
