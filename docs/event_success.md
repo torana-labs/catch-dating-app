@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.154.0
-updated: 2026-09-23
+version: 1.155.0
+updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -3432,8 +3432,8 @@ The founding packs are:
 |---|---|---|---|---|
 | Social run | Pace pods plus a composable route plan | Timed legs | Completion plus finish sweep | Static route operations only; no live GPS tracking |
 | Pickleball/padel/racket | Pair assignments and bounded resources | Timed rounds | Ranked outcomes | Existing pair-rotation engine; no bracket/tournament engine |
-| Pub quiz | Host/imported teams | Quiz rounds | Numeric points and standings reveal | Not a question authoring, answer validation, or buzzer system |
-| Dinner | Tables | Courses | No competitive outcome | True table-seating optimization remains unsupported |
+| Pub quiz | Balanced teams (arrival groups together, solo arrivals spread) or host/imported teams | Quiz rounds | Numeric points and standings reveal | Not a question authoring, answer validation, or buzzer system |
+| Dinner | Tables with seat order, re-seated by course | Courses | No competitive outcome | Seat adjacency is a ring order, not a floor plan |
 | Mixer/open | Social groups or whole group | Rounds or continuous beats | Optional reveal or no outcome | Uses only saved interaction primitives |
 
 Format-specific language belongs at the edges. The generic Host route remains
@@ -3455,9 +3455,11 @@ Roster import and the no-download runtime's required `teamName` field both feed
 `arrivalGroup`. Registered but absent teams do not appear in the live recorder.
 The Host records one complete numeric score set per round; corrections replace
 that round under the existing outcome revision fence and recompute standings.
-Attendees see standings only through the existing reveal gate. The first pilot
-does not need automatic team balancing to keep score, but it does need every
-team to have an arrival group before points can be recorded.
+Attendees see standings only through the existing reveal gate. Team balancing
+(`teamBalancer`, [assignment_engine.md](assignment_engine.md)) can build the
+teams; Host-imported teams still work, and every team needs an arrival group
+or a score unit before points can be recorded. A live reveal that shows
+standings is ready without a pod or rotation tool.
 
 #### Route-based event plan contract
 
@@ -3604,12 +3606,12 @@ identity; private answers, subject IDs, response IDs and receipt IDs stay out
 of attendee-readable assignment documents. Existing manual Host overrides
 remain explicitly marked as such and do not fabricate a feature audit.
 
-Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
-`tableSeating`, resolve to `unsupported` with an honest reason. They never run
-an implemented neighbouring behavior or rewrite existing assignments.
-`topology: adjacency` likewise remains unsupported, including when table
-resource and seat counts are present. True table-seating, team-balancing, and
-dance-partner engines remain future backend work.
+`teamBalancer` and `tableSeating` run on the shared shape planner behind
+`runAssignmentEngine`; [assignment_engine.md](assignment_engine.md) owns that
+contract, including the `coverAcrossGroups` mode (each group holds a
+cross-section of an answer). `none` still resolves to `unsupported` with an
+honest reason, and `topology: adjacency` is supported only for table seating.
+Dance-partner engines remain future backend work.
 
 Operational roster imports now retain an optional `arrivalGroup` from reviewed
 provider booking, order, group, or ticket-buyer columns. Provider adapters keep
@@ -4024,8 +4026,8 @@ so `accessStatus: ready` and `readyAt` remain the countable, non-sensitive Host
 readiness source. Pace/skill values are assignment attributes, mixer answers
 also update the private compatibility-response edge, and quiz team names update
 the existing operational `arrivalGroup`. Dinner constraints remain private and
-event-scoped; they do not enable or imitate `tableSeating`, and Host surfaces
-must not expose the answer while that engine remains unsupported.
+event-scoped. Table seating consumes them only as consented feature snapshots,
+and Host surfaces never expose the answer.
 
 Existing private Consumer values may prefill the event form but must be
 confirmed. Event answers never overwrite `users/{uid}`. When the participant

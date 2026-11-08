@@ -2,7 +2,9 @@
 export type AssignmentFeatureKind =
   "category" | "set" | "number" | "ordinal";
 export type AssignmentFeatureMode =
-  "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
+  "preferSimilar" | "preferDifferent" | "balanceAcrossGroups" |
+  /** Each unit holds a cross-section of the answer's values. */
+  "coverAcrossGroups";
 
 export interface AssignmentFeatureRule {
   featureId: string;
@@ -134,8 +136,10 @@ export function validateAssignmentFeatureRules(
   const ids = new Set<string>();
   for (const rule of rules) {
     if (!["category", "set", "number", "ordinal"].includes(rule.kind) ||
-        !["preferSimilar", "preferDifferent", "balanceAcrossGroups"]
-          .includes(rule.mode) ||
+        !["preferSimilar", "preferDifferent", "balanceAcrossGroups",
+          "coverAcrossGroups"].includes(rule.mode) ||
+        (rule.mode === "coverAcrossGroups" && rule.kind !== "category" &&
+          rule.kind !== "set") ||
         !nonempty(rule.featureId) || !nonempty(rule.formId) ||
         !nonempty(rule.versionId) || !nonempty(rule.questionId) ||
         !Number.isSafeInteger(rule.transformVersion) ||
@@ -233,7 +237,8 @@ export function assignmentFeaturePairScore(
   b: NormalizedFeatureValue | null
 ): number {
   if (!a || !b || a.kind !== b.kind ||
-      rule.mode === "balanceAcrossGroups") return 0;
+      rule.mode === "balanceAcrossGroups" ||
+      rule.mode === "coverAcrossGroups") return 0;
   let similarity: number;
   if (a.kind === "scalar" && b.kind === "scalar") {
     similarity = 1 - Math.abs(a.value - b.value);

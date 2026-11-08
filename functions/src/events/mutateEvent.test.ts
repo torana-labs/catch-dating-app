@@ -919,6 +919,7 @@ test("createEventHandler uses event-success primitives for custom formats",
             compatibilityPolicy: "questionnaireClueOnly",
             matchingObjective: "spread",
             unitOutcome: "score",
+            accountability: "rollCall",
             durationShape: "courses",
           },
         },
@@ -944,6 +945,7 @@ test("createEventHandler uses event-success primitives for custom formats",
         compatibilityPolicy: "questionnaireClueOnly",
         matchingObjective: "spread",
         unitOutcome: "score",
+        accountability: "rollCall",
         durationShape: "courses",
       },
     });
@@ -2042,6 +2044,32 @@ test("host cancellation replay retries staging without false refund success",
     assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
   });
 
+
+test("createEventHandler seats dinner tables with the group assignment tool",
+  async () => {
+    const h = harness({"organizers/club-1": organizer()});
+
+    await createEventHandler(
+      request("host-1", payload({
+        capacityLimit: 24,
+        distanceKm: 0,
+        eventFormat: {
+          version: 1,
+          activityKind: "dinner",
+          interactionModel: "seatedTable",
+        },
+        eventSuccessDefaults: {enabled: true, hostGoal: "Seat tables."},
+      })),
+      h.deps
+    );
+
+    const plan = h.firestore.get("eventSuccessPlans/event-1");
+    assert.ok((plan?.selectedModuleIds as string[]).includes("micro_pods"));
+    assert.ok(!(plan?.selectedModuleIds as string[])
+      .includes("guided_rotations"));
+    assert.equal((plan?.structureConfig as {unitKind?: string}).unitKind,
+      "tables");
+  });
 
 test("guest notes survive create and edit, can be cleared, and are bounded",
   async () => {

@@ -115,6 +115,13 @@ class EventSuccessActivityProfile {
   final EventSuccessUnitOutcome unitOutcome;
   final EventSuccessAccountability accountability;
   final EventSuccessAssignmentResolution assignmentResolution;
+
+  /// Whether a live reveal can show score or rank standings without an
+  /// assignment. The runtime and host live surface use the same rule.
+  bool get revealShowsStandings =>
+      unitOutcome == EventSuccessUnitOutcome.score ||
+      (unitOutcome == EventSuccessUnitOutcome.rank &&
+          assignmentResolution.supported);
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;
   final bool compatibilityAffectsRankingByDefault;

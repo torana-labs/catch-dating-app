@@ -33565,6 +33565,12 @@ abstract class AppLocalizations {
   /// **'Balance answers across groups'**
   String get eventMatchingHostBalance;
 
+  /// Group-level cross-section preference: each group holds as many different answers as it can.
+  ///
+  /// In en, this message translates to:
+  /// **'Give every group a mix of answers'**
+  String get eventMatchingHostCover;
+
   /// Soft feature weight control.
   ///
   /// In en, this message translates to:
@@ -43720,6 +43726,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Same share of each answer in every group'**
   String get hostFormatsRuleSpreadNote;
+
+  /// Rule use: each group holds a cross-section of the answers.
+  ///
+  /// In en, this message translates to:
+  /// **'One of each'**
+  String get hostFormatsRuleCover;
+
+  /// Rule use note for the cross-section mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Every group gets as many different answers as it can'**
+  String get hostFormatsRuleCoverNote;
 
   /// Rule strength.
   ///

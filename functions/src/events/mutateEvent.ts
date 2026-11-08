@@ -95,6 +95,7 @@ import {
 import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
+  isEventSuccessAccountability,
   isEventSuccessAssignmentAlgorithm,
   isEventSuccessCompatibilityPolicy,
   isEventSuccessDurationShape,
@@ -1323,6 +1324,9 @@ function defaultEventSuccessModuleIdsFor(
     return [...base, "guided_rotations", "live_reveal"];
   case "teamRotations":
     return [...base, "micro_pods", "live_reveal"];
+  case "seatedTable":
+    // Tables and course changes come from the group assignment tool.
+    return [...base, "micro_pods"];
   case "freeFormMixer":
     return primitives.compatibilityPolicy === "mutualInterestOnly" ?
       [...base, "guided_rotations", "live_reveal",
@@ -1469,6 +1473,9 @@ function normalizeEventSuccessFormatPrimitives(
   }
   if (isEventSuccessUnitOutcome(raw?.unitOutcome)) {
     normalized.unitOutcome = raw.unitOutcome;
+  }
+  if (isEventSuccessAccountability(raw?.accountability)) {
+    normalized.accountability = raw.accountability;
   }
   if (isEventSuccessDurationShape(raw?.durationShape)) {
     normalized.durationShape = raw.durationShape;

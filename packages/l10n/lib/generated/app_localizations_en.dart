@@ -20837,6 +20837,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventMatchingHostBalance => 'Balance answers across groups';
 
   @override
+  String get eventMatchingHostCover => 'Give every group a mix of answers';
+
+  @override
   String get eventMatchingHostWeight => 'Preference strength';
 
   @override
@@ -27123,6 +27126,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormatsRuleSpreadNote =>
       'Same share of each answer in every group';
+
+  @override
+  String get hostFormatsRuleCover => 'One of each';
+
+  @override
+  String get hostFormatsRuleCoverNote =>
+      'Every group gets as many different answers as it can';
 
   @override
   String get hostFormatsRuleLight => 'Light';

@@ -559,7 +559,7 @@ test("adjacency topology fails instead of using pair rotations", async () => {
   await assert.rejects(
     () => generateEventSuccessRotationsHandler(callableRequest("host-1"), deps),
     (error) => {
-      isHttpsError(error, "failed-precondition", "not implemented");
+      isHttpsError(error, "failed-precondition", "table seating");
       return true;
     }
   );

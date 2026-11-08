@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.12.5
-updated: 2026-11-02
+version: 5.12.6
+updated: 2026-11-08
 owner: agent_operating_model
 status: active
 ---
@@ -105,6 +105,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Clubs-to-organizers migration | `migrations/clubs_to_organizers.md` | Organizer subtype taxonomy, canonical/compatibility authority map, and the record of the completed July 2026 migration. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, and participant metrics. |
+| Assignment engine | `assignment_engine.md` | The one assignment function every live format calls: shapes, objectives, fairness, safety, routing. |
 | Host product and Forms | `../lib/hosts/audience/README.md`, `host_product.md`, `host_forms.md` | Read Audience first for current feature answers and source references. The central contracts own the cross-surface product promise, capability/consent gates, remaining Host tooling decisions, and Forms lifecycle, respondent, distribution, analytics, automation, and conversion requirements. |
 | Host memberships | `plans/host_memberships_spec.md` | Proposed paid monthly/annual host memberships: plans and benefits, checkout entitlement evaluation, Razorpay Subscriptions on the host's own account (`hostCollected`) or a Route split (`platformSplit`), membership state machine, CRM segments, surfaces, rules, test plan, MVP/phase-2 split, decisions and open questions. |
 | Commercial terms | `data_contracts.md#commercial-terms` | What Catch charges each organizer (commission, cap, cycle, trial, tools-only fee, gateway fee bearer, per-purpose fee basis), platform defaults with audited organizer overrides, the money-flow switch and the terms snapshot every payment freezes. Owner decision: [catch-knowledge](https://github.com/torana-labs/catch-knowledge/blob/main/decisions/2026-10-30-membership-money-flow-and-commercial-terms.md). |
