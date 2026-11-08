@@ -2731,7 +2731,8 @@
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -2766,7 +2767,8 @@
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
       ],
       "storybook": {
         "status": "ready",
