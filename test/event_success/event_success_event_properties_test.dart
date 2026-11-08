@@ -445,7 +445,11 @@ void main() {
 
   group('setup readiness', () {
     test('a quiz with score standings can reveal without pods or rotations', () {
-      final draft = EventSuccessHostDraft.fromActivity(ActivityKind.pubQuiz);
+      // Quiz keeps the group tool by default (team balancing ships), so turn
+      // it off to pin the standings rule on its own.
+      final draft = EventSuccessHostDraft.fromActivity(
+        ActivityKind.pubQuiz,
+      ).withModuleSelection(EventSuccessModuleCatalog.microPods.id, false);
 
       expect(
         draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
