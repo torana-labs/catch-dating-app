@@ -13,6 +13,7 @@ import {
   heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen,
   recordEventRuntimeShareIntent,
+  requestEventRuntimeHostHelp,
   saveEventRuntimeCompatibilityAnswers,
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
@@ -84,6 +85,7 @@ export function useEventRuntimeController(
   const userRef = useRef<User | null>(null);
   const loadingRef = useRef<Promise<void> | null>(null);
   const attendeeLinkEventIdRef = useRef<string | null>(null);
+  const hostHelpRequestIdRef = useRef<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [bootstrap, setBootstrap] = useState<EventRuntimeBootstrap | null>(null);
   const [stage, setStage] = useState<EventRuntimeStage>("loading");
@@ -657,6 +659,25 @@ export function useEventRuntimeController(
     }).catch(() => undefined);
   }
 
+  async function requestHostHelp() {
+    if (!bootstrap?.participant || pending) return;
+    // One id per request: a retry after a failure reuses it, so it opens one
+    // case; a later tap after success asks again.
+    const requestId = hostHelpRequestIdRef.current ?? newHostHelpRequestId();
+    hostHelpRequestIdRef.current = requestId;
+    await runAction(async (current) => {
+      await requestEventRuntimeHostHelp({
+        publicRuntimeId,
+        requestId,
+        category: "other",
+        ...(venueSessionToken ? {venueSessionToken} : {}),
+      });
+      hostHelpRequestIdRef.current = null;
+      if (!current()) return;
+      setStatus({message: eventRuntimeCopy.hostHelpSent, tone: "is-success"});
+    }).catch(() => undefined);
+  }
+
   async function submitWingmanRequest() {
     const participant = bootstrap?.participant;
     if (!participant || !wingmanTargetUid || pending) return;
@@ -813,12 +834,20 @@ export function useEventRuntimeController(
     submitWingmanRequest,
     toggleConversationUid,
     toggleInterest,
+    requestHostHelp,
     safetyConcern,
     welcomeRating,
     wingmanCandidates,
     wingmanTargetUid,
     withdrawWingmanRequest,
   };
+}
+
+function newHostHelpRequestId(): string {
+  const random = typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID().replace(/-/gu, "")
+    : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+  return `rth-${random}`.slice(0, 64);
 }
 
 function answerMapForIds(

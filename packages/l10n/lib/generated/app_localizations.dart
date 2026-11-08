@@ -37451,6 +37451,72 @@ abstract class AppLocalizations {
   /// **'Night {count}'**
   String doorScanNights({required int count});
 
+  /// Scanner notice: the scanned guest ticket belongs to a cancelled booking.
+  ///
+  /// In en, this message translates to:
+  /// **'That ticket was cancelled.'**
+  String get doorScanCancelled;
+
+  /// Scanner notice: the scanned ticket belongs to a guest who is invited or on the waitlist, not booked.
+  ///
+  /// In en, this message translates to:
+  /// **'That guest does not have a place tonight yet.'**
+  String get doorScanNotBooked;
+
+  /// Scanner notice: the ticket lookup failed for a reason other than the ticket itself.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read that ticket. Try again.'**
+  String get doorScanUnavailable;
+
+  /// Door line naming the other managers and staff whose door is open now.
+  ///
+  /// In en, this message translates to:
+  /// **'On the door with you: {names}'**
+  String doorTeamWithYou({required String names});
+
+  /// Door row meta: places the guest-list row holds, shown when more than one.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 place} other{{count} places}}'**
+  String doorGuestPlaces({required int count});
+
+  /// Scanner success sheet stat label under the number of places the scanned ticket holds.
+  ///
+  /// In en, this message translates to:
+  /// **'places'**
+  String get doorScanPlaces;
+
+  /// Walk-in sheet field: how many places the walk-in holds, including themselves.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hostsOperationalRosterFieldPlaces;
+
+  /// Screen-reader label for the walk-in places stepper decrease button.
+  ///
+  /// In en, this message translates to:
+  /// **'One place fewer'**
+  String get hostsOperationalRosterPlacesFewer;
+
+  /// Screen-reader label for the walk-in places stepper increase button.
+  ///
+  /// In en, this message translates to:
+  /// **'One more place'**
+  String get hostsOperationalRosterPlacesMore;
+
+  /// Line under the guest ticket QR the door staff scan to check the guest in.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this at the door'**
+  String get eventTicketCodeHint;
+
+  /// Screen-reader label for the guest ticket QR.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ticket code'**
+  String get eventTicketCodeQrLabel;
+
   /// Events row meta: start time and places booked.
   ///
   /// In en, this message translates to:

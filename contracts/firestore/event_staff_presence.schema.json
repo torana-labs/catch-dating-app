@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_staff_presence.schema.json",
+  "title": "EventStaffPresenceDocument",
+  "description": "Who of an event's managers and staff is on the door now, stored at eventStaffPresence/{eventId}_{uid}. Written only by heartbeatEventStaffPresence; managers and viewRoster staff read it by listener. A row is current while expiresAt is in the future; a Firestore TTL policy on expiresAt removes lapsed rows.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventStaffPresence",
+  "x-firestore-path": "eventStaffPresence/{presenceId}",
+  "x-document-id-field": "presenceId",
+  "x-owner": "heartbeatEventStaffPresence callable",
+  "required": ["schemaVersion", "eventId", "organizerId", "uid", "displayName", "role", "lastSeenAt", "expiresAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 180},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "role": {"type": "string", "enum": ["manager", "operator"]},
+    "lastSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

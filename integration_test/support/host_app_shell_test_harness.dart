@@ -178,6 +178,14 @@ class HostShellBackend {
     final eventId = request['eventId'] as String?;
     return switch (name) {
       'setEventAttendeeAttendance' => _setAttendance(request),
+      // The door says its host is on it on open and every 45 s.
+      'heartbeatEventStaffPresence' => {
+        'eventId': eventId,
+        'lastSeenAtMillis': now,
+        'expiresAtMillis': now + const Duration(minutes: 2).inMilliseconds,
+      },
+      // A journey's ticket code is the attendee id it names.
+      'resolveEventTicketCode' => _resolveTicket(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The Organiser tab and Payments read the Catch bills: none yet.
@@ -329,6 +337,23 @@ class HostShellBackend {
       'acceptedRevision': revision,
       'replayed': false,
       'changed': true,
+    };
+  }
+
+  Future<Map<String, Object?>> _resolveTicket(
+    Map<String, Object?> request,
+  ) async {
+    final attendeeId = request['ticketCode']! as String;
+    final row =
+        (await firestore.collection('eventAttendees').doc(attendeeId).get())
+            .data()!;
+    return {
+      'eventId': row['eventId'],
+      'attendeeId': attendeeId,
+      'displayName': row['displayName'],
+      'status': row['status'],
+      'attendanceRevision': row['attendanceRevision'] ?? 0,
+      'partySize': row['partySize'] ?? 1,
     };
   }
 

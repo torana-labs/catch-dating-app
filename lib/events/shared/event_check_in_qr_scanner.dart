@@ -8,13 +8,21 @@ enum EventCheckInQrScanResult {
   wrongEvent,
   printableJoinOnly,
   matchedVenueSession,
+
+  /// One guest's ticket for this event; the door resolves it.
+  matchedTicket,
 }
 
 class EventCheckInQrScan {
-  const EventCheckInQrScan(this.result, {this.venueSessionToken});
+  const EventCheckInQrScan(
+    this.result, {
+    this.venueSessionToken,
+    this.ticketCode,
+  });
 
   final EventCheckInQrScanResult result;
   final String? venueSessionToken;
+  final String? ticketCode;
 }
 
 EventCheckInQrScanResult classifyEventCheckInQrCode(
@@ -31,24 +39,26 @@ EventCheckInQrScan parseEventCheckInQrCode(
   if (rawValue == null) {
     return const EventCheckInQrScan(EventCheckInQrScanResult.ignored);
   }
-  final venuePayload = EventVenueSessionQrPayload.tryParse(rawValue);
-  if (venuePayload != null) {
-    if (venuePayload.eventId != eventId) {
-      return const EventCheckInQrScan(EventCheckInQrScanResult.wrongEvent);
-    }
-    return EventCheckInQrScan(
-      EventCheckInQrScanResult.matchedVenueSession,
-      venueSessionToken: venuePayload.venueSessionToken,
-    );
-  }
-  final printablePayload = EventCheckInQrPayload.tryParse(rawValue);
-  if (printablePayload == null) {
+  final code = EventCheckInQrCode.tryParse(rawValue);
+  if (code == null) {
     return const EventCheckInQrScan(EventCheckInQrScanResult.invalid);
   }
-  if (printablePayload.eventId != eventId) {
+  if (code.eventId != eventId) {
     return const EventCheckInQrScan(EventCheckInQrScanResult.wrongEvent);
   }
-  return const EventCheckInQrScan(EventCheckInQrScanResult.printableJoinOnly);
+  return switch (code) {
+    EventVenueSessionQrPayload(:final venueSessionToken) => EventCheckInQrScan(
+      EventCheckInQrScanResult.matchedVenueSession,
+      venueSessionToken: venueSessionToken,
+    ),
+    EventTicketQrPayload(:final ticketCode) => EventCheckInQrScan(
+      EventCheckInQrScanResult.matchedTicket,
+      ticketCode: ticketCode,
+    ),
+    EventCheckInQrPayload() => const EventCheckInQrScan(
+      EventCheckInQrScanResult.printableJoinOnly,
+    ),
+  };
 }
 
 class EventCheckInQrScanner extends StatefulWidget {
@@ -71,6 +81,10 @@ class _EventCheckInQrScannerState extends State<EventCheckInQrScanner> {
   );
   bool _matched = false;
 
+  /// The last ticket read, so a code held in front of the camera is handed
+  /// on once rather than every frame. The door keeps scanning after it.
+  String? _lastTicketCode;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -90,6 +104,10 @@ class _EventCheckInQrScannerState extends State<EventCheckInQrScanner> {
         eventId: widget.eventId,
       );
       if (scan.result == EventCheckInQrScanResult.ignored) continue;
+      if (scan.result == EventCheckInQrScanResult.matchedTicket) {
+        if (scan.ticketCode == _lastTicketCode) continue;
+        _lastTicketCode = scan.ticketCode;
+      }
       if (scan.result == EventCheckInQrScanResult.matchedVenueSession) {
         _matched = true;
       }

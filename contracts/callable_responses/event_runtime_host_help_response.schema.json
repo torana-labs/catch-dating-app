@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_runtime_host_help_response.schema.json",
+  "title": "RequestEventRuntimeHostHelpCallableResponse",
+  "description": "The case the request opened, or the one an earlier attempt with the same requestId opened.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["caseId", "status", "replayed"],
+  "properties": {
+    "caseId": {"type": "string", "minLength": 1, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "status": {"type": "string", "enum": ["open", "resolved"]},
+    "replayed": {"type": "boolean"}
+  }
+}

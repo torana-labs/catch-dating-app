@@ -22,6 +22,7 @@ class HostDoorGuest {
     this.priorNights,
     this.paidMinor,
     this.paidCurrency,
+    this.partySize = 1,
     this.checkedInAt,
     this.askedAt,
     this.waitlistPosition,
@@ -47,6 +48,9 @@ class HostDoorGuest {
   /// What the guest paid, in minor units of [paidCurrency].
   final int? paidMinor;
   final String? paidCurrency;
+
+  /// Places the guest's row holds: the guest and anyone on the same booking.
+  final int partySize;
   final DateTime? checkedInAt;
 
   /// When the join request was made.
@@ -163,10 +167,14 @@ String hostDoorGuestMeta(BuildContext context, HostDoorGuest guest) {
     ),
     _ => null,
   };
+  final places = guest.partySize > 1
+      ? l10n.doorGuestPlaces(count: guest.partySize)
+      : null;
   final parts = <String>[
     ...switch (guest.status) {
-      HostDoorGuestStatus.arriving => [?paid, ?history],
+      HostDoorGuestStatus.arriving => [?places, ?paid, ?history],
       HostDoorGuestStatus.checkedIn => [
+        ?places,
         switch (guest.checkedInAt) {
           final at? when !guest.syncing => l10n.doorGuestInAt(time: time(at)),
           _ => l10n.doorGuestInJustNow,

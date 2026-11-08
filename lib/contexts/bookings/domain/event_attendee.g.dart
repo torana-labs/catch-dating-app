@@ -22,6 +22,7 @@ _EventAttendee _$EventAttendeeFromJson(
   externalReference: json['externalReference'] as String?,
   arrivalGroup: json['arrivalGroup'] as String?,
   ticketType: json['ticketType'] as String?,
+  partySize: (json['partySize'] as num?)?.toInt() ?? 1,
   revenueAmountMinor: (json['revenueAmountMinor'] as num?)?.toInt(),
   revenueCurrency: json['revenueCurrency'] as String?,
   revenueSource: $enumDecodeNullable(
@@ -90,6 +91,7 @@ Map<String, dynamic> _$EventAttendeeToJson(
   'externalReference': instance.externalReference,
   'arrivalGroup': instance.arrivalGroup,
   'ticketType': instance.ticketType,
+  'partySize': instance.partySize,
   'revenueAmountMinor': instance.revenueAmountMinor,
   'revenueCurrency': instance.revenueCurrency,
   'revenueSource': _$EventAttendeeRevenueSourceEnumMap[instance.revenueSource],
