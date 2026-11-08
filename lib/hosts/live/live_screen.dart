@@ -7,6 +7,8 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_courts_screen.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_mix_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_body.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_needs_screen.dart';
@@ -176,7 +178,8 @@ CatchTopBar hostLiveTopBar(
 
 /// What the console's rows and buttons do, shared by its four screens: the
 /// existing run-of-show commands, the help and delivery reviews, placing a
-/// late arrival, the door, the compose screen and the other views.
+/// late arrival, the door, the compose screen and the other views, the
+/// format's own board among them.
 class HostLiveActions {
   const HostLiveActions({
     required this.context,
@@ -287,6 +290,24 @@ class HostLiveActions {
               onOpenGuests: onOpenGuests,
               now: now,
             ),
+          ),
+        );
+      case HostLiveView.format:
+        final format = hostLiveFormatView(event);
+        if (format == null) return;
+        _push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+            builder: (_) => switch (format) {
+              HostLiveFormatView.courts => HostFormatsCourtsScreen(
+                event: event,
+                now: now,
+              ),
+              HostLiveFormatView.mix => HostFormatsMixScreen(
+                event: event,
+                now: now,
+              ),
+            },
           ),
         );
       case HostLiveView.room:
