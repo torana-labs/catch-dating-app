@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/organizer/page_edit_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,8 @@ class OrganizerPageEditBody extends StatelessWidget {
         key: const ValueKey<String>('page-edit-add-photo'),
         variant: CatchChoiceTileVariant.add,
         title: l10n.hostOrganizerPagePhotoAdd,
+        contract: CatchContractConstraints
+            .updateOrganizerCallablePayloadFieldsOrganizerPhotos,
         onTap: busy ? null : onAddPhotos,
       ),
     ];
@@ -74,6 +77,23 @@ class OrganizerPageEditBody extends StatelessWidget {
       key: ValueKey<String>('page-edit-${id.name}-$revision'),
       copy: copy,
       title: title,
+      contract: switch (id) {
+        PageEditField.name =>
+          CatchContractConstraints.updateOrganizerCallablePayloadFieldsName,
+        PageEditField.about =>
+          CatchContractConstraints
+              .updateOrganizerCallablePayloadFieldsDescription,
+        PageEditField.area =>
+          CatchContractConstraints.updateOrganizerCallablePayloadFieldsArea,
+        PageEditField.instagram =>
+          CatchContractConstraints
+              .updateOrganizerCallablePayloadFieldsInstagramHandle,
+        PageEditField.phone =>
+          CatchContractConstraints
+              .updateOrganizerCallablePayloadFieldsPhoneNumber,
+        PageEditField.email =>
+          CatchContractConstraints.updateOrganizerCallablePayloadFieldsEmail,
+      },
       initialValue: value,
       minLines: minLines,
       maxLines: minLines == null ? 1 : null,
@@ -223,6 +243,8 @@ class OrganizerPageEditBody extends StatelessWidget {
                   key: const ValueKey<String>('page-edit-listed'),
                   value: draft.listed,
                   semanticLabel: l10n.hostOrganizerPageListed,
+                  contract: CatchContractConstraints
+                      .updateOrganizerCallablePayloadFieldsPublicListingEnabled,
                   onChanged: busy ? null : onListed,
                 ),
                 onTap: null,
