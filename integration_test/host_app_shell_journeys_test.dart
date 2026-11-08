@@ -345,12 +345,13 @@ void main() {
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Check in'), findsNWidgets(2));
+    expect(find.text('0 of 2 in'), findsOneWidget);
 
+    // The Guests tab is the door: Check in is the row action.
     await tester.tap(
       find.descendant(
-        of: find.byKey(const ValueKey('guest-asha')),
-        matching: find.widgetWithText(CatchButton, 'Check in'),
+        of: find.byKey(const ValueKey('door-guest-guest-asha')),
+        matching: find.text('Check in'),
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
@@ -365,8 +366,7 @@ void main() {
         .doc('guest-asha')
         .get();
     expect(stored.data()?['status'], EventAttendeeStatus.checkedIn.name);
-    expect(find.text('Checked in'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Undo'), findsOneWidget);
+    expect(find.text('1 of 2 in'), findsOneWidget);
     expectHostSurfaceLoaded(tester, backend, surface: 'guest roster');
     await unmountHostAppShell(tester);
   });

@@ -182,6 +182,8 @@ class HostShellBackend {
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The Organiser tab and Payments read the Catch bills: none yet.
       'listOrganizerBills' => {'bills': const <Object?>[]},
+      // The event workspace's door reads its staff: nobody granted yet.
+      'listEventStaff' => {'eventId': eventId, 'members': const <Object?>[]},
       // Setup's Getting paid step: Razorpay is open and nothing is connected.
       'manageOrganizerFormPaymentConnection' => {
         'available': true,
