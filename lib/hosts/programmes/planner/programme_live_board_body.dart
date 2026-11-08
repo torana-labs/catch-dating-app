@@ -50,7 +50,7 @@ class HostProgrammeLiveBoardBody extends StatelessWidget {
             children: const [],
           )
         else
-          HostProgrammeLiveSpotlight(function: now, at: loaded.generatedAt),
+          HostProgrammeLiveSurface(function: now, at: loaded.generatedAt),
         CatchSection(
           title: l10n.hostProgrammeLiveTravel,
           children: [
@@ -133,8 +133,8 @@ class HostProgrammeLiveBoardBody extends StatelessWidget {
 }
 
 /// The function on now: when, its name, the door meter and three counts.
-class HostProgrammeLiveSpotlight extends StatelessWidget {
-  const HostProgrammeLiveSpotlight({
+class HostProgrammeLiveSurface extends StatelessWidget {
+  const HostProgrammeLiveSurface({
     super.key,
     required this.function,
     required this.at,
