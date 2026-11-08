@@ -26,6 +26,21 @@ export function publicationRegistrationPatch(event: EventDocument):
     publicRegistrationRevision: revision + 1};
 }
 
+/** Placeholder admission for an event whose tickets are sold elsewhere and
+ * which never set Catch terms: the published contract needs capacity and a
+ * price, and Catch registration stays closed while externalBooking is set.
+ */
+export function externalBookingTermsPatch(event: EventDocument):
+  Partial<EventDocument> {
+  if (event.externalBooking === undefined || isEventPolicyTerms(event)) {
+    return {};
+  }
+  return {capacityLimit: 1000, priceInPaise: 0,
+    currency: event.currency ?? "INR",
+    constraints: event.constraints ?? {minAge: 0, maxAge: 99,
+      maxMen: null, maxWomen: null}};
+}
+
 /** Same candidate projection and validation for manager preview and commit. */
 export function preparePublishedEventPatch(params: {
   event: EventDocument;
@@ -33,7 +48,9 @@ export function preparePublishedEventPatch(params: {
   nowMillis: number;
   timestampFromMillis: (value: number) => FirebaseFirestore.Timestamp;
 }): Partial<EventDocument> {
-  const {event, organizer, nowMillis, timestampFromMillis} = params;
+  const {organizer, nowMillis, timestampFromMillis} = params;
+  const external = externalBookingTermsPatch(params.event);
+  const event = {...params.event, ...external} as EventDocument;
   if (!Number.isSafeInteger(nowMillis) || event.status !== "active" ||
       !Number.isFinite(event.startTime?.toMillis?.()) ||
       event.startTime.toMillis() <= nowMillis ||
@@ -49,6 +66,7 @@ export function preparePublishedEventPatch(params: {
     endTimeMillis: configured.endTime.toMillis(),
     eventFormat: configured.eventFormat});
   const patch: Partial<EventDocument> = {
+    ...external,
     ...publicationRegistrationPatch(event),
     ...(event.description === undefined ? {description: ""} : {}),
     ...eventDiscoveryProjection({event: configured,
@@ -83,7 +101,10 @@ export function eventPublicationReadiness(params:
   if (!isEventTimeRange(event)) missing.push("duration");
   if (!event.meetingLocation || !event.meetingPoint) missing.push("venue");
   if (!event.eventFormat) missing.push("format");
-  if (!isEventPolicyTerms(event)) missing.push("admissionTerms");
+  // Tickets sold elsewhere need no Catch admission terms.
+  if (!isEventPolicyTerms(event) && event.externalBooking === undefined) {
+    missing.push("admissionTerms");
+  }
   if (event.distanceKm === undefined || event.pace === undefined) {
     missing.push("distancePace");
   }

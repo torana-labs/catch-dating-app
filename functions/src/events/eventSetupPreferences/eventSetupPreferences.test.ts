@@ -227,3 +227,34 @@ test("integrated checkout freezes terms without activating a provider", () => {
     nowMillis: 1_000_000, eventStartsAtMillis: 9_000_000,
     allowCatchCheckout: true}), (error) => isError(error, "incomplete"));
 });
+
+test("booking mode is optional, inherits and leaves old hashes alone", () => {
+  const without = resolved();
+  assert.equal("bookingMode" in without, false);
+  const withDefault = {...defaults, eventSetup: {...defaults.eventSetup,
+    bookingMode: "askFirst" as const}};
+  assert.notEqual(organizerEventDefaultsHash(withDefault),
+    organizerEventDefaultsHash(defaults));
+  assert.deepEqual(resolved(intents(), withDefault).bookingMode,
+    {value: "askFirst", source: "organizer"});
+  const inherited = resolved({...intents(), bookingMode: {mode: "inherit"}},
+    withDefault);
+  assert.deepEqual(inherited.bookingMode,
+    {value: "askFirst", source: "organizer"});
+  const set = resolved({...intents(), bookingMode: {mode: "set",
+    value: "anyone"}}, withDefault);
+  assert.deepEqual(set.bookingMode, {value: "anyone", source: "event"});
+  assert.throws(() => resolved({...intents(), bookingMode: {mode: "set",
+    value: "everyone" as never}}), EventPreferenceError);
+});
+
+test("the waitlist choice is optional and inherits the default", () => {
+  assert.equal("waitlistEnabled" in resolved(), false);
+  const withDefault = {...defaults, eventSetup: {...defaults.eventSetup,
+    waitlistEnabled: false}};
+  assert.deepEqual(resolved(intents(), withDefault).waitlistEnabled,
+    {value: false, source: "organizer"});
+  assert.deepEqual(resolved({...intents(), waitlistEnabled: {mode: "set",
+    value: true}}, withDefault).waitlistEnabled,
+  {value: true, source: "event"});
+});

@@ -55,6 +55,53 @@ class PrivateEventSetupRepository {
     );
   }
 
+  /// Creates a weekly series from one set of basics: [basics]' date is the
+  /// first event, each later one a week after the one before. Each event has
+  /// its own receipt under `$requestId-<index>`, so retrying the same
+  /// [requestId] replays the events already made.
+  Future<PrivateEventSeriesReceipt> createSeries({
+    required String organizerId,
+    required String requestId,
+    required PrivateEventBasics basics,
+    required int count,
+  }) {
+    if (!basics.isValid || count < 2 || count > 8 || requestId.length > 124) {
+      throw ArgumentError.value(basics, 'basics', 'Invalid series');
+    }
+    final date = DateTime.parse('${basics.localDate}T00:00:00Z');
+    const weekdays = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
+    return withBackendErrorContext(
+      () async {
+        final response = await _functions
+            .httpsCallable('createPrivateEventSeries')
+            .call<Object?>({
+              'organizerId': organizerId,
+              'requestId': requestId,
+              'template': basics.toJson(),
+              'cadence': {
+                'kind': 'weekly',
+                'weekday': weekdays[date.weekday - 1],
+                'count': count,
+              },
+            });
+        return PrivateEventSeriesReceipt.fromResponse(response.data);
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'create private event series',
+        resource: 'createPrivateEventSeries',
+      ),
+    );
+  }
+
   Future<PrivateEventCreateReceipt> update(
     PrivateEventBasicsUpdateRequest request,
   ) {

@@ -22,6 +22,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -57,6 +58,7 @@ class CreateController extends _$CreateController {
   late String _requestId;
   String? _submittedSignature;
   bool _hydrated = false;
+  String _refundPolicy = 'standard';
   final _subscriptions = <ProviderSubscription<Object?>>[];
 
   @override
@@ -88,6 +90,7 @@ class CreateController extends _$CreateController {
     if (eventId != null) {
       Future.microtask(() => _follow(eventId));
     }
+    Future.microtask(() => _prefillFromDefaults(fresh: starting == null));
     return CreateFlowState(
       organizer: args.organizer,
       draft: draft,
@@ -95,6 +98,35 @@ class CreateController extends _$CreateController {
       loadingSaved: args.initialSavedEventId != null,
     );
   }
+
+  /// The organizer's event defaults fill an untouched price and places, and
+  /// set the refund policy a paid event starts with. They are a convenience:
+  /// without the defaults view the flow keeps its own starting values.
+  Future<void> _prefillFromDefaults({required bool fresh}) =>
+      Future<ManagerEventSetupDefaultsView>(
+        () => ref.read(
+          managerEventSetupDefaultsViewProvider(args.organizer.id).future,
+        ),
+      ).then<void>((view) {
+        final defaults = view.defaults?.preferences;
+        if (defaults == null || !ref.mounted) return;
+        _refundPolicy = defaults.refundPolicy ?? _refundPolicy;
+        if (!fresh) return;
+        state = state.copyWith(
+          waitlist: defaults.waitlistEnabled,
+          approveEach: defaults.bookingMode == null
+              ? null
+              : defaults.bookingMode == 'askFirst',
+        );
+        final draft = state.draft;
+        final price = defaults.startingPriceMinor;
+        state = state.copyWith(
+          draft: draft.copyWith(
+            price: draft.price ?? (price == null ? null : '${price ~/ 100}'),
+            capacity: draft.capacity ?? defaults.places?.toString(),
+          ),
+        );
+      }, onError: (Object _) {});
 
   PrivateEventDetailsScope _scope(String eventId) =>
       (userId: args.userId, organizerId: args.organizer.id, eventId: eventId);
@@ -163,6 +195,14 @@ class CreateController extends _$CreateController {
       ),
     ),
   );
+
+  void setWaitlist(bool on) => state = state.copyWith(waitlist: on);
+
+  void setApproveEach(bool on) => state = state.copyWith(approveEach: on);
+
+  void setPlanVisible(bool on) => state = state.copyWith(planVisible: on);
+
+  void setRepeatWeekly(bool on) => state = state.copyWith(repeatWeekly: on);
 
   void goTo(CreateStep step) {
     if (state.working || step == CreateStep.share) return;
@@ -458,6 +498,8 @@ class CreateController extends _$CreateController {
         meetingLocation: patch.meetingLocation,
         itinerary: patch.itinerary,
         admissionTerms: patch.admissionTerms,
+        planVisibleToGuests: patch.planVisibleToGuests,
+        externalBooking: patch.externalBooking,
       );
       if (!patch.isValid) return;
     }
@@ -473,6 +515,7 @@ class CreateController extends _$CreateController {
 
   Future<void> _saveTickets() async {
     final draft = state.draft;
+    await _saveExternalBooking(draft);
     if (!draft.externalBookingMode) {
       final price = _pricePaise(draft.price)!;
       await _saveDetails(
@@ -481,7 +524,7 @@ class CreateController extends _$CreateController {
             capacityLimit: int.tryParse(draft.capacity ?? '') ?? 30,
             priceInPaise: price,
             currency: 'INR',
-            cancellationPolicyId: price == 0 ? 'notApplicable' : 'standard',
+            cancellationPolicyId: price == 0 ? 'notApplicable' : _refundPolicy,
           ),
         ),
       );
@@ -494,7 +537,19 @@ class CreateController extends _$CreateController {
     );
     if (current.error != null) throw current.error!;
     final intents = current.intents;
-    if (intents.admissionPreset.value == state.admission.preset) return;
+    final resolved = current.resolvedValues;
+    final booking = state.approveEach ? 'askFirst' : 'anyone';
+    final bookingSaved =
+        resolved['bookingMode'] == booking ||
+        (!state.approveEach && resolved['bookingMode'] == null);
+    final waitlistSaved =
+        resolved['waitlistEnabled'] == state.waitlist ||
+        (state.waitlist && resolved['waitlistEnabled'] == null);
+    if (intents.admissionPreset.value == state.admission.preset &&
+        bookingSaved &&
+        waitlistSaved) {
+      return;
+    }
     await ref
         .read(
           privateEventPreferencesControllerProvider(_scope(eventId)).notifier,
@@ -511,6 +566,8 @@ class CreateController extends _$CreateController {
             reusablePaymentPage: intents.reusablePaymentPage,
             admissionPreset: EventSetupValue.set(state.admission.preset),
             expectedAmountMinor: intents.expectedAmountMinor,
+            bookingMode: EventSetupValue.set(booking),
+            waitlistEnabled: EventSetupValue.set(state.waitlist),
           ),
         );
     current = await _untilPreferences(
@@ -520,14 +577,71 @@ class CreateController extends _$CreateController {
     if (current.error != null) throw current.error!;
   }
 
+  /// Every week: the next eight weeks are set up as private events to edit,
+  /// before this one publishes. The request id is fixed for the flow, so a
+  /// retry replays the series instead of making a second one.
+  Future<void> _createSeries() async {
+    if (!state.repeatWeekly || state.seriesEventIds.isNotEmpty) return;
+    final basics = await _basics();
+    final first = DateTime.parse('${basics.localDate}T00:00:00Z');
+    final next = first.add(const Duration(days: 7));
+    final receipt =
+        await PrivateEventSetupRepository(
+          ref.read(firebaseFunctionsProvider),
+        ).createSeries(
+          organizerId: args.organizer.id,
+          requestId: '$_requestId-series',
+          count: 8,
+          basics: PrivateEventBasics(
+            name: basics.name,
+            city: basics.city,
+            localDate: next.toIso8601String().substring(0, 10),
+            localStartTime: basics.localStartTime,
+            timezone: basics.timezone,
+          ),
+        );
+    if (!ref.mounted) return;
+    state = state.copyWith(seriesEventIds: receipt.eventIds);
+  }
+
+  /// Selling elsewhere saves the booking page on the event; selling on Catch
+  /// again clears a saved one.
+  Future<void> _saveExternalBooking(EventDraft draft) async {
+    final eventId = state.eventId;
+    if (eventId == null) return;
+    final url = (draft.externalEventUrl ?? '').trim();
+    if (draft.externalBookingMode) {
+      final booking = PrivateEventExternalBooking.forUrl(url);
+      if (!booking.isValid) return;
+      await _saveDetails(
+        PrivateEventDetailsPatch(externalBooking: EventSetupValue.set(booking)),
+      );
+      return;
+    }
+    final saved = ref
+        .read(privateEventDetailsControllerProvider(_scope(eventId)))
+        .event
+        ?.eventSettings
+        .externalBookingUrl;
+    if (saved != null) {
+      await _saveDetails(
+        const PrivateEventDetailsPatch(
+          externalBooking: EventSetupValue.clear(),
+        ),
+      );
+    }
+  }
+
   Future<void> _publish() async {
     final eventId = state.eventId;
     if (eventId == null) return;
-    if (state.draft.itinerary.isNotEmpty) {
-      await _saveDetails(
-        PrivateEventDetailsPatch(itinerary: state.draft.itinerary),
-      );
-    }
+    await _saveDetails(
+      PrivateEventDetailsPatch(
+        itinerary: state.draft.itinerary.isEmpty ? null : state.draft.itinerary,
+        planVisibleToGuests: state.planVisible,
+      ),
+    );
+    await _createSeries();
     var current = await _untilPublication(
       eventId,
       (s) => (s.canChange && s.event != null) || s.error != null,
@@ -625,6 +739,15 @@ class CreateController extends _$CreateController {
     if (preset != null && state.draft.admissionPreset == null) {
       state = state.copyWith(
         draft: state.draft.copyWith(admissionPreset: preset),
+      );
+    }
+    final resolved = preferences.event?.eventPreferences?.resolvedValues;
+    final booking = resolved?['bookingMode'];
+    final waitlist = resolved?['waitlistEnabled'];
+    if (booking is String || waitlist is bool) {
+      state = state.copyWith(
+        approveEach: booking is String ? booking == 'askFirst' : null,
+        waitlist: waitlist is bool ? waitlist : null,
       );
     }
   }

@@ -189,6 +189,21 @@ test("withdrawn events leave both pages; ambiguous ids lose the event page",
     assert(!pages.includes("draft-event"));
   });
 
+test("link-only events keep their page but leave every list", () => {
+  const parity = parityCase(everyVariant);
+  const linked = parity.catchEvents.map((doc) =>
+    doc.id === "open-upcoming" ?
+      {...doc, data: {...doc.data, listing: "link"}} : doc);
+  const {organizerPage, eventPages} = built({catchEvents: linked});
+  const listed = [...organizerPage.upcomingEvents,
+    ...organizerPage.pastMoments].map((item) => item.eventId);
+  assert(!listed.includes("open-upcoming"));
+  const page = eventPages.find((item) => item.eventId === "open-upcoming");
+  assert(page);
+  assert(eventPages.every((item) => item.moreEvents
+    .every((card) => card.eventId !== "open-upcoming")));
+});
+
 test("pages whose reviews are not readable show none", () => {
   const pages = buildOrganizerScope(sources(
     parityCase("noindex page stays readable")));

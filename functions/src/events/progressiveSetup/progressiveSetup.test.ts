@@ -15,6 +15,7 @@ import {
   ProgressiveSetupDependencies,
   updatePrivateEventBasics,
 } from "./service";
+import {addLocalDays, createPrivateEventSeries} from "./series";
 
 type Row = Record<string, unknown>;
 
@@ -304,3 +305,32 @@ test("creation uses reviewed private defaults and preserves the event snapshot",
     assert.deepEqual(await createPrivateEventSetup({actorUid: "host1",
       command, deps: h.deps}), {...created, replayed: true});
   });
+
+test("a weekly series creates each event once with its place", async () => {
+  const h = setup();
+  const command = {organizerId: "org1", requestId: "series-request-1",
+    template: {...basics, localDate: "2026-10-20"},
+    cadence: {kind: "weekly" as const, weekday: "tuesday" as const,
+      count: 3}};
+  const first = await createPrivateEventSeries({actorUid: "host1", command,
+    deps: h.deps});
+  assert.equal(first.eventIds.length, 3);
+  assert.equal(first.replayed, false);
+  const dates = first.eventIds.map((id) => {
+    const event = h.store.read(`events/${id}`)!;
+    assert.equal(event.seriesId, first.seriesId);
+    assert.equal(validateEventDocument(event), true,
+      JSON.stringify(validateEventDocument.errors));
+    return [event.seriesIndex, event.eventLocalDate];
+  });
+  assert.deepEqual(dates, [[0, "2026-10-20"], [1, "2026-10-27"],
+    [2, "2026-11-03"]]);
+  const again = await createPrivateEventSeries({actorUid: "host1", command,
+    deps: h.deps});
+  assert.deepEqual(again, {...first, replayed: true});
+  await assert.rejects(createPrivateEventSeries({actorUid: "host1",
+    command: {...command, requestId: "series-request-2",
+      cadence: {...command.cadence, weekday: "monday" as const}},
+    deps: h.deps}), (error) => code(error) === "invalid-argument");
+  assert.equal(addLocalDays("2026-12-29", 7), "2027-01-05");
+});

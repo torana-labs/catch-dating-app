@@ -347,6 +347,65 @@
           ]
         }
       }
+    },
+    "bookingMode": {
+      "description": "Present once the event chose a booking mode or its organizer set a default one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "anyone",
+                "followersFirst",
+                "askFirst"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "cleared"
+          ]
+        }
+      }
+    },
+    "waitlistEnabled": {
+      "description": "Present once the event chose whether to take a waitlist or its organizer set a default.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "cleared"
+          ]
+        }
+      }
     }
   }
 }

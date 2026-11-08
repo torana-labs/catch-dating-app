@@ -21,6 +21,46 @@ import {
 } from "./support/viewWrite";
 
 export const eventSetupViewsCollection = "hostEventSetupViews";
+
+export type EventSetupFacts = NonNullable<HostEventSetupViewDocument["facts"]>;
+
+const capturedCheckout = new Set(["captured", "admitted"]);
+
+/** Whole minor units, never negative. */
+function minor(value: unknown): number {
+  return typeof value === "number" && Number.isSafeInteger(value) &&
+    value > 0 ? value : 0;
+}
+
+/** What the workspace states about the night: places booked, money taken
+ * for it, and whether the arrival message (the event-start reminder moment)
+ * is armed. Gross counts completed app payments and captured or admitted
+ * checkout and offer payments, less what they refunded. Pure.
+ */
+export function projectEventSetupFacts(params: {
+  event: FirebaseFirestore.DocumentData;
+  payments: FirebaseFirestore.DocumentData[];
+  checkoutPayments: FirebaseFirestore.DocumentData[];
+  arrivalMoment: FirebaseFirestore.DocumentData | undefined;
+}): EventSetupFacts {
+  const appGross = params.payments
+    .filter((payment) => payment.status === "completed")
+    .reduce((sum, payment) =>
+      sum + minor(payment.amountMinor ?? payment.amount), 0);
+  const checkoutGross = params.checkoutPayments
+    .filter((payment) => capturedCheckout.has(payment.status))
+    .reduce((sum, payment) => sum + Math.max(0,
+      minor(payment.amountPaise) - minor(payment.refundedAmountPaise)), 0);
+  return {
+    ticketsSold: minor(params.event.bookedCount),
+    grossMinor: appGross + checkoutGross,
+    arrivalMessage: {ready: params.arrivalMoment?.status === "armed"},
+  };
+}
+
+/** The event-start reminder moment the moments engine seeds per event. */
+export const arrivalMomentId = (eventId: string) =>
+  `${eventId}_event_start_reminder`;
 const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 
 export type EventSetupViewOutcome = ViewOutcome;
@@ -65,10 +105,22 @@ export async function reconcileEventSetupView(
       if (viewSnap.exists) tx.delete(viewRef);
       return {kind: "removed", existed: viewSnap.exists};
     }
-    const [organizerSnap, preferencesSnap] = await Promise.all([
+    const [organizerSnap, preferencesSnap, paymentsSnap, checkoutSnap,
+      offerPaymentsSnap, momentSnap] = await Promise.all([
       tx.get(db.collection("organizers").doc(organizerId)),
       tx.get(db.collection("eventSetupPreferences").doc(eventId)),
+      tx.get(db.collection("payments").where("eventId", "==", eventId)),
+      tx.get(db.collection("publicEventPayments")
+        .where("eventId", "==", eventId)),
+      tx.get(db.collection("organizerEventOfferPayments")
+        .where("eventId", "==", eventId)),
+      tx.get(db.collection("organizerMoments").doc(arrivalMomentId(eventId))),
     ]);
+    const facts = projectEventSetupFacts({event,
+      payments: paymentsSnap.docs.map((doc) => doc.data()),
+      checkoutPayments: [...checkoutSnap.docs, ...offerPaymentsSnap.docs]
+        .map((doc) => doc.data()),
+      arrivalMoment: momentSnap.data()});
     // Published, cancelled or booked events can never edit basics, so their
     // seven witness reads are skipped; the answer cannot depend on them.
     const shapeEditable = privateEventBasicsShapeEditable(eventId, event);
@@ -97,6 +149,7 @@ export async function reconcileEventSetupView(
         "invalidSource" as const,
       incompleteSource: invalid?.source ?? null,
       summary,
+      facts,
     };
     const plan = planViewWrite(previous, {schemaVersion: 1 as const, eventId,
       ...next}, deps.now());

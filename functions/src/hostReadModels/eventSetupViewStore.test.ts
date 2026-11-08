@@ -10,6 +10,7 @@ import {
   backfillEventSetupViews,
   reconcileEventSetupView,
 } from "./eventSetupViewStore";
+import {projectEventSetupFacts} from "./eventSetupViewStore";
 
 type Data = Record<string, unknown>;
 
@@ -264,3 +265,17 @@ test("backfill counts the organizer's setup events and evaluates on apply",
     assert.ok(view(db, "event-2"));
     assert.equal(view(db, "foreign"), undefined);
   });
+
+test("facts count places, net takings and the armed arrival message", () => {
+  assert.deepEqual(projectEventSetupFacts({event: {bookedCount: 12},
+    payments: [{status: "completed", amount: 49900},
+      {status: "refunded", amount: 49900},
+      {status: "completed", amountMinor: 20000, amount: 1}],
+    checkoutPayments: [{status: "admitted", amountPaise: 49900,
+      refundedAmountPaise: 9900}, {status: "expired", amountPaise: 49900}],
+    arrivalMoment: {status: "armed"}}), {ticketsSold: 12,
+    grossMinor: 49900 + 20000 + 40000, arrivalMessage: {ready: true}});
+  assert.deepEqual(projectEventSetupFacts({event: {}, payments: [],
+    checkoutPayments: [], arrivalMoment: {status: "paused"}}),
+  {ticketsSold: 0, grossMinor: 0, arrivalMessage: {ready: false}});
+});

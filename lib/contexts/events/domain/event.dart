@@ -38,6 +38,8 @@ enum EventLifecycleStatus { active, cancelled }
 
 enum EventPublicRegistrationMode { closed, free, paid }
 
+enum EventListing { listed, link }
+
 enum EventOriginMode { catchNative, externalCompanion }
 
 enum EventBookingAuthority {
@@ -109,6 +111,12 @@ abstract class Event with _$Event {
     )
     EventPublicRegistrationMode? publicRegistrationMode,
     @Default(0) int publicRegistrationRevision,
+    @JsonKey(unknownEnumValue: EventListing.listed)
+    @Default(EventListing.listed)
+    EventListing listing,
+    @Default(true) bool showGuestList,
+    @Default(false) bool priceHiddenUntilBookingOpens,
+    @Default(true) bool planVisibleToGuests,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,

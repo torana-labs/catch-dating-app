@@ -76,6 +76,17 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   ),
   publicRegistrationRevision:
       (json['publicRegistrationRevision'] as num?)?.toInt() ?? 0,
+  listing:
+      $enumDecodeNullable(
+        _$EventListingEnumMap,
+        json['listing'],
+        unknownValue: EventListing.listed,
+      ) ??
+      EventListing.listed,
+  showGuestList: json['showGuestList'] as bool? ?? true,
+  priceHiddenUntilBookingOpens:
+      json['priceHiddenUntilBookingOpens'] as bool? ?? false,
+  planVisibleToGuests: json['planVisibleToGuests'] as bool? ?? true,
   constraints: json['constraints'] == null
       ? const EventConstraints()
       : EventConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -146,6 +157,10 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'publicRegistrationMode':
       ?_$EventPublicRegistrationModeEnumMap[instance.publicRegistrationMode],
   'publicRegistrationRevision': instance.publicRegistrationRevision,
+  'listing': _$EventListingEnumMap[instance.listing]!,
+  'showGuestList': instance.showGuestList,
+  'priceHiddenUntilBookingOpens': instance.priceHiddenUntilBookingOpens,
+  'planVisibleToGuests': instance.planVisibleToGuests,
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'eventOrigin': ?instance.eventOrigin?.toJson(),
@@ -171,6 +186,11 @@ const _$EventPublicRegistrationModeEnumMap = {
   EventPublicRegistrationMode.closed: 'closed',
   EventPublicRegistrationMode.free: 'free',
   EventPublicRegistrationMode.paid: 'paid',
+};
+
+const _$EventListingEnumMap = {
+  EventListing.listed: 'listed',
+  EventListing.link: 'link',
 };
 
 _EventOrigin _$EventOriginFromJson(Map<String, dynamic> json) => _EventOrigin(

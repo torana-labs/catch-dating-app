@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "eventId": "event_1",
+  "organizerId": "org_1",
+  "setupRevision": 3,
+  "revision": 4,
+  "evaluatedAt": {
+    "_seconds": 1778889600,
+    "_nanoseconds": 0
+  },
+  "sourceCoverage": "invalidSource",
+  "incompleteSource": "organizers",
+  "summary": null,
+  "facts": {
+    "ticketsSold": 12,
+    "grossMinor": 598800,
+    "arrivalMessage": {
+      "ready": true
+    }
+  }
+}

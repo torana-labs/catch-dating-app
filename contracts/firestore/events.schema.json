@@ -481,6 +481,47 @@
           "rotations"
         ]
       }
+    },
+    "listing": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "link"
+      ],
+      "description": "Where people can find the event. listed: on the organizer's page, in Catch Explore and in search. link: only people with the event's link; it is left out of Explore, search and the organizer page. Missing reads as listed.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "showGuestList": {
+      "type": "boolean",
+      "description": "Whether guests see who else is going: a count, and friends' names in the app. Missing reads as true.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "priceHiddenUntilBookingOpens": {
+      "type": "boolean",
+      "description": "Whether the price stays hidden until booking opens. Missing reads as false.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "planVisibleToGuests": {
+      "type": "boolean",
+      "description": "Whether booked guests see the plan for the night (eventSuccessPlans) on their phones. Missing reads as true, so events from before the choice keep their live guide; false shows it to the event's managers only.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "externalBooking": {
+      "$ref": "../embedded/event_external_booking.schema.json",
+      "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "seriesId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The weekly series this event was created in by createPrivateEventSeries. Missing for a single event.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "seriesIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "description": "The event's place in its series, from 0. Present with seriesId.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [
@@ -598,6 +639,25 @@
           "publicRegistrationEnabled": {
             "const": true
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "seriesId"
+        ]
+      },
+      "then": {
+        "required": [
+          "seriesIndex"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "seriesIndex"
+          ]
         }
       }
     }

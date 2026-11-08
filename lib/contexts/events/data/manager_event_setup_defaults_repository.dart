@@ -156,6 +156,13 @@ class ManagerEventSetupDefaultsUpdateRequest {
     'offerMessageTemplate',
     'paymentInstructions',
     'reusablePaymentPage',
+    'bookingMode',
+    'startingPriceMinor',
+    'places',
+    'waitlistEnabled',
+    'refundPolicy',
+    'askedAtBooking',
+    'autoMessages',
   };
 
   factory ManagerEventSetupDefaultsUpdateRequest.forChange({
@@ -209,7 +216,7 @@ class ManagerEventSetupDefaultsUpdateRequest {
         expectedRevision > 1000000000 ||
         !_hashPattern.hasMatch(reviewedDefaultsHash) ||
         changes.isEmpty ||
-        changes.length > 9 ||
+        changes.length > fieldNames.length ||
         changes.keys.any((key) => !fieldNames.contains(key))) {
       return false;
     }
@@ -245,6 +252,13 @@ class ManagerEventSetupDefaultsUpdateRequest {
 }
 
 bool _equalValue(Object? a, Object? b) {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (!_equalValue(a[i], b[i])) return false;
+    }
+    return true;
+  }
   if (a is Map && b is Map) {
     if (a.length != b.length) return false;
     return a.keys.every((key) => _equalValue(a[key], b[key]));

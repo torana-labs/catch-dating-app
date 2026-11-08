@@ -6,6 +6,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_publication_repository.g.dart';
 
+/// One `setEventPublication` command. The optional settings travel with it;
+/// sending the current [publicationState] with a changed setting saves only
+/// the setting.
 class EventPublicationRequest {
   const EventPublicationRequest({
     required this.organizerId,
@@ -13,33 +16,58 @@ class EventPublicationRequest {
     required this.requestId,
     required this.expectedSetupRevision,
     required this.publicationState,
+    this.listing,
+    this.showGuestList,
+    this.priceHiddenUntilBookingOpens,
   });
   final String organizerId;
   final String eventId;
   final String requestId;
   final int expectedSetupRevision;
   final String publicationState;
+
+  /// `listed` or `link`; null leaves it as it is.
+  final String? listing;
+  final bool? showGuestList;
+  final bool? priceHiddenUntilBookingOpens;
+
+  static const _settingKeys = {
+    'listing',
+    'showGuestList',
+    'priceHiddenUntilBookingOpens',
+  };
+
   bool get isValid =>
       RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$').hasMatch(organizerId) &&
       RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$').hasMatch(eventId) &&
       RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$').hasMatch(requestId) &&
       expectedSetupRevision >= 1 &&
       expectedSetupRevision < 1000000000 &&
-      const {'private', 'published'}.contains(publicationState);
+      const {'private', 'published'}.contains(publicationState) &&
+      (listing == null || const {'listed', 'link'}.contains(listing));
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'eventId': eventId,
     'requestId': requestId,
     'expectedSetupRevision': expectedSetupRevision,
     'publicationState': publicationState,
+    if (listing != null) 'listing': listing,
+    if (showGuestList != null) 'showGuestList': showGuestList,
+    if (priceHiddenUntilBookingOpens != null)
+      'priceHiddenUntilBookingOpens': priceHiddenUntilBookingOpens,
   };
   factory EventPublicationRequest.fromJson(Map<String, dynamic> raw) {
-    if (raw.length != 5 ||
+    final settings = raw.keys.where(_settingKeys.contains).length;
+    if (raw.length != 5 + settings ||
         raw['organizerId'] is! String ||
         raw['eventId'] is! String ||
         raw['requestId'] is! String ||
         raw['expectedSetupRevision'] is! int ||
-        raw['publicationState'] is! String) {
+        raw['publicationState'] is! String ||
+        (raw['listing'] != null && raw['listing'] is! String) ||
+        (raw['showGuestList'] != null && raw['showGuestList'] is! bool) ||
+        (raw['priceHiddenUntilBookingOpens'] != null &&
+            raw['priceHiddenUntilBookingOpens'] is! bool)) {
       throw const FormatException('Invalid publication request');
     }
     final request = EventPublicationRequest(
@@ -48,6 +76,10 @@ class EventPublicationRequest {
       requestId: raw['requestId'] as String,
       expectedSetupRevision: raw['expectedSetupRevision'] as int,
       publicationState: raw['publicationState'] as String,
+      listing: raw['listing'] as String?,
+      showGuestList: raw['showGuestList'] as bool?,
+      priceHiddenUntilBookingOpens:
+          raw['priceHiddenUntilBookingOpens'] as bool?,
     );
     if (!request.isValid) {
       throw const FormatException('Invalid publication request');

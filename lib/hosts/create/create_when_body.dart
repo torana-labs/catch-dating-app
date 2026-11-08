@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_settings_copy.dart';
 import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -24,6 +25,7 @@ class CreateWhenBody extends StatelessWidget {
     required this.onEnd,
     required this.onPlace,
     required this.onDirections,
+    this.onRepeat,
     this.showTitle = false,
     this.enableNetworkTiles = true,
   });
@@ -38,6 +40,9 @@ class CreateWhenBody extends StatelessWidget {
   final VoidCallback onEnd;
   final VoidCallback onPlace;
   final ValueChanged<String> onDirections;
+
+  /// Every week on this weekday; null hides the switch.
+  final ValueChanged<bool>? onRepeat;
   final bool showTitle;
 
   /// False draws the map's no-network fallback (previews and captures).
@@ -126,6 +131,22 @@ class CreateWhenBody extends StatelessWidget {
               ),
           ],
         ),
+        if (onRepeat != null && picked != null && state.eventId != null)
+          CatchIndexRow(
+            title: CreateSettingsCopy.repeatOn(
+              DateFormat.EEEE(locale).format(picked),
+            ),
+            subtitle: CreateSettingsCopy.repeatBody,
+            onTap: null,
+            trailing: CatchToggleInput(
+              key: const ValueKey<String>('create-repeat-weekly'),
+              value: state.repeatWeekly,
+              semanticLabel: CreateSettingsCopy.repeat,
+              contractExemption:
+                  'Sets up the weekly series when the event publishes.',
+              onChanged: onRepeat,
+            ),
+          ),
         CatchStack(
           direction: CatchStackDirection.row,
           equal: true,

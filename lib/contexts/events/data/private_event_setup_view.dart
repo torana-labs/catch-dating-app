@@ -30,6 +30,37 @@ class PrivateEventSetupViewUnavailable implements Exception {
       '${source == null ? '' : ', $source'})';
 }
 
+/// What the server states about the night: places booked, money taken for
+/// it in minor units, and whether the arrival message is armed.
+class PrivateEventSetupFacts {
+  const PrivateEventSetupFacts({
+    required this.ticketsSold,
+    required this.grossMinor,
+    required this.arrivalReady,
+  });
+
+  final int ticketsSold;
+  final int grossMinor;
+  final bool arrivalReady;
+
+  /// Null when the view was written before it carried facts.
+  static PrivateEventSetupFacts? fromView(Object? raw) {
+    if (raw == null) return null;
+    if (raw is! Map ||
+        raw['ticketsSold'] is! int ||
+        raw['grossMinor'] is! int ||
+        raw['arrivalMessage'] is! Map ||
+        (raw['arrivalMessage'] as Map)['ready'] is! bool) {
+      throw const FormatException('Invalid setup view facts');
+    }
+    return PrivateEventSetupFacts(
+      ticketsSold: raw['ticketsSold'] as int,
+      grossMinor: raw['grossMinor'] as int,
+      arrivalReady: (raw['arrivalMessage'] as Map)['ready'] as bool,
+    );
+  }
+}
+
 /// One read of `hostEventSetupViews/{eventId}`: the manager projection of an
 /// event, written ahead of time by the server.
 class PrivateEventSetupView {
@@ -41,6 +72,7 @@ class PrivateEventSetupView {
     this.setupRevision,
     this.evaluatedAt,
     this.incompleteSource,
+    this.facts,
   });
 
   const PrivateEventSetupView.missing({
@@ -50,7 +82,8 @@ class PrivateEventSetupView {
        summary = null,
        setupRevision = null,
        evaluatedAt = null,
-       incompleteSource = null;
+       incompleteSource = null,
+       facts = null;
 
   /// A view with [summary] as its complete projection.
   PrivateEventSetupView.complete(PrivateEventBasicSummary this.summary)
@@ -59,7 +92,8 @@ class PrivateEventSetupView {
       sourceCoverage = PrivateEventSetupCoverage.complete,
       setupRevision = summary.setupRevision,
       evaluatedAt = null,
-      incompleteSource = null;
+      incompleteSource = null,
+      facts = null;
 
   /// Parses the document; [data] is null when it does not exist yet. A
   /// document for another event or organizer is a [FormatException].
@@ -109,6 +143,7 @@ class PrivateEventSetupView {
       setupRevision: setupRevision,
       evaluatedAt: evaluatedAt.toDate(),
       incompleteSource: incompleteSource as String?,
+      facts: PrivateEventSetupFacts.fromView(data['facts']),
     );
   }
 
@@ -119,6 +154,9 @@ class PrivateEventSetupView {
   final int? setupRevision;
   final DateTime? evaluatedAt;
   final String? incompleteSource;
+
+  /// The trigger-owned facts; null on views written before them.
+  final PrivateEventSetupFacts? facts;
 
   bool get isComplete =>
       sourceCoverage == PrivateEventSetupCoverage.complete && summary != null;

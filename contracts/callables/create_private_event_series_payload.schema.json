@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_private_event_series_payload.schema.json",
+  "title": "CreatePrivateEventSeriesCallablePayload",
+  "description": "Creates a weekly series of private events from one set of basics. The template's localDate is the first event and must fall on cadence.weekday; each later event is seven days after the one before. Each event is created with its own receipt under requestId-index, so a retry replays the events already made.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "template",
+    "cadence"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,123}$"
+    },
+    "template": {
+      "$ref": "../embedded/event_setup_defaults.schema.json#/definitions/basicsInput"
+    },
+    "cadence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "weekday",
+        "count"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "weekly"
+        },
+        "weekday": {
+          "type": "string",
+          "enum": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 8
+        }
+      }
+    }
+  }
+}
