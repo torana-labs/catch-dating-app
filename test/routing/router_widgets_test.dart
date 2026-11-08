@@ -14,10 +14,11 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/hosts/create/create_screen.dart';
+import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
+import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
@@ -321,13 +322,13 @@ void main() {
                 '/host/audience?view=responses&organizerId=organizer-1&formId=form-1',
               ),
             )
-            as HostFormsScreen;
+            as HostResponsesScreen;
 
     expect(audiences.initialView, HostAudienceView.audiences);
     expect(audiences.initialContactId, 'contact-1');
-    expect(forms.initialResponses, isFalse);
-    expect(responses.initialResponses, isTrue);
-    expect(responses.initialFormId, 'form-1');
+    expect(forms.initialOrganizerId, 'organizer-1');
+    expect(responses.organizerId, 'organizer-1');
+    expect(responses.formId, 'form-1');
   });
 
   test('host inbox route restores the campaigns saved audience', () {
@@ -418,9 +419,9 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.byType(CreateScreen), findsOneWidget);
+      expect(find.byType(PrivateEventCreateScreen), findsOneWidget);
       expect(find.text('Club not found.'), findsNothing);
-      // Unmount the create flow so its listeners settle.
+      // The private create flow schedules draft timers; unmount to settle them.
       await tester.pumpWidget(const SizedBox.shrink());
       await pumpFeatureUiFor(tester, const Duration(seconds: 5));
     },

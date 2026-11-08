@@ -29,8 +29,8 @@ void main() {
     expect(newRootLegacyFiles.every(newRootPath), isTrue);
   });
 
-  test('the new roots are the app packages, lib/pages, Today, Create, '
-      'Onboarding and the door', () {
+  test('the new roots are the app packages, lib/pages and the redrawn '
+      'host destinations', () {
     for (final file in const [
       'apps/host/lib/main.dart',
       'apps/consumer/lib/explore/widgets/row.dart',
@@ -41,6 +41,8 @@ void main() {
       'lib/hosts/door/door_body.dart',
       'lib/hosts/insights/host_insights_body.dart',
       'lib/hosts/live/live_body.dart',
+      'lib/hosts/organizer/organizer_body.dart',
+      'lib/hosts/forms/forms_body.dart',
       'tool/catch_ui_lints_probe/run.x/1/apps/host/lib/a.dart',
       'tool/catch_ui_lints_probe/run.x/1/arch/lib/pages/a/a.dart',
     ]) {
@@ -87,6 +89,8 @@ void main() {
     expect(zero('lib/hosts/door/door_screen.dart'), isTrue);
     expect(zero('lib/hosts/door/door_controller.g.dart'), isFalse);
     expect(zero('lib/hosts/insights/host_event_report_screen.dart'), isTrue);
+    expect(zero('lib/hosts/organizer/organizer_screen.dart'), isTrue);
+    expect(zero('lib/hosts/organizer/organizer_controller.g.dart'), isFalse);
     for (final file in newRootLegacyFiles) {
       expect(zero(file), isFalse, reason: file);
       expect(listed(file), isTrue, reason: file);

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -344,12 +345,13 @@ void main() {
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Check in'), findsNWidgets(2));
+    expect(find.text('0 of 2 in'), findsOneWidget);
 
+    // The Guests tab is the door: Check in is the row action.
     await tester.tap(
       find.descendant(
-        of: find.byKey(const ValueKey('guest-asha')),
-        matching: find.widgetWithText(CatchButton, 'Check in'),
+        of: find.byKey(const ValueKey('door-guest-guest-asha')),
+        matching: find.text('Check in'),
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
@@ -364,8 +366,7 @@ void main() {
         .doc('guest-asha')
         .get();
     expect(stored.data()?['status'], EventAttendeeStatus.checkedIn.name);
-    expect(find.text('Checked in'), findsOneWidget);
-    expect(find.widgetWithText(CatchButton, 'Undo'), findsOneWidget);
+    expect(find.text('1 of 2 in'), findsOneWidget);
     expectHostSurfaceLoaded(tester, backend, surface: 'guest roster');
     await unmountHostAppShell(tester);
   });
@@ -431,22 +432,25 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
-  testWidgets('Host account menu offers Delete account', (tester) async {
+  testWidgets('Host settings offer Delete your account', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
 
     await openHostTab(tester, 'Organizer');
     await pumpAppShellFrames(tester, frames: 20);
-    await tester.tap(find.byKey(const ValueKey('host-account-menu')));
-    await pumpSheet(tester);
-    expect(find.text('Delete account'), findsOneWidget);
-
-    await tester.tap(find.text('Delete account'));
+    final settings = find.byKey(const ValueKey('organizer-row-settings'));
+    await tester.ensureVisible(settings);
+    await pumpAppShellFrames(tester);
+    await tester.tap(settings);
+    await pumpAppShellFrames(tester, frames: 20);
+    final delete = find.byKey(const ValueKey('settings-row-delete'));
+    await tester.ensureVisible(delete);
+    await tester.tap(delete);
     await pumpSheet(tester);
     expect(find.textContaining('Shared business records'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await pumpSheet(tester);
-    expect(find.byKey(const ValueKey('host-account-menu')), findsOneWidget);
+    expect(delete, findsOneWidget);
     await unmountHostAppShell(tester);
   });
 }
@@ -455,7 +459,7 @@ const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
   'Events': HostEventsScreen,
   'People': HostCustomersScreen,
-  'Organizer': HostOrganizersScreen,
+  'Organizer': OrganizerScreen,
 };
 
 /// A Host who already dismissed the first-run Today focus prompt.

@@ -180,22 +180,6 @@
       ]
     },
     {
-      "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
-      "requires": [
-        {
-          "text": "HostAudienceView get _view"
-        }
-      ],
-      "forbids": [
-        {
-          "text": "TabController("
-        },
-        {
-          "text": "CatchNavigationViewport("
-        }
-      ]
-    },
-    {
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "requires": [
         {

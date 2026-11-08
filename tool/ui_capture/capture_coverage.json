@@ -727,8 +727,7 @@
       "captureIds": [
         "host_customers_populated",
         "host_customers_audiences_populated",
-        "host_forms_populated",
-        "host_responses_populated"
+        "host_forms_phone"
       ],
       "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
     },
@@ -759,9 +758,12 @@
     },
     {
       "routeId": "hostResponseOfferScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+      "reason": "Deterministic phone captures of the system offer screen in its chrome with fixture state.",
+      "captureIds": [
+        "host_offer_phone"
+      ]
     },
     {
       "routeId": "hostResponseOfferReviewScreen",
@@ -824,7 +826,7 @@
       "priority": "P1",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_form_templates"
+        "host_form_new_phone"
       ]
     },
     {
@@ -839,7 +841,8 @@
         "host_form_response_large_text",
         "host_response_review_submitted",
         "host_response_review_imported",
-        "host_response_review_revoked"
+        "host_response_review_revoked",
+        "host_response_phone"
       ]
     },
     {
@@ -850,7 +853,10 @@
         "host_form_builder_draft",
         "host_form_overview",
         "host_form_questions_phone",
-        "host_form_settings"
+        "host_form_settings",
+        "host_form_phone",
+        "host_form_builder_phone",
+        "host_responses_phone"
       ],
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
@@ -869,7 +875,7 @@
       "priority": "P2",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_form_share"
+        "host_form_share_phone"
       ]
     },
     {
@@ -878,7 +884,7 @@
       "priority": "P2",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_form_results"
+        "host_responses_phone"
       ]
     },
     {
@@ -1102,7 +1108,10 @@
       "priority": "P1",
       "captureIds": [
         "host_clubs_management",
-        "host_organizer_media_summary"
+        "host_organizer_media_summary",
+        "host_organizer_tab_phone",
+        "host_organizer_page_phone",
+        "host_organizer_settings_phone"
       ],
       "reason": "The first-class Host Organizer branch is captured through the real five-destination Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
     },
@@ -1182,14 +1191,18 @@
         "host_team_save_profile_error",
         "host_team_save_profile_offline",
         "host_team_sign_out_error",
-        "host_team_sign_out_offline"
+        "host_team_sign_out_offline",
+        "host_organizer_team_phone"
       ]
     },
     {
       "routeId": "hostOrganizerPaymentsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The owner-only Payments spoke has loaded Widgetbook coverage; add routed payout-ready and restricted captures in the next Host Clubs capture refresh."
+      "reason": "The rebuilt Payments and billing screen is captured at phone with Razorpay connected, the current bill against its cap, the plan and the bill rows.",
+      "captureIds": [
+        "host_organizer_payments_phone"
+      ]
     },
     {
       "routeId": "hostOrganizerMembershipsScreen",

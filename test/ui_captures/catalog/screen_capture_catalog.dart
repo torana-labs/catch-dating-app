@@ -71,14 +71,11 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/modules.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
-import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
@@ -203,17 +200,13 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
@@ -329,8 +322,10 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../hosts/forms/forms_captures.dart';
 import '../../hosts/live/live_captures.dart';
 import '../../hosts/onboarding/onboarding_captures.dart';
+import '../../hosts/organizer/organizer_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
@@ -3314,6 +3309,17 @@ final _createHandlers = CreateHandlers(
 
 Widget _createCapture(Widget screen) => CatchRoot(child: screen);
 
+// The organiser tab, Your page, Payments, Team and Settings on the fixture
+// organizer, live on the web with a bill and Razorpay connected.
+List<Object> _organizerCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [organizerCaptureOrganizer],
+    ownedOrganizers: [organizerCaptureOrganizer],
+  ),
+  ...organizerCaptureOverrides(),
+];
+
 Widget _hostTodayCapture() => _HostRoutedShellCapture(
   initialLocation: '/host/today',
   activeIndex: 0,
@@ -5983,26 +5989,6 @@ HostSavedAudience _hostSavedAudienceCapture() {
   );
 }
 
-class _CaptureHostFormsDirectoryController
-    extends HostFormsDirectoryController {
-  @override
-  Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
-    return HostFormsDirectoryState(
-      forms: _hostFormsAuditForms,
-      nextCursor: null,
-    );
-  }
-}
-
-class _CaptureHostFormResponsesController extends HostFormResponsesController {
-  @override
-  Future<HostFormResponsesState> build(
-    HostFormResponseListRequest request,
-  ) async {
-    return const HostFormResponsesState(responses: [], nextCursor: null);
-  }
-}
-
 class _CaptureHostFormEditorController extends HostFormEditorController {
   @override
   bool editorBoundTo(String? accountId) => true;
@@ -6156,66 +6142,6 @@ Map<String, Object?> _hostFormBuilderAuditQuestion({
     'customError': null,
   },
 };
-
-final List<HostFormSummary> _hostFormsAuditForms = [
-  _hostFormsAuditSummary(
-    id: 'guest-preferences',
-    title: 'Guest preferences',
-    status: HostFormLifecycleStatus.published,
-    submittedResponseCount: 48,
-  ),
-  _hostFormsAuditSummary(
-    id: 'event-waiver',
-    title: 'Event waiver',
-    status: HostFormLifecycleStatus.paused,
-    submittedResponseCount: 126,
-  ),
-  _hostFormsAuditSummary(
-    id: 'host-application',
-    title: 'Volunteer host application',
-    status: HostFormLifecycleStatus.draft,
-    submittedResponseCount: 0,
-  ),
-];
-
-HostFormSummary _hostFormsAuditSummary({
-  required String id,
-  required String title,
-  required HostFormLifecycleStatus status,
-  required int submittedResponseCount,
-}) {
-  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
-  return HostFormSummary(
-    organizerId: organizerId,
-    formId: id,
-    title: title,
-    description: null,
-    purpose: HostFormPurpose.application,
-    status: status,
-    templateId: null,
-    publicFormId: 'public-$id',
-    defaultTargetKind: HostFormTargetKind.organizer,
-    defaultTargetId: organizerId,
-    activeVersionId: 'version-$id',
-    draftRevision: 1,
-    publishedVersion: 1,
-    submittedResponseCount: submittedResponseCount,
-    consequences: const HostFormConsequences(
-      coverage: HostFormConsequenceCoverage.exact,
-      identityPolicy: HostFormIdentityPolicy.emailOrPhoneVerified,
-      enabledAutomationActionKinds: {
-        HostFormAutomationActionKind.createCrmContact,
-      },
-    ),
-    updatedAt: DateTime(2026, 8, 28, 18, 30),
-    publishedAt: status == HostFormLifecycleStatus.draft
-        ? null
-        : DateTime(2026, 8, 20, 19),
-    lastResponseAt: submittedResponseCount == 0
-        ? null
-        : DateTime(2026, 8, 28, 17, 45),
-  );
-}
 
 HostAudienceContactDetail _hostCustomerMemoryDetail() {
   final organizerId = HostOperationsFixtures.primaryOrganizer.id;
@@ -9765,13 +9691,6 @@ class _CaptureAuthRepository implements AuthRepository {
   Future<void> signOut() async {}
 }
 
-class _CaptureFirebaseAuth extends Fake implements FirebaseAuth {
-  _CaptureFirebaseAuth({required this.currentUser});
-
-  @override
-  final User? currentUser;
-}
-
 class _CaptureAuthUser extends Fake implements User {
   _CaptureAuthUser({required this.uid, required this.phoneNumber});
 
@@ -11199,6 +11118,57 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostTodayCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_forms_phone',
+    routeIds: const <String>['hostAudienceScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_forms_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_new_phone',
+    routeIds: const <String>['hostFormTemplatesScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_form_new_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_phone',
+    routeIds: const <String>['hostFormBuilderScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_form_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_builder_phone',
+    routeIds: const <String>['hostFormBuilderScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_form_builder_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_share_phone',
+    routeIds: const <String>['hostFormShareScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_form_share_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_responses_phone',
+    routeIds: const <String>[
+      'hostFormBuilderScreen',
+      'hostFormAnalyticsScreen',
+    ],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_responses_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_response_phone',
+    routeIds: const <String>['hostFormResponseDetailScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_response_phone']!(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_offer_phone',
+    routeIds: const <String>['hostResponseOfferScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (_) => hostFormsCaptures['host_offer_phone']!(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_door_arriving',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
@@ -11312,6 +11282,45 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     providerOverrides: _hostReportCaptureOverrides(),
     builder: (context) => _hostReportCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_tab_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/organizer',
+      activeIndex: 4,
+      child: organizerTabCapture(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_page_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerPageEditCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_payments_phone',
+    routeIds: const <String>['hostOrganizerPaymentsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerPaymentsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_team_phone',
+    routeIds: const <String>['hostOrganizerTeamScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerTeamCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_organizer_settings_phone',
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _organizerCaptureOverrides(),
+    builder: (context) => organizerSettingsCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',
@@ -16902,142 +16911,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     includeOverlays: true,
   ),
   ScreenCaptureEntry(
-    id: 'host_form_templates',
-    routeIds: const <String>['hostFormTemplatesScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostFormTemplatesScreen(organizerId: 'org_1'),
-    providerOverrides: [
-      hostFormTemplatesProvider('org_1').overrideWith(
-        (_) async => [
-          for (final (id, title, purpose, count, description) in [
-            (
-              'blank_form',
-              'Blank form',
-              HostFormPurpose.intake,
-              0,
-              'Start with your own questions.',
-            ),
-            (
-              'event_application',
-              'Event application',
-              HostFormPurpose.application,
-              5,
-              'Learn who wants to join your event.',
-            ),
-            (
-              'dinner_guest_intake',
-              'Dinner guest intake',
-              HostFormPurpose.intake,
-              6,
-              'Dietary requirements, seating preferences and accessibility.',
-            ),
-            (
-              'post_event_feedback',
-              'Post-event feedback',
-              HostFormPurpose.feedback,
-              4,
-              'Learn what went well and what could improve.',
-            ),
-          ])
-            HostFormTemplateSummary(
-              templateId: id,
-              version: 1,
-              title: title,
-              description: description,
-              purpose: purpose,
-              identityPolicy: HostFormIdentityPolicy.emailOrPhoneVerified,
-              sectionCount: 1,
-              questionCount: count,
-            ),
-        ],
-      ),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_share',
-    routeIds: const <String>['hostFormShareScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) =>
-        const HostFormShareScreen(organizerId: 'org_1', formId: 'form_1'),
-    providerOverrides: [
-      hostFormEditorControllerProvider(
-        'org_1',
-        'form_1',
-      ).overrideWith(_AudienceCapturePublishedEditor.new),
-      hostFormShareAssetsControllerProvider(
-        organizerId: 'org_1',
-        formId: 'form_1',
-      ).overrideWith(
-        (_) async => const HostFormShareAssets(
-          canonicalUrl: 'https://catch.example/f/saturday-social/',
-          embedUrl: 'https://catch.example/f/saturday-social/?embed=1',
-          embedSnippet:
-              '<iframe src="https://catch.example/f/saturday-social/?embed=1" title="Saturday Social application"></iframe>',
-        ),
-      ),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_form_results',
-    routeIds: const <String>['hostFormAnalyticsScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) =>
-        const HostFormAnalyticsScreen(organizerId: 'org_1', formId: 'form_1'),
-    providerOverrides: [
-      hostFormEditorControllerProvider(
-        'org_1',
-        'form_1',
-      ).overrideWith(_AudienceCapturePublishedEditor.new),
-      hostFormAnalyticsProvider(
-        organizerId: 'org_1',
-        formId: 'form_1',
-      ).overrideWith(
-        (_) async => const HostFormAnalytics(
-          formId: 'form_1',
-          versionId: 'v1',
-          version: 1,
-          opens: 240,
-          starts: 120,
-          submissions: 84,
-          withdrawals: 2,
-          completionRate: .7,
-          medianCompletionMillis: 82000,
-          questions: [
-            HostFormQuestionAggregate(
-              questionId: 'join',
-              label: 'What would you like to join?',
-              kind: 'singleChoice',
-              privacyClass: 'organizerCustom',
-              responseCount: 84,
-              choiceCounts: [
-                HostFormChoiceCount(
-                  value: 'dinners',
-                  label: 'Small dinners',
-                  count: 48,
-                ),
-                HostFormChoiceCount(
-                  value: 'running',
-                  label: 'Running groups',
-                  count: 24,
-                ),
-                HostFormChoiceCount(value: 'both', label: 'Both', count: 12),
-              ],
-              numericCount: 0,
-              numericSum: 0,
-              numericMin: null,
-              numericMax: null,
-            ),
-          ],
-          sources: [],
-          privacyThreshold: 5,
-        ),
-      ),
-    ],
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
     id: 'host_form_response_application',
     routeIds: const <String>['hostFormResponseDetailScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -17283,82 +17156,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     builder: (_) => const HostAddCustomerScreen(organizerId: 'org_1'),
     includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_responses_populated',
-    routeIds: const <String>['hostAudienceScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: [
-      firebaseAuthProvider.overrideWithValue(
-        _CaptureFirebaseAuth(
-          currentUser: _CaptureAuthUser(
-            uid: HostOperationsFixtures.hostUid,
-            phoneNumber: '+919876543210',
-          ),
-        ),
-      ),
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      uidProvider.overrideWithValue(
-        const AsyncData<String?>(HostOperationsFixtures.hostUid),
-      ),
-      hostOperableOrganizersProvider(
-        HostOperationsFixtures.hostUid,
-      ).overrideWithValue(
-        AsyncData<List<Organizer>>([HostOperationsFixtures.primaryOrganizer]),
-      ),
-      hostFormsDirectoryControllerProvider.overrideWith2(
-        (_) => _CaptureHostFormsDirectoryController(),
-      ),
-      hostFormResponsesControllerProvider.overrideWith2(
-        (_) => _AudienceCaptureResponses(),
-      ),
-    ],
-    builder: (_) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience?view=responses',
-      activeIndex: 2,
-      child: HostFormsScreen(
-        initialOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
-        initialResponses: true,
-      ),
-    ),
-    includeOverlays: true,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_forms_populated',
-    routeIds: const <String>['hostAudienceScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: [
-      firebaseAuthProvider.overrideWithValue(
-        _CaptureFirebaseAuth(
-          currentUser: _CaptureAuthUser(
-            uid: HostOperationsFixtures.hostUid,
-            phoneNumber: '+919876543210',
-          ),
-        ),
-      ),
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      uidProvider.overrideWithValue(
-        const AsyncData<String?>(HostOperationsFixtures.hostUid),
-      ),
-      hostOperableOrganizersProvider(
-        HostOperationsFixtures.hostUid,
-      ).overrideWithValue(
-        AsyncData<List<Organizer>>([HostOperationsFixtures.primaryOrganizer]),
-      ),
-      hostFormsDirectoryControllerProvider.overrideWith2(
-        (_) => _CaptureHostFormsDirectoryController(),
-      ),
-      hostFormResponsesControllerProvider.overrideWith2(
-        (_) => _CaptureHostFormResponsesController(),
-      ),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience?view=forms',
-      activeIndex: 2,
-      child: HostFormsScreen(
-        initialOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
-      ),
-    ),
   ),
   ScreenCaptureEntry(
     id: 'host_form_builder_draft',

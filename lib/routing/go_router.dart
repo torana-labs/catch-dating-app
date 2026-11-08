@@ -38,23 +38,33 @@ import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_new_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_questions_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_screen.dart';
+import 'package:catch_dating_app/hosts/forms/form_share_screen.dart';
+import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
+import 'package:catch_dating_app/hosts/forms/offer_screen.dart';
+import 'package:catch_dating_app/hosts/forms/response_screen.dart';
+import 'package:catch_dating_app/hosts/forms/responses_screen.dart';
+import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/page_edit_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/payments_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
+import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_analytics_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -174,15 +184,43 @@ String? hostAudienceRecordRedirect(Uri uri) {
       .toString();
 }
 
+/// One form's route: its page, its questions or its answers on the
+/// system; its settings and payments on the form workspace.
+@visibleForTesting
+Widget hostFormScreenForUri(Uri uri, {required String formId}) {
+  final organizerId = uri.queryParameters['organizerId'] ?? '';
+  return switch (hostFormViewFromQuery(uri.queryParameters['view'])) {
+    HostFormWorkspaceView.questions => HostFormQuestionsScreen(
+      organizerId: organizerId,
+      formId: formId,
+    ),
+    HostFormWorkspaceView.responses => HostResponsesScreen(
+      organizerId: organizerId,
+      formId: formId,
+    ),
+    final view?
+        when view == HostFormWorkspaceView.settings ||
+            view == HostFormWorkspaceView.payments =>
+      HostFormBuilderScreen(
+        organizerId: organizerId,
+        formId: formId,
+        initialView: view,
+      ),
+    _ => HostFormScreen(organizerId: organizerId, formId: formId),
+  };
+}
+
 @visibleForTesting
 Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
   final view = hostAudienceViewFromName(uri.queryParameters['view']);
+  final organizerId = uri.queryParameters['organizerId'];
   return switch (view) {
+    HostAudienceView.responses when organizerId != null => HostResponsesScreen(
+      organizerId: organizerId,
+      formId: uri.queryParameters['formId'],
+    ),
     HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
-      initialOrganizerId: uri.queryParameters['organizerId'],
-      initialResponses: view == HostAudienceView.responses,
-      initialFormId: uri.queryParameters['formId'],
-      initialContactId: uri.queryParameters['contactId'],
+      initialOrganizerId: organizerId,
     ),
     HostAudienceView.requests => HostRequestsScreen(
       initialOrganizerId: uri.queryParameters['organizerId'],
@@ -587,7 +625,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.responses,
     path: Routes.hostResponseOfferScreen.path,
     name: Routes.hostResponseOfferScreen.name,
-    builder: (context, state) => HostResponseOfferScreen(
+    builder: (context, state) => HostOfferScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       responseId: state.pathParameters['responseId']!,
       recipientLabel: state.uri.queryParameters['recipientLabel'],
@@ -602,7 +640,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.responses,
     path: Routes.hostResponseOfferReviewScreen.path,
     name: Routes.hostResponseOfferReviewScreen.name,
-    builder: (context, state) => HostFormResponseDetailScreen(
+    builder: (context, state) => HostResponseScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       responseId: state.pathParameters['responseId']!,
       returnToOffer: true,
@@ -910,7 +948,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerTeamScreen.path,
     name: Routes.hostOrganizerTeamScreen.name,
-    builder: (context, state) => HostOrganizerTeamScreen(
+    builder: (context, state) => OrganizerTeamScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -918,7 +956,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerPaymentsScreen.path,
     name: Routes.hostOrganizerPaymentsScreen.name,
-    builder: (context, state) => HostOrganizerPaymentsScreen(
+    builder: (context, state) => OrganizerPaymentsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -926,7 +964,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerMembershipsScreen.path,
     name: Routes.hostOrganizerMembershipsScreen.name,
-    builder: (context, state) => HostOrganizerMembershipsScreen(
+    builder: (context, state) => OrganizerMembershipsScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -1104,7 +1142,6 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostApplicationDetailScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       applicationId: state.pathParameters['applicationId']!,
-      queue: _responseReviewQueue(state.extra),
     ),
   ),
   HostWorkspaceDestination(
@@ -1141,7 +1178,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormTemplatesScreen.path,
     name: Routes.hostFormTemplatesScreen.name,
-    builder: (context, state) => HostFormTemplatesScreen(
+    builder: (context, state) => HostFormNewScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
@@ -1154,10 +1191,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
         : null,
     path: Routes.hostFormResponseDetailScreen.path,
     name: Routes.hostFormResponseDetailScreen.name,
-    builder: (context, state) => HostFormResponseDetailScreen(
+    builder: (context, state) => HostResponseScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       responseId: state.pathParameters['responseId']!,
-      queue: _responseReviewQueue(state.extra),
     ),
   ),
   HostWorkspaceDestination(
@@ -1188,9 +1224,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormAnalyticsScreen.path,
     name: Routes.hostFormAnalyticsScreen.name,
-    builder: (context, state) => HostFormAnalyticsScreen(
+    builder: (context, state) => HostResponsesScreen(
       organizerId: state.uri.queryParameters['organizerId'] ?? '',
       formId: state.pathParameters['formId']!,
+      initialView: HostResponsesView.results,
     ),
   ),
   HostWorkspaceDestination(
@@ -1218,10 +1255,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormBuilderScreen.path,
     name: Routes.hostFormBuilderScreen.name,
-    builder: (context, state) => HostFormBuilderScreen(
-      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    builder: (context, state) => hostFormScreenForUri(
+      state.uri,
       formId: state.pathParameters['formId']!,
-      initialView: hostFormViewFromQuery(state.uri.queryParameters['view']),
     ),
   ),
   HostWorkspaceDestination(
