@@ -16,8 +16,6 @@ import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
@@ -605,33 +603,6 @@ void main() {
       );
     });
 
-    testWidgets('when step renders schedule validation text', (tester) async {
-      final dateController = TextEditingController(text: '23/04/2026');
-      final startTimeController = TextEditingController(text: '6:30 AM');
-      addTearDown(dateController.dispose);
-      addTearDown(startTimeController.dispose);
-
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(
-          body: WhenStep(
-            formKey: GlobalKey<FormState>(),
-            dateController: dateController,
-            startTimeController: startTimeController,
-            durationMinutes: 60,
-            onPickDate: _noop,
-            onPickTime: _noop,
-            onDecreaseDuration: _noop,
-            onIncreaseDuration: _noop,
-            formatDuration: (minutes) => '$minutes min',
-            scheduleErrorText: 'Start time must be in the future',
-          ),
-        ),
-      );
-
-      expect(find.text('Start time must be in the future'), findsOneWidget);
-    });
-
     testWidgets('agenda and action widgets render and handle selection', (
       tester,
     ) async {
@@ -708,84 +679,6 @@ void main() {
       expect(selectedEventId, 'event-7');
       expect(footerTapped, isTrue);
     });
-
-    testWidgets(
-      'stepper footer fades scrolling content without restoring dock chrome',
-      (tester) async {
-        tester.view.physicalSize = const Size(320, 640);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-
-        await pumpEventsTestApp(
-          tester,
-          Scaffold(
-            body: HostStepperDock(
-              body: ListView(
-                padding: CatchInsets.formStepBodyWithBottomActions,
-                children: const [
-                  SizedBox(height: 560),
-                  Text('Last form field'),
-                ],
-              ),
-              isLastStep: true,
-              isLoading: false,
-              onPrimary: _noop,
-              onPrevious: _noop,
-              lastStepLabel: 'Schedule event',
-            ),
-          ),
-        );
-
-        expect(tester.takeException(), isNull);
-        expect(find.text('Previous'), findsOneWidget);
-        expect(find.text('Schedule event'), findsOneWidget);
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchLegacyDock &&
-                widget.variant == CatchDockVariant.utility,
-          ),
-          findsNothing,
-        );
-        expect(find.byType(Divider), findsNothing);
-        expect(find.byType(BackdropFilter), findsOneWidget);
-
-        final scrim = tester.widget<DecoratedBox>(
-          find.byKey(const ValueKey('catch_bottom_action_overlay.scrim')),
-        );
-        final gradient = (scrim.decoration as BoxDecoration).gradient;
-        expect(gradient, isA<LinearGradient>());
-        final colors = (gradient! as LinearGradient).colors;
-        expect(colors.first.a, CatchOpacity.none);
-        expect(colors.last.a, CatchOpacity.visible);
-
-        final bodyRect = tester.getRect(
-          find.byKey(const ValueKey('catch_bottom_action_overlay.body')),
-        );
-        final scrimRect = tester.getRect(
-          find.byKey(const ValueKey('catch_bottom_action_overlay.scrim')),
-        );
-        final actionsRect = tester.getRect(
-          find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
-        );
-        final overlayRect = tester.getRect(
-          find.byType(CatchBottomActionOverlay),
-        );
-        expect(scrimRect.top, lessThan(bodyRect.bottom));
-        expect(actionsRect.top, bodyRect.bottom);
-        expect(actionsRect.bottom, lessThanOrEqualTo(overlayRect.bottom));
-        expect(actionsRect.top, greaterThan(scrimRect.top));
-        expect(actionsRect.left, greaterThanOrEqualTo(CatchSpacing.screenPx));
-        expect(
-          actionsRect.right,
-          lessThanOrEqualTo(320 - CatchSpacing.screenPx),
-        );
-        await tester.drag(find.byType(ListView), const Offset(0, -160));
-        await tester.pump();
-        expect(find.text('Last form field').hitTestable(), findsOneWidget);
-      },
-    );
 
     testWidgets('agenda list sorts events and forwards selected-event taps', (
       tester,

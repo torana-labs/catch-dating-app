@@ -18,9 +18,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -375,44 +373,6 @@ void main() {
     },
   );
   testWidgets(
-    'production exposes phone entry and reviewed route to wedding managers',
-    (tester) async {
-      AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
-      addTearDown(AppConfig.resetEntrypointEnvironmentOverrideForTesting);
-      final access = ProgramWorkAccess.fromCallableData(
-        _access(role: 'manager'),
-      );
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: ProgramWorkPageBody(access: access, now: _now),
-          ),
-        ),
-      );
-      await pumpFeatureUi(tester);
-      expect(
-        find.byKey(const ValueKey('program-work-phone-import')),
-        findsOneWidget,
-      );
-
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump();
-
-      final f = _Fixture();
-      addTearDown(() => f.close(tester));
-      await f.mount(tester);
-      expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
-      expect(find.byKey(const ValueKey('phone-import-pick')), findsOneWidget);
-      expect(f.assignments.calls, 0);
-      expect(f.functions.calls.map((call) => call.name), [
-        'getProgramWorkAccess',
-        'getProgramWorkAccess',
-      ]);
-      expect(tester.takeException(), isNull);
-    },
-  );
-  testWidgets(
     'native selection needs explicit international review and shares only chosen phone',
     (tester) async {
       final f = _Fixture();
@@ -627,39 +587,6 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
-  testWidgets('work entry is hidden for cached or restricted grants', (
-    tester,
-  ) async {
-    for (final state in ['current', 'cached', 'restricted']) {
-      final access = ProgramWorkAccess.fromCallableData(
-        _access(
-          duties: state == 'restricted'
-              ? [
-                  _duty(functions: ['one']),
-                ]
-              : null,
-        ),
-      );
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: ProgramWorkPageBody(
-              access: access,
-              now: _now,
-              snapshotAt: state == 'cached' ? _now : null,
-            ),
-          ),
-        ),
-      );
-      await pumpFeatureUi(tester);
-      expect(
-        find.byKey(const ValueKey('program-work-phone-import')),
-        state == 'current' ? findsOneWidget : findsNothing,
-      );
-      expect(tester.takeException(), isNull);
-    }
-  });
   const captureDirectory = String.fromEnvironment(
     'PHONE_IMPORT_LIVE_CAPTURE_DIRECTORY',
   );

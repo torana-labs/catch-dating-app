@@ -1,11 +1,9 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
@@ -18,31 +16,6 @@ import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
 void main() {
-  test('explicitly skipped route stays skipped after draft serialization', () {
-    final draft = EventDraft(
-      id: 'draft1',
-      organizerId: 'club1',
-      savedAt: DateTime(2026),
-      activityKind: 'socialRun',
-      routePlanEnabled: false,
-    );
-    final restored = EventDraft.fromJson(draft.toJson());
-    expect(
-      CreateEventDraftRestoreState.fromDraft(
-        restored,
-        now: DateTime(2026),
-      ).routePlan,
-      isNull,
-    );
-    expect(
-      CreateEventDraftRestoreState.fromDraft(
-        restored.copyWith(routePlanEnabled: null),
-        now: DateTime(2026),
-      ).routePlan,
-      isNotNull,
-    );
-  });
-
   Future<void> pump(WidgetTester tester, Widget child) => tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.light,

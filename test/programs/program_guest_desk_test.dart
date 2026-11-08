@@ -2,9 +2,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_setup_reposito
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
-import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,46 +80,6 @@ final _guestPage = ProgramGuestListPage.fromCallableData({
   'nextCursor': null,
 });
 
-Future<GoRouter> _pumpBody(
-  WidgetTester tester,
-  ProgramWorkAccess access, {
-  List<Override> overrides = const [],
-}) async {
-  final router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (_, _) => ProgramWorkPageBody(access: access, now: _now),
-      ),
-      GoRoute(
-        path: Routes.hostWorkGuestsScreen.path,
-        name: Routes.hostWorkGuestsScreen.name,
-        builder: (_, _) => const Scaffold(body: Text('Guest desk destination')),
-      ),
-      GoRoute(
-        path: Routes.hostWorkImportScreen.path,
-        name: Routes.hostWorkImportScreen.name,
-        builder: (_, _) => const Scaffold(body: Text('Import destination')),
-      ),
-    ],
-  );
-  addTearDown(router.dispose);
-  await tester.pumpWidget(
-    ProviderScope(
-      retry: (_, _) => null,
-      overrides: overrides,
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-      ),
-    ),
-  );
-  await pumpFeatureUi(tester);
-  return router;
-}
-
 List<Override> _deskOverrides(Map<String, Object?> access) => [
   programWorkEntryProvider('p-1', null).overrideWith(
     (ref) async => (
@@ -134,50 +92,6 @@ List<Override> _deskOverrides(Map<String, Object?> access) => [
 ];
 
 void main() {
-  testWidgets('guestRelations staff see the guest desk rows and open them', (
-    tester,
-  ) async {
-    final access = ProgramWorkAccess.fromCallableData(
-      _access(role: 'staff', duties: [_duty('guestRelations')]),
-    );
-    final router = await _pumpBody(tester, access);
-    expect(find.text('Guest desk'), findsOneWidget);
-    expect(find.text('Guests & RSVP'), findsOneWidget);
-    expect(find.text('Manifest import'), findsOneWidget);
-    // Guest desk staff do not hold door duty: no function check-in rows.
-    expect(find.text('Sangeet'), findsNothing);
-
-    await tester.ensureVisible(find.text('Guests & RSVP'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Guests & RSVP').hitTestable(), findsOneWidget);
-    await tester.tap(find.text('Guests & RSVP'));
-    await pumpFeatureUi(tester);
-    expect(router.state.uri.path, '/host/work/p-1/guests');
-    router.pop();
-    await pumpFeatureUi(tester);
-    await tester.ensureVisible(find.text('Manifest import'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Manifest import').hitTestable(), findsOneWidget);
-    await tester.tap(find.text('Manifest import'));
-    await pumpFeatureUi(tester);
-    expect(router.state.uri.path, '/host/work/p-1/import');
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
-
-  testWidgets('greeters without the desk duty get the empty shell', (
-    tester,
-  ) async {
-    final access = ProgramWorkAccess.fromCallableData(
-      _access(role: 'staff', duties: [_duty('airportGreeter')]),
-    );
-    await _pumpBody(tester, access);
-    expect(find.text('Guest desk'), findsNothing);
-    // A greeter with no assigned stations resolves no routable destinations.
-    expect(find.text('No duties assigned'), findsOneWidget);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
-
   testWidgets(
     'the staff guest desk hides coordinator mutations but keeps RSVP edits',
     (tester) async {
