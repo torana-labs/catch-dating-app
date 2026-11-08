@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
-import 'package:catch_dating_app/contexts/events/parts/host_event_close_out_row.dart';
+import 'package:catch_dating_app/contexts/bookings/parts/host_event_close_out_row.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

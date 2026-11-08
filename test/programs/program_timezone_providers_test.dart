@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';

@@ -69,7 +69,12 @@ void main() {
     expect(find.text('Check in'), findsNWidgets(4));
     expect(find.text('Aanya Sharma'), findsNothing);
 
-    await tester.tap(find.text('Check in').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey<String>('door-guest-dp')),
+        matching: find.text('Check in'),
+      ),
+    );
     expect(calls.actions.single.attendeeId, 'dp');
     await tester.tap(find.byKey(const ValueKey<String>('door-scan')));
     expect(calls.scans, 1);
@@ -93,7 +98,12 @@ void main() {
 
     expect(find.text('Zoya Merchant'), findsOneWidget);
     expect(find.text('Let in'), findsNWidgets(2));
-    await tester.tap(find.text('Let in').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey<String>('door-guest-zm')),
+        matching: find.text('Let in'),
+      ),
+    );
     expect(calls.actions.single.userId, 'u-zm');
 
     await _pump(tester, doorBoardState(filter: DoorFilter.waitlist));

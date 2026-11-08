@@ -71,44 +71,67 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
           );
 
     final Widget body;
-    if (uidValue.hasError && uid == null) {
+    if (uidValue.isTerminalError && uid == null) {
       body = CatchLocalizedErrorState(
         uidValue.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       );
-    } else if (organizersValue.hasError && organizers == null) {
+    } else if (organizersValue.isTerminalError && organizers == null) {
       body = CatchLocalizedErrorState(
         organizersValue.error!,
         context: AppErrorContext.organizer,
         onRetry: () => hostOperableOrganizerReads(uid!).forEach(ref.invalidate),
       );
-    } else if (organizer == null) {
-      body = organizers == null
-          ? _body(const HostEventsState.loading(), now, null)
-          : CatchPageBody.screen(
-              child: CatchEmptyState(
-                icon: CatchIcons.people,
-                title: l10n.hostEventsNoOrganizerTitle,
-                message: l10n.hostEventsNoOrganizerBody,
-                actions: [
-                  CatchButton(
-                    label: l10n.hostEventsCreateOrganizer,
-                    leading: CatchIcon(CatchIcons.add),
-                    onPressed: () => context.pushNamed(
-                      Routes.hostCreateOrganizerScreen.name,
-                    ),
-                  ),
-                ],
-              ),
-            );
+    } else if (organizer == null && organizers != null) {
+      body = CatchPageBody.screen(
+        child: CatchEmptyState(
+          icon: CatchIcons.people,
+          title: l10n.hostEventsNoOrganizerTitle,
+          message: l10n.hostEventsNoOrganizerBody,
+          actions: [
+            CatchButton(
+              label: l10n.hostEventsCreateOrganizer,
+              leading: CatchIcon(CatchIcons.add),
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateOrganizerScreen.name),
+            ),
+          ],
+        ),
+      );
     } else {
-      final request = HostEventsRequest(organizerId: organizer.id, now: now);
-      body = _body(
-        ref.watch(hostEventsControllerProvider(request)),
-        now,
-        organizer,
-        request: request,
+      final request = organizer == null
+          ? null
+          : HostEventsRequest(organizerId: organizer.id, now: now);
+      body = HostEventsBody(
+        state: request == null
+            ? const HostEventsState.loading()
+            : ref.watch(hostEventsControllerProvider(request)),
+        now: now,
+        tab: _tab,
+        onTab: (tab) => setState(() => _tab = tab),
+        onOpenEvent: (event) {
+          if (organizer != null) unawaited(_openEvent(organizer, event));
+        },
+        onOpenDraft: (item) {
+          if (organizer != null) {
+            unawaited(_create(organizer, savedEventId: item.eventId));
+          }
+        },
+        onOpenProgramme: (programme) => context.pushNamed(
+          Routes.hostProgramWorkspaceScreen.name,
+          pathParameters: {'programId': programme.programId},
+        ),
+        onNewProgramme: () {
+          if (organizer == null) return;
+          context.pushNamed(
+            Routes.hostCreateProgramScreen.name,
+            pathParameters: {'organizerId': organizer.id},
+          );
+        },
+        onRetry: () {
+          if (request != null) retryHostEventsReads(ref, request);
+        },
       );
     }
 
@@ -135,40 +158,6 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
       ),
     );
   }
-
-  Widget _body(
-    HostEventsState state,
-    DateTime now,
-    Organizer? organizer, {
-    HostEventsRequest? request,
-  }) => HostEventsBody(
-    state: state,
-    now: now,
-    tab: _tab,
-    onTab: (tab) => setState(() => _tab = tab),
-    onOpenEvent: (event) {
-      if (organizer != null) unawaited(_openEvent(organizer, event));
-    },
-    onOpenDraft: (item) {
-      if (organizer != null) {
-        unawaited(_create(organizer, savedEventId: item.eventId));
-      }
-    },
-    onOpenProgramme: (programme) => context.pushNamed(
-      Routes.hostProgramWorkspaceScreen.name,
-      pathParameters: {'programId': programme.programId},
-    ),
-    onNewProgramme: () {
-      if (organizer == null) return;
-      context.pushNamed(
-        Routes.hostCreateProgramScreen.name,
-        pathParameters: {'organizerId': organizer.id},
-      );
-    },
-    onRetry: () {
-      if (request != null) retryHostEventsReads(ref, request);
-    },
-  );
 
   /// Reads drafts and past events again once the tab is shown. The pushed
   /// route's future completes as its exit starts, while this tab's

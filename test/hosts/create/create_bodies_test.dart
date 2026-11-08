@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_body.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/create/create_share_body.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../organizers/organizers_test_helpers.dart';
 
 final _today = DateTime(2026, 10, 27);
+final l10n = AppLocalizationsEn();
 
 CreateFlowState _state({
   EventDraft? draft,
@@ -90,14 +91,19 @@ void main() {
       await _pump(tester, body(_state(draft: _trivia), calls: calls));
 
       for (final format in CreateFormat.values) {
-        expect(find.text(CreateCopy.formatLabel(format)), findsOneWidget);
+        expect(
+          find.text(l10n.hostCreateFormatLabel(format: format.name)),
+          findsOneWidget,
+        );
       }
       expect(
-        find.text(CreateCopy.formatNote(CreateFormat.quiz)),
+        find.text(l10n.hostCreateFormatNote(format: CreateFormat.quiz.name)),
         findsOneWidget,
       );
       expect(find.byKey(const ValueKey('create-distance')), findsNothing);
-      await tester.tap(find.text(CreateCopy.formatLabel(CreateFormat.run)));
+      await tester.tap(
+        find.text(l10n.hostCreateFormatLabel(format: CreateFormat.run.name)),
+      );
       expect(calls, [CreateFormat.run]);
     });
 
@@ -107,7 +113,7 @@ void main() {
         body(_state(draft: _trivia.copyWith(activityKind: 'socialRun'))),
       );
       expect(find.byKey(const ValueKey('create-distance')), findsOneWidget);
-      expect(find.text(CreateCopy.pace), findsOneWidget);
+      expect(find.text(l10n.hostCreatePace), findsOneWidget);
     });
 
     testWidgets('names what is missing on its fields', (tester) async {
@@ -115,14 +121,14 @@ void main() {
         tester,
         body(_state(problems: {CreateProblem.name, CreateProblem.format})),
       );
-      expect(find.text(CreateCopy.nameNeeded), findsOneWidget);
-      expect(find.text(CreateCopy.formatNeeded), findsOneWidget);
+      expect(find.text(l10n.hostCreateNameNeeded), findsOneWidget);
+      expect(find.text(l10n.hostCreateFormatNeeded), findsOneWidget);
     });
 
     testWidgets('photos wait for the event, then add', (tester) async {
       final calls = <Object>[];
       await _pump(tester, body(_state(), calls: calls));
-      expect(find.text(CreateCopy.addPhotoLater), findsOneWidget);
+      expect(find.text(l10n.hostCreateAddPhotoLater), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('create-add-photo-0')));
       expect(calls, isEmpty);
 
@@ -130,7 +136,7 @@ void main() {
         tester,
         body(_state(eventId: 'event-1', canAddPhotos: true), calls: calls),
       );
-      expect(find.text(CreateCopy.addPhotoLater), findsNothing);
+      expect(find.text(l10n.hostCreateAddPhotoLater), findsNothing);
       await tester.tap(find.byKey(const ValueKey('create-add-photo-0')));
       expect(calls, ['photo']);
     });
@@ -152,11 +158,14 @@ void main() {
       final calls = <Object>[];
       await _pump(tester, body(_state(draft: _trivia), calls: calls));
 
-      expect(find.text(CreateCopy.dateRange('Oct', 'Nov')), findsOneWidget);
+      expect(
+        find.text(l10n.hostCreateDateRange(from: 'Oct', to: 'Nov')),
+        findsOneWidget,
+      );
       expect(find.textContaining('7:30'), findsOneWidget);
       expect(find.textContaining('10:00'), findsOneWidget);
       expect(find.text('Harbour Room'), findsOneWidget);
-      expect(find.text(CreateCopy.change), findsOneWidget);
+      expect(find.text(l10n.hostCreateChange), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('create-pick-date')));
       await tester.tap(find.byKey(const ValueKey('create-day-28')));
       expect(calls, ['calendar', DateTime(2026, 10, 28)]);
@@ -169,9 +178,9 @@ void main() {
         tester,
         body(_state(problems: {CreateProblem.date, CreateProblem.start})),
       );
-      expect(find.text(CreateCopy.dateNeeded), findsNWidgets(2));
-      expect(find.text(CreateCopy.startNeeded), findsOneWidget);
-      expect(find.text(CreateCopy.pickPlace), findsOneWidget);
+      expect(find.text(l10n.hostCreateDateNeeded), findsNWidgets(2));
+      expect(find.text(l10n.hostCreateStartNeeded), findsOneWidget);
+      expect(find.text(l10n.hostCreatePickPlace), findsOneWidget);
     });
   });
 
@@ -188,11 +197,14 @@ void main() {
       tester,
     ) async {
       await _pump(tester, body(_state(draft: _trivia)));
-      expect(find.text(CreateCopy.pricePerPlace), findsOneWidget);
-      expect(find.text(CreateCopy.places), findsOneWidget);
-      expect(find.text(CreateCopy.payoutNotice), findsOneWidget);
+      expect(find.text(l10n.hostCreatePricePerPlace), findsOneWidget);
+      expect(find.text(l10n.hostCreatePlaces), findsOneWidget);
+      expect(find.text(l10n.hostCreatePayoutNotice), findsOneWidget);
       for (final admission in CreateAdmission.values) {
-        expect(find.text(CreateCopy.admissionTitle(admission)), findsOneWidget);
+        expect(
+          find.text(l10n.hostCreateAdmissionTitle(admission: admission.name)),
+          findsOneWidget,
+        );
       }
     });
 
@@ -201,16 +213,16 @@ void main() {
         tester,
         body(_state(draft: _trivia.copyWith(externalBookingMode: true))),
       );
-      expect(find.text(CreateCopy.pricePerPlace), findsNothing);
-      expect(find.text(CreateCopy.payoutNotice), findsNothing);
-      expect(find.text(CreateCopy.whoCanCome), findsOneWidget);
+      expect(find.text(l10n.hostCreatePricePerPlace), findsNothing);
+      expect(find.text(l10n.hostCreatePayoutNotice), findsNothing);
+      expect(find.text(l10n.hostCreateWhoCanCome), findsOneWidget);
     });
   });
 
   group('the plan', () {
     testWidgets('lists the steps with their clock times', (tester) async {
       final edits = <EventItineraryItem>[];
-      final plan = createPlanTemplate(CreateFormat.quiz, 150);
+      final plan = createPlanTemplate(l10n, CreateFormat.quiz, 150);
       await _pump(
         tester,
         CreatePlanBody(
@@ -221,11 +233,11 @@ void main() {
           onAdd: () {},
         ),
       );
-      expect(find.text(CreateCopy.doorsAndHellos), findsOneWidget);
+      expect(find.text(l10n.hostCreateDoorsAndHellos), findsOneWidget);
       expect(find.text('7:30'), findsOneWidget);
       expect(find.text('8:00'), findsOneWidget);
-      expect(find.text(CreateCopy.addStep), findsOneWidget);
-      await tester.tap(find.text(CreateCopy.goodbyes));
+      expect(find.text(l10n.hostCreateAddStep), findsOneWidget);
+      await tester.tap(find.text(l10n.hostCreateGoodbyes));
       expect(edits.single.id, 'goodbyes');
     });
   });
@@ -244,7 +256,7 @@ void main() {
           onShareWhatsApp: () {},
         ),
       );
-      expect(find.text(CreateCopy.published), findsOneWidget);
+      expect(find.text(l10n.hostCreatePublished), findsOneWidget);
       expect(find.text('Tuesday Trivia Night'), findsOneWidget);
       expect(find.text('https://catchdates.com/e/event-1'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('create-copy-link')));
@@ -272,9 +284,11 @@ void main() {
         ),
         size: const Size(1440, 2000),
       );
-      expect(find.text(CreateCopy.dateToCome), findsOneWidget);
+      expect(find.text(l10n.hostCreateDateToCome), findsOneWidget);
       expect(find.text('When and where · Tickets'), findsOneWidget);
-      await tester.tap(find.text(CreateCopy.railTitle(CreateStep.tickets)));
+      await tester.tap(
+        find.text(l10n.hostCreateRailTitle(step: CreateStep.tickets.name)),
+      );
       expect(steps, [CreateStep.tickets]);
     });
   });

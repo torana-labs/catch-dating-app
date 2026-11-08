@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_kernel/location_coordinate.dart';
@@ -70,7 +69,7 @@ class CreateWhenBody extends StatelessWidget {
       children: [
         if (showTitle)
           CatchText(
-            CreateCopy.stepTitle(CreateStep.when),
+            context.l10n.hostCreateStepTitle(step: CreateStep.when.name),
             variant: CatchTextVariant.displaySection,
           ),
         CatchStack(
@@ -82,16 +81,20 @@ class CreateWhenBody extends StatelessWidget {
               children: [
                 Expanded(
                   child: CatchText(
-                    CreateCopy.dateRange(
-                      month.format(days.first),
-                      month.format(days.last),
-                    ),
+                    month.format(days.first) == month.format(days.last)
+                        ? context.l10n.hostCreateDateSingle(
+                            date: month.format(days.first),
+                          )
+                        : context.l10n.hostCreateDateRange(
+                            from: month.format(days.first),
+                            to: month.format(days.last),
+                          ),
                     variant: CatchTextVariant.labelAction,
                   ),
                 ),
                 CatchButton(
                   key: const ValueKey<String>('create-pick-date'),
-                  label: CreateCopy.pickDate,
+                  label: context.l10n.hostCreatePickDate,
                   variant: CatchButtonVariant.quiet,
                   size: CatchButtonSize.sm,
                   leading: CatchIcon(CatchIcons.date),
@@ -100,7 +103,7 @@ class CreateWhenBody extends StatelessWidget {
               ],
             ),
             CatchRail(
-              label: CreateCopy.dates,
+              label: context.l10n.hostCreateDates,
               itemWidth: 48,
               wrap: CatchRailMode.never,
               children: [
@@ -116,8 +119,8 @@ class CreateWhenBody extends StatelessWidget {
               ],
             ),
             if (state.problems.contains(CreateProblem.date))
-              const CatchText(
-                CreateCopy.dateNeeded,
+              CatchText(
+                context.l10n.hostCreateDateNeeded,
                 variant: CatchTextVariant.bodySmall,
                 tone: CatchTextTone.danger,
               ),
@@ -127,30 +130,34 @@ class CreateWhenBody extends StatelessWidget {
           direction: CatchStackDirection.row,
           equal: true,
           children: [
-            CatchField.action(
-              key: const ValueKey<String>('create-starts'),
-              copy: copy,
-              title: CreateCopy.starts,
-              valueText: start,
-              onTap: onStart,
-              errorText: state.problems.contains(CreateProblem.start)
-                  ? CreateCopy.startNeeded
-                  : null,
+            CatchFieldLanes.single(
+              child: CatchField.action(
+                key: const ValueKey<String>('create-starts'),
+                copy: copy,
+                title: context.l10n.hostCreateStarts,
+                valueText: start,
+                onTap: onStart,
+                errorText: state.problems.contains(CreateProblem.start)
+                    ? context.l10n.hostCreateStartNeeded
+                    : null,
+              ),
             ),
-            CatchField.action(
-              key: const ValueKey<String>('create-ends'),
-              copy: copy,
-              title: CreateCopy.ends,
-              valueText: end,
-              onTap: start == null ? null : onEnd,
+            CatchFieldLanes.single(
+              child: CatchField.action(
+                key: const ValueKey<String>('create-ends'),
+                copy: copy,
+                title: context.l10n.hostCreateEnds,
+                valueText: end,
+                onTap: start == null ? null : onEnd,
+              ),
             ),
           ],
         ),
         CatchStack(
           gap: CatchStackGap.g8,
           children: [
-            const CatchText(
-              CreateCopy.where,
+            CatchText(
+              context.l10n.hostCreateWhere,
               variant: CatchTextVariant.labelAction,
             ),
             if (place != null && lat != null && lng != null) ...[
@@ -158,7 +165,7 @@ class CreateWhenBody extends StatelessWidget {
                 aspectRatio: 21 / 9,
                 child: MapPreview(
                   coordinate: LocationCoordinate(lat, lng),
-                  fallbackLabel: CreateCopy.onTheMap(place),
+                  fallbackLabel: context.l10n.hostCreateOnTheMap(place: place),
                   enableNetworkTiles: enableNetworkTiles,
                 ),
               ),
@@ -169,29 +176,33 @@ class CreateWhenBody extends StatelessWidget {
                 density: CatchIndexRowSize.compact,
                 onTap: onPlace,
                 action: CatchIndexRowAction(
-                  label: CreateCopy.change,
+                  label: context.l10n.hostCreateChange,
                   onPressed: onPlace,
                 ),
               ),
             ] else
-              CatchField.action(
-                key: const ValueKey<String>('create-place'),
-                copy: copy,
-                title: CreateCopy.pickPlace,
-                icon: CatchIcons.location,
-                onTap: onPlace,
-                errorText: state.problems.contains(CreateProblem.place)
-                    ? CreateCopy.placeNeeded
-                    : null,
+              CatchFieldLanes.single(
+                child: CatchField.action(
+                  key: const ValueKey<String>('create-place'),
+                  copy: copy,
+                  title: context.l10n.hostCreatePickPlace,
+                  icon: CatchIcons.location,
+                  onTap: onPlace,
+                  errorText: state.problems.contains(CreateProblem.place)
+                      ? context.l10n.hostCreatePlaceNeeded
+                      : null,
+                ),
               ),
           ],
         ),
-        CatchField.input(
-          key: const ValueKey<String>('create-directions'),
-          copy: copy,
-          title: CreateCopy.howToFindYou,
-          initialValue: draft.locationDetails ?? '',
-          onChanged: onDirections,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-directions'),
+            copy: copy,
+            title: context.l10n.hostCreateHowToFindYou,
+            initialValue: draft.locationDetails ?? '',
+            onChanged: onDirections,
+          ),
         ),
       ],
     );

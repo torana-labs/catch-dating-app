@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/parts/event_draft_poster.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_preview.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -38,7 +38,7 @@ class CreateShareBody extends StatelessWidget {
           direction: CatchStackDirection.row,
           children: [
             CatchBadge(
-              label: CreateCopy.published,
+              label: context.l10n.hostCreatePublished,
               tone: CatchBadgeTone.success,
               size: CatchBadgeSize.md,
               icon: CatchIcons.success,
@@ -49,18 +49,18 @@ class CreateShareBody extends StatelessWidget {
           gap: CatchStackGap.g8,
           children: [
             CatchText(
-              CreateCopy.stepTitle(CreateStep.share),
+              context.l10n.hostCreateStepTitle(step: CreateStep.share.name),
               variant: CatchTextVariant.pageTitle,
             ),
-            const CatchText(
-              CreateCopy.shareNote,
+            CatchText(
+              context.l10n.hostCreateShareNote,
               tone: CatchTextTone.secondary,
             ),
           ],
         ),
         EventDraftPoster(
           draft: state.draft,
-          untitled: CreateCopy.untitled,
+          untitled: context.l10n.hostCreateUntitled,
           formatLabel: preview.formatLabel,
           when: preview.when,
           place: preview.place,
@@ -81,7 +81,7 @@ class CreateShareBody extends StatelessWidget {
               ),
               CatchButton(
                 key: const ValueKey<String>('create-copy-link'),
-                label: CreateCopy.copyLink,
+                label: context.l10n.hostCreateCopyLink,
                 variant: CatchButtonVariant.secondary,
                 size: CatchButtonSize.sm,
                 leading: CatchIcon(CatchIcons.copy),
@@ -91,12 +91,12 @@ class CreateShareBody extends StatelessWidget {
           ),
         ),
         CatchIndexRow(
-          title: CreateCopy.qrTitle,
-          subtitle: CreateCopy.qrNote,
+          title: context.l10n.hostCreateQrTitle,
+          subtitle: context.l10n.hostCreateQrNote,
           icon: CatchIcons.qrCode,
           onTap: onPrint,
           action: CatchIndexRowAction(
-            label: CreateCopy.print,
+            label: context.l10n.hostCreatePrint,
             onPressed: onPrint,
           ),
         ),
@@ -105,14 +105,14 @@ class CreateShareBody extends StatelessWidget {
           children: [
             CatchButton(
               key: const ValueKey<String>('create-share-story'),
-              label: CreateCopy.shareStory,
+              label: context.l10n.hostCreateShareStory,
               leading: CatchIcon(CatchIcons.share),
               fullWidth: true,
               onPressed: onShareStory,
             ),
             CatchButton(
               key: const ValueKey<String>('create-share-whatsapp'),
-              label: CreateCopy.tellFollowers,
+              label: context.l10n.hostCreateTellFollowers,
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
               onPressed: onShareWhatsApp,

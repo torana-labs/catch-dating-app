@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.d
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';

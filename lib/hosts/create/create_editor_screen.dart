@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_handlers.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_editor_rail.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -57,23 +57,25 @@ class CreateEditorScreen extends StatelessWidget {
       ),
     };
     final nextLabel = step == CreateStep.plan
-        ? CreateCopy.publish
-        : CreateCopy.nextTo(CreateStep.values[step.index + 1]);
+        ? context.l10n.hostCreatePublish
+        : context.l10n.hostCreateNextTo(
+            step: CreateStep.values[step.index + 1].name,
+          );
     return CatchScreen(
       key: const ValueKey<String>('create-editor'),
       topBar: CatchTopBar(
         variant: CatchTopBarVariant.tool,
         kicker: state.organizer.name,
-        title: CreateCopy.newEvent,
+        title: context.l10n.hostCreateNewEvent,
         back: CatchTopBarBack(
-          label: CreateCopy.close,
+          label: context.l10n.hostCreateClose,
           close: true,
           onPressed: state.working ? null : handlers.onBack,
         ),
         actions: [
           CatchButton(
             key: const ValueKey<String>('create-editor-save-draft'),
-            label: CreateCopy.saveDraft,
+            label: context.l10n.hostCreateSaveDraft,
             variant: CatchButtonVariant.quiet,
             size: CatchButtonSize.md,
             status: state.savingDraft

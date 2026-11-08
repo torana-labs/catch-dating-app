@@ -47,7 +47,10 @@ class HostEventDefaultsScreen extends ConsumerWidget {
           state: state,
           saving: saving,
           onCollection: (option) {
-            final current = state.defaults;
+            final current = ref
+                .read(managerEventSetupDefaultsViewProvider(organizerId))
+                .value
+                ?.defaults;
             if (current == null) return;
             unawaited(
               HostEventCommands.defaultsMutation

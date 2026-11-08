@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_plan_controller.g.dart';
@@ -13,15 +14,19 @@ part 'event_plan_controller.g.dart';
 /// The plan screen, composed from the event and its plan listeners.
 @riverpod
 HostEventPlanState hostEventPlanController(Ref ref, HostEventRequest request) {
-  final eventValue = ref.watch(watchEventProvider(request.eventId));
-  final planValue = ref.watch(watchEventSuccessPlanProvider(request.eventId));
+  final eventValue = catchAsyncStateFromAsyncValue(
+    ref.watch(watchEventProvider(request.eventId)),
+  );
+  final planValue = catchAsyncStateFromAsyncValue(
+    ref.watch(watchEventSuccessPlanProvider(request.eventId)),
+  );
   final event = eventValue.value;
   final plan = planValue.value;
   final error = eventValue.error ?? planValue.error;
-  if (error != null && (event == null || !planValue.hasValue)) {
+  if (error != null && (event == null || !planValue.hasData)) {
     return HostEventPlanState(status: HostEventPlanStatus.error, error: error);
   }
-  if (event == null || !planValue.hasValue) {
+  if (event == null || !planValue.hasData) {
     return const HostEventPlanState.loading();
   }
   if (plan == null) {

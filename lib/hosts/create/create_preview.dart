@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_body.dart';
 import 'package:catch_dating_app/hosts/create/create_when_body.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -29,10 +29,10 @@ class CreatePreview {
     final when = switch ((day, clock)) {
       (final String day, final String clock) => '$day · $clock',
       (final String day, null) => day,
-      _ => CreateCopy.dateToCome,
+      _ => context.l10n.hostCreateDateToCome,
     };
     final price = int.tryParse(draft.price ?? '');
-    final placeName = draft.meetingPoint ?? CreateCopy.placeToCome;
+    final placeName = draft.meetingPoint ?? context.l10n.hostCreatePlaceToCome;
     final place = draft.externalBookingMode || price == null
         ? placeName
         : price == 0
@@ -44,17 +44,19 @@ class CreatePreview {
               (draft.price == null ? null : createDefaultPlaces);
     final format = state.format;
     return CreatePreview(
-      formatLabel: format == null ? null : CreateCopy.formatShort(format),
+      formatLabel: format == null
+          ? null
+          : context.l10n.hostCreateFormatShort(format: format.name),
       when: when,
       place: place,
       counts: [
         CatchMetricValue(
-          value: places == null ? CreateCopy.dash : '$places',
-          label: CreateCopy.places,
+          value: places == null ? context.l10n.hostCreateNoValue : '$places',
+          label: context.l10n.hostCreatePlaces,
         ),
         CatchMetricValue(
-          value: state.published ? '0' : CreateCopy.dash,
-          label: CreateCopy.booked,
+          value: state.published ? '0' : context.l10n.hostCreateNoValue,
+          label: context.l10n.hostCreateBooked,
         ),
       ],
     );

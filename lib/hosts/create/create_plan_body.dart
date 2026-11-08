@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_plan_step_row.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -35,24 +35,27 @@ class CreatePlanBody extends StatelessWidget {
       children: [
         if (showTitle)
           CatchText(
-            CreateCopy.stepTitle(CreateStep.plan),
+            context.l10n.hostCreateStepTitle(step: CreateStep.plan.name),
             variant: CatchTextVariant.displaySection,
           ),
-        const CatchText(CreateCopy.planIntro, tone: CatchTextTone.secondary),
+        CatchText(
+          context.l10n.hostCreatePlanIntro,
+          tone: CatchTextTone.secondary,
+        ),
         CatchStack(
           direction: CatchStackDirection.row,
           gap: CatchStackGap.g8,
           align: CatchStackAlign.center,
           wrap: true,
           children: [
-            const CatchText(
-              CreateCopy.startFrom,
+            CatchText(
+              context.l10n.hostCreateStartFrom,
               variant: CatchTextVariant.labelKicker,
               tone: CatchTextTone.secondary,
             ),
             CatchChip.choice(
               key: const ValueKey<String>('create-plan-template'),
-              label: CreateCopy.template(format),
+              label: context.l10n.hostCreateTemplate(format: format.name),
               selected: steps.isNotEmpty,
               mode: CatchChipMode.single,
               size: CatchChipSize.sm,
@@ -60,7 +63,7 @@ class CreatePlanBody extends StatelessWidget {
             ),
             CatchChip.choice(
               key: const ValueKey<String>('create-plan-blank'),
-              label: CreateCopy.blank,
+              label: context.l10n.hostCreateBlank,
               selected: steps.isEmpty,
               mode: CatchChipMode.single,
               size: CatchChipSize.sm,
@@ -76,11 +79,19 @@ class CreatePlanBody extends StatelessWidget {
                   key: ValueKey<String>('create-plan-step-${step.id}'),
                   step: step,
                   eventStartMinutes: start,
-                  subtitle: CreateCopy.stepMinutes(
-                    step.durationMinutes ?? 0,
-                    step.description,
+                  subtitle: switch (step.description) {
+                    final String note when note.isNotEmpty =>
+                      context.l10n.hostCreateStepMinutesNote(
+                        minutes: step.durationMinutes ?? 0,
+                        note: note,
+                      ),
+                    _ => context.l10n.hostCreateStepMinutes(
+                      minutes: step.durationMinutes ?? 0,
+                    ),
+                  },
+                  editLabel: context.l10n.hostCreateEditStepLabel(
+                    title: step.title,
                   ),
-                  editLabel: CreateCopy.editStepLabel(step.title),
                   onEdit: () => onEdit(step),
                 ),
             ],
@@ -88,7 +99,7 @@ class CreatePlanBody extends StatelessWidget {
         CatchChoiceTile(
           key: const ValueKey<String>('create-plan-add'),
           variant: CatchChoiceTileVariant.add,
-          title: CreateCopy.addStep,
+          title: context.l10n.hostCreateAddStep,
           onTap: onAdd,
         ),
       ],
@@ -109,31 +120,32 @@ int? createMinutes(String? localTime) {
 /// The format's starting plan: doors, the main part and goodbyes, sized to
 /// the event's length.
 List<EventItineraryItem> createPlanTemplate(
+  AppLocalizations l10n,
   CreateFormat format,
   int durationMinutes,
 ) {
   final main = (durationMinutes - 50).clamp(20, 600);
   return [
-    const EventItineraryItem(
+    EventItineraryItem(
       id: 'doors',
       kind: EventItineraryKind.gather,
       offsetMinutes: 0,
       durationMinutes: 30,
-      title: CreateCopy.doorsAndHellos,
+      title: l10n.hostCreateDoorsAndHellos,
     ),
     EventItineraryItem(
       id: 'main',
       kind: EventItineraryKind.activity,
       offsetMinutes: 30,
       durationMinutes: main,
-      title: CreateCopy.mainStep(format),
+      title: l10n.hostCreateMainStep(format: format.name),
     ),
     EventItineraryItem(
       id: 'goodbyes',
       kind: EventItineraryKind.transition,
       offsetMinutes: 30 + main,
       durationMinutes: 20,
-      title: CreateCopy.goodbyes,
+      title: l10n.hostCreateGoodbyes,
     ),
   ];
 }

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -49,7 +48,7 @@ class CreateBasicsBody extends StatelessWidget {
         CatchChoiceTile(
           key: ValueKey<String>('create-add-photo-$i'),
           variant: CatchChoiceTileVariant.add,
-          title: CreateCopy.addPhoto,
+          title: context.l10n.hostCreateAddPhoto,
           onTap: addPhoto,
         ),
     ];
@@ -58,7 +57,7 @@ class CreateBasicsBody extends StatelessWidget {
       children: [
         if (showTitle)
           CatchText(
-            CreateCopy.stepTitle(CreateStep.basics),
+            context.l10n.hostCreateStepTitle(step: CreateStep.basics.name),
             variant: CatchTextVariant.displaySection,
           ),
         CatchStack(
@@ -70,7 +69,7 @@ class CreateBasicsBody extends StatelessWidget {
                 child: CatchHeroImage(
                   imageUrl: photos.first,
                   showScrim: false,
-                  semanticLabel: CreateCopy.photos,
+                  semanticLabel: context.l10n.hostCreatePhotos,
                 ),
               ),
             CatchStack(
@@ -80,28 +79,30 @@ class CreateBasicsBody extends StatelessWidget {
               children: addCards.take(2).toList(),
             ),
             if (state.eventId == null)
-              const CatchText(
-                CreateCopy.addPhotoLater,
+              CatchText(
+                context.l10n.hostCreateAddPhotoLater,
                 variant: CatchTextVariant.bodySmall,
                 tone: CatchTextTone.secondary,
               ),
           ],
         ),
-        CatchField.input(
-          key: const ValueKey<String>('create-name'),
-          copy: copy,
-          title: CreateCopy.name,
-          initialValue: draft.name ?? '',
-          onChanged: onName,
-          textInputAction: TextInputAction.next,
-          errorText: state.problems.contains(CreateProblem.name)
-              ? CreateCopy.nameNeeded
-              : null,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-name'),
+            copy: copy,
+            title: context.l10n.hostCreateName,
+            initialValue: draft.name ?? '',
+            onChanged: onName,
+            textInputAction: TextInputAction.next,
+            errorText: state.problems.contains(CreateProblem.name)
+                ? context.l10n.hostCreateNameNeeded
+                : null,
+          ),
         ),
         CatchStack(
           children: [
-            const CatchText(
-              CreateCopy.format,
+            CatchText(
+              context.l10n.hostCreateFormat,
               variant: CatchTextVariant.labelAction,
             ),
             CatchStack(
@@ -112,7 +113,9 @@ class CreateBasicsBody extends StatelessWidget {
                 for (final option in CreateFormat.values)
                   CatchChip.choice(
                     key: ValueKey<String>('create-format-${option.name}'),
-                    label: CreateCopy.formatLabel(option),
+                    label: context.l10n.hostCreateFormatLabel(
+                      format: option.name,
+                    ),
                     selected: option == format,
                     mode: CatchChipMode.single,
                     dot: option.tint,
@@ -123,8 +126,10 @@ class CreateBasicsBody extends StatelessWidget {
             ),
             CatchText(
               state.problems.contains(CreateProblem.format)
-                  ? CreateCopy.formatNeeded
-                  : CreateCopy.formatNote(format ?? CreateFormat.quiz),
+                  ? context.l10n.hostCreateFormatNeeded
+                  : context.l10n.hostCreateFormatNote(
+                      format: (format ?? CreateFormat.quiz).name,
+                    ),
               variant: CatchTextVariant.bodySmall,
               tone: state.problems.contains(CreateProblem.format)
                   ? CatchTextTone.danger
@@ -133,20 +138,24 @@ class CreateBasicsBody extends StatelessWidget {
           ],
         ),
         if (format == CreateFormat.run) ...[
-          CatchField.input(
-            key: const ValueKey<String>('create-distance'),
-            copy: copy,
-            title: CreateCopy.distance,
-            initialValue: draft.distance ?? '',
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            suffixText: 'km',
-            onChanged: onDistance,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              key: const ValueKey<String>('create-distance'),
+              copy: copy,
+              title: context.l10n.hostCreateDistance,
+              initialValue: draft.distance ?? '',
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              suffixText: 'km',
+              onChanged: onDistance,
+            ),
           ),
           CatchStack(
             gap: CatchStackGap.g8,
             children: [
-              const CatchText(
-                CreateCopy.pace,
+              CatchText(
+                context.l10n.hostCreatePace,
                 variant: CatchTextVariant.labelAction,
               ),
               CatchStack(
@@ -156,7 +165,7 @@ class CreateBasicsBody extends StatelessWidget {
                 children: [
                   for (final pace in _paces)
                     CatchChip.choice(
-                      label: CreateCopy.paceLabel(pace),
+                      label: context.l10n.hostCreatePaceLabel(pace: pace),
                       selected: draft.paceName == pace,
                       mode: CatchChipMode.single,
                       size: CatchChipSize.sm,
@@ -167,16 +176,18 @@ class CreateBasicsBody extends StatelessWidget {
             ],
           ),
         ],
-        CatchField.input(
-          key: const ValueKey<String>('create-description'),
-          copy: copy,
-          title: CreateCopy.whatsItLike,
-          initialValue: draft.description ?? '',
-          onChanged: onDescription,
-          minLines: 3,
-          maxLines: 6,
-          keyboardType: TextInputType.multiline,
-          maxLength: 2000,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('create-description'),
+            copy: copy,
+            title: context.l10n.hostCreateWhatsItLike,
+            initialValue: draft.description ?? '',
+            onChanged: onDescription,
+            minLines: 3,
+            maxLines: 6,
+            keyboardType: TextInputType.multiline,
+            maxLength: 2000,
+          ),
         ),
       ],
     );

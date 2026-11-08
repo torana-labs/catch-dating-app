@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';

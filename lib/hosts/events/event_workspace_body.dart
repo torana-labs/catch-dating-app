@@ -78,44 +78,13 @@ class HostEventWorkspaceBody extends StatelessWidget {
     }
     final over = !event.endTime.isAfter(now);
     final cancelled = event.status == EventLifecycleStatus.cancelled;
-    return CatchPageBody.screen(
-      child: CatchStack(
-        gap: CatchStackGap.section,
-        children: [
-          HostEventPoster(
-            event: event,
-            now: now,
-            newFaces: state.newFaces,
-            people: state.people,
-          ),
-          HostEventTabBar(selected: HostEventView.overview, onView: onView),
-          if (!over && !cancelled) _ready(context, event),
-          _links(context, event),
-          _stats(context, event),
-          _manage(context),
-          if (!over && !cancelled)
-            CatchButton(
-              label: l10n.hostEventsCancelEvent,
-              variant: CatchButtonVariant.danger,
-              fullWidth: true,
-              onPressed: cancelling
-                  ? null
-                  : () => onAction(HostEventWorkspaceAction.cancel),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _ready(BuildContext context, Event event) {
-    final l10n = context.l10n;
     const done = CatchMarker(
       variant: CatchMarkerVariant.check,
       tone: CatchMarkerTone.success,
     );
     const todo = CatchMarker(variant: CatchMarkerVariant.ring);
     final door = state.door;
-    return CatchSection(
+    final ready = CatchSection(
       title: l10n.hostEventsReadyTitle,
       note: l10n.hostEventsReadyNote(
         done: state.readyDone,
@@ -162,12 +131,9 @@ class HostEventWorkspaceBody extends StatelessWidget {
         ),
       ],
     );
-  }
 
-  Widget _links(BuildContext context, Event event) {
-    final l10n = context.l10n;
     final steps = state.planSteps;
-    return CatchSection(
+    final links = CatchSection(
       children: [
         CatchIndexRow(
           key: const ValueKey<String>('host-event-link-plan'),
@@ -198,12 +164,9 @@ class HostEventWorkspaceBody extends StatelessWidget {
         ),
       ],
     );
-  }
 
-  Widget _stats(BuildContext context, Event event) {
-    final l10n = context.l10n;
     final sales = state.ticketSalesMinor;
-    return CatchStack(
+    final stats = CatchStack(
       direction: CatchStackDirection.row,
       equal: true,
       children: [
@@ -224,12 +187,8 @@ class HostEventWorkspaceBody extends StatelessWidget {
           ),
       ],
     );
-  }
 
-  Widget _manage(BuildContext context) {
-    final l10n = context.l10n;
-    final door = state.door;
-    return CatchSection(
+    final manage = CatchSection(
       children: [
         CatchIndexRow(
           key: const ValueKey<String>('host-event-edit'),
@@ -257,6 +216,34 @@ class HostEventWorkspaceBody extends StatelessWidget {
           onTap: () => onAction(HostEventWorkspaceAction.team),
         ),
       ],
+    );
+
+    return CatchPageBody.screen(
+      child: CatchStack(
+        gap: CatchStackGap.section,
+        children: [
+          HostEventPoster(
+            event: event,
+            now: now,
+            newFaces: state.newFaces,
+            people: state.people,
+          ),
+          HostEventTabBar(selected: HostEventView.overview, onView: onView),
+          if (!over && !cancelled) ready,
+          links,
+          stats,
+          manage,
+          if (!over && !cancelled)
+            CatchButton(
+              label: l10n.hostEventsCancelEvent,
+              variant: CatchButtonVariant.danger,
+              fullWidth: true,
+              onPressed: cancelling
+                  ? null
+                  : () => onAction(HostEventWorkspaceAction.cancel),
+            ),
+        ],
+      ),
     );
   }
 }

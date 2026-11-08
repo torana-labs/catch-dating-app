@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/parts/event_draft_poster.dart';
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_preview.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -28,8 +28,12 @@ class CreateStepRail extends StatelessWidget {
           CatchIndexRow(
             key: ValueKey<String>('create-rail-${step.name}'),
             leading: CatchMarker.number(step.number),
-            title: CreateCopy.railTitle(step),
-            subtitle: CreateCopy.railNote(step),
+            title: context.l10n.hostCreateRailTitle(step: step.name),
+            subtitle: switch (step) {
+              CreateStep.basics => context.l10n.hostCreateRailNoteBasics,
+              CreateStep.plan => context.l10n.hostCreateRailNotePlan,
+              _ => null,
+            },
             selected: step == state.step,
             density: CatchIndexRowSize.compact,
             onTap: state.working ? null : () => onStep(step),
@@ -58,34 +62,34 @@ class CreateEditorPreview extends StatelessWidget {
     final preview = CreatePreview.of(context, state);
     return CatchStack(
       children: [
-        const CatchText(
-          CreateCopy.whatGuestsSee,
+        CatchText(
+          context.l10n.hostCreateWhatGuestsSee,
           variant: CatchTextVariant.labelKicker,
           tone: CatchTextTone.secondary,
         ),
         EventDraftPoster(
           draft: state.draft,
-          untitled: CreateCopy.untitled,
+          untitled: context.l10n.hostCreateUntitled,
           formatLabel: preview.formatLabel,
           when: preview.when,
           place: preview.place,
           counts: preview.counts,
         ),
-        const CatchText(
-          CreateCopy.previewNote,
+        CatchText(
+          context.l10n.hostCreatePreviewNote,
           variant: CatchTextVariant.bodySmall,
           tone: CatchTextTone.secondary,
         ),
         CatchStack(
           gap: CatchStackGap.g4,
           children: [
-            const CatchText(
-              CreateCopy.stillToSet,
+            CatchText(
+              context.l10n.hostCreateStillToSet,
               variant: CatchTextVariant.labelAction,
             ),
             CatchText(
               stillToSet.isEmpty
-                  ? CreateCopy.nothingToSet
+                  ? context.l10n.hostCreateNothingToSet
                   : stillToSet.join(' · '),
               variant: CatchTextVariant.bodySmall,
               tone: CatchTextTone.secondary,

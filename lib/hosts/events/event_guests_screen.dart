@@ -11,11 +11,13 @@ import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,37 +47,49 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
     final request = widget.request;
     final state = ref.watch(hostEventGuestsControllerProvider(request));
     final event = state.event;
-    final pending = <String>{
+    // Let in and Offer run one keyed mutation per guest; a failed one shows
+    // its error notice, and a running one marks the guest's row busy.
+    final guestMutations = <String, List<Mutation<Object?>>>{
       for (final guest in [
         ...state.listOf(HostEventGuestList.asked),
         ...state.listOf(HostEventGuestList.waitlist),
       ])
         if (guest.uid case final uid?)
-          if (ref
-                  .watch(
-                    HostEventBookingController.approveJoinRequestMutation(
-                      HostEventBookingController.approveJoinRequestMutationKey(
-                        eventId: request.eventId,
-                        userId: uid,
-                      ),
-                    ),
-                  )
-                  .isPending ||
-              ref
-                  .watch(
-                    HostEventBookingController.createWaitlistOfferMutation(
-                      HostEventBookingController.waitlistOfferMutationKey(
-                        eventId: request.eventId,
-                        userId: uid,
-                      ),
-                    ),
-                  )
-                  .isPending)
-            guest.id,
+          guest.id: [
+            HostEventBookingController.approveJoinRequestMutation(
+              HostEventBookingController.approveJoinRequestMutationKey(
+                eventId: request.eventId,
+                userId: uid,
+              ),
+            ),
+            HostEventBookingController.createWaitlistOfferMutation(
+              HostEventBookingController.waitlistOfferMutationKey(
+                eventId: request.eventId,
+                userId: uid,
+              ),
+            ),
+          ],
     };
-    final downloading = ref
-        .watch(HostEventManageController.shareOpsReportMutation)
-        .isPending;
+    final shareMutation = HostEventManageController.shareOpsReportMutation;
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [
+        ...guestMutations.values.expand((list) => list),
+        shareMutation,
+      ],
+      errorContext: AppErrorContext.event,
+    );
+    final pending = <String>{
+      for (final MapEntry(key: guestId, value: mutations)
+          in guestMutations.entries)
+        if ([
+          for (final mutation in mutations) ref.watch(mutation),
+        ].any((state) => state.isPending))
+          guestId,
+    };
+    final share = ref.watch(shareMutation);
+    final downloading = share.isPending;
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-event-guests-screen'),
@@ -184,11 +198,22 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
         .read(attendanceSheetViewModelProvider(widget.request.eventId))
         .value;
     if (viewModel == null) return;
+    final ids = [...viewModel.profileIds]..sort();
+    final Map<String, (String, String?)> profiles;
     try {
-      final ids = [...viewModel.profileIds]..sort();
-      final profiles = await ref.read(
+      profiles = await ref.read(
         hostEventGuestNamesProvider(ids.join(',')).future,
       );
+    } on Object catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(error, stackTrace, reason: 'share the guest list');
+      if (mounted) {
+        showCatchNotice(context, l10n.hostEventsGuestsDownloadFailed);
+      }
+      return;
+    }
+    try {
       await HostEventManageController.shareOpsReportMutation.run(
         ref,
         (tx) => tx
@@ -199,13 +224,8 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
               origin: origin,
             ),
       );
-    } on Object catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'share the guest list');
-      if (mounted) {
-        showCatchNotice(context, l10n.hostEventsGuestsDownloadFailed);
-      }
+    } on Object {
+      // The share mutation's error notice, set up in build, says why.
       return;
     }
     if (mounted) showCatchNotice(context, l10n.hostEventsGuestsDownloaded);

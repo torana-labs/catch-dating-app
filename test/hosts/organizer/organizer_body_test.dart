@@ -67,7 +67,7 @@ void main() {
     expect(find.text('2 people'), findsOneWidget);
     expect(find.text('Meher'), findsOneWidget);
 
-    double top(String text) => tester.getTopLeft(find.text(text).first).dy;
+    double top(String text) => tester.getTopLeft(find.text(text)).dy;
     expect(top('Your page'), lessThan(top('Last 30 days')));
     expect(top('Last 30 days'), lessThan(top('Running Lantern Lane Social')));
     expect(top('Running Lantern Lane Social'), lessThan(top('You')));

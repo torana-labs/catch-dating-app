@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
 import 'package:catch_l10n/l10n.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/create/create_copy.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -31,22 +31,24 @@ class CreateCalendarSheet extends StatelessWidget {
     final value = this.value;
     return CatchSheet.contained(
       key: const ValueKey<String>('create-calendar-sheet'),
-      title: CreateCopy.pickDate,
+      title: context.l10n.hostCreatePickDate,
       footer: CatchButton(
         key: const ValueKey<String>('create-use-date'),
         label: value == null
-            ? CreateCopy.pickDate
-            : CreateCopy.useDate(DateFormat('EEE d MMM', locale).format(value)),
+            ? context.l10n.hostCreatePickDate
+            : context.l10n.hostCreateUseDate(
+                date: DateFormat('EEE d MMM', locale).format(value),
+              ),
         fullWidth: true,
         onPressed: value == null ? null : onUse,
       ),
       child: CatchCalendar(
         month: value ?? today,
-        label: CreateCopy.pickDate,
+        label: context.l10n.hostCreatePickDate,
         value: value,
         min: today,
         marked: marked,
-        markedLabel: marked.isEmpty ? null : CreateCopy.alreadyOn,
+        markedLabel: marked.isEmpty ? null : context.l10n.hostCreateAlreadyOn,
         onChanged: onChanged,
       ),
     );

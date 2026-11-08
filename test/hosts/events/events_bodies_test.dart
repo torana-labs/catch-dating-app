@@ -272,7 +272,14 @@ void main() {
       expect(find.text('of 28 booked'), findsOneWidget);
       expect(find.textContaining('Check the 1 people'), findsOneWidget);
       expect(find.text('Ishaan Bose'), findsOneWidget);
-      await tester.tap(find.text('Came').first);
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey<String>('host-event-close-out-a-ishaan'),
+          ),
+          matching: find.text('Came'),
+        ),
+      );
       expect(marks, ['a-ishaan true']);
     });
 
@@ -342,7 +349,14 @@ void main() {
       expect(find.text('Run of show'), findsOneWidget);
       expect(find.text(state.steps.first.step.title), findsOneWidget);
       expect(find.text('On the night'), findsOneWidget);
-      await tester.tap(find.byType(CatchToggleInput).first);
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(
+            const ValueKey<String>('host-event-plan-introductions'),
+          ),
+          matching: find.byType(CatchToggleInput),
+        ),
+      );
       expect(changed, hasLength(1));
     });
 

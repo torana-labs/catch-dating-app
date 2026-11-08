@@ -39,6 +39,6 @@ HostEventDefaultsState hostEventDefaultsController(
   }
   return HostEventDefaultsState(
     status: HostEventDefaultsStatus.ready,
-    defaults: view.defaults,
+    preferences: view.defaults?.preferences,
   );
 }

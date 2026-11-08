@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_events_draft_row.dart';
 import 'package:catch_dating_app/contexts/events/parts/host_events_event_row.dart';
-import 'package:catch_dating_app/contexts/events/parts/host_events_programme_tile.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/host_events_programme_tile.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -75,137 +75,136 @@ class HostEventsBody extends StatelessWidget {
           ),
       ],
     );
+    final tonight = state.tonight(now);
+    final week = state.thisWeek(now);
+    final later = state.later(now);
     return CatchPageBody.screen(
       child: CatchStack(
         gap: CatchStackGap.section,
         children: [
           tabs,
           ...switch (tab) {
-            HostEventsTab.upcoming => _upcoming(context),
-            HostEventsTab.drafts => [_drafts(context)],
-            HostEventsTab.past => [_past(context)],
+            HostEventsTab.upcoming => [
+              if (tonight != null)
+                CatchSection(
+                  title: l10n.hostEventsTonightTitle,
+                  children: [
+                    HostEventsEventRow(
+                      key: ValueKey<String>(
+                        'host-events-tonight-${tonight.id}',
+                      ),
+                      event: tonight,
+                      kind: HostEventsRowKind.tonight,
+                      onTap: () => onOpenEvent(tonight),
+                    ),
+                  ],
+                ),
+              if (state.programmes.isNotEmpty)
+                CatchSection(
+                  title: l10n.hostEventsProgrammesTitle,
+                  action: CatchSectionAction(
+                    label: l10n.hostEventsNewProgramme,
+                    onPressed: onNewProgramme,
+                  ),
+                  dividers: CatchSectionPlacement.none,
+                  children: [
+                    for (final programme in state.programmes)
+                      HostEventsProgrammeTile(
+                        key: ValueKey<String>(
+                          'host-events-programme-${programme.programId}',
+                        ),
+                        programme: programme,
+                        onTap: () => onOpenProgramme(programme),
+                      ),
+                  ],
+                ),
+              CatchSection(
+                title: l10n.hostEventsThisWeekTitle,
+                empty: later.isEmpty && tonight == null
+                    ? l10n.hostEventsUpcomingEmpty
+                    : l10n.hostEventsThisWeekEmpty,
+                children: [
+                  for (final event in week)
+                    HostEventsEventRow(
+                      key: ValueKey<String>('host-events-week-${event.id}'),
+                      event: event,
+                      kind: HostEventsRowKind.coming,
+                      onTap: () => onOpenEvent(event),
+                    ),
+                ],
+              ),
+              for (final group in later)
+                CatchSection(
+                  title: l10n.hostEventsLaterIn(
+                    month: EventFormatters.longMonth(group.month),
+                  ),
+                  children: [
+                    for (final event in group.events)
+                      HostEventsEventRow(
+                        key: ValueKey<String>('host-events-later-${event.id}'),
+                        event: event,
+                        kind: HostEventsRowKind.coming,
+                        onTap: () => onOpenEvent(event),
+                      ),
+                  ],
+                ),
+            ],
+            HostEventsTab.drafts => [
+              CatchSection(
+                title: l10n.hostEventsTabDrafts,
+                note: state.historyLoading ? l10n.hostEventsStillLoading : null,
+                action: state.historyFailed
+                    ? CatchSectionAction(
+                        label: l10n.hostEventsRetry,
+                        onPressed: onRetry,
+                      )
+                    : null,
+                empty: state.historyLoading
+                    ? null
+                    : state.historyFailed
+                    ? l10n.hostEventsHistoryFailed
+                    : l10n.hostEventsDraftsEmpty,
+                children: [
+                  for (final item in state.drafts)
+                    HostEventsDraftRow(
+                      key: ValueKey<String>(
+                        'host-events-draft-${item.eventId}',
+                      ),
+                      item: item,
+                      onTap: () => onOpenDraft(item),
+                    ),
+                ],
+              ),
+            ],
+            HostEventsTab.past => [
+              CatchSection(
+                title: l10n.hostEventsTabPast,
+                note: state.historyLoading ? l10n.hostEventsStillLoading : null,
+                action: state.historyFailed
+                    ? CatchSectionAction(
+                        label: l10n.hostEventsRetry,
+                        onPressed: onRetry,
+                      )
+                    : null,
+                empty: state.historyLoading
+                    ? null
+                    : state.historyFailed
+                    ? l10n.hostEventsHistoryFailed
+                    : l10n.hostEventsPastEmpty,
+                children: [
+                  for (final event in state.past)
+                    HostEventsEventRow(
+                      key: ValueKey<String>('host-events-past-${event.id}'),
+                      event: event,
+                      kind: HostEventsRowKind.past,
+                      onTap: () => onOpenEvent(event),
+                    ),
+                ],
+              ),
+            ],
           },
         ],
       ),
-    );
-  }
-
-  List<Widget> _upcoming(BuildContext context) {
-    final l10n = context.l10n;
-    final tonight = state.tonight(now);
-    final week = state.thisWeek(now);
-    final later = state.later(now);
-    return [
-      if (tonight != null)
-        CatchSection(
-          title: l10n.hostEventsTonightTitle,
-          children: [
-            HostEventsEventRow(
-              key: ValueKey<String>('host-events-tonight-${tonight.id}'),
-              event: tonight,
-              kind: HostEventsRowKind.tonight,
-              onTap: () => onOpenEvent(tonight),
-            ),
-          ],
-        ),
-      if (state.programmes.isNotEmpty)
-        CatchSection(
-          title: l10n.hostEventsProgrammesTitle,
-          action: CatchSectionAction(
-            label: l10n.hostEventsNewProgramme,
-            onPressed: onNewProgramme,
-          ),
-          dividers: CatchSectionPlacement.none,
-          children: [
-            for (final programme in state.programmes)
-              HostEventsProgrammeTile(
-                key: ValueKey<String>(
-                  'host-events-programme-${programme.programId}',
-                ),
-                programme: programme,
-                onTap: () => onOpenProgramme(programme),
-              ),
-          ],
-        ),
-      CatchSection(
-        title: l10n.hostEventsThisWeekTitle,
-        empty: later.isEmpty && tonight == null
-            ? l10n.hostEventsUpcomingEmpty
-            : l10n.hostEventsThisWeekEmpty,
-        children: [
-          for (final event in week)
-            HostEventsEventRow(
-              key: ValueKey<String>('host-events-week-${event.id}'),
-              event: event,
-              kind: HostEventsRowKind.coming,
-              onTap: () => onOpenEvent(event),
-            ),
-        ],
-      ),
-      for (final group in later)
-        CatchSection(
-          title: l10n.hostEventsLaterIn(
-            month: EventFormatters.longMonth(group.month),
-          ),
-          children: [
-            for (final event in group.events)
-              HostEventsEventRow(
-                key: ValueKey<String>('host-events-later-${event.id}'),
-                event: event,
-                kind: HostEventsRowKind.coming,
-                onTap: () => onOpenEvent(event),
-              ),
-          ],
-        ),
-    ];
-  }
-
-  Widget _drafts(BuildContext context) {
-    final l10n = context.l10n;
-    return CatchSection(
-      title: l10n.hostEventsTabDrafts,
-      note: state.historyLoading ? l10n.hostEventsStillLoading : null,
-      action: state.historyFailed
-          ? CatchSectionAction(label: l10n.hostEventsRetry, onPressed: onRetry)
-          : null,
-      empty: state.historyLoading
-          ? null
-          : state.historyFailed
-          ? l10n.hostEventsHistoryFailed
-          : l10n.hostEventsDraftsEmpty,
-      children: [
-        for (final item in state.drafts)
-          HostEventsDraftRow(
-            key: ValueKey<String>('host-events-draft-${item.eventId}'),
-            item: item,
-            onTap: () => onOpenDraft(item),
-          ),
-      ],
-    );
-  }
-
-  Widget _past(BuildContext context) {
-    final l10n = context.l10n;
-    return CatchSection(
-      title: l10n.hostEventsTabPast,
-      note: state.historyLoading ? l10n.hostEventsStillLoading : null,
-      action: state.historyFailed
-          ? CatchSectionAction(label: l10n.hostEventsRetry, onPressed: onRetry)
-          : null,
-      empty: state.historyLoading
-          ? null
-          : state.historyFailed
-          ? l10n.hostEventsHistoryFailed
-          : l10n.hostEventsPastEmpty,
-      children: [
-        for (final event in state.past)
-          HostEventsEventRow(
-            key: ValueKey<String>('host-events-past-${event.id}'),
-            event: event,
-            kind: HostEventsRowKind.past,
-            onTap: () => onOpenEvent(event),
-          ),
-      ],
     );
   }
 }

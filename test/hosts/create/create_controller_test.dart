@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/create/create_controller.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,7 +103,9 @@ void main() {
   });
 
   test('plan steps start where the one before ends', () {
-    controller().useTemplate(createPlanTemplate(CreateFormat.quiz, 150));
+    controller().useTemplate(
+      createPlanTemplate(AppLocalizationsEn(), CreateFormat.quiz, 150),
+    );
     final main = state().plan[1];
     controller().putStep(main.copyWith(durationMinutes: 60));
     expect([for (final step in state().plan) step.offsetMinutes], [0, 30, 90]);
