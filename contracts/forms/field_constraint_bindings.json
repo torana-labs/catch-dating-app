@@ -18,11 +18,15 @@
     "addOrganizerHostCallablePayload": [
       "phoneNumber"
     ],
+    "commitEventOffersCallablePayload": [
+      "eventId"
+    ],
     "configureEventAssignmentFeaturesCallablePayload": [
       "rules.items.kind",
       "rules.items.maximum",
       "rules.items.minimum",
       "rules.items.mode",
+      "rules.items.questionId",
       "rules.items.weight"
     ],
     "configureEventOfferPreferencesCallablePayload": [
@@ -107,6 +111,9 @@
       "name",
       "trigger"
     ],
+    "createOrganizerFormCallablePayload": [
+      "templateId"
+    ],
     "createOrganizerPostCallablePayload": [
       "text"
     ],
@@ -114,6 +121,10 @@
       "startsAtMillis",
       "timezone",
       "title"
+    ],
+    "createPrivateEventSetupCallablePayload": [
+      "basics.localDate",
+      "basics.name"
     ],
     "createProfileDecisionClientWrite": [
       "data.comment"
@@ -170,6 +181,7 @@
     ],
     "eventSuccessPlanDocument": [
       "attendeePrompt",
+      "contextualOpenersEnabled",
       "conversationGraphConsentMode",
       "hostGoal",
       "questionnaireConfig.customQuestions.items.options.items.label",
@@ -207,6 +219,7 @@
     "importEventAttendeesCallablePayload": [
       "rows.items.displayName",
       "rows.items.email",
+      "rows.items.partySize",
       "rows.items.phone"
     ],
     "listOrganizerFormResponsesCallablePayload": [
@@ -432,8 +445,10 @@
       "fields.instagramHandle",
       "fields.location",
       "fields.name",
+      "fields.organizerPhotos",
       "fields.organizerType",
-      "fields.phoneNumber"
+      "fields.phoneNumber",
+      "fields.publicListingEnabled"
     ],
     "updatePrivateEventDetailsCallablePayload": [
       "details.admissionTerms.cancellationPolicyId",
@@ -445,12 +460,21 @@
       "details.durationMinutes.value",
       "details.eventFormat.value.customActivityLabel",
       "details.eventPhotos",
+      "details.externalBooking.value.url",
+      "details.itinerary",
+      "details.itinerary.items.description",
+      "details.itinerary.items.durationMinutes",
+      "details.itinerary.items.title",
       "details.pace",
       "details.venue.value.name",
+      "details.venue.value.notes",
       "eventId",
       "expectedSetupRevision",
       "requestId",
       "reviewedDefaultsHash"
+    ],
+    "updatePrivateEventPreferencesCallablePayload": [
+      "intents.admissionPreset.value"
     ],
     "updateUserProfilePatch": [
       "activityPreferences.running.paceMaxSecsPerKm",
