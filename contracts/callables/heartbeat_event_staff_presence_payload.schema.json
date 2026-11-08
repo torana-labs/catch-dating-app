@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/heartbeat_event_staff_presence_payload.schema.json",
+  "title": "HeartbeatEventStaffPresenceCallablePayload",
+  "description": "An organizer manager or event staff with viewRoster says they are on the door for one event. The door sends it while open; presence lapses two minutes after the last one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

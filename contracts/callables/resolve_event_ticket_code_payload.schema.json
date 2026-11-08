@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_event_ticket_code_payload.schema.json",
+  "title": "ResolveEventTicketCodeCallablePayload",
+  "description": "Door request from an organizer manager or event staff with setAttendance to turn a scanned guest ticket code into its attendee row. It checks nobody in: the door's attendance outbox does that with setEventAttendeeAttendance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "ticketCode"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "ticketCode": {
+      "type": "string",
+      "minLength": 52,
+      "maxLength": 640,
+      "pattern": "^[A-Za-z0-9_-]{8,596}\\.[A-Za-z0-9_-]{43}$"
+    }
+  }
+}

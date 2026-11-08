@@ -47,6 +47,9 @@ abstract class EventAttendee with _$EventAttendee {
     String? externalReference,
     String? arrivalGroup,
     String? ticketType,
+
+    /// Places this row holds at the door; rows without one hold one.
+    @Default(1) int partySize,
     int? revenueAmountMinor,
     String? revenueCurrency,
     EventAttendeeRevenueSource? revenueSource,
@@ -103,6 +106,7 @@ class EventAttendeeImportRow {
     this.externalReference,
     this.arrivalGroup,
     this.ticketType,
+    this.partySize,
     this.revenueAmountMinor,
     this.revenueCurrency,
     this.revenueSource,
@@ -117,6 +121,9 @@ class EventAttendeeImportRow {
   final String? externalReference;
   final String? arrivalGroup;
   final String? ticketType;
+
+  /// Places the row holds; null keeps the row's current value.
+  final int? partySize;
   final int? revenueAmountMinor;
   final String? revenueCurrency;
   final EventAttendeeRevenueSource? revenueSource;
@@ -131,6 +138,7 @@ class EventAttendeeImportRow {
     'externalReference': externalReference,
     'arrivalGroup': arrivalGroup,
     'ticketType': ticketType,
+    'partySize': ?partySize,
     'revenueAmountMinor': revenueAmountMinor,
     'revenueCurrency': revenueCurrency,
     'revenueSource': revenueSource?.name,

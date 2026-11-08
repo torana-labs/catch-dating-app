@@ -1,0 +1,34 @@
+{
+  "eventId": "event-1",
+  "organizerId": "club-1",
+  "displayName": "Walk-in Group",
+  "searchName": "walk-in group",
+  "source": "hostManual",
+  "status": "registered",
+  "linkedUid": null,
+  "phoneE164": null,
+  "email": null,
+  "externalReference": null,
+  "arrivalGroup": null,
+  "ticketType": null,
+  "importId": "import-2",
+  "sourceRowId": "manual",
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786627200,
+    "_nanoseconds": 0
+  },
+  "registeredAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "waitlistedAt": null,
+  "checkedInAt": null,
+  "cancelledAt": null,
+  "checkedInBy": null,
+  "linkedAt": null,
+  "partySize": 3
+}

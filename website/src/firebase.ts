@@ -50,6 +50,8 @@ import type {Functions} from "firebase/functions";
 import type {Firestore} from "firebase/firestore";
 import type {CheckInEventRuntimeCallablePayload} from "../../functions/src/shared/generated/checkInEventRuntimeCallablePayload";
 import type {CheckInEventRuntimeCallableResponse} from "../../functions/src/shared/generated/checkInEventRuntimeCallableResponse";
+import type {RequestEventRuntimeHostHelpCallablePayload} from "../../functions/src/shared/generated/requestEventRuntimeHostHelpCallablePayload";
+import type {RequestEventRuntimeHostHelpCallableResponse} from "../../functions/src/shared/generated/requestEventRuntimeHostHelpCallableResponse";
 import type {ClaimEventRuntimeAccessCallablePayload} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallablePayload";
 import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallableResponse";
 import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
@@ -515,6 +517,17 @@ export async function checkInEventRuntime(
 ): Promise<CheckInEventRuntimeCallableResponse> {
   return invokeWebsiteCallable(
     "checkInEventRuntime",
+    payload,
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+/** Opens a host-help case the live console sees; a retry with the same requestId returns it. */
+export async function requestEventRuntimeHostHelp(
+  payload: RequestEventRuntimeHostHelpCallablePayload
+): Promise<RequestEventRuntimeHostHelpCallableResponse> {
+  return invokeWebsiteCallable(
+    "requestEventRuntimeHostHelp",
     payload,
     eventRuntimeFirebaseConfigured
   );
