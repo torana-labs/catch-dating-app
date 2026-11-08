@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
@@ -30,6 +31,7 @@ class HostProgrammeScreen extends ConsumerWidget {
     final state = ref.watch(hostProgrammeControllerProvider(programId));
     final program = state.program;
     final days = state.daysToGo(ref.watch(appClockProvider).now());
+    final messages = ref.watch(programPlannedMessagesProvider(programId));
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
@@ -67,6 +69,12 @@ class HostProgrammeScreen extends ConsumerWidget {
             queryParameters: {'filter': 'noReply'},
           ),
           onRetry: () => refreshHostProgramme(ref, programId),
+          messages: messages.value,
+          onMessages: () => openHostProgrammePage(
+            context,
+            programId,
+            HostProgrammePage.messages,
+          ),
         ),
       ),
     );

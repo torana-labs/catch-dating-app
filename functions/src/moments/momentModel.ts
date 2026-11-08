@@ -145,6 +145,37 @@ export interface MomentDefinition {
   approval: MomentApproval | null;
   origin: MomentOrigin;
   revision: number;
+  /** Planner board anchor. Optional: older moments carry none and readers
+   *  derive one from the initiation (`planAnchorFor`). */
+  anchor?: MomentPlanAnchor | null;
+}
+
+/** What a planned programme message is tied to on the planner board. */
+export interface MomentPlanAnchor {
+  kind: "function" | "flight" | "date";
+  id: string | null;
+}
+
+/** The stored anchor, or the one the initiation implies: function anchors
+ *  tie to the function, travel legs to the flight, everything else to a
+ *  date. */
+export function planAnchorFor(moment: MomentDefinition): MomentPlanAnchor {
+  if (moment.anchor) return moment.anchor;
+  const initiation = moment.initiation;
+  if (initiation.kind === "anchored") {
+    if ((initiation.anchorKind === "functionStart" ||
+        initiation.anchorKind === "functionEnd") && initiation.anchorId) {
+      return {kind: "function", id: initiation.anchorId};
+    }
+    if (initiation.anchorKind === "travelLegTime") {
+      return {kind: "flight", id: initiation.anchorId};
+    }
+  }
+  if (initiation.kind === "triggered" &&
+      initiation.triggerKind === "flightDisrupted") {
+    return {kind: "flight", id: null};
+  }
+  return {kind: "date", id: null};
 }
 
 export interface GeoPoint {
@@ -422,7 +453,7 @@ export function resumeMoment(moment: MomentDefinition): LifecycleResult {
 export function reviseMoment(
   moment: MomentDefinition,
   patch: Partial<Pick<MomentDefinition,
-    "name" | "initiation" | "sense" | "audience" | "action">>,
+    "name" | "initiation" | "sense" | "audience" | "action" | "anchor">>,
 ): LifecycleResult {
   if (moment.status === "done") {
     return {kind: "rejected", reason: "alreadyDone"};

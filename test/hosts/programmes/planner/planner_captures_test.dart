@@ -28,6 +28,8 @@ void main() {
     ('host_programme_rooms_desktop', (_) => plannerRoomsCapture(), desktop),
     ('host_programme_trips_desktop', (_) => plannerTripsCapture(), desktop),
     ('host_programme_create_phone', (_) => plannerCreateCapture(), phone),
+    ('host_programme_messages_phone', (_) => plannerMessagesCapture(), phone),
+    ('host_programme_message_phone', (_) => plannerMessageCapture(), phone),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

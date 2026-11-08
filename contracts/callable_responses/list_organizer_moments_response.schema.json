@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_moments_response.schema.json",
   "title": "ListOrganizerMomentsCallableResponse",
-  "description": "All moments for one scope, sorted by momentId.",
+  "description": "All moments for one scope, sorted by momentId, with what each has sent and when it runs next.",
   "type": "object",
   "additionalProperties": false,
   "required": ["moments"],
@@ -10,6 +10,42 @@
     "moments": {
       "type": "array",
       "items": {"$ref": "../shared/moment_common.schema.json#/definitions/momentDefinition"}
+    },
+    "senderConnectionId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Programme scopes only: the organiser's active WhatsApp sender connection that new planned messages send through, or null when none is active."
+    },
+    "plans": {
+      "type": "array",
+      "description": "One entry per listed moment, keyed by momentId. Optional so older servers stay readable; a client without it treats every moment as planned with nothing sent.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["momentId", "anchor", "sentCount", "nextRunAtMillis", "state"],
+        "properties": {
+          "momentId": {"type": "string", "minLength": 1, "maxLength": 180},
+          "anchor": {"$ref": "../shared/moment_common.schema.json#/definitions/momentPlanAnchor"},
+          "sentCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Messages sent across every dispatched run."
+          },
+          "nextRunAtMillis": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "The earliest planned run, or null when nothing is planned."
+          },
+          "state": {
+            "type": "string",
+            "enum": ["draft", "planned", "next", "sent", "paused", "done"],
+            "description": "Board state: next is the armed moment that runs soonest in this scope; sent has dispatched and has nothing planned."
+          }
+        }
+      }
     }
   }
 }

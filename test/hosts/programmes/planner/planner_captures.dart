@@ -1,10 +1,14 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_create_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_household_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_message_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_screen.dart';
@@ -19,6 +23,7 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 
+import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';
 
 /// The window the desktop boards are drawn for.
@@ -59,6 +64,13 @@ List<Override> plannerCaptureOverrides() => [
   hostProgrammeTripsControllerProvider(
     plannerProgramId,
   ).overrideWithValue(plannerTripsReport),
+  programPlannedMessagesProvider(
+    plannerProgramId,
+  ).overrideWith((ref) async => plannerMessages),
+  programArrivalsRosterProvider(
+    plannerProgramId,
+    null,
+  ).overrideWith((ref) async => plannerTravel.roster!),
   programCreateControllerProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
@@ -92,3 +104,9 @@ Widget plannerTripsCapture() =>
 
 Widget plannerCreateCapture() =>
     const HostProgrammeCreateScreen(organizerId: plannerOrganizerId);
+
+Widget plannerMessagesCapture() =>
+    const HostProgrammeMessagesScreen(programId: plannerProgramId);
+
+Widget plannerMessageCapture() =>
+    const HostProgrammeMessageScreen(programId: plannerProgramId);

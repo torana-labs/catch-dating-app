@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/parts/programme_function_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
@@ -20,6 +21,8 @@ class HostProgrammeBody extends StatelessWidget {
     required this.onAddFunction,
     required this.onWaiting,
     required this.onRetry,
+    this.messages,
+    this.onMessages,
   });
 
   final HostProgrammeState state;
@@ -28,6 +31,10 @@ class HostProgrammeBody extends StatelessWidget {
   final VoidCallback? onAddFunction;
   final VoidCallback onWaiting;
   final VoidCallback onRetry;
+
+  /// The planned messages, once read; the tile waits for them.
+  final ProgramPlannedMessages? messages;
+  final VoidCallback? onMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +101,58 @@ class HostProgrammeBody extends StatelessWidget {
               ? null
               : onAddFunction,
         ),
+        if (messages case final planned?)
+          HostProgrammeMessagesTile(messages: planned, onSeeAll: onMessages),
       ],
+    );
+  }
+}
+
+/// The Planned messages tile: the next message, how many are planned and
+/// that they move with their function.
+class HostProgrammeMessagesTile extends StatelessWidget {
+  const HostProgrammeMessagesTile({
+    super.key,
+    required this.messages,
+    required this.onSeeAll,
+  });
+
+  final ProgramPlannedMessages messages;
+  final VoidCallback? onSeeAll;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final next = messages.next;
+    final when = next?.when;
+    return CatchSurface(
+      key: const ValueKey<String>('host-programme-messages-tile'),
+      child: CatchSection(
+        title: l10n.hostProgrammeMessagesTitle,
+        action: onSeeAll == null
+            ? null
+            : CatchSectionAction(
+                label: l10n.hostProgrammeSeeAll,
+                onPressed: onSeeAll!,
+              ),
+        children: [
+          CatchIndexRow(
+            title: next == null
+                ? l10n.hostProgrammeMessagesNone
+                : when == null
+                ? l10n.hostProgrammeMessagesNextUndated(name: next.name)
+                : l10n.hostProgrammeMessagesNext(
+                    name: next.name,
+                    date: '${when.day} ${AppTimeFormatters.longMonth(when)}',
+                  ),
+            subtitle: l10n.hostProgrammeMessagesPlanned(
+              count: messages.plannedCount,
+            ),
+            meta: l10n.hostProgrammeMessagesMove,
+            onTap: onSeeAll,
+          ),
+        ],
+      ),
     );
   }
 }
