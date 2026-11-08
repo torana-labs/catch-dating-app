@@ -8,6 +8,7 @@ import type {
   OrganizerBillDocument,
   OrganizerBillNoticeDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {BRAND} from "../shared/generated/brand";
 import {FakeFirestore, type FakeData} from "../shared/testing/programFirestore";
 import type {BillInvoiceClient} from "./billInvoices";
 import {invoiceLineName, razorpayBillInvoices} from "./billInvoices";
@@ -54,7 +55,8 @@ function cycleBill(extra: Partial<OrganizerBillDocument> = {}):
 }
 
 const settings = {schemaVersion: 1, updatedAtMillis: 1, email: {
-  provider: "resend", accountId: "acct", from: "billing@notify.catchdates.com",
+  provider: "resend", accountId: "acct",
+  from: `billing@${BRAND.senders.emailDomain}`,
   credentialVersion: "projects/catch-test/secrets/billing-email/versions/1"}};
 
 function harness(seed: Record<string, FakeData> = {}) {
@@ -171,6 +173,28 @@ test("a deferred email is retried by the sweep; an unknown one never is",
     assert.equal(sent.length, 3);
   });
 
+test("a send that throws is retried, not lost", async () => {
+  const {db, deps, sent, setNow} = harness({
+    "organizerBills/org_c2026-11-09": sentBill as unknown as FakeData});
+  let throws = true;
+  const flaky: NoticeDeps = {...deps, emailSender: async () => ({
+    submit: async (message) => {
+      if (throws) throw new Error("socket hang up");
+      sent.push(message);
+      return {kind: "accepted", providerMessageId: "re_9"};
+    }})};
+  await enqueueBillNotice(flaky, sentBill, "issued");
+  await deliverBillNotice(flaky, "org_c2026-11-09_issued");
+  const first = notice(db, "org_c2026-11-09_issued");
+  assert.equal(first.email.state, "deferred");
+  assert.equal(first.push.state, "sent");
+  throws = false;
+  setNow(end + 60 * 60_000);
+  assert.equal(await retryDeferredBillNotices(flaky), 1);
+  assert.equal(notice(db, "org_c2026-11-09_issued").email.state, "accepted");
+  assert.equal(sent.length, 1);
+});
+
 test("a bill paid before its notice went out is not announced", async () => {
   const {deps, sent, pushes} = harness({"organizerBills/org_c2026-11-09":
     {...sentBill, status: "paid"} as unknown as FakeData});
@@ -185,7 +209,7 @@ test("a tools-only bill says so and the reminder names its due date", () => {
     toolsOnlyFeeMinor: 500_000}, totalMinor: 500_000},
   notice: {noticeId: "org_c2026-11-09_reminder1", kind: "reminder"} as
     OrganizerBillNoticeDocument,
-  from: "billing@notify.catchdates.com", to: "owner@example.com",
+  from: `billing@${BRAND.senders.emailDomain}`, to: "owner@example.com",
   nowMillis: end});
   assert.match(email.subject, /^Reminder: Catch bill 2026-27\/031 is due /u);
   assert.match(email.text, /Tools-only plan for this billing cycle/u);

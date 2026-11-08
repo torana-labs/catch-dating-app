@@ -249,8 +249,19 @@ async function deliverEmail(deps: NoticeDeps, bill: Bill, notice: Notice,
     return null;
   });
   if (!sender) return done("notConfigured");
-  const result = await sender.submit(billNoticeEmail({bill, notice,
-    from: settings.email.from, to, nowMillis: now}));
+  let result: EmailSubmission;
+  try {
+    result = await sender.submit(billNoticeEmail({bill, notice,
+      from: settings.email.from, to, nowMillis: now}));
+  } catch (error) {
+    // A thrown send (network or provider fault) is retried by the hourly
+    // sweep; the stable idempotency key keeps a retry from sending twice.
+    logger.warn("Bill email send failed; it will be retried.",
+      {noticeId: notice.noticeId,
+        error: error instanceof Error ? error.message : String(error)});
+    result = {kind: "deferred", reason: "rateLimited",
+      retryAfterMillis: 15 * 60_000};
+  }
   switch (result.kind) {
   case "accepted":
     return done("accepted", {providerMessageId: result.providerMessageId});
