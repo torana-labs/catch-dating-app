@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 /// It draws the avatar, the name and an optional note, with the up-down mark
 /// when it opens a switcher. In a slot narrower than the rail, as in the
 /// rail's header row, it draws the avatar alone and keeps the name for screen
-/// readers and the tooltip.
+/// readers and the tooltip. A [leading] avatar replaces the one drawn from
+/// [name]: a square `CatchAvatar.system` with
+/// `variant: CatchAvatarVariant.square` for an organisation.
 ///
 /// [CatchTabBar]: CatchTabBar
 class CatchTabBarIdentity extends StatelessWidget {
@@ -25,6 +27,7 @@ class CatchTabBarIdentity extends StatelessWidget {
     this.note,
     this.switcher = false,
     this.onTap,
+    this.leading,
   });
 
   final String name;
@@ -44,24 +47,30 @@ class CatchTabBarIdentity extends StatelessWidget {
   final bool switcher;
   final VoidCallback? onTap;
 
+  /// The avatar, in place of the one drawn from [name], [photoUrl],
+  /// [initials] and [color].
+  final Widget? leading;
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < GeneratedCatchLayoutTokens.rail;
-      final avatar = color == null
-          ? CatchAvatar(
-              size: GeneratedCatchSizeTokens.avatarSm,
-              name: name,
-              imageUrl: photoUrl,
-              initials: initials,
-            )
-          : CatchAvatar.system(
-              size: CatchAvatarSize.sm,
-              name: name,
-              imageUrl: photoUrl,
-              initials: initials,
-              color: color,
-            );
+      final avatar =
+          leading ??
+          (color == null
+              ? CatchAvatar(
+                  size: GeneratedCatchSizeTokens.avatarSm,
+                  name: name,
+                  imageUrl: photoUrl,
+                  initials: initials,
+                )
+              : CatchAvatar.system(
+                  size: CatchAvatarSize.sm,
+                  name: name,
+                  imageUrl: photoUrl,
+                  initials: initials,
+                  color: color,
+                ));
       final note = this.note;
       final tile = InkWell(
         onTap: onTap,
