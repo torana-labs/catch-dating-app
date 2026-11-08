@@ -243,6 +243,7 @@ const retentionCollections = [
   "workspaceMembershipDecisions",
   "programGuestIds",
   "programAlerts",
+  "programVendorBills",
 ] as const;
 
 function shortId(docId: string): string {
@@ -276,6 +277,16 @@ function retentionScrub(
     return null; // ID records exist only for the stay; files go below.
   case "programAlerts":
     return null; // Resolutions name staff and have no use after the event.
+  case "programVendorBills":
+    // Keep the commercial totals; the free text may name guests.
+    return {
+      anonymizedAt: now,
+      revision: (typeof data.revision === "number" ? data.revision : 0) + 1,
+      note: null,
+      lines: (Array.isArray(data.lines) ? data.lines : [])
+        .map((line: Record<string, unknown>) =>
+          ({...line, reference: line.lineId})),
+    };
   case "programGuests":
     return {
       ...marker,

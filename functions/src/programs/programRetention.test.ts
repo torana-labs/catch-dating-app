@@ -677,7 +677,7 @@ test("anonymizeProgram is idempotent and skipped once marked", async () => {
   assert.equal(db.getDoc("programGuests/guest-1")!.displayName, tombstone);
 });
 
-test("retention deletes guest IDs, alert resolutions and programme files",
+test("retention deletes guest IDs, alerts and files and clears bill notes",
   async () => {
     const db = new FakeFirestore({
       ...retentionSeed(),
@@ -694,6 +694,12 @@ test("retention deletes guest IDs, alert resolutions and programme files",
       "programAlerts/program-1_staff:1": {programId: "program-1",
         organizerId: "org-1", alertId: "staff:1", state: "done",
         assigneeUid: "greeter-1", assigneeName: "Asha"},
+      "programVendorBills/program-1_vendor-1": {programId: "program-1",
+        organizerId: "org-1", vendorId: "vendor-1", note: "Mehra family",
+        revision: 2, totals: {billedMinor: 100},
+        lines: [{lineId: "line-1", reference: "Mehra family airport run",
+          tripId: null, billedMinor: 100, recordedMinor: null,
+          check: "noTrip"}]},
     });
     archived(db);
     const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
@@ -708,6 +714,11 @@ test("retention deletes guest IDs, alert resolutions and programme files",
     assert.equal(db.getDoc("programGuestIds/program-1_guest-1"), undefined);
     assert.equal(db.getDoc("programAlerts/program-1_staff:1"), undefined);
     assert.ok(db.getDoc("programGuestIds/program-2_guest-9"));
+    const bill = db.getDoc("programVendorBills/program-1_vendor-1")!;
+    assert.equal(bill.note, null);
+    assert.deepEqual((bill.lines as {reference: string}[])
+      .map((line) => line.reference), ["line-1"]);
+    assert.deepEqual(bill.totals, {billedMinor: 100});
     assert.deepEqual(deletedPrefixes, ["program-1"]);
   });
 
@@ -887,7 +898,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 25);
+      Array<{collection: string}>).length, 26);
   });
 
 test("mismatched evidence scope blocks retention completion",

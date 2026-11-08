@@ -580,6 +580,100 @@ final class ProgramTripListFamily extends $Family
   String toString() => r'programTripListProvider';
 }
 
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+@ProviderFor(programVendorBillView)
+final programVendorBillViewProvider = ProgramVendorBillViewFamily._();
+
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+final class ProgramVendorBillViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramVendorBillView>>,
+          ProgramReadView<ProgramVendorBillView>,
+          FutureOr<ProgramReadView<ProgramVendorBillView>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramVendorBillView>>,
+        $FutureProvider<ProgramReadView<ProgramVendorBillView>> {
+  /// One vendor's bill, from the live read or a bounded offline snapshot.
+  ProgramVendorBillViewProvider._({
+    required ProgramVendorBillViewFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programVendorBillViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programVendorBillViewHash();
+
+  @override
+  String toString() {
+    return r'programVendorBillViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramVendorBillView>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramVendorBillView>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programVendorBillView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramVendorBillViewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programVendorBillViewHash() =>
+    r'fb1d66cdd73fd720bdfc3b232c247a91eb09dcc6';
+
+/// One vendor's bill, from the live read or a bounded offline snapshot.
+
+final class ProgramVendorBillViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramVendorBillView>>,
+          (String, String)
+        > {
+  ProgramVendorBillViewFamily._()
+    : super(
+        retry: null,
+        name: r'programVendorBillViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One vendor's bill, from the live read or a bounded offline snapshot.
+
+  ProgramVendorBillViewProvider call(String programId, String vendorId) =>
+      ProgramVendorBillViewProvider._(
+        argument: (programId, vendorId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programVendorBillViewProvider';
+}
+
 /// The ID tracker for one programme, optionally one hotel.
 
 @ProviderFor(programIdTracker)

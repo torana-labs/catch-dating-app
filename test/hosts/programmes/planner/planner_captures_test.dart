@@ -40,6 +40,11 @@ void main() {
       (_) => plannerIdTrackerCapture(),
       desktop,
     ),
+    (
+      'host_programme_reconcile_desktop',
+      (_) => plannerReconcileCapture(),
+      desktop,
+    ),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

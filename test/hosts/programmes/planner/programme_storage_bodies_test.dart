@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -69,5 +71,57 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('host-programme-id-ask')));
     expect(decided, isNull);
     expect(find.text('Front desk'), findsOneWidget);
+  });
+
+  test('pasted bill lines parse the reference and the rupee amount', () {
+    final lines = ProgramBillLineInput.parse(
+      'T-041 · Airport, 2,000\nno amount here\nT-042\t₹1800.50\n'
+      'T-043, Airport, 1200\n',
+    );
+    expect(lines.map((line) => line.reference), [
+      'T-041 · Airport',
+      'T-042',
+      'T-043, Airport',
+    ]);
+    expect(lines.first.billedMinor, 200000);
+    expect(lines[1].billedMinor, 180050);
+    expect(plannerVendorBill.bill!.toQuestion, hasLength(3));
+  });
+
+  testWidgets('the bill lists the lines to question and approves', (
+    tester,
+  ) async {
+    final invoice = TextEditingController();
+    final pasted = TextEditingController();
+    final note = TextEditingController();
+    addTearDown(invoice.dispose);
+    addTearDown(pasted.dispose);
+    addTearDown(note.dispose);
+    var approved = false;
+    var newBill = false;
+    Widget body({required bool editing}) => HostProgrammeReconcileBody(
+      status: HostProgrammeStatus.ready,
+      view: plannerVendorBill,
+      editing: editing,
+      invoiceController: invoice,
+      linesController: pasted,
+      noteController: note,
+      onCheck: () {},
+      onNewBill: () => newBill = true,
+      onQuestion: () {},
+      onApprove: () => approved = true,
+      onRetry: () {},
+    );
+    await pumpPlannerBody(tester, body(editing: false), size: plannerDesktop);
+    expect(find.text('Shree Travels · invoice 2026-118'), findsOneWidget);
+    expect(find.text('The 3 trips to question'), findsOneWidget);
+    expect(find.text('Send the 3 questions'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-bill-approve')));
+    expect(approved, isTrue);
+    await tester.tap(find.byKey(const ValueKey('host-bill-new')));
+    expect(newBill, isTrue);
+
+    await pumpPlannerBody(tester, body(editing: true), size: plannerDesktop);
+    expect(find.text('Check the bill'), findsOneWidget);
   });
 }

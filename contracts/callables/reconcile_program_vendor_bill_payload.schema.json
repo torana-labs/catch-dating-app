@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/reconcile_program_vendor_bill_payload.schema.json",
+  "title": "ReconcileProgramVendorBillCallablePayload",
+  "description": "Check a transport vendor's bill against the trips recorded for this programme. review reads the stored bill re-checked against today's trips and writes nothing (reconciliation viewers and managers). check stores the bill lines (each a reference on the bill, an optional trip id and the billed amount in minor units) and their checks; question stores the note to the vendor; approve approves the recorded total (managers only). Writes need requestId and expectedRevision (0 before the first check); replays of the same requestId return the stored bill.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "vendorId",
+    "action"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "review",
+        "check",
+        "question",
+        "approve"
+      ]
+    },
+    "invoiceNumber": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "receivedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reference",
+          "billedMinor"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "billedMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    }
+  }
+}

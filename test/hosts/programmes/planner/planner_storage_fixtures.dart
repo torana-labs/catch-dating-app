@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 
 import 'planner_fixtures.dart';
@@ -88,4 +89,91 @@ final plannerIdTrackerData = <String, Object?>{
 
 final plannerIdTracker = ProgramIdTracker.fromCallableData(
   plannerIdTrackerData,
+);
+
+Map<String, Object?> _billLine(
+  int index,
+  String reference,
+  int billed,
+  int? recorded,
+  String check,
+) => {
+  'lineId': 'line-$index',
+  'reference': reference,
+  'tripId': check == 'noTrip' ? null : 'trip-$index',
+  'billedMinor': billed * 100,
+  'recordedMinor': recorded == null ? null : recorded * 100,
+  'check': check,
+};
+
+/// `reconcileProgramVendorBill` as the Reconcile board draws it.
+final plannerVendorBillData = <String, Object?>{
+  'programId': plannerProgramId,
+  'vendorId': 'shree',
+  'vendorName': 'Shree Travels',
+  'currency': 'INR',
+  'bill': {
+    'invoiceNumber': '2026-118',
+    'receivedAtMillis': DateTime(2026, 12, 17).millisecondsSinceEpoch,
+    'status': 'open',
+    'note': null,
+    'lines': [
+      _billLine(
+        1,
+        'T-041 · 11 Dec · Airport to the Taj',
+        2000,
+        2000,
+        'matches',
+      ),
+      _billLine(
+        2,
+        'T-042 · 11 Dec · Airport to the Taj',
+        2000,
+        2000,
+        'matches',
+      ),
+      _billLine(
+        3,
+        'T-057 · 11 Dec · Airport to the Leela',
+        2400,
+        2000,
+        'amountDiffers',
+      ),
+      _billLine(4, 'T-063 · 12 Dec · Station to the Taj', 2400, null, 'noTrip'),
+      _billLine(
+        5,
+        'T-041 · 11 Dec · Airport to the Taj',
+        2400,
+        null,
+        'duplicate',
+      ),
+      _billLine(6, 'T-070 · 13 Dec · Taj to the palace', 1800, 1800, 'matches'),
+    ],
+    'totals': {
+      'billedMinor': 1300000,
+      'recordedMinor': 780000,
+      'questionMinor': 520000,
+      'billedTrips': 6,
+      'recordedTrips': 5,
+      'unbilledTrips': 1,
+    },
+    'approvedMinor': null,
+    'approvedAtMillis': null,
+    'revision': 1,
+  },
+  'recordedTrips': 5,
+  'recordedMinor': 960000,
+  'unbilled': [
+    {
+      'tripId': 'trip-9',
+      'departedAtMillis': DateTime(2026, 12, 14, 11).millisecondsSinceEpoch,
+      'plateDisplay': 'RJ 27 TA 4471',
+      'destinationLabel': 'Taj to the airport',
+      'recordedMinor': 180000,
+    },
+  ],
+};
+
+final plannerVendorBill = ProgramVendorBillView.fromCallableData(
+  plannerVendorBillData,
 );

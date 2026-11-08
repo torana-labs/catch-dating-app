@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_vendor_bill_response.schema.json",
+  "title": "ProgramVendorBillCallableResponse",
+  "description": "A vendor's bill checked against the recorded trips: the stored bill (null before the first check) with every line re-checked, and the recorded trips the bill does not cover.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "vendorId",
+    "vendorName",
+    "currency",
+    "bill",
+    "recordedTrips",
+    "recordedMinor",
+    "unbilled"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorName": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "bill": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "invoiceNumber",
+            "receivedAtMillis",
+            "status",
+            "note",
+            "lines",
+            "totals",
+            "approvedMinor",
+            "approvedAtMillis",
+            "revision"
+          ],
+          "properties": {
+            "invoiceNumber": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "receivedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "questioned",
+                "approved"
+              ]
+            },
+            "note": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "lines": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "lineId",
+                  "reference",
+                  "tripId",
+                  "billedMinor",
+                  "recordedMinor",
+                  "check"
+                ],
+                "properties": {
+                  "lineId": {
+                    "type": "string",
+                    "pattern": "^line-[0-9]{1,4}$"
+                  },
+                  "reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "tripId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "billedMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "recordedMinor": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "check": {
+                    "type": "string",
+                    "enum": [
+                      "matches",
+                      "amountDiffers",
+                      "noRate",
+                      "noTrip",
+                      "voided",
+                      "duplicate"
+                    ]
+                  }
+                }
+              }
+            },
+            "totals": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "billedMinor",
+                "recordedMinor",
+                "questionMinor",
+                "billedTrips",
+                "recordedTrips",
+                "unbilledTrips"
+              ],
+              "properties": {
+                "billedMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "recordedMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "questionMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "billedTrips": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "recordedTrips": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unbilledTrips": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "approvedMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "approvedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "recordedTrips": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "recordedMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "unbilled": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "departedAtMillis",
+          "plateDisplay",
+          "destinationLabel",
+          "recordedMinor"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "departedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "plateDisplay": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 40
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "recordedMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    }
+  }
+}
