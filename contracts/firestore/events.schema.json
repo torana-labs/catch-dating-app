@@ -537,8 +537,8 @@
     "seriesIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 7,
-      "description": "The event's place in its series, from 0. Present with seriesId.",
+      "maximum": 8,
+      "description": "The event's place in its series, from 0. The event a series was created from is 0 and the weekly events after it count on from 1. Present with seriesId.",
       "x-catch-ownership": "callable-owned"
     }
   },
