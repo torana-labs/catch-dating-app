@@ -1179,22 +1179,6 @@
     "x-surface": "hosts.insights",
     "x-max-chars": 48
   },
-  "hostInsightsStatCameBack": "Came back",
-  "@hostInsightsStatCameBack": {
-    "description": "Insights stat label: the share of booked guests who had been to one of the organizer's events before.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.insights",
-    "x-max-chars": 24
-  },
-  "hostInsightsStatFollowers": "Followers",
-  "@hostInsightsStatFollowers": {
-    "description": "Insights stat label: people following the organizer page at the end of the period.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.insights",
-    "x-max-chars": 24
-  },
   "hostInsightsSourcesTitle": "Where visitors came from",
   "@hostInsightsSourcesTitle": {
     "description": "Insights section title over the share of page visitors by where they came from (Instagram, WhatsApp and so on).",

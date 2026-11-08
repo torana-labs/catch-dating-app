@@ -1441,18 +1441,6 @@ abstract class AppLocalizations {
   /// **'No bookings in this period.'**
   String get hostInsightsBookingsEmpty;
 
-  /// Insights stat label: the share of booked guests who had been to one of the organizer's events before.
-  ///
-  /// In en, this message translates to:
-  /// **'Came back'**
-  String get hostInsightsStatCameBack;
-
-  /// Insights stat label: people following the organizer page at the end of the period.
-  ///
-  /// In en, this message translates to:
-  /// **'Followers'**
-  String get hostInsightsStatFollowers;
-
   /// Insights section title over the share of page visitors by where they came from (Instagram, WhatsApp and so on).
   ///
   /// In en, this message translates to:

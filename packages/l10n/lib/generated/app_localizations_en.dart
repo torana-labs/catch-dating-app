@@ -801,12 +801,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInsightsBookingsEmpty => 'No bookings in this period.';
 
   @override
-  String get hostInsightsStatCameBack => 'Came back';
-
-  @override
-  String get hostInsightsStatFollowers => 'Followers';
-
-  @override
   String get hostInsightsSourcesTitle => 'Where visitors came from';
 
   @override
