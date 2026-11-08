@@ -8,15 +8,17 @@ part of 'event_close_out_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Close-out, composed from the event and its attendee listeners: who
-/// came, who was booked and who nobody checked in.
+/// Close-out, composed from the event, its attendee listeners and the
+/// close-out listener: who came, who was booked, who nobody checked in and
+/// the after-closing choices already saved.
 
 @ProviderFor(hostEventCloseOutController)
 final hostEventCloseOutControllerProvider =
     HostEventCloseOutControllerFamily._();
 
-/// Close-out, composed from the event and its attendee listeners: who
-/// came, who was booked and who nobody checked in.
+/// Close-out, composed from the event, its attendee listeners and the
+/// close-out listener: who came, who was booked, who nobody checked in and
+/// the after-closing choices already saved.
 
 final class HostEventCloseOutControllerProvider
     extends
@@ -26,8 +28,9 @@ final class HostEventCloseOutControllerProvider
           HostEventCloseOutState
         >
     with $Provider<HostEventCloseOutState> {
-  /// Close-out, composed from the event and its attendee listeners: who
-  /// came, who was booked and who nobody checked in.
+  /// Close-out, composed from the event, its attendee listeners and the
+  /// close-out listener: who came, who was booked, who nobody checked in and
+  /// the after-closing choices already saved.
   HostEventCloseOutControllerProvider._({
     required HostEventCloseOutControllerFamily super.from,
     required HostEventRequest super.argument,
@@ -82,10 +85,11 @@ final class HostEventCloseOutControllerProvider
 }
 
 String _$hostEventCloseOutControllerHash() =>
-    r'c289b545a22658b91e5405dfa1a62df877d0182f';
+    r'd4a2ce2871a644bd971206fb581104c0c305ba79';
 
-/// Close-out, composed from the event and its attendee listeners: who
-/// came, who was booked and who nobody checked in.
+/// Close-out, composed from the event, its attendee listeners and the
+/// close-out listener: who came, who was booked, who nobody checked in and
+/// the after-closing choices already saved.
 
 final class HostEventCloseOutControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostEventCloseOutState, HostEventRequest> {
@@ -98,8 +102,9 @@ final class HostEventCloseOutControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Close-out, composed from the event and its attendee listeners: who
-  /// came, who was booked and who nobody checked in.
+  /// Close-out, composed from the event, its attendee listeners and the
+  /// close-out listener: who came, who was booked, who nobody checked in and
+  /// the after-closing choices already saved.
 
   HostEventCloseOutControllerProvider call(HostEventRequest request) =>
       HostEventCloseOutControllerProvider._(argument: request, from: this);
