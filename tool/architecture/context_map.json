@@ -91,6 +91,7 @@
     {"path": "lib/hosts/organizer/", "layer": "app"},
     {"path": "lib/hosts/people/", "layer": "app"},
     {"path": "lib/hosts/forms/", "layer": "app"},
+    {"path": "lib/hosts/programmes/", "layer": "app"},
     {"path": "lib/user_analytics/", "context": "insights"}
   ]
 }

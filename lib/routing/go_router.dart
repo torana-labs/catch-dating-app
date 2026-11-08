@@ -80,31 +80,24 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/requests/host_requests_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/staff/staff.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
-import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_now_next_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_screen.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
@@ -724,7 +717,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.today,
     path: Routes.hostWorkScreen.path,
     name: Routes.hostWorkScreen.name,
-    builder: (context, state) => const HostWorkScreen(),
+    builder: (context, state) => const StaffAssignmentsScreen(),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
@@ -739,7 +732,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkScreen,
     path: Routes.hostWorkProgramScreen.path,
     name: Routes.hostWorkProgramScreen.name,
-    builder: (context, state) => ProgramWorkScreen(
+    builder: (context, state) => StaffJobsScreen(
       programId: state.pathParameters['programId']!,
       inviteId: state.uri.queryParameters['invite'],
     ),
@@ -749,7 +742,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkProgramScreen,
     path: Routes.hostWorkArrivalsScreen.path,
     name: Routes.hostWorkArrivalsScreen.name,
-    builder: (context, state) => ProgramArrivalsScreen(
+    builder: (context, state) => StaffArrivalsScreen(
       programId: state.pathParameters['programId']!,
       pickupPointId: state.pathParameters['pickupPointId'],
       stationLabel: state.uri.queryParameters['station'] ?? 'Arrivals',
@@ -760,7 +753,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkProgramScreen,
     path: Routes.hostWorkDispatchScreen.path,
     name: Routes.hostWorkDispatchScreen.name,
-    builder: (context, state) => ProgramDispatchScreen(
+    builder: (context, state) => StaffDispatchScreen(
       programId: state.pathParameters['programId']!,
       pickupPointId: state.pathParameters['pickupPointId']!,
       stationLabel: state.uri.queryParameters['station'] ?? 'Dispatch',
@@ -771,7 +764,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkProgramScreen,
     path: Routes.hostWorkHotelScreen.path,
     name: Routes.hostWorkHotelScreen.name,
-    builder: (context, state) => ProgramHotelDeskScreen(
+    builder: (context, state) => StaffHotelDeskScreen(
       programId: state.pathParameters['programId']!,
       hotelId: state.pathParameters['hotelId']!,
     ),
@@ -791,7 +784,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     parent: Routes.hostWorkProgramScreen,
     path: Routes.hostWorkDoorScreen.path,
     name: Routes.hostWorkDoorScreen.name,
-    builder: (context, state) => ProgramFunctionDoorScreen(
+    builder: (context, state) => StaffDoorScreen(
       programId: state.pathParameters['programId']!,
       functionId: state.pathParameters['functionId']!,
       functionName: state.uri.queryParameters['function'],
@@ -803,7 +796,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkNowScreen.path,
     name: Routes.hostWorkNowScreen.name,
     builder: (context, state) =>
-        ProgramNowNextScreen(programId: state.pathParameters['programId']!),
+        StaffLeadScreen(programId: state.pathParameters['programId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,
@@ -811,7 +804,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostWorkAttentionScreen.path,
     name: Routes.hostWorkAttentionScreen.name,
     builder: (context, state) =>
-        ProgramAttentionScreen(programId: state.pathParameters['programId']!),
+        StaffAlertsScreen(programId: state.pathParameters['programId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.today,

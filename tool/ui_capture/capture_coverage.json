@@ -966,9 +966,12 @@
     },
     {
       "routeId": "hostWorkScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The unified staff assignment picker is implemented with loading/error/empty/picker states; captures remain planned until an authenticated staff fixture is admitted to the canonical capture catalog."
+      "captureIds": [
+        "host_staff_work_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkEventScreen",
@@ -979,27 +982,40 @@
     },
     {
       "routeId": "hostWorkProgramScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Program work workspace lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_jobs_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkArrivalsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Arrivals roster lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_arrivals_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkDispatchScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Dispatch desk lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_dispatch_phone",
+        "host_staff_dispatch_sheet_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkHotelScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Hotel desk lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_hotel_desk_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkHotelRoomsScreen",
@@ -1009,21 +1025,30 @@
     },
     {
       "routeId": "hostWorkDoorScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Door check-in lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_door_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkNowScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Now & next lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_lead_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkAttentionScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Staff attention feed lands with this slice; route captures are scheduled with the program golden pass."
+      "captureIds": [
+        "host_staff_alerts_phone"
+      ],
+      "reason": "The staff screen on the system is captured over the wedding-weekend fixture reads (night, phone)."
     },
     {
       "routeId": "hostWorkTripsScreen",
