@@ -11,7 +11,7 @@ import {
 test("flags activity choice fields without itemAccentBuilder", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
-      "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
     source: [
       "CatchField<ActivityKind>.choices(",
       "  values: ActivityKind.values,",
@@ -27,7 +27,7 @@ test("flags activity choice fields without itemAccentBuilder", () => {
 test("allows activity choice fields with itemAccentBuilder", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
-      "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
     source: [
       "CatchField<PaceLevel>.choices(",
       "  values: PaceLevel.values,",
@@ -42,7 +42,7 @@ test("allows activity choice fields with itemAccentBuilder", () => {
 test("flags initially open event create fields", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
-      "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
     source: "CatchField<String>.choices(disclosureMode: CatchFieldMode.localExpanded)",
   });
 
@@ -52,7 +52,7 @@ test("flags initially open event create fields", () => {
 
 test("typed disclosure modes distinguish an expanded seed from interaction-owned state", () => {
   const scan = (source) => scanHostEventFieldSource({
-    relativePath: "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+    relativePath: "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
     source,
   });
   assert.equal(scan("CatchField.choices(disclosureMode: CatchFieldMode.controlledExpanded)").length, 1);
@@ -62,7 +62,7 @@ test("typed disclosure modes distinguish an expanded seed from interaction-owned
 
 test("commented accent builders cannot satisfy activity color ownership", () => {
   const findings = scanHostEventFieldSource({
-    relativePath: "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+    relativePath: "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
     source: "CatchField<ActivityKind>.choices(// itemAccentBuilder: (_) => accent,\n values: ActivityKind.values)",
   });
   assert.equal(findings.length, 1);
@@ -83,7 +83,7 @@ test("repository scan covers all Host Dart sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-host-fields-"));
   const sourcePath = path.join(
     root,
-    "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+    "lib/hosts/presentation/event_management/widgets/event_guest_details_section.dart",
   );
   fs.mkdirSync(path.dirname(sourcePath), {recursive: true});
   fs.writeFileSync(

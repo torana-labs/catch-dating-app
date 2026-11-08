@@ -41,9 +41,6 @@ declare(`${ui}components/catch_legacy_top_bar.dart`, `${ui}components/catch_lega
   "_CatchLegacyTopBarState", ["_buildBar", "_searchField", "_selectorControls"], ["Widget"]);
 // Typed factories return the canonical component itself, preventing an outer
 // GestureDetector, inset, or alternate interaction shell around their result.
-declare("lib/hosts/presentation/customers/host_customer_timeline_section.dart",
-  "lib/hosts/presentation/customers/host_customer_timeline_section.dart", null,
-  ["hostCustomerTimelineField"], ["CatchField"]);
 declare("lib/programs/presentation/program_events_row.dart",
   "lib/programs/presentation/program_events_row.dart", null,
   ["programEventsField"], ["CatchField"]);
@@ -58,11 +55,6 @@ declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
 // typed factories configure the canonical shell; they are not new widgets.
 for (const [file, owner] of [
   ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
-  ["lib/programs/presentation/program_arrivals_screen.dart", "ProgramArrivalsScreen"],
-  ["lib/programs/presentation/program_dispatch_screen.dart", "_ProgramDispatchScreenState"],
-  ["lib/programs/presentation/program_hotel_desk_screen.dart", "_ProgramHotelDeskScreenState"],
-  ["lib/programs/presentation/program_trips_screen.dart", "_ProgramTripsScreenState"],
-  ["lib/programs/presentation/program_work_screen.dart", null],
 ]) {
   declare(file, file, owner, ["_routeScaffold"], ["CatchRouteScaffold"]);
 }

@@ -1000,7 +1000,7 @@ function validateRemoteConfigOwnership({root, manifest, findings}) {
     routeSource: fs.readFileSync(path.join(root,
       "lib/hosts/audience/phone_import/presentation/phone_import_route_controller.dart"), "utf8"),
     workSource: fs.readFileSync(path.join(root,
-      "lib/programs/presentation/program_work_screen.dart"), "utf8"),
+      "lib/hosts/programmes/staff/staff_jobs_state.dart"), "utf8"),
   }));
 }
 

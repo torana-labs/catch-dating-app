@@ -36,7 +36,6 @@ test("owned renderers require exact source, library, owner, method and return ty
   }
   assert.equal(isOwnedCompositionRenderer({...entry, name: "status"}), false);
   for (const [file, name] of [
-    ["lib/hosts/presentation/customers/host_customer_timeline_section.dart", "hostCustomerTimelineField"],
     ["lib/programs/presentation/program_events_row.dart", "programEventsField"],
   ]) {
     const factory = {
@@ -49,11 +48,6 @@ test("owned renderers require exact source, library, owner, method and return ty
 
 test("typed factories require their exact real source identities", () => {
   const entries = [
-    {
-      file: "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
-      library: "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
-      owner: null, name: "hostCustomerTimelineField", returnType: "CatchField",
-    },
     {
       file: "lib/programs/presentation/program_events_row.dart",
       library: "lib/programs/presentation/program_events_row.dart",
@@ -135,11 +129,6 @@ test("composition renderer recognition stays bound to real owner methods", () =>
 test("approved route-shell factories require their exact real source identities", () => {
   const entries = [
     ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
-    ["lib/programs/presentation/program_arrivals_screen.dart", "ProgramArrivalsScreen"],
-    ["lib/programs/presentation/program_dispatch_screen.dart", "_ProgramDispatchScreenState"],
-    ["lib/programs/presentation/program_hotel_desk_screen.dart", "_ProgramHotelDeskScreenState"],
-    ["lib/programs/presentation/program_trips_screen.dart", "_ProgramTripsScreenState"],
-    ["lib/programs/presentation/program_work_screen.dart", null],
   ].map(([file, owner]) => ({
     file, library: file, owner, name: "_routeScaffold", returnType: "CatchRouteScaffold",
   }));

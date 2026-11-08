@@ -727,8 +727,6 @@
       "captureIds": [
         "host_people_desktop",
         "host_people_phone",
-        "host_customers_populated",
-        "host_customers_audiences_populated",
         "host_forms_phone"
       ],
       "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
@@ -806,23 +804,16 @@
     },
     {
       "routeId": "hostCreateSavedAudienceScreen",
-      "status": "captured",
+      "status": "planned",
       "priority": "P1",
-      "captureIds": [
-        "host_saved_audience_create",
-        "host_group_create"
-      ],
-      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
+      "reason": "The saved group screen on the system has no registered capture yet; the legacy editor captures retired with it."
     },
     {
       "routeId": "hostSavedAudienceDetailScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_saved_group_phone",
-        "host_saved_audience_detail",
-        "host_group_overview",
-        "host_group_edit"
+        "host_saved_group_phone"
       ],
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
@@ -841,13 +832,6 @@
       "priority": "P1",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_form_response_application",
-        "host_form_response_intake",
-        "host_form_response_withdrawn",
-        "host_form_response_large_text",
-        "host_response_review_submitted",
-        "host_response_review_imported",
-        "host_response_review_revoked",
         "host_response_phone"
       ]
     },
@@ -934,12 +918,7 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_person_phone",
-        "host_customer_detail_memory",
-        "host_person_overview",
-        "host_person_details",
-        "host_person_notes",
-        "host_person_history"
+        "host_person_phone"
       ],
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
@@ -1291,22 +1270,7 @@
         "host_onboarding_details",
         "host_onboarding_payments",
         "host_onboarding_done",
-        "create_club_basics",
-        "create_club_basics_validation",
-        "create_club_picked_media",
-        "host_media_gallery_manager",
-        "create_club_draft_restored",
-        "create_club_details",
-        "create_club_host_defaults",
-        "create_club_event_success_defaults",
-        "create_club_save_draft_pending",
-        "create_club_save_draft_error",
-        "create_club_submit_pending",
-        "create_club_submit_error",
-        "create_club_submit_offline",
-        "create_club_text_scale_2",
-        "create_club_reduced_motion",
-        "create_club_light_dark"
+        "host_media_gallery_manager"
       ],
       "reason": "Host app create-club route now has deterministic captures for basics, basics validation errors, separate logo and picked gallery media, the shared 24-photo scalable gallery manager, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
@@ -1322,46 +1286,15 @@
         "host_create_step_plan",
         "host_create_step_share",
         "host_create_editor_desktop",
-        "host_event_setup",
-        "host_create_basics",
         "host_create_initial_club_extra",
         "host_create_route_loading",
         "host_create_route_error",
         "host_create_route_offline",
         "host_create_not_found",
         "host_create_unauthorized",
-        "host_create_text_scale_2",
-        "host_create_reduced_motion",
-        "host_create_light_dark",
-        "host_create_location",
         "host_create_map_picker_offline",
-        "host_create_schedule",
-        "host_create_schedule_validation",
-        "host_create_policy",
-        "host_create_policy_age_validation",
-        "host_create_policy_invite_only",
-        "host_create_policy_cohort_caps",
-        "host_create_policy_dynamic_pricing_disabled",
-        "host_create_policy_dynamic_pricing_validation",
-        "host_create_guide",
-        "host_create_guide_question_pack",
-        "host_create_basics_validation",
-        "host_create_custom_activity",
-        "host_create_event_photos",
         "host_media_gallery_manager",
-        "host_create_location_selected",
-        "host_create_draft_picker",
-        "host_create_draft_restored",
-        "host_create_draft_delete_confirmation",
-        "host_create_unsaved_changes_dialog",
-        "host_create_save_draft_pending",
-        "host_create_save_draft_error",
-        "host_create_save_draft_offline",
-        "host_create_submit_pending",
-        "host_create_submit_error",
-        "host_create_submit_offline",
-        "host_create_photo_upload_offline",
-        "host_create_success_manage"
+        "host_create_draft_delete_confirmation"
       ],
       "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, inherited organizer identity, picked event photos, the shared 24-photo scalable gallery manager, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },

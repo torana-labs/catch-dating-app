@@ -31,11 +31,6 @@
     },
     {
       "rule": "bare_catch",
-      "path": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
-      "snippet": "} catch (_) {"
-    },
-    {
-      "rule": "bare_catch",
       "path": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
       "snippet": "} catch (_) {"
     },

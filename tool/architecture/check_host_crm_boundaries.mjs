@@ -8,10 +8,9 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 const toolPath = fileURLToPath(import.meta.url);
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === toolPath;
 
-const customerRouteConsumers = new Set([
-  "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-  "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
-]);
+// The legacy customer detail and timeline were the only transport-route
+// consumers; People reads intent plans, so no presentation file selects one.
+const customerRouteConsumers = new Set();
 const savedAudienceMutationOwners = new Set([
   "lib/hosts/presentation/host_audience_controller.dart",
 ]);
@@ -347,27 +346,10 @@ export function applicationRouteOwnershipFindings({
 export function audienceWorkspacePresentationFindings({
   audienceViewPath,
   audienceViewSource,
-  customersPath,
-  customersSource,
-  workspacePath,
-  workspaceSource,
-  editorSheetsPath,
-  editorSheetsSource,
   routeContractPath,
   routeContractSource,
 }) {
   const findings = [];
-  for (const anchor of [
-    "CatchRootScreenScaffold.withPrimaryRail(",
-    "HostSavedAudiencesWorkspace(",
-    "primaryAction: peopleView",
-  ]) {
-    if (!customersSource.includes(anchor)) findings.push({
-      path: customersPath,
-      line: 1,
-      reason: `Customers must keep People and Audiences as peer workspaces: ${anchor}`,
-    });
-  }
   for (const anchor of [
     "enum HostAudienceView { people, audiences, forms, responses, requests }",
     "class HostAudienceTabRail",
@@ -379,40 +361,6 @@ export function audienceWorkspacePresentationFindings({
       reason: `Audience must expose all five peer workspaces: ${anchor}`,
     });
   }
-  if (customersSource.includes("savedAudiences") ||
-      customersSource.includes("HostSavedAudiencesSheet")) {
-    findings.push({
-      path: customersPath,
-      line: 1,
-      reason: "Saved audiences must not return to the Customers overflow or a modal workspace.",
-    });
-  }
-
-  const createKey = "ValueKey('host-saved-audience-create')";
-  const createActionCount = customersSource.split(createKey).length - 1;
-  const directoryCreateCount = workspaceSource.split(createKey).length - 1;
-  if (!/CatchSection\.(?:rows|sliverRows)\s*\(/u.test(workspaceSource) ||
-      !/CatchField\.navigate\s*\(/u.test(workspaceSource)) {
-    findings.push({
-      path: workspacePath,
-      line: 1,
-      reason: "The top-level saved-audience directory must use a full-width typed row section with navigation fields.",
-    });
-  }
-  if (createActionCount !== 1 || directoryCreateCount !== 0) {
-    findings.push({
-      path: customersPath,
-      line: 1,
-      reason: "Groups must expose exactly one New group action in the app-bar primary action, with none in the directory body.",
-    });
-  }
-  if (editorSheetsSource.includes("class HostSavedAudiencesSheet")) {
-    findings.push({
-      path: editorSheetsPath,
-      line: 1,
-      reason: "Saved-audience management is route-level and must not regain a parallel modal.",
-    });
-  }
   for (const anchor of [
     "hostCreateSavedAudienceScreen(\n    '/host/audience/audiences/new'",
     "hostSavedAudienceDetailScreen(\n    '/host/audience/audiences/:audienceId'",
@@ -421,53 +369,6 @@ export function audienceWorkspacePresentationFindings({
       path: routeContractPath,
       line: 1,
       reason: "Saved-audience create and detail must remain full-page Audience routes.",
-    });
-  }
-  return findings;
-}
-
-export function customerMessagingHandoffFindings({
-  customersPath,
-  customersSource,
-}) {
-  const findings = [];
-  for (const forbidden of [
-    "onOpenMessaging",
-    "hostCustomersOpenMessaging",
-  ]) {
-    const index = customersSource.indexOf(forbidden);
-    if (index >= 0) findings.push(finding(
-      customersPath,
-      customersSource,
-      index,
-      "Customers must not expose a generic Messaging handoff; the Host shell already owns that destination."
-    ));
-  }
-
-  const routePattern = /context\.(?:goNamed|pushNamed)\(\s*Routes\.hostInboxScreen\.name,[\s\S]{0,700}?\n\s*\);/gu;
-  for (const match of customersSource.matchAll(routePattern)) {
-    if (match[0].includes("HostMessagingWorkspace.campaigns.name") &&
-        (!match[0].includes("'compose': '1'") ||
-         !match[0].includes("'audienceId': audience.audienceId"))) {
-      findings.push(finding(
-        customersPath,
-        customersSource,
-        match.index,
-        "Customers may open Messaging compose only with a persisted saved-audience id."
-      ));
-    }
-  }
-
-  for (const anchor of [
-    "onReviewSenderSetup:",
-    "Routes.hostOrganizerMessagingScreen.name",
-    "'compose': '1'",
-    "'audienceId': audience.audienceId",
-  ]) {
-    if (!customersSource.includes(anchor)) findings.push({
-      path: customersPath,
-      line: 1,
-      reason: `Customers messaging handoff contract is missing: ${anchor}`,
     });
   }
   return findings;
@@ -526,44 +427,19 @@ function scanApplicationRouteOwnership(root) {
 function scanAudienceWorkspacePresentation(root) {
   const audienceViewPath =
     "lib/hosts/presentation/host_audience_view.dart";
-  const customersPath =
-    "lib/hosts/presentation/customers/host_customers_screen.dart";
-  const workspacePath =
-    "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart";
-  const editorSheetsPath =
-    "lib/hosts/presentation/customers/host_save_audience_sheet.dart";
   const routeContractPath = "packages/platform/lib/routing/route_contract.dart";
-  const paths = [
-    audienceViewPath,
-    customersPath,
-    workspacePath,
-    editorSheetsPath,
-    routeContractPath,
-  ];
+  const paths = [audienceViewPath, routeContractPath];
   const missing = paths.filter((item) => !fs.existsSync(path.join(root, item)));
   if (missing.length > 0) return missing.map(missingFinding);
-  const customersSource = fs.readFileSync(path.join(root, customersPath), "utf8");
-  return [
-    ...audienceWorkspacePresentationFindings({
-      audienceViewPath,
-      audienceViewSource: fs.readFileSync(
-        path.join(root, audienceViewPath),
-        "utf8"
-      ),
-      customersPath,
-      customersSource,
-      workspacePath,
-      workspaceSource: fs.readFileSync(path.join(root, workspacePath), "utf8"),
-      editorSheetsPath,
-      editorSheetsSource: fs.readFileSync(path.join(root, editorSheetsPath), "utf8"),
-      routeContractPath,
-      routeContractSource: fs.readFileSync(path.join(root, routeContractPath), "utf8"),
-    }),
-    ...customerMessagingHandoffFindings({
-      customersPath,
-      customersSource,
-    }),
-  ];
+  return audienceWorkspacePresentationFindings({
+    audienceViewPath,
+    audienceViewSource: fs.readFileSync(
+      path.join(root, audienceViewPath),
+      "utf8"
+    ),
+    routeContractPath,
+    routeContractSource: fs.readFileSync(path.join(root, routeContractPath), "utf8"),
+  });
 }
 
 function scanFormProvenanceContract(root) {
