@@ -107,9 +107,11 @@ class HostOfferBody extends StatelessWidget {
                     : l10n.hostFormsOfferUntitledEvent,
                 subtitle: hostOfferTime(option.startsAt),
                 selected: option.id == event?.id,
-                onTap: state.busy || option.id == event?.id
+                onTap: state.busy
                     ? null
-                    : () => onChoose(option),
+                    : () {
+                        if (option.id != event?.id) onChoose(option);
+                      },
               ),
             if (state.canLoadMoreEvents)
               CatchButton(
