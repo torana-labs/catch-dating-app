@@ -419,10 +419,9 @@ class EventSuccessRuntime {
       step.moduleIds.contains(moduleId);
 
   bool get _usesStandingsReveal {
-    final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
-    return profile.unitOutcome == EventSuccessUnitOutcome.score ||
-        (profile.unitOutcome == EventSuccessUnitOutcome.rank &&
-            profile.assignmentResolution.supported);
+    return EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+    ).revealShowsStandings;
   }
 
   bool _canPrioritizeCompatibilityQuestionnaire(

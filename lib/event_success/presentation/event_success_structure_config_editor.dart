@@ -154,7 +154,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
-            values: EventSuccessActivityAssignmentAttribute.values,
+            values: _offeredAttributes(value),
             itemLabelBuilder: (attribute) => attribute.balanceLabel,
             selected: value.balanceActivityAttributes.toSet(),
             mode: CatchChipMode.multiple,
@@ -181,7 +181,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
-            values: EventSuccessActivityAssignmentAttribute.values,
+            values: _offeredAttributes(value),
             itemLabelBuilder: (attribute) => attribute.clusterLabel,
             selected: value.clusterActivityAttributes.toSet(),
             mode: CatchChipMode.multiple,
@@ -296,6 +296,29 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
       ),
     };
   }
+}
+
+/// Activity signals are always offered. Sensitive profile signals (gender,
+/// age band) are offered for pair formats (singles-first racket nights and
+/// mixers, where mixed partnerships are the usual ask) or when this event
+/// already opted in, so a saved choice stays visible and removable. Which
+/// formats may opt in is an open owner decision (docs/assignment_engine.md).
+List<EventSuccessActivityAssignmentAttribute> _offeredAttributes(
+  EventSuccessStructureConfig config,
+) {
+  final selected = {
+    ...config.balanceActivityAttributes,
+    ...config.clusterActivityAttributes,
+    ...config.coverActivityAttributes,
+  };
+  return EventSuccessActivityAssignmentAttribute.values
+      .where(
+        (attribute) =>
+            !attribute.sensitive ||
+            selected.contains(attribute) ||
+            config.unitKind == EventSuccessUnitKind.pairs,
+      )
+      .toList(growable: false);
 }
 
 List<EventSuccessActivityAssignmentAttribute> _orderedAttributes(

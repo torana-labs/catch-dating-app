@@ -1324,6 +1324,9 @@ function defaultEventSuccessModuleIdsFor(
     return [...base, "guided_rotations", "live_reveal"];
   case "teamRotations":
     return [...base, "micro_pods", "live_reveal"];
+  case "seatedTable":
+    // Tables and course changes come from the group assignment tool.
+    return [...base, "micro_pods"];
   case "freeFormMixer":
     return primitives.compatibilityPolicy === "mutualInterestOnly" ?
       [...base, "guided_rotations", "live_reveal",

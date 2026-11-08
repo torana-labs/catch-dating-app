@@ -178,10 +178,11 @@ class _HostFormatsRuleSheetState extends State<HostFormatsRuleSheet> {
             title: l10n.hostFormatsRuleHow,
             dividers: CatchSectionPlacement.none,
             children: [
-              for (final mode in const [
+              for (final mode in [
                 'preferSimilar',
                 'preferDifferent',
                 'balanceAcrossGroups',
+                if (_choice?.question.kind != 'number') 'coverAcrossGroups',
               ])
                 CatchChoiceTile(
                   key: ValueKey<String>('formats-rule-mode-$mode'),
@@ -190,6 +191,7 @@ class _HostFormatsRuleSheetState extends State<HostFormatsRuleSheet> {
                   subtitle: switch (mode) {
                     'preferDifferent' => l10n.hostFormatsRuleDifferentNote,
                     'balanceAcrossGroups' => l10n.hostFormatsRuleSpreadNote,
+                    'coverAcrossGroups' => l10n.hostFormatsRuleCoverNote,
                     _ => l10n.hostFormatsRuleSimilarNote,
                   },
                   selected: _mode == mode,
