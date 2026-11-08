@@ -133,6 +133,21 @@ describe("storage.rules", () => {
     });
   });
 
+  describe("programme private files", () => {
+    it("denies direct reads and writes for every programme file kind", async () => {
+      for (const kind of ["guestIds", "hampers", "photos", "branding"]) {
+        const filePath = `programs/program-1/${kind}/asset-1`;
+        await assertFails(uploadImage(authedStorage("host-1"), filePath));
+        await assertFails(uploadImage(unauthenticatedStorage(), filePath));
+        await seedStorageFile(filePath);
+        await assertFails(authedStorage("host-1").ref(filePath).getMetadata());
+        await assertFails(
+          unauthenticatedStorage().ref(filePath).getMetadata(),
+        );
+      }
+    });
+  });
+
   describe("chat images", () => {
     it("allows active match participants to upload using user1Id/user2Id", async () => {
       await seedFirestore(["matches", "match-1"], match());

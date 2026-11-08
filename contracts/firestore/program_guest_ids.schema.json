@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_guest_ids.schema.json",
+  "title": "ProgramGuestIdDocument",
+  "description": "One guest's ID for the hotels, at programGuestIds/{programId}_{guestId}. The household submits it through its RSVP link; guest relations accept it or ask again; the hotel front desk sees accepted IDs through its handover link, and each look is recorded in hotelViews. Only the last four characters of the ID number are kept; the images live in private Storage (programs/{programId}/guestIds/). Server-only. The archive retention sweep deletes these documents and their files.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programGuestIds",
+  "x-firestore-path": "programGuestIds/{programGuestIdId}",
+  "x-owner": "submitProgramGuestId and decideProgramGuestId callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "householdId",
+    "guestId",
+    "idKind",
+    "numberLast4",
+    "frontPath",
+    "backPath",
+    "visaPath",
+    "status",
+    "submittedAtMillis",
+    "decidedAtMillis",
+    "decidedByUid",
+    "askAgainNote",
+    "hotelViews",
+    "revision",
+    "lastRequestId",
+    "lastRequestHash"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "householdId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "idKind": {
+      "type": "string",
+      "enum": [
+        "aadhaar",
+        "passport",
+        "licence",
+        "voterId"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "numberLast4": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9A-Z]{4}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "frontPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^programs/[^/]+/[A-Za-z]+/[A-Za-z0-9_-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "backPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^programs/[^/]+/[A-Za-z]+/[A-Za-z0-9_-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "visaPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^programs/[^/]+/[A-Za-z]+/[A-Za-z0-9_-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "accepted",
+        "askedAgain"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "submittedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "decidedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "decidedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "askAgainNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hotelViews": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "The last front-desk looks through the hotel handover link, newest last.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "atMillis"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "atMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRequestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

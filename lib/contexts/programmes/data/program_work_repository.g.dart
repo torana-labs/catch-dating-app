@@ -580,6 +580,94 @@ final class ProgramTripListFamily extends $Family
   String toString() => r'programTripListProvider';
 }
 
+/// The ID tracker for one programme, optionally one hotel.
+
+@ProviderFor(programIdTracker)
+final programIdTrackerProvider = ProgramIdTrackerFamily._();
+
+/// The ID tracker for one programme, optionally one hotel.
+
+final class ProgramIdTrackerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramIdTracker>,
+          ProgramIdTracker,
+          FutureOr<ProgramIdTracker>
+        >
+    with $FutureModifier<ProgramIdTracker>, $FutureProvider<ProgramIdTracker> {
+  /// The ID tracker for one programme, optionally one hotel.
+  ProgramIdTrackerProvider._({
+    required ProgramIdTrackerFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programIdTrackerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programIdTrackerHash();
+
+  @override
+  String toString() {
+    return r'programIdTrackerProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramIdTracker> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramIdTracker> create(Ref ref) {
+    final argument = this.argument as (String, String?);
+    return programIdTracker(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramIdTrackerProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programIdTrackerHash() => r'240f05d8e86df313042b7f14c4253dd396bfbccb';
+
+/// The ID tracker for one programme, optionally one hotel.
+
+final class ProgramIdTrackerFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramIdTracker>,
+          (String, String?)
+        > {
+  ProgramIdTrackerFamily._()
+    : super(
+        retry: null,
+        name: r'programIdTrackerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The ID tracker for one programme, optionally one hotel.
+
+  ProgramIdTrackerProvider call(String programId, String? hotelId) =>
+      ProgramIdTrackerProvider._(argument: (programId, hotelId), from: this);
+
+  @override
+  String toString() => r'programIdTrackerProvider';
+}
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
 

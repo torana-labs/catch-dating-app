@@ -1,0 +1,275 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_id_tracker_response.schema.json",
+  "title": "ProgramIdTrackerCallableResponse",
+  "description": "The ID tracker. Rows are staying guests (a live stay) plus any guest with a submitted ID. Image URLs are signed for a few minutes and expire at urlsExpireAtMillis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId",
+    "counts",
+    "hotels",
+    "rows",
+    "urlsExpireAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "staying",
+        "idsIn",
+        "toCheck",
+        "missing",
+        "passports"
+      ],
+      "properties": {
+        "staying": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "idsIn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toCheck": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "passports": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name",
+          "staying"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "staying": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "householdId",
+          "displayName",
+          "hotelId",
+          "hotelName",
+          "roomLabel",
+          "status",
+          "idKind",
+          "numberLast4",
+          "submittedAtMillis",
+          "decidedAtMillis",
+          "askAgainNote",
+          "hotelViews",
+          "frontUrl",
+          "backUrl",
+          "visaUrl",
+          "revision"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "householdId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "hotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "hotelName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "roomLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "submitted",
+              "accepted",
+              "askedAgain"
+            ]
+          },
+          "idKind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "aadhaar",
+              "passport",
+              "licence",
+              "voterId",
+              null
+            ]
+          },
+          "numberLast4": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9A-Z]{4}$"
+          },
+          "submittedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "decidedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "askAgainNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          },
+          "hotelViews": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hotelId",
+                "hotelName",
+                "atMillis"
+              ],
+              "properties": {
+                "hotelId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "hotelName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                },
+                "atMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          },
+          "frontUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          },
+          "backUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          },
+          "visaUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "urlsExpireAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

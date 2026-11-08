@@ -22,6 +22,7 @@ import {
 import {loadFlightProviderConfig} from "../transport/flightProviderConfig";
 import {deleteFlightSubscription} from "../transport/flightSubscriptions";
 import type {FetchImpl} from "../transport/aeroDataBox";
+import {programAssetPrefix} from "./programAssets";
 import type {
   OrganizerProgramDocument,
   ProgramRetentionRunDocument,
@@ -59,6 +60,9 @@ export interface RetentionDeps {
    *  (no live subscriptions can exist), so legs scrub without a delete. */
   loadFlightApiKey: () => Promise<string | null>;
   deleteFlightSubscription: typeof deleteFlightSubscription;
+  /** Deletes every private programme file (guest IDs, hamper and
+   *  function photos, the cover) under programs/{programId}/. */
+  deleteProgramFiles: (programId: string) => Promise<void>;
   fetchImpl?: FetchImpl;
   /** Test hook: shrink page size to exercise chunked resume. */
   pageLimit?: number;
@@ -71,6 +75,10 @@ const defaultRetentionDeps: RetentionDeps = {
   loadFlightApiKey: async () =>
     (await loadFlightProviderConfig())?.apiKey ?? null,
   deleteFlightSubscription,
+  deleteProgramFiles: async (programId) => {
+    await admin.storage().bucket()
+      .deleteFiles({prefix: programAssetPrefix(programId)});
+  },
 };
 
 export async function archiveProgramHandler(
@@ -233,6 +241,8 @@ const retentionCollections = [
   "programLodgingConfigs",
   "workspaceMembershipAssertions",
   "workspaceMembershipDecisions",
+  "programGuestIds",
+  "programAlerts",
 ] as const;
 
 function shortId(docId: string): string {
@@ -262,6 +272,10 @@ function retentionScrub(
   case "workspaceMembershipAssertions":
   case "workspaceMembershipDecisions":
     return null; // Historical field values are PII, not operational counts.
+  case "programGuestIds":
+    return null; // ID records exist only for the stay; files go below.
+  case "programAlerts":
+    return null; // Resolutions name staff and have no use after the event.
   case "programGuests":
     return {
       ...marker,
@@ -478,6 +492,9 @@ export async function anonymizeProgram(
       entry.cursor = null;
       await persistRun();
     }
+    // Private files last: every record that pointed at them is gone, and a
+    // failure here leaves the run unfinished so the next pass retries.
+    await deps.deleteProgramFiles(programId);
     // Final transaction: mark the program scrubbed and close the journal.
     await db.runTransaction(async (tx) => {
       const programSnap = await tx.get(programRef);

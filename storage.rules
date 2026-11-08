@@ -305,6 +305,14 @@ service firebase.storage {
       allow read, write: if false;
     }
 
+    // Programme files: guest IDs, hamper and function photos and the guest
+    // page cover. Uploads use one short-lived backend-signed POST policy
+    // (createProgramAssetUpload); reads are short-lived signed URLs from the
+    // reads allowed to show them. Direct SDK access stays denied.
+    match /programs/{programId}/{assetKind}/{assetId} {
+      allow read, write: if false;
+    }
+
     // Response exports are private backend objects surfaced only through
     // short-lived manager-authorized signed URLs.
     match /organizer-form-exports/{organizerId}/{fileName} {

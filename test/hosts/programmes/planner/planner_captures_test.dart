@@ -35,6 +35,11 @@ void main() {
       (_) => plannerLiveBoardCapture(),
       phone,
     ),
+    (
+      'host_programme_id_tracker_desktop',
+      (_) => plannerIdTrackerCapture(),
+      desktop,
+    ),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

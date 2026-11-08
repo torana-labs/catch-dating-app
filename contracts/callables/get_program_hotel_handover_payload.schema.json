@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_hotel_handover_payload.schema.json",
+  "title": "GetProgramHotelHandoverCallablePayload",
+  "description": "The hotel front desk's rooming list with guest IDs, through a hotelHandover web link token (issueProgramWebLink). No sign-in.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 2048,
+      "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"
+    }
+  }
+}
