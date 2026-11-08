@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -39,6 +40,28 @@ class HostOrganizerBillsRepository {
           resource: 'listOrganizerBills',
         ),
       );
+
+  /// The free trial and other billing status. Status only, never prices.
+  Future<HostOrganizerBillingStatus> status(String organizerId) =>
+      withBackendErrorContext(
+        () async {
+          final result = await _functions
+              .httpsCallable('getOrganizerBillingStatus')
+              .call<Object?>(
+                GetOrganizerBillingStatusCallableRequest(
+                  organizerId: organizerId,
+                ).toJson(),
+              );
+          return HostOrganizerBillingStatus.fromJson(
+            Map<String, Object?>.from(result.data! as Map),
+          );
+        },
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'read organizer billing status',
+          resource: 'getOrganizerBillingStatus',
+        ),
+      );
 }
 
 @riverpod
@@ -50,3 +73,9 @@ Future<List<HostOrganizerBill>> hostOrganizerBills(
   Ref ref,
   String organizerId,
 ) => ref.watch(hostOrganizerBillsRepositoryProvider).list(organizerId);
+
+@riverpod
+Future<HostOrganizerBillingStatus> hostOrganizerBillingStatus(
+  Ref ref,
+  String organizerId,
+) => ref.watch(hostOrganizerBillsRepositoryProvider).status(organizerId);

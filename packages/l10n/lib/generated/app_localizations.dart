@@ -30770,6 +30770,36 @@ abstract class AppLocalizations {
   /// **'What Catch charges, and the tools-only plan, are on the Catch website.'**
   String get hostOrganizerPlanBody;
 
+  /// Payments plan tile: the free trial is running, with whole days left. Status only, no price.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial · {days, plural, =1{1 day left} other{{days} days left}}'**
+  String hostOrganizerTrialActive({required int days});
+
+  /// Payments plan tile: the day the running free trial ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free trial ends on {date}.'**
+  String hostOrganizerTrialActiveBody({required String date});
+
+  /// Payments plan tile: the free trial starts at the first booked event, which is still ahead.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial starts {date}'**
+  String hostOrganizerTrialScheduled({required String date});
+
+  /// Payments plan tile: no event or paid booking yet, so the trial has not started.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial starts with your first event'**
+  String get hostOrganizerTrialNotStarted;
+
+  /// Payments plan tile: the free trial is over. Neutral status, no price or purchase prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ended on {date}'**
+  String hostOrganizerTrialEnded({required String date});
+
   /// Payments section title over the bills.
   ///
   /// In en, this message translates to:

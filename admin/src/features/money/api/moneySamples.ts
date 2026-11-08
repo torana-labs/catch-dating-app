@@ -113,7 +113,11 @@ function listBills(scope: {month: string} | {organizerId: string},
     bills: [...monthBills].sort((a, b) =>
     b.updatedAtMillis - a.updatedAtMillis), totals, counts,
   nextInvoiceNumber: `2026-27/${String(lastInvoice + 1).padStart(3, "0")}`,
-  gstRegistered: false};
+  gstRegistered: false,
+  // One organizer's page shows its trial: it ended on 1 September.
+  trial: "organizerId" in scope ? {state: "ended", anchor: "firstEvent",
+    days: 30, startsAtMillis: Date.UTC(2026, 6, 2, 18, 30),
+    endsAtMillis: Date.UTC(2026, 7, 1, 18, 30), daysLeft: null} : null};
 }
 
 /**

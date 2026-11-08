@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_body.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_state.dart';
 import 'package:flutter/material.dart';
@@ -150,5 +151,92 @@ void main() {
 
     expect(find.text('Only the owner sees money'), findsOneWidget);
     expect(find.text('Guests pay you directly'), findsNothing);
+  });
+
+  group('trial status', () {
+    OrganizerPaymentsState withTrial(HostTrialStatus? trial) =>
+        OrganizerPaymentsState(
+          isOwner: true,
+          currencyCode: 'INR',
+          now: organizerNow,
+          setup: razorpaySetup(),
+          bills: const [],
+          trial: trial,
+        );
+
+    testWidgets('a running trial shows days left and its end, no price', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        withTrial(
+          HostTrialStatus(
+            state: HostTrialState.active,
+            startsAt: DateTime(2026, 10, 20),
+            endsAt: DateTime(2026, 11, 19),
+            daysLeft: 12,
+          ),
+        ),
+      );
+      expect(find.text('Free trial · 12 days left'), findsOneWidget);
+      expect(
+        find.text('Your free trial ends on Nov 19, 2026.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('an ended trial is neutral status with its date', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        withTrial(
+          HostTrialStatus(
+            state: HostTrialState.ended,
+            startsAt: DateTime(2026, 9),
+            endsAt: DateTime(2026, 10),
+            daysLeft: null,
+          ),
+        ),
+      );
+      expect(find.text('Trial ended on Oct 1, 2026'), findsOneWidget);
+    });
+
+    testWidgets('before the first event the trial waits for it', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        withTrial(
+          const HostTrialStatus(
+            state: HostTrialState.notStarted,
+            startsAt: null,
+            endsAt: null,
+            daysLeft: null,
+          ),
+        ),
+      );
+      expect(
+        find.text('Free trial starts with your first event'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('unknown terms or no status show nothing', (tester) async {
+      await _pump(
+        tester,
+        withTrial(
+          const HostTrialStatus(
+            state: HostTrialState.unconfigured,
+            startsAt: null,
+            endsAt: null,
+            daysLeft: null,
+          ),
+        ),
+      );
+      expect(find.byKey(const ValueKey('payments-trial-status')), findsNothing);
+      await _pump(tester, withTrial(null));
+      expect(find.byKey(const ValueKey('payments-trial-status')), findsNothing);
+    });
   });
 }

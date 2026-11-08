@@ -69,6 +69,9 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
               ref.watch(hostOrganizerBillsProvider(organizer.id)),
             )
           : null;
+      final trial = isOwner
+          ? ref.watch(hostOrganizerBillingStatusProvider(organizer.id)).value
+          : null;
       final setupState = connection?.value;
       final state = OrganizerPaymentsState(
         isOwner: isOwner,
@@ -79,6 +82,7 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
         connectionError: setupState?.error ?? connection?.error,
         bills: bills?.value,
         billsError: bills?.error,
+        trial: trial?.trial,
       );
       body = OrganizerPaymentsBody(
         state: state,
@@ -123,6 +127,7 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
         ref.invalidate(connection);
       case OrganizerPaymentsAction.retryBills:
         ref.invalidate(hostOrganizerBillsProvider(organizer.id));
+        ref.invalidate(hostOrganizerBillingStatusProvider(organizer.id));
       case OrganizerPaymentsAction.disconnect:
         final ready = state.readyConnection;
         if (ready == null) return;

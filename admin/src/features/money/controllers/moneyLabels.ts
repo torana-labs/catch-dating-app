@@ -1,4 +1,4 @@
-import type {Bill, MoneyIssue} from "../api/moneyRepository";
+import type {Bill, BillsMonth, MoneyIssue} from "../api/moneyRepository";
 import {isOverdue} from "./useBillsController";
 
 export {moneyNowMillis} from "../api/moneyRepository";
@@ -169,4 +169,20 @@ export function billJourney(bill: Bill, nowMillis: number): MoneyStep[] {
     });
   }
   return steps;
+}
+
+/** An organizer's free trial as one line of status for staff. */
+export function trialLabel(trial: BillsMonth["trial"]): string | null {
+  if (!trial) return null;
+  switch (trial.state) {
+  case "notStarted": return "Not started: waits for the first event";
+  case "scheduled": return trial.startsAtMillis === null ? "Starts with the first event" :
+    `Starts ${shortDate(trial.startsAtMillis)} with the first event`;
+  case "active": return `${trial.daysLeft === 1 ? "1 day" : `${trial.daysLeft} days`} left` +
+    (trial.endsAtMillis === null ? "" : `, ends ${shortDate(trial.endsAtMillis)}`);
+  case "ended": return trial.endsAtMillis === null ? "Ended" : `Ended ${shortDate(trial.endsAtMillis)}`;
+  case "none": return "No trial in these terms";
+  case "unconfigured": return "Unknown until platform terms are saved";
+  default: return null;
+  }
 }

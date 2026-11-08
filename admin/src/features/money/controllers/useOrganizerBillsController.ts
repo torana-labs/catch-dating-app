@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {loadOrganizerBills, type Bill} from "../api/moneyRepository";
+import {loadOrganizerBills, type Bill, type BillsMonth} from "../api/moneyRepository";
 
 export interface OrganizerMoneySummary {
   /** Ticket sales after refunds, every bill together. */
@@ -26,6 +26,8 @@ export interface OrganizerBillsController {
   bills: Bill[];
   summary: OrganizerMoneySummary;
   latest: OrganizerMonthBreakdown | null;
+  /** The organizer's free trial, computed by the server. */
+  trial: BillsMonth["trial"];
   loadState: "loading" | "error" | "ready";
   loadError: string | null;
 }
@@ -82,6 +84,7 @@ export function useOrganizerBillsController(organizerId: string): OrganizerBills
     bills,
     summary: organizerMoneySummary(bills),
     latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null,
+    trial: query.data?.trial ?? null,
     loadState: query.isError ? "error" : query.data ? "ready" : "loading",
     loadError: query.error instanceof Error ? query.error.message : null,
   };

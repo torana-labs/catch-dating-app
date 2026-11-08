@@ -19239,6 +19239,36 @@ class AppLocalizationsEn extends AppLocalizations {
       'What Catch charges, and the tools-only plan, are on the Catch website.';
 
   @override
+  String hostOrganizerTrialActive({required int days}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days left',
+      one: '1 day left',
+    );
+    return 'Free trial · $_temp0';
+  }
+
+  @override
+  String hostOrganizerTrialActiveBody({required String date}) {
+    return 'Your free trial ends on $date.';
+  }
+
+  @override
+  String hostOrganizerTrialScheduled({required String date}) {
+    return 'Free trial starts $date';
+  }
+
+  @override
+  String get hostOrganizerTrialNotStarted =>
+      'Free trial starts with your first event';
+
+  @override
+  String hostOrganizerTrialEnded({required String date}) {
+    return 'Trial ended on $date';
+  }
+
+  @override
   String get hostOrganizerBillsTitle => 'Bills';
 
   @override
