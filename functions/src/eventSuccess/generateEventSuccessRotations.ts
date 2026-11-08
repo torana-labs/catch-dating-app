@@ -1,3 +1,9 @@
+import {loadOrganizerMeetingHistory} from "./organizerMeetingHistory";
+import {
+  DOUBLES_BENCH_NOTE,
+  doublesRoundsFromPlannedRounds,
+  isDoublesCourt,
+} from "./doublesSlots";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -37,6 +43,7 @@ import {
   AssignmentRotationPolicy,
   OptimizedPair,
   runAssignmentEngine,
+  type AssignmentHistoryInput,
 } from "./assignmentOptimizer";
 import {
   AssignmentConstraintConfig,
@@ -165,6 +172,10 @@ interface RotationPair {
   resourceUnitId?: string;
   movementCost?: number;
   meetingIndex?: number;
+  /** Doubles: the partnership across the net. */
+  opponents?: [RotationParticipant, RotationParticipant];
+  /** Doubles: which side of the court this partnership is on. */
+  side?: 0 | 1;
 }
 
 interface RotationRound {
@@ -188,6 +199,10 @@ interface RotationFairnessSummary {
   sitOutRoundCount: number;
   uniquePeerCount: number;
   repeatPeerCount: number;
+  /** Minutes on court (or in a pair), for the court-time tally. */
+  assignedMinutes: number;
+  /** Minutes sitting out. */
+  benchMinutes: number;
 }
 
 interface GeneratedRotationSlot {
@@ -197,6 +212,12 @@ interface GeneratedRotationSlot {
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
   peerUid: string;
+  /** Doubles: the partner (same as peerUid, for older clients). */
+  partnerUid?: string;
+  /** Doubles: the two players across the net. */
+  opponentUids?: string[];
+  /** Doubles: the court, zero-based. */
+  courtIndex?: number;
   unitKind?: EventSuccessUnitKind;
   unitIndex?: number;
   peerCount?: number;
@@ -211,6 +232,8 @@ interface GeneratedSitOutSlot {
   label: string;
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
+  /** Doubles: where the bench goes while sitting out. */
+  benchNote?: typeof DOUBLES_BENCH_NOTE;
   whySummary: string;
   whyCodes: AssignmentWhyCode[];
 }
@@ -349,7 +372,14 @@ export async function prepareEventSuccessRotationDraft(
     event.organizerId,
     plan
   );
+  const history = await loadOrganizerMeetingHistory(
+    db,
+    event.organizerId,
+    participants.map((participant) => participant.uid),
+    deps.nowMillis?.() ?? Date.now()
+  );
   const rounds = buildRotationRounds({
+    history,
     participants,
     blockedPairs,
     eventStartMillis: event.startTime.toMillis(),
@@ -918,6 +948,8 @@ function buildRotationRounds(params: {
   softFeatures?: {eventId: string; organizerId: string;
     rules: AssignmentFeatureRule[];
     snapshots: EventAssignmentFeatureSnapshot[]};
+  /** Prior meetings (e.g. this organiser's recent events) to avoid. */
+  history?: AssignmentHistoryInput;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const requestedRounds = rotationRoundCountForDuration({
@@ -925,6 +957,9 @@ function buildRotationRounds(params: {
     eventEndMillis: params.eventEndMillis,
     rotationIntervalMinutes: params.rotationIntervalMinutes,
   });
+  if (isDoublesCourt(params.topology.resourceCapacity?.seatsPerUnit)) {
+    return buildDoublesRotationRounds(params, requestedRounds);
+  }
   if (params.topology.topology === "sequence") {
     const constraints = normalizeAssignmentConstraints(
       params.constraints,
@@ -1002,6 +1037,9 @@ function buildRotationRounds(params: {
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
     softFeatures: params.softFeatures,
+    // Only when someone here met before at this organiser's events; the
+    // engine routes a request with history to the shape planner.
+    ...(params.history === undefined ? {} : {history: params.history}),
   }).rotationRounds.map((round) => ({
     roundIndex: round.roundIndex,
     pairs: round.pairs.map(toRotationPair),
@@ -1125,6 +1163,51 @@ function toRotationPair(
 }
 
 /**
+ * Plans doubles courts with the assignment engine: two partnerships per
+ * court, a fair bench, and no repeated partner until every pairing is used.
+ * Each partnership becomes one rotation pair that names its opponents.
+ * @param {object} params Rotation inputs (see buildRotationRounds).
+ * @param {number} requestedRounds Rounds that fit the event.
+ * @return {RotationRound[]} Partnerships by round.
+ */
+function buildDoublesRotationRounds(
+  params: Parameters<typeof buildRotationRounds>[0],
+  requestedRounds: number
+): RotationRound[] {
+  if (requestedRounds <= 0) return [];
+  const result = runAssignmentEngine({
+    participants: params.participants,
+    blockedPairs: params.blockedPairs,
+    topology: {...params.topology, topology: "set"},
+    assignmentAlgorithm: params.assignmentAlgorithm,
+    compatibilityPolicy: params.compatibilityPolicy,
+    matchingObjective: params.matchingObjective,
+    questionnaireMode: params.questionnaireMode,
+    rotationRoundCount: requestedRounds,
+    allowOrientationFallback: true,
+    constraints: params.constraints,
+    rotationPolicy: params.rotationPolicy,
+    softFeatures: params.softFeatures,
+    history: params.history,
+    seed: params.softFeatures?.eventId,
+  });
+  return doublesRoundsFromPlannedRounds(result.plannedRounds)
+    .filter((round) => round.partnerships.length > 0)
+    .map((round) => ({
+      roundIndex: round.roundIndex,
+      pairs: round.partnerships.map((partnership) => ({
+        a: partnership.a,
+        b: partnership.b,
+        score: 0,
+        compatibility: "social" as const,
+        unitIndex: partnership.unitIndex,
+        opponents: partnership.opponents,
+        side: partnership.side,
+      })),
+    }));
+}
+
+/**
  * Builds assignment documents from rotation rounds.
  * @param {object} params Assignment inputs.
  * @param {string} params.eventId Event id.
@@ -1178,15 +1261,16 @@ function buildAssignments(params: {
       const repeatedForB =
         seenPeersByUid.get(pair.b.uid)?.has(pair.a.uid) === true;
       const slotA: GeneratedRotationSlot = {
-        slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
+        slotId: rotationSlotId(round.roundIndex, unitIndex, pair.side),
         roundIndex: round.roundIndex,
         label,
         startsAt,
         endsAt,
         peerUid: pair.b.uid,
+        ...doublesSlotFields(pair, pair.b.uid),
         unitKind: "pairs" as const,
         unitIndex,
-        peerCount: 1,
+        peerCount: pair.opponents === undefined ? 1 : 3,
         ...(pair.resourceUnitId === undefined ? {} : {
           resourceUnitId: pair.resourceUnitId,
         }),
@@ -1204,15 +1288,16 @@ function buildAssignments(params: {
         }),
       };
       const slotB: GeneratedRotationSlot = {
-        slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
+        slotId: rotationSlotId(round.roundIndex, unitIndex, pair.side),
         roundIndex: round.roundIndex,
         label,
         startsAt,
         endsAt,
         peerUid: pair.a.uid,
+        ...doublesSlotFields(pair, pair.a.uid),
         unitKind: "pairs" as const,
         unitIndex,
-        peerCount: 1,
+        peerCount: pair.opponents === undefined ? 1 : 3,
         ...(pair.resourceUnitId === undefined ? {} : {
           resourceUnitId: pair.resourceUnitId,
         }),
@@ -1236,6 +1321,7 @@ function buildAssignments(params: {
       usedUids.add(pair.a.uid);
       usedUids.add(pair.b.uid);
     }
+    const doubles = round.pairs.some((pair) => pair.opponents !== undefined);
     for (const participant of params.participants) {
       if (usedUids.has(participant.uid)) continue;
       sitOutSlotsByUid.get(participant.uid)?.push({
@@ -1243,7 +1329,11 @@ function buildAssignments(params: {
         label: `Round ${round.roundIndex + 1}`,
         startsAt,
         endsAt,
-        whySummary: "Planned break to keep rotation counts fair.",
+        ...(doubles ? {benchNote: DOUBLES_BENCH_NOTE} : {}),
+        whySummary: doubles ?
+          "Sitting out this round to share court time. Mix in the " +
+            "common area." :
+          "Planned break to keep rotation counts fair.",
         whyCodes: ["sit_out"],
       });
     }
@@ -1253,8 +1343,15 @@ function buildAssignments(params: {
   for (const [uid, slots] of slotsByUid.entries()) {
     const sitOutSlots = sitOutSlotsByUid.get(uid) ?? [];
     if (slots.length === 0 && sitOutSlots.length === 0) continue;
-    const peerUids = [...new Set(slots.map((slot) => slot.peerUid))].sort();
-    const fairness = rotationFairnessSummary(slots, sitOutSlots);
+    const peerUids = [...new Set(slots.flatMap((slot) => [
+      slot.peerUid,
+      ...(slot.opponentUids ?? []),
+    ]))].sort();
+    const fairness = rotationFairnessSummary(
+      slots,
+      sitOutSlots,
+      params.rotationIntervalMinutes
+    );
     const breakLabel = sitOutSlots.length === 0 ?
       "" :
       ` · ${sitOutSlots.length} ` +
@@ -1376,7 +1473,8 @@ function rotationWhyCodes(params: {
  */
 function rotationFairnessSummary(
   slots: GeneratedRotationSlot[],
-  sitOutSlots: GeneratedSitOutSlot[]
+  sitOutSlots: GeneratedSitOutSlot[],
+  rotationIntervalMinutes: number
 ): RotationFairnessSummary {
   const peerCounts = new Map<string, number>();
   for (const slot of slots) {
@@ -1390,6 +1488,44 @@ function rotationFairnessSummary(
       (sum, count) => sum + Math.max(0, count - 1),
       0
     ),
+    assignedMinutes: slots.length * rotationIntervalMinutes,
+    benchMinutes: sitOutSlots.length * rotationIntervalMinutes,
+  };
+}
+
+/**
+ * The stable slot id: one per pair, or one per side of a doubles court.
+ * @param {number} roundIndex Round.
+ * @param {number} unitIndex Pair or court index.
+ * @param {0 | 1 | undefined} side Doubles side, when doubles.
+ * @return {string} Slot id.
+ */
+function rotationSlotId(
+  roundIndex: number,
+  unitIndex: number,
+  side: 0 | 1 | undefined
+): string {
+  return side === undefined ?
+    `round-${roundIndex}-pair-${unitIndex}` :
+    `round-${roundIndex}-court-${unitIndex}-side-${side}`;
+}
+
+/**
+ * Doubles fields for one player's slot: partner, opponents and court.
+ * @param {RotationPair} pair The player's partnership.
+ * @param {string} partnerUid The player's partner.
+ * @return {object} Fields to spread into the slot; empty for singles.
+ */
+function doublesSlotFields(
+  pair: RotationPair,
+  partnerUid: string
+): Pick<GeneratedRotationSlot, "partnerUid" | "opponentUids" |
+  "courtIndex"> {
+  if (pair.opponents === undefined) return {};
+  return {
+    partnerUid,
+    opponentUids: pair.opponents.map((opponent) => opponent.uid),
+    courtIndex: pair.unitIndex,
   };
 }
 

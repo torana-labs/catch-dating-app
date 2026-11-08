@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_meeting_history.schema.json",
+  "title": "OrganizerMeetingHistoryDocument",
+  "description": "Server-only record of who a guest met at one organiser's events, stored at organizerMeetingHistory/{organizerId_uid}. The assignment engine reads the last 90 days so a recurring event avoids recent pairs.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMeetingHistory",
+  "x-firestore-path": "organizerMeetingHistory/{historyId}",
+  "x-document-id-field": "historyId",
+  "x-owner": "event-success live control callable",
+  "required": [
+    "organizerId",
+    "uid",
+    "peers",
+    "expiresAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "peers": {
+      "type": "object",
+      "maxProperties": 5000,
+      "propertyNames": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "meetings",
+          "lastMetAtMs"
+        ],
+        "properties": {
+          "meetings": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "partnerships": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "lastMetAtMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

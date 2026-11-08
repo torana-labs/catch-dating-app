@@ -1,6 +1,6 @@
 ---
 doc_id: assignment_engine
-version: 1.0.0
+version: 1.1.0
 updated: 2026-11-08
 owner: event_success
 status: active
@@ -236,27 +236,33 @@ Measured in a cloud development container:
 Quiz and dinner use the group assignment tool (`micro_pods`). Guided rotations
 stay two-person pairs.
 
+## Doubles and history
+
+- **Doubles.** A four-seat court is doubles. `generateEventSuccessRotations`
+  plans it with the shape planner and persists each partnership as a
+  rotation slot:
+  - `peerUid` and `partnerUid` hold the partner;
+  - `opponentUids` holds the two players across the net;
+  - `courtIndex` holds the court.
+
+  Sit-out slots in a doubles round carry `benchNote: commonArea`, so the
+  companion says to mix in the common area. `rotationFairness` carries
+  `assignedMinutes` and `benchMinutes` for the host's court-time tally.
+  Seat counts other than two or four are refused.
+- **Meeting history across occurrences.** When a live guide completes, its
+  published rotation rounds are recorded per organiser and guest in
+  `organizerMeetingHistory` (server only, TTL on `expiresAt`). Rotation
+  generation reads the last 90 days for tonight's roster and passes them as
+  `history`. A request with history routes to the shape planner. The
+  `sequence` court scheduler (singles on numbered courts) does not read
+  history yet.
+
 ## Not yet built
 
-- **Doubles persistence and display.** The engine schedules partners and
-  opponents on courts. The rotation callable still persists one-to-one pair
-  slots, and the companion shows one peer, so live doubles needs the slot
-  schema and companion work first. Until then, `generateEventSuccessRotations`
-  refuses a court with more than two seats, rather than silently producing no
-  rounds.
 - **Legacy cores.** Pace pods, social pods and pair rotations still run on
-  the legacy scorer. Moving them onto the planner needs parity tests against
-  the current romantic and fairness pins.
-- **Cover for activity attributes.** `coverActivityAttributes` is stored and
-  honoured, but no host editor writes it yet. Form-question cover is in both
-  host rule sheets.
-
-## Open owner decisions
-
-1. **Who may opt into gender and age band.** The editor offers them to pair
-   formats, and keeps them visible once chosen.
-2. **The doubles companion moment.** It must show the partner, the opponents,
-   the court, and "mix in the common area" while on the bench.
-3. **Persisting history across occurrences.** Should history be kept per
-   organiser so a weekly event avoids last week's pairs? The engine accepts
-   history; where it is stored is not yet decided.
+  the legacy scorer when there is no history. Moving them onto the planner
+  needs parity tests against the current romantic and fairness pins.
+- **History for group formats.** Teams, tables and pods do not record or
+  read organiser history yet.
+- **Seat order persistence.** The planner computes `seatOrder` for tables.
+  Group assignments do not persist it yet.

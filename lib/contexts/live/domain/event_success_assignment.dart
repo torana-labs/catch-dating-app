@@ -189,6 +189,8 @@ final class EventSuccessRotationFairness {
     required this.sitOutRoundCount,
     required this.uniquePeerCount,
     required this.repeatPeerCount,
+    this.assignedMinutes,
+    this.benchMinutes,
   });
 
   factory EventSuccessRotationFairness.fromJson(Map<String, dynamic> json) {
@@ -197,6 +199,8 @@ final class EventSuccessRotationFairness {
       sitOutRoundCount: json['sitOutRoundCount'] as int? ?? 0,
       uniquePeerCount: json['uniquePeerCount'] as int? ?? 0,
       repeatPeerCount: json['repeatPeerCount'] as int? ?? 0,
+      assignedMinutes: json['assignedMinutes'] as int?,
+      benchMinutes: json['benchMinutes'] as int?,
     );
   }
 
@@ -205,11 +209,20 @@ final class EventSuccessRotationFairness {
   final int uniquePeerCount;
   final int repeatPeerCount;
 
+  /// Minutes in a pair or on court. Null on rotations made before the
+  /// server recorded minutes.
+  final int? assignedMinutes;
+
+  /// Minutes sitting out.
+  final int? benchMinutes;
+
   Map<String, Object?> toJson() => {
     'assignedRoundCount': assignedRoundCount,
     'sitOutRoundCount': sitOutRoundCount,
     'uniquePeerCount': uniquePeerCount,
     'repeatPeerCount': repeatPeerCount,
+    'assignedMinutes': ?assignedMinutes,
+    'benchMinutes': ?benchMinutes,
   };
 }
 
@@ -227,6 +240,9 @@ final class EventSuccessRotationSlot {
     this.peerCount,
     this.whySummary,
     this.whyCodes = const [],
+    this.partnerUid,
+    this.opponentUids = const [],
+    this.courtIndex,
   });
 
   factory EventSuccessRotationSlot.fromJson(Map<String, dynamic> json) {
@@ -239,6 +255,11 @@ final class EventSuccessRotationSlot {
       startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
       endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
       peerUid: json['peerUid'] as String,
+      partnerUid: json['partnerUid'] as String?,
+      opponentUids: (json['opponentUids'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
+      courtIndex: json['courtIndex'] as int?,
       unitKind: json['unitKind'] as String?,
       unitIndex: json['unitIndex'] as int?,
       peerCount: json['peerCount'] as int?,
@@ -256,6 +277,19 @@ final class EventSuccessRotationSlot {
   final DateTime startsAt;
   final DateTime endsAt;
   final String peerUid;
+
+  /// Doubles: the partner (the same person as [peerUid]).
+  final String? partnerUid;
+
+  /// Doubles: the two players across the net. Empty for singles and pairs.
+  final List<String> opponentUids;
+
+  /// Doubles: the zero-based court.
+  final int? courtIndex;
+
+  /// Whether this slot is a doubles game.
+  bool get isDoubles => opponentUids.isNotEmpty;
+
   final String? unitKind;
   final int? unitIndex;
   final int? peerCount;
@@ -270,6 +304,9 @@ final class EventSuccessRotationSlot {
     'startsAt': firestoreTimestampFromDateTime(startsAt),
     'endsAt': firestoreTimestampFromDateTime(endsAt),
     'peerUid': peerUid,
+    'partnerUid': ?partnerUid,
+    if (opponentUids.isNotEmpty) 'opponentUids': opponentUids,
+    'courtIndex': ?courtIndex,
     'unitKind': unitKind,
     'unitIndex': unitIndex,
     'peerCount': peerCount,
@@ -359,6 +396,7 @@ final class EventSuccessSitOutSlot {
     required this.endsAt,
     required this.whySummary,
     required this.whyCodes,
+    this.benchNote,
   });
 
   factory EventSuccessSitOutSlot.fromJson(Map<String, dynamic> json) {
@@ -375,6 +413,7 @@ final class EventSuccessSitOutSlot {
       whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
+      benchNote: EventSuccessBenchNote.fromName(json['benchNote']),
     );
   }
 
@@ -385,6 +424,9 @@ final class EventSuccessSitOutSlot {
   final String whySummary;
   final List<String> whyCodes;
 
+  /// Doubles: what to do while sitting out.
+  final EventSuccessBenchNote? benchNote;
+
   Map<String, Object?> toJson() => {
     'roundIndex': roundIndex,
     'label': label,
@@ -392,7 +434,21 @@ final class EventSuccessSitOutSlot {
     'endsAt': firestoreTimestampFromDateTime(endsAt),
     'whySummary': whySummary,
     'whyCodes': whyCodes,
+    'benchNote': ?benchNote?.name,
   };
+}
+
+/// What a doubles player does while sitting out a round.
+enum EventSuccessBenchNote {
+  /// Mix in the common area.
+  commonArea;
+
+  static EventSuccessBenchNote? fromName(Object? value) {
+    for (final note in values) {
+      if (note.name == value) return note;
+    }
+    return null;
+  }
 }
 
 final class EventSuccessRotationOverrideRound {

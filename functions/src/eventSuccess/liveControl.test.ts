@@ -4,6 +4,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
+  controlEventSuccessLiveHandler,
   LivePlanState,
   publishedAssignmentThroughRound,
   publishEventSuccessRotationRoundHandler,
@@ -311,3 +312,61 @@ test("a new step starts its clock and ends any pause", () => {
     9_000), (error: unknown) => error instanceof HttpsError &&
     error.code === "failed-precondition");
 });
+
+test("completing a live guide records tonight's meetings for the organizer",
+  async () => {
+    const stamp = {_seconds: 1, _nanoseconds: 0};
+    const store = new AudienceTestStore({
+      "events/event-1": {organizerId: "org-1"},
+      "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
+        hostProfiles: []},
+      "eventSuccessPlans/event-1": {eventId: "event-1", organizerId: "org-1",
+        liveControlRevision: 4, publishedRotationRoundIndex: 2,
+        status: "live", activeStepIndex: 0},
+    });
+    const recorded: Array<Record<string, unknown>> = [];
+    const deps = {firestore: () => store.asFirestore(),
+      serverTimestamp: () => stamp, nowMillis: () => 5_000,
+      checkRateLimit: async () => {},
+      recordMeetings: async (_db: unknown, params: Record<string, unknown>) => {
+        recorded.push(params);
+        return 0;
+      }};
+
+    const result = await controlEventSuccessLiveHandler({
+      auth: {uid: "host-1"},
+      data: {eventId: "event-1", expectedRevision: 4, action: "complete"},
+    } as never, deps as never);
+
+    assert.equal(result.replayed, false);
+    assert.deepEqual(recorded, [{eventId: "event-1", organizerId: "org-1",
+      publishedRoundIndex: 2, nowMillis: 5_000}]);
+    assert.equal(store.docs["eventSuccessPlans/event-1"].status, "complete");
+  });
+
+test("completion still succeeds when meeting history cannot be written",
+  async () => {
+    const stamp = {_seconds: 1, _nanoseconds: 0};
+    const store = new AudienceTestStore({
+      "events/event-1": {organizerId: "org-1"},
+      "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
+        hostProfiles: []},
+      "eventSuccessPlans/event-1": {eventId: "event-1", organizerId: "org-1",
+        liveControlRevision: 4, publishedRotationRoundIndex: 0,
+        status: "live", activeStepIndex: 0},
+    });
+    const deps = {firestore: () => store.asFirestore(),
+      serverTimestamp: () => stamp, nowMillis: () => 5_000,
+      checkRateLimit: async () => {},
+      recordMeetings: async () => {
+        throw new Error("history unavailable");
+      }};
+
+    const result = await controlEventSuccessLiveHandler({
+      auth: {uid: "host-1"},
+      data: {eventId: "event-1", expectedRevision: 4, action: "complete"},
+    } as never, deps as never);
+
+    assert.equal(result.replayed, false);
+    assert.equal(store.docs["eventSuccessPlans/event-1"].status, "complete");
+  });
