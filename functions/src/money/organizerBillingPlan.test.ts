@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
-import {commercialTermsRecords} from "../commercialTerms/testFixture";
+import {
+  commercialTermsRecords,
+  organizerTermsDocument,
+} from "../commercialTerms/testFixture";
+import {organizerCommercialTermsId} from "../commercialTerms/terms";
 import type {
   OrganizerBillDocument,
   OrganizerBillingPlanDocument,
@@ -16,7 +20,10 @@ import {
   type PlanDeps,
 } from "./organizerBillingPlan";
 import {getOrganizerBillingStatusHandler} from "./organizerBillingStatus";
-import {generateCycleBills} from "./organizerCycleBills";
+import {
+  generateCycleBills,
+  regenerateToSendCycleBills,
+} from "./organizerCycleBills";
 
 const ist = (5 * 60 + 30) * 60 * 1000;
 const firstEvent = Date.UTC(2026, 10, 10, 12) - ist;
@@ -228,3 +235,91 @@ test("the Host app's status shows the plan with no price", async () => {
   assert.ok(!JSON.stringify(status).includes("Minor"));
   assert.ok(db.getDoc("organizerBillingPlans/org"));
 });
+
+test("a purchase paid after its first cycle began buys the next cycle " +
+  "instead, and is never lost", async () => {
+  const {db, links, deps, call} = setup();
+  await call("buyToolsOnly", 0);
+  // The first cycle closes while the purchase is unpaid: no tools-only.
+  await generateCycleBills({db: deps.db, now: () => trialEnd + cycle + 1},
+    null);
+  links.pay("plink_tools1");
+  const late = {...deps, now: () => trialEnd + cycle + 2 * 3_600_000};
+  assert.equal(await markToolsOnlyPaidFromLink(late, "plink_tools1",
+    "catch-test"), true);
+  assert.equal(plan(db).startsAtMillis, trialEnd + 2 * cycle);
+  await generateCycleBills({db: deps.db, now: () => trialEnd + 3 * cycle + 1},
+    null);
+  const [prepaid] = bills(db);
+  assert.equal(prepaid.periodStartMillis, trialEnd + 2 * cycle);
+  assert.equal(prepaid.plan?.kind, "toolsOnly");
+  assert.equal(prepaid.status, "paid");
+  assert.equal(plan(db).prepaidBillId, prepaid.billId);
+});
+
+test("the prepaid cycle is paid at the fee it was bought at, even after the " +
+  "fee rises", async () => {
+  const {db, links, deps, call} = setup();
+  await call("buyToolsOnly", 0);
+  links.pay("plink_tools1");
+  await markToolsOnlyPaidFromLink(deps, "plink_tools1", "catch-test");
+  db.setDoc(`commercialTerms/${organizerCommercialTermsId("org")}`,
+    organizerTermsDocument("org", {toolsOnly: {feeMinor: 600_000}}) as
+      unknown as FakeData);
+  await generateCycleBills({db: deps.db, now: () => trialEnd + 2 * cycle + 1},
+    null);
+  const [first, second] = bills(db);
+  assert.equal(first.totalMinor, 500_000);
+  assert.equal(first.status, "paid");
+  assert.equal(second.totalMinor, 600_000);
+  assert.equal(second.status, "toSend");
+});
+
+test("a new purchase waits until the last tools-only window is billed",
+  async () => {
+    const {links, deps, call, setNow} = setup();
+    await call("buyToolsOnly", 0);
+    links.pay("plink_tools1");
+    await markToolsOnlyPaidFromLink(deps, "plink_tools1", "catch-test");
+    await call("cancelToolsOnly", 2);
+    // The plan ended at the first cycle's close, which is not yet billed.
+    setNow(trialEnd + cycle + 60_000);
+    await assert.rejects(call("buyToolsOnly", 3),
+      {code: "failed-precondition"});
+    await generateCycleBills({db: deps.db, now: () => trialEnd + cycle + 1},
+      null);
+    const again = await call("buyToolsOnly", 4);
+    assert.equal(again.plan.status, "pendingPayment");
+    assert.equal(again.plan.startsAtMillis, trialEnd + 2 * cycle);
+  });
+
+test("recomputing an unsent bill keeps the plan it was made on", async () => {
+  const {db, links, deps, call} = setup();
+  await call("buyToolsOnly", 0);
+  links.pay("plink_tools1");
+  await markToolsOnlyPaidFromLink(deps, "plink_tools1", "catch-test");
+  await generateCycleBills({db: deps.db, now: () => trialEnd + 2 * cycle + 1},
+    null);
+  // The plan document changes (as on a later purchase); the bill does not.
+  db.setDoc("organizerBillingPlans/org", {...plan(db), plan: "ticketing",
+    status: "ended"} as unknown as FakeData);
+  await regenerateToSendCycleBills({db: deps.db,
+    now: () => trialEnd + 2 * cycle + 5}, "staff");
+  const [, second] = bills(db);
+  assert.equal(second.plan?.kind, "toolsOnly");
+  assert.equal(second.totalMinor, 500_000);
+  assert.equal(second.commission.amountMinor, 0);
+});
+
+test("paying a link the plan no longer tracks is flagged, not applied",
+  async () => {
+    const {db, links, deps, call} = setup();
+    await call("buyToolsOnly", 0);
+    await call("cancelToolsOnly", 1);
+    await call("buyToolsOnly", 2);
+    links.pay("plink_tools1");
+    assert.equal(await markToolsOnlyPaidFromLink(deps, "plink_tools1",
+      "catch-test"), false);
+    assert.equal(plan(db).status, "pendingPayment");
+    assert.equal(plan(db).purchase?.linkId, "plink_tools2");
+  });

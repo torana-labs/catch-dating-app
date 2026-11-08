@@ -14,6 +14,20 @@ export type BillingPlan =
   {kind: "toolsOnly"; feeMinor: number;
     prepaid: {paidMinor: number; paidAtMillis: number} | null};
 
+/**
+ * The plan a bill was made on, for recomputing it: the plan never changes
+ * after a cycle is billed, whatever the organizer chose since.
+ * @param {object} bill The stored bill's plan.
+ * @return {BillingPlan} Its plan.
+ */
+export function planOfBill(bill: {plan?: {kind: "ticketing" | "toolsOnly";
+  toolsOnlyFeeMinor: number | null}}): BillingPlan {
+  return bill.plan?.kind === "toolsOnly" ?
+    {kind: "toolsOnly", feeMinor: bill.plan.toolsOnlyFeeMinor ?? 0,
+      prepaid: null} :
+    {kind: "ticketing"};
+}
+
 const plansCollection = "organizerBillingPlans";
 
 /**
@@ -33,14 +47,16 @@ export function planForCycle(plan: OrganizerBillingPlanDocument | undefined,
       (plan.endsAtMillis !== null && cycle.startMillis >= plan.endsAtMillis)) {
     return {kind: "ticketing"};
   }
+  // The purchase prepays the first tools-only cycle billed, at the fee it
+  // was bought at, however the terms changed since.
   const purchase = plan.purchase;
   const prepaid = plan.prepaidBillId === null && purchase &&
-    purchase.paidAtMillis !== null && purchase.paidMinor !== null &&
-    (plan.startsAtMillis === null ||
-      cycle.startMillis === plan.startsAtMillis) ?
+    purchase.paidAtMillis !== null && purchase.paidMinor !== null ?
     {paidMinor: purchase.paidMinor, paidAtMillis: purchase.paidAtMillis} :
     null;
-  return {kind: "toolsOnly", feeMinor: terms.toolsOnly.feeMinor, prepaid};
+  const feeMinor = prepaid && purchase ? purchase.feeMinor :
+    terms.toolsOnly.feeMinor;
+  return {kind: "toolsOnly", feeMinor, prepaid};
 }
 
 /**

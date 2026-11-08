@@ -262,6 +262,19 @@ async function buyToolsOnly(deps: PlanDeps, organizerId: string,
   if (plan?.status === "pendingPayment") return plan;
   const db = deps.db();
   const now = deps.now();
+  // One plan document holds one tools-only window: a new one waits until
+  // every cycle of the previous window has been billed as tools-only.
+  if (plan?.plan === "toolsOnly" && plan.status === "active" &&
+      plan.endsAtMillis !== null) {
+    const pointer = (await db.collection(billingCyclesCollection)
+      .doc(organizerId).get()).data() as OrganizerBillingCycleDocument |
+      undefined;
+    if (!pointer || pointer.nextCycleStartMillis < plan.endsAtMillis) {
+      throw new HttpsError("failed-precondition",
+        "Your last tools-only cycle is still being billed. " +
+        "Try again tomorrow.");
+    }
+  }
   const terms = await readTerms(db, organizerId);
   const startsAtMillis = await nextCycleStartMillis({db, organizerId, terms,
     nowMillis: now});
@@ -372,22 +385,40 @@ export async function markToolsOnlyPaidFromLink(
   if (link.project !== projectId || !link.planOrganizerId ||
       link.status !== "paid") return false;
   const db = deps.db();
-  const ref = db.collection(organizerBillingPlansCollection)
-    .doc(link.planOrganizerId);
-  return db.runTransaction(async (tx) => {
+  const organizerId = link.planOrganizerId;
+  const ref = db.collection(organizerBillingPlansCollection).doc(organizerId);
+  // A payment that arrives after the planned first cycle began starts
+  // tools-only with the next cycle instead, so the purchase always buys a
+  // whole tools-only cycle and is never lost.
+  const terms = effectiveCommercialTerms(await readCommercialTerms({db,
+    organizerId}));
+  const nextStart = terms ? await nextCycleStartMillis({db, organizerId,
+    terms, nowMillis: deps.now()}) : null;
+  const result = await db.runTransaction(async (tx) => {
     const plan = (await tx.get(ref)).data() as Plan | undefined;
     const purchase = plan?.purchase;
-    if (!plan || !purchase || purchase.linkId !== linkId ||
-        purchase.paidAtMillis !== null ||
-        link.amountPaid < purchase.amountMinor) return false;
+    if (!plan || !purchase) return "unknown" as const;
+    if (purchase.linkId !== linkId) return "superseded" as const;
+    if (purchase.paidAtMillis !== null ||
+        link.amountPaid < purchase.amountMinor) return "ignored" as const;
     const now = deps.now();
+    const startsAtMillis = plan.startsAtMillis !== null && nextStart !== null &&
+      plan.startsAtMillis < nextStart && plan.startsAtMillis <= now ?
+      nextStart : plan.startsAtMillis;
     tx.set(ref, checkedPlan({...plan, plan: "toolsOnly", status: "active",
-      endsAtMillis: null,
+      startsAtMillis, endsAtMillis: null, prepaidBillId: null,
       purchase: {...purchase, paidAtMillis: now, paidMinor: link.amountPaid},
       revision: plan.revision + 1,
       history: withHistory(plan, "paid", now, null), updatedAtMillis: now}));
-    return true;
+    return "activated" as const;
   });
+  if (result === "superseded" || result === "unknown") {
+    // Money arrived for a purchase the plan no longer tracks (cancelled and
+    // bought again). Staff refund or apply it by hand.
+    logger.error("Tools-only payment for a superseded purchase needs review.",
+      {organizerId, linkId, amountPaid: link.amountPaid});
+  }
+  return result === "activated";
 }
 
 export const manageOrganizerBillingPlan = onCall(
