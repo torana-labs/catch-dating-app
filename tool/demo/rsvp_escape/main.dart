@@ -19,11 +19,11 @@ import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.d
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/hosts/forms/forms_screen.dart';
+import 'package:catch_dating_app/hosts/forms/response_screen.dart';
+import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -75,7 +75,7 @@ Future<void> main() async {
       GoRoute(
         path: '/people/:contactId',
         name: Routes.hostCustomerDetailScreen.name,
-        builder: (_, state) => HostCustomerDetailScreen(
+        builder: (_, state) => HostPersonScreen(
           organizerId: organizerId,
           contactId: state.pathParameters['contactId']!,
         ),
@@ -98,7 +98,7 @@ Future<void> main() async {
       GoRoute(
         path: '/responses/:responseId',
         name: Routes.hostFormResponseDetailScreen.name,
-        builder: (_, state) => HostFormResponseDetailScreen(
+        builder: (_, state) => HostResponseScreen(
           organizerId: organizerId,
           responseId: state.pathParameters['responseId']!,
         ),

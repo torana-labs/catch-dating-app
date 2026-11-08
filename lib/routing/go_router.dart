@@ -60,8 +60,7 @@ import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
@@ -79,7 +78,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/requests/host_requests_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -197,28 +195,17 @@ Widget hostFormScreenForUri(Uri uri, {required String formId}) {
   };
 }
 
+/// The forms and responses views of the People tab. Every other view
+/// draws People through [hostPeopleScreenForUri].
 @visibleForTesting
-Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
-  final view = hostAudienceViewFromName(uri.queryParameters['view']);
+Widget hostAudienceScreenForUri(Uri uri) {
   final organizerId = uri.queryParameters['organizerId'];
-  return switch (view) {
+  return switch (hostAudienceViewFromName(uri.queryParameters['view'])) {
     HostAudienceView.responses when organizerId != null => HostResponsesScreen(
       organizerId: organizerId,
       formId: uri.queryParameters['formId'],
     ),
-    HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
-      initialOrganizerId: organizerId,
-    ),
-    HostAudienceView.requests => HostRequestsScreen(
-      initialOrganizerId: uri.queryParameters['organizerId'],
-    ),
-    HostAudienceView.people ||
-    HostAudienceView.audiences => HostCustomersScreen(
-      initialOrganizerId: uri.queryParameters['organizerId'],
-      initialView: view,
-      initialContactId: uri.queryParameters['contactId'],
-      initialContactDisplayName: initialContactDisplayName,
-    ),
+    _ => HostFormsScreen(initialOrganizerId: organizerId),
   };
 }
 

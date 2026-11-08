@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
@@ -33,6 +32,33 @@ export 'host_response_query_capability.dart'
     show canMountHostResponseQuery, hostResponseQueryCapability;
 
 part 'host_form_responses_filter_sheet.dart';
+
+/// Ephemeral route context for continuing through one filtered response queue.
+class HostResponseReviewQueue {
+  const HostResponseReviewQueue({
+    required this.request,
+    required this.entryId,
+    required this.index,
+  });
+
+  final HostFormResponseListRequest request;
+  final String entryId;
+  final int index;
+
+  int targetIndex(
+    List<HostFormInboxEntry> entries,
+    int direction, {
+    bool hasMore = true,
+  }) {
+    final current = entries.indexWhere((entry) => entry.entryId == entryId);
+    if (current >= 0) return current + direction;
+    final target = index + (direction > 0 ? 0 : -1);
+    if (direction < 0 && !hasMore && target >= entries.length) {
+      return entries.length - 1;
+    }
+    return target;
+  }
+}
 
 class HostFormResponsesSection extends ConsumerStatefulWidget {
   const HostFormResponsesSection({

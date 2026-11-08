@@ -9,7 +9,6 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     required this.uri,
     this.initialEvent,
     this.initialProgramAnchor,
-    this.initialContactDisplayName,
     this.initialOrganizerId,
   });
   final Routes root;
@@ -25,14 +24,12 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     initialProgramAnchor: state.extra is OrganizerProgramListAnchor
         ? state.extra as OrganizerProgramListAnchor
         : null,
-    initialContactDisplayName: _routeContactNameExtra(state),
     initialOrganizerId: _routeOrganizerIdExtra(state),
   );
 
   final Uri uri;
   final Event? initialEvent;
   final OrganizerProgramListAnchor? initialProgramAnchor;
-  final String? initialContactDisplayName;
   final String? initialOrganizerId;
 
   @override

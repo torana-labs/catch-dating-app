@@ -20,18 +20,10 @@ export 'events/presentation/host_events_state.dart'; // public-api: provider-fre
 export 'presentation/edit_hosted_event_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_management/create/create_event_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_management/create/create_event_draft_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/event_management/create/create_event_draft_snapshot.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/event_management/create/create_event_form_keys.dart'; // public-api: presentation value/helper API used across feature boundaries
-export 'presentation/event_management/create/create_event_location_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/event_management/create/create_event_photo_draft_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/event_management/create/create_event_policy_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/event_management/create/create_event_schedule_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/event_management/create/create_event_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_management/create/create_event_success_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_management/create/create_event_wizard_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/event_management/host_create_event_route_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/event_management/host_create_event_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_management/widgets/event_policy_step.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/host_event_booking_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_screen.dart'; // public-api: route entry point exposed to app routing
@@ -45,7 +37,6 @@ export 'presentation/host_roster_row_state.dart'; // public-api: provider-free H
 export 'presentation/host_team_workspace_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/organizer_management/create/create_organizer_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/organizer_management/create/create_organizer_draft_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/organizer_management/create/create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/organizer_management/host_create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/organizer_management/host_organizer_edit_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/organizer_management/host_team_management_controller.dart'; // public-api: command seam for route-owned actions
@@ -53,10 +44,8 @@ export 'presentation/payments/host_payment_account_card.dart'; // public-api: sh
 export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/widgets/host_event_participants_section.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/host_event_tools_rail.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_loading_skeleton.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_organizer_switcher_sheet.dart'; // public-api: shared Host-shell identity component
-export 'presentation/widgets/host_stepper_dock.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/participant_table.dart'; // public-api: shared presentation component used outside this feature
 export 'today/host_today_screen.dart'; // public-api: route entry point exposed to app routing
