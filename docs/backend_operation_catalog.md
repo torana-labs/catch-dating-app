@@ -494,6 +494,25 @@ public OTP/external continuations remain future adapters, with existing payment,
 seat, offer and attendance owners retained. All four new roots deny direct client
 reads/writes; grants do not publish a profile or disclose private endpoints.
 
+## Programme live weekend, departures and web links
+
+`getProgramLiveBoard` derives the live board on read: the function on now,
+today's schedule in the programme's zone, inbound travel counts and alerts
+merged from staff attention sends, cancelled or diverted flights and
+disrupted journeys. `resolveProgramAlert` writes only the resolution
+(`programAlerts/{programId}_{alertId}`: take, finish, reopen), fenced by
+`expectedRevision` with a `requestId` replay. Function leads see the staff
+alerts for duties they hold; managers and coordinators see every alert.
+`getProgramDeparturesRoster` mirrors the arrivals roster for outbound
+journeys from one hotel (hotel desk duty scoped). `issueProgramWebLink`
+mints expiring signed links that `getProgramDriverTrip` and
+`getProgramVendorRunSheet` read without sign-in; they reuse the household
+RSVP secret with a kind-separated HMAC and return no contact data.
+`listOrganizerMoments` adds per-moment plans (anchor, sent count, next run,
+board state) and the programme's active WhatsApp sender;
+`listOrganizerPrograms` rows add bounded guest, flying-in and replied
+counts; `updateOrganizerProgram` sets or clears optional `branding`.
+
 ## Paid host membership operations
 
 Paid host memberships ([spec](plans/host_memberships_spec.md)) are entirely

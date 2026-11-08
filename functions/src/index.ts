@@ -836,6 +836,15 @@ export {importProgramManifest, importWeddingPhoneContacts} from
   "./programs/programManifestImport";
 export {listProgramStaffAttention} from
   "./programs/programStaffAttention";
+export {getProgramLiveBoard, resolveProgramAlert} from
+  "./programs/programLiveBoard";
+export {
+  getProgramDriverTrip,
+  getProgramVendorRunSheet,
+  issueProgramWebLink,
+} from "./programs/programWebLinks";
+export {getProgramDeparturesRoster} from
+  "./transport/programDepartures";
 export {
   getProgramArrivalsRoster,
   getProgramTransportPlan,

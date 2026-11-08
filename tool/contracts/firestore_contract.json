@@ -3103,6 +3103,20 @@
       ]
     },
     {
+      "id": "programAlerts",
+      "path": "programAlerts/{programAlertId}",
+      "rulesMatch": "/programAlerts/{programAlertId}",
+      "typescriptInterface": "ProgramAlertDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "resolveProgramAlert callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Resolution of a derived live board alert; exists only once someone takes, finishes or reopens one.",
+        "Holds staff uids and display names, never guest data."
+      ]
+    },
+    {
       "id": "programTravelLegs",
       "path": "programTravelLegs/{legId}",
       "rulesMatch": "/programTravelLegs/{legId}",

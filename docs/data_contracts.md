@@ -4312,6 +4312,17 @@ with function selection, RSVP-status filters, and household dedupe. The
 document field ships ahead of its callable payload and dispatcher wiring;
 clients cannot set it through `upsertOrganizerCampaign` today.
 
+### Programme Alerts, Branding And Planner Anchors
+
+`programAlerts/{programId}_{alertId}` is server-only and exists only after
+someone takes, finishes or reopens a live board alert; the alerts
+themselves are derived on read. It holds staff uids and display names,
+never guest data. `organizerPrograms.branding` (colour, cover photo path in
+`programs/{programId}/branding/`, credit line) and
+`organizerMoments.anchor` (`function | flight | date` with an id) are
+optional: older documents read as the default look (rani, no cover, no
+credit) and as the anchor their initiation implies.
+
 ### Program Room Occupancy
 
 `programStays` remains the per-guest lodging record. `roomOccupancyId` is a

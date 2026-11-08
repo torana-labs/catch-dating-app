@@ -491,6 +491,19 @@ enter previews.
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
+
+### Not yet described
+
+`--write` adds each export missing from this inventory here; move its row to its section and describe it.
+
+| Function | File | Purpose |
+|----------|------|---------|
+| `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
+| `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
+| `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
 <!-- fn-inventory:end -->
 
 ## Shared modules

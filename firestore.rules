@@ -2222,6 +2222,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programAlerts/{programAlertId} {
+      allow read, write: if false;
+    }
+
     match /programTravelLegs/{legId} {
       allow read, write: if false;
     }

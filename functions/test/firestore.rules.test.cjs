@@ -6192,6 +6192,7 @@ describe("firestore.rules", () => {
       "programStaffInvites",
       "programPickupPoints",
       "programHotels",
+      "programAlerts",
       "programTravelLegs",
       "programTravelParties",
       "transportVendors",
