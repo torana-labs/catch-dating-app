@@ -1,5 +1,8 @@
 import type {ManageWebsiteAccountCallablePayload} from "../../functions/src/shared/generated/manageWebsiteAccountCallablePayload";
 import type {ManageWebsiteAccountCallableResponse} from "../../functions/src/shared/generated/manageWebsiteAccountCallableResponse";
+import type {WithdrawParticipantMessagingPermissionCallablePayload} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload";
+import type {WithdrawParticipantMessagingPermissionCallableResponse} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
+import type {GetEventTicketCodeCallableResponse} from "../../functions/src/shared/generated/getEventTicketCodeCallableResponse";
 import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
 import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
 import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
@@ -1519,4 +1522,40 @@ export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayloa
 }
 export function setWebsiteOrganizerFollow(organizerId: string, following: boolean, expectedUid: string): Promise<{following: boolean}> {
   return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");
+}
+
+export type WebsiteAccount = ManageWebsiteAccountCallableResponse;
+export type WebsiteAccountSection = NonNullable<Extract<ManageWebsiteAccountCallablePayload, {action: "read"}>["sections"]>[number];
+export type WebsiteEventTicketCode = GetEventTicketCodeCallableResponse;
+/** The guest's signed pass for one booking, the same code the apps show at the door. */
+export function getWebsiteEventTicketCode(eventId: string): Promise<GetEventTicketCodeCallableResponse> {
+  return invokeWebsiteCallable("getEventTicketCode", {eventId}, claimFirebaseConfigured, "Event passes");
+}
+/** Withdraws one organiser's WhatsApp permission with the reviewed receipt; it never grants consent. */
+export function withdrawWebsiteMessagingPermission(
+  payload: WithdrawParticipantMessagingPermissionCallablePayload
+): Promise<WithdrawParticipantMessagingPermissionCallableResponse> {
+  return invokeWebsiteCallable("withdrawParticipantMessagingPermission", payload, claimFirebaseConfigured, "Messaging permissions");
+}
+/** Google sign-in keeps an existing UID: it links rather than merges. */
+export const signInWebsiteAccountWithGoogle = signInForClaim;
+export const signOutWebsiteAccount = signOutClaimUser;
+/** Sends a passwordless sign-in link that returns to `returnUrl`. */
+export async function sendWebsiteAccountEmailLink(email: string, returnUrl: string): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !claimFirebaseConfigured) throw new Error("Account sign-in is not configured for this build.");
+  const {sendSignInLinkToEmail} = await import("firebase/auth");
+  await sendSignInLinkToEmail(runtime.auth, email, {url: returnUrl, handleCodeInApp: true});
+}
+export async function isWebsiteAccountEmailLink(link: string): Promise<boolean> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !claimFirebaseConfigured) return false;
+  const {isSignInWithEmailLink} = await import("firebase/auth");
+  return isSignInWithEmailLink(runtime.auth, link);
+}
+export async function completeWebsiteAccountEmailLink(email: string, link: string): Promise<User> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !claimFirebaseConfigured) throw new Error("Account sign-in is not configured for this build.");
+  const {signInOrLinkEmailLink} = await import("./firebaseClaimAccountLinking");
+  return signInOrLinkEmailLink(runtime.auth, email, link);
 }

@@ -1,9 +1,17 @@
 import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar} from "@catch/web-ui";
-import type {ReactNode} from "react";
+import {createContext, useContext, type ReactNode} from "react";
 import {publicPageChromeCopy, publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
 import {ConsumerHome} from "../ui/primitives/consumerHome";
 import {SiteFooter, type SiteNavItem} from "./SiteFooter";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
+
+/**
+ * The header's account entry ("Sign in" or "Account"). The app shell provides
+ * it from the account feature, so shared chrome never imports a feature; a
+ * story or test without the provider draws the header without it.
+ */
+const SiteAccountActionContext = createContext<ReactNode>(null);
+export const SiteAccountActionProvider = SiteAccountActionContext.Provider;
 
 /**
  * The one public header, the system's site top bar: the wordmark, page links
@@ -16,9 +24,10 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
   links?: readonly SiteNavItem[];
   actions?: ReactNode;
 }) {
+  const account = useContext(SiteAccountActionContext);
   return (
     <CatchTopBar
-      actions={actions}
+      actions={account ? <CatchStack align="center" direction="row" gap={8}>{account}{actions}</CatchStack> : actions}
       homeHref="/"
       links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}
       linksLabel={publicSiteCopy.menu.navLabel}
