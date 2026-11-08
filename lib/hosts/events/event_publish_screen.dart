@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/events/data/read_models/host_event_set
 import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_body.dart';
 import 'package:catch_dating_app/hosts/events/event_publish_controller.dart';
+import 'package:catch_dating_app/hosts/events/event_publish_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -25,13 +26,47 @@ class HostEventPublishScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final state = ref.watch(hostEventPublishControllerProvider(request));
-    final saving = ref.watch(HostEventCommands.publicationMutation).isPending;
+    final saving =
+        ref.watch(HostEventCommands.publicationMutation).isPending ||
+        ref.watch(HostEventPublishCommands.settingsMutation).isPending ||
+        ref.watch(HostEventPublishCommands.bookingMutation).isPending;
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [HostEventCommands.publicationMutation],
+      mutations: [
+        HostEventCommands.publicationMutation,
+        HostEventPublishCommands.settingsMutation,
+        HostEventPublishCommands.bookingMutation,
+      ],
       errorContext: AppErrorContext.event,
     );
+    void saveSettings({
+      required bool published,
+      String? listing,
+      bool? showGuestList,
+      bool? priceHiddenUntilBookingOpens,
+    }) {
+      final revision = state.setupRevision;
+      if (revision == null) return;
+      unawaited(
+        HostEventPublishCommands.settingsMutation
+            .run(
+              ref,
+              (tx) => tx
+                  .get(hostEventPublishCommandsProvider.notifier)
+                  .saveSettings(
+                    request: request,
+                    expectedSetupRevision: revision,
+                    published: published,
+                    listing: listing,
+                    showGuestList: showGuestList,
+                    priceHiddenUntilBookingOpens: priceHiddenUntilBookingOpens,
+                  ),
+            )
+            .then<void>((_) {}, onError: (Object _) {}),
+      );
+    }
+
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-event-publish-screen'),
@@ -45,25 +80,33 @@ class HostEventPublishScreen extends ConsumerWidget {
         body: HostEventPublishBody(
           state: state,
           saving: saving,
-          onPublished: (published) {
-            final revision = state.setupRevision;
-            if (revision == null) return;
-            unawaited(
-              HostEventCommands.publicationMutation
-                  .run(
-                    ref,
-                    (tx) => tx
-                        .get(hostEventCommandsProvider.notifier)
-                        .setPublication(
-                          organizerId: request.organizerId,
-                          eventId: request.eventId,
-                          expectedSetupRevision: revision,
-                          published: published,
-                        ),
-                  )
-                  .then<void>((_) {}, onError: (Object _) {}),
-            );
+          onVisibility: (visibility) => switch (visibility) {
+            HostEventVisibility.team => saveSettings(published: false),
+            HostEventVisibility.everyone => saveSettings(
+              published: true,
+              listing: 'listed',
+            ),
+            HostEventVisibility.link => saveSettings(
+              published: true,
+              listing: 'link',
+            ),
           },
+          onShowGuestList: (value) =>
+              saveSettings(published: state.published, showGuestList: value),
+          onHidePrice: (value) => saveSettings(
+            published: state.published,
+            priceHiddenUntilBookingOpens: value,
+          ),
+          onBookingMode: (mode) => unawaited(
+            HostEventPublishCommands.bookingMutation
+                .run(
+                  ref,
+                  (tx) => tx
+                      .get(hostEventPublishCommandsProvider.notifier)
+                      .saveBookingMode(request: request, mode: mode),
+                )
+                .then<void>((_) {}, onError: (Object _) {}),
+          ),
           onRetry: () => ref.invalidate(
             privateEventSetupViewProvider(
               organizerId: request.organizerId,

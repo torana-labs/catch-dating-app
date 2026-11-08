@@ -11,7 +11,8 @@ import {validateEventPaymentTerms} from
 import {
   canonicalJson, eventPaymentTermsFromPreferences, resolveEventPreferences,
 } from "../eventSetupPreferences/resolve";
-import {EventPreferenceError, OrganizerEventDefaults} from
+import {EventPreferenceError, EventPreferenceIntents,
+  OrganizerEventDefaults, PreferenceIntent} from
   "../eventSetupPreferences/types";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
@@ -103,7 +104,10 @@ export async function updatePrivateEventPreferences(params: {
     };
     let preferences;
     try {
-      preferences = resolveEventPreferences({defaults, intents: command.intents,
+      preferences = resolveEventPreferences({defaults,
+        intents: withSavedOptionalIntents(command.intents as
+          EventPreferenceIntents, saved?.preferences as
+          Record<string, unknown> | undefined),
         reviewedDefaultsHash: command.reviewedDefaultsHash});
     } catch (error) {
       if (error instanceof EventPreferenceError) {
@@ -132,6 +136,31 @@ export async function updatePrivateEventPreferences(params: {
     return {eventId: command.eventId, setupRevision: setupRevision + 1,
       replayed: false};
   });
+}
+
+/** Intents added after the first ten are optional. A command that leaves one
+ * out (an older client, or a screen that edits other settings) keeps the
+ * event's saved choice instead of resetting it; with none saved it inherits.
+ */
+export const optionalPreferenceIntents = ["bookingMode"] as const;
+
+export function withSavedOptionalIntents(intents: EventPreferenceIntents,
+  saved: Record<string, unknown> | undefined): EventPreferenceIntents {
+  const next = {...intents} as Record<string, unknown>;
+  for (const key of optionalPreferenceIntents) {
+    if (next[key] !== undefined) continue;
+    const field = saved?.[key] as {value?: unknown; source?: unknown} |
+      undefined;
+    if (!field) continue;
+    const intent: PreferenceIntent<unknown> | undefined =
+      field.source === "organizer" ? {mode: "inherit"} :
+        field.source === "cleared" ? {mode: "clear"} :
+          field.source === "event" && field.value !== null &&
+            field.value !== undefined ? {mode: "set", value: field.value} :
+            undefined;
+    if (intent) next[key] = intent;
+  }
+  return next as unknown as EventPreferenceIntents;
 }
 
 /** Current-manager projection; never returns actor metadata or extra fields. */

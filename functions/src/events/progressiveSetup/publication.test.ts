@@ -259,3 +259,63 @@ test("stale marker identifies an uncommitted command", async () => {
   await h.run();
   assert.equal((await h.run()).replayed, true);
 });
+
+test("settings save alone on the current state and keep registration",
+  async () => {
+    const h = setup();
+    await h.run();
+    Object.assign(h.store.get("events/event1")!, {
+      publicRegistrationEnabled: true, publicRegistrationMode: "free",
+      publicRegistrationRevision: 2});
+    const result = await h.run({...h.command, requestId: "settings-one",
+      expectedSetupRevision: 2, listing: "link", showGuestList: false});
+    assert.equal(result.setupRevision, 3);
+    const event = h.store.get("events/event1")!;
+    assert.equal(event.listing, "link");
+    assert.equal(event.showGuestList, false);
+    assert.equal(event.priceHiddenUntilBookingOpens, undefined);
+    assert.equal(event.publicRegistrationEnabled, true);
+    assert.equal(event.publicRegistrationRevision, 2);
+    assert.equal(validateEventDocument(event), true,
+      JSON.stringify(validateEventDocument.errors));
+    // Defaults need no write: listed and a visible guest list are the reads.
+    await assert.rejects(h.run({...h.command, requestId: "settings-two",
+      expectedSetupRevision: 3, listing: "link", showGuestList: false,
+      priceHiddenUntilBookingOpens: false}), errorCode("failed-precondition"));
+  });
+
+test("publishing applies the saved booking and waitlist choices", async () => {
+  const h = setup();
+  // Before the shared seat ledger exists, only an empty event may change its
+  // admission policy, as with any other admission change.
+  Object.assign(h.store.get("events/event1")!, {bookedCount: 0,
+    checkedInCount: 0, waitlistedCount: 0, genderCounts: {},
+    cohortCounts: {}, waitlistedCohortCounts: {}});
+  h.store.put("eventSetupPreferences/event1", {organizerId: "org1",
+    eventId: "event1", revision: 1, preferences: {
+      bookingMode: {value: "askFirst", source: "event"},
+      waitlistEnabled: {value: false, source: "event"}}});
+  await h.run({...h.command, listing: "link"});
+  const event = h.store.get("events/event1")!;
+  assert.equal(event.listing, "link");
+  const admission = (event.eventPolicy as {admission: {
+    manualApprovalRequired: boolean; waitlistPolicy: {mode: string}}})
+    .admission;
+  assert.equal(admission.manualApprovalRequired, true);
+  assert.equal(admission.waitlistPolicy.mode, "disabled");
+  assert.equal(event.discoveryManualApprovalRequired, true);
+  assert.equal(validateEventDocument(event), true,
+    JSON.stringify(validateEventDocument.errors));
+});
+
+test("publishing without booking choices leaves the policy alone",
+  async () => {
+    const h = setup();
+    const before = JSON.stringify(h.event.eventPolicy ?? null);
+    await h.run();
+    const event = h.store.get("events/event1")!;
+    assert.equal(event.listing, undefined);
+    if (h.event.eventPolicy !== undefined) {
+      assert.equal(JSON.stringify(event.eventPolicy), before);
+    }
+  });

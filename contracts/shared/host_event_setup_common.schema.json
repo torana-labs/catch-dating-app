@@ -79,6 +79,17 @@
         }
       }
     },
+    "eventSettings": {
+      "description": "Who can see and book the event and how guests experience it, with each field's read-time default applied (listing listed, showGuestList true, priceHiddenUntilBookingOpens false).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["listing", "showGuestList", "priceHiddenUntilBookingOpens"],
+      "properties": {
+        "listing": {"type": "string", "enum": ["listed", "link"]},
+        "showGuestList": {"type": "boolean"},
+        "priceHiddenUntilBookingOpens": {"type": "boolean"}
+      }
+    },
     "publicationReadinessWhenFuture": {
       "description": "Publication readiness with every requirement checked except time. The server evaluates it as if the event started one millisecond from now; the phone applies time: futureActive is status active and startTimeMillis after the app clock's now, canPublish is canPublishWhenFuture and futureActive, and missing gains futureActive (first) when futureActive is false. A published event carries canPublishWhenFuture false and no missing requirements.",
       "anyOf": [
@@ -153,7 +164,8 @@
         "eventDetails": {"$ref": "#/definitions/eventDetails"},
         "canEditBasics": {"type": "boolean"},
         "canChangeCity": {"type": "boolean"},
-        "publicationReadiness": {"$ref": "#/definitions/publicationReadinessWhenFuture"}
+        "publicationReadiness": {"$ref": "#/definitions/publicationReadinessWhenFuture"},
+        "eventSettings": {"$ref": "#/definitions/eventSettings", "description": "Optional: views written before it existed leave it out."}
       }
     },
     "managerEventSetupDefaults": {

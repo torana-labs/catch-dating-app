@@ -347,6 +347,40 @@
           ]
         }
       }
+    },
+    "bookingMode": {
+      "description": "Present only when the saving command carried a bookingMode intent.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "anyone",
+                "followersFirst",
+                "askFirst"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "cleared"
+          ]
+        }
+      }
     }
   }
 }

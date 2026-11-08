@@ -227,6 +227,10 @@ const SPECS = [
     "schemaPointer": "/properties/publicRegistrationMode"
   },
   {
+    "name": "EventListing",
+    "schemaPointer": "/properties/listing"
+  },
+  {
     "name": "EventOriginMode",
     "schemaPointer": "/properties/eventOrigin/properties/mode"
   },
@@ -470,6 +474,22 @@ const SPECS = [
           "name": "publicRegistrationRevision",
           "dartType": "int",
           "default": "0"
+        },
+        {
+          "name": "listing",
+          "dartType": "EventListing",
+          "default": "EventListing.listed",
+          "unknownEnumValue": "EventListing.listed"
+        },
+        {
+          "name": "showGuestList",
+          "dartType": "bool",
+          "default": "true"
+        },
+        {
+          "name": "priceHiddenUntilBookingOpens",
+          "dartType": "bool",
+          "default": "false"
         },
         {
           "name": "constraints",

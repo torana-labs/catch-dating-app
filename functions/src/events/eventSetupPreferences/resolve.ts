@@ -11,6 +11,7 @@ const currencyCode = /^[A-Z]{3}$/;
 const admission = new Set([
   "openCapacity", "inviteOnly", "balancedSingles", "fixedCohortCaps",
 ]);
+const bookingModes = new Set(["anyone", "followersFirst", "askFirst"]);
 const collection = new Set([
   "manualInstructions", "reusablePage", "personalRequest", "catchCheckout",
 ]);
@@ -39,6 +40,8 @@ export function organizerEventDefaultsHash(
         defaults.eventSetup?.paymentInstructions ?? null,
       reusablePaymentPage:
         copyReusablePage(defaults.eventSetup?.reusablePaymentPage ?? null),
+      // Added later: an unset key is left out, so existing hashes hold.
+      bookingMode: defaults.eventSetup?.bookingMode,
     },
   });
 }
@@ -81,6 +84,9 @@ export function resolveEventPreferences(input: {
       setup.reusablePaymentPage),
     expectedAmountMinor: resolve(intents.expectedAmountMinor, undefined),
   };
+  if (intents.bookingMode !== undefined) {
+    resolved.bookingMode = resolve(intents.bookingMode, setup.bookingMode);
+  }
   validateResolved(resolved);
   resolved.reusablePaymentPage = {...resolved.reusablePaymentPage,
     value: copyReusablePage(resolved.reusablePaymentPage.value)};
@@ -171,6 +177,7 @@ function validateOrganizerDefaults(defaults: OrganizerEventDefaults): void {
     }
   }
   const setup = defaults.eventSetup;
+  validateBookingMode(setup?.bookingMode ?? null);
   validateValues({
     usualDurationMinutes: setup?.usualDurationMinutes ?? null,
     preferredVenueId: setup?.preferredVenueId ?? null,
@@ -186,6 +193,7 @@ function validateOrganizerDefaults(defaults: OrganizerEventDefaults): void {
 }
 
 function validateResolved(value: ResolvedEventPreferences): void {
+  validateBookingMode(value.bookingMode?.value ?? null);
   validateValues({
     usualDurationMinutes: value.usualDurationMinutes.value,
     preferredVenueId: value.preferredVenueId.value,
@@ -247,6 +255,12 @@ function validateValues(value: {
   }
   if (value.reusablePaymentPage !== null) {
     validateReusablePage(value.reusablePaymentPage);
+  }
+}
+
+function validateBookingMode(value: string | null): void {
+  if (value !== null && !bookingModes.has(value)) {
+    invalid("Invalid booking mode.");
   }
 }
 

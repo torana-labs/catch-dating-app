@@ -298,21 +298,69 @@ void main() {
   });
 
   group('Publish', () {
-    testWidgets('published offers going back to the team only', (tester) async {
-      final calls = <bool>[];
+    testWidgets('published offers the link and the team, not itself', (
+      tester,
+    ) async {
+      final calls = <HostEventVisibility>[];
       await _pump(
         tester,
         HostEventPublishBody(
           state: publishReady,
-          onPublished: calls.add,
+          onVisibility: calls.add,
           onRetry: () {},
         ),
       );
       expect(find.text('Everyone'), findsOneWidget);
+      expect(find.text('People with the link'), findsOneWidget);
       expect(find.text('Only your team'), findsOneWidget);
       await tester.tap(find.text('Everyone'));
+      await tester.tap(find.text('People with the link'));
       await tester.tap(find.text('Only your team'));
-      expect(calls, [false]);
+      expect(calls, [HostEventVisibility.link, HostEventVisibility.team]);
+    });
+
+    testWidgets('who can book saves only while the event is unpublished', (
+      tester,
+    ) async {
+      final modes = <HostEventBookingMode>[];
+      final switches = <bool>[];
+      await _pump(
+        tester,
+        HostEventPublishBody(
+          state: publishReady,
+          onVisibility: (_) {},
+          onBookingMode: modes.add,
+          onShowGuestList: switches.add,
+          onRetry: () {},
+        ),
+      );
+      expect(
+        find.text('Unpublish the event to change who can book'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Ask first'));
+      expect(modes, isEmpty);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('host-event-publish-guest-list')),
+      );
+      expect(switches, [false]);
+
+      await _pump(
+        tester,
+        HostEventPublishBody(
+          state: const HostEventPublishState(
+            status: HostEventPublishStatus.ready,
+            canPublish: true,
+            setupRevision: 2,
+            canChangeBooking: true,
+          ),
+          onVisibility: (_) {},
+          onBookingMode: modes.add,
+          onRetry: () {},
+        ),
+      );
+      await tester.tap(find.text('Ask first'));
+      expect(modes, [HostEventBookingMode.askFirst]);
     });
 
     testWidgets('not written yet', (tester) async {
@@ -322,7 +370,7 @@ void main() {
           state: const HostEventPublishState(
             status: HostEventPublishStatus.missing,
           ),
-          onPublished: (_) {},
+          onVisibility: (_) {},
           onRetry: () {},
         ),
       );

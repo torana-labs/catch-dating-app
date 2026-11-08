@@ -164,6 +164,44 @@ class PrivateEventAdmissionTerms {
   }
 }
 
+/// Who can see and book the event and how guests experience it, as the setup
+/// view projects it with the read-time defaults applied. A view written
+/// before these settings existed reads as the defaults.
+class PrivateEventSettings {
+  const PrivateEventSettings({
+    this.listing = 'listed',
+    this.showGuestList = true,
+    this.priceHiddenUntilBookingOpens = false,
+  });
+
+  /// `listed` (on the organizer's page, Explore and search) or `link` (only
+  /// people with the link).
+  final String listing;
+  final bool showGuestList;
+  final bool priceHiddenUntilBookingOpens;
+
+  bool get linkOnly => listing == 'link';
+
+  factory PrivateEventSettings.fromView(Object? raw) {
+    if (raw == null) return const PrivateEventSettings();
+    if (raw is! Map) throw const FormatException('Invalid event settings');
+    final data = Map<String, Object?>.from(raw);
+    final listing = data['listing'];
+    final showGuestList = data['showGuestList'];
+    final priceHidden = data['priceHiddenUntilBookingOpens'];
+    if (!const {'listed', 'link'}.contains(listing) ||
+        showGuestList is! bool ||
+        priceHidden is! bool) {
+      throw const FormatException('Invalid event settings');
+    }
+    return PrivateEventSettings(
+      listing: listing as String,
+      showGuestList: showGuestList,
+      priceHiddenUntilBookingOpens: priceHidden,
+    );
+  }
+}
+
 /// Actual optional event fields, as opposed to organizer recommendations.
 class PrivateEventDetailsSnapshot {
   const PrivateEventDetailsSnapshot({
@@ -389,6 +427,7 @@ class PrivateEventBasicSummary {
     this.canEditBasics = false,
     this.canChangeCity = false,
     this.eventDetails = const PrivateEventDetailsSnapshot(),
+    this.eventSettings = const PrivateEventSettings(),
   });
 
   final String eventId;
@@ -407,6 +446,7 @@ class PrivateEventBasicSummary {
   final bool detailsConfigured;
   final PrivateEventPreferencesSnapshot? eventPreferences;
   final PrivateEventDetailsSnapshot eventDetails;
+  final PrivateEventSettings eventSettings;
   final bool canEditBasics;
   final bool canChangeCity;
 
@@ -503,6 +543,7 @@ class PrivateEventBasicSummary {
       canEditBasics: canEditBasics,
       canChangeCity: canChangeCity,
       eventDetails: PrivateEventDetailsSnapshot.fromResponse(rawEventDetails),
+      eventSettings: PrivateEventSettings.fromView(data['eventSettings']),
       eventPreferences: data['eventPreferences'] == null
           ? null
           : PrivateEventPreferencesSnapshot.fromResponse(

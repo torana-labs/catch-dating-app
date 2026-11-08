@@ -1,0 +1,8 @@
+{
+  "organizerId": "org_1",
+  "requestId": "publish-settings-1",
+  "eventId": "event_1",
+  "expectedSetupRevision": 3,
+  "publicationState": "published",
+  "listing": "invite"
+}

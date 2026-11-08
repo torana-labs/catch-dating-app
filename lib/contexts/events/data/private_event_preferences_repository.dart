@@ -17,6 +17,15 @@ const eventPreferenceFields = <String>{
   'expectedAmountMinor',
 };
 
+/// Intents added after the first ten. A command may leave them out (the
+/// server reads a missing one as inherit), and a saved snapshot carries them
+/// only when the saving command did.
+const optionalEventPreferenceFields = <String>{'bookingMode'};
+
+/// Who can book: `anyone`, `followersFirst` or `askFirst` (the host approves
+/// each sign-up before the guest books).
+const eventBookingModes = <String>{'anyone', 'followersFirst', 'askFirst'};
+
 final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 final _requestPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$');
 final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
@@ -53,8 +62,10 @@ Map<String, Object?> privateEventPreferenceSetIntentForInput(
   }
 }
 
-/// All ten event-local intentions are required by the command. A null field
-/// has no meaning: inherit, set and clear must remain distinguishable.
+/// The first ten event-local intentions are required by the command; a null
+/// field there has no meaning: inherit, set and clear must remain
+/// distinguishable. The optional intents ([bookingMode]) are null when left
+/// out.
 class PrivateEventPreferenceIntents {
   const PrivateEventPreferenceIntents({
     this.usualDurationMinutes = const EventSetupValue.inherit(),
@@ -67,6 +78,7 @@ class PrivateEventPreferenceIntents {
     this.reusablePaymentPage = const EventSetupValue.inherit(),
     this.admissionPreset = const EventSetupValue.inherit(),
     this.expectedAmountMinor = const EventSetupValue.clear(),
+    this.bookingMode,
   });
 
   final EventSetupValue<int> usualDurationMinutes;
@@ -79,6 +91,26 @@ class PrivateEventPreferenceIntents {
   final EventSetupValue<ReusableOrganizerPaymentPage> reusablePaymentPage;
   final EventSetupValue<String> admissionPreset;
   final EventSetupValue<int> expectedAmountMinor;
+
+  /// Null leaves the intent out of the command.
+  final EventSetupValue<String>? bookingMode;
+
+  /// A copy with [bookingMode] replaced.
+  PrivateEventPreferenceIntents withBookingMode(
+    EventSetupValue<String> value,
+  ) => PrivateEventPreferenceIntents(
+    usualDurationMinutes: usualDurationMinutes,
+    preferredVenueId: preferredVenueId,
+    offerValidityMinutes: offerValidityMinutes,
+    collectionPreference: collectionPreference,
+    currency: currency,
+    offerMessageTemplate: offerMessageTemplate,
+    paymentInstructions: paymentInstructions,
+    reusablePaymentPage: reusablePaymentPage,
+    admissionPreset: admissionPreset,
+    expectedAmountMinor: expectedAmountMinor,
+    bookingMode: value,
+  );
 
   static const _admissionValues = <String>{
     'openCapacity',
@@ -111,6 +143,10 @@ class PrivateEventPreferenceIntents {
       final value = intent['value'];
       if (entry.key == 'admissionPreset') {
         if (value is! String || !_admissionValues.contains(value)) return false;
+      } else if (entry.key == 'bookingMode') {
+        if (value is! String || !eventBookingModes.contains(value)) {
+          return false;
+        }
       } else if (entry.key != 'expectedAmountMinor') {
         try {
           ManagerEventSetupPreferences.fromSparseJson({entry.key: value});
@@ -138,11 +174,17 @@ class PrivateEventPreferenceIntents {
     ),
     'admissionPreset': admissionPreset.toJson((value) => value),
     'expectedAmountMinor': expectedAmountMinor.toJson((value) => value),
+    if (bookingMode != null)
+      'bookingMode': bookingMode!.toJson((value) => value),
   };
 
   factory PrivateEventPreferenceIntents.fromJson(Map<String, Object?> json) {
-    if (json.keys.toSet().difference(eventPreferenceFields).isNotEmpty ||
-        json.length != eventPreferenceFields.length) {
+    final keys = json.keys.toSet();
+    if (keys.difference({
+          ...eventPreferenceFields,
+          ...optionalEventPreferenceFields,
+        }).isNotEmpty ||
+        !keys.containsAll(eventPreferenceFields)) {
       throw const FormatException('Invalid event preference fields');
     }
     EventSetupValue<T> read<T>(String key, T Function(Object?) decode) {
@@ -204,6 +246,9 @@ class PrivateEventPreferenceIntents {
       reusablePaymentPage: read('reusablePaymentPage', page),
       admissionPreset: read('admissionPreset', string),
       expectedAmountMinor: read('expectedAmountMinor', integer),
+      bookingMode: json.containsKey('bookingMode')
+          ? read('bookingMode', string)
+          : null,
     );
     if (!intents.isValid) {
       throw const FormatException('Invalid event preferences');
@@ -244,12 +289,17 @@ class PrivateEventPreferencesSnapshot {
     }
     final preferences = Map<String, Object?>.from(rawPreferences);
     final terms = Map<String, Object?>.from(rawTerms);
+    final optionalKeys = optionalEventPreferenceFields
+        .where(preferences.containsKey)
+        .toList(growable: false);
     if (preferences.keys.toSet().difference({
           ...eventPreferenceFields,
+          ...optionalEventPreferenceFields,
           'defaultsRevision',
           'defaultsHash',
         }).isNotEmpty ||
-        preferences.length != eventPreferenceFields.length + 2 ||
+        preferences.length !=
+            eventPreferenceFields.length + optionalKeys.length + 2 ||
         preferences['defaultsRevision'] is! int ||
         preferences['defaultsHash'] is! String ||
         !_hashPattern.hasMatch(preferences['defaultsHash'] as String) ||
@@ -260,7 +310,7 @@ class PrivateEventPreferencesSnapshot {
     }
     final intentsJson = <String, Object?>{};
     final resolvedValues = <String, Object?>{};
-    for (final key in eventPreferenceFields) {
+    for (final key in [...eventPreferenceFields, ...optionalKeys]) {
       final rawField = preferences[key];
       if (rawField is! Map) {
         throw const FormatException('Invalid resolved field');

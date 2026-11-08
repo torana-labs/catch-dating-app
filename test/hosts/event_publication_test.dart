@@ -284,6 +284,41 @@ void main() {
     },
   );
 
+  test('publication settings round-trip and the view reads defaults', () {
+    const request = EventPublicationRequest(
+      organizerId: 'org1',
+      eventId: 'event1',
+      requestId: 'publication-settings',
+      expectedSetupRevision: 2,
+      publicationState: 'published',
+      listing: 'link',
+      showGuestList: false,
+    );
+    expect(request.toJson()['listing'], 'link');
+    expect(request.toJson().containsKey('priceHiddenUntilBookingOpens'), false);
+    expect(
+      EventPublicationRequest.fromJson(request.toJson()).toJson(),
+      request.toJson(),
+    );
+    expect(
+      () =>
+          EventPublicationRequest.fromJson({...request.toJson(), 'listing': 7}),
+      throwsFormatException,
+    );
+    expect(PrivateEventSettings.fromView(null).listing, 'listed');
+    expect(PrivateEventSettings.fromView(null).showGuestList, true);
+    final linked = PrivateEventSettings.fromView({
+      'listing': 'link',
+      'showGuestList': false,
+      'priceHiddenUntilBookingOpens': true,
+    });
+    expect(linked.linkOnly, true);
+    expect(
+      () => PrivateEventSettings.fromView({'listing': 'invite'}),
+      throwsFormatException,
+    );
+  });
+
   test('publication request journal rejects unknown authority fields', () {
     const request = EventPublicationRequest(
       organizerId: 'org1',

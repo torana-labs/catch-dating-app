@@ -481,6 +481,25 @@
           "rotations"
         ]
       }
+    },
+    "listing": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "link"
+      ],
+      "description": "Where people can find the event. listed: on the organizer's page, in Catch Explore and in search. link: only people with the event's link; it is left out of Explore, search and the organizer page. Missing reads as listed.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "showGuestList": {
+      "type": "boolean",
+      "description": "Whether guests see who else is going: a count, and friends' names in the app. Missing reads as true.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "priceHiddenUntilBookingOpens": {
+      "type": "boolean",
+      "description": "Whether the price stays hidden until booking opens. Missing reads as false.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [

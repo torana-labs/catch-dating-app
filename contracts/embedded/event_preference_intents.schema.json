@@ -513,6 +513,59 @@
           }
         }
       ]
+    },
+    "bookingMode": {
+      "description": "Who can book. askFirst sends sign-ups to the host for approval before they book. Optional: a command that leaves it out keeps the event's saved choice, and inherits when none is saved.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "value"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "set"
+            },
+            "value": {
+              "type": "string",
+              "enum": [
+                "anyone",
+                "followersFirst",
+                "askFirst"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "clear"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "inherit"
+            }
+          }
+        }
+      ]
     }
   }
 }
