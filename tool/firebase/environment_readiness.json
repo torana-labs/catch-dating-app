@@ -113,6 +113,7 @@
       ],
       "owner": "payments",
       "sourcePaths": [
+        "functions/src/money/organizerBillingPlan.ts",
         "functions/src/money/organizerBills.ts",
         "functions/src/payments/razorpay.ts"
       ],

@@ -9,6 +9,7 @@ import {growthFactsCollection} from "../growth/organizerGrowthFacts";
 import type {
   OrganizerBillDocument,
   OrganizerBillingCycleDocument,
+  OrganizerBillingPlanDocument as PlanDocument,
   OrganizerGrowthFactsDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {validateOrganizerBillDocument} from
@@ -28,6 +29,7 @@ import {computeBill, monthOf, type BillablePayment} from "./billComputation";
 import {billablePaymentsByOrganizer} from "./billSources";
 import {trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {readMoneySettings} from "./moneySettings";
+import {prepareNominatorCredit} from "./nominatorCredits";
 import {billingPlanForCycle, type BillingPlan} from "./billingPlan";
 
 /**
@@ -38,6 +40,7 @@ import {billingPlanForCycle, type BillingPlan} from "./billingPlan";
  */
 export const organizerBillingCyclesCollection = "organizerBillingCycles";
 export const organizerBillsCollectionName = "organizerBills";
+const organizerBillingPlansCollectionName = "organizerBillingPlans";
 const historyLimit = 60;
 const pageSize = 300;
 
@@ -262,9 +265,11 @@ export async function generateCycleBills(deps: CycleBillDeps,
         .doc(item.organizerId);
       const billRef = db.collection(organizerBillsCollectionName)
         .doc(cycleBillId(item.organizerId, cycle.startMillis));
+      const planRef = db.collection(organizerBillingPlansCollectionName)
+        .doc(item.organizerId);
       const wrote = await db.runTransaction(async (tx) => {
-        const [pointerSnap, billSnap] = await Promise.all([
-          tx.get(pointerRef), tx.get(billRef)]);
+        const [pointerSnap, billSnap, planSnap] = await Promise.all([
+          tx.get(pointerRef), tx.get(billRef), tx.get(planRef)]);
         const pointer = pointerSnap.data() as Pointer | undefined ??
           item.pointer;
         // Another run already billed this cycle.
@@ -272,12 +277,33 @@ export async function generateCycleBills(deps: CycleBillDeps,
             billSnap.exists) {
           return false;
         }
-        const bill = cycleBill({work: item, cycle,
+        const storedPlan = planSnap.data() as PlanDocument | undefined;
+        let bill = cycleBill({work: item, cycle,
           payments: byOrganizer.get(item.organizerId) ?? [], plan,
           organizerName, gstRegistered: settings.gstRegistered,
           gstRateBasisPoints: settings.gstRateBasisPoints, current: undefined,
           nowMillis: now, actorUid});
+        // The web purchase prepaid the first tools-only cycle, once.
+        const prepaid = plan.kind === "toolsOnly" ? plan.prepaid : null;
+        let credit: () => unknown = () => null;
+        if (bill && prepaid && storedPlan?.prepaidBillId === null) {
+          if (prepaid.paidMinor >= bill.totalMinor) {
+            bill = checkedBill({...bill, status: "paid",
+              paidAtMillis: prepaid.paidAtMillis, paidMinor: prepaid.paidMinor,
+              paidVia: "planPurchase", history: [...bill.history,
+                {atMillis: now, action: "paid" as const, byUid: null,
+                  note: "Prepaid by the tools-only purchase"}]
+                .slice(-historyLimit)});
+            credit = await prepareNominatorCredit(db, tx, bill, now);
+          }
+          tx.set(planRef, {...storedPlan, prepaidBillId: bill.billId,
+            revision: storedPlan.revision + 1, updatedAtMillis: now,
+            history: [...storedPlan.history, {atMillis: now,
+              action: "prepaidUsed" as const, byUid: null}]
+              .slice(-historyLimit)});
+        }
         if (bill) tx.set(billRef, bill);
+        credit();
         tx.set(pointerRef, checkedPointer({...pointer,
           nextCycleNumber: cycle.cycleNumber + 1,
           nextCycleStartMillis: cycle.endMillis,

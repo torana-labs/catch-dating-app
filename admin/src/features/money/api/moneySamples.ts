@@ -117,7 +117,8 @@ function listBills(scope: {month: string} | {organizerId: string},
   // One organizer's page shows its trial: it ended on 1 September.
   trial: "organizerId" in scope ? {state: "ended", anchor: "firstEvent",
     days: 30, startsAtMillis: Date.UTC(2026, 6, 2, 18, 30),
-    endsAtMillis: Date.UTC(2026, 7, 1, 18, 30), daysLeft: null} : null};
+    endsAtMillis: Date.UTC(2026, 7, 1, 18, 30), daysLeft: null} : null,
+  billingPlan: null};
 }
 
 /**

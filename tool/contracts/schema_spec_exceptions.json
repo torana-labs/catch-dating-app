@@ -285,6 +285,7 @@
       "MoneyIssueResolutionDocument",
       "NominatorCreditDocument",
       "OrganizerBillDocument",
+      "OrganizerBillingPlanDocument",
       "OrganizerEntitlementCallableResponse",
       "OrganizerEntitlementMutationCallableResponse",
       "OrganizerTrialStatus",

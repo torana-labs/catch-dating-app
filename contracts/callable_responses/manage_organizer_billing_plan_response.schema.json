@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_billing_plan_response.schema.json",
+  "title": "ManageOrganizerBillingPlanCallableResponse",
+  "description": "The organizer's Catch plan for the host billing website, with prices: the tools-only fee per cycle, the commission rate and cap, the cycle length and whether GST is added. paymentUrl is the tools-only payment link while a purchase waits to be paid. revision is 0 before any plan change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "plan", "revision", "paymentUrl", "amountDueMinor", "prices"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "plan": {"$ref": "../embedded/organizer_billing_plan_status.schema.json"},
+    "revision": {"type": "integer", "minimum": 0},
+    "paymentUrl": {"type": ["string", "null"], "pattern": "^https://", "maxLength": 300},
+    "amountDueMinor": {"type": ["integer", "null"], "minimum": 0, "maximum": 100000000000},
+    "prices": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["toolsOnlyFeeMinor", "commissionRateBasisPoints", "commissionCapMinor", "cycleDays", "gstRegistered", "gstRateBasisPoints"],
+          "properties": {
+            "toolsOnlyFeeMinor": {"type": "integer", "minimum": 0, "maximum": 100000000000},
+            "commissionRateBasisPoints": {"type": "integer", "minimum": 0, "maximum": 10000},
+            "commissionCapMinor": {"type": ["integer", "null"], "minimum": 0, "maximum": 100000000000},
+            "cycleDays": {"type": "integer", "minimum": 1, "maximum": 366},
+            "gstRegistered": {"type": "boolean"},
+            "gstRateBasisPoints": {"type": "integer", "minimum": 0, "maximum": 10000}
+          }
+        }
+      ]
+    }
+  }
+}

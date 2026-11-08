@@ -1147,6 +1147,7 @@ export {generateOrganizerCycleBillsDaily} from "./money/organizerCycleBills";
 export {listMyOrganizerJourneys} from "./organizers/organizerJourney";
 export {listOrganizerBills} from "./money/organizerOwnBills";
 export {getOrganizerBillingStatus} from "./money/organizerBillingStatus";
+export {manageOrganizerBillingPlan} from "./money/organizerBillingPlan";
 export {adminManageMoneySettings} from "./money/moneySettings";
 export {adminManageNominatorCredits} from "./money/nominatorCredits";
 export {adminManagePlatformCosts} from "./money/platformCosts";

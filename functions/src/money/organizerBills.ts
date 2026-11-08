@@ -30,6 +30,7 @@ import {
 import {dayMillis} from "./hostTrial";
 import {moneyRoles, nextInvoice, readMoneySettings} from "./moneySettings";
 import {readOrganizerTrialStatus} from "./organizerBillingStatus";
+import {readBillingPlan} from "./organizerBillingPlan";
 import {prepareNominatorCredit} from "./nominatorCredits";
 import {generateCycleBills, regenerateToSendCycleBills} from
   "./organizerCycleBills";
@@ -252,14 +253,17 @@ export async function listBills(db: Db,
     if (bill.status !== "free") totals.billedMinor += bill.totalMinor;
     totals.paidMinor += bill.paidMinor ?? 0;
   }
-  const [{settings}, invoice, trial] = await Promise.all([
+  const [{settings}, invoice, trial, billingPlan] = await Promise.all([
     readMoneySettings(db), nextInvoice(db, nowMillis),
     "organizerId" in scope ?
-      readOrganizerTrialStatus(db, scope.organizerId, nowMillis) : null]);
+      readOrganizerTrialStatus(db, scope.organizerId, nowMillis) : null,
+    "organizerId" in scope ?
+      readBillingPlan(db, scope.organizerId) : undefined]);
   return {month: "month" in scope ? scope.month : null,
     organizerId: "organizerId" in scope ? scope.organizerId : null, bills,
     totals, counts, nextInvoiceNumber: invoice.label,
-    gstRegistered: settings.gstRegistered, trial};
+    gstRegistered: settings.gstRegistered, trial,
+    billingPlan: billingPlan ?? null};
 }
 
 /**
