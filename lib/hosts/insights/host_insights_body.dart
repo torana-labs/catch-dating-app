@@ -149,10 +149,7 @@ class _HostInsightsStatRow extends StatelessWidget {
       label: switch (stat.kind) {
         HostInsightsStatKind.bookings => l10n.hostTodayStatBookings,
         HostInsightsStatKind.ticketSales => l10n.hostTodayStatTicketSales,
-        // Existing strings until Insights gets its own (the l10n catalog is
-        // claimed by another lane): "Returning" and "Followers".
-        HostInsightsStatKind.cameBack =>
-          l10n.hostsOperationalRosterInsightReturning,
+        HostInsightsStatKind.cameBack => l10n.hostInsightsCameBack,
         HostInsightsStatKind.followers => l10n.hostOrganizerStatFollowers,
       },
       value: stat.value,
