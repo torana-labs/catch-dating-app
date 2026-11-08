@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_owner_page_response.schema.json",
+  "title": "ManageOrganizerOwnerPageCallableResponse",
+  "description": "Callable response returned by manageOrganizerOwnerPage. links echoes the saved owner links after setLinks; photoIds the saved photo order after setPhotoOrder; followerMessages the month's usage after sendFollowerMessage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "idempotentReplay",
+    "links",
+    "followerMessages",
+    "photoIds"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "setLinks",
+        "setPhotoOrder",
+        "sendFollowerMessage"
+      ]
+    },
+    "idempotentReplay": {
+      "type": "boolean"
+    },
+    "links": {
+      "anyOf": [
+        {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "../shared/public_page_common.schema.json#/definitions/ownerLinkInput"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "followerMessages": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "month",
+            "limit",
+            "used"
+          ],
+          "properties": {
+            "month": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}$"
+            },
+            "limit": {
+              "type": "integer",
+              "const": 2
+            },
+            "used": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "photoIds": {
+      "anyOf": [
+        {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

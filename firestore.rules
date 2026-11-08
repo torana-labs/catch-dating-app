@@ -1216,6 +1216,14 @@ service cloud.firestore {
     match /organizerTrackingSettings/{organizerId} {
       allow read, write: if false;
     }
+    // Owner view (#1109): daily page activity and the monthly follower-message
+    // allowance are written and read only by Functions.
+    match /organizerInsights/{insightId} {
+      allow read, write: if false;
+    }
+    match /organizerFollowerMessageQuotas/{quotaId} {
+      allow read, write: if false;
+    }
     match /organizerEventSetupDefaults/{organizerId} {
       allow read, write: if false;
     }

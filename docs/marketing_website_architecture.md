@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.22.0
+version: 0.23.0
 updated: 2026-11-08
 owner: marketing_website
 status: active
@@ -160,6 +160,36 @@ need separate authority design; claim approval still requires `profileComplete`.
 Instagram control proof is not implemented, and marketing permission remains
 separate from ownership. Removed concept promises are preserved only in Git
 history, not in a runtime or test-only duplicate of the old pages.
+
+### Owner view (#1109)
+
+A claimed organiser's team manages its page in place, on the page itself
+(`website/src/features/organizers/owner/`). Authority is the organiser's own
+fields, the same ones every organiser command checks: the owner
+(`ownerUserId`) is **owner**; managers and hosts (`hostUserIds`) are
+**editor**; **analyst** is reserved in the contract and the page (insights and
+"Open in Catch Host" only) until a team command grants it. The server returns
+the role's capabilities with the view, and each capability mirrors its
+command: about through `updateOrganizer` (owner only, as that command
+requires), the photo order and owner links through `manageOrganizerOwnerPage`
+(owner and editors), review replies through `setReviewResponse`, Pixel and GA4
+through `get/setOrganizerTrackingSettings` (the page keeps them with the
+owner, although the command accepts managers), and "Message followers"
+through `manageOrganizerOwnerPage`, which reserves one of two sends per
+calendar month (Asia/Kolkata) in `organizerFollowerMessageQuotas` and then
+calls `createOrganizerPost`. Insights read 30 server-only `organizerInsights`
+day documents that `rollupOrganizerInsightsDaily` writes each night from the
+host analytics marts and `organizerFollows`; `getOrganizerOwnerView` returns
+them with the editable content. A signed-out visitor sees one quiet sign-in
+line above the footer (today's claim sign-in); a signed-in visitor who is not
+on the team sees only the public page. Photo uploads and removals, events and
+live tools stay in Catch Host.
+
+Edits reach the public page within a minute without a purge: an organiser
+write rebuilds `organizerPublicPages` through `onPublicPageOrganizerWritten`
+within seconds, a server render reads the rebuilt record, and the CDN's cached
+HTML expires after `s-maxage=60`. The owner view re-reads its own data after
+every write, so the team sees the change at once.
 
 ## Current State
 

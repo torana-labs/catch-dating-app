@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.186.0
+version: 1.187.0
 updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
@@ -6087,6 +6087,20 @@ eligibility. The public projection has a code-owned disabled publication gate
 and null IDs pending reviewed advertising policy. Public organizer and event
 eligibility cannot be supplied by a caller. No new client permissions, provider
 credentials, guest information or advertising transmission are introduced.
+
+### Organizer owner view (#1109)
+
+`organizer_insights.schema.json` owns one server-only document per organiser and
+UTC day (`organizerInsights/{organizerId}_{yyyymmdd}`): visits, owner link
+clicks by link and fixed traffic source, booking clicks and new followers.
+`rollupOrganizerInsightsDaily` rewrites a day from the host analytics marts and
+`organizerFollows`, only for organisers with an owner and some activity; a
+missing day reads as zero. `organizer_follower_message_quotas.schema.json` owns
+the monthly (Asia/Kolkata) Message followers allowance as at most two request
+ids per organiser-month. `getOrganizerOwnerView` and `manageOrganizerOwnerPage`
+validate generated payloads and responses; the role comes from the organiser's
+own authority fields. Both collections deny all client access. Every field is
+new; no existing document or command changes shape.
 
 
 ## Catch-owned controlled support reply (CAT16)

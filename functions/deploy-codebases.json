@@ -5,7 +5,7 @@
     "eventsuccess": ["eventSuccess"],
     "host": ["hostReadModels", "hostWork"],
     "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],
-    "organizers": ["organizers"],
+    "organizers": ["organizers", "organizerInsights"],
     "payments": ["payments", "money", "hostMemberships", "commercialTerms", "memberships", "entitlements"],
     "platform": ["analytics", "growth", "operations", "demoOps"],
     "programs": ["programs", "transport", "programRsvp"],

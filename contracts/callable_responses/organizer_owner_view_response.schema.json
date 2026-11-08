@@ -1,0 +1,288 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_owner_view_response.schema.json",
+  "title": "OrganizerOwnerViewCallableResponse",
+  "description": "Callable response returned by getOrganizerOwnerView: who the caller is on this organiser's team, what they may do on the website, the last 30 days of page activity from organizerInsights, and the editable page content the owner panels start from.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "role",
+    "capabilities",
+    "insights",
+    "links",
+    "about",
+    "photos",
+    "followerMessages"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "role": {
+      "description": "owner: the organiser's owner. editor: a manager or host on the team. analyst: read-only (reserved; no team command grants it yet).",
+      "type": "string",
+      "enum": [
+        "owner",
+        "editor",
+        "analyst"
+      ]
+    },
+    "capabilities": {
+      "description": "What this role may do in the owner view, matching what the server commands allow.",
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "enum": [
+          "insights",
+          "links",
+          "about",
+          "photos",
+          "reviews",
+          "messageFollowers",
+          "settings",
+          "openInHost"
+        ]
+      }
+    },
+    "insights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "windowDays",
+        "startDate",
+        "endDate",
+        "updatedThrough",
+        "totals",
+        "days",
+        "sources",
+        "links"
+      ],
+      "properties": {
+        "windowDays": {
+          "type": "integer",
+          "const": 30
+        },
+        "startDate": {
+          "$ref": "#/definitions/dateKey"
+        },
+        "endDate": {
+          "$ref": "#/definitions/dateKey"
+        },
+        "updatedThrough": {
+          "description": "The latest day in the window that has a roll-up, or null before the first nightly run.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/dateKey"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "totals": {
+          "$ref": "#/definitions/totals"
+        },
+        "days": {
+          "type": "array",
+          "minItems": 30,
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "visits",
+              "linkClicks",
+              "bookingClicks",
+              "newFollowers"
+            ],
+            "properties": {
+              "date": {
+                "$ref": "#/definitions/dateKey"
+              },
+              "visits": {
+                "$ref": "#/definitions/count"
+              },
+              "linkClicks": {
+                "$ref": "#/definitions/count"
+              },
+              "bookingClicks": {
+                "$ref": "#/definitions/count"
+              },
+              "newFollowers": {
+                "$ref": "#/definitions/count"
+              }
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "clicks"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "instagram",
+                  "whatsapp",
+                  "facebook",
+                  "google",
+                  "qr",
+                  "email",
+                  "direct",
+                  "other"
+                ]
+              },
+              "clicks": {
+                "$ref": "#/definitions/count"
+              }
+            }
+          }
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "linkId",
+              "clicks"
+            ],
+            "properties": {
+              "linkId": {
+                "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+              },
+              "clicks": {
+                "$ref": "#/definitions/count"
+              }
+            }
+          }
+        }
+      }
+    },
+    "links": {
+      "description": "Every owner link as the editor sends it back, expired ones included, in the owner's order.",
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/ownerLinkInput"
+      }
+    },
+    "about": {
+      "description": "The organiser description the page shows under About.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    },
+    "photos": {
+      "description": "The page's photos in display order (the first is the cover). The owner view reorders them through manageOrganizerOwnerPage; adding and removing photos stays in Catch Host, where uploads and storage clean-up live.",
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "$ref": "#/definitions/photo"
+      }
+    },
+    "followerMessages": {
+      "description": "Message followers: at most twice a calendar month (Asia/Kolkata) per organiser.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "month",
+        "limit",
+        "used"
+      ],
+      "properties": {
+        "month": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}$"
+        },
+        "limit": {
+          "type": "integer",
+          "const": 2
+        },
+        "used": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        }
+      }
+    }
+  },
+  "definitions": {
+    "dateKey": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visits",
+        "linkClicks",
+        "bookingClicks",
+        "newFollowers"
+      ],
+      "properties": {
+        "visits": {
+          "$ref": "#/definitions/count"
+        },
+        "linkClicks": {
+          "$ref": "#/definitions/count"
+        },
+        "bookingClicks": {
+          "$ref": "#/definitions/count"
+        },
+        "newFollowers": {
+          "$ref": "#/definitions/count"
+        }
+      }
+    },
+    "photo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "url",
+        "thumbnailUrl"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "thumbnailUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "maxLength": 2048
+        }
+      }
+    }
+  }
+}

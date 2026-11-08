@@ -1,4 +1,5 @@
 import {CatchPageBody, CatchPaneLayout, CatchStack, useCatch} from "@catch/web-ui";
+import type {ReactNode} from "react";
 import type {OrganizerPageController} from "../useOrganizerPageController";
 import {OrganizerAboutSection, OrganizerClaimSection, OrganizerPageFooter} from "./organizerPage/OrganizerAboutSections";
 import {OrganizerEventsSection, OrganizerMomentsSection} from "./organizerPage/OrganizerEventsSections";
@@ -13,9 +14,15 @@ import {PublicPageFooter} from "../../../shared/site";
  * the main column (the claim pitch on a generated page, Coming up, What it's
  * like, Reviews, About, "Made with Catch" and the footer). A phone stacks
  * them in that order; a wider window puts the profile in the list pane
- * beside the rest, as the board's list-detail pane layout does.
+ * beside the rest, as the board's list-detail pane layout does. The owner
+ * view (#1109) adds its bar above the page and its sign-in line above the
+ * footer, for a claimed page only.
  */
-export function HostListingSections({controller}: {controller: OrganizerPageController}) {
+export function HostListingSections({controller, owner, ownerFooter}: {
+  controller: OrganizerPageController;
+  owner?: ReactNode;
+  ownerFooter?: ReactNode;
+}) {
   const {sizeClass} = useCatch();
   const profile = (
     <CatchStack aria-label={controller.view.name} as="aside" gap={20}>
@@ -33,11 +40,13 @@ export function HostListingSections({controller}: {controller: OrganizerPageCont
       <OrganizerReviewsSection controller={controller} />
       <OrganizerAboutSection controller={controller} />
       <OrganizerPageFooter controller={controller} />
+      {ownerFooter}
       <PublicPageFooter />
     </CatchStack>
   );
   if (sizeClass === "compact") {
-    return <CatchPageBody gutter><CatchStack gap="section">{profile}{main}</CatchStack></CatchPageBody>;
+    return <CatchPageBody gutter><CatchStack gap="section">{owner}{profile}{main}</CatchStack></CatchPageBody>;
   }
-  return <CatchPaneLayout detail={main} main={profile} pattern="list-detail" />;
+  const panes = <CatchPaneLayout detail={main} main={profile} pattern="list-detail" />;
+  return owner ? <CatchStack gap={24}><CatchPageBody gutter>{owner}</CatchPageBody>{panes}</CatchStack> : panes;
 }

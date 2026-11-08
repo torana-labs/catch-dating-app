@@ -500,6 +500,7 @@ enter previews.
 |----------|------|---------|
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
+| `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramFamilyView` | `src/programs/familyView.ts` | The family's counts-only programme view (no names) by a family link. |
@@ -511,8 +512,10 @@ enter previews.
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
 | `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
+| `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
+| `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |
 | `submitProgramGuestId` | `src/programs/guestIds.ts` | A household saves a member's ID through its RSVP link. |
 | `upsertProgramHamper` | `src/programs/hampers.ts` | Marks a room's welcome hamper placed (porter link or hotel desk). |
 | `upsertProgramPhoto` | `src/programs/photos.ts` | Adds or changes a programme photo. |

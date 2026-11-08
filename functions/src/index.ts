@@ -1036,6 +1036,10 @@ export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
 export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
   readPublicOrganizerTrackingSettings}
   from "./analytics/organizerTrackingSettings";
+export {rollupOrganizerInsightsDaily} from
+  "./organizerInsights/insightsRollup";
+export {getOrganizerOwnerView} from "./organizerInsights/ownerView";
+export {manageOrganizerOwnerPage} from "./organizerInsights/ownerPage";
 
 export {manageProgramLodging} from "./programs/programLodgingApi";
 export {generateSalesPartnerOutreach, getSalesPartnerOutreachJob,
