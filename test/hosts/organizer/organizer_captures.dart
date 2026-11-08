@@ -14,6 +14,7 @@ import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
@@ -66,7 +67,7 @@ final List<HostOrganizerBill> _bills = [
 final OrganizerState _tab = OrganizerState(
   organizer: organizerCaptureOrganizer,
   isOwner: true,
-  pageLink: 'catchdates.com/seafacesocial',
+  pageLink: '${Brand.webDomain}/seafacesocial',
   pageLive: true,
   stats: const [
     OrganizerStat(

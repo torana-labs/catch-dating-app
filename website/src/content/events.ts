@@ -242,7 +242,7 @@ export const eventPageCopy = {
   ticketsOn: (source: string) => `Tickets on ${source}`,
   /** The price while the host hides it until booking opens. */
   priceHidden: "Price when booking opens",
-  /** Where a Catch event's host sells its tickets instead. */
+  /** Where the host of an event listed from elsewhere sells its tickets instead. */
   ticketPlatforms: {
     generic: "the organiser’s site", luma: "Luma", eventbrite: "Eventbrite", partiful: "Partiful",
     posh: "Posh", bookmyshow: "BookMyShow", district: "District", sortmyscene: "Sort My Scene", airbnb: "Airbnb",

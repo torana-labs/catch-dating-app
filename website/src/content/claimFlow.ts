@@ -2,6 +2,7 @@
 // (SignIn, Choose, Code, Done, Review, Sent and the desktop Code board).
 // Listing names, handles and the owner's first name are filled at runtime;
 // the code itself, the check copy and the errors live in claimVerification.ts.
+import {brand} from "./brand.ts";
 
 export const claimFlowCopy = {
   kicker: "Claim your page",
@@ -54,7 +55,7 @@ export const claimFlowCopy = {
       {icon: "feedback", title: "Reply to reviews", subtitle: "Thank people and answer questions in public."},
     ],
     openPage: "Open your page",
-    host: "Get Catch Host to run your events",
+    host: `Get ${brand.stores.hostAppName} to run your events`,
   },
   footerLabel: "Footer",
   reviewFootnote: "We already have your name and phone from signing in.",

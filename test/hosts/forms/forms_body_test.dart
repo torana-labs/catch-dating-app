@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/forms/form_new_state.dart';
 import 'package:catch_dating_app/hosts/forms/form_share_body.dart';
 import 'package:catch_dating_app/hosts/forms/forms_body.dart';
 import 'package:catch_dating_app/hosts/forms/forms_state.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -203,14 +204,14 @@ void main() {
       await pumpFormsBody(
         tester,
         HostFormShareBody(
-          url: 'https://catchdates.com/lanternlane/join-the-run/',
+          url: '${Brand.webOrigin}/lanternlane/join-the-run/',
           onCopy: () => copied++,
           onShare: shared.add,
         ),
       );
 
       expect(
-        find.text('catchdates.com/lanternlane/join-the-run'),
+        find.text('${Brand.webDomain}/lanternlane/join-the-run'),
         findsOneWidget,
       );
       await tester.tap(find.text('Copy'));

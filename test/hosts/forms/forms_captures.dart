@@ -19,6 +19,7 @@ import 'package:catch_dating_app/hosts/forms/response_body.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
 import 'package:catch_dating_app/hosts/forms/responses_body.dart';
 import 'package:catch_dating_app/hosts/forms/responses_state.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -287,7 +288,7 @@ Widget hostOfferCapture() {
           expiresAt: DateTime(2026, 11, 13, 21),
           message:
               'Hi Tara! There’s a place for you on the Sunday 15 Nov run. '
-              'It’s held until Friday at 9 PM. Book here: catchdates.com/o/4fk2',
+              'It’s held until Friday at 9 PM. Book here: ${Brand.webDomain}/o/4fk2',
           canOpenWhatsapp: true,
         ),
       ),
@@ -371,7 +372,7 @@ Widget hostFormShareCapture() => _frame(
     back: CatchTopBarBack(label: l10n.hostFormsBack, onPressed: () {}),
   ),
   body: HostFormShareBody(
-    url: 'https://catchdates.com/lanternlane/join-the-run/',
+    url: '${Brand.webOrigin}/lanternlane/join-the-run/',
     onCopy: () {},
     onShare: (_) {},
   ),

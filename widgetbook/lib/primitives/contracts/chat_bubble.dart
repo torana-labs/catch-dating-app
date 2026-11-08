@@ -1,3 +1,4 @@
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ Widget catchChatBubbleContractStates(BuildContext context) {
         child: const CatchChatBubble(
           text:
               'Hi Tara! There is a place for you on the Sunday run. '
-              'Book here: catchdates.com/o/4fk2',
+              'Book here: ${Brand.webDomain}/o/4fk2',
           variant: CatchChatBubbleVariant.mine,
           time: '7:12 PM',
         ),
