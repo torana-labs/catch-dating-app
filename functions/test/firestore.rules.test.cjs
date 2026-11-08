@@ -6216,6 +6216,8 @@ describe("firestore.rules", () => {
       "programHampers",
       "programPhotos",
       "programVendorBills",
+      "programAssistantRuns",
+      "programAssistantBudgets",
       "programTravelLegs",
       "programTravelParties",
       "transportVendors",

@@ -858,6 +858,7 @@ export {
   upsertProgramHamper,
 } from "./programs/hampers";
 export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
+export {previewProgramAssistantReply} from "./programs/assistant/preview";
 export {getProgramDeparturesRoster} from
   "./transport/programDepartures";
 export {

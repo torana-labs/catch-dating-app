@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.187.0
+version: 1.188.0
 updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
@@ -4396,6 +4396,27 @@ retention sweep deletes `programGuestIds`, `programHampers`, `programPhotos`
 and `programAlerts`, clears vendor bill notes and line references (keeping
 the totals), and deletes every file under `programs/{programId}/`; a failed
 file delete leaves the run unfinished so the next pass retries.
+
+### Programme Assistant Runs And Budgets
+
+Two new server-only collections back the wedding assistant
+([programme_assistant.md](programme_assistant.md)).
+`programAssistantRuns/{runId}` (`runId` is `par_` plus 40 hex characters,
+derived from the inbound message id or from the previewing actor's request
+id) is one audit row per run: mode (`live | preview`), thread and message
+ids, status (`intent | answered | escalated | skipped`), the reason,
+language, model, prompt and fact pack versions, SHA-256 hashes of the exact
+request and of the fact pack, the budget day, reserved, input and output
+tokens, attempts, the provider status and latency. It never holds the
+guest's text, the reply, the fact pack, names or phone numbers.
+`programAssistantBudgets/{programId}_{YYYY-MM-DD}` is one programme's
+token ledger for a programme-local day: the cap, tokens reserved by runs in
+flight, tokens consumed and the run count. A run's intent and its
+reservation commit in one transaction before the model call. Both
+collections are new; no existing document gains a field. The assistant
+reads `programAssistantSettings` and `programWhatsappThreads` with
+read-time defaults (a missing settings document reads as off) and writes
+only `state` and `escalationReason` on a thread.
 
 ### Program Room Occupancy
 

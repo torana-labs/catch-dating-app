@@ -3131,6 +3131,34 @@
       ]
     },
     {
+      "id": "programAssistantRuns",
+      "path": "programAssistantRuns/{runId}",
+      "rulesMatch": "/programAssistantRuns/{runId}",
+      "typescriptInterface": "ProgramAssistantRunDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "wedding assistant (handleProgramWhatsappInbound, previewProgramAssistantReply)",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One audit row per assistant run, written as an intent with its budget reservation before the model call and settled after it.",
+        "Holds ids, request and fact pack hashes, token counts and the outcome; never guest text, replies, names or phone numbers."
+      ]
+    },
+    {
+      "id": "programAssistantBudgets",
+      "path": "programAssistantBudgets/{budgetId}",
+      "rulesMatch": "/programAssistantBudgets/{budgetId}",
+      "typescriptInterface": "ProgramAssistantBudgetDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "wedding assistant budget ledger",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One programme's daily token ledger, id {programId}_{YYYY-MM-DD} in the programme's time zone.",
+        "Counts only: the cap, tokens reserved by runs in flight, tokens consumed and the run count."
+      ]
+    },
+    {
       "id": "programHampers",
       "path": "programHampers/{programHamperId}",
       "rulesMatch": "/programHampers/{programHamperId}",

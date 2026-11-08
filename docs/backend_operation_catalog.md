@@ -540,6 +540,24 @@ changes a function photo; `listProgramPhotos` returns albums, photos and the
 cover as signed URLs. Every command keeps a `requestId` receipt on its
 document. The guest ID, hotel and porter web pages are P4.10.
 
+## Programme assistant
+
+The wedding assistant ([owner doc](programme_assistant.md)) has one entry
+point and one callable. `handleProgramWhatsappInbound` is called by the
+programme WhatsApp inbound trigger for each guest message (it exports no
+Function of its own). It skips threads the planner has taken over. While
+the assistant is off it marks the thread `needsYou`. Otherwise it either
+answers from the household's fact pack through `sendProgramServiceReply`,
+or passes the message on: thread `needsYou` with `escalationReason`, a
+staff attention journal row in `organizerMomentSends` (duty
+`communications`), an assigned `programAlerts` row, and a holding reply
+while the 24-hour window is open. `previewProgramAssistantReply`
+(`communications` duty) runs the same path for the settings screen's Try it
+and sends nothing. Both write one `programAssistantRuns` audit row per run
+and draw on the programme's daily `programAssistantBudgets` ledger. The
+run's intent and its reservation commit before any model call, and a run is
+never resubmitted.
+
 ## Paid host membership operations
 
 Paid host memberships ([spec](plans/host_memberships_spec.md)) are entirely

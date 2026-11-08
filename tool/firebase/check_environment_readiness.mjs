@@ -971,8 +971,10 @@ export function buildCandidateBindings({environment, projectId, projectNumber, s
     Object.keys(value).sort().join(",") === [...keys].sort().join(",");
   const refs = ["RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
     "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
-    "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"];
-  const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY"];
+    "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
+    "PROGRAM_ASSISTANT_KEY_VERSION"];
+  const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
+    "PROGRAM_ASSISTANT_ENABLED"];
   if (!exactKeys(paramsProvenance, ["version", "projectId", "sourceSha", "paramsSha256", "names", "references", "activation"]) ||
       paramsProvenance.version !== 1 || paramsProvenance.projectId !== projectId || paramsProvenance.sourceSha !== sourceSha ||
       !/^[a-f0-9]{64}$/u.test(paramsProvenance.paramsSha256 ?? "") ||
