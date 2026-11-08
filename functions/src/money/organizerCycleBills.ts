@@ -30,7 +30,8 @@ import {billablePaymentsByOrganizer} from "./billSources";
 import {trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {readMoneySettings} from "./moneySettings";
 import {prepareNominatorCredit} from "./nominatorCredits";
-import {billingPlanForCycle, type BillingPlan} from "./billingPlan";
+import {billingPlanForCycle, planOfBill, type BillingPlan} from
+  "./billingPlan";
 
 /**
  * Rolling cycle bills (#1126): once a day, every organizer whose free trial
@@ -287,15 +288,15 @@ export async function generateCycleBills(deps: CycleBillDeps,
         const prepaid = plan.kind === "toolsOnly" ? plan.prepaid : null;
         let credit: () => unknown = () => null;
         if (bill && prepaid && storedPlan?.prepaidBillId === null) {
-          if (prepaid.paidMinor >= bill.totalMinor) {
-            bill = checkedBill({...bill, status: "paid",
-              paidAtMillis: prepaid.paidAtMillis, paidMinor: prepaid.paidMinor,
-              paidVia: "planPurchase", history: [...bill.history,
-                {atMillis: now, action: "paid" as const, byUid: null,
-                  note: "Prepaid by the tools-only purchase"}]
-                .slice(-historyLimit)});
-            credit = await prepareNominatorCredit(db, tx, bill, now);
-          }
+          // The purchase paid for this cycle at the fee it was bought at;
+          // GST switched on since is not charged on top.
+          bill = checkedBill({...bill, status: "paid",
+            paidAtMillis: prepaid.paidAtMillis, paidMinor: prepaid.paidMinor,
+            paidVia: "planPurchase", history: [...bill.history,
+              {atMillis: now, action: "paid" as const, byUid: null,
+                note: "Prepaid by the tools-only purchase"}]
+              .slice(-historyLimit)});
+          credit = await prepareNominatorCredit(db, tx, bill, now);
           tx.set(planRef, {...storedPlan, prepaidBillId: bill.billId,
             revision: storedPlan.revision + 1, updatedAtMillis: now,
             history: [...storedPlan.history, {atMillis: now,
@@ -348,8 +349,8 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
     const cycle: CycleWindow = {cycleNumber: stale.cycleNumber ?? 1,
       startMillis: stale.periodStartMillis, endMillis: stale.periodEndMillis,
       countFromMillis: stale.countFromMillis ?? stale.periodStartMillis};
-    const plan = await billingPlanForCycle({db,
-      organizerId: stale.organizerId, cycle, terms});
+    // A bill keeps the plan it was made on (#1126: never both).
+    const plan = planOfBill(stale);
     const ref = db.collection(organizerBillsCollectionName).doc(stale.billId);
     const wrote = await db.runTransaction(async (tx) => {
       const current = (await tx.get(ref)).data() as Bill | undefined;
