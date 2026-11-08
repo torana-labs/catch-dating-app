@@ -62,6 +62,7 @@ function controller() {
     selectedConversationUids: [],
     stage: "runtime",
     status: {message: "", tone: ""},
+    requestHostHelp: vi.fn(),
     submitConversationGraph: vi.fn(),
     toggleConversationUid: vi.fn(),
   }, {
@@ -106,6 +107,21 @@ describe("EventRuntimePage conversation graph", () => {
       .toHaveBeenCalledWith();
     expect(screen.getByText(eventRuntimeCopy.conversationPrivacy))
       .toBeTruthy();
+  });
+
+  it("asks the host for help from the live screen and keeps help and safety apart", () => {
+    render(
+      <MemoryRouter initialEntries={["/join/runtime-1"]}>
+        <Routes>
+          <Route path="/join/:publicRuntimeId" element={<EventRuntimePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", {name: eventRuntimeCopy.hostHelpAction}));
+    expect(runtimeController.value.requestHostHelp).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("link", {name: eventRuntimeCopy.safetyAction})
+      .getAttribute("href")).toBe("/help/");
   });
 
   it("renders the same server-clocked reveal midpoint and arrival count", () => {

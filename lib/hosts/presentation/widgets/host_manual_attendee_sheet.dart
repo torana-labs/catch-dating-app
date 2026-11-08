@@ -13,6 +13,7 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   var _showNameError = false;
+  var _places = 1;
 
   @override
   void dispose() {
@@ -60,6 +61,18 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
           ),
+          CatchField.stepper(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostsOperationalRosterFieldPlaces,
+            value: _places,
+            min: 1,
+            max: 20,
+            onChanged: (value) => setState(() => _places = value.toInt()),
+            decreaseSemanticLabel:
+                context.l10n.hostsOperationalRosterPlacesFewer,
+            increaseSemanticLabel:
+                context.l10n.hostsOperationalRosterPlacesMore,
+          ),
         ],
       ),
     );
@@ -77,6 +90,7 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
         displayName: name,
         phone: _nullableText(_phoneController.text),
         email: _nullableText(_emailController.text),
+        partySize: _places,
         status: EventAttendeeStatus.registered,
       ),
     );

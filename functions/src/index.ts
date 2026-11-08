@@ -97,6 +97,11 @@ export {
   listEventStaff,
   revokeEventStaff,
 } from "./events/eventStaff";
+export {heartbeatEventStaffPresence} from "./events/eventStaffPresence";
+export {
+  getEventTicketCode,
+  resolveEventTicketCode,
+} from "./events/eventTicketCodes";
 export {
   createEventRosterHandoff,
   ingestEventRosterWebhook,
@@ -108,6 +113,8 @@ export {
   getEventRuntimeBootstrap,
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
+export {requestEventRuntimeHostHelp} from
+  "./eventSuccess/eventRuntimeHostHelp";
 export {onEventRuntimeParticipantWritten} from
   "./eventSuccess/operations/runtimeRequiredDataTrigger";
 export {

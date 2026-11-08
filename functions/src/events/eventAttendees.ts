@@ -203,6 +203,8 @@ interface PreparedRow {
   externalReference: string | null;
   arrivalGroup: string | null;
   ticketType: string | null;
+  /** Places the row holds; null keeps the current value (new rows: 1). */
+  partySize: number | null;
   revenueAmountMinor: number | null;
   revenueCurrency: string | null;
   revenueSource: "hostImport" | "hostEstimate" | null;
@@ -464,6 +466,9 @@ export async function importEventAttendeesForHost(
           row.externalReference ?? existing?.externalReference ?? null,
         arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
         ticketType: row.ticketType ?? existing?.ticketType ?? null,
+        // Optional on the contract: absent reads as one place, so rows that
+        // never carried a party size stay untouched.
+        ...(row.partySize === null ? {} : {partySize: row.partySize}),
         revenueAmountMinor:
           row.revenueAmountMinor ?? existing?.revenueAmountMinor ?? null,
         revenueCurrency:
@@ -1332,6 +1337,7 @@ export function prepareImportRows(params: {
       externalReference,
       arrivalGroup,
       ticketType: stringOrNull(row.ticketType),
+      partySize: row.partySize ?? null,
       revenueAmountMinor,
       revenueCurrency,
       revenueSource,
@@ -1425,6 +1431,8 @@ export function canonicalImportPayload(
       externalReference: row.externalReference ?? null,
       arrivalGroup: row.arrivalGroup ?? null,
       ticketType: row.ticketType ?? null,
+      // Only present when set, so replay hashes of earlier imports hold.
+      ...(row.partySize == null ? {} : {partySize: row.partySize}),
       revenueAmountMinor: row.revenueAmountMinor ?? null,
       revenueCurrency: row.revenueCurrency ?? null,
       revenueSource: row.revenueSource ?? null,

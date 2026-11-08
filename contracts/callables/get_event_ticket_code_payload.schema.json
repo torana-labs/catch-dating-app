@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_ticket_code_payload.schema.json",
+  "title": "GetEventTicketCodeCallablePayload",
+  "description": "Guest request for the signed ticket code of the caller's own place on one event's guest list.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

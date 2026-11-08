@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_event_ticket_code_response.schema.json",
+  "title": "ResolveEventTicketCodeCallableResponse",
+  "description": "The attendee row a valid ticket code names, with the facts the door needs to check them in through the attendance outbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "displayName",
+    "status",
+    "attendanceRevision",
+    "partySize"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "registered",
+        "waitlisted",
+        "checkedIn"
+      ]
+    },
+    "attendanceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "partySize": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Places the row holds; a row without partySize holds 1."
+    }
+  }
+}

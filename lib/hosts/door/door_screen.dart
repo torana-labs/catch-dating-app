@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_staff_presence_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
@@ -59,6 +60,7 @@ class DoorScreen extends ConsumerStatefulWidget {
 
 class _DoorScreenState extends ConsumerState<DoorScreen> {
   var _scanning = false;
+  Timer? _heartbeat;
 
   DoorSession get _session =>
       ref.read(doorSessionProvider(widget.eventId).notifier);
@@ -70,13 +72,24 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
       if (!mounted) return;
       if (widget.initialFilter case final filter?) _session.setFilter(filter);
       unawaited(_guard(_session.loadOutbox));
+      unawaited(_session.heartbeat());
     });
+    _heartbeat = Timer.periodic(
+      EventStaffPresenceRepository.heartbeatInterval,
+      (_) => unawaited(_session.heartbeat()),
+    );
     ref.listenManual(appConnectivityProvider, (_, next) {
       final results = next.asData?.value;
       if (results != null && !connectivityResultsAreOffline(results)) {
         unawaited(_guard(_session.flushOutbox));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _heartbeat?.cancel();
+    super.dispose();
   }
 
   @override
@@ -94,7 +107,14 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
           checkedIn: state.checkedIn,
           expected: state.expected,
           camera: widget.scanCamera,
-          onClose: () => setState(() => _scanning = false),
+          result: state.scanned,
+          onTicket: _session.scanTicket,
+          onNext: _session.clearScanned,
+          onUndo: () => unawaited(_guard(_session.undoScanned)),
+          onClose: () {
+            _session.clearScanned();
+            setState(() => _scanning = false);
+          },
         ),
       );
     }
