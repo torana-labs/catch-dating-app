@@ -150,6 +150,12 @@
    "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
    "description": "Set once the retention sweep scrubbed identity/free-text fields. Anonymized programs remain archived and indefinitely retained."
   },
+   "whatsappSenderConnectionId": {
+     "type": ["string", "null"],
+     "minLength": 1,
+     "maxLength": 180,
+     "description": "organizerSenderConnections id of the wedding's own WhatsApp number. Optional; absent or null means the programme falls back to the organiser's first active WhatsApp sender. Guests who message this number reach the programme's inbox."
+   },
    "branding": {
      "type": ["object", "null"],
      "additionalProperties": false,

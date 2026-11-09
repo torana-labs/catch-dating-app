@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchStarRating, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchStarRating, CatchText} from "@catch/web-ui";
 import {organizerPageCopy} from "../../../content/organizerPage";
 import {ownerViewCopy} from "../../../content/ownerView";
 import {renderOwnerNotice} from "./OwnerInsightsPanel";
@@ -9,7 +9,8 @@ const copy = ownerViewCopy;
 /**
  * Review replies (setReviewResponse, the Host app's reply command) and
  * "Message followers" (a follower update, at most twice a calendar month,
- * enforced by manageOrganizerOwnerPage).
+ * enforced by manageOrganizerOwnerPage), also on WhatsApp when the
+ * organiser's number and follower template are ready.
  */
 export function OwnerAudiencePanel({controller}: {controller: OwnerViewController}) {
   const {reviews, followers, can} = controller;
@@ -23,6 +24,10 @@ export function OwnerAudiencePanel({controller}: {controller: OwnerViewControlle
               inputHint={copy.followers.hint} maxLength={500}
               maxLines={null} minLines={3} onChanged={followers.change} recipe="input" title={copy.followers.field}
               value={followers.text} />
+            {followers.whatsappAvailable ? (
+              <CatchCheckboxInput description={copy.followers.whatsappNote} label={copy.followers.whatsapp}
+                onChanged={followers.busy ? null : followers.setWhatsapp} value={followers.whatsapp} />
+            ) : null}
             {followers.usedUp ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followers.usedUp}</CatchText> : null}
             <CatchStack align="start">
               <CatchButton label={copy.followers.send}
@@ -32,6 +37,11 @@ export function OwnerAudiencePanel({controller}: {controller: OwnerViewControlle
             {what === "message" ?
               renderOwnerNotice({controller, failed: copy.followers.failed, panel: "audience", saved: copy.followers.sent}) :
               null}
+            {followers.delivery ? (
+              <CatchText as="p" role="status" tone="secondary" variant="body-small">
+                {copy.followers.delivered(followers.delivery.appRecipientCount, followers.delivery.whatsapp)}
+              </CatchText>
+            ) : null}
           </CatchStack>
         </CatchSection>
       ) : null}

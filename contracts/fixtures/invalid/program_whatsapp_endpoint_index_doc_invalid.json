@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "endpointHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "householdId": "household-1",
+  "guestId": null,
+  "source": "phone",
+  "ambiguous": false,
+  "claimants": [
+    {
+      "kind": "household",
+      "id": "household-1",
+      "householdId": "household-1"
+    }
+  ],
+  "updatedAtMillis": 1800000000000,
+  "revision": 1
+}

@@ -85,6 +85,29 @@ void main() {
       expect(rotated, 1);
     });
 
+    testWidgets('doubles courts read one partnership against the other', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        HostFormatsCourtsBody(
+          state: hostFormatsCourtsState(
+            plan: courtsPlan(round: 1),
+            assignments: doublesCourtsAssignments(),
+            drafts: const [],
+            attendees: formatsAttendees(courtsEvent),
+          ),
+          now: hostFormatsCourtsNow,
+          onRotate: () {},
+          onSetUp: () {},
+          onRetry: () {},
+        ),
+      );
+      expect(find.text('against'), findsNWidgets(2));
+      expect(find.textContaining('min on court ·'), findsNWidgets(2));
+      expect(find.text('most court time apart'), findsOneWidget);
+    });
+
     testWidgets('on a tablet the courts sit two by two beside Coming up', (
       tester,
     ) async {

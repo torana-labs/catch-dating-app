@@ -1183,6 +1183,30 @@
       "activationPolicy": "per-record-runtime-authority",
       "rotationCompatibility": "provider-overlap",
       "recordReferences": true
+    },
+    {
+      "id": "functions.reference.program-assistant",
+      "sourcePaths": [
+        "functions/src/programs/assistant/provider.ts"
+      ],
+      "owner": "program-assistant",
+      "credentialClass": "provider-secret",
+      "consumers": [
+        "onProgramWhatsappInboundMessageCreated",
+        "previewProgramAssistantReply"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "PROGRAM_ASSISTANT_KEY_VERSION",
+        "optional": true,
+        "secret": "ANTHROPIC_API_KEY",
+        "enabledParameter": "PROGRAM_ASSISTANT_ENABLED"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
     }
   ]
 }

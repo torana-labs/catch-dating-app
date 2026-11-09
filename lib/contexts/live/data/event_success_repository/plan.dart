@@ -172,10 +172,14 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// Moves the run of show to [activeStepIndex]. [activeStepIsActivity]
+  /// says whether the new step is the core activity; false (a planned stop)
+  /// lets guest cues the phone rule held back go out.
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
     required int expectedRevision,
+    bool? activeStepIsActivity,
   }) => withBackendErrorContext(
     () => _callLiveAction(
       EventSuccessLiveActionCallableRequest(
@@ -183,6 +187,7 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
         expectedRevision: expectedRevision,
         action: 'setActiveStep',
         activeStepIndex: activeStepIndex,
+        activeStepIsActivity: activeStepIsActivity,
       ),
     ),
     context: const BackendErrorContext(

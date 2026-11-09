@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_program_whatsapp_thread_handling_payload.schema.json",
+  "title": "SetProgramWhatsappThreadHandlingCallablePayload",
+  "description": "Take a thread over from the assistant (handledBy planner) or hand it back (assistant), and optionally mark it handled or needing the planner. expectedRevision fences concurrent edits. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "threadId",
+    "handledBy",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "handledBy": {
+      "type": "string",
+      "enum": [
+        "assistant",
+        "planner"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "needsYou",
+        "handled"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

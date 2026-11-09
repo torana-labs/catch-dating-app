@@ -905,7 +905,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 28);
+      Array<{collection: string}>).length, 36);
   });
 
 test("mismatched evidence scope blocks retention completion",
@@ -969,3 +969,33 @@ test("conflicting lodging scope prevents retention completion", async () => {
   assert.ok(db.getDoc("programLodgingProposals/conflict"));
   assert.equal(db.getDoc("organizerPrograms/program-1")!.anonymizedAt, null);
 });
+
+test("retention deletes the programme's WhatsApp threads and settings",
+  async () => {
+    const paths = [
+      "programWhatsappThreads/program-1_house-1",
+      "programWhatsappMessages/pwm_1",
+      "programWhatsappReplyOperations/pwro_1",
+      "programWhatsappCannedReplies/program-1_bus-times",
+      "programAssistantSettings/program-1",
+      "programWhatsappEndpointIndex/program-1_" + "a".repeat(64),
+      "programAssistantRuns/par_1",
+      "programAssistantBudgets/program-1_2026-12-12",
+    ];
+    const db = new FakeFirestore({
+      ...retentionSeed(),
+      ...Object.fromEntries(paths.map((path) => [path,
+        {programId: "program-1", organizerId: "org-1",
+          text: "Mehra family question"}])),
+      "programWhatsappMessages/pwm_other": {programId: "program-2",
+        organizerId: "org-1", text: "Other wedding"},
+    });
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const deps = retentionDeps(db, {now: () => pastGrace});
+    assert.equal(await anonymizeProgram(
+      db as never, "program-1", deps, T_GRACE + 10_000 + 60_000),
+    "completed");
+    for (const path of paths) assert.equal(db.getDoc(path), undefined, path);
+    assert.ok(db.getDoc("programWhatsappMessages/pwm_other"));
+  });

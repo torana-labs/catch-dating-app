@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/follow_organizer_by_phone_payload.schema.json",
+  "title": "FollowOrganizerByPhoneCallablePayload",
+  "description": "Callable payload accepted by followOrganizerByPhone: follow an organiser with just a verified phone (the website's phone-code sign-in), optionally with the explicit WhatsApp tick that grants the followerUpdates purpose for that phone. No profile is required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "whatsappUpdates"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "whatsappUpdates": {
+      "type": "boolean",
+      "description": "True only when the follower ticked the WhatsApp box themselves. False follows without any WhatsApp permission."
+    },
+    "termsVersion": {
+      "type": "string",
+      "enum": [
+        "follower-whatsapp-v1"
+      ],
+      "description": "The reviewed WhatsApp consent copy the follower saw. Required when whatsappUpdates is true."
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    }
+  }
+}

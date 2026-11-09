@@ -68,7 +68,9 @@ final class HostLiveDeliveryNeed extends HostLiveNeed {
 
 /// The formats board tonight's format runs on, opened from the console's
 /// views: the court board for court rotations, team mixing for teams.
-enum HostLiveFormatView { courts, mix }
+/// The formats board a night opens from Live: courts, team mixing, the
+/// crawl's stops, or pace pods.
+enum HostLiveFormatView { courts, mix, crawl, pods }
 
 /// One team or table and how many of its places are taken.
 @immutable

@@ -1100,7 +1100,10 @@
         "host_programme_branding_phone",
         "host_programme_id_tracker_desktop",
         "host_programme_reconcile_desktop",
-        "host_programme_photos_phone"
+        "host_programme_photos_phone",
+        "host_programme_inbox_desktop",
+        "host_programme_inbox_phone",
+        "host_programme_assistant_phone"
       ]
     },
     {

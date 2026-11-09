@@ -1,0 +1,24 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "cannedReplyId": "bus-times",
+  "label": "Bus times",
+  "variants": [
+    {
+      "language": "en",
+      "text": "Buses leave the hotel lobby 30 minutes before each function."
+    },
+    {
+      "language": "hi",
+      "text": "Har function se 30 minute pehle hotel lobby se bus chalegi."
+    }
+  ],
+  "sortOrder": 0,
+  "archived": false,
+  "updatedByUid": "manager-1",
+  "createdAtMillis": 1800000000000,
+  "updatedAtMillis": 1800000000000,
+  "revision": 1,
+  "lastRequestId": "canned-cmd-1",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}
