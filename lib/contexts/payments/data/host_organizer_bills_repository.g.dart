@@ -135,3 +135,86 @@ final class HostOrganizerBillsFamily extends $Family
   @override
   String toString() => r'hostOrganizerBillsProvider';
 }
+
+@ProviderFor(hostOrganizerBillingStatus)
+final hostOrganizerBillingStatusProvider = HostOrganizerBillingStatusFamily._();
+
+final class HostOrganizerBillingStatusProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostOrganizerBillingStatus>,
+          HostOrganizerBillingStatus,
+          FutureOr<HostOrganizerBillingStatus>
+        >
+    with
+        $FutureModifier<HostOrganizerBillingStatus>,
+        $FutureProvider<HostOrganizerBillingStatus> {
+  HostOrganizerBillingStatusProvider._({
+    required HostOrganizerBillingStatusFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostOrganizerBillingStatusProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostOrganizerBillingStatusHash();
+
+  @override
+  String toString() {
+    return r'hostOrganizerBillingStatusProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostOrganizerBillingStatus> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostOrganizerBillingStatus> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostOrganizerBillingStatus(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostOrganizerBillingStatusProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostOrganizerBillingStatusHash() =>
+    r'abee1c6ce076dfcc9021c269ad2116338a7542e6';
+
+final class HostOrganizerBillingStatusFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostOrganizerBillingStatus>,
+          String
+        > {
+  HostOrganizerBillingStatusFamily._()
+    : super(
+        retry: null,
+        name: r'hostOrganizerBillingStatusProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostOrganizerBillingStatusProvider call(String organizerId) =>
+      HostOrganizerBillingStatusProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostOrganizerBillingStatusProvider';
+}

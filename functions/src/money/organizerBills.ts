@@ -39,11 +39,12 @@ import {
   razorpayBillPaymentLinks,
   type BillPaymentLinkClient,
 } from "./billPaymentLinks";
+import {dayMillis, trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {moneyRoles, nextInvoice, readMoneySettings} from "./moneySettings";
+import {readOrganizerTrialStatus} from "./organizerBillingStatus";
 import {prepareNominatorCredit} from "./nominatorCredits";
 
 export const organizerBillsCollection = "organizerBills";
-const dayMillis = 24 * 60 * 60 * 1000;
 const historyLimit = 60;
 
 type Db = FirebaseFirestore.Firestore;
@@ -110,9 +111,11 @@ export async function generateMonthBills(deps: Pick<BillDeps, "db" | "now">,
     const facts = factsSnap.data() as OrganizerGrowthFactsDocument |
       undefined;
     // The free trial starts at the organizer's first event; a paid booking
-    // with no recorded event dates it instead.
-    const anchor = facts?.milestones.firstEventAt?.toMillis() ??
-      facts?.milestones.firstPaidBookingAt?.toMillis() ??
+    // with no recorded event dates it instead (hostTrial.ts). Growth facts
+    // that have not caught up yet fall back to the month's first payment.
+    const window = trialWindow(trialAnchorsFromFacts(facts),
+      terms.trial.days);
+    const anchor = window?.startsAtMillis ??
       Math.min(...payments.map((payment) => payment.capturedAtMillis));
     const figures = computeBill({payments, terms,
       trialEndsAtMillis: terms.trial.days > 0 ?
@@ -317,12 +320,14 @@ export async function listBills(db: Db,
     if (bill.status !== "free") totals.billedMinor += bill.totalMinor;
     totals.paidMinor += bill.paidMinor ?? 0;
   }
-  const [{settings}, invoice] = await Promise.all([readMoneySettings(db),
-    nextInvoice(db, nowMillis)]);
+  const [{settings}, invoice, trial] = await Promise.all([
+    readMoneySettings(db), nextInvoice(db, nowMillis),
+    "organizerId" in scope ?
+      readOrganizerTrialStatus(db, scope.organizerId, nowMillis) : null]);
   return {month: "month" in scope ? scope.month : null,
     organizerId: "organizerId" in scope ? scope.organizerId : null, bills,
     totals, counts, nextInvoiceNumber: invoice.label,
-    gstRegistered: settings.gstRegistered};
+    gstRegistered: settings.gstRegistered, trial};
 }
 
 /**

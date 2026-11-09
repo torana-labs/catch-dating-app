@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
 import 'package:catch_dating_app/hosts/organizer/payments_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -99,6 +100,7 @@ class OrganizerPaymentsBody extends StatelessWidget {
                   ),
                 ],
               ),
+              ?_TrialStatusLine.of(state.trial),
               CatchText(
                 l10n.hostOrganizerPlanBody,
                 variant: CatchTextVariant.bodySmall,
@@ -284,6 +286,61 @@ class _RazorpayTile extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Where the free trial stands, as neutral status text: days left, the day
+/// it starts or the day it ended. It never shows a price or a purchase prompt
+/// (App Store guideline 3.1.3(f)); nothing is gated when the trial ends.
+class _TrialStatusLine extends StatelessWidget {
+  const _TrialStatusLine(this.trial);
+
+  /// Null when there is nothing to say: no trial, unknown terms or no status.
+  static _TrialStatusLine? of(HostTrialStatus? trial) => switch (trial?.state) {
+    HostTrialState.notStarted ||
+    HostTrialState.scheduled ||
+    HostTrialState.active ||
+    HostTrialState.ended => _TrialStatusLine(trial!),
+    _ => null,
+  };
+
+  final HostTrialStatus trial;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String day(DateTime? date) =>
+        date == null ? '' : DateFormat.yMMMd(locale).format(date);
+    final daysLeft = trial.daysLeft;
+    final (title, body) = switch (trial.state) {
+      HostTrialState.active when daysLeft != null => (
+        l10n.hostOrganizerTrialActive(days: daysLeft),
+        l10n.hostOrganizerTrialActiveBody(date: day(trial.endsAt)),
+      ),
+      HostTrialState.scheduled => (
+        l10n.hostOrganizerTrialScheduled(date: day(trial.startsAt)),
+        null,
+      ),
+      HostTrialState.ended => (
+        l10n.hostOrganizerTrialEnded(date: day(trial.endsAt)),
+        null,
+      ),
+      _ => (l10n.hostOrganizerTrialNotStarted, null),
+    };
+    return CatchStack(
+      key: const ValueKey<String>('payments-trial-status'),
+      gap: CatchStackGap.none,
+      children: [
+        CatchText(title),
+        if (body != null)
+          CatchText(
+            body,
+            variant: CatchTextVariant.bodySmall,
+            tone: CatchTextTone.secondary,
+          ),
+      ],
     );
   }
 }

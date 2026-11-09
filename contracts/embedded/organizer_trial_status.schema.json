@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/organizer_trial_status.schema.json",
+  "title": "OrganizerTrialStatus",
+  "description": "An organizer's free trial, computed on the server from the effective commercial terms and organizerGrowthFacts. The trial starts at the first event (the start of the first non-cancelled event with a booking), or the first paid booking when no event is recorded. notStarted: neither has happened. scheduled: the first event is booked but has not started. none: the terms give no trial. unconfigured: Catch's platform terms are not saved. Nothing gates features when the trial ends; the next billing cycle is billed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["state", "anchor", "days", "startsAtMillis", "endsAtMillis", "daysLeft"],
+  "properties": {
+    "state": {"enum": ["notStarted", "scheduled", "active", "ended", "none", "unconfigured"]},
+    "anchor": {"enum": ["firstEvent", "firstPaidBooking", null]},
+    "days": {"type": ["integer", "null"], "minimum": 0, "maximum": 366},
+    "startsAtMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+    "endsAtMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+    "daysLeft": {"description": "Whole days left, rounded up, while scheduled or active.", "type": ["integer", "null"], "minimum": 0, "maximum": 366}
+  }
+}

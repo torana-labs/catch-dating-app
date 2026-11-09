@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
@@ -112,6 +113,16 @@ List<Override> organizerCaptureOverrides() => [
     (_) => _CapturePaymentSetup(),
   ),
   hostOrganizerBillsProvider.overrideWith((ref, organizerId) async => _bills),
+  hostOrganizerBillingStatusProvider.overrideWith(
+    (ref, organizerId) async => HostOrganizerBillingStatus(
+      trial: HostTrialStatus(
+        state: HostTrialState.active,
+        startsAt: DateTime(2026, 10, 20),
+        endsAt: DateTime(2026, 11, 19),
+        daysLeft: 12,
+      ),
+    ),
+  ),
   appPackageInfoProvider.overrideWith(
     (ref) => (version: '4.0.1', buildNumber: '401'),
   ),

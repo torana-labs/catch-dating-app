@@ -374,6 +374,8 @@
     "GetEventWhatsappPreferenceCallablePayload",
     "GetEventWhatsappWithdrawalCallablePayload",
     "GetOrganizerApplicationDetailCallablePayload",
+    "GetOrganizerBillingStatusCallablePayload",
+    "GetOrganizerBillingStatusCallableResponse",
     "GetOrganizerClaimVerificationOptionsCallablePayload",
     "GetOrganizerContactDetailCallablePayload",
     "GetOrganizerCrmSummaryCallablePayload",

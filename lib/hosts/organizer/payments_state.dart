@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
 import 'package:flutter/foundation.dart';
 
 /// What a control on Payments and billing asks for.
@@ -27,6 +28,7 @@ class OrganizerPaymentsState {
     this.connectionError,
     this.bills,
     this.billsError,
+    this.trial,
   });
 
   /// Only the owner sees money; everyone else sees why not.
@@ -48,6 +50,9 @@ class OrganizerPaymentsState {
   /// Newest first; null while they are first read.
   final List<HostOrganizerBill>? bills;
   final Object? billsError;
+
+  /// The free trial, computed by the server; null while read or unreadable.
+  final HostTrialStatus? trial;
 
   HostRazorpayConnectionState? get connection => setup?.razorpayConnectionState;
 

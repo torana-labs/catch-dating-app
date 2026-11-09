@@ -12,7 +12,8 @@
     "totals",
     "counts",
     "nextInvoiceNumber",
-    "gstRegistered"
+    "gstRegistered",
+    "trial"
   ],
   "properties": {
     "month": {
@@ -108,6 +109,17 @@
     },
     "gstRegistered": {
       "type": "boolean"
+    },
+    "trial": {
+      "description": "The organizer's free trial when the list is one organizer's bills; null for a month.",
+      "anyOf": [
+        {
+          "$ref": "../embedded/organizer_trial_status.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }

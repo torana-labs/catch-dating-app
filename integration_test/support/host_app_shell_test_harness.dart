@@ -190,6 +190,18 @@ class HostShellBackend {
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       // The Organiser tab and Payments read the Catch bills: none yet.
       'listOrganizerBills' => {'bills': const <Object?>[]},
+      // Payments reads the free trial: no event yet, so it has not started.
+      'getOrganizerBillingStatus' => {
+        'organizerId': organizerId,
+        'trial': {
+          'state': 'notStarted',
+          'anchor': null,
+          'days': 30,
+          'startsAtMillis': null,
+          'endsAtMillis': null,
+          'daysLeft': null,
+        },
+      },
       // The event workspace's door reads its staff: nobody granted yet.
       'listEventStaff' => {'eventId': eventId, 'members': const <Object?>[]},
       // Setup's Getting paid step: Razorpay is open and nothing is connected.

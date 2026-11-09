@@ -12,7 +12,9 @@ afterEach(cleanup);
 const sample = sampleManageOrganizerBills({action: "list", month: "2026-10", organizerId: null,
   billId: null, expectedRevision: null, note: null}).bills[0]!;
 
-function renderMonth(status: typeof sample.status) {
+type Trial = Parameters<typeof OrganizerBillsWorkspace>[0]["controller"]["trial"];
+
+function renderMonth(status: typeof sample.status, trial: Trial = null) {
   const bill = {...sample, status, paidMinor: null, totalMinor: 25000};
   render(
     <OrganizerBillsWorkspace
@@ -20,6 +22,7 @@ function renderMonth(status: typeof sample.status) {
         bills: [bill],
         summary: organizerMoneySummary([bill]),
         latest: organizerMonthBreakdown(bill),
+        trial,
         loadState: "ready",
         loadError: null,
       }}
@@ -47,5 +50,13 @@ describe("OrganizerBillsWorkspace", () => {
     renderMonth("sent");
     expect(catchBillRow()).toContain("−₹250");
     expect(screen.queryByText("Written off")).toBeNull();
+  });
+
+  it("shows the organizer's free trial as status", () => {
+    renderMonth("sent", {state: "active", anchor: "firstEvent", days: 30,
+      startsAtMillis: Date.UTC(2026, 9, 20), endsAtMillis: Date.UTC(2026, 10, 19),
+      daysLeft: 12});
+    expect(screen.getByText("Free trial")).toBeTruthy();
+    expect(screen.getByText(/12 days left, ends 19 Nov/u)).toBeTruthy();
   });
 });

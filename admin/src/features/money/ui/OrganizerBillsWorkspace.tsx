@@ -6,7 +6,7 @@ import {
   CatchSection,
   CatchLegacyText,
 } from "@catch/web-ui";
-import {billState, moneyNowMillis, monthLabel, rupees} from "../controllers/moneyLabels";
+import {billState, moneyNowMillis, monthLabel, rupees, trialLabel} from "../controllers/moneyLabels";
 import {
   organizerSalesMinor,
   useOrganizerBillsController,
@@ -46,8 +46,15 @@ export function OrganizerBillsWorkspace({
   if (controller.loadState === "error") {
     return <CatchLegacyText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Bills could not load."}</CatchLegacyText>;
   }
+  const trial = trialLabel(controller.trial);
+  const trialRow = trial ? <CatchMetaRow entries={[{label: "Free trial", value: trial}]} /> : null;
   if (controller.bills.length === 0) {
-    return <CatchSection dividers="none" empty="No bills yet." title="Bills" />;
+    return (
+      <CatchGap size="majorSection">
+        {trialRow}
+        <CatchSection dividers="none" empty="No bills yet." title="Bills" />
+      </CatchGap>
+    );
   }
   const {bills, latest, summary} = controller;
   const oldestFirst = [...bills].reverse().slice(-12);
@@ -56,6 +63,7 @@ export function OrganizerBillsWorkspace({
       <CatchMetaRow entries={[
         {label: "Ticket sales, all time", value: `${rupees(summary.salesMinor)} · ${summary.paymentCount.toLocaleString("en-IN")} tickets`},
         {label: "Catch earned, all time", value: rupees(summary.earnedMinor)},
+        ...(trial ? [{label: "Free trial", value: trial}] : []),
       ]} />
       {oldestFirst.length > 1 ? (
         <CatchSection dividers="none" title="Ticket sales each month">
