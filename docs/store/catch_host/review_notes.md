@@ -56,6 +56,26 @@ An organizer whose paid access has lapsed must see neutral status copy with no
 price, link or purchase prompt. Nothing in the Host app gates features on paid
 status today.
 
+**Host app billing surfaces after the self-serve billing work (Nov 2026).**
+Organizer → Payments shows only status:
+
+- the latest Catch bill's period and whether it is due (with its due day),
+  overdue, paid or settled, and the ticket sales it was on;
+- each bill's period and status;
+- the free trial ("Free trial · 12 days left", "Trial ended on …");
+- the plan ("Ticketing plan", "Tools-only plan until …").
+
+It shows no Catch price, commission, cap, GST or tools-only fee. It has no
+"Pay" button, no "Compare plans" link to `/host/#pricing`, and no way to buy
+or cancel a plan. `getOrganizerBillingStatus` returns no money fields, and a
+test asserts that. Bills, invoices, paying and choosing tools-only happen on
+the web, through the invoice link Catch emails to the owner. The push for a
+new bill says only "Catch bill issued" with the period and opens Payments. The
+dormant Route payout (KYC) card is hidden in the app. Source:
+`lib/hosts/organizer/payments_body.dart`,
+`lib/hosts/presentation/payments/host_organizer_bills_section.dart` and
+`test/hosts/organizer/payments_body_test.dart`.
+
 ### External pages the Host app opens
 
 | Destination | Opened from | State on 2026-10-22 |

@@ -119,3 +119,19 @@ test("no stored version, or another secret answering, is unconfigured",
       read(config, version.replace("/1", "/2")));
     await assert.rejects(mismatched.load(version), /not configured/u);
   });
+
+test("a v2 config carries the partner webhook secret; v1 has none",
+  async () => {
+    assert.equal((await new FormPaymentRuntimeConfig("catch-test",
+      read(config)).load(version)).partnerWebhookSecret, null);
+    const v2 = {...config, schema: "catch.form-razorpay-partner/v2",
+      webhookSecret: "partner-hook"};
+    assert.equal((await new FormPaymentRuntimeConfig("catch-test",
+      read(v2)).load(version)).partnerWebhookSecret, "partner-hook");
+    for (const bad of [{...v2, webhookSecret: " "},
+      {...config, webhookSecret: "partner-hook"},
+      {...v2, webhookSecret: undefined}]) {
+      await assert.rejects(new FormPaymentRuntimeConfig("catch-test",
+        read(bad)).load(version), /not configured/u);
+    }
+  });

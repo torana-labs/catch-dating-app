@@ -14,7 +14,12 @@ import {
   razorpayWebhookSecret,
   verifyRazorpayWebhookSignature,
 } from "./razorpay";
-import {markBillPaidFromLink} from "../money/organizerBills";
+import {razorpayBillInvoices} from "../money/billInvoices";
+import {
+  markBillPaidFromInvoice,
+  markBillPaidFromLink,
+} from "../money/organizerBills";
+import {markToolsOnlyPaidFromLink} from "../money/organizerBillingPlan";
 import {razorpayBillPaymentLinks} from "../money/billPaymentLinks";
 import {
   assertRazorpayOrderOwnership,
@@ -79,16 +84,46 @@ export async function razorpayWebhookHandler(
   }
 
   if (event.event === "payment_link.paid") {
-    // An organizer paying Catch's bill; the bill is read back from Razorpay.
+    // An organizer paying Catch's bill or buying tools-only; the link is read
+    // back from Razorpay.
     const linkId = paymentLinkId(event);
     const projectId = (deps.runtimeProjectId ?? razorpayRuntimeProject)();
-    await markBillPaidFromLink({db: () => db, now: Date.now,
-      links: () => razorpayBillPaymentLinks(deps.createClient(), projectId)},
-    linkId, projectId);
+    const billDeps = {db: () => db, now: Date.now,
+      links: () => razorpayBillPaymentLinks(deps.createClient(), projectId)};
+    // A link is a bill's or a tools-only purchase's; each reads it back.
+    if (!await markBillPaidFromLink(billDeps, linkId, projectId)) {
+      await markToolsOnlyPaidFromLink(billDeps, linkId, projectId);
+    }
+    return;
+  }
+
+  if (event.event === "invoice.paid") {
+    // An organizer paying Catch's bill from its Razorpay invoice; the invoice
+    // is read back from Razorpay.
+    const invoiceId = invoiceIdOf(event);
+    const projectId = (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+    await markBillPaidFromInvoice({db: () => db, now: Date.now,
+      invoices: () => razorpayBillInvoices(deps.createClient(), projectId)},
+    invoiceId, projectId);
     return;
   }
 
   // Other event types (e.g. order.paid, refund.*) are not acted on here.
+}
+
+/**
+ * Reads the invoice id from an invoice.paid event.
+ * @param {RazorpayWebhookEvent} event Parsed webhook event.
+ * @return {string} Invoice id.
+ */
+function invoiceIdOf(event: RazorpayWebhookEvent): string {
+  const entity = event.payload?.invoice?.entity as
+    Record<string, unknown> | undefined;
+  const id = entity?.id;
+  if (typeof id !== "string" || !/^inv_[A-Za-z0-9]{1,40}$/u.test(id)) {
+    throw new Error("Razorpay webhook invoice id was missing.");
+  }
+  return id;
 }
 
 /**
@@ -262,6 +297,7 @@ interface RazorpayWebhookEvent {
   payload: {
     payment?: {entity?: unknown};
     payment_link?: {entity?: unknown};
+    invoice?: {entity?: unknown};
   };
 }
 

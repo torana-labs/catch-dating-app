@@ -1,3 +1,4 @@
+import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,30 @@ void main() {
         isNull,
       );
     });
+  });
+
+  group('hostOrganizerPaymentsRouteFromMessageData', () {
+    tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+    for (final type in ['organizerBillIssued', 'organizerRazorpayRevoked']) {
+      test('a $type notice opens Payments in the Host app', () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+        expect(
+          routeFromMessageData({'type': type, 'organizerId': 'club-1'}),
+          '/host/organizers/payments?organizerId=club-1',
+        );
+      });
+
+      test('the consumer app ignores a $type notice', () {
+        expect(
+          hostOrganizerPaymentsRouteFromMessageData({
+            'type': type,
+            'organizerId': 'club-1',
+          }),
+          isNull,
+        );
+      });
+    }
   });
 
   group('eventChatRouteFromMessageData', () {

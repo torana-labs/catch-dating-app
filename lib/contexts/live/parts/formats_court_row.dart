@@ -4,18 +4,23 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// One court this round as a row: "Court 2", the time left in the game and
-/// the two players under it. The row draws nothing of its own.
+/// the two players under it, or for doubles one partnership "against" the
+/// other. The row draws nothing of its own.
 class FormatsCourtRow extends StatelessWidget {
   const FormatsCourtRow({
     super.key,
     required this.index,
     required this.players,
+    this.opponents = const <String>[],
     this.status,
   });
 
   /// Zero-based: court 1 is index 0.
   final int index;
   final List<String> players;
+
+  /// Doubles: the partnership across the net. Empty for singles.
+  final List<String> opponents;
 
   /// The time left in the game: "9:40 left".
   final String? status;
@@ -28,7 +33,39 @@ class FormatsCourtRow extends StatelessWidget {
       onTap: null,
       density: CatchIndexRowSize.compact,
       status: status,
-      footer: FormatsPlayersRow(players: players),
+      footer: opponents.isEmpty
+          ? FormatsPlayersRow(players: players)
+          : FormatsMatchup(players: players, opponents: opponents),
+    );
+  }
+}
+
+/// A doubles game: one partnership, "against", the other.
+class FormatsMatchup extends StatelessWidget {
+  const FormatsMatchup({
+    super.key,
+    required this.players,
+    required this.opponents,
+    this.size = GeneratedCatchSizeTokens.avatarSm,
+  });
+
+  final List<String> players;
+  final List<String> opponents;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchStack(
+      gap: CatchStackGap.g4,
+      children: [
+        FormatsPlayersRow(players: players, size: size),
+        CatchText(
+          context.l10n.hostFormatsAgainst,
+          variant: CatchTextVariant.bodyMeta,
+          tone: CatchTextTone.secondary,
+        ),
+        FormatsPlayersRow(players: opponents, size: size),
+      ],
     );
   }
 }
@@ -40,11 +77,13 @@ class FormatsCourtTile extends StatelessWidget {
     super.key,
     required this.index,
     required this.players,
+    this.opponents = const <String>[],
     this.status,
   });
 
   final int index;
   final List<String> players;
+  final List<String> opponents;
   final String? status;
 
   @override
@@ -66,10 +105,17 @@ class FormatsCourtTile extends StatelessWidget {
               if (status != null) CatchBadge(label: status),
             ],
           ),
-          FormatsPlayersRow(
-            players: players,
-            size: GeneratedCatchSizeTokens.avatarMd,
-          ),
+          if (opponents.isEmpty)
+            FormatsPlayersRow(
+              players: players,
+              size: GeneratedCatchSizeTokens.avatarMd,
+            )
+          else
+            FormatsMatchup(
+              players: players,
+              opponents: opponents,
+              size: GeneratedCatchSizeTokens.avatarMd,
+            ),
         ],
       ),
     );

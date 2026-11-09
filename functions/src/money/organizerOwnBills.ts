@@ -45,6 +45,10 @@ export function ownBillView(bill: Bill): Result["bills"][number] | null {
   return {
     billId: bill.billId,
     month: bill.month,
+    periodKind: bill.periodKind ?? "calendarMonth",
+    periodStartMillis: bill.periodStartMillis,
+    periodEndMillis: bill.periodEndMillis,
+    plan: bill.plan?.kind ?? "ticketing",
     status,
     sales: {
       paymentCount: bill.sales.paymentCount,
@@ -63,7 +67,8 @@ export function ownBillView(bill: Bill): Result["bills"][number] | null {
     totalMinor: bill.totalMinor,
     invoiceNumber: bill.invoiceNumber,
     dueAtMillis: bill.dueAtMillis,
-    paymentUrl: status === "sent" ? bill.paymentLink?.url ?? null : null,
+    paymentUrl: status === "sent" ? bill.razorpayInvoice?.url ??
+      bill.paymentLink?.url ?? null : null,
     paidAtMillis: bill.paidAtMillis,
     paidMinor: bill.paidMinor,
   };
@@ -95,7 +100,8 @@ export async function listOrganizerBillsHandler(
     .where("organizerId", "==", organizerId).limit(240).get();
   const bills = snap.docs.map((doc) => ownBillView(doc.data() as Bill))
     .filter((bill) => bill !== null)
-    .sort((a, b) => b.month.localeCompare(a.month));
+    .sort((a, b) => b.periodEndMillis - a.periodEndMillis ||
+      b.month.localeCompare(a.month));
   const result: Result = {bills};
   if (!validateListOrganizerBillsCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid bills.");

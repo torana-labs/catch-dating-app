@@ -11,11 +11,14 @@ import {RazorpayFormProvider, type RazorpayPartnerConfig} from
 export const formRazorpayPartnerSecret = "FORM_RAZORPAY_PARTNER_CONFIG";
 
 interface PartnerSecret {
-  schema: "catch.form-razorpay-partner/v1";
+  /** v2 adds the partner app's webhook secret; v1 versions still load. */
+  schema: "catch.form-razorpay-partner/v1" | "catch.form-razorpay-partner/v2";
   clientId: string;
   clientSecret: string;
   mode: "test" | "live";
   credentialSecretId: string;
+  /** Signs the partner app's own webhooks (revocation, #1255). */
+  webhookSecret?: string;
 }
 
 export interface FormPaymentRuntime {
@@ -26,6 +29,8 @@ export interface FormPaymentRuntime {
   mode: "test" | "live";
   webhookBaseUrl: string;
   callbackUrl: string;
+  /** The partner app's webhook secret; null on a v1 config. */
+  partnerWebhookSecret: string | null;
 }
 
 interface SecretVersion {name: string; data: string}
@@ -72,7 +77,8 @@ export class FormPaymentRuntimeConfig {
       provider: new RazorpayFormProvider(providerConfig),
       vault: new RazorpayCredentialVault(this.projectId,
         config.credentialSecretId), mode: config.mode,
-      webhookBaseUrl, callbackUrl};
+      webhookBaseUrl, callbackUrl,
+      partnerWebhookSecret: config.webhookSecret ?? null};
   }
 
   private async loadSecret(version?: string): Promise<LoadedSecret> {
@@ -126,9 +132,13 @@ function parsePartnerSecret(raw: string): PartnerSecret {
     unavailable();
   }
   const record = value as Record<string, unknown>;
-  if (Object.keys(record).sort().join(",") !==
-      "clientId,clientSecret,credentialSecretId,mode,schema" ||
-      record.schema !== "catch.form-razorpay-partner/v1" ||
+  const keys = Object.keys(record).sort().join(",");
+  const v1 = record.schema === "catch.form-razorpay-partner/v1" &&
+    keys === "clientId,clientSecret,credentialSecretId,mode,schema";
+  const v2 = record.schema === "catch.form-razorpay-partner/v2" &&
+    keys === "clientId,clientSecret,credentialSecretId,mode,schema," +
+      "webhookSecret" && secret(record.webhookSecret);
+  if (!v1 && !v2 ||
       (record.mode !== "test" && record.mode !== "live") ||
       !secret(record.clientId) || !secret(record.clientSecret) ||
       typeof record.credentialSecretId !== "string" ||

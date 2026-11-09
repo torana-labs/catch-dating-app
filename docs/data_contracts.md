@@ -3773,6 +3773,18 @@ process is retried on the next run. When the current token still has more than
 two minutes left, such a failure leaves the connection ready; otherwise it sets
 `refreshNotSent`, which blocks checkout until a refresh succeeds.
 
+An organizer can revoke Catch's access from Razorpay's side (#1255). The partner
+app's `account.app.authorization_revoked` webhook (`organizerRazorpayPartnerWebhook`,
+signed with `webhookSecret` from a `catch.form-razorpay-partner/v2` partner config)
+and any 401 from the organizer's token during event, offer or form checkout mark
+every live connection on that account `needsAttention` with `lastErrorCode:
+authorizationRevoked`; the status is reused because older Host apps reject
+unknown statuses. Checkout then finds no ready merchant and refuses with
+`organizerPaymentsNotReady` (guests are told nothing was charged), the Host app
+shows Reconnect with a revoked explanation, and the owner gets one push. A
+replayed webhook changes and notifies nothing. Without a v2 config the partner
+webhook answers 503 and only 401s are detected.
+
 `organizerFormPayments` freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's
 `paymentAttemptId` prevents editing; `organizerForms.pendingPaymentCount`
@@ -5025,22 +5037,78 @@ with a reported fee; refunds stay in each record's existing refund fields.
 
 ## Organizer Bills And Nominator Credit
 
-`organizerBills/{organizerId}_{YYYY-MM}` is Catch's monthly bill to one
-organizer, made from payments into the organizer's own account (hostCollected)
-captured in that India-time calendar month. Commission uses each payment's
-frozen `routing.commercialTerms` (or the organizer's current terms when none was
-frozen), payments before the trial ends (trial days from the first event in
-`organizerGrowthFacts`) are free, and the month's total is capped by the current
-terms. GST is added only while `moneySettings/platform.settings.gstRegistered`
+`organizerBills/{billId}` is Catch's bill to one organizer for one billing
+period, made from payments into the organizer's own account (hostCollected).
+Since the move to rolling cycles (#1126) a period is one commission cycle:
+`commission.cycleDays` days anchored at the end of the organizer's free trial
+(`cycleAnchor: trialEnd`), billed in arrears once it closes, with id
+`{organizerId}_c{YYYY-MM-DD}` (the cycle's first day, India time) and `month`
+set to the India-time month the cycle ends in. `generateOrganizerCycleBillsDaily`
+bills each closed cycle in the same transaction that advances
+`organizerBillingCycles/{organizerId}` (trial end, count-from instant, next
+cycle number and start), so a cycle is billed at most once. Cycles chain from
+the last one billed, so a change to `cycleDays` changes only cycles not yet
+billed. A cycle with nothing to bill advances the pointer without a bill.
+
+Commission uses each payment's frozen `routing.commercialTerms` (or the
+organizer's current terms when none was frozen); the cap from the current terms
+applies per cycle. A cycle is billed for tools-only OR ticketing, never both
+(`plan`): a tools-only cycle bills the flat `toolsOnly.feeMinor` and no
+commission. GST is added only while `moneySettings/platform.settings.gstRegistered`
 is on. A bill is `toSend`, `sent` (overdue past `dueAtMillis`), `paid`,
-`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` bills.
-Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
-unbroken sequence per April–March year (`2026-27/031`). All are server-only and
-reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
+`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` cycle
+bills. A cycle bill falls due 15 days after its cycle closes and never less
+than 7 days after it is sent. Sending takes the next number of
+`moneyInvoiceCounters/{financialYear}`, one unbroken sequence per April–March
+year (`2026-27/031`). All are server-only and reached through
+`adminManageOrganizerBills` and `adminManageMoneySettings`.
+
+`organizerBillingPlans/{organizerId}` is the organizer's plan: ticketing (the
+default) or tools-only. Tools-only is bought only on the host billing website
+through `manageOrganizerBillingPlan`, as a Razorpay payment link on Catch's
+account for one tools-only fee (a plan-based invoice; #1124 rules out
+subscriptions and mandates). The fee prepays the first tools-only cycle, whose
+bill is made already paid (`paidVia: planPurchase`, `prepaidBillId`). The plan
+is `pendingPayment` until `payment_link.paid` reads the link back, then
+`active` from `startsAtMillis`, the next billing cycle (never the cycle under
+way), until `endsAtMillis`. Cancelling ends it when the cycle under way closes,
+never before the prepaid cycle. A tools-only cycle bills the flat fee and no
+commission, whatever was sold. The native Host app reads only the plan's status
+through `getOrganizerBillingStatus`; prices and purchases stay on the web.
+
+Bills made before rolling cycles are calendar months, India time
+(`{organizerId}_{YYYY-MM}`, `periodKind` absent or `calendarMonth`); they keep
+their figures and can still be sent, reminded, paid or written off. The
+transition never bills a payment twice: calendar-month bills are no longer
+made, and no cycle counts a payment captured before `countFromMillis`, the
+later of the trial end, the end of the organizer's last calendar-month bill and
+1 November 2026, India time. Cycles stay anchored at trial end, so the first
+cycle billed may straddle that instant; its cap is reduced to the share of the
+cycle still billed.
+
+A sent bill is paid from a Razorpay Invoice on Catch's account
+(`razorpayInvoice`), a numbered invoice document with its own page, as #1124
+prefers over bare payment links; bills sent before invoices keep
+`paymentLink`, and a payment link is the fallback when Razorpay refuses an
+invoice. GST stays off while Catch is not GST registered (#1088). Each send and
+reminder queues one `organizerBillNotices/{billId}_issued` or
+`{billId}_reminder{n}` row: email to the owner's verified Firebase Auth address
+through the credential named in `billingNoticeSettings/platform` (pinned Secret
+Manager version; never the key itself), and a Host app push that says only that
+a bill was issued. Both are server-only.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent
 bills and everything only staff need (reminders, history, terms revisions).
+
+The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
+It starts at the organizer's first event, the start of the first non-cancelled
+event with a booking in `organizerGrowthFacts`, or at the first paid booking
+when no event is recorded, and lasts the effective terms' `trial.days`. Bills
+and status use the same computation. The owner reads it through
+`getOrganizerBillingStatus` (status only, no prices) and staff see it on one
+organizer's bills in `adminManageOrganizerBills`. Nothing gates features when
+the trial ends; the next billing period is billed.
 
 `nominatorCredits/{billId}` is written in the transaction that marks a bill
 paid: the organizer's first nominator earns the credit rate on what was paid

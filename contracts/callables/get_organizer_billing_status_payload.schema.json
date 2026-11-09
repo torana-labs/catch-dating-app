@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_billing_status_payload.schema.json",
+  "title": "GetOrganizerBillingStatusCallablePayload",
+  "description": "An organizer's owner reads where the organizer stands with Catch's billing: the free trial and the plan (ticketing or tools-only). Status only; it carries no prices.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Organizer owners (Host app Payments, host billing website)",
+  "required": ["organizerId"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

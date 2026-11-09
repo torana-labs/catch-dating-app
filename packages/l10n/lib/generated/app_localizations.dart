@@ -8357,6 +8357,42 @@ abstract class AppLocalizations {
   /// **'Include me in timed rotations'**
   String get eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInTimed;
 
+  /// A guest's doubles game: time, court, partner and opponents.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Court {court} · You and {partner} against {opponentA} and {opponentB}'**
+  String eventSuccessCompanionDoublesSlot({
+    required Object timeRange,
+    required int court,
+    required Object partner,
+    required Object opponentA,
+    required Object opponentB,
+  });
+
+  /// Fallback name for a doubles opponent whose profile is not loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'An opponent'**
+  String get eventSuccessCompanionDoublesOpponent;
+
+  /// A guest's doubles round on the bench.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Sitting out this round · mix in the common area'**
+  String eventSuccessCompanionBenchSlot({required Object timeRange});
+
+  /// Button that puts a live prompt away for this step.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get eventSuccessCompanionPromptSkip;
+
+  /// Note beside the Skip button on every live prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip any prompt.'**
+  String get eventSuccessCompanionPromptSkipNote;
+
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).
   ///
   /// In en, this message translates to:
@@ -16767,7 +16803,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy): paid booking refused because the organiser's own payment account is not ready.
   ///
   /// In en, this message translates to:
-  /// **'Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.'**
+  /// **'Paid booking is unavailable until the organiser connects their Razorpay account. You have not been charged.'**
   String get coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.
@@ -30644,6 +30680,12 @@ abstract class AppLocalizations {
   /// **'Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.'**
   String get hostOrganizerRazorpayConnectBody;
 
+  /// Razorpay tile body after the organizer revoked Catch’s access from Razorpay's side (#1255).
+  ///
+  /// In en, this message translates to:
+  /// **'Catch\'\'s access to your Razorpay account was removed, so guests can\'\'t pay for bookings. Reconnect Razorpay to take payments again.'**
+  String get hostOrganizerRazorpayRevokedBody;
+
   /// Razorpay tile body when connections are unavailable.
   ///
   /// In en, this message translates to:
@@ -30692,7 +30734,7 @@ abstract class AppLocalizations {
   /// **'Guests can’t pay for events, forms or memberships until you connect an account again.'**
   String get hostOrganizerRazorpayDisconnectBody;
 
-  /// Payments bill spotlight kicker with the month billed.
+  /// Payments bill spotlight kicker with the period billed: a month, or a billing cycle as a date range.
   ///
   /// In en, this message translates to:
   /// **'Your Catch bill · {month}'**
@@ -30707,7 +30749,7 @@ abstract class AppLocalizations {
   /// Payments bill spotlight body before the first bill.
   ///
   /// In en, this message translates to:
-  /// **'No bills yet. Catch bills you once a month, for the month before.'**
+  /// **'No bills yet. After your free trial, Catch bills you when each billing cycle ends, for the sales in it.'**
   String get hostOrganizerBillNoneBody;
 
   /// Payments bill spotlight body.
@@ -30716,59 +30758,101 @@ abstract class AppLocalizations {
   /// **'On {sales} in ticket sales, after refunds.'**
   String hostOrganizerBillBody({required String sales});
 
-  /// Payments bill spotlight body for a bill waiting to be paid.
-  ///
-  /// In en, this message translates to:
-  /// **'On {sales} in ticket sales, after refunds. Due on {date}.'**
-  String hostOrganizerBillBodyDue({
-    required String sales,
-    required String date,
-  });
-
-  /// Payments bill cap meter label for screen readers.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch bill this cycle'**
-  String get hostOrganizerBillMeter;
-
-  /// Payments line under the cap meter.
-  ///
-  /// In en, this message translates to:
-  /// **'{remaining} to the {cap} cap. After that, nothing more this cycle.'**
-  String hostOrganizerBillCapLeft({
-    required String remaining,
-    required String cap,
-  });
-
-  /// Payments line under the cap meter once the cap is reached.
-  ///
-  /// In en, this message translates to:
-  /// **'You reached the {cap} cap. Nothing more this cycle.'**
-  String hostOrganizerBillCapReached({required String cap});
-
-  /// Payments button that opens the bill payment page.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay this bill'**
-  String get hostOrganizerBillPay;
-
   /// Payments plan tile title.
   ///
   /// In en, this message translates to:
   /// **'Your plan'**
   String get hostOrganizerPlanTitle;
 
-  /// Payments plan tile button that opens the pricing page.
+  /// Payments plan tile: the organizer is on the default ticketing plan. Status only, no price.
   ///
   /// In en, this message translates to:
-  /// **'Compare plans'**
-  String get hostOrganizerPlanCompare;
+  /// **'Ticketing plan'**
+  String get hostOrganizerPlanTicketing;
 
-  /// Payments plan tile body.
+  /// Payments plan tile: the tools-only plan is active. Status only, no price.
   ///
   /// In en, this message translates to:
-  /// **'What Catch charges, and the tools-only plan, are on the Catch website.'**
-  String get hostOrganizerPlanBody;
+  /// **'Tools-only plan'**
+  String get hostOrganizerPlanToolsOnly;
+
+  /// Payments plan tile: the tools-only plan starts with the next billing cycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools-only plan from {date}'**
+  String hostOrganizerPlanToolsOnlyFrom({required String date});
+
+  /// Payments plan tile: a cancelled tools-only plan runs until this day, then ticketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools-only plan until {date}'**
+  String hostOrganizerPlanToolsOnlyUntil({required String date});
+
+  /// Payments bill spotlight before the first bill.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet'**
+  String get hostOrganizerBillSpotlightNone;
+
+  /// Payments bill spotlight: the latest bill is due on this day. No amount (store guideline 3.1.3(f)).
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String hostOrganizerBillSpotlightDue({required String date});
+
+  /// Payments bill spotlight: the latest bill is past its due day.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue since {date}'**
+  String hostOrganizerBillSpotlightOverdue({required String date});
+
+  /// Payments bill spotlight: the latest bill was free or written off.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to pay'**
+  String get hostOrganizerBillSpotlightSettled;
+
+  /// Payments bill spotlight body for an issued bill; the bill and its invoice reach the host by email.
+  ///
+  /// In en, this message translates to:
+  /// **'On {sales} in ticket sales, after refunds. Catch emailed you this bill.'**
+  String hostOrganizerBillEmailedBody({required String sales});
+
+  /// Bill row subtitle: the period was billed on the tools-only plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools-only plan'**
+  String get hostOrganizerBillToolsOnly;
+
+  /// Payments plan tile: the free trial is running, with whole days left. Status only, no price.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial · {days, plural, =1{1 day left} other{{days} days left}}'**
+  String hostOrganizerTrialActive({required int days});
+
+  /// Payments plan tile: the day the running free trial ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free trial ends on {date}.'**
+  String hostOrganizerTrialActiveBody({required String date});
+
+  /// Payments plan tile: the free trial starts at the first booked event, which is still ahead.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial starts {date}'**
+  String hostOrganizerTrialScheduled({required String date});
+
+  /// Payments plan tile: no event or paid booking yet, so the trial has not started.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial starts with your first event'**
+  String get hostOrganizerTrialNotStarted;
+
+  /// Payments plan tile: the free trial is over. Neutral status, no price or purchase prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ended on {date}'**
+  String hostOrganizerTrialEnded({required String date});
 
   /// Payments section title over the bills.
   ///
@@ -35968,12 +36052,6 @@ abstract class AppLocalizations {
   /// **'When Catch sends you a bill, it shows here with its payment link.'**
   String get hostBillsEmptyBody;
 
-  /// Bill row: the month and what it costs.
-  ///
-  /// In en, this message translates to:
-  /// **'{month}: {amount}'**
-  String hostBillsRowTitle({required String month, required String amount});
-
   /// Bill row: a month in the free trial.
   ///
   /// In en, this message translates to:
@@ -36034,11 +36112,11 @@ abstract class AppLocalizations {
   /// **'The bill'**
   String get hostBillsSectionBill;
 
-  /// Bill statement: heading of what the organizer kept that month.
+  /// Bill statement: where the bill stands (due, paid, free). No amount (store guideline 3.1.3(f)).
   ///
   /// In en, this message translates to:
-  /// **'What you kept'**
-  String get hostBillsSectionKept;
+  /// **'Status'**
+  String get hostBillsStatusTitle;
 
   /// Bill statement: ticket sales after refunds.
   ///
@@ -36067,54 +36145,6 @@ abstract class AppLocalizations {
     required String refunded,
   });
 
-  /// Bill statement: sales already exclude refunds.
-  ///
-  /// In en, this message translates to:
-  /// **'After refunds'**
-  String get hostBillsSalesAfterRefunds;
-
-  /// Bill statement: commission line.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch’s commission'**
-  String get hostBillsCommission;
-
-  /// Bill statement: what commission is charged on.
-  ///
-  /// In en, this message translates to:
-  /// **'On this month’s ticket sales'**
-  String get hostBillsCommissionBody;
-
-  /// Bill statement: the monthly cap applied.
-  ///
-  /// In en, this message translates to:
-  /// **'Capped at {cap}'**
-  String hostBillsCommissionCapped({required String cap});
-
-  /// Bill statement: commission the free trial removed.
-  ///
-  /// In en, this message translates to:
-  /// **'{amount} waived in your free trial'**
-  String hostBillsCommissionWaived({required String amount});
-
-  /// Bill statement: GST line, shown only when Catch is registered.
-  ///
-  /// In en, this message translates to:
-  /// **'GST'**
-  String get hostBillsGst;
-
-  /// Bill statement: what GST applies to.
-  ///
-  /// In en, this message translates to:
-  /// **'Added to Catch’s commission'**
-  String get hostBillsGstBody;
-
-  /// Bill statement: the amount of the bill.
-  ///
-  /// In en, this message translates to:
-  /// **'Total'**
-  String get hostBillsTotal;
-
   /// Bill statement: due date.
   ///
   /// In en, this message translates to:
@@ -36138,42 +36168,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free trial, so nothing to pay'**
   String get hostBillsFreeBody;
-
-  /// Bill statement: Razorpay's fees for the month.
-  ///
-  /// In en, this message translates to:
-  /// **'Razorpay fees'**
-  String get hostBillsRazorpayFees;
-
-  /// Bill statement: who takes Razorpay's fees.
-  ///
-  /// In en, this message translates to:
-  /// **'Taken by Razorpay from your account. Catch never sees this money.'**
-  String get hostBillsRazorpayFeesBody;
-
-  /// Bill statement: the bill, in what the organizer kept.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch’s bill'**
-  String get hostBillsCatchBill;
-
-  /// Bill statement: what is left after fees and the bill.
-  ///
-  /// In en, this message translates to:
-  /// **'You kept'**
-  String get hostBillsKept;
-
-  /// Bill statement: how the amount kept is worked out.
-  ///
-  /// In en, this message translates to:
-  /// **'After Razorpay’s fees and Catch’s bill'**
-  String get hostBillsKeptBody;
-
-  /// Bill statement: opens the Razorpay payment page.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay {amount}'**
-  String hostBillsPay({required String amount});
 
   /// Audience tab: everyone waiting across coming events.
   ///
@@ -42825,6 +42819,42 @@ abstract class AppLocalizations {
   /// **'Courts'**
   String get hostFormatsViewCourts;
 
+  /// Someone sitting out: their court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} min on court · {off} off'**
+  String hostFormatsCourtMinutes({required int on, required int off});
+
+  /// Fairness stat label: the gap between the most and least court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'most court time apart'**
+  String get hostFormatsStatCourtTimeApart;
+
+  /// A short minutes value for a stat.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String hostFormatsMinutesShort({required int minutes});
+
+  /// Between two doubles partnerships on one court.
+  ///
+  /// In en, this message translates to:
+  /// **'against'**
+  String get hostFormatsAgainst;
+
+  /// Live console view: the crawl's stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops'**
+  String get hostFormatsViewStops;
+
+  /// Live console view: pace pods.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods'**
+  String get hostFormatsViewPods;
+
   /// Live console view: mixing the teams.
   ///
   /// In en, this message translates to:
@@ -43000,12 +43030,6 @@ abstract class AppLocalizations {
   /// **'Everyone plays this round.'**
   String get hostFormatsSittingOutNone;
 
-  /// Someone sitting out: their morning so far.
-  ///
-  /// In en, this message translates to:
-  /// **'Sat out {out} · played {played}'**
-  String hostFormatsSatOut({required int out, required int played});
-
   /// Someone sitting out plays the next round.
   ///
   /// In en, this message translates to:
@@ -43035,12 +43059,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'repeat partners'**
   String get hostFormatsStatRepeats;
-
-  /// Fairness stat label.
-  ///
-  /// In en, this message translates to:
-  /// **'sat out at most'**
-  String get hostFormatsStatMostSatOut;
 
   /// Court board tablet section: the next round.
   ///

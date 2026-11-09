@@ -124,17 +124,24 @@ export interface BillInput {
   trialEndsAtMillis: number | null;
   gstRegistered: boolean;
   gstRateBasisPoints: number;
+  /** The period's cap; defaults to the terms' cap per cycle. */
+  capMinor?: number | null;
+  /** Tools-only OR ticketing, never both; defaults to ticketing. */
+  plan?: {kind: "ticketing"} | {kind: "toolsOnly"; feeMinor: number};
 }
 
 export type BillFigures = Pick<OrganizerBillDocument, "sales" | "commission" |
-  "gst" | "totalMinor" | "trialEndsAtMillis">;
+  "gst" | "totalMinor" | "trialEndsAtMillis"> &
+  {plan: NonNullable<OrganizerBillDocument["plan"]>};
 
 /**
- * What one organizer owes Catch for one month. Only hostCollected payments
- * are billed: a platformSplit payment already had Catch's fee taken at
- * source. Each payment uses its frozen terms, or the current terms when it
- * froze none; payments before the trial ends are free; the month's total is
- * capped by the current terms; GST applies only while registered.
+ * What one organizer owes Catch for one billing period. Only hostCollected
+ * payments are billed: a platformSplit payment already had Catch's fee taken
+ * at source. Each payment uses its frozen terms, or the current terms when it
+ * froze none; payments before the trial ends are free; the period's total is
+ * capped (per cycle, by the current terms unless a cycle cap is given); a
+ * tools-only period bills the flat tools-only fee and no commission; GST
+ * applies only while registered.
  * @param {BillInput} input Payments, terms, trial end and tax setting.
  * @return {BillFigures} The bill's figures.
  */
@@ -174,9 +181,13 @@ export function computeBill(input: BillInput): BillFigures {
       uncappedMinor += fee;
     }
   }
-  const capMinor = terms.commission.capMinor;
-  const amountMinor = capMinor === null ? uncappedMinor :
+  const capMinor = input.capMinor === undefined ? terms.commission.capMinor :
+    input.capMinor;
+  const commissionMinor = capMinor === null ? uncappedMinor :
     Math.min(uncappedMinor, capMinor);
+  // A tools-only period bills the flat fee instead of any commission.
+  const toolsOnly = input.plan?.kind === "toolsOnly" ? input.plan : null;
+  const amountMinor = toolsOnly ? toolsOnly.feeMinor : commissionMinor;
   const rate = input.gstRegistered ? input.gstRateBasisPoints : 0;
   const exclusive = terms.commission.taxTreatment === "exclusive";
   const gstMinor = !rate ? 0 : exclusive ?
@@ -187,12 +198,16 @@ export function computeBill(input: BillInput): BillFigures {
       refundedMinor, baseMinor, providerFeeMinor, providerTaxMinor,
       unsnapshottedCount},
     commission: {rateBasisPoints: terms.commission.rateBasisPoints,
-      uncappedMinor, capMinor, capped: amountMinor < uncappedMinor,
-      trialWaivedMinor, amountMinor},
+      uncappedMinor, capMinor,
+      capped: !toolsOnly && commissionMinor < uncappedMinor,
+      trialWaivedMinor, amountMinor: toolsOnly ? 0 : commissionMinor},
     gst: {registered: input.gstRegistered, rateBasisPoints: rate,
       amountMinor: gstMinor},
     totalMinor: exclusive ? amountMinor + gstMinor : amountMinor,
     trialEndsAtMillis: input.trialEndsAtMillis,
+    plan: toolsOnly ?
+      {kind: "toolsOnly", toolsOnlyFeeMinor: toolsOnly.feeMinor} :
+      {kind: "ticketing", toolsOnlyFeeMinor: null},
   };
 }
 

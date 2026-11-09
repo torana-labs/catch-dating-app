@@ -84,9 +84,16 @@ export function usePublicCheckoutController(
       busy.current = true;
       try {
         await mutateAsync(() => action(epoch));
-      } catch {
+      } catch (error) {
+        // The organizer cannot take payments (not connected, or Catch's
+        // Razorpay access was revoked): say so honestly; nothing was charged.
         if (current(epoch))
-          setStatus({ message: errorMessage, tone: "is-error" });
+          setStatus({
+            message: organizerPaymentsNotReady(error)
+              ? publicCheckoutCopy.organizerPaymentsNotReady
+              : errorMessage,
+            tone: "is-error",
+          });
       } finally {
         if (current(epoch)) busy.current = false;
       }
@@ -495,4 +502,11 @@ function clearJournal(key: string): void {
   } catch {
     /* No persisted journal. */
   }
+}
+
+/** The callable refused because the organizer's payment account is not ready. */
+export function organizerPaymentsNotReady(error: unknown): boolean {
+  const details = (error as {details?: unknown} | null)?.details;
+  return typeof details === "object" && details !== null &&
+    (details as {reason?: unknown}).reason === "organizerPaymentsNotReady";
 }

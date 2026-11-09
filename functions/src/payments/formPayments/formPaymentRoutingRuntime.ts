@@ -1,3 +1,5 @@
+import {watchConnectionAuthorization} from
+  "./razorpayAuthorizationRevocation";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerFormPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
@@ -42,6 +44,8 @@ export async function formPaymentExecutionFor(input: {
     if (!payment.connectionId) unavailable();
     const runtime = await deps.oauth();
     return {processor: new FormPaymentProcessor({...runtime, db,
+      provider: watchConnectionAuthorization(runtime.provider,
+        payment.connectionId),
       boundPaymentId: paymentId})};
   }
   assertPaymentRouteSnapshot(payment.routing, {
@@ -59,7 +63,10 @@ async function executionForSnapshot(db: FirebaseFirestore.Firestore,
   if (snapshot.selection.route === "razorpayOAuth") {
     const runtime = await deps.oauth(snapshot.configurationVersion);
     if (runtime.mode !== snapshot.selection.mode) unavailable();
+    // A 401 on the organizer's token means it revoked Catch's access.
     return {processor: new FormPaymentProcessor({...runtime, db,
+      provider: watchConnectionAuthorization(runtime.provider,
+        snapshot.bindingId),
       boundPaymentId: paymentId, expectedRouting: snapshot})};
   }
   if (snapshot.selection.route !== "razorpayRoute") unavailable();

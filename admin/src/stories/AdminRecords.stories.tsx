@@ -54,10 +54,10 @@ function eventDirectory(organizerId: string | null = null): EventDirectoryContro
 }
 
 function organizerBills(): OrganizerBillsController {
-  const {bills} = sampleManageOrganizerBills({action: "list", month: null,
+  const {bills, trial, billingPlan} = sampleManageOrganizerBills({action: "list", month: null,
     organizerId: "mumbai-padel-social", billId: null, expectedRevision: null, note: null});
   return {bills, summary: organizerMoneySummary(bills),
-    latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null, loadState: "ready", loadError: null};
+    latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null, trial, billingPlan, loadState: "ready", loadError: null};
 }
 
 const organizerLinks: OrganizerPageLinks = {

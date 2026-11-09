@@ -368,7 +368,10 @@ function resolveSentinel(current: unknown, value: unknown) {
 }
 
 function matchWhere(data: FakeData, where: Where): boolean {
-  const value = data[where.field];
+  // Dotted field paths reach into maps, as in Firestore.
+  const value = where.field.split(".").reduce<unknown>((current, key) =>
+    current && typeof current === "object" ?
+      (current as FakeData)[key] : undefined, data);
   if (where.op === "==") return value === where.value;
   if (where.op === "array-contains") {
     return Array.isArray(value) && value.includes(where.value);
@@ -376,11 +379,13 @@ function matchWhere(data: FakeData, where: Where): boolean {
   if (where.op === "in") {
     return Array.isArray(where.value) && where.value.includes(value);
   }
-  if (where.op === ">" || where.op === "<=") {
+  if (where.op === ">" || where.op === "<=" || where.op === ">=" ||
+      where.op === "<") {
     if (value == null) return false;
-    return where.op === ">" ?
-      timestampMillis(value) > timestampMillis(where.value) :
-      timestampMillis(value) <= timestampMillis(where.value);
+    const left = timestampMillis(value);
+    const right = timestampMillis(where.value);
+    return where.op === ">" ? left > right : where.op === "<=" ?
+      left <= right : where.op === ">=" ? left >= right : left < right;
   }
   if (where.op === "!=") return value !== where.value;
   throw new Error(`Unsupported where op: ${where.op}`);
