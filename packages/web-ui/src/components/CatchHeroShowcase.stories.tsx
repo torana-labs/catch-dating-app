@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {ReferenceComparison} from "../stories/referenceScreens";
+import {ReferenceComparison, referenceScreenUrl} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchDeviceFrame} from "./CatchDeviceFrame";
@@ -21,7 +21,7 @@ const storyRoutes = ["home"];
 const showcase: CatchHeroShowcaseProps = {
   device: (
     <CatchDeviceFrame kind="phone" tilt="left">
-      <img alt="The Catch app showing tonight's plans" src="/assets/app-screenshots/member-event-discovery.png" />
+      <img alt="An organiser's page on Catch" src={referenceScreenUrl("organizer/guest/390")} />
     </CatchDeviceFrame>
   ),
   ground: "pink",
