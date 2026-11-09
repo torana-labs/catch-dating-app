@@ -9,7 +9,6 @@ enum OrganizerPaymentsAction {
   reconnect,
   refresh,
   disconnect,
-  comparePlans,
   refunds,
   retryBills,
   retryConnection,
@@ -29,6 +28,7 @@ class OrganizerPaymentsState {
     this.bills,
     this.billsError,
     this.trial,
+    this.plan = HostPlanStatus.ticketing,
   });
 
   /// Only the owner sees money; everyone else sees why not.
@@ -53,6 +53,9 @@ class OrganizerPaymentsState {
 
   /// The free trial, computed by the server; null while read or unreadable.
   final HostTrialStatus? trial;
+
+  /// Ticketing or tools-only, as status; ticketing until read.
+  final HostPlanStatus plan;
 
   HostRazorpayConnectionState? get connection => setup?.razorpayConnectionState;
 

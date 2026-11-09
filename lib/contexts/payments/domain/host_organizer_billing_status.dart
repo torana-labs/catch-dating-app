@@ -42,16 +42,74 @@ class HostTrialStatus {
       : DateTime.fromMillisecondsSinceEpoch(millis as int);
 }
 
+/// Which Catch plan the organizer is on, as status only: never a price.
+enum HostPlanKind { ticketing, toolsOnly }
+
+/// Where the plan stands; tools-only is bought and paid on the web only.
+enum HostPlanState {
+  none,
+  pendingPayment,
+  active,
+  ended;
+
+  static HostPlanState fromWire(Object? value) => values.firstWhere(
+    (state) => state.name == value,
+    orElse: () => HostPlanState.none,
+  );
+}
+
+/// The plan as `getOrganizerBillingStatus` returns it.
+class HostPlanStatus {
+  const HostPlanStatus({
+    required this.kind,
+    required this.state,
+    required this.startsAt,
+    required this.endsAt,
+  });
+
+  factory HostPlanStatus.fromJson(Map<String, Object?>? json) => HostPlanStatus(
+    kind: json?['plan'] == 'toolsOnly'
+        ? HostPlanKind.toolsOnly
+        : HostPlanKind.ticketing,
+    state: HostPlanState.fromWire(json?['status']),
+    startsAt: HostTrialStatus._dateOf(json?['startsAtMillis']),
+    endsAt: HostTrialStatus._dateOf(json?['endsAtMillis']),
+  );
+
+  /// Ticketing by default, before any plan change.
+  static const ticketing = HostPlanStatus(
+    kind: HostPlanKind.ticketing,
+    state: HostPlanState.none,
+    startsAt: null,
+    endsAt: null,
+  );
+
+  final HostPlanKind kind;
+  final HostPlanState state;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+}
+
 /// One organizer's billing status for its owner.
 class HostOrganizerBillingStatus {
-  const HostOrganizerBillingStatus({required this.trial});
+  const HostOrganizerBillingStatus({
+    required this.trial,
+    this.plan = HostPlanStatus.ticketing,
+  });
 
   factory HostOrganizerBillingStatus.fromJson(Map<String, Object?> json) =>
       HostOrganizerBillingStatus(
         trial: HostTrialStatus.fromJson(
           Map<String, Object?>.from(json['trial']! as Map),
         ),
+        // A server from before plans sends none: ticketing.
+        plan: HostPlanStatus.fromJson(
+          json['plan'] == null
+              ? null
+              : Map<String, Object?>.from(json['plan']! as Map),
+        ),
       );
 
   final HostTrialStatus trial;
+  final HostPlanStatus plan;
 }

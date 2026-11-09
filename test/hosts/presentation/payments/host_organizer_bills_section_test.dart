@@ -71,7 +71,7 @@ Future<void> _pump(
 }
 
 void main() {
-  testWidgets('a month shows what it costs and where it stands', (
+  testWidgets('a period shows where it stands, never what it costs', (
     tester,
   ) async {
     HostOrganizerBill? tapped;
@@ -88,12 +88,13 @@ void main() {
       ),
     );
     expect(find.text('BILLS FROM CATCH'), findsOneWidget);
-    expect(find.text('October 2026: ₹6,400'), findsOneWidget);
+    expect(find.text('October 2026'), findsOneWidget);
     expect(find.text('Overdue'), findsOneWidget);
     expect(find.text('August 2026: free'), findsOneWidget);
     expect(find.text('Free'), findsOneWidget);
+    expect(find.textContaining('6,400'), findsNothing);
 
-    await tester.tap(find.text('October 2026: ₹6,400'));
+    await tester.tap(find.text('October 2026'));
     await pumpFeatureUi(tester);
     expect(tapped, overdue);
   });
@@ -129,27 +130,27 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('October 2026: ₹6,400'), findsOneWidget);
+    expect(find.text('October 2026'), findsOneWidget);
   });
 
-  testWidgets('an unpaid statement adds up and pays from its link', (
+  testWidgets('a statement shows sales and status, with no charge or Pay', (
     tester,
   ) async {
     final opened = <Uri>[];
     await _pump(tester, HostOrganizerBillSheet(bill: _bill()), opened: opened);
     expect(find.text('Invoice 2026-27/031'), findsOneWidget);
-    expect(find.text('₹160,000'), findsNWidgets(2));
-    expect(find.text('-₹3,776'), findsOneWidget);
-    expect(find.text('-₹6,400'), findsOneWidget);
-    expect(find.text('₹149,824'), findsOneWidget);
-    expect(find.text('GST'), findsNothing);
-
-    await tester.tap(find.byKey(const ValueKey('host-bill-pay')));
-    await pumpFeatureUi(tester);
-    expect(opened, [Uri.parse('https://rzp.io/l/bill')]);
+    expect(find.text('₹160,000'), findsOneWidget);
+    expect(find.text('Due Nov 15'), findsOneWidget);
+    for (final charge in ['-₹6,400', '₹6,400', '-₹3,776', '₹149,824']) {
+      expect(find.text(charge), findsNothing, reason: charge);
+    }
+    expect(find.byKey(const ValueKey('host-bill-pay')), findsNothing);
+    expect(opened, isEmpty);
   });
 
-  testWidgets('a closed statement has nothing to pay', (tester) async {
+  testWidgets('a closed statement says why there is nothing to pay', (
+    tester,
+  ) async {
     await _pump(
       tester,
       HostOrganizerBillSheet(
@@ -159,8 +160,6 @@ void main() {
         ),
       ),
     );
-    expect(find.byKey(const ValueKey('host-bill-pay')), findsNothing);
     expect(find.text('Written off, so nothing to pay'), findsWidgets);
-    expect(find.text('₹156,224'), findsOneWidget);
   });
 }

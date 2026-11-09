@@ -19227,41 +19227,47 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostOrganizerBillBodyDue({
-    required String sales,
-    required String date,
-  }) {
-    return 'On $sales in ticket sales, after refunds. Due on $date.';
-  }
-
-  @override
-  String get hostOrganizerBillMeter => 'Catch bill this cycle';
-
-  @override
-  String hostOrganizerBillCapLeft({
-    required String remaining,
-    required String cap,
-  }) {
-    return '$remaining to the $cap cap. After that, nothing more this cycle.';
-  }
-
-  @override
-  String hostOrganizerBillCapReached({required String cap}) {
-    return 'You reached the $cap cap. Nothing more this cycle.';
-  }
-
-  @override
-  String get hostOrganizerBillPay => 'Pay this bill';
-
-  @override
   String get hostOrganizerPlanTitle => 'Your plan';
 
   @override
-  String get hostOrganizerPlanCompare => 'Compare plans';
+  String get hostOrganizerPlanTicketing => 'Ticketing plan';
 
   @override
-  String get hostOrganizerPlanBody =>
-      'What Catch charges, and the tools-only plan, are on the Catch website.';
+  String get hostOrganizerPlanToolsOnly => 'Tools-only plan';
+
+  @override
+  String hostOrganizerPlanToolsOnlyFrom({required String date}) {
+    return 'Tools-only plan from $date';
+  }
+
+  @override
+  String hostOrganizerPlanToolsOnlyUntil({required String date}) {
+    return 'Tools-only plan until $date';
+  }
+
+  @override
+  String get hostOrganizerBillSpotlightNone => 'No bills yet';
+
+  @override
+  String hostOrganizerBillSpotlightDue({required String date}) {
+    return 'Due $date';
+  }
+
+  @override
+  String hostOrganizerBillSpotlightOverdue({required String date}) {
+    return 'Overdue since $date';
+  }
+
+  @override
+  String get hostOrganizerBillSpotlightSettled => 'Nothing to pay';
+
+  @override
+  String hostOrganizerBillEmailedBody({required String sales}) {
+    return 'On $sales in ticket sales, after refunds. Catch emailed you this bill.';
+  }
+
+  @override
+  String get hostOrganizerBillToolsOnly => 'Tools-only plan';
 
   @override
   String hostOrganizerTrialActive({required int days}) {
@@ -22341,11 +22347,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'When Catch sends you a bill, it shows here with its payment link.';
 
   @override
-  String hostBillsRowTitle({required String month, required String amount}) {
-    return '$month: $amount';
-  }
-
-  @override
   String hostBillsRowTitleFree({required String month}) {
     return '$month: free';
   }
@@ -22384,7 +22385,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostBillsSectionBill => 'The bill';
 
   @override
-  String get hostBillsSectionKept => 'What you kept';
+  String get hostBillsStatusTitle => 'Status';
 
   @override
   String get hostBillsTicketSales => 'Ticket sales';
@@ -22420,34 +22421,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostBillsSalesAfterRefunds => 'After refunds';
-
-  @override
-  String get hostBillsCommission => 'Catch’s commission';
-
-  @override
-  String get hostBillsCommissionBody => 'On this month’s ticket sales';
-
-  @override
-  String hostBillsCommissionCapped({required String cap}) {
-    return 'Capped at $cap';
-  }
-
-  @override
-  String hostBillsCommissionWaived({required String amount}) {
-    return '$amount waived in your free trial';
-  }
-
-  @override
-  String get hostBillsGst => 'GST';
-
-  @override
-  String get hostBillsGstBody => 'Added to Catch’s commission';
-
-  @override
-  String get hostBillsTotal => 'Total';
-
-  @override
   String hostBillsDue({required String date}) {
     return 'Due $date';
   }
@@ -22462,27 +22435,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostBillsFreeBody => 'Free trial, so nothing to pay';
-
-  @override
-  String get hostBillsRazorpayFees => 'Razorpay fees';
-
-  @override
-  String get hostBillsRazorpayFeesBody =>
-      'Taken by Razorpay from your account. Catch never sees this money.';
-
-  @override
-  String get hostBillsCatchBill => 'Catch’s bill';
-
-  @override
-  String get hostBillsKept => 'You kept';
-
-  @override
-  String get hostBillsKeptBody => 'After Razorpay’s fees and Catch’s bill';
-
-  @override
-  String hostBillsPay({required String amount}) {
-    return 'Pay $amount';
-  }
 
   @override
   String get hostRequestsTab => 'Requests';
