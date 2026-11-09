@@ -9,7 +9,7 @@ import styles from "./CatchDeviceFrame.module.css";
 export type CatchDeviceFrameKind = "phone" | "android" | "tablet";
 
 /** @deprecated Use "phone" for "iphone" and "tablet" for "ipad". */
-export type CatchDeviceFrameLegacyKind = "iphone" | "ipad";
+type CatchDeviceFrameLegacyKind = "iphone" | "ipad";
 
 /** Which way a tablet is held. Phones are always portrait. */
 export type CatchDeviceFrameOrientation = "landscape" | "portrait";
@@ -42,7 +42,7 @@ const specs = {
 const legacyKinds: Record<CatchDeviceFrameLegacyKind, CatchDeviceFrameKind> = {iphone: "phone", ipad: "tablet"};
 
 /** Frame geometry in units of the frame width (W = 1). */
-export interface CatchDeviceFrameGeometry {
+interface CatchDeviceFrameGeometry {
   /** Frame height. */
   height: number;
   /** Bezel on every side. */
@@ -55,11 +55,11 @@ export interface CatchDeviceFrameGeometry {
   camera?: {diameter: number; centreY: number};
 }
 
-export function catchDeviceFrameKind(kind: CatchDeviceFrameProps["kind"]): CatchDeviceFrameKind {
+function catchDeviceFrameKind(kind: CatchDeviceFrameProps["kind"]): CatchDeviceFrameKind {
   return kind in legacyKinds ? legacyKinds[kind as CatchDeviceFrameLegacyKind] : (kind as CatchDeviceFrameKind);
 }
 
-export function catchDeviceFrameGeometry(
+function catchDeviceFrameGeometry(
   kind: CatchDeviceFrameKind,
   orientation: CatchDeviceFrameOrientation = "landscape",
 ): CatchDeviceFrameGeometry {
