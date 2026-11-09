@@ -29,7 +29,10 @@ export function invoiceLineName(bill: OrganizerBillDocument): string {
   const plan = bill.plan?.kind === "toolsOnly" ? "Catch tools-only plan" :
     "Catch ticketing commission";
   if ((bill.periodKind ?? "calendarMonth") === "cycle") {
-    return `${plan}, billing cycle ${bill.cycleNumber ?? ""}`.trim();
+    // The one line carries the total, so it says when a credit came off.
+    const credit = bill.refundCredit?.appliedMinor ? ", less refund credit" :
+      "";
+    return `${plan}, billing cycle ${bill.cycleNumber ?? ""}`.trim() + credit;
   }
   return `${plan}, ${bill.month}`;
 }

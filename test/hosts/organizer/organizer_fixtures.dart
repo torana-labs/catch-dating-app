@@ -59,6 +59,8 @@ HostOrganizerBill organizerBill({
   int events = 9,
   DateTime? dueAt,
   String? paymentUrl = 'https://rzp.io/i/bill',
+  int refundCreditAppliedMinor = 0,
+  int refundCreditCarriedMinor = 0,
 }) => HostOrganizerBill(
   billId: id,
   month: month ?? DateTime(2026, 10),
@@ -80,6 +82,8 @@ HostOrganizerBill organizerBill({
   paymentUrl: paymentUrl,
   paidAt: null,
   paidMinor: null,
+  refundCreditAppliedMinor: refundCreditAppliedMinor,
+  refundCreditCarriedMinor: refundCreditCarriedMinor,
 );
 
 HostFormPaymentSetup razorpaySetup({

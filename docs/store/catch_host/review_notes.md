@@ -61,7 +61,9 @@ Organizer → Payments shows only status:
 
 - the latest Catch bill's period and whether it is due (with its due day),
   overdue, paid or settled, and the ticket sales it was on;
-- each bill's period and status;
+- each bill's period and status, and, when a refund made after an earlier
+  bill was sent is credited on it, "includes a refund credit" or "Covered by a
+  refund credit" (never the amount);
 - the free trial ("Free trial · 12 days left", "Trial ended on …");
 - the plan ("Ticketing plan", "Tools-only plan until …").
 
