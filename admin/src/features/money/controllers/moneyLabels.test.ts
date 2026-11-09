@@ -7,6 +7,7 @@ import {
   billState,
   billSummary,
   monthLabel,
+  refundCreditNote,
   percent,
   rupees,
   waitingFor,
@@ -57,5 +58,18 @@ describe("Money labels", () => {
       plan: {kind: "toolsOnly" as const, toolsOnlyFeeMinor: 500000}};
     expect(billPeriod(cycle)).toBe("9 Nov–9 Dec");
     expect(billSummary(cycle)).toMatch(/^Cycle 3 · \d+ events? · tools only/u);
+  });
+
+  it("states a refund credit from earlier bills, and a bill it covered", () => {
+    const base = bill("sample-padel");
+    expect(refundCreditNote(base)).toBeNull();
+    const credited = {...base, periodKind: "cycle" as const, cycleNumber: 2, refundCredit: {
+      availableMinor: 50_000, appliedMinor: 5_000, carriedForwardMinor: 45_000, lines: [{
+        billId: "sample-padel_c2026-11-09", cycleNumber: 1, invoiceNumber: "2026-27/031",
+        refundedMinor: 1_000_000, creditMinor: 50_000, appliedMinor: 5_000}]}};
+    expect(refundCreditNote(credited)).toEqual({title: "Refund credit",
+      subtitle: "₹500 owed from 2026-27/031 (₹10,000 refunded after it was sent); ₹450 carries to the next bill"});
+    expect(billSummary(credited)).toMatch(/· refund credit$/u);
+    expect(billState({...credited, status: "free"}, now)).toEqual({text: "Covered by refund credit", tone: "secondary"});
   });
 });
