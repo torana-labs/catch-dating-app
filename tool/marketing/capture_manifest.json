@@ -10,7 +10,7 @@
       "audience": "guest",
       "surface": "Guest check-in in the browser",
       "status": "active",
-      "device": "iphone-17-pro",
+      "device": "generic-phone",
       "routeId": "event_runtime",
       "story": {
         "file": "website/src/stories/WebCaptures.stories.tsx",

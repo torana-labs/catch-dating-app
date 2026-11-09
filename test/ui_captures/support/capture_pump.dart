@@ -218,7 +218,11 @@ Widget _frame({
                 textScale: textScale,
                 disableAnimations: disableAnimations,
               ),
-              child: child ?? const SizedBox.shrink(),
+              child: _withStatusBar(
+                device,
+                brightness,
+                child ?? const SizedBox.shrink(),
+              ),
             )
           : null,
       home: includeOverlays
@@ -234,7 +238,11 @@ Widget _frame({
                     textScale: textScale,
                     disableAnimations: disableAnimations,
                   ),
-                  child: _captureScaffold(builder),
+                  child: _withStatusBar(
+                    device,
+                    brightness,
+                    _captureScaffold(builder),
+                  ),
                 ),
               ),
             ),
@@ -245,6 +253,173 @@ Widget _frame({
   return includeOverlays
       ? RepaintBoundary(key: boundaryKey, child: bundledApp)
       : bundledApp;
+}
+
+/// Lays a clean status bar over the top safe area for devices that show one,
+/// so marketing captures read as a phone screen rather than a blank inset.
+Widget _withStatusBar(CaptureDevice device, Brightness brightness, Widget app) {
+  if (!device.showsStatusBar || device.safeArea.top <= 0) return app;
+  return Stack(
+    textDirection: TextDirection.ltr,
+    children: [
+      Positioned.fill(child: app),
+      Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        height: device.safeArea.top,
+        child: CaptureStatusBar(
+          color: brightness == Brightness.dark
+              ? const Color(0xFFFFFFFF)
+              : const Color(0xFF000000),
+        ),
+      ),
+    ],
+  );
+}
+
+/// 9:41 with full signal, Wi-Fi and battery, in the layout the web captures'
+/// Safari screen uses (tool/marketing/lib/web_capture_screen.mjs): the time
+/// centred in the leading 138pt, the icons centred in the trailing 138pt.
+class CaptureStatusBar extends StatelessWidget {
+  const CaptureStatusBar({super.key, required this.color});
+
+  static const time = '9:41';
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Semantics(
+        excludeSemantics: true,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 19),
+            child: SizedBox(
+              height: 22,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 138,
+                    child: Center(
+                      child: Text(
+                        time,
+                        textDirection: TextDirection.ltr,
+                        textScaler: TextScaler.noScaling,
+                        style: TextStyle(
+                          color: color,
+                          fontFamily: CatchFonts.functionFamily,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
+                          height: 1.25,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    width: 138,
+                    child: Center(
+                      child: CustomPaint(
+                        size: const Size(73, 13),
+                        painter: _StatusIconsPainter(color),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Signal (18x12), Wi-Fi (16x12) and battery (27x13), 6pt apart.
+class _StatusIconsPainter extends CustomPainter {
+  const _StatusIconsPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final fill = Paint()..color = color;
+    // Signal: four rising bars, all lit.
+    const bars = [(0.0, 8.0), (5.0, 5.5), (10.0, 3.0), (15.0, 0.0)];
+    for (final (x, top) in bars) {
+      canvas.drawRRect(
+        RRect.fromLTRBR(x, top + 0.5, x + 3, 12.5, const Radius.circular(1)),
+        fill,
+      );
+    }
+    // Wi-Fi: three arcs and a dot, all lit.
+    const wifiCentre = Offset(24 + 8, 12);
+    final arc = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.9
+      ..strokeCap = StrokeCap.round;
+    for (final radius in [10.0, 6.6]) {
+      canvas.drawArc(
+        Rect.fromCircle(center: wifiCentre, radius: radius),
+        -2.36,
+        1.57,
+        false,
+        arc,
+      );
+    }
+    canvas.drawPath(
+      Path()
+        ..moveTo(wifiCentre.dx, wifiCentre.dy)
+        ..arcTo(
+          Rect.fromCircle(center: wifiCentre, radius: 3.6),
+          -2.36,
+          1.57,
+          false,
+        )
+        ..close(),
+      fill,
+    );
+    // Battery: outline, full charge and the terminal nub.
+    const left = 46.0;
+    final faint = color.withValues(alpha: 0.4);
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        left + 0.5,
+        0.5,
+        left + 23.5,
+        12.5,
+        const Radius.circular(3.8),
+      ),
+      Paint()
+        ..color = faint
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1,
+    );
+    canvas.drawRRect(
+      RRect.fromLTRBR(left + 2, 2, left + 22, 11, const Radius.circular(2.5)),
+      fill,
+    );
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        left + 25,
+        4.5,
+        left + 26.4,
+        8.5,
+        const Radius.circular(0.7),
+      ),
+      Paint()..color = faint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_StatusIconsPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 Widget _captureScaffold(WidgetBuilder builder) {

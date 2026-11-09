@@ -1,13 +1,21 @@
-// Draws one iPhone Safari screen around a rendered website page: the status
-// bar above it and the bottom address bar over it, as Safari shows a page.
-// The device bezel comes later from frame_device_capture.dart, so web and app
-// captures share one frame.
+// Draws one phone Safari screen around a rendered website page: a clean
+// status bar above it (9:41, full signal, Wi-Fi and battery) and the bottom
+// address bar over it, as Safari shows a page. The device bezel comes later
+// from frame_device_capture.dart, so web and app captures share one frame.
+import {captureDevice} from "./capture_devices.mjs";
 
-/** iPhone 17 Pro screen in points, the size frame_device_capture.dart expects. */
-export const safariScreen = Object.freeze({width: 402, height: 874, scale: 2, statusBar: 54, toolbar: 92});
+/** The capture device's screen in points, the size frame_device_capture.dart expects. */
+export function safariScreen(deviceId) {
+  const device = captureDevice(deviceId);
+  return Object.freeze({width: device.logicalWidth, height: device.logicalHeight, scale: device.outputScale,
+    statusBar: device.safariStatusBar, toolbar: 92});
+}
 
 /** The page area under the status bar; Safari's toolbar floats over its foot. */
-export const safariViewport = Object.freeze({width: safariScreen.width, height: safariScreen.height - safariScreen.statusBar});
+export function safariViewport(deviceId) {
+  const {width, height, statusBar} = safariScreen(deviceId);
+  return Object.freeze({width, height: height - statusBar});
+}
 
 /**
  * HTML for the composed screen. `pagePng` is the page screenshot as base64 and
@@ -15,14 +23,16 @@ export const safariViewport = Object.freeze({width: safariScreen.width, height: 
  * page's top colour behind the status bar, so the page samples it once the
  * screenshot loads and then sets body[data-ready].
  */
-export function safariScreenHtml({pagePng, address}) {
-  const {width, height, statusBar, toolbar} = safariScreen;
+export function safariScreenHtml({pagePng, address, device}) {
+  const {width, height, statusBar, toolbar} = safariScreen(device);
+  // The status bar's content sits 19pt down a 54pt bar and stays centred as the bar grows.
+  const contentTop = 19 + Math.round((statusBar - 54) / 2);
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 html, body { margin: 0; width: ${width}px; height: ${height}px; overflow: hidden; background: var(--top, #fff); }
 body { position: relative; font-family: -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; --ink: #000; }
 .status { position: absolute; inset: 0 0 auto; height: ${statusBar}px; color: var(--ink); }
-.time { position: absolute; left: 0; width: 138px; top: 19px; text-align: center; font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
-.icons { position: absolute; right: 0; width: 138px; top: 21px; display: flex; justify-content: center; gap: 6px; align-items: center; }
+.time { position: absolute; left: 0; width: 138px; top: ${contentTop}px; text-align: center; font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.icons { position: absolute; right: 0; width: 138px; top: ${contentTop + 2}px; display: flex; justify-content: center; gap: 6px; align-items: center; }
 .page { position: absolute; top: ${statusBar}px; left: 0; width: ${width}px; height: ${height - statusBar}px; display: block; }
 .toolbar { position: absolute; inset: auto 0 0; height: ${toolbar}px; background: rgb(250 250 250 / 0.94); box-shadow: 0 -0.5px 0 rgb(0 0 0 / 0.16); }
 .bar { position: absolute; top: 9px; left: 14px; right: 14px; height: 48px; display: flex; gap: 10px; align-items: center; }

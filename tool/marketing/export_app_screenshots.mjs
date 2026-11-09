@@ -5,12 +5,13 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
+import {captureDeviceIds, deviceFrameSpec} from "./lib/capture_devices.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const designContextPath = fromRepo("tool/marketing/app_screenshots_design_context.json");
 const rawOutputDir = "artifacts/marketing/app-screenshots/raw";
-const supportedDevices = new Set(["iphone-17-pro"]);
+const supportedDevices = new Set(captureDeviceIds);
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 
@@ -497,39 +498,6 @@ function deviceIdFromToken(token) {
     .replace(/([a-z0-9])([A-Z])/gu, "$1-$2")
     .replace(/([a-z])([0-9])/gu, "$1-$2")
     .toLowerCase();
-}
-
-function deviceFrameSpec(deviceId) {
-  if (deviceId !== "iphone-17-pro") {
-    throw new Error(`Unsupported design metadata device: ${deviceId}`);
-  }
-  const logicalWidth = 402;
-  const logicalHeight = 874;
-  const outputScale = 2;
-  const canvasMargin = 32;
-  const frameInset = 22;
-  const screenWidth = logicalWidth * outputScale;
-  const screenHeight = logicalHeight * outputScale;
-  const framedWidth = screenWidth + (frameInset + canvasMargin) * outputScale * 2;
-  const framedHeight = screenHeight + (frameInset + canvasMargin) * outputScale * 2;
-  return {
-    id: deviceId,
-    logicalSize: {width: logicalWidth, height: logicalHeight},
-    outputScale,
-    safeArea: {top: 59, right: 0, bottom: 34, left: 0},
-    frame: {
-      framedSize: {width: framedWidth, height: framedHeight},
-      canvasMargin: canvasMargin * outputScale,
-      frameInset: frameInset * outputScale,
-      outerRadius: 68 * outputScale,
-      screenRadius: 52 * outputScale,
-      dynamicIsland: {
-        width: 126 * outputScale,
-        height: 37 * outputScale,
-        top: 12 * outputScale,
-      },
-    },
-  };
 }
 
 function valueAfter(flag) {
