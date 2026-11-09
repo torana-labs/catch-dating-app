@@ -30824,6 +30824,18 @@ abstract class AppLocalizations {
   /// **'Tools-only plan'**
   String get hostOrganizerBillToolsOnly;
 
+  /// Bill row subtitle when a refund credit (for refunds made after an earlier bill was sent) came off this bill or carries on from it. details is the row's usual subtitle. Status only: never an amount (App Store 3.1.3(f)).
+  ///
+  /// In en, this message translates to:
+  /// **'{details} · includes a refund credit'**
+  String hostOrganizerBillWithRefundCredit({required String details});
+
+  /// Bill row subtitle for a bill with nothing to pay because a refund credit from an earlier bill covered it. Status only: never an amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Covered by a refund credit'**
+  String get hostOrganizerBillCoveredByRefundCredit;
+
   /// Payments plan tile: the free trial is running, with whole days left. Status only, no price.
   ///
   /// In en, this message translates to:

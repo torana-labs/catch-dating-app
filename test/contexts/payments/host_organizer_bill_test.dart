@@ -128,4 +128,23 @@ void main() {
     expect(bill.toolsOnly, isTrue);
     expect(hostOrganizerBillPeriodLabel(bill, 'en'), 'Nov 9 – Dec 8 2026');
   });
+
+  test('a refund credit reads from the server, and none from an older one', () {
+    final older = HostOrganizerBill.fromJson(_bill());
+    expect(older.hasRefundCredit, isFalse);
+    expect(older.refundCreditAppliedMinor, 0);
+    final credited = HostOrganizerBill.fromJson({
+      ..._bill(),
+      'refundCredit': {'appliedMinor': 2500, 'carriedForwardMinor': 0},
+    });
+    expect(credited.hasRefundCredit, isTrue);
+    expect(credited.refundCreditAppliedMinor, 2500);
+    expect(
+      HostOrganizerBill.fromJson({
+        ..._bill(),
+        'refundCredit': null,
+      }).hasRefundCredit,
+      isFalse,
+    );
+  });
 }

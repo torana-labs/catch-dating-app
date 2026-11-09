@@ -49,21 +49,30 @@ class HostOrganizerBillRow extends StatelessWidget {
         CatchBadgeTone.neutral,
       ),
     };
+    final details = bill.status == HostOrganizerBillStatus.free
+        ? bill.refundCreditAppliedMinor > 0
+              ? l10n.hostOrganizerBillCoveredByRefundCredit
+              : l10n.hostOrganizerBillTrial
+        : bill.toolsOnly
+        ? l10n.hostOrganizerBillToolsOnly
+        : bill.capped
+        ? l10n.hostOrganizerBillCapped(
+            sales: money.format(bill.salesMinor / 100),
+          )
+        : l10n.hostOrganizerBillSales(
+            sales: money.format(bill.salesMinor / 100),
+            events: bill.eventCount,
+          );
     return CatchIndexRow(
       key: ValueKey<String>('host-organizer-bill-${bill.billId}'),
       title: hostOrganizerBillPeriodLabel(bill, locale),
-      subtitle: bill.status == HostOrganizerBillStatus.free
-          ? l10n.hostOrganizerBillTrial
-          : bill.toolsOnly
-          ? l10n.hostOrganizerBillToolsOnly
-          : bill.capped
-          ? l10n.hostOrganizerBillCapped(
-              sales: money.format(bill.salesMinor / 100),
-            )
-          : l10n.hostOrganizerBillSales(
-              sales: money.format(bill.salesMinor / 100),
-              events: bill.eventCount,
-            ),
+      // A refund credit is status only: no Catch amount in the app.
+      subtitle:
+          bill.hasRefundCredit &&
+              !(bill.status == HostOrganizerBillStatus.free &&
+                  bill.refundCreditAppliedMinor > 0)
+          ? l10n.hostOrganizerBillWithRefundCredit(details: details)
+          : details,
       trailing: CatchBadge(label: label, tone: tone),
       density: CatchIndexRowSize.regular,
       onTap: null,
