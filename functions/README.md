@@ -502,7 +502,9 @@ enter previews.
 |----------|------|---------|
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
+| `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
+| `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
 | `getProgramDriverTrip` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramFamilyView` | `src/programs/familyView.ts` | The family's counts-only programme view (no names) by a family link. |
@@ -511,16 +513,27 @@ enter previews.
 | `getProgramHotelHandover` | `src/programs/guestIds.ts` | Hotel front desk rooming list with accepted IDs by hotelHandover link. |
 | `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `getProgramWhatsappThread` | `src/programs/programWhatsapp/callables.ts` | One guest WhatsApp thread with its household and retained messages; marks it read. Managers and communications staff. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
 | `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
+| `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |
+| `listProgramWhatsappThreads` | `src/programs/programWhatsapp/callables.ts` | The programme guest inbox: threads by Needs you, Handled or All with counts and the wedding's number. |
 | `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
+| `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
+| `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
+| `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
+| `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |
+| `sendProgramWhatsappReply` | `src/programs/programWhatsapp/callables.ts` | Free-text planner reply inside the 24-hour window, reserved before the Meta call and failing closed; takes the thread over. |
+| `setProgramWhatsappThreadHandling` | `src/programs/programWhatsapp/callables.ts` | Takes a guest thread over from the assistant or hands it back, optionally marking it handled. |
 | `submitProgramGuestId` | `src/programs/guestIds.ts` | A household saves a member's ID through its RSVP link. |
+| `updateProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Changes the programme assistant settings under a revision fence; escalation staff must be active programme staff. |
 | `upsertProgramHamper` | `src/programs/hampers.ts` | Marks a room's welcome hamper placed (porter link or hotel desk). |
 | `upsertProgramPhoto` | `src/programs/photos.ts` | Adds or changes a programme photo. |
+| `upsertProgramWhatsappCannedReply` | `src/programs/programWhatsapp/callables.ts` | Adds or changes a saved WhatsApp reply with one text per language. |
 <!-- fn-inventory:end -->
 
 ## Shared modules

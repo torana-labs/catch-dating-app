@@ -2268,6 +2268,40 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programWhatsappEndpointIndex/{endpointIndexId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappThreads/{programWhatsappThreadId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappMessages/{programWhatsappMessageId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappReplyOperations/{programWhatsappReplyOperationId} {
+      allow read, write: if false;
+    }
+
+    match /programWhatsappCannedReplies/{programWhatsappCannedReplyId} {
+      allow read, write: if false;
+    }
+
+    match /programAssistantSettings/{programId} {
+      allow read, write: if false;
+    }
+
+    // The wedding assistant's audit rows and daily token ledgers:
+    // server-only, written by the assistant (ids, hashes and counts).
+    match /programAssistantRuns/{runId} {
+      allow read, write: if false;
+    }
+
+    match /programAssistantBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
     match /programVendorBills/{programVendorBillId} {
       allow read, write: if false;
     }
