@@ -5063,6 +5063,29 @@ than 7 days after it is sent. Sending takes the next number of
 year (`2026-27/031`). All are server-only and reached through
 `adminManageOrganizerBills` and `adminManageMoneySettings`.
 
+Refunds after a bill is sent are credited on the next bill (owner, 9 Nov
+2026). A sent bill's figures never change. When a cycle bill is made or
+recomputed, every earlier `sent` or `paid` ticketing cycle bill of the
+organizer (ending within the last 240 days, about Razorpay's refund window
+plus a cycle) is recomputed with today's refunds, its payments' frozen rates,
+its own `trialEndsAtMillis` and its own per-cycle `commission.capMinor`; if
+new refunds were recorded, the commission they remove, less what other bills
+already took from that bill (`refundCredit.lines[].appliedMinor`, read in the
+same transaction), is owed. The new bill's `refundCredit` records what was
+owed (`availableMinor`), what came off its commission or tools-only fee before
+GST (`appliedMinor`, oldest bill first) and what carries forward
+(`carriedForwardMinor`); `totalMinor` never goes below zero, and a bill the
+credit brings to zero is made `free` so the credit it used is recorded. A
+capped cycle owes credit only once refunds bring it under its cap; a
+tools-only cycle billed a flat fee and owes none (#1126: never both); a
+written-off bill owes none; a bill prepaid by the tools-only purchase takes
+none, leaving it for the next bill; a refund recorded before a bill is sent is
+counted in that bill when it is recomputed. Calendar-month bills (October 2026
+and earlier) get no automatic credit. `listOrganizerBills` returns
+`refundCredit {appliedMinor, carriedForwardMinor}`; the web billing portal and
+the bill email show the amounts, and the native Host app shows only that a
+credit applies.
+
 `organizerBillingPlans/{organizerId}` is the organizer's plan: ticketing (the
 default) or tools-only. Tools-only is bought only on the host billing website
 through `manageOrganizerBillingPlan`, as a Razorpay payment link on Catch's
