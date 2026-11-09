@@ -4,6 +4,8 @@ import {
   billDue,
   billJourney,
   billPeriod,
+  billReviewLabel,
+  billSending,
   billState,
   billSummary,
   monthLabel,
@@ -57,5 +59,34 @@ describe("Money labels", () => {
       plan: {kind: "toolsOnly" as const, toolsOnlyFeeMinor: 500000}};
     expect(billPeriod(cycle)).toBe("9 Nov–9 Dec");
     expect(billSummary(cycle)).toMatch(/^Cycle 3 · \d+ events? · tools only/u);
+  });
+
+  it("says how an unsent cycle bill goes out: staff review, automatically, or held", () => {
+    const cycle = {...bill("sample-padel"), periodKind: "cycle" as const, cycleNumber: 1};
+    expect(billSending(cycle, false)).toMatchObject({automatic: false, held: false,
+      label: {text: "Waits for staff: one of the host's first two billing cycles", tone: "warning"}});
+    // A bill made before automatic sending has no send time: staff send it.
+    expect(billSending({...cycle, autoSendAtMillis: undefined}, false).automatic).toBe(false);
+    const automatic = {...cycle, cycleNumber: 3, autoSendAtMillis: Date.parse("2026-11-19T06:15:00+05:30")};
+    expect(billSending(automatic, false)).toMatchObject({automatic: true, held: false,
+      label: {text: "Sends automatically 19 Nov"}});
+    expect(billState(automatic, now)).toEqual({text: "Sends 19 Nov", tone: "secondary"});
+    expect(billSending(automatic, true).label.text).toBe("On hold: the organizer's bills are held");
+    expect(billState(automatic, now, true)).toEqual({text: "To send · held", tone: "warning"});
+    const held = {...automatic, sendHold: {atMillis: now, byUid: "operator", note: "Disputed refund"}};
+    expect(billSending(held, false)).toMatchObject({held: true, label: {text: "On hold: Disputed refund"}});
+    expect(billJourney(held, now).at(-1)?.title).toBe("Waiting to be issued");
+    expect(billJourney(automatic, now).at(-1)?.title).toBe("Sends automatically 19 Nov");
+  });
+
+  it("says how an organizer's bills go out", () => {
+    expect(billReviewLabel(null)).toBeNull();
+    expect(billReviewLabel({reviewedCycles: 0, reviewRequiredCycles: 2, hold: null, canHold: false})?.text)
+      .toBe("Staff review: 0 of the first 2 cycles sent");
+    expect(billReviewLabel({reviewedCycles: 4, reviewRequiredCycles: 2, hold: null, canHold: true})?.text)
+      .toBe("Sent automatically a day after each cycle is billed");
+    expect(billReviewLabel({reviewedCycles: 4, reviewRequiredCycles: 2,
+      hold: {atMillis: 1, byUid: null, note: null}, canHold: true})).toEqual({
+      text: "On hold · staff send every bill", tone: "warning"});
   });
 });

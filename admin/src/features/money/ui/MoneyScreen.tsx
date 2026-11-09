@@ -23,6 +23,7 @@ import {
   billDue,
   billJourney,
   billPeriod,
+  billSending,
   billState,
   billSummary,
   dayDate,
@@ -156,6 +157,7 @@ export function MoneyScreen({
             key={bills.selected.billId}
             bill={bills.selected}
             gstRegistered={bills.data?.gstRegistered ?? false}
+            organizerHeld={bills.data?.heldOrganizerIds.includes(bills.selected.organizerId) ?? false}
             isActing={bills.isActing}
             actionError={bills.actionError}
             next={nextOf(bills.rows, bills.selected)}
@@ -265,7 +267,7 @@ function billsMain(bills: BillsController, nowMillis: number, onSelect: (billId:
     organizer: {title: bill.organizerName, subtitle: billSummary(bill)},
     sales: rupees(bill.sales.grossMinor - bill.sales.refundedMinor),
     bill: bill.status === "free" ? "—" : rupees(bill.totalMinor),
-    state: billState(bill, nowMillis),
+    state: billState(bill, nowMillis, bills.data?.heldOrganizerIds.includes(bill.organizerId) ?? false),
   }));
   return (
     <CatchTable<BillRow>
@@ -417,6 +419,7 @@ function MoneyBillInspector({
   position,
   nowMillis,
   gstRegistered,
+  organizerHeld,
   isActing,
   actionError,
   onAct,
@@ -428,6 +431,8 @@ function MoneyBillInspector({
   position: QueuePosition;
   nowMillis: number;
   gstRegistered: boolean;
+  /** Staff hold every bill of this bill's organizer from sending automatically. */
+  organizerHeld: boolean;
   isActing: boolean;
   actionError: string | null;
   onAct: (action: BillAction, note: string | null) => Promise<boolean>;
@@ -437,6 +442,7 @@ function MoneyBillInspector({
   const [note, setNote] = useState("");
   const [confirmingWriteOff, setConfirmingWriteOff] = useState(false);
   const due = billDue(bill, nowMillis);
+  const sending = billSending(bill, organizerHeld);
   const {sales, commission, gst} = bill;
   const netSales = sales.grossMinor - sales.refundedMinor;
   const facts: CatchMetaEntry[] = [
@@ -446,6 +452,7 @@ function MoneyBillInspector({
     bill.paymentLink ?
       {label: "Payment link", value: bill.paymentLink.url, href: bill.paymentLink.url} :
       {label: "Payment link", value: bill.status === "toSend" ? "Made when sent" : "None", tone: "secondary"},
+    ...(bill.status === "toSend" ? [{label: "Sending", value: sending.label.text, tone: sending.label.tone}] : []),
   ];
   const run = async (action: BillAction) => {
     if (await onAct(action, note)) setNote("");
@@ -466,7 +473,10 @@ function MoneyBillInspector({
         {label: "Issue the bill", isLoading: isActing, onPressed: isActing ? null : () => void run("send")} :
         {label: "Record a reminder", isLoading: isActing, onPressed: isActing ? null : () => void run("remind")}}
       recipe="pane"
-      secondary={bill.status === "sent" ? {label: "Mark as paid", onPressed: isActing ? null : () => void run("markPaid")} : undefined}
+      secondary={bill.status === "sent" ? {label: "Mark as paid", onPressed: isActing ? null : () => void run("markPaid")} :
+        sending.automatic ? bill.sendHold ?
+          {label: "Release the hold", onPressed: isActing ? null : () => void run("releaseHold")} :
+          {label: "Hold from sending automatically", onPressed: isActing ? null : () => void run("hold")} : undefined}
     />
   ) : null;
   return (

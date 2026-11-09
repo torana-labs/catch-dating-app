@@ -68,6 +68,33 @@ describe("Money", () => {
     expect(bills.act).toHaveBeenCalledWith("writeOff", "");
   });
 
+  it("holds a cycle bill that would go out automatically, and says so", () => {
+    const padel = month.bills.find((bill) => bill.organizerId === "sample-padel")!;
+    const automatic = {...padel, periodKind: "cycle" as const, cycleNumber: 3,
+      autoSendAtMillis: Date.parse("2026-11-19T06:15:00+05:30")};
+    const bills = billsController("sample-padel", {selected: automatic, rows: [automatic]});
+    renderMoney("bills", bills, issuesController(0));
+    expect(screen.getAllByText("Sends automatically 19 Nov").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", {name: "Hold from sending automatically"}));
+    expect(bills.act).toHaveBeenCalledWith("hold", "");
+    cleanup();
+    const held = {...automatic, sendHold: {atMillis: now, byUid: "operator", note: "Disputed refund"}};
+    const heldBills = billsController("sample-padel", {selected: held, rows: [held]});
+    renderMoney("bills", heldBills, issuesController(0));
+    expect(screen.getByText("On hold: Disputed refund")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Release the hold"}));
+    expect(heldBills.act).toHaveBeenCalledWith("releaseHold", "");
+  });
+
+  it("says a bill of a host's first two cycles waits for staff, with no hold to place", () => {
+    const padel = month.bills.find((bill) => bill.organizerId === "sample-padel")!;
+    const first = {...padel, periodKind: "cycle" as const, cycleNumber: 1, autoSendAtMillis: null};
+    renderMoney("bills", billsController("sample-padel", {selected: first, rows: [first]}), issuesController(0));
+    expect(screen.getByText("Waits for staff: one of the host's first two billing cycles")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Issue the bill"})).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Hold from sending automatically"})).toBeNull();
+  });
+
   it("offers no decision on a paid bill", () => {
     renderMoney("bills", billsController("sample-afterfly"), issuesController(0));
     expect(screen.queryByRole("button", {name: "Record a reminder"})).toBeNull();

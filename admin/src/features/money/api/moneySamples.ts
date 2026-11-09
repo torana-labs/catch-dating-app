@@ -118,8 +118,16 @@ function listBills(scope: {month: string} | {organizerId: string},
   trial: "organizerId" in scope ? {state: "ended", anchor: "firstEvent",
     days: 30, startsAtMillis: Date.UTC(2026, 6, 2, 18, 30),
     endsAtMillis: Date.UTC(2026, 7, 1, 18, 30), daysLeft: null} : null,
-  billingPlan: null};
+  billingPlan: null,
+  // The sample organizers have had two cycles reviewed, so bills now go out automatically.
+  billReview: "organizerId" in scope ? {reviewedCycles: 2, reviewRequiredCycles: 2,
+    hold: heldOrganizers.get(scope.organizerId) ?? null, canHold: true} : null,
+  heldOrganizerIds: [...heldOrganizers.keys()].filter((organizerId) =>
+    "organizerId" in scope ? organizerId === scope.organizerId :
+      monthBills.some((entry) => entry.organizerId === organizerId))};
 }
+
+const heldOrganizers = new Map<string, {atMillis: number; byUid: string | null; note: string | null}>();
 
 /**
  * Sample adminManageOrganizerBills.
@@ -138,6 +146,15 @@ export function sampleManageOrganizerBills(
   payload: AdminManageOrganizerBillsCallablePayload,
   nowMillis = moneySampleNowMillis):
   AdminManageOrganizerBillsCallableResponse {
+  if (payload.action === "holdOrganizer" || payload.action === "releaseOrganizerHold") {
+    const organizerId = organizerRecordBills[payload.organizerId ?? ""] ?? payload.organizerId ?? "";
+    if (payload.action === "holdOrganizer") {
+      heldOrganizers.set(organizerId, {atMillis: nowMillis, byUid: "sample-owner", note: payload.note});
+    } else {
+      heldOrganizers.delete(organizerId);
+    }
+    return listBills({organizerId}, nowMillis);
+  }
   if (payload.action === "list" || payload.action === "generate") {
     return listBills(payload.organizerId ?
       {organizerId: organizerRecordBills[payload.organizerId] ?? payload.organizerId} :
@@ -165,12 +182,18 @@ export function sampleManageOrganizerBills(
   } else if (payload.action === "writeOff" &&
       ["toSend", "sent"].includes(current.status)) {
     Object.assign(next, {status: "writtenOff", writtenOffAtMillis: nowMillis});
+  } else if (payload.action === "hold" && current.status === "toSend" &&
+      current.autoSendAtMillis && !current.sendHold) {
+    next.sendHold = {atMillis: nowMillis, byUid: "sample-owner", note: payload.note};
+  } else if (payload.action === "releaseHold" && current.status === "toSend" && current.sendHold) {
+    next.sendHold = null;
   } else {
     throw new Error(`A bill that is ${current.status} cannot do that.`);
   }
   next.history = [...current.history, {atMillis: nowMillis,
     action: payload.action === "send" ? "sent" : payload.action === "remind" ?
-      "reminded" : payload.action === "markPaid" ? "paid" : "writtenOff",
+      "reminded" : payload.action === "markPaid" ? "paid" : payload.action === "hold" ? "held" :
+        payload.action === "releaseHold" ? "holdReleased" : "writtenOff",
     byUid: "sample-owner", note: payload.note}];
   bills = bills.map((entry) => entry.billId === next.billId ? next : entry);
   return listBills({month: next.month}, nowMillis);

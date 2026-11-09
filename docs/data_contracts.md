@@ -5063,6 +5063,24 @@ than 7 days after it is sent. Sending takes the next number of
 year (`2026-27/031`). All are server-only and reached through
 `adminManageOrganizerBills` and `adminManageMoneySettings`.
 
+Staff review the start of every host's billing (owner, 9 Nov 2026). Until staff
+have sent two of an organizer's cycle bills, each new cycle bill is made with
+`autoSendAtMillis: null` and waits in Admin for staff to review and send it.
+The count is of cycle bills actually sent (`periodKind: cycle` with
+`sentAtMillis`), so it counts cycles, never calendar months, and it cannot be
+used up by a bill nobody reviewed: a cycle with nothing to bill (no bill), a
+`free` bill and a bill prepaid by the tools-only purchase are never sent and do
+not count. From the third reviewed cycle, a new cycle bill gets
+`autoSendAtMillis` a day after it is made, and the next daily run recomputes it
+(picking up refunds) and sends it through the same path as staff's send. Staff
+can still send any bill themselves. A hold stops automatic sending:
+`sendHold` on one unsent bill, or on the organizer's
+`organizerBillingCycles/{organizerId}` pointer for all of its bills (only once
+it has been billed for a cycle, since before that its bills wait for staff
+anyway). Holds and releases are recorded with who and why, in the bill's
+history (`held`, `holdReleased`) or the admin audit log. Bills made before
+automatic sending have no `autoSendAtMillis` and wait for staff.
+
 `organizerBillingPlans/{organizerId}` is the organizer's plan: ticketing (the
 default) or tools-only. Tools-only is bought only on the host billing website
 through `manageOrganizerBillingPlan`, as a Razorpay payment link on Catch's

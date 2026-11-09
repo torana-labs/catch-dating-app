@@ -2477,6 +2477,13 @@ the evidence in the release ticket.
   IST and that the first cycle bills appear as "To send" under the month their
   cycle ends. Review and send them in Admin → Money; sending issues the invoice
   and the email.
+- [ ] Each host's first two cycle bills that staff send are reviewed by hand
+  ("Waits for staff" on the bill). From the third, a bill reads "Sends
+  automatically {date}" and the next daily run issues and sends it. To stop
+  that, hold the bill (Money → the bill → "Hold from sending automatically")
+  or the organizer (its Money tab → "Hold bills from sending automatically").
+  The deploy binds `RAZORPAY_KEY_SECRET` to `generateOrganizerCycleBillsDaily`,
+  which now issues invoices.
 
 ### 7. Store-safe Host app
 
