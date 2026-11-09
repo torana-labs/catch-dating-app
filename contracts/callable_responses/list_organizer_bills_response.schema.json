@@ -54,6 +54,14 @@
           }
         },
         "totalMinor": {"$ref": "#/definitions/minor"},
+        "refundCredit": {
+          "description": "Credit for refunds recorded after earlier bills were sent: appliedMinor came off this bill before GST, carriedForwardMinor goes to the next bill. Null or absent when there is none. The native Host app shows only that a credit applies, never the amounts.",
+          "anyOf": [
+            {"type": "object", "additionalProperties": false, "required": ["appliedMinor", "carriedForwardMinor"],
+              "properties": {"appliedMinor": {"$ref": "#/definitions/minor"}, "carriedForwardMinor": {"$ref": "#/definitions/minor"}}},
+            {"type": "null"}
+          ]
+        },
         "invoiceNumber": {"type": ["string", "null"], "maxLength": 40},
         "dueAtMillis": {"$ref": "#/definitions/nullableMillis"},
         "paymentUrl": {"type": ["string", "null"], "pattern": "^https://", "maxLength": 300, "description": "The Razorpay payment link, only while the bill is unpaid."},

@@ -173,6 +173,24 @@ function rupees(minor: number): string {
 }
 
 /**
+ * The email's lines about refund credit: what came off this bill for
+ * refunds made after earlier bills were sent, and what carries forward.
+ * @param {Bill} bill The bill.
+ * @return {string[]} Lines, none when there is no credit.
+ */
+export function refundCreditLines(bill: Bill): string[] {
+  const credit = bill.refundCredit;
+  if (!credit) return [];
+  return [
+    ...(credit.appliedMinor > 0 ? ["Less a refund credit of " +
+      `${rupees(credit.appliedMinor)} for refunds made after earlier bills ` +
+      "were sent"] : []),
+    ...(credit.carriedForwardMinor > 0 ? ["A further refund credit of " +
+      `${rupees(credit.carriedForwardMinor)} goes to your next bill`] : []),
+  ];
+}
+
+/**
  * The email for a notice: plain text with the invoice's own page.
  * @param {object} input Bill, notice kind, sender and recipient.
  * @return {TransactionalEmail} The email.
@@ -202,6 +220,7 @@ export function billNoticeEmail(input: {bill: Bill; notice: Notice;
     "",
     `Amount: ${rupees(bill.totalMinor)}`,
     plan,
+    ...refundCreditLines(bill),
     bill.gst.registered ? `Includes GST of ${rupees(bill.gst.amountMinor)}` :
       "No GST is charged: Catch is not GST registered.",
     ...(due ? [`Due: ${due}`] : []),

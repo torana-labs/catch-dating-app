@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
   "title": "OrganizerBillDocument",
-  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. A refund recorded after a cycle bill was sent or paid is credited on the organizer's next cycle bill (refundCredit), never making a bill negative. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerBills",
@@ -106,7 +106,32 @@
         "amountMinor": {"$ref": "#/definitions/minor"}
       }
     },
-    "totalMinor": {"$ref": "#/definitions/minor"},
+    "totalMinor": {"$ref": "#/definitions/minor", "description": "What the organizer owes: the commission (or tools-only fee) less refundCredit.appliedMinor, plus GST on the rest."},
+    "refundCredit": {
+      "description": "Cycle bills only: commission Catch owes back because refunds were recorded after earlier cycle bills of this organizer were sent or paid (owner, 9 Nov 2026). Each earlier ticketing bill is recomputed with today's refunds, its own frozen rates, trial and per-cycle cap; what the refunds take off its commission, less what other bills already took, is the credit. It comes off this bill before GST, never below zero, and what is left carries forward to the next bill. Tools-only cycles bill a flat fee and owe no credit. Null or absent when nothing is owed.",
+      "anyOf": [
+        {"type": "object", "additionalProperties": false,
+          "required": ["availableMinor", "appliedMinor", "carriedForwardMinor", "lines"],
+          "properties": {
+            "availableMinor": {"$ref": "#/definitions/minor", "description": "Credit owed when this bill was made."},
+            "appliedMinor": {"$ref": "#/definitions/minor", "description": "Taken off this bill, before GST."},
+            "carriedForwardMinor": {"$ref": "#/definitions/minor", "description": "Left for the next bill."},
+            "lines": {"type": "array", "maxItems": 24, "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["billId", "cycleNumber", "invoiceNumber", "refundedMinor", "creditMinor", "appliedMinor"],
+              "properties": {
+                "billId": {"type": "string", "minLength": 1, "maxLength": 200, "description": "The earlier bill whose sales were refunded."},
+                "cycleNumber": {"type": ["integer", "null"], "minimum": 1},
+                "invoiceNumber": {"type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"},
+                "refundedMinor": {"$ref": "#/definitions/minor", "description": "Refunds recorded on its sales since it was made."},
+                "creditMinor": {"$ref": "#/definitions/minor", "description": "Its credit still owed when this bill was made."},
+                "appliedMinor": {"$ref": "#/definitions/minor", "description": "The part of it taken off this bill."}
+              }
+            }}
+          }},
+        {"type": "null"}
+      ]
+    },
     "invoiceNumber": {"type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"},
     "dueAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "paymentLink": {
