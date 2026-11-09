@@ -217,15 +217,27 @@ class RotationScheduleCard extends StatelessWidget {
             else
               Column(
                 children: [
-                  for (final slot in assigned.rotationSlots)
-                    RotationSlotRow(
-                      slot: slot,
-                      peerName:
-                          profilesByUid[slot.peerUid]?.name ??
-                          context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyPartner,
-                    ),
+                  for (final entry in rotationScheduleEntries(assigned))
+                    switch (entry) {
+                      RotationScheduleSlot(:final slot) => RotationSlotRow(
+                        slot: slot,
+                        peerName:
+                            profilesByUid[slot.peerUid]?.name ??
+                            context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyPartner,
+                        opponentNames: [
+                          for (final uid in slot.opponentUids)
+                            profilesByUid[uid]?.name ??
+                                context
+                                    .l10n
+                                    .eventSuccessCompanionDoublesOpponent,
+                        ],
+                      ),
+                      RotationScheduleBench(:final slot) => BenchSlotRow(
+                        slot: slot,
+                      ),
+                    },
                 ],
               ),
           ],
@@ -568,14 +580,29 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   }
 }
 
-class StagePromptCard extends StatelessWidget {
+class StagePromptCard extends StatefulWidget {
   const StagePromptCard({super.key, required this.prompt, this.title});
 
   final String prompt;
   final String? title;
 
   @override
+  State<StagePromptCard> createState() => _StagePromptCardState();
+}
+
+class _StagePromptCardState extends State<StagePromptCard> {
+  bool _skipped = false;
+
+  @override
+  void didUpdateWidget(covariant StagePromptCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A new prompt (the next step) is offered again.
+    if (oldWidget.prompt != widget.prompt) _skipped = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_skipped) return const SizedBox.shrink();
     final t = CatchTokens.of(context);
     return CompanionStageSurface(
       child: Column(
@@ -583,18 +610,54 @@ class StagePromptCard extends StatelessWidget {
         children: [
           StageSectionHeader(
             icon: CatchIcons.chatBubbleOutlineRounded,
-            label: title ?? context.l10n.eventSuccessSocialMissionTitle,
+            label: widget.title ?? context.l10n.eventSuccessSocialMissionTitle,
             color: t.primary,
           ),
           gapH12,
-          CatchLegacyText(prompt, variant: CatchLegacyTextVariant.titleL),
+          CatchLegacyText(
+            widget.prompt,
+            variant: CatchLegacyTextVariant.titleL,
+          ),
+          gapH12,
+          CompanionPromptSkip(onSkip: () => setState(() => _skipped = true)),
         ],
       ),
     );
   }
 }
 
-class StageConversationCueCard extends StatelessWidget {
+/// Every prompt can be skipped. Skipping records nothing: it only puts the
+/// prompt away for this step.
+class CompanionPromptSkip extends StatelessWidget {
+  const CompanionPromptSkip({super.key, required this.onSkip});
+
+  final VoidCallback onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        CatchButton(
+          key: const ValueKey('companionPromptSkip'),
+          label: context.l10n.eventSuccessCompanionPromptSkip,
+          variant: CatchButtonVariant.quiet,
+          onPressed: onSkip,
+        ),
+        gapW8,
+        Expanded(
+          child: CatchLegacyText(
+            context.l10n.eventSuccessCompanionPromptSkipNote,
+            variant: CatchLegacyTextVariant.supporting,
+            color: t.ink2,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class StageConversationCueCard extends StatefulWidget {
   const StageConversationCueCard({
     super.key,
     required this.title,
@@ -607,8 +670,28 @@ class StageConversationCueCard extends StatelessWidget {
   final List<EventSuccessConversationCue> cues;
 
   @override
+  State<StageConversationCueCard> createState() =>
+      _StageConversationCueCardState();
+}
+
+class _StageConversationCueCardState extends State<StageConversationCueCard> {
+  bool _skipped = false;
+
+  @override
+  void didUpdateWidget(covariant StageConversationCueCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.title != widget.title ||
+        oldWidget.cues.firstOrNull?.moment != widget.cues.firstOrNull?.moment) {
+      _skipped = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (cues.isEmpty) return const SizedBox.shrink();
+    final cues = widget.cues;
+    final title = widget.title;
+    final subtitle = widget.subtitle;
+    if (cues.isEmpty || _skipped) return const SizedBox.shrink();
 
     final t = CatchTokens.of(context);
     final moment = cues.first.moment;
@@ -624,13 +707,15 @@ class StageConversationCueCard extends StatelessWidget {
           if (subtitle != null) ...[
             gapH8,
             CatchLegacyText(
-              subtitle!,
+              subtitle,
               variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ],
           gapH14,
           for (final cue in cues.take(3)) StageCueCard(cue: cue),
+          gapH4,
+          CompanionPromptSkip(onSkip: () => setState(() => _skipped = true)),
         ],
       ),
     );
