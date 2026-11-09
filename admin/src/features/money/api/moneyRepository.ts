@@ -20,7 +20,6 @@ export type BillAction = Exclude<AdminManageOrganizerBillsCallablePayload["actio
   "list" | "generate" | OrganizerBillsAction>;
 /** Holds or releases automatic sending for every bill of one organizer. */
 export type OrganizerBillsAction = "holdOrganizer" | "releaseOrganizerHold";
-export type BillReview = NonNullable<BillsMonth["billReview"]>;
 export type IssuesView = AdminManagePaymentIssuesCallableResponse;
 export type MoneyIssue = IssuesView["issues"][number];
 
