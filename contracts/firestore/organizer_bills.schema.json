@@ -18,7 +18,7 @@
     "nullableMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
     "minor": {"type": "integer", "minimum": 0, "maximum": 100000000000},
     "status": {
-      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial, or because refund credit from earlier bills covered it.",
       "enum": ["toSend", "sent", "paid", "writtenOff", "free"]
     },
     "historyEntry": {
