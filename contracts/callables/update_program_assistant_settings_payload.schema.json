@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_program_assistant_settings_payload.schema.json",
+  "title": "UpdateProgramAssistantSettingsCallablePayload",
+  "description": "Change one programme's assistant settings. Omitted fields keep their value; expectedRevision is 0 while the programme still runs on the defaults. Escalation staff must hold an active grant on the programme. Managers and coordinators.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "expectedRevision",
+    "requestId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether the assistant answers this wedding's guests. The PROGRAM_ASSISTANT_ENABLED param must also be true."
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "en",
+          "hi",
+          "gu",
+          "mr",
+          "ta"
+        ]
+      },
+      "description": "Languages the assistant may reply in; the first is the fallback."
+    },
+    "replyWithin": {
+      "type": "string",
+      "enum": [
+        "hour",
+        "fourHours",
+        "sameDay"
+      ],
+      "description": "What guests are told about when the planner replies to anything passed on."
+    },
+    "escalationStaffUids": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Programme staff told when a thread is passed to the planner."
+    },
+    "tone": {
+      "type": "string",
+      "enum": [
+        "warm",
+        "formal",
+        "brief"
+      ]
+    },
+    "dailyTokenBudget": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 5000000,
+      "description": "Per-programme daily model token cap."
+    },
+    "answerTopics": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "schedule",
+          "venues",
+          "dressCode",
+          "travel",
+          "stay",
+          "rsvp"
+        ]
+      },
+      "description": "What the assistant may answer from the household's itinerary."
+    },
+    "attachmentReads": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "tickets",
+          "ids"
+        ]
+      },
+      "description": "Attachments the assistant may read. Media is not downloaded yet; these are stored for the planner's choice."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    }
+  }
+}

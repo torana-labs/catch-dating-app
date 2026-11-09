@@ -117,4 +117,24 @@ void main() {
       );
     },
   );
+
+  test(
+    'follower WhatsApp needs its own consent, not the follow preference',
+    () {
+      final whatsapp = communicationRouteCapability(
+        CommunicationRouteId.organizerFollowerWhatsapp,
+      );
+      final push = communicationRouteCapability(
+        CommunicationRouteId.organizerFollowerUpdate,
+      );
+      expect(whatsapp.transport, CommunicationTransport.whatsapp);
+      expect(whatsapp.audienceScope, push.audienceScope);
+      expect(whatsapp.consentScope, CommunicationConsentScope.followerUpdates);
+      expect(whatsapp.consentScope, isNot(push.consentScope));
+      expect(
+        whatsapp.observability,
+        CommunicationObservability.providerReceipts,
+      );
+    },
+  );
 }

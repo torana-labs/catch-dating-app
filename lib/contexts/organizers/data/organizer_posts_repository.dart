@@ -61,6 +61,7 @@ class OrganizerPostsRepository {
     required String text,
     String? eventId,
     String? photoPath,
+    bool whatsapp = false,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
@@ -72,6 +73,7 @@ class OrganizerPostsRepository {
               text: text,
               eventId: eventId,
               photoPath: photoPath,
+              channels: whatsapp ? const ['app', 'whatsapp'] : null,
             ).toJson(),
           );
       return CreateOrganizerPostCallableResponse.fromCallableData(result.data);

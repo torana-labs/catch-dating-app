@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_whatsapp_thread_payload.schema.json",
+  "title": "GetProgramWhatsappThreadCallablePayload",
+  "description": "Read one programme WhatsApp thread with its retained messages and household. Reading marks it read. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "threadId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    }
+  }
+}

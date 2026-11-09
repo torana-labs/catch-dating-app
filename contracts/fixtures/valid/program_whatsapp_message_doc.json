@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "messageId": "pwm_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "threadId": "program-1_household-1",
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "householdId": "household-1",
+  "direction": "inbound",
+  "kind": "text",
+  "text": "Kya hum Sangeet ke liye bus le sakte hain?",
+  "author": "guest",
+  "authorUid": null,
+  "runId": null,
+  "cannedReplyId": null,
+  "providerMessageId": "wamid.inbound-1",
+  "status": "received",
+  "createdAtMillis": 1800000000000,
+  "statusUpdatedAtMillis": 1800000000000
+}

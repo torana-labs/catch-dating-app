@@ -263,6 +263,8 @@ class HostLiveViewTabBar extends StatelessWidget {
             label: switch (format) {
               HostLiveFormatView.courts => l10n.hostFormatsViewCourts,
               HostLiveFormatView.mix => l10n.hostFormatsViewTeams,
+              HostLiveFormatView.crawl => l10n.hostFormatsViewStops,
+              HostLiveFormatView.pods => l10n.hostFormatsViewPods,
             },
           ),
         if (room)
