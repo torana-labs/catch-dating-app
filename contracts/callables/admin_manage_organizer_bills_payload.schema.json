@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_manage_organizer_bills_payload.schema.json",
   "title": "AdminManageOrganizerBillsCallablePayload",
-  "description": "Owner reads one month's organizer bills or acts on them. list reads the month (cycle bills appear under the month their cycle ends), or with organizerId every bill of one organizer (the organizer's Money tab). generate bills every rolling cycle (#1126) that has closed, for every organizer, and recomputes cycle bills not yet sent; bills already sent or closed are kept, and calendar-month bills are no longer made. send takes the next invoice number, sets the due date and creates a Razorpay payment link. remind records a reminder. markPaid closes a bill paid outside its link and credits its nominator. writeOff closes a bill that will not be paid. Acting on one bill names the revision it reviewed.",
+  "description": "Owner reads one month's organizer bills or acts on them. list reads the month (cycle bills appear under the month their cycle ends), or with organizerId every bill of one organizer (the organizer's Money tab). generate bills every rolling cycle (#1126) that has closed, for every organizer, and recomputes cycle bills not yet sent; bills already sent or closed are kept, and calendar-month bills are no longer made. send takes the next invoice number, sets the due date and creates a Razorpay Invoice (a payment link if Razorpay refuses). Until staff have sent two of a host's cycle bills, every cycle bill waits for staff to send it; later cycle bills are sent automatically by the daily run about a day after they are made. hold and releaseHold stop or resume sending one unsent bill automatically; holdOrganizer and releaseOrganizerHold (with organizerId and no billId, month or revision) do the same for every bill of an organizer already billed for a cycle. remind records a reminder. markPaid closes a bill paid outside its link and credits its nominator. writeOff closes a bill that will not be paid. Acting on one bill names the revision it reviewed.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "Catch operators (Admin Owner)",
@@ -22,7 +22,11 @@
         "send",
         "remind",
         "markPaid",
-        "writeOff"
+        "writeOff",
+        "hold",
+        "releaseHold",
+        "holdOrganizer",
+        "releaseOrganizerHold"
       ]
     },
     "month": {

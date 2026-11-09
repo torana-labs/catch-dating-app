@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import {requireAdminRole, type AdminContext} from "../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
 import {createRazorpayClient, razorpayKeySecret} from "../payments/razorpay";
@@ -9,8 +10,10 @@ import {razorpayRuntimeProject} from "../payments/razorpayOrderOwnership";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import type {OrganizerBillDocument} from
-  "../shared/generated/firestoreAdminTypes";
+import type {
+  OrganizerBillDocument,
+  OrganizerBillingCycleDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import type {AdminManageOrganizerBillsCallablePayload as Payload} from
   "../shared/generated/adminManageOrganizerBillsCallablePayload";
 import type {AdminManageOrganizerBillsCallableResponse as Result} from
@@ -34,15 +37,31 @@ import {moneyRoles, nextInvoice, readMoneySettings} from "./moneySettings";
 import {readOrganizerTrialStatus} from "./organizerBillingStatus";
 import {readBillingPlan} from "./organizerBillingPlan";
 import {prepareNominatorCredit} from "./nominatorCredits";
-import {generateCycleBills, regenerateToSendCycleBills} from
-  "./organizerCycleBills";
+import {
+  autoSendToleranceMillis,
+  checkedPointer,
+  generateCycleBills,
+  isReviewedCycleBill,
+  organizerBillingCyclesCollection,
+  regenerateToSendCycleBills,
+  staffReviewedCycles,
+} from "./organizerCycleBills";
 
 export const organizerBillsCollection = "organizerBills";
 const historyLimit = 60;
 
 type Db = FirebaseFirestore.Firestore;
 type Bill = OrganizerBillDocument;
+type Pointer = OrganizerBillingCycleDocument;
 type HistoryAction = Bill["history"][number]["action"];
+type BillAction = "send" | "remind" | "markPaid" | "writeOff" | "hold" |
+  "releaseHold";
+const billActions: readonly string[] = ["send", "remind", "markPaid",
+  "writeOff", "hold", "releaseHold"];
+const organizerActions: readonly string[] = ["holdOrganizer",
+  "releaseOrganizerHold"];
+const autoSendNote =
+  "Sent automatically: staff reviewed the host's first billing cycles";
 
 export interface BillDeps {
   db: () => Db;
@@ -79,46 +98,81 @@ function checked(bill: Bill): Bill {
   return bill;
 }
 
+const actionWords: Record<BillAction, string> = {send: "sent",
+  remind: "reminded", markPaid: "marked paid", writeOff: "written off",
+  hold: "held", releaseHold: "released from its hold"};
+
 /**
- * Applies one owner action to one bill.
+ * Applies one action to one bill: a staff member's, or the daily run's
+ * automatic send (actor null), which only sends a bill that is due to go
+ * out automatically and that neither it nor its organizer holds.
  * @param {BillDeps} deps Dependencies.
- * @param {AdminContext} actor Staff member.
- * @param {Payload} data Validated request.
- * @param {CallableRequest<unknown>} request Original request, for audit.
- * @return {Promise<void>} Resolves once applied.
+ * @param {AdminContext|null} actor Staff member, or null for the daily run.
+ * @param {object} data Bill, reviewed revision, action and note.
+ * @param {CallableRequest<unknown>|null} request Original request, for audit.
+ * @return {Promise<Bill>} The bill after the action.
  */
-async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
-  request: CallableRequest<unknown>): Promise<Bill> {
+async function actOnBill(deps: BillDeps, actor: AdminContext | null,
+  data: {billId: string; expectedRevision: number; action: BillAction;
+    note: string | null},
+  request: CallableRequest<unknown> | null): Promise<Bill> {
   const db = deps.db();
-  const ref = db.collection(organizerBillsCollection).doc(data.billId!);
-  const action = data.action as "send" | "remind" | "markPaid" | "writeOff";
-  const note = data.note?.trim() || null;
+  const ref = db.collection(organizerBillsCollection).doc(data.billId);
+  const action = data.action;
+  const note = actor ? data.note?.trim() || null : autoSendNote;
   const after = await db.runTransaction(async (tx) => {
     const bill = (await tx.get(ref)).data() as Bill | undefined;
     if (!bill) throw new HttpsError("not-found", "Bill not found.");
     if (bill.revision !== data.expectedRevision) {
       throw new HttpsError("aborted", "This bill changed. Review it again.");
     }
-    const allowed: Record<typeof action, Bill["status"][]> = {
+    const allowed: Record<BillAction, Bill["status"][]> = {
       send: ["toSend"], remind: ["sent"], markPaid: ["sent"],
-      writeOff: ["toSend", "sent"]};
+      writeOff: ["toSend", "sent"], hold: ["toSend"],
+      releaseHold: ["toSend"]};
     if (!allowed[action].includes(bill.status)) {
       throw new HttpsError("failed-precondition",
-        `A bill that is ${bill.status} cannot be ${action === "markPaid" ?
-          "marked paid" : action === "writeOff" ? "written off" :
-            action === "send" ? "sent" : "reminded"}.`);
+        `A bill that is ${bill.status} cannot be ${actionWords[action]}.`);
     }
     const now = deps.now();
+    if (!actor) {
+      // The daily run sends only what is due and not held, rechecked here.
+      const pointer = (await tx.get(db.collection(
+        organizerBillingCyclesCollection).doc(bill.organizerId))).data() as
+        Pointer | undefined;
+      if (action !== "send" || bill.periodKind !== "cycle" ||
+          bill.sendHold || pointer?.sendHold ||
+          bill.autoSendAtMillis === null ||
+          bill.autoSendAtMillis === undefined ||
+          bill.autoSendAtMillis > now + autoSendToleranceMillis) {
+        throw new HttpsError("failed-precondition",
+          "This bill is not due to be sent automatically.");
+      }
+    }
+    if (action === "hold" && (bill.sendHold || !bill.autoSendAtMillis)) {
+      throw new HttpsError("failed-precondition", bill.sendHold ?
+        "This bill is already on hold." :
+        "This bill already waits for staff to send it.");
+    }
+    if (action === "releaseHold" && !bill.sendHold) {
+      throw new HttpsError("failed-precondition", "This bill is not on hold.");
+    }
     let next: Bill = {...bill, revision: bill.revision + 1,
       updatedAtMillis: now};
     let credit: () => unknown = () => null;
-    if (action === "send") {
+    if (action === "hold") {
+      next = {...next, sendHold: {atMillis: now, byUid: actor?.uid ?? null,
+        note}};
+    } else if (action === "releaseHold") {
+      next = {...next, sendHold: null};
+    } else if (action === "send") {
       const {settings} = await readMoneySettings(db, tx);
       const invoice = await nextInvoice(db, now, tx);
       tx.set(invoice.ref, {schemaVersion: 1,
         financialYear: invoice.financialYear, lastNumber: invoice.number,
         updatedAtMillis: now});
-      next = {...next, status: "sent", invoiceNumber: invoice.label,
+      next = {...next, status: "sent", sendHold: null,
+        invoiceNumber: invoice.label,
         sentAtMillis: now, dueAtMillis: billDueAtMillis(bill, now,
           settings.billDueDayOfMonth)};
     } else if (action === "remind") {
@@ -130,19 +184,23 @@ async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
     } else {
       next = {...next, status: "writtenOff", writtenOffAtMillis: now};
     }
-    next = {...next, history: withHistory(bill, action === "send" ? "sent" :
-      action === "remind" ? "reminded" : action === "markPaid" ? "paid" :
-        "writtenOff", now, actor.uid, note)};
+    const historyAction: Record<BillAction, HistoryAction> = {send: "sent",
+      remind: "reminded", markPaid: "paid", writeOff: "writtenOff",
+      hold: "held", releaseHold: "holdReleased"};
+    next = {...next, history: withHistory(bill, historyAction[action], now,
+      actor?.uid ?? null, note)};
     tx.set(ref, checked(next));
     credit();
-    setAdminAuditLogInTransaction(tx, db, actor, {
-      action: `adminManageOrganizerBills.${action}`, targetPath: ref.path,
-      request, before: {status: bill.status, revision: bill.revision},
-      after: {status: next.status, revision: next.revision,
-        invoiceNumber: next.invoiceNumber, totalMinor: next.totalMinor},
-      note,
-      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-    });
+    if (actor && request) {
+      setAdminAuditLogInTransaction(tx, db, actor, {
+        action: `adminManageOrganizerBills.${action}`, targetPath: ref.path,
+        request, before: {status: bill.status, revision: bill.revision},
+        after: {status: next.status, revision: next.revision,
+          invoiceNumber: next.invoiceNumber, totalMinor: next.totalMinor},
+        note,
+        serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
     return next;
   });
   let delivered = after;
@@ -177,6 +235,88 @@ export function billDueAtMillis(bill: Bill, sentAtMillis: number,
   }
   return Math.max(bill.periodEndMillis + cycleBillDueDays * dayMillis,
     sentAtMillis + 7 * dayMillis);
+}
+
+/**
+ * Holds or releases automatic sending for every cycle bill of one organizer.
+ * The hold lives on the organizer's cycle pointer, so an organizer not yet
+ * billed for a cycle has nothing to hold: its first bills wait for staff.
+ * @param {BillDeps} deps Dependencies.
+ * @param {AdminContext} actor Staff member.
+ * @param {object} data Organizer, hold or release, and note.
+ * @param {CallableRequest<unknown>} request Original request, for audit.
+ * @return {Promise<void>} Resolves once applied.
+ */
+async function setOrganizerHold(deps: BillDeps, actor: AdminContext,
+  data: {organizerId: string; hold: boolean; note: string | null},
+  request: CallableRequest<unknown>): Promise<void> {
+  const db = deps.db();
+  const ref = db.collection(organizerBillingCyclesCollection)
+    .doc(data.organizerId);
+  const note = data.note?.trim() || null;
+  await db.runTransaction(async (tx) => {
+    const pointer = (await tx.get(ref)).data() as Pointer | undefined;
+    if (!pointer) {
+      throw new HttpsError("failed-precondition",
+        "This organizer has not been billed for a cycle yet. Its first " +
+        `${staffReviewedCycles} cycle bills wait for staff to send them.`);
+    }
+    if (data.hold === Boolean(pointer.sendHold)) {
+      throw new HttpsError("failed-precondition", data.hold ?
+        "This organizer's bills are already on hold." :
+        "This organizer's bills are not on hold.");
+    }
+    const now = deps.now();
+    tx.set(ref, checkedPointer({...pointer, sendHold: data.hold ?
+      {atMillis: now, byUid: actor.uid, note} : null, updatedAtMillis: now}));
+    setAdminAuditLogInTransaction(tx, db, actor, {
+      action: `adminManageOrganizerBills.${data.hold ? "holdOrganizer" :
+        "releaseOrganizerHold"}`,
+      targetPath: ref.path, request,
+      before: {sendHold: Boolean(pointer.sendHold)},
+      after: {sendHold: data.hold}, note,
+      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+}
+
+/**
+ * Sends every cycle bill due to go out automatically: past its automatic
+ * send time, not held, and its organizer not held. Each bill is recomputed
+ * first, so refunds made since it was made are counted, then sent through
+ * the same path as staff's send (invoice number, due date, Razorpay
+ * invoice, notices). A bill that fails is left to send on the next run.
+ * @param {BillDeps} deps Dependencies.
+ * @return {Promise<number>} Bills sent.
+ */
+export async function sendDueCycleBills(deps: BillDeps): Promise<number> {
+  const db = deps.db();
+  const now = deps.now();
+  const snap = await db.collection(organizerBillsCollection)
+    .where("status", "==", "toSend").limit(500).get();
+  const due = snap.docs.map((doc) => doc.data() as Bill).filter((bill) =>
+    bill.periodKind === "cycle" && !bill.sendHold &&
+    typeof bill.autoSendAtMillis === "number" &&
+    bill.autoSendAtMillis <= now + autoSendToleranceMillis);
+  if (due.length === 0) return 0;
+  await regenerateToSendCycleBills(deps, null,
+    new Set(due.map((bill) => bill.billId)));
+  let sent = 0;
+  for (const stale of due) {
+    const bill = (await db.collection(organizerBillsCollection)
+      .doc(stale.billId).get()).data() as Bill | undefined;
+    // Refunds may have left nothing to bill.
+    if (!bill || bill.status !== "toSend") continue;
+    try {
+      await actOnBill(deps, null, {billId: bill.billId,
+        expectedRevision: bill.revision, action: "send", note: null}, null);
+      sent++;
+    } catch (error) {
+      logger.warn("Bill was not sent automatically.", {billId: bill.billId,
+        error: error instanceof Error ? error.message : String(error)});
+    }
+  }
+  return sent;
 }
 
 /**
@@ -320,17 +460,49 @@ export async function listBills(db: Db,
     if (bill.status !== "free") totals.billedMinor += bill.totalMinor;
     totals.paidMinor += bill.paidMinor ?? 0;
   }
-  const [{settings}, invoice, trial, billingPlan] = await Promise.all([
-    readMoneySettings(db), nextInvoice(db, nowMillis),
-    "organizerId" in scope ?
-      readOrganizerTrialStatus(db, scope.organizerId, nowMillis) : null,
-    "organizerId" in scope ?
-      readBillingPlan(db, scope.organizerId) : undefined]);
+  const [{settings}, invoice, trial, billingPlan, pointers] =
+    await Promise.all([
+      readMoneySettings(db), nextInvoice(db, nowMillis),
+      "organizerId" in scope ?
+        readOrganizerTrialStatus(db, scope.organizerId, nowMillis) : null,
+      "organizerId" in scope ?
+        readBillingPlan(db, scope.organizerId) : undefined,
+      readPointers(db, "organizerId" in scope ? [scope.organizerId] :
+        bills.filter((bill) => bill.periodKind === "cycle")
+          .map((bill) => bill.organizerId))]);
+  const pointer = "organizerId" in scope ?
+    pointers.get(scope.organizerId) : undefined;
   return {month: "month" in scope ? scope.month : null,
     organizerId: "organizerId" in scope ? scope.organizerId : null, bills,
     totals, counts, nextInvoiceNumber: invoice.label,
     gstRegistered: settings.gstRegistered, trial,
-    billingPlan: billingPlan ?? null};
+    billingPlan: billingPlan ?? null,
+    billReview: "organizerId" in scope ? {
+      reviewedCycles: bills.filter(isReviewedCycleBill).length,
+      reviewRequiredCycles: staffReviewedCycles,
+      hold: pointer?.sendHold ?? null, canHold: pointer !== undefined} : null,
+    heldOrganizerIds: [...pointers.values()]
+      .filter((item) => item.sendHold).map((item) => item.organizerId)
+      .slice(0, 1000)};
+}
+
+/**
+ * The cycle pointers of some organizers, for their holds.
+ * @param {Db} db Firestore.
+ * @param {string[]} organizerIds Organizers.
+ * @return {Promise<Map<string, Pointer>>} Pointers that exist, by organizer.
+ */
+async function readPointers(db: Db, organizerIds: string[]):
+  Promise<Map<string, Pointer>> {
+  const ids = [...new Set(organizerIds)];
+  const result = new Map<string, Pointer>();
+  if (ids.length === 0) return result;
+  const snaps = await Promise.all(ids.map((id) =>
+    db.collection(organizerBillingCyclesCollection).doc(id).get()));
+  for (const snap of snaps) {
+    if (snap.exists) result.set(snap.id, snap.data() as Pointer);
+  }
+  return result;
 }
 
 /**
@@ -345,9 +517,11 @@ export async function adminManageOrganizerBillsHandler(
   const actor = requireAdminRole(request, moneyRoles);
   const data = validateCallableWithAjv<Payload>(request,
     validateAdminManageOrganizerBillsCallablePayload);
-  const onBill = !["list", "generate"].includes(data.action);
-  if (onBill ? data.billId === null || data.expectedRevision === null :
-    data.billId !== null || data.expectedRevision !== null) {
+  const onBill = billActions.includes(data.action);
+  const onOrganizer = organizerActions.includes(data.action);
+  if ((onBill ? data.billId === null || data.expectedRevision === null :
+    data.billId !== null || data.expectedRevision !== null) ||
+      (onOrganizer && (data.organizerId === null || data.month !== null))) {
     throw new HttpsError("invalid-argument", "Invalid bill action.");
   }
   const db = deps.db();
@@ -365,8 +539,13 @@ export async function adminManageOrganizerBillsHandler(
     // bills not yet sent. Calendar-month bills are no longer made.
     await regenerateToSendCycleBills(deps, actor.uid);
     await generateCycleBills(deps, actor.uid);
+  } else if (onOrganizer) {
+    await setOrganizerHold(deps, actor, {organizerId: data.organizerId!,
+      hold: data.action === "holdOrganizer", note: data.note}, request);
   } else if (onBill) {
-    month = (await actOnBill(deps, actor, data, request)).month;
+    month = (await actOnBill(deps, actor, {billId: data.billId!,
+      expectedRevision: data.expectedRevision!,
+      action: data.action as BillAction, note: data.note}, request)).month;
   }
   const result = await listBills(db, data.organizerId !== null ?
     {organizerId: data.organizerId} : {month}, now);
@@ -380,3 +559,17 @@ export const adminManageOrganizerBills = onCall(
   appCheckCallableOptionsWithSecrets([razorpayKeySecret],
     {timeoutSeconds: 300, maxInstances: 5}),
   (request) => adminManageOrganizerBillsHandler(request));
+
+/**
+ * Once a day, India time: every cycle that closed is billed in arrears, then
+ * every cycle bill due to go out automatically is sent. Until staff have sent
+ * two of a host's cycle bills, its bills wait for staff instead.
+ */
+export const generateOrganizerCycleBillsDaily = onSchedule({
+  schedule: "15 6 * * *", timeZone: "Asia/Kolkata", timeoutSeconds: 540,
+  maxInstances: 1, secrets: [razorpayKeySecret],
+}, async () => {
+  const written = await generateCycleBills(defaultBillDeps, null);
+  const sent = await sendDueCycleBills(defaultBillDeps);
+  logger.info("Organizer cycle bills made and sent.", {written, sent});
+});
