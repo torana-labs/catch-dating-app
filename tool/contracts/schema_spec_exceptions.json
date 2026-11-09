@@ -285,8 +285,10 @@
       "MoneyIssueResolutionDocument",
       "NominatorCreditDocument",
       "OrganizerBillDocument",
+      "OrganizerBillingPlanDocument",
       "OrganizerEntitlementCallableResponse",
       "OrganizerEntitlementMutationCallableResponse",
+      "OrganizerTrialStatus",
       "PlatformCostDocument"
     ],
     "website/src/shared/contracts/generated": [

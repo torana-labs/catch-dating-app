@@ -12,7 +12,9 @@
     "totals",
     "counts",
     "nextInvoiceNumber",
-    "gstRegistered"
+    "gstRegistered",
+    "trial",
+    "billingPlan"
   ],
   "properties": {
     "month": {
@@ -108,6 +110,28 @@
     },
     "gstRegistered": {
       "type": "boolean"
+    },
+    "trial": {
+      "description": "The organizer's free trial when the list is one organizer's bills; null for a month.",
+      "anyOf": [
+        {
+          "$ref": "../embedded/organizer_trial_status.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "billingPlan": {
+      "description": "The organizer's Catch plan when the list is one organizer's bills; null for a month.",
+      "anyOf": [
+        {
+          "$ref": "../firestore/organizer_billing_plans.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }

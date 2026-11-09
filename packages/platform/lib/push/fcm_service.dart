@@ -80,10 +80,11 @@ String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
 }
 
 /// Host notices about the organizer's payments open its Payments screen:
-/// Razorpay access was revoked and needs reconnecting.
+/// a Catch bill was issued or reminded, or Razorpay access was revoked and
+/// needs reconnecting. The push itself carries no amount.
 String? hostOrganizerPaymentsRouteFromMessageData(Map<String, Object?> data) {
   if (!AppConfig.appRole.isHost) return null;
-  const paymentTypes = {'organizerRazorpayRevoked'};
+  const paymentTypes = {'organizerBillIssued', 'organizerRazorpayRevoked'};
   if (!paymentTypes.contains(data['type'])) return null;
   final organizerId = data['organizerId'];
   if (organizerId is! String || organizerId.isEmpty) return null;

@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
   "title": "OrganizerBillDocument",
-  "description": "Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerBills",
   "x-firestore-path": "organizerBills/{billId}",
   "x-document-id-field": "billId",
-  "x-owner": "Functions organizer billing (monthly generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+  "x-owner": "Functions organizer billing (daily cycle generation, adminManageOrganizerBills, Razorpay payment link webhook)",
   "required": ["schemaVersion", "billId", "organizerId", "organizerName", "month", "periodStartMillis", "periodEndMillis",
     "revision", "status", "sales", "commission", "trialEndsAtMillis", "terms", "gst", "totalMinor", "invoiceNumber",
     "dueAtMillis", "paymentLink", "sentAtMillis", "reminders", "paidAtMillis", "paidMinor", "paidVia",
@@ -35,12 +35,25 @@
   },
   "properties": {
     "schemaVersion": {"const": 1},
-    "billId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_[0-9]{4}-[0-9]{2}$"},
+    "billId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_(c[0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{4}-[0-9]{2})$", "description": "organizerId_YYYY-MM for a calendar-month bill; organizerId_cYYYY-MM-DD (the cycle's first day, India time) for a cycle bill."},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "organizerName": {"type": "string", "maxLength": 160},
-    "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+    "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$", "description": "The calendar month billed, or for a cycle bill the India-time month its cycle ends in, which Admin's monthly view groups by."},
     "periodStartMillis": {"$ref": "#/definitions/millis"},
     "periodEndMillis": {"$ref": "#/definitions/millis"},
+    "periodKind": {"description": "calendarMonth for bills made before rolling cycles; cycle afterwards. Absent means calendarMonth.", "enum": ["calendarMonth", "cycle"]},
+    "cycleNumber": {"description": "The cycle's position after the trial, from 1. Cycle bills only.", "type": ["integer", "null"], "minimum": 1},
+    "countFromMillis": {"description": "Payments captured from here to periodEndMillis are billed: the cycle start, or later for the cycle that straddles the move from calendar-month bills. Cycle bills only.", "anyOf": [{"$ref": "#/definitions/millis"}, {"type": "null"}]},
+    "plan": {
+      "description": "What the cycle was billed on. ticketing: commission on sales. toolsOnly: the flat tools-only fee and no commission. Absent means ticketing.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "toolsOnlyFeeMinor"],
+      "properties": {
+        "kind": {"enum": ["ticketing", "toolsOnly"]},
+        "toolsOnlyFeeMinor": {"anyOf": [{"$ref": "#/definitions/minor"}, {"type": "null"}]}
+      }
+    },
     "revision": {"type": "integer", "minimum": 1},
     "status": {"$ref": "#/definitions/status"},
     "sales": {
@@ -110,11 +123,26 @@
         }
       ]
     },
+    "razorpayInvoice": {
+      "description": "The Razorpay invoice (a numbered invoice document with its own hosted page) on Catch's account that the host pays from. Bills sent before invoices carry paymentLink instead. Absent until created.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["invoiceId", "url"],
+          "properties": {
+            "invoiceId": {"type": "string", "pattern": "^inv_[A-Za-z0-9]{1,40}$"},
+            "url": {"type": "string", "pattern": "^https://", "maxLength": 300}
+          }
+        }
+      ]
+    },
     "sentAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "reminders": {"type": "array", "maxItems": 24, "items": {"$ref": "#/definitions/millis"}},
     "paidAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "paidMinor": {"anyOf": [{"$ref": "#/definitions/minor"}, {"type": "null"}]},
-    "paidVia": {"enum": ["paymentLink", "manual", null]},
+    "paidVia": {"description": "planPurchase: the tools-only purchase prepaid this cycle. invoice: paid from its Razorpay invoice.", "enum": ["paymentLink", "invoice", "manual", "planPurchase", null]},
     "writtenOffAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "history": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/historyEntry"}},
     "generatedAtMillis": {"$ref": "#/definitions/millis"},

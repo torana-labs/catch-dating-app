@@ -6,7 +6,7 @@ import {
   CatchSection,
   CatchLegacyText,
 } from "@catch/web-ui";
-import {billState, moneyNowMillis, monthLabel, rupees} from "../controllers/moneyLabels";
+import {billingPlanLabel, billPeriodName, billState, moneyNowMillis, monthLabel, rupees, trialLabel} from "../controllers/moneyLabels";
 import {
   organizerSalesMinor,
   useOrganizerBillsController,
@@ -46,8 +46,18 @@ export function OrganizerBillsWorkspace({
   if (controller.loadState === "error") {
     return <CatchLegacyText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Bills could not load."}</CatchLegacyText>;
   }
+  const trial = trialLabel(controller.trial);
+  const plan = billingPlanLabel(controller.billingPlan, nowMillis);
+  const trialRow = (
+    <CatchMetaRow entries={[...(trial ? [{label: "Free trial", value: trial}] : []), {label: "Plan", value: plan}]} />
+  );
   if (controller.bills.length === 0) {
-    return <CatchSection dividers="none" empty="No bills yet." title="Bills" />;
+    return (
+      <CatchGap size="majorSection">
+        {trialRow}
+        <CatchSection dividers="none" empty="No bills yet." title="Bills" />
+      </CatchGap>
+    );
   }
   const {bills, latest, summary} = controller;
   const oldestFirst = [...bills].reverse().slice(-12);
@@ -56,6 +66,8 @@ export function OrganizerBillsWorkspace({
       <CatchMetaRow entries={[
         {label: "Ticket sales, all time", value: `${rupees(summary.salesMinor)} · ${summary.paymentCount.toLocaleString("en-IN")} tickets`},
         {label: "Catch earned, all time", value: rupees(summary.earnedMinor)},
+        ...(trial ? [{label: "Free trial", value: trial}] : []),
+        {label: "Plan", value: plan},
       ]} />
       {oldestFirst.length > 1 ? (
         <CatchSection dividers="none" title="Ticket sales each month">
@@ -77,7 +89,7 @@ export function OrganizerBillsWorkspace({
               key={bill.billId}
               onTap={() => onOpenBill(bill.billId)}
               subtitle={`${rupees(organizerSalesMinor(bill))} in ticket sales${bill.commission.capped ? " · capped" : ""}`}
-              title={`${monthLabel(bill.month)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
+              title={`${billPeriodName(bill)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
               titleVariant="bodyM"
               trailing={(
                 <CatchLegacyText as="span" color={state.tone ? stateColor[state.tone] : "ink"} variant="supportingStrong">

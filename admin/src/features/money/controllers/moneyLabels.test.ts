@@ -49,4 +49,13 @@ describe("Money labels", () => {
     expect(steps.at(-1)).toMatchObject({state: "current", tone: "danger"});
     expect(billJourney(bill("sample-afterfly"), now).every((step) => step.state === "done")).toBe(true);
   });
+
+  it("names a rolling cycle bill by its days and number", () => {
+    const cycle = {...bill(bills[0]!.organizerId), periodKind: "cycle" as const, cycleNumber: 3,
+      periodStartMillis: Date.parse("2026-11-09T12:00:00+05:30"),
+      periodEndMillis: Date.parse("2026-12-09T12:00:00+05:30"),
+      plan: {kind: "toolsOnly" as const, toolsOnlyFeeMinor: 500000}};
+    expect(billPeriod(cycle)).toBe("9 Nov–9 Dec");
+    expect(billSummary(cycle)).toMatch(/^Cycle 3 · \d+ events? · tools only/u);
+  });
 });

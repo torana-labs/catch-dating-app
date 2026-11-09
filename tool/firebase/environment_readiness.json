@@ -113,6 +113,7 @@
       ],
       "owner": "payments",
       "sourcePaths": [
+        "functions/src/money/organizerBillingPlan.ts",
         "functions/src/money/organizerBills.ts",
         "functions/src/payments/razorpay.ts"
       ],
@@ -1164,6 +1165,26 @@
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",
       "recordReferences": false
+    },
+    {
+      "id": "functions.reference.billing-notice",
+      "sourcePaths": [
+        "functions/src/money/billNotices.ts"
+      ],
+      "owner": "payments",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "deliverOrganizerBillNotice",
+        "retryOrganizerBillNoticesHourly"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
     },
     {
       "id": "functions.reference.event-approval",

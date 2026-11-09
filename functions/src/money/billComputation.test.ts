@@ -194,3 +194,29 @@ test("payment link references stay within 40 characters per project", () => {
   assert.ok(billLinkReference("2026-27/123456789012345678901234567890",
     "p").length <= 40);
 });
+
+test("a cycle cap replaces the terms' cap for that cycle", () => {
+  const figures = bill([payment({amountMinor: 30_000_000})],
+    {capMinor: 700_000});
+  assert.equal(figures.commission.uncappedMinor, 1_500_000);
+  assert.equal(figures.commission.capMinor, 700_000);
+  assert.equal(figures.commission.amountMinor, 700_000);
+  assert.equal(figures.commission.capped, true);
+  assert.deepEqual(figures.plan, {kind: "ticketing", toolsOnlyFeeMinor: null});
+});
+
+test("a tools-only cycle bills the flat fee and never commission too", () => {
+  const figures = bill([payment({amountMinor: 30_000_000})],
+    {plan: {kind: "toolsOnly", feeMinor: 500_000}});
+  assert.equal(figures.commission.amountMinor, 0);
+  assert.equal(figures.commission.capped, false);
+  assert.equal(figures.totalMinor, 500_000);
+  assert.deepEqual(figures.plan, {kind: "toolsOnly",
+    toolsOnlyFeeMinor: 500_000});
+  // Sales are still reported for the host's records.
+  assert.equal(figures.sales.grossMinor, 30_000_000);
+  const withGst = bill([], {plan: {kind: "toolsOnly", feeMinor: 500_000},
+    gstRegistered: true});
+  assert.equal(withGst.gst.amountMinor, 90_000);
+  assert.equal(withGst.totalMinor, 590_000);
+});
