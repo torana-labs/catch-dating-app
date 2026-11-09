@@ -29,6 +29,8 @@ const allowedFeatureImports = new Map([
   ["eventAssistance", new Set(["eventMessaging"])],
   ["eventRuntime", new Set(["eventMessaging"])],
   ["home", new Set(["marketing", "organizers", "waitlist"])],
+  // The host billing portal signs owners in with the one shared sign-in sheet.
+  ["hostBilling", new Set(["account"])],
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
   ["reviews", new Set(["organizers"])],

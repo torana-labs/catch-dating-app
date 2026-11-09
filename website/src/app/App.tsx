@@ -60,6 +60,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/events/PublicBookingPage.tsx",
   "../features/eventOffers/EventOfferPage.tsx",
   "../features/account/AccountPage.tsx",
+  "../features/hostBilling/HostBillingPage.tsx",
   "../features/eventAssistance/EventAssistancePage.tsx",
   "../features/eventRehearsal/EventRehearsalPage.tsx",
   "../features/events/EventInvitePage.tsx",
@@ -120,6 +121,9 @@ const EventOfferPage = route(async () => ({
 const AccountPage = route(async () => ({
   default: (await import("../features/account/AccountPage")).AccountPage,
 }), "../features/account/AccountPage", "AccountPage");
+const HostBillingPage = route(async () => ({
+  default: (await import("../features/hostBilling/HostBillingPage")).HostBillingPage,
+}), "../features/hostBilling/HostBillingPage", "HostBillingPage");
 const EventAssistancePage = route(async () => ({
   default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
 }), "../features/eventAssistance/EventAssistancePage", "EventAssistancePage");
@@ -299,6 +303,7 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.event_booking} element={<PublicBookingPage />} />
           <Route path={marketingRoutePaths.event_offer} element={<EventOfferRoute />} />
           <Route path={marketingRoutePaths.account} element={<AccountPage />} />
+          <Route path={marketingRoutePaths.host_billing} element={<HostBillingPage />} />
           <Route
             path={marketingRoutePaths.event_assistance}
             element={<EventAssistanceRoute />}
@@ -420,6 +425,7 @@ function CanonicalMarketingRouteShell() {
        page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
        page === "household_rsvp" || page === "programme_link" || page === "account" ||
+       page === "host_billing" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>

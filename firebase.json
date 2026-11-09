@@ -203,6 +203,14 @@
           "destination": "/offer/index.html"
         },
         {
+          "source": "/host/billing/**",
+          "destination": "/host/billing/index.html"
+        },
+        {
+          "source": "/host/billing",
+          "destination": "/host/billing/index.html"
+        },
+        {
           "source": "/account/**",
           "destination": "/account/index.html"
         },

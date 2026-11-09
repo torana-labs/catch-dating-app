@@ -126,6 +126,13 @@
       "twitterDescription": "Your Catch account.",
       "robots": "noindex, follow"
     },
+    "host_billing": {
+      "title": "Billing | Catch",
+      "description": "Your organiser's free trial, plan, Catch's prices and bills, for the organiser's owner.",
+      "canonicalPath": "/host/billing/",
+      "twitterDescription": "Billing for organisers on Catch.",
+      "robots": "noindex, follow"
+    },
     "event_offer": {
       "title": "Your event invitation | Catch",
       "description": "Verify your phone to open your private event invitation and check your booking.",

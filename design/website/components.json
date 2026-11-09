@@ -5496,6 +5496,28 @@
       "notes": "The account page's tabs (Plans with passes, Following, Reviews, Details, Messages, Privacy and data) drawn from the system; empty states per tab."
     },
     {
+      "id": "route_host_billing",
+      "kind": "route",
+      "routeIds": ["host_billing"],
+      "owner": "features/hostBilling",
+      "source": "website/src/features/hostBilling/HostBillingPage.tsx",
+      "exportName": "HostBillingPage",
+      "css": ["packages/web-ui/src/components/CatchPaneLayout.module.css", "packages/web-ui/src/components/CatchStack.module.css"],
+      "storybook": {"status": "planned", "states": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"]},
+      "notes": "/host/billing/: the organiser owner's billing on the web (trial, plan with prices, bills to pay, tools-only buy or cancel); private and noindex; signed out it offers the sign-in sheet. The native Host app shows status only (App Store 3.1.3(f))."
+    },
+    {
+      "id": "host_billing_view",
+      "kind": "supporting-component",
+      "routeIds": ["host_billing"],
+      "owner": "features/hostBilling",
+      "source": "website/src/features/hostBilling/HostBillingPage.tsx",
+      "exportName": "HostBillingView",
+      "css": ["packages/web-ui/src/components/CatchPaneLayout.module.css", "packages/web-ui/src/components/CatchSection.module.css", "packages/web-ui/src/components/CatchStack.module.css", "packages/web-ui/src/components/CatchText.module.css"],
+      "storybook": {"status": "planned", "states": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"]},
+      "notes": "The billing page drawn from the system: trial tile, plan tile with Catch's prices and the tools-only actions, and the bills list with each invoice's Pay action."
+    },
+    {
       "id": "sign_in_sheet_view",
       "kind": "supporting-component",
       "routeIds": [
