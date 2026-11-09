@@ -26514,6 +26514,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormatsViewCourts => 'Courts';
 
   @override
+  String hostFormatsCourtMinutes({required int on, required int off}) {
+    return '$on min on court · $off off';
+  }
+
+  @override
+  String get hostFormatsStatCourtTimeApart => 'most court time apart';
+
+  @override
+  String hostFormatsMinutesShort({required int minutes}) {
+    return '${minutes}m';
+  }
+
+  @override
+  String get hostFormatsAgainst => 'against';
+
+  @override
+  String get hostFormatsViewStops => 'Stops';
+
+  @override
+  String get hostFormatsViewPods => 'Pods';
+
+  @override
   String get hostFormatsViewTeams => 'Teams';
 
   @override
@@ -26662,11 +26684,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormatsSittingOutNone => 'Everyone plays this round.';
 
   @override
-  String hostFormatsSatOut({required int out, required int played}) {
-    return 'Sat out $out · played $played';
-  }
-
-  @override
   String get hostFormatsPlaysNext => 'Plays next';
 
   @override
@@ -26680,9 +26697,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormatsStatRepeats => 'repeat partners';
-
-  @override
-  String get hostFormatsStatMostSatOut => 'sat out at most';
 
   @override
   String get hostFormatsComingUp => 'Coming up';
