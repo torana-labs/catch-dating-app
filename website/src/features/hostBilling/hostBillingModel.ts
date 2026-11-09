@@ -1,95 +1,89 @@
+import type {
+  GetOrganizerBillingStatusCallableResponse,
+  ListOrganizerBillsCallableResponse,
+  ManageOrganizerBillingPlanCallableResponse,
+} from "./contracts";
+
 /**
  * The host billing portal's data, parsed from the owner callables:
  * getOrganizerBillingStatus (trial and plan), manageOrganizerBillingPlan
  * (prices and the tools-only purchase) and listOrganizerBills (bills). The
- * shapes mirror their contracts in contracts/callable_responses; parsing is
- * defensive so an older server degrades to "unavailable" instead of breaking.
+ * types come from the generated contracts in functions/src/shared/generated,
+ * so a contract change fails the website typecheck. Parsing stays defensive:
+ * a reply is read field by field (keyed by the contract) so an older or
+ * newer server degrades to "unavailable" instead of breaking.
  */
-export type TrialState = "notStarted" | "scheduled" | "active" | "ended" | "none" | "unconfigured";
+type RawTrial = GetOrganizerBillingStatusCallableResponse["trial"];
+type RawPlanView = ManageOrganizerBillingPlanCallableResponse;
+type RawBill = ListOrganizerBillsCallableResponse["bills"][number];
 
-export interface TrialStatus {
-  state: TrialState;
-  startsAtMillis: number | null;
-  endsAtMillis: number | null;
-  daysLeft: number | null;
-}
+export type TrialState = RawTrial["state"];
+export type TrialStatus = Pick<RawTrial, "state" | "startsAtMillis" | "endsAtMillis" | "daysLeft">;
+export type PlanStatus = GetOrganizerBillingStatusCallableResponse["plan"];
+export type PlanPrices = NonNullable<RawPlanView["prices"]>;
+export type PlanView = Omit<RawPlanView, "organizerId">;
+export type BillStatus = RawBill["status"];
 
-export interface PlanStatus {
-  plan: "ticketing" | "toolsOnly";
-  status: "none" | "pendingPayment" | "active" | "ended";
-  startsAtMillis: number | null;
-  endsAtMillis: number | null;
-}
-
-export interface PlanPrices {
-  toolsOnlyFeeMinor: number;
-  commissionRateBasisPoints: number;
-  commissionCapMinor: number | null;
-  cycleDays: number;
-  gstRegistered: boolean;
-  gstRateBasisPoints: number;
-}
-
-export interface PlanView {
-  plan: PlanStatus;
-  revision: number;
-  paymentUrl: string | null;
-  amountDueMinor: number | null;
-  prices: PlanPrices | null;
-}
-
-export type BillStatus = "sent" | "paid" | "writtenOff" | "free";
-
+/** One bill as the portal shows it, derived from a listOrganizerBills row. */
 export interface Bill {
-  billId: string;
-  month: string;
-  periodKind: "calendarMonth" | "cycle";
-  periodStartMillis: number | null;
-  periodEndMillis: number | null;
+  billId: RawBill["billId"];
+  month: RawBill["month"];
+  periodKind: RawBill["periodKind"];
+  /** Null when an older server sent no period. */
+  periodStartMillis: RawBill["periodStartMillis"] | null;
+  periodEndMillis: RawBill["periodEndMillis"] | null;
   toolsOnly: boolean;
   status: BillStatus;
+  /** Gross sales less refunds. */
   salesMinor: number;
-  commissionMinor: number;
-  capped: boolean;
-  gstMinor: number;
-  totalMinor: number;
-  invoiceNumber: string | null;
-  dueAtMillis: number | null;
-  paymentUrl: string | null;
-  paidAtMillis: number | null;
+  commissionMinor: RawBill["commission"]["amountMinor"];
+  capped: RawBill["commission"]["capped"];
+  gstMinor: RawBill["gst"]["amountMinor"];
+  totalMinor: RawBill["totalMinor"];
+  invoiceNumber: RawBill["invoiceNumber"];
+  dueAtMillis: RawBill["dueAtMillis"];
+  /** Only for an unpaid bill, and only an https URL. */
+  paymentUrl: RawBill["paymentUrl"];
+  paidAtMillis: RawBill["paidAtMillis"];
 }
 
-type Raw = Record<string, unknown>;
+/** A reply not yet trusted: only the contract's keys, every value unknown. */
+type Untrusted<T> = {[K in keyof T]?: unknown};
 
-const record = (value: unknown): Raw | null =>
-  value !== null && typeof value === "object" && !Array.isArray(value) ? value as Raw : null;
+const record = <T,>(value: unknown): Untrusted<T> | null =>
+  value !== null && typeof value === "object" && !Array.isArray(value) ? value as Untrusted<T> : null;
 const millis = (value: unknown): number | null =>
   typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
 const minor = (value: unknown): number =>
   typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : 0;
 const httpsUrl = (value: unknown): string | null =>
   typeof value === "string" && value.startsWith("https://") ? value : null;
+/** Every value of a contract enum; the Record makes a new contract value a type error here. */
+const members = <T extends string>(all: Record<T, true>): readonly T[] => Object.keys(all) as T[];
+const oneOf = <T extends string>(values: readonly T[], value: unknown): T | undefined =>
+  values.find((item) => item === value);
 
-const trialStates: readonly TrialState[] = ["notStarted", "scheduled", "active", "ended", "none", "unconfigured"];
+const trialStates = members<TrialState>({notStarted: true, scheduled: true, active: true, ended: true, none: true,
+  unconfigured: true});
+const planStatuses = members<PlanStatus["status"]>({none: true, pendingPayment: true, active: true, ended: true});
+const billStatuses = members<BillStatus>({sent: true, paid: true, writtenOff: true, free: true});
 
 export function parseTrial(value: unknown): TrialStatus {
-  const raw = record(value);
-  const state = trialStates.find((item) => item === raw?.state) ?? "unconfigured";
-  return {state, startsAtMillis: millis(raw?.startsAtMillis), endsAtMillis: millis(raw?.endsAtMillis),
-    daysLeft: millis(raw?.daysLeft)};
+  const raw = record<RawTrial>(value);
+  return {state: oneOf(trialStates, raw?.state) ?? "unconfigured", startsAtMillis: millis(raw?.startsAtMillis),
+    endsAtMillis: millis(raw?.endsAtMillis), daysLeft: millis(raw?.daysLeft)};
 }
 
 export function parsePlanStatus(value: unknown): PlanStatus {
-  const raw = record(value);
-  const statuses = ["none", "pendingPayment", "active", "ended"] as const;
+  const raw = record<PlanStatus>(value);
   return {plan: raw?.plan === "toolsOnly" ? "toolsOnly" : "ticketing",
-    status: statuses.find((item) => item === raw?.status) ?? "none",
+    status: oneOf(planStatuses, raw?.status) ?? "none",
     startsAtMillis: millis(raw?.startsAtMillis), endsAtMillis: millis(raw?.endsAtMillis)};
 }
 
 export function parsePlanView(value: unknown): PlanView {
-  const raw = record(value);
-  const prices = record(raw?.prices);
+  const raw = record<RawPlanView>(value);
+  const prices = record<PlanPrices>(raw?.prices);
   return {plan: parsePlanStatus(raw?.plan), revision: minor(raw?.revision),
     paymentUrl: httpsUrl(raw?.paymentUrl),
     amountDueMinor: raw?.amountDueMinor === null || raw?.amountDueMinor === undefined ? null : minor(raw.amountDueMinor),
@@ -101,22 +95,21 @@ export function parsePlanView(value: unknown): PlanView {
 }
 
 export function parseBills(value: unknown): Bill[] {
-  const bills = record(value)?.bills;
+  const bills = record<ListOrganizerBillsCallableResponse>(value)?.bills;
   if (!Array.isArray(bills)) return [];
-  const statuses: readonly BillStatus[] = ["sent", "paid", "writtenOff", "free"];
-  return bills.flatMap((item): Bill[] => {
-    const raw = record(item);
-    const status = statuses.find((entry) => entry === raw?.status);
+  return bills.flatMap((item: unknown): Bill[] => {
+    const raw = record<RawBill>(item);
+    const status = oneOf(billStatuses, raw?.status);
     if (!raw || typeof raw.billId !== "string" || typeof raw.month !== "string" || !status) return [];
-    const sales = record(raw.sales);
-    const commission = record(raw.commission);
+    const sales = record<RawBill["sales"]>(raw.sales);
+    const commission = record<RawBill["commission"]>(raw.commission);
     return [{billId: raw.billId, month: raw.month,
       periodKind: raw.periodKind === "cycle" ? "cycle" : "calendarMonth",
       periodStartMillis: millis(raw.periodStartMillis), periodEndMillis: millis(raw.periodEndMillis),
       toolsOnly: raw.plan === "toolsOnly", status,
       salesMinor: Math.max(0, minor(sales?.grossMinor) - minor(sales?.refundedMinor)),
       commissionMinor: minor(commission?.amountMinor), capped: commission?.capped === true,
-      gstMinor: minor(record(raw.gst)?.amountMinor), totalMinor: minor(raw.totalMinor),
+      gstMinor: minor(record<RawBill["gst"]>(raw.gst)?.amountMinor), totalMinor: minor(raw.totalMinor),
       invoiceNumber: typeof raw.invoiceNumber === "string" ? raw.invoiceNumber : null,
       dueAtMillis: millis(raw.dueAtMillis), paymentUrl: status === "sent" ? httpsUrl(raw.paymentUrl) : null,
       paidAtMillis: millis(raw.paidAtMillis)}];

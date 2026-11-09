@@ -11,11 +11,23 @@ import {
   type PlanView,
   type TrialStatus,
 } from "./hostBillingModel";
+import type {
+  GetOrganizerBillingStatusCallablePayload,
+  GetOrganizerBillingStatusCallableResponse,
+  ListMyOrganizerJourneysCallablePayload,
+  ListMyOrganizerJourneysCallableResponse,
+  ListOrganizerBillsCallablePayload,
+  ManageOrganizerBillingPlanCallablePayload,
+} from "./contracts";
 
-export interface BillingOrganizer {
-  organizerId: string;
-  organizerName: string;
-}
+type Journey = ListMyOrganizerJourneysCallableResponse["journeys"][number];
+
+export type BillingOrganizer = Pick<Journey, "organizerId" | "organizerName">;
+
+type PlanAction = Exclude<ManageOrganizerBillingPlanCallablePayload["action"], "read">;
+
+/** A reply not yet trusted: only the contract's keys, every value unknown. */
+type Untrusted<T> = {[K in keyof T]?: unknown};
 
 export type HostBillingPhase = "loading" | "signedOut" | "noOrganizers" | "notOwner" | "failed" | "ready";
 
@@ -59,17 +71,21 @@ function initialOrganizerId(): string | null {
 export function useHostBillingController(): HostBillingController {
   const queryClient = useQueryClient();
   const [identity, setIdentity] = useState<{user: User | null; loaded: boolean}>({user: null, loaded: false});
-  const [chosen, setChosen] = useState<string | null>(initialOrganizerId);
+  const [requested] = useState<string | null>(initialOrganizerId);
+  const [chosen, setChosen] = useState<string | null>(requested);
   const [actionError, setActionError] = useState<"changed" | "failed" | null>(null);
   useEffect(() => watchWebsiteAccountAuthState((user) => setIdentity({user, loaded: true})), []);
   const uid = identity.user?.uid ?? null;
 
-  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers"], enabled: Boolean(uid),
+  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers", requested], enabled: Boolean(uid),
     retry: false, gcTime: 0, queryFn: async (): Promise<BillingOrganizer[]> => {
-      const reply = await invokeHostBillingCallable("listMyOrganizerJourneys", {}) as {journeys?: unknown};
-      const journeys = Array.isArray(reply?.journeys) ? reply.journeys : [];
-      return journeys.flatMap((entry: unknown) => {
-        const journey = entry as {organizerId?: unknown; organizerName?: unknown; waitingClaim?: unknown};
+      // The contract requires organizerId: the preselected organizer's journey, or null.
+      const payload: ListMyOrganizerJourneysCallablePayload = {organizerId: requested};
+      const reply = await invokeHostBillingCallable("listMyOrganizerJourneys", {...payload}) as
+        Untrusted<ListMyOrganizerJourneysCallableResponse> | null;
+      const journeys: unknown[] = Array.isArray(reply?.journeys) ? reply.journeys : [];
+      return journeys.flatMap((entry) => {
+        const journey = (entry ?? {}) as Untrusted<Journey>;
         return typeof journey.organizerId === "string" && journey.waitingClaim !== true ?
           [{organizerId: journey.organizerId, organizerName: String(journey.organizerName ?? journey.organizerId)}] : [];
       });
@@ -80,20 +96,23 @@ export function useHostBillingController(): HostBillingController {
 
   const billingQuery = useQuery({queryKey: ["host-billing", uid, organizerId], enabled: Boolean(uid && organizerId),
     retry: false, gcTime: 0, queryFn: async () => {
-      const payload = {organizerId: organizerId!};
+      const payload: GetOrganizerBillingStatusCallablePayload & ListOrganizerBillsCallablePayload =
+        {organizerId: organizerId!};
+      const read: ManageOrganizerBillingPlanCallablePayload = {...payload, action: "read", expectedRevision: null};
       const [status, planView, bills] = await Promise.all([
-        invokeHostBillingCallable("getOrganizerBillingStatus", payload),
-        invokeHostBillingCallable("manageOrganizerBillingPlan", {...payload, action: "read", expectedRevision: null}),
-        invokeHostBillingCallable("listOrganizerBills", payload)]);
-      const statusRaw = status as {trial?: unknown; plan?: unknown};
+        invokeHostBillingCallable("getOrganizerBillingStatus", {...payload}),
+        invokeHostBillingCallable("manageOrganizerBillingPlan", {...read}),
+        invokeHostBillingCallable("listOrganizerBills", {...payload})]);
+      const statusRaw = status as Untrusted<GetOrganizerBillingStatusCallableResponse> | null;
       return {trial: parseTrial(statusRaw?.trial), plan: parsePlanStatus(statusRaw?.plan),
         planView: parsePlanView(planView), bills: parseBills(bills)};
     }});
 
-  const action = useMutation({retry: false, gcTime: 0, mutationFn: async (kind: "buyToolsOnly" | "cancelToolsOnly") => {
+  const action = useMutation({retry: false, gcTime: 0, mutationFn: async (kind: PlanAction) => {
     const view = billingQuery.data?.planView;
-    return parsePlanView(await invokeHostBillingCallable("manageOrganizerBillingPlan",
-      {organizerId, action: kind, expectedRevision: view?.revision ?? 0}));
+    const change: ManageOrganizerBillingPlanCallablePayload =
+      {organizerId: organizerId!, action: kind, expectedRevision: view?.revision ?? 0};
+    return parsePlanView(await invokeHostBillingCallable("manageOrganizerBillingPlan", {...change}));
   }, onSuccess: (view, kind) => {
     setActionError(null);
     void queryClient.invalidateQueries({queryKey: ["host-billing", uid, organizerId]});
