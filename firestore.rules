@@ -1042,6 +1042,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerBillingCycles/{organizerId} {
+      allow read, write: if false;
+    }
+
     match /moneyInvoiceCounters/{financialYear} {
       allow read, write: if false;
     }

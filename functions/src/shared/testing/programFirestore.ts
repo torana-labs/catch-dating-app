@@ -376,11 +376,13 @@ function matchWhere(data: FakeData, where: Where): boolean {
   if (where.op === "in") {
     return Array.isArray(where.value) && where.value.includes(value);
   }
-  if (where.op === ">" || where.op === "<=") {
+  if (where.op === ">" || where.op === "<=" || where.op === ">=" ||
+      where.op === "<") {
     if (value == null) return false;
-    return where.op === ">" ?
-      timestampMillis(value) > timestampMillis(where.value) :
-      timestampMillis(value) <= timestampMillis(where.value);
+    const left = timestampMillis(value);
+    const right = timestampMillis(where.value);
+    return where.op === ">" ? left > right : where.op === "<=" ?
+      left <= right : where.op === ">=" ? left >= right : left < right;
   }
   if (where.op === "!=") return value !== where.value;
   throw new Error(`Unsupported where op: ${where.op}`);

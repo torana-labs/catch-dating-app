@@ -6,7 +6,7 @@ import {
   CatchSection,
   CatchLegacyText,
 } from "@catch/web-ui";
-import {billState, moneyNowMillis, monthLabel, rupees, trialLabel} from "../controllers/moneyLabels";
+import {billPeriodName, billState, moneyNowMillis, monthLabel, rupees, trialLabel} from "../controllers/moneyLabels";
 import {
   organizerSalesMinor,
   useOrganizerBillsController,
@@ -85,7 +85,7 @@ export function OrganizerBillsWorkspace({
               key={bill.billId}
               onTap={() => onOpenBill(bill.billId)}
               subtitle={`${rupees(organizerSalesMinor(bill))} in ticket sales${bill.commission.capped ? " · capped" : ""}`}
-              title={`${monthLabel(bill.month)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
+              title={`${billPeriodName(bill)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
               titleVariant="bodyM"
               trailing={(
                 <CatchLegacyText as="span" color={state.tone ? stateColor[state.tone] : "ink"} variant="supportingStrong">

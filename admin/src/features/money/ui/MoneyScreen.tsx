@@ -253,8 +253,8 @@ function billsMain(bills: BillsController, nowMillis: number, onSelect: (billId:
   if (bills.data && bills.data.counts.all === 0) {
     return (
       <CatchEmptyState
-        actions={<CatchButton label={bills.isActing ? "Making bills" : "Make last month's bills"} onPressed={bills.isActing ? null : () => void bills.generate()} size="sm" />}
-        message="Bills are made on the 1st from the month's bookings paid into organizers' own Razorpay."
+        actions={<CatchButton label={bills.isActing ? "Making bills" : "Bill closed cycles now"} onPressed={bills.isActing ? null : () => void bills.generate()} size="sm" />}
+        message="Each organizer is billed per cycle (commission.cycleDays, 30 by default) after its free trial, the day after each cycle closes, for bookings paid into its own Razorpay. Cycle bills appear under the month their cycle ends."
         title="No bills for this month yet"
       />
     );
@@ -523,7 +523,7 @@ function MoneyBillInspector({
           />
           <CatchIndexRow
             titleVariant="titleS"
-            subtitle={`In ${monthLabel(bill.month)}; already off ticket sales`}
+            subtitle={`In ${billPeriod(bill)}; already off ticket sales`}
             title="Refunds"
             trailing={<Amount empty={sales.refundedMinor === 0} minor={sales.refundedMinor} />}
           />
@@ -545,7 +545,7 @@ function MoneyBillInspector({
         message={`${bill.organizerName} won't be asked for ${rupees(bill.totalMinor)}. The bill keeps its invoice number.`}
         onClose={() => setConfirmingWriteOff(false)}
         open={confirmingWriteOff}
-        title={`Write off ${monthLabel(bill.month)}'s bill?`}
+        title={`Write off the ${billPeriod(bill)} bill?`}
       />
     </>
   );

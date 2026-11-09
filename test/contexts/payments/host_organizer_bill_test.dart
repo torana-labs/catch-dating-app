@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
+import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Map<String, Object?> _bill({
   String status = 'sent',
@@ -37,6 +39,8 @@ Map<String, Object?> _bill({
 };
 
 void main() {
+  setUpAll(() => initializeDateFormatting('en'));
+
   test('kept is sales after refunds, less Razorpay fees and the bill', () {
     final bill = HostOrganizerBill.fromJson(_bill());
     expect(bill.month, DateTime(2026, 10));
@@ -99,5 +103,29 @@ void main() {
         expect(bill.keptMinor, expected['keptMinor']);
       });
     }
+  });
+
+  test('a bill from a server before cycles is a calendar month', () {
+    final bill = HostOrganizerBill.fromJson(_bill());
+    expect(bill.periodKind, HostOrganizerBillPeriodKind.calendarMonth);
+    expect(bill.toolsOnly, isFalse);
+    expect(hostOrganizerBillPeriodLabel(bill, 'en'), 'October 2026');
+  });
+
+  test('a cycle bill names its days, last day inclusive', () {
+    final start = DateTime(2026, 11, 9);
+    final end = DateTime(2026, 12, 9);
+    final bill = HostOrganizerBill.fromJson({
+      ..._bill(),
+      'billId': 'lantern_c2026-11-09',
+      'month': '2026-12',
+      'periodKind': 'cycle',
+      'periodStartMillis': start.millisecondsSinceEpoch,
+      'periodEndMillis': end.millisecondsSinceEpoch,
+      'plan': 'toolsOnly',
+    });
+    expect(bill.periodKind, HostOrganizerBillPeriodKind.cycle);
+    expect(bill.toolsOnly, isTrue);
+    expect(hostOrganizerBillPeriodLabel(bill, 'en'), 'Nov 9 – Dec 8 2026');
   });
 }

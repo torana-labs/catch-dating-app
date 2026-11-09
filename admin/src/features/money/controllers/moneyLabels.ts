@@ -98,10 +98,21 @@ export function billState(bill: Bill, nowMillis: number): MoneyLabel {
   }
 }
 
-/** The line under a bill's organizer: October · 9 events · capped. */
+/** Whether a bill covers one rolling cycle (#1126) rather than a calendar month. */
+export function isCycleBill(bill: Bill): boolean {
+  return bill.periodKind === "cycle";
+}
+
+/** A bill's period in short: October, or cycle 3 for a rolling cycle. */
+export function billPeriodName(bill: Bill): string {
+  return isCycleBill(bill) ? `Cycle ${bill.cycleNumber ?? ""}`.trim() : monthLabel(bill.month);
+}
+
+/** The line under a bill's organizer: October · 9 events · capped, or Cycle 3 · tools only. */
 export function billSummary(bill: Bill): string {
   const events = `${bill.sales.eventCount} ${bill.sales.eventCount === 1 ? "event" : "events"}`;
-  return [monthLabel(bill.month), events, bill.commission.capped ? "capped" : null]
+  return [billPeriodName(bill), events, bill.plan?.kind === "toolsOnly" ? "tools only" : null,
+    bill.commission.capped ? "capped" : null]
     .filter(Boolean).join(" · ");
 }
 
@@ -110,9 +121,12 @@ export function percent(basisPoints: number): string {
   return `${(basisPoints / 100).toLocaleString("en-IN", {maximumFractionDigits: 2})}%`;
 }
 
-/** The bill's period: 1–31 October. */
+/** The bill's period: 1–31 October, or 9 Nov–8 Dec for a rolling cycle. */
 export function billPeriod(bill: Bill): string {
   const lastDay = new Date(bill.periodEndMillis - 1);
+  if (isCycleBill(bill)) {
+    return `${shortDate(bill.periodStartMillis)}–${shortDate(lastDay.getTime())}`;
+  }
   const day = new Intl.DateTimeFormat("en-IN", {day: "numeric", timeZone: india}).format(lastDay);
   return `1–${day} ${monthLabel(bill.month)}`;
 }
@@ -129,7 +143,7 @@ export function billDue(bill: Bill, nowMillis: number): MoneyLabel {
 }
 
 const historyTitles: Record<Bill["history"][number]["action"], string> = {
-  generated: "Bill made from the month's bookings",
+  generated: "Bill made from the period's bookings",
   regenerated: "Bill made again",
   sent: "Issued with a payment link",
   reminded: "Reminder recorded",
@@ -148,7 +162,8 @@ export interface MoneyStep {
 /** How a bill got here: each recorded step, then where it is now when something is still to do. */
 export function billJourney(bill: Bill, nowMillis: number): MoneyStep[] {
   const steps: MoneyStep[] = bill.history.map((entry) => ({
-    title: entry.action === "generated" ? `Bill made from ${monthLabel(bill.month)}'s bookings` :
+    title: entry.action === "generated" ? `Bill made from ${isCycleBill(bill) ?
+      `${billPeriod(bill)} bookings` : `${monthLabel(bill.month)}'s bookings`}` :
       entry.action === "paid" && bill.paidVia === "paymentLink" && !entry.byUid ? "Paid by payment link" :
         historyTitles[entry.action],
     subtitle: entry.note ?? (entry.byUid ? undefined : "Automatic"),

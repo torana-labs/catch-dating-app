@@ -5025,18 +5025,41 @@ with a reported fee; refunds stay in each record's existing refund fields.
 
 ## Organizer Bills And Nominator Credit
 
-`organizerBills/{organizerId}_{YYYY-MM}` is Catch's monthly bill to one
-organizer, made from payments into the organizer's own account (hostCollected)
-captured in that India-time calendar month. Commission uses each payment's
-frozen `routing.commercialTerms` (or the organizer's current terms when none was
-frozen), payments before the trial ends (trial days from the first event in
-`organizerGrowthFacts`) are free, and the month's total is capped by the current
-terms. GST is added only while `moneySettings/platform.settings.gstRegistered`
+`organizerBills/{billId}` is Catch's bill to one organizer for one billing
+period, made from payments into the organizer's own account (hostCollected).
+Since the move to rolling cycles (#1126) a period is one commission cycle:
+`commission.cycleDays` days anchored at the end of the organizer's free trial
+(`cycleAnchor: trialEnd`), billed in arrears once it closes, with id
+`{organizerId}_c{YYYY-MM-DD}` (the cycle's first day, India time) and `month`
+set to the India-time month the cycle ends in. `generateOrganizerCycleBillsDaily`
+bills each closed cycle in the same transaction that advances
+`organizerBillingCycles/{organizerId}` (trial end, count-from instant, next
+cycle number and start), so a cycle is billed at most once. Cycles chain from
+the last one billed, so a change to `cycleDays` changes only cycles not yet
+billed. A cycle with nothing to bill advances the pointer without a bill.
+
+Commission uses each payment's frozen `routing.commercialTerms` (or the
+organizer's current terms when none was frozen); the cap from the current terms
+applies per cycle. A cycle is billed for tools-only OR ticketing, never both
+(`plan`): a tools-only cycle bills the flat `toolsOnly.feeMinor` and no
+commission. GST is added only while `moneySettings/platform.settings.gstRegistered`
 is on. A bill is `toSend`, `sent` (overdue past `dueAtMillis`), `paid`,
-`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` bills.
-Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
-unbroken sequence per April–March year (`2026-27/031`). All are server-only and
-reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
+`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` cycle
+bills. A cycle bill falls due 15 days after its cycle closes and never less
+than 7 days after it is sent. Sending takes the next number of
+`moneyInvoiceCounters/{financialYear}`, one unbroken sequence per April–March
+year (`2026-27/031`). All are server-only and reached through
+`adminManageOrganizerBills` and `adminManageMoneySettings`.
+
+Bills made before rolling cycles are calendar months, India time
+(`{organizerId}_{YYYY-MM}`, `periodKind` absent or `calendarMonth`); they keep
+their figures and can still be sent, reminded, paid or written off. The
+transition never bills a payment twice: calendar-month bills are no longer
+made, and no cycle counts a payment captured before `countFromMillis`, the
+later of the trial end, the end of the organizer's last calendar-month bill and
+1 November 2026, India time. Cycles stay anchored at trial end, so the first
+cycle billed may straddle that instant; its cap is reduced to the share of the
+cycle still billed.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent

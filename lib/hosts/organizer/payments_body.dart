@@ -376,7 +376,7 @@ class _BillSpotlight extends StatelessWidget {
             bill == null
                 ? l10n.hostOrganizerBillKickerNone
                 : l10n.hostOrganizerBillKicker(
-                    month: DateFormat.yMMMM(locale).format(bill.month),
+                    month: hostOrganizerBillPeriodLabel(bill, locale),
                   ),
             variant: CatchTextVariant.labelKicker,
           ),

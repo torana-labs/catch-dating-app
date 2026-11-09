@@ -1,4 +1,4 @@
-/// Where one of Catch's monthly bills stands, as its organizer sees it. A bill
+/// Where one of Catch's bills stands, as its organizer sees it. A bill
 /// still waiting to be sent is never returned to the organizer.
 enum HostOrganizerBillStatus {
   sent,
@@ -10,13 +10,27 @@ enum HostOrganizerBillStatus {
       values.firstWhere((status) => status.name == value);
 }
 
-/// One month's bill from Catch to an organizer, read through
+/// What a bill covers: a calendar month (bills made before rolling cycles) or
+/// one rolling billing cycle anchored at the end of the free trial.
+enum HostOrganizerBillPeriodKind {
+  calendarMonth,
+  cycle;
+
+  static HostOrganizerBillPeriodKind fromWire(Object? value) =>
+      value == 'cycle' ? cycle : calendarMonth;
+}
+
+/// One billing period's bill from Catch to an organizer, read through
 /// `listOrganizerBills`. All amounts are in minor units.
 class HostOrganizerBill {
   const HostOrganizerBill({
     required this.billId,
     required this.month,
     required this.status,
+    this.periodKind = HostOrganizerBillPeriodKind.calendarMonth,
+    this.periodStart,
+    this.periodEnd,
+    this.toolsOnly = false,
     required this.paymentCount,
     required this.eventCount,
     required this.grossMinor,
@@ -44,6 +58,11 @@ class HostOrganizerBill {
       billId: json['billId']! as String,
       month: _monthOf(json['month']! as String),
       status: HostOrganizerBillStatus.fromWire(json['status']! as String),
+      // A server from before rolling cycles sends neither; it billed months.
+      periodKind: HostOrganizerBillPeriodKind.fromWire(json['periodKind']),
+      periodStart: _dateOf(json['periodStartMillis']),
+      periodEnd: _dateOf(json['periodEndMillis']),
+      toolsOnly: json['plan'] == 'toolsOnly',
       paymentCount: sales['paymentCount']! as int,
       eventCount: sales['eventCount']! as int,
       grossMinor: sales['grossMinor']! as int,
@@ -66,9 +85,18 @@ class HostOrganizerBill {
 
   final String billId;
 
-  /// The first day of the month billed.
+  /// The first day of the month billed; for a cycle, of the month it ends in.
   final DateTime month;
   final HostOrganizerBillStatus status;
+  final HostOrganizerBillPeriodKind periodKind;
+
+  /// The period billed, end exclusive; null from a server before cycles.
+  final DateTime? periodStart;
+  final DateTime? periodEnd;
+
+  /// The period was billed on the tools-only plan: its flat fee, no
+  /// commission (never both).
+  final bool toolsOnly;
   final int paymentCount;
   final int eventCount;
   final int grossMinor;
