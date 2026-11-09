@@ -20,7 +20,7 @@ const storyRoutes = ["home"];
 
 const showcase: CatchHeroShowcaseProps = {
   device: (
-    <CatchDeviceFrame kind="iphone" tilt="left">
+    <CatchDeviceFrame kind="phone" tilt="left">
       <img alt="The Catch app showing tonight's plans" src="/assets/app-screenshots/member-event-discovery.png" />
     </CatchDeviceFrame>
   ),

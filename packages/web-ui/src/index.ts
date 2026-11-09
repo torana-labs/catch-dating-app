@@ -45,7 +45,7 @@ export type {CatchSiteHeaderLink, CatchSiteHeaderProps} from "./components/Catch
 export {CatchSiteFooter} from "./components/CatchSiteFooter";
 export type {CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
 export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
-export type {CatchDeviceFrameKind, CatchDeviceFrameProps, CatchDeviceFrameTilt} from "./components/CatchDeviceFrame";
+export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
 export type {CatchHeroShowcaseProps, CatchHeroShowcaseSticker} from "./components/CatchHeroShowcase";
 export {CatchFormatTile} from "./components/CatchFormatTile";

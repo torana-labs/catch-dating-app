@@ -5202,15 +5202,17 @@
         "story": "packages/web-ui/src/components/CatchDeviceFrame.stories.tsx",
         "exportName": "Kinds",
         "states": [
-          "iphone",
+          "phone",
           "android",
-          "ipad",
+          "tablet",
+          "tablet-portrait",
           "tilt-left",
           "tilt-right",
-          "on-ink"
+          "on-ink",
+          "small"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). A device bezel (iPhone, Android or iPad) around an app screen for showing the Catch apps on the website, upright or turned. The frame is decoration; the screen image carries the description. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+      "notes": "Website T4 under D18 (CAT-260). A generic device bezel (phone, Android phone with a punch-hole camera, or tablet held either way; nothing unique to Apple hardware) around an app screen for showing the Catch apps on the website, upright or turned. Geometry is one spec per kind as shares of the frame, so proportions hold at any size. The frame is decoration; the screen image carries the description. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
     },
     {
       "id": "shared_hero_showcase",
