@@ -2,6 +2,9 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_create_screen.dart';
@@ -33,6 +36,7 @@ import '../staff/staff_live_fixtures.dart';
 import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';
 import 'planner_storage_fixtures.dart';
+import 'planner_whatsapp_fixtures.dart';
 
 /// The window the desktop boards are drawn for.
 const plannerDesktopSize = Size(1440, 900);
@@ -98,6 +102,40 @@ List<Override> plannerCaptureOverrides() => [
     (ref) async =>
         (value: plannerPhotos, snapshotAt: null, snapshotExpiresAt: null),
   ),
+  programWhatsappInboxProvider(
+    plannerProgramId,
+    ProgramWhatsappFilter.needsYou,
+  ).overrideWith(
+    (ref) async => (
+      value: plannerWhatsappInbox,
+      snapshotAt: null,
+      snapshotExpiresAt: null,
+    ),
+  ),
+  programWhatsappThreadProvider(
+    plannerProgramId,
+    plannerWhatsappThread.summary.threadId,
+  ).overrideWith(
+    (ref) async => (
+      value: plannerWhatsappThread,
+      snapshotAt: null,
+      snapshotExpiresAt: null,
+    ),
+  ),
+  programCannedRepliesProvider(plannerProgramId).overrideWith(
+    (ref) async => (
+      value: plannerCannedReplies,
+      snapshotAt: null,
+      snapshotExpiresAt: null,
+    ),
+  ),
+  programAssistantSettingsProvider(plannerProgramId).overrideWith(
+    (ref) async => (
+      value: plannerAssistantSettings,
+      snapshotAt: null,
+      snapshotExpiresAt: null,
+    ),
+  ),
   programCreateControllerProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
@@ -159,3 +197,14 @@ Widget plannerReconcileCapture() => const HostProgrammeReconcileScreen(
 
 Widget plannerPhotosCapture() =>
     const HostProgrammePhotosScreen(programId: plannerProgramId);
+
+Widget plannerInboxCapture() => HostProgrammeInboxScreen(
+  programId: plannerProgramId,
+  initialThreadId: plannerWhatsappThread.summary.threadId,
+);
+
+Widget plannerInboxListCapture() =>
+    const HostProgrammeInboxScreen(programId: plannerProgramId);
+
+Widget plannerAssistantCapture() =>
+    const HostProgrammeAssistantScreen(programId: plannerProgramId);

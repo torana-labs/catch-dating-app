@@ -1508,6 +1508,31 @@ description:
 - the released Host clients expose provider unavailability and setup blockers
   rather than enabling a campaign composer optimistically.
 
+Follower updates on WhatsApp (route `organizerFollowerWhatsapp`) need one more
+step per organiser, after their number is connected and its test message is
+delivered: the organiser submits the `organizer_follower_update` template on
+their own WhatsApp Business account and Meta approves it. Catch only syncs it
+(`syncOrganizerWhatsappTemplates`); nothing provisions it. The template must
+have exactly one named body variable, no media header and no URL parameters.
+Submit it as Marketing, language English, with this body (the variable name
+may differ):
+
+```text
+New from us:
+
+{{update_text}}
+
+Reply STOP to stop these updates.
+```
+
+The spec lives in `organizerFollowerUpdateTemplateSpec`
+(`functions/src/organizers/organizerFollowerWhatsapp.ts`). Until the template
+is approved, Host and the website owner view keep the WhatsApp choice off and
+`createOrganizerPost` refuses `channels: ["app", "whatsapp"]`. Followers are
+reached only when they ticked WhatsApp updates on follow-by-phone (consent
+purpose `followerUpdates`, bound to their verified phone); Meta bills the
+organiser's WABA per message.
+
 Catch-owned WhatsApp is a separate activation. It requires a separate Catch
 WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
 authority, retention policy and support owner. Enabling organizer WhatsApp must

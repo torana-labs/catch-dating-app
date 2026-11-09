@@ -3131,6 +3131,34 @@
       ]
     },
     {
+      "id": "programAssistantRuns",
+      "path": "programAssistantRuns/{runId}",
+      "rulesMatch": "/programAssistantRuns/{runId}",
+      "typescriptInterface": "ProgramAssistantRunDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "wedding assistant (handleProgramWhatsappInbound, previewProgramAssistantReply)",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One audit row per assistant run, written as an intent with its budget reservation before the model call and settled after it.",
+        "Holds ids, request and fact pack hashes, token counts and the outcome; never guest text, replies, names or phone numbers."
+      ]
+    },
+    {
+      "id": "programAssistantBudgets",
+      "path": "programAssistantBudgets/{budgetId}",
+      "rulesMatch": "/programAssistantBudgets/{budgetId}",
+      "typescriptInterface": "ProgramAssistantBudgetDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "wedding assistant budget ledger",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One programme's daily token ledger, id {programId}_{YYYY-MM-DD} in the programme's time zone.",
+        "Counts only: the cap, tokens reserved by runs in flight, tokens consumed and the run count."
+      ]
+    },
+    {
       "id": "programHampers",
       "path": "programHampers/{programHamperId}",
       "rulesMatch": "/programHampers/{programHamperId}",
@@ -3155,6 +3183,91 @@
       "write": "server only",
       "migrationNotes": [
         "One function photo; the file lives in private Storage under programs/{programId}/photos/.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programWhatsappEndpointIndex",
+      "path": "programWhatsappEndpointIndex/{endpointIndexId}",
+      "rulesMatch": "/programWhatsappEndpointIndex/{endpointIndexId}",
+      "typescriptInterface": "ProgramWhatsappEndpointIndexDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "programme WhatsApp endpoint index trigger",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Maps {programId, sha256(E.164)} to the household a number reaches; no raw number.",
+        "Kept current by triggers on programHouseholds and programGuests; seeded by functions/scripts/backfill-program-whatsapp-endpoint-index.cjs.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programWhatsappThreads",
+      "path": "programWhatsappThreads/{programWhatsappThreadId}",
+      "rulesMatch": "/programWhatsappThreads/{programWhatsappThreadId}",
+      "typescriptInterface": "ProgramWhatsappThreadDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "programme WhatsApp inbound router and reply callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One household's WhatsApp conversation with the wedding's number; the 24-hour window is the last inbound plus 24 hours.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programWhatsappMessages",
+      "path": "programWhatsappMessages/{programWhatsappMessageId}",
+      "rulesMatch": "/programWhatsappMessages/{programWhatsappMessageId}",
+      "typescriptInterface": "ProgramWhatsappMessageDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "programme WhatsApp inbound router and reply callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One guest, assistant or planner message; media is recorded by reference only.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programWhatsappReplyOperations",
+      "path": "programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
+      "rulesMatch": "/programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
+      "typescriptInterface": "ProgramWhatsappReplyOperationDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "sendProgramWhatsappReply callable and sendProgramServiceReply",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Reservation written before the Meta call; an uncertain outcome stays unknown (fail closed).",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programWhatsappCannedReplies",
+      "path": "programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
+      "rulesMatch": "/programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
+      "typescriptInterface": "ProgramWhatsappCannedReplyDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "upsertProgramWhatsappCannedReply callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "A saved inbox reply with one text per language.",
+        "Deleted by the archive retention sweep."
+      ]
+    },
+    {
+      "id": "programAssistantSettings",
+      "path": "programAssistantSettings/{programId}",
+      "rulesMatch": "/programAssistantSettings/{programId}",
+      "typescriptInterface": "ProgramAssistantSettingsDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "updateProgramAssistantSettings callable",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "How the programme's WhatsApp assistant behaves; absent means the defaults. Read by the assistant (lane W2).",
         "Deleted by the archive retention sweep."
       ]
     },

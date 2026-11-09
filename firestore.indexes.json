@@ -7243,6 +7243,52 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "programWhatsappThreads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastMessageAtMillis",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "threadId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAtMillis",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "threadId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAtMillis",
+          "mode": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

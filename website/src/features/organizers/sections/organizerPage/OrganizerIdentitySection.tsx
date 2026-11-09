@@ -1,6 +1,7 @@
 import {
   CatchAvatar,
   CatchButton,
+  CatchCheckboxInput,
   CatchCodeInput,
   CatchField,
   CatchHeroImage,
@@ -84,14 +85,14 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
 
 type PhoneFollow = NonNullable<OrganizerPageController["follow"]["phone"]>;
 
-/** Follow by phone (CAT-253): number, then code, then done. Hidden until its backend lands. */
+/** Follow by phone (CAT-253): number and the WhatsApp tick, then code, then done. */
 function OrganizerFollowSheet({error, name, phone}: {error: string; name: string; phone: PhoneFollow}) {
   const sheet = copy.followSheet;
   if (phone.step === "done") {
     return (
       <CatchSurface role="status">
         <CatchText as="p" variant="title-row">{sheet.doneTitle(name)}</CatchText>
-        <CatchText as="p" tone="secondary" variant="body-small">{sheet.doneBody}</CatchText>
+        <CatchText as="p" tone="secondary" variant="body-small">{sheet.doneBody(phone.whatsapp)}</CatchText>
       </CatchSurface>
     );
   }
@@ -102,6 +103,7 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
         <CatchText as="p" tone="secondary" variant="body-small">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchText>
       </CatchStack>
       {phone.step === "phone" ? (
+        <CatchStack gap={12}>
         <CatchField
           autoComplete="tel-national"
           errorText={error || null}
@@ -115,10 +117,13 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
           title={sheet.phoneLabel}
           value={phone.number}
         />
+        <CatchCheckboxInput label={sheet.whatsappTick}
+          onChanged={phone.pending ? null : phone.setWhatsapp} value={phone.whatsapp} />
+        </CatchStack>
       ) : (
         <CatchStack gap={8}>
           <CatchCodeInput
-            contractExemption="Follow by phone has no callable contract until CAT-253 lands."
+            contractExemption="The phone code is Firebase Auth's sign-in code, not a callable field."
             onChanged={phone.setCode}
             onSubmitted={phone.confirm}
             semanticsLabel={sheet.codeBody(phone.shown)}
@@ -128,6 +133,7 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
           {error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{error}</CatchText> : null}
         </CatchStack>
       )}
+      <CatchStack id={phone.recaptchaId} />
       <CatchButton
         fill
         label={phone.step === "phone" ? sheet.sendCode : sheet.confirm}

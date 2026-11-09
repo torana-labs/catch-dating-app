@@ -103,6 +103,15 @@
         }
       },
       "description": "Replace how guest pages look, or null to clear it. Omitted keeps it."
+    },
+    "whatsappSenderConnectionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Bind the wedding's own WhatsApp number (an organizerSenderConnections id of the same organiser), or null to fall back to the organiser's first active number. Omitted keeps it."
     }
   }
 }

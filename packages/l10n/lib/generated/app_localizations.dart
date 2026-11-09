@@ -8357,6 +8357,42 @@ abstract class AppLocalizations {
   /// **'Include me in timed rotations'**
   String get eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInTimed;
 
+  /// A guest's doubles game: time, court, partner and opponents.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Court {court} · You and {partner} against {opponentA} and {opponentB}'**
+  String eventSuccessCompanionDoublesSlot({
+    required Object timeRange,
+    required int court,
+    required Object partner,
+    required Object opponentA,
+    required Object opponentB,
+  });
+
+  /// Fallback name for a doubles opponent whose profile is not loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'An opponent'**
+  String get eventSuccessCompanionDoublesOpponent;
+
+  /// A guest's doubles round on the bench.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeRange} · Sitting out this round · mix in the common area'**
+  String eventSuccessCompanionBenchSlot({required Object timeRange});
+
+  /// Button that puts a live prompt away for this step.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get eventSuccessCompanionPromptSkip;
+
+  /// Note beside the Skip button on every live prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip any prompt.'**
+  String get eventSuccessCompanionPromptSkipNote;
+
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).
   ///
   /// In en, this message translates to:
@@ -42777,6 +42813,42 @@ abstract class AppLocalizations {
   /// **'Courts'**
   String get hostFormatsViewCourts;
 
+  /// Someone sitting out: their court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} min on court · {off} off'**
+  String hostFormatsCourtMinutes({required int on, required int off});
+
+  /// Fairness stat label: the gap between the most and least court time so far.
+  ///
+  /// In en, this message translates to:
+  /// **'most court time apart'**
+  String get hostFormatsStatCourtTimeApart;
+
+  /// A short minutes value for a stat.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String hostFormatsMinutesShort({required int minutes});
+
+  /// Between two doubles partnerships on one court.
+  ///
+  /// In en, this message translates to:
+  /// **'against'**
+  String get hostFormatsAgainst;
+
+  /// Live console view: the crawl's stops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops'**
+  String get hostFormatsViewStops;
+
+  /// Live console view: pace pods.
+  ///
+  /// In en, this message translates to:
+  /// **'Pods'**
+  String get hostFormatsViewPods;
+
   /// Live console view: mixing the teams.
   ///
   /// In en, this message translates to:
@@ -42952,12 +43024,6 @@ abstract class AppLocalizations {
   /// **'Everyone plays this round.'**
   String get hostFormatsSittingOutNone;
 
-  /// Someone sitting out: their morning so far.
-  ///
-  /// In en, this message translates to:
-  /// **'Sat out {out} · played {played}'**
-  String hostFormatsSatOut({required int out, required int played});
-
   /// Someone sitting out plays the next round.
   ///
   /// In en, this message translates to:
@@ -42987,12 +43053,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'repeat partners'**
   String get hostFormatsStatRepeats;
-
-  /// Fairness stat label.
-  ///
-  /// In en, this message translates to:
-  /// **'sat out at most'**
-  String get hostFormatsStatMostSatOut;
 
   /// Court board tablet section: the next round.
   ///
@@ -46146,6 +46206,643 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every {weekday}'**
   String hostCreateRepeatOn({required Object weekday});
+
+  /// Follower update composer: switch that adds the WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Also send on WhatsApp'**
+  String get hostFollowerUpdateWhatsappToggle;
+
+  /// Follower update composer: who the WhatsApp channel reaches.
+  ///
+  /// In en, this message translates to:
+  /// **'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.'**
+  String get hostFollowerUpdateWhatsappToggleBody;
+
+  /// Follower update composer: why the WhatsApp switch is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your WhatsApp number and get the follower update template approved to send there too.'**
+  String get hostFollowerUpdateWhatsappUnavailable;
+
+  /// Notice after a follower update that also went on WhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Posted to followers. Nobody has ticked WhatsApp updates yet.} =1{Posted to followers. Sending on WhatsApp to 1 follower.} other{Posted to followers. Sending on WhatsApp to {count} followers.}}'**
+  String hostFollowerUpdatePostedWhatsapp({required int count});
+
+  /// Sends: per-channel counts for a follower update's WhatsApp leg.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp: {sent} sent, {delivered} delivered, {skipped} not on WhatsApp'**
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  });
+
+  /// Guest inbox page and pane title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest messages'**
+  String get hostProgrammeInboxTitle;
+
+  /// Programme top bar action opening the guest WhatsApp inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest messages'**
+  String get hostProgrammeInboxOpen;
+
+  /// Guest inbox action opening the assistant settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant settings'**
+  String get hostProgrammeInboxSettings;
+
+  /// Label of the guest inbox segment control.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get hostProgrammeInboxShow;
+
+  /// Guest inbox segment and badge: threads waiting for the planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostProgrammeInboxNeedsYou;
+
+  /// Guest inbox segment: answered threads.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled'**
+  String get hostProgrammeInboxHandled;
+
+  /// Guest inbox segment: every thread.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostProgrammeInboxAll;
+
+  /// Guest inbox segment with its count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {count}'**
+  String hostProgrammeInboxSegmentCount({
+    required Object label,
+    required int count,
+  });
+
+  /// Guest inbox badge on a handled thread.
+  ///
+  /// In en, this message translates to:
+  /// **'Answered'**
+  String get hostProgrammeInboxAnswered;
+
+  /// Guest inbox badge on a thread the assistant passed to the planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed to you'**
+  String get hostProgrammeInboxPassedBadge;
+
+  /// Guest inbox badge on a thread from a number on no household.
+  ///
+  /// In en, this message translates to:
+  /// **'Not on the list'**
+  String get hostProgrammeInboxUnknownBadge;
+
+  /// Guest inbox empty list.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages here yet.'**
+  String get hostProgrammeInboxEmpty;
+
+  /// Guest inbox notice when no WhatsApp number is connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect the wedding’s WhatsApp number in Assistant settings so guests can message you.'**
+  String get hostProgrammeInboxNoNumber;
+
+  /// Guest inbox note under the list.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant answers guests from their own itineraries. Read its answers under Handled.'**
+  String get hostProgrammeInboxFooter;
+
+  /// Guest inbox detail before a pick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a conversation to read it.'**
+  String get hostProgrammeInboxPick;
+
+  /// Guest thread kicker naming whose side the household is on.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}’s side'**
+  String hostProgrammeInboxSide({required Object name});
+
+  /// Guest thread button opening the household.
+  ///
+  /// In en, this message translates to:
+  /// **'Open household'**
+  String get hostProgrammeInboxOpenHousehold;
+
+  /// Guest thread button: the planner answers instead of the assistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Take over'**
+  String get hostProgrammeInboxTakeOver;
+
+  /// Guest thread button: the assistant answers again.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand back to the assistant'**
+  String get hostProgrammeInboxHandBack;
+
+  /// Guest thread button: nothing more to do.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark handled'**
+  String get hostProgrammeInboxMarkHandled;
+
+  /// Guest thread household contact subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies for the family · {count} guests'**
+  String hostProgrammeInboxRepliesFor({required int count});
+
+  /// Guest thread title for a number on no household.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown number'**
+  String get hostProgrammeInboxUnknownName;
+
+  /// Guest thread bubble author when the household has no contact name.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get hostProgrammeInboxGuest;
+
+  /// Guest thread bubble for a photo or file, which Catch does not download.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent an attachment. Open WhatsApp on the wedding’s phone to see it.'**
+  String get hostProgrammeInboxAttachment;
+
+  /// Caption under an assistant reply.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant · from their itinerary · {language}'**
+  String hostProgrammeInboxAssistantCaption({required Object language});
+
+  /// Caption under an assistant reply when its language is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant · from their itinerary'**
+  String get hostProgrammeInboxAssistantCaptionNoLanguage;
+
+  /// Caption under a planner reply.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · from the inbox'**
+  String hostProgrammeInboxPlannerCaption({required Object name});
+
+  /// Guest thread notice title when the assistant passed the thread on.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed to you'**
+  String get hostProgrammeInboxPassedTitle;
+
+  /// Passed-to-you reason: the answer is not in the facts.
+  ///
+  /// In en, this message translates to:
+  /// **'This isn’t in their itinerary, so the assistant said you’d reply.'**
+  String get hostProgrammeInboxPassedNotInFacts;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'They asked for a person.'**
+  String get hostProgrammeInboxPassedPerson;
+
+  /// Passed-to-you reason: an unknown number.
+  ///
+  /// In en, this message translates to:
+  /// **'This number isn’t on any household. Add it to a household to reply.'**
+  String get hostProgrammeInboxPassedUnknown;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant is off, so this waits for you.'**
+  String get hostProgrammeInboxPassedOff;
+
+  /// Guest thread composer placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to {name}'**
+  String hostProgrammeInboxReplyTo({required Object name});
+
+  /// Guest thread composer send button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get hostProgrammeInboxSend;
+
+  /// Guest thread note on the 24-hour window.
+  ///
+  /// In en, this message translates to:
+  /// **'You can write freely until {when}, inside WhatsApp’s 24-hour window. After that, only an approved message can start the conversation again.'**
+  String hostProgrammeInboxWindowOpen({required Object when});
+
+  /// Guest thread composer note once the window has closed.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp’s 24-hour window has closed. Send an approved message from Planned messages instead.'**
+  String get hostProgrammeInboxWindowClosed;
+
+  /// Guest thread composer note for an unknown number.
+  ///
+  /// In en, this message translates to:
+  /// **'Add this number to a household to reply.'**
+  String get hostProgrammeInboxUnknownClosed;
+
+  /// Guest thread reply error.
+  ///
+  /// In en, this message translates to:
+  /// **'That reply wasn’t sent. Check the conversation and try again.'**
+  String get hostProgrammeInboxSendFailed;
+
+  /// Guest thread take-over error.
+  ///
+  /// In en, this message translates to:
+  /// **'That didn’t change. Refresh and try again.'**
+  String get hostProgrammeInboxHandlingFailed;
+
+  /// Assistant settings top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest messages'**
+  String get hostProgrammeInboxAssistantTitle;
+
+  /// Assistant settings section: the number.
+  ///
+  /// In en, this message translates to:
+  /// **'The wedding’s WhatsApp number'**
+  String get hostProgrammeInboxAssistantNumber;
+
+  /// Assistant settings number subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows as “{name}”'**
+  String hostProgrammeInboxAssistantShowsAs({required Object name});
+
+  /// Assistant settings number status.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get hostProgrammeInboxAssistantConnected;
+
+  /// Assistant settings number status.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get hostProgrammeInboxAssistantNotConnected;
+
+  /// Assistant settings row when no number is connected.
+  ///
+  /// In en, this message translates to:
+  /// **'No number yet'**
+  String get hostProgrammeInboxAssistantNoNumber;
+
+  /// Assistant settings number note.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests message the wedding, not your personal number. Your team replies from the same inbox.'**
+  String get hostProgrammeInboxAssistantNumberNote;
+
+  /// Assistant settings note when the programme borrows the organiser's number.
+  ///
+  /// In en, this message translates to:
+  /// **'This uses your organiser number. Connect the wedding’s own number in Messaging setup.'**
+  String get hostProgrammeInboxAssistantSharedNumber;
+
+  /// Assistant settings master switch.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant answers guests'**
+  String get hostProgrammeInboxAssistantOn;
+
+  /// Assistant settings master switch subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It answers only from each household’s own itinerary.'**
+  String get hostProgrammeInboxAssistantOnNote;
+
+  /// Assistant settings section.
+  ///
+  /// In en, this message translates to:
+  /// **'What the assistant may answer'**
+  String get hostProgrammeInboxAssistantMayAnswer;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Times and places'**
+  String get hostProgrammeInboxTopicSchedule;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From each household’s own itinerary'**
+  String get hostProgrammeInboxTopicScheduleNote;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'What to wear'**
+  String get hostProgrammeInboxTopicDressCode;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The dress code for each function'**
+  String get hostProgrammeInboxTopicDressCodeNote;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickups, cars and flights'**
+  String get hostProgrammeInboxTopicTravel;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Their own pickup and driver'**
+  String get hostProgrammeInboxTopicTravelNote;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get hostProgrammeInboxTopicStay;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Their own hotel and room numbers'**
+  String get hostProgrammeInboxTopicStayNote;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Venues and directions'**
+  String get hostProgrammeInboxTopicVenues;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where each function is'**
+  String get hostProgrammeInboxTopicVenuesNote;
+
+  /// Assistant topic switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Their reply'**
+  String get hostProgrammeInboxTopicRsvp;
+
+  /// Assistant topic subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is coming to what'**
+  String get hostProgrammeInboxTopicRsvpNote;
+
+  /// Assistant settings section.
+  ///
+  /// In en, this message translates to:
+  /// **'What it reads from attachments'**
+  String get hostProgrammeInboxAssistantReads;
+
+  /// Assistant attachment switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Read tickets into flights'**
+  String get hostProgrammeInboxReadTickets;
+
+  /// Assistant attachment subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest confirms before anything is saved'**
+  String get hostProgrammeInboxReadTicketsNote;
+
+  /// Assistant attachment switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Take ID photos for the hotels'**
+  String get hostProgrammeInboxReadIds;
+
+  /// Assistant attachment subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team checks each one before a hotel sees it'**
+  String get hostProgrammeInboxReadIdsNote;
+
+  /// Assistant settings section: escalation staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything else goes to'**
+  String get hostProgrammeInboxEverythingElse;
+
+  /// Assistant settings escalation empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your team on the Team page to pass messages to them.'**
+  String get hostProgrammeInboxNoStaff;
+
+  /// Assistant settings reply-time label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell guests you’ll reply within'**
+  String get hostProgrammeInboxReplyWithin;
+
+  /// Assistant reply-time choice.
+  ///
+  /// In en, this message translates to:
+  /// **'An hour'**
+  String get hostProgrammeInboxWithinHour;
+
+  /// Assistant reply-time choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Four hours'**
+  String get hostProgrammeInboxWithinFourHours;
+
+  /// Assistant reply-time choice.
+  ///
+  /// In en, this message translates to:
+  /// **'The same day'**
+  String get hostProgrammeInboxWithinSameDay;
+
+  /// Assistant settings section.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages'**
+  String get hostProgrammeInboxLanguages;
+
+  /// Assistant languages note.
+  ///
+  /// In en, this message translates to:
+  /// **'It answers in the language the guest writes in.'**
+  String get hostProgrammeInboxLanguagesNote;
+
+  /// Assistant settings section.
+  ///
+  /// In en, this message translates to:
+  /// **'What it never does'**
+  String get hostProgrammeInboxNeverDoes;
+
+  /// Assistant never-does row.
+  ///
+  /// In en, this message translates to:
+  /// **'Never changes anyone’s replies, rooms or flights'**
+  String get hostProgrammeInboxNeverPromises;
+
+  /// Assistant never-does row.
+  ///
+  /// In en, this message translates to:
+  /// **'Never shares another guest’s details'**
+  String get hostProgrammeInboxNeverShares;
+
+  /// Assistant never-does row.
+  ///
+  /// In en, this message translates to:
+  /// **'Never guesses: if it isn’t in the itinerary, it asks you'**
+  String get hostProgrammeInboxNeverGuesses;
+
+  /// Assistant never-does row.
+  ///
+  /// In en, this message translates to:
+  /// **'Never promises anything on the planner’s behalf'**
+  String get hostProgrammeInboxNeverPromisesForPlanner;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'They sent a photo or a file.'**
+  String get hostProgrammeInboxPassedMedia;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'They sound worried. Reply soon.'**
+  String get hostProgrammeInboxPassedDistressed;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant reached today’s limit, so this waits for you.'**
+  String get hostProgrammeInboxPassedBudget;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp’s 24-hour window had closed, so the assistant could not reply.'**
+  String get hostProgrammeInboxPassedWindow;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'They asked about gifts or money.'**
+  String get hostProgrammeInboxPassedMoney;
+
+  /// Passed-to-you reason.
+  ///
+  /// In en, this message translates to:
+  /// **'They asked to change something.'**
+  String get hostProgrammeInboxPassedChange;
+
+  /// Passed-to-you reason: provider error, unsafe answer, missing facts or an uncertain retry.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant couldn’t answer safely, so it passed this to you.'**
+  String get hostProgrammeInboxPassedOther;
+
+  /// Passed-to-you reason: the planner has taken over.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re handling this conversation.'**
+  String get hostProgrammeInboxPassedPlanner;
+
+  /// Assistant settings section: preview an answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Try it'**
+  String get hostProgrammeInboxTryIt;
+
+  /// Assistant Try-it field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask as a guest'**
+  String get hostProgrammeInboxTryItAsk;
+
+  /// Assistant Try-it button.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask'**
+  String get hostProgrammeInboxTryItSend;
+
+  /// Assistant Try-it result when it would pass the question on.
+  ///
+  /// In en, this message translates to:
+  /// **'It would pass this to you and tell the guest you’ll reply.'**
+  String get hostProgrammeInboxTryItPassed;
+
+  /// Assistant Try-it result when the assistant is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant is switched off for Catch right now.'**
+  String get hostProgrammeInboxTryItOff;
+
+  /// Assistant Try-it error.
+  ///
+  /// In en, this message translates to:
+  /// **'That didn’t work. Try again.'**
+  String get hostProgrammeInboxTryItFailed;
+
+  /// Assistant settings save error.
+  ///
+  /// In en, this message translates to:
+  /// **'That setting wasn’t saved. Try again.'**
+  String get hostProgrammeInboxSaveFailed;
+
+  /// Language name.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get hostProgrammeInboxLanguageEn;
+
+  /// Language name.
+  ///
+  /// In en, this message translates to:
+  /// **'Hindi'**
+  String get hostProgrammeInboxLanguageHi;
+
+  /// Language name.
+  ///
+  /// In en, this message translates to:
+  /// **'Tamil'**
+  String get hostProgrammeInboxLanguageTa;
+
+  /// Language name.
+  ///
+  /// In en, this message translates to:
+  /// **'Marathi'**
+  String get hostProgrammeInboxLanguageMr;
+
+  /// Language name.
+  ///
+  /// In en, this message translates to:
+  /// **'Gujarati'**
+  String get hostProgrammeInboxLanguageGu;
 }
 
 class _AppLocalizationsDelegate

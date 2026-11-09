@@ -34,7 +34,7 @@
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "channel": {"type": "string", "enum": ["whatsapp", "sms"]},
-    "purpose": {"type": "string", "enum": ["eventOperations", "marketing"]},
+    "purpose": {"type": "string", "enum": ["eventOperations", "marketing", "followerUpdates"]},
     "endpointE164": {"type": "string", "pattern": "^\\+[1-9][0-9]{6,14}$"},
     "sourceVersionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "sourceDecidedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
@@ -44,7 +44,7 @@
     "consentCopyHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
     "source": {
       "type": "string",
-      "enum": ["publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete"]
+      "enum": ["publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete", "organizerFollowByPhone"]
     },
     "sourceEventId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "sourceFormId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},

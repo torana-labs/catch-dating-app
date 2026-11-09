@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useId, useMemo, useRef, useState} from "react";
 import {accountCopy} from "../../content/account";
 import {organizerPageCopy} from "../../content/organizerPage";
 import {trackMarketingEvent} from "../../analytics";
@@ -11,20 +11,47 @@ import type {OrganizerPageRecord} from "./organizerPage";
 import {organizerPageView, type OrganizerEventView, type OrganizerLinkView} from "./organizerPageView";
 import type {HostListing} from "./types";
 
+/** A sent phone code: confirming it signs in (or links) that verified phone. */
+export interface PhoneCodeChallenge {
+  confirm: (code: string) => Promise<void>;
+  clear: () => void;
+}
+
 /**
- * Backends the page has UI for but production does not have yet. Each stays
- * null, and its UI hidden, until it lands: follow by phone with WhatsApp by
- * default (CAT-253) and unverified reviews from anyone (CAT-169).
+ * Backends the page calls. Follow by phone (CAT-253) is live: the website's
+ * phone-code sign-in, then followOrganizerByPhone with the follower's own
+ * WhatsApp tick. Unverified reviews from anyone (CAT-169) stay null, and
+ * their UI hidden, until that backend lands.
  */
 export interface OrganizerPageBackends {
   followByPhone: null | {
-    sendCode: (input: {organizerId: string; phoneNumber: string}) => Promise<void>;
-    confirm: (input: {organizerId: string; phoneNumber: string; code: string}) => Promise<void>;
+    sendCode: (input: {phoneNumber: string; recaptchaId: string}) => Promise<PhoneCodeChallenge>;
+    follow: (input: {organizerId: string; requestId: string; whatsappUpdates: boolean}) => Promise<void>;
   };
   submitReview: null | ((input: {organizerId: string; rating: number; comment: string; reviewerName: string}) => Promise<void>);
 }
 
-export const organizerPageBackends: OrganizerPageBackends = {followByPhone: null, submitReview: null};
+/** The reviewed copy version the WhatsApp tick shows (follower-whatsapp-v1). */
+export const followerWhatsappTermsVersion = "follower-whatsapp-v1";
+
+export const organizerPageBackends: OrganizerPageBackends = {
+  followByPhone: {
+    sendCode: async ({phoneNumber, recaptchaId}) => {
+      const {beginWebsiteAccountPhoneVerification} = await import("../../firebase");
+      const challenge = await beginWebsiteAccountPhoneVerification(phoneNumber, recaptchaId);
+      return {confirm: async (code) => {await challenge.confirm(code);}, clear: () => challenge.clear()};
+    },
+    follow: async ({organizerId, requestId, whatsappUpdates}) => {
+      const {followWebsiteOrganizerByPhone} = await import("../../firebase");
+      await followWebsiteOrganizerByPhone({organizerId, requestId, whatsappUpdates,
+        ...(whatsappUpdates ? {termsVersion: followerWhatsappTermsVersion} : {})});
+    },
+  },
+  submitReview: null,
+};
+
+const newRequestId = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`)
+  .replace(/[^A-Za-z0-9_-]/gu, "").slice(0, 100);
 
 /**
  * Who is looking. The owner view (CAT-257) adds "owner"; until then every
@@ -61,10 +88,15 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     mutationFn: (following: boolean) => setWebsiteOrganizerFollow(listing.id, following, account.uid!)});
   const accountFollowing = account.account?.following === true;
 
-  // Follow by phone (CAT-253).
+  // Follow by phone (CAT-253): number and the WhatsApp tick, then the code.
+  const recaptchaId = `follow-${useId().replace(/:/gu, "")}`;
   const [followStep, setFollowStep] = useState<FollowStep | null>(null);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [whatsappUpdates, setWhatsappUpdates] = useState(false);
+  const challenge = useRef<PhoneCodeChallenge | null>(null);
+  const followRequestId = useRef(newRequestId());
+  useEffect(() => () => {challenge.current?.clear(); challenge.current = null;}, []);
   const phoneMutation = useMutation({retry: false, gcTime: 0, mutationFn: (step: () => Promise<void>) => step()});
 
   // Share and QR.
@@ -89,6 +121,8 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
 
   useEffect(() => {
     setAccountFollowRequested(false); setFollowError(""); setFollowStep(null); setPhone(""); setCode("");
+    setWhatsappUpdates(false); challenge.current?.clear(); challenge.current = null;
+    followRequestId.current = newRequestId();
     setShareOpen(false); setCopyState("idle");
     setReviewOpen(false); setReviewStars(0); setReviewText(""); setReviewName(""); setReviewError(""); setReviewDone(false);
   }, [listing.id]);
@@ -114,9 +148,11 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     if (accountFollowRequested && account.ready) void changeAccountFollow(true);
   }, [accountFollowRequested, account.ready]);
 
-  const phoneFollow = backends.followByPhone;
+  // A signed-out visitor follows with just a phone number; a signed-in one
+  // keeps following through their account, as before.
+  const phoneFollow = account.uid === null || followStep !== null ? backends.followByPhone : null;
   function pressFollow() {
-    if (phoneFollow) {
+    if (phoneFollow && !accountFollowing) {
       setFollowError("");
       setFollowStep((step) => (step === null ? "phone" : step === "done" ? "done" : null));
       return;
@@ -131,7 +167,10 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     if (!phoneFollow || phoneMutation.isPending) return;
     setFollowError("");
     try {
-      await phoneMutation.mutateAsync(() => phoneFollow.sendCode({organizerId: listing.id, phoneNumber: `+91${local}`}));
+      await phoneMutation.mutateAsync(async () => {
+        challenge.current?.clear();
+        challenge.current = await phoneFollow.sendCode({phoneNumber: `+91${local}`, recaptchaId});
+      });
       setCode(""); setFollowStep("code");
     } catch {setFollowError(copy.followSheet.failed);}
   }
@@ -141,8 +180,13 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     if (!phoneFollow || phoneMutation.isPending) return;
     setFollowError("");
     try {
-      await phoneMutation.mutateAsync(() =>
-        phoneFollow.confirm({organizerId: listing.id, phoneNumber: `+91${phoneDigits(phone)}`, code: code.trim()}));
+      await phoneMutation.mutateAsync(async () => {
+        if (!challenge.current) throw new Error("expired");
+        await challenge.current.confirm(code.trim());
+        challenge.current.clear(); challenge.current = null;
+        await phoneFollow.follow({organizerId: listing.id, requestId: followRequestId.current, whatsappUpdates});
+      });
+      followRequestId.current = newRequestId();
       setFollowStep("done");
       trackOrganizerAnalytics(listing, "organizerSave", "organizer_page");
     } catch {setFollowError(copy.followSheet.failed);}
@@ -178,7 +222,7 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     role,
     view,
     follow: {
-      following: phoneFollow ? followStep === "done" : accountFollowing,
+      following: followStep === "done" || accountFollowing,
       /** Follow by phone is live (CAT-253): the page says a phone number is all it takes. */
       byPhone: phoneFollow !== null,
       pending: followMutation.isPending || (accountFollowRequested && account.loading),
@@ -193,6 +237,10 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
         shown: phoneShown ? `+91 ${phoneShown.slice(0, 5)} ${phoneShown.slice(5)}` : "",
         code,
         setCode: (value: string) => {setCode(value.replace(/\D/gu, "").slice(0, 6)); setFollowError("");},
+        recaptchaId,
+        /** The explicit WhatsApp tick; unticked until the follower ticks it. */
+        whatsapp: whatsappUpdates,
+        setWhatsapp: (value: boolean) => {setWhatsappUpdates(value); setFollowError("");},
         pending: phoneMutation.isPending,
         sendCode: () => void sendCode(),
         confirm: () => void confirmCode(),

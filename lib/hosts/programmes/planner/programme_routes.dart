@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_screen.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/inbox/programme_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_function_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_screen.dart';
@@ -34,6 +36,8 @@ enum HostProgrammePage {
   idTracker,
   reconcile,
   photos,
+  inbox,
+  assistant,
 }
 
 /// The workspace route's screen for [uri]: the workspace itself, or the
@@ -90,6 +94,13 @@ Widget hostProgrammeScreenForUri(String programId, Uri uri) {
     HostProgrammePage.idTracker => HostProgrammeIdTrackerScreen(
       programId: programId,
       initialGuestId: id,
+    ),
+    HostProgrammePage.inbox => HostProgrammeInboxScreen(
+      programId: programId,
+      initialThreadId: id,
+    ),
+    HostProgrammePage.assistant => HostProgrammeAssistantScreen(
+      programId: programId,
     ),
     _ => HostProgrammeScreen(programId: programId),
   };

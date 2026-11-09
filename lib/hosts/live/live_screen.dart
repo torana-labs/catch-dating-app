@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -8,7 +9,9 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_del
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_screen.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_crawl_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_screen.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_pods_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_body.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_needs_screen.dart';
@@ -215,6 +218,9 @@ class HostLiveActions {
               eventId: event.id,
               activeStepIndex: index,
               expectedRevision: state.liveControlRevision,
+              activeStepIsActivity: eventSuccessStepIsActivity(
+                state.steps[index].step,
+              ),
             ),
       ),
     );
@@ -329,6 +335,24 @@ class HostLiveActions {
               MaterialPageRoute<void>(
                 settings: const RouteSettings(name: hostLiveSubscreenRouteName),
                 builder: (_) => HostFormatsMixScreen(event: event, now: now),
+              ),
+            );
+          case HostLiveFormatView.crawl:
+            _push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+                builder: (_) => HostFormatsCrawlScreen(
+                  organizer: organizer,
+                  event: event,
+                  now: now,
+                ),
+              ),
+            );
+          case HostLiveFormatView.pods:
+            _push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+                builder: (_) => HostFormatsPodsScreen(event: event),
               ),
             );
         }

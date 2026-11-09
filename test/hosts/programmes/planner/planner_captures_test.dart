@@ -47,6 +47,9 @@ void main() {
     ),
     ('host_programme_photos_phone', (_) => plannerPhotosCapture(), phone),
     ('host_programme_branding_phone', (_) => plannerBrandingCapture(), phone),
+    ('host_programme_inbox_desktop', (_) => plannerInboxCapture(), desktop),
+    ('host_programme_inbox_phone', (_) => plannerInboxListCapture(), phone),
+    ('host_programme_assistant_phone', (_) => plannerAssistantCapture(), phone),
   ];
   setUpAll(loadCatchTestFonts);
   for (final (id, builder, device) in captures) {

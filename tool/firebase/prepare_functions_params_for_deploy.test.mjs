@@ -69,6 +69,8 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'FLIGHT_PROVIDER_POLICY=" "',
     'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
+    'PROGRAM_ASSISTANT_ENABLED="false"',
+    'PROGRAM_ASSISTANT_KEY_VERSION=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -127,6 +129,8 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'FLIGHT_PROVIDER_POLICY=" "',
     'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
+    'PROGRAM_ASSISTANT_ENABLED="false"',
+    'PROGRAM_ASSISTANT_KEY_VERSION=" "',
     "",
   ].join("\n"));
 });
@@ -726,4 +730,25 @@ test("ordinary deployment cannot activate Host operator alerts", () => {
       projectId: "catchdates-dev", environment: {...publicIds, ...config}}),
     /separately reviewed runtime activation/);
   }
+});
+
+test("the wedding assistant switches on only with a pinned project-local ANTHROPIC_API_KEY", () => {
+  const options = {projectId: "catchdates-dev", sourceSha: "a".repeat(40), environment: publicIds};
+  const blank = functionsParamsProvenance(options);
+  assert.equal(blank.references.PROGRAM_ASSISTANT_KEY_VERSION, null);
+  assert.equal(blank.activation.PROGRAM_ASSISTANT_ENABLED, false);
+  const reference = "projects/catchdates-dev/secrets/ANTHROPIC_API_KEY/versions/2";
+  const on = functionsParamsProvenance({...options, environment: {...publicIds,
+    PROGRAM_ASSISTANT_KEY_VERSION: reference, PROGRAM_ASSISTANT_ENABLED: "true"}});
+  assert.equal(on.references.PROGRAM_ASSISTANT_KEY_VERSION, reference);
+  assert.equal(on.activation.PROGRAM_ASSISTANT_ENABLED, true);
+  assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
+    PROGRAM_ASSISTANT_ENABLED: "true"}}), /requires PROGRAM_ASSISTANT_KEY_VERSION/);
+  for (const bad of [reference.replace("/2", "/latest"), reference.replace("catchdates-dev", "foreign-project"),
+    reference.replace("ANTHROPIC_API_KEY", "OTHER_SECRET")]) {
+    assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
+      PROGRAM_ASSISTANT_KEY_VERSION: bad}}), /must pin ANTHROPIC_API_KEY/);
+  }
+  assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
+    PROGRAM_ASSISTANT_ENABLED: "yes"}}), /must be true or false/);
 });

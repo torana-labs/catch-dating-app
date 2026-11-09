@@ -23,6 +23,16 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import type {CreateOrganizerPostCallableResponse} from
   "../shared/generated/createOrganizerPostCallableResponse";
+import {
+  FollowerWhatsappDecision,
+  FollowerWhatsappPageDeps,
+  followerWhatsappResponse,
+  prepareFollowerWhatsappPage,
+  stageFollowerWhatsappDecision,
+  stageFollowerWhatsappRelease,
+  syncFollowerWhatsappLeg,
+  verifiedPhonesFromAuth,
+} from "./organizerFollowerWhatsappLeg";
 
 const pageSize = 100;
 const leaseDurationMs = 5 * 60 * 1000;
@@ -63,7 +73,12 @@ export interface OrganizerPostDeliveryDeps {
   sendNotification: (params: FcmParams) => Promise<void>;
   hasBlockingRelationship: typeof hasBlockingRelationship;
   pageSize: number;
+  /** The WhatsApp leg's reads, used only when the update includes it. */
+  whatsappPage?: FollowerWhatsappPageDeps;
 }
+
+type WhatsappDecider = (follow: OrganizerFollowDocument) =>
+  Promise<FollowerWhatsappDecision>;
 
 export const defaultOrganizerPostDeliveryDeps: OrganizerPostDeliveryDeps = {
   firestore: () => admin.firestore(),
@@ -78,6 +93,8 @@ export const defaultOrganizerPostDeliveryDeps: OrganizerPostDeliveryDeps = {
   sendNotification: sendFcmNotification,
   hasBlockingRelationship,
   pageSize,
+  whatsappPage: {verifiedPhones: verifiedPhonesFromAuth,
+    hasBlockingRelationship},
 };
 
 /** Stable post identity used to make lost callable responses safe to retry. */
@@ -94,20 +111,26 @@ export function organizerPostId(params: {
     .slice(0, 40);
 }
 
-/** Binds a request id to exact post content. */
+/**
+ * Binds a request id to exact post content. Channels join the hash only when
+ * they add WhatsApp, so app-only hashes are unchanged from before channels.
+ */
 export function organizerPostPayloadHash(params: {
   organizerId: string;
   authorUid: string;
   text: string;
   photoPath?: string;
   eventId?: string;
+  channels?: readonly string[];
 }): string {
+  const whatsapp = params.channels?.includes("whatsapp") === true;
   return createHash("sha256").update(JSON.stringify({
     organizerId: params.organizerId,
     authorUid: params.authorUid,
     text: params.text,
     photoPath: params.photoPath ?? null,
     eventId: params.eventId ?? null,
+    ...(whatsapp ? {channels: ["app", "whatsapp"]} : {}),
   })).digest("hex");
 }
 
@@ -227,8 +250,12 @@ async function dispatchOrganizerPostDeliveryPage(
     }
     const snapshot = await query.get();
     const batch = snapshot.docs.slice(0, deps.pageSize);
+    const decideWhatsapp = await whatsappDecider({db, deps,
+      operation: claimed, suppressLinkedEvent,
+      follows: batch.map((doc) => doc.data() as OrganizerFollowDocument)});
     for (const followSnap of batch) {
       await deliverRecipient({
+        decideWhatsapp,
         db,
         deps,
         operationRef,
@@ -263,6 +290,24 @@ async function dispatchOrganizerPostDeliveryPage(
     });
     return null;
   }
+}
+
+// The WhatsApp leg decides each follower while its pages are collected; a
+// suppressed linked event stops the update everywhere, WhatsApp included.
+async function whatsappDecider(params: {
+  db: FirebaseFirestore.Firestore;
+  deps: OrganizerPostDeliveryDeps;
+  operation: OrganizerPostDeliveryOperationDocument;
+  suppressLinkedEvent: boolean;
+  follows: OrganizerFollowDocument[];
+}): Promise<WhatsappDecider | null> {
+  if (params.operation.whatsapp?.status !== "collecting") return null;
+  if (params.suppressLinkedEvent || !params.deps.whatsappPage) {
+    return async () => ({kind: "skipped"});
+  }
+  return prepareFollowerWhatsappPage({db: params.db,
+    deps: params.deps.whatsappPage, operation: params.operation,
+    follows: params.follows, now: params.deps.now()});
 }
 
 // Once the linked event is unavailable, retries must not resume delivery if
@@ -330,6 +375,7 @@ async function deliverRecipient(params: {
   post: OrganizerPostDocument;
   suppressLinkedEvent: boolean;
   follow: OrganizerFollowDocument;
+  decideWhatsapp: WhatsappDecider | null;
 }): Promise<void> {
   const receiptId = organizerFollowerReceiptId(
     params.operation.postId,
@@ -338,12 +384,18 @@ async function deliverRecipient(params: {
   const receiptRef = params.db.collection("organizerPostDeliveryRecipients")
     .doc(receiptId);
   if ((await receiptRef.get()).exists) return;
+  // A phone-only follower has no profile, so WhatsApp is decided before
+  // (and independently of) the app checks below.
+  const whatsapp = params.decideWhatsapp ?
+    await params.decideWhatsapp(params.follow) : null;
+  const record = (evidence: RecipientEvidence) =>
+    recordRecipient(params, receiptRef, evidence, whatsapp);
   const notificationId = activityNotificationId(
     "organizerUpdate",
     params.operation.postId,
   );
   if (params.suppressLinkedEvent) {
-    await recordRecipient(params, receiptRef, {
+    await record({
       activityStatus: "failed",
       pushStatus: "ineligible",
       activityNotificationId: notificationId,
@@ -353,7 +405,7 @@ async function deliverRecipient(params: {
     return;
   }
   if (params.follow.uid === params.operation.authorUid) {
-    await recordRecipient(params, receiptRef, {
+    await record({
       activityStatus: "failed",
       pushStatus: "ineligible",
       activityNotificationId: notificationId,
@@ -371,7 +423,7 @@ async function deliverRecipient(params: {
     ),
   ]);
   if (!userSnap.exists || userSnap.data()?.deleted === true || blocked) {
-    await recordRecipient(params, receiptRef, {
+    await record({
       activityStatus: "failed",
       pushStatus: "ineligible",
       activityNotificationId: notificationId,
@@ -396,7 +448,7 @@ async function deliverRecipient(params: {
     {...delivery.activity, createdAt: params.deps.serverTimestamp()},
   );
   if (activityResult === "recipient-deleted") {
-    await recordRecipient(params, receiptRef, {
+    await record({
       activityStatus: "failed",
       pushStatus: "ineligible",
       activityNotificationId: notificationId,
@@ -419,7 +471,7 @@ async function deliverRecipient(params: {
     pushStatus = "unknown";
     errorCode = "push-outcome-unknown-after-retry";
   }
-  await recordRecipient(params, receiptRef, {
+  await record({
     activityStatus: activityResult,
     pushStatus,
     activityNotificationId: notificationId,
@@ -436,6 +488,7 @@ async function recordRecipient(
   },
   receiptRef: FirebaseFirestore.DocumentReference,
   evidence: RecipientEvidence,
+  whatsapp: FollowerWhatsappDecision | null = null,
 ): Promise<void> {
   await receiptRef.firestore.runTransaction(async (tx) => {
     const existing = await tx.get(receiptRef);
@@ -451,8 +504,15 @@ async function recordRecipient(
       expiresAt,
       createdAt: timestamp,
       updatedAt: timestamp,
+      ...(whatsapp ? {whatsappStatus: whatsapp.kind} : {}),
     };
     tx.create(receiptRef, receipt);
+    if (whatsapp && params.operation.whatsapp) {
+      stageFollowerWhatsappDecision({tx, db: receiptRef.firestore,
+        operationRef: params.operationRef,
+        campaignId: params.operation.whatsapp.campaignId,
+        decision: whatsapp, increment: params.deps.increment});
+    }
     const activityAvailable = !evidence.excluded &&
       evidence.activityStatus !== "failed";
     const pushAttempted = evidence.pushStatus === "accepted" ||
@@ -504,8 +564,12 @@ async function finishPage(params: {
       operation.pushFailedCount > 0 || operation.pushUnknownCount > 0;
     const status = partial ? "partial" : "completed";
     const completedAt = params.deps.now();
+    const whatsapp = operation.whatsapp ? stageFollowerWhatsappRelease({tx,
+      db: params.operationRef.firestore, operationRef: params.operationRef,
+      leg: operation.whatsapp, now: completedAt}) : undefined;
     const finished = {
       ...operation,
+      ...(whatsapp ? {whatsapp} : {}),
       status,
       cursorFollowId: params.cursorFollowId,
       leaseOwner: null,
@@ -571,6 +635,8 @@ export function operationResponse(
     pushFailedCount: operation.pushFailedCount,
     pushUnknownCount: operation.pushUnknownCount,
     idempotentReplay,
+    channels: operation.channels ?? ["app"],
+    whatsapp: followerWhatsappResponse(operation.whatsapp),
   };
 }
 
@@ -599,6 +665,14 @@ export async function dispatchPendingOrganizerFollowerUpdatesHandler(
   ])];
   for (const id of postIds) {
     await dispatchOrganizerPostDelivery(id, deps, 10);
+  }
+  // WhatsApp legs are sent by the campaign engine; mirror their counts.
+  const sending = await db.collection("organizerPostDeliveryOperations")
+    .where("whatsapp.status", "==", "sending").limit(20).get();
+  for (const doc of sending.docs) {
+    await syncFollowerWhatsappLeg(db, doc.id, deps.now()).catch((error) =>
+      logger.error("Follower WhatsApp counts will resync", {
+        postId: doc.id, error}));
   }
 }
 

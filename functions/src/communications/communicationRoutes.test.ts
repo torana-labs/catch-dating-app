@@ -12,6 +12,7 @@ test("the route registry covers every supported communication route", () => {
     "catchWhatsapp",
     "organizerEventWhatsapp",
     "organizerFollowerUpdate",
+    "organizerFollowerWhatsapp",
     "organizerProgramWhatsapp",
     "organizerWhatsappCampaign",
     "personalEmailHandoff",
@@ -55,6 +56,7 @@ test("every route declares audience, reply, and scheduling semantics", () => {
       "catchPermissionedAudience",
       "linkedCatchAccount",
       "eventRoster",
+      "organizerFollowers",
       "organizerFollowers",
       "eventRoster",
       "eventRoster",
@@ -110,4 +112,20 @@ test("program routes keep separate authority from event and campaign routes",
       "catchApp");
     assert.equal(communicationRoutes.catchProgramActivity.observability,
       "catchActivity");
+  });
+
+test("follower WhatsApp keeps its own consent apart from push and campaigns",
+  () => {
+    const whatsapp = communicationRoutes.organizerFollowerWhatsapp;
+    const push = communicationRoutes.organizerFollowerUpdate;
+    const campaign = communicationRoutes.organizerWhatsappCampaign;
+    assert.equal(whatsapp.transport, "whatsapp");
+    assert.equal(whatsapp.adapterKey, campaign.adapterKey);
+    assert.equal(whatsapp.audienceScope, push.audienceScope);
+    assert.equal(whatsapp.deliveryMode, push.deliveryMode);
+    assert.equal(whatsapp.consentScope, "followerUpdates");
+    assert.notEqual(whatsapp.consentScope, push.consentScope);
+    assert.notEqual(whatsapp.consentScope, campaign.consentScope);
+    assert.equal(whatsapp.observability, "providerReceipts");
+    assert.equal(whatsapp.supportsScheduling, false);
   });

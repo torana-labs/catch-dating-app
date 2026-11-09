@@ -4,18 +4,25 @@ import 'package:flutter/foundation.dart';
 /// made yet, rotations running, or unable to read them.
 enum HostFormatsCourtsStatus { loading, noPlan, noRotations, running, error }
 
-/// One court this round and the two people on it.
+/// One court this round: the two people on it, or for doubles one
+/// partnership in [players] against the other in [opponents].
 @immutable
 class HostFormatsCourt {
   const HostFormatsCourt({
     required this.index,
     required this.players,
+    this.opponents = const <String>[],
     this.endsAt,
   });
 
   /// Zero-based: court 1 is index 0.
   final int index;
   final List<String> players;
+
+  /// Doubles: the partnership across the net. Empty for singles.
+  final List<String> opponents;
+
+  bool get isDoubles => opponents.isNotEmpty;
 
   /// When this round's game on the court ends.
   final DateTime? endsAt;
@@ -32,12 +39,20 @@ class HostFormatsSitter {
     required this.satOut,
     required this.played,
     required this.next,
+    this.minutesOn = 0,
+    this.minutesOff = 0,
   });
 
   final String name;
   final int satOut;
   final int played;
   final HostFormatsSitOutNext next;
+
+  /// Minutes on court so far.
+  final int minutesOn;
+
+  /// Minutes sitting out so far, this round included.
+  final int minutesOff;
 }
 
 /// Everything the court board shows, as plain values.
@@ -54,6 +69,7 @@ class HostFormatsCourtsState {
     this.newPartners = 0,
     this.repeatPartners = 0,
     this.mostSatOut = 0,
+    this.courtTimeApartMinutes = 0,
     this.comingOn = const <String>[],
     this.goingOff = const <String>[],
     this.nextReady = false,
@@ -86,6 +102,10 @@ class HostFormatsCourtsState {
 
   /// The most rounds anyone has sat out so far.
   final int mostSatOut;
+
+  /// The gap in court time so far between the person who has played most
+  /// and the person who has played least, in minutes.
+  final int courtTimeApartMinutes;
 
   /// Who comes on and who goes off when the next round starts.
   final List<String> comingOn;
