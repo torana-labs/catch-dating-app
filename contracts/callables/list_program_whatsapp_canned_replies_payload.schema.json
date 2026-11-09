@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_whatsapp_canned_replies_payload.schema.json",
+  "title": "ListProgramWhatsappCannedRepliesCallablePayload",
+  "description": "List one programme's saved replies. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "includeArchived": {
+      "type": "boolean"
+    }
+  }
+}

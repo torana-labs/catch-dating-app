@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "operationId": "pwro_cccccccccccccccccccccccccccccccccccccccccccccccc",
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "threadId": "program-1_household-1",
+  "messageId": "pwm_dddddddddddddddddddddddddddddddddddddddddddddddd",
+  "attemptId": "attempt:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "bodyHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "expectedLastInboundAtMillis": 1800000000000,
+  "author": "planner",
+  "actorUid": "manager-1",
+  "runId": null,
+  "state": "sent",
+  "providerMessageId": null,
+  "createdAtMillis": 1800000000000,
+  "updatedAtMillis": 1800000000000
+}

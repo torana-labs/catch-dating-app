@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/follow_organizer_by_phone_response.schema.json",
+  "title": "FollowOrganizerByPhoneCallableResponse",
+  "description": "Callable response returned by followOrganizerByPhone. whatsappUpdates is optedIn when this request's tick (or its replay) granted follower updates on WhatsApp for the verified phone, notRequested otherwise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "following",
+    "whatsappUpdates",
+    "receiptId",
+    "idempotentReplay"
+  ],
+  "properties": {
+    "following": {
+      "type": "boolean",
+      "const": true
+    },
+    "whatsappUpdates": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "notRequested"
+      ]
+    },
+    "receiptId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "idempotentReplay": {
+      "type": "boolean"
+    }
+  }
+}

@@ -5176,6 +5176,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Include me in timed rotations';
 
   @override
+  String eventSuccessCompanionDoublesSlot({
+    required Object timeRange,
+    required int court,
+    required Object partner,
+    required Object opponentA,
+    required Object opponentB,
+  }) {
+    return '$timeRange · Court $court · You and $partner against $opponentA and $opponentB';
+  }
+
+  @override
+  String get eventSuccessCompanionDoublesOpponent => 'An opponent';
+
+  @override
+  String eventSuccessCompanionBenchSlot({required Object timeRange}) {
+    return '$timeRange · Sitting out this round · mix in the common area';
+  }
+
+  @override
+  String get eventSuccessCompanionPromptSkip => 'Skip';
+
+  @override
+  String get eventSuccessCompanionPromptSkipNote => 'You can skip any prompt.';
+
+  @override
   String eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername({
     required Object timeRange,
     required Object peerName,
@@ -26544,6 +26569,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormatsViewCourts => 'Courts';
 
   @override
+  String hostFormatsCourtMinutes({required int on, required int off}) {
+    return '$on min on court · $off off';
+  }
+
+  @override
+  String get hostFormatsStatCourtTimeApart => 'most court time apart';
+
+  @override
+  String hostFormatsMinutesShort({required int minutes}) {
+    return '${minutes}m';
+  }
+
+  @override
+  String get hostFormatsAgainst => 'against';
+
+  @override
+  String get hostFormatsViewStops => 'Stops';
+
+  @override
+  String get hostFormatsViewPods => 'Pods';
+
+  @override
   String get hostFormatsViewTeams => 'Teams';
 
   @override
@@ -26692,11 +26739,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormatsSittingOutNone => 'Everyone plays this round.';
 
   @override
-  String hostFormatsSatOut({required int out, required int played}) {
-    return 'Sat out $out · played $played';
-  }
-
-  @override
   String get hostFormatsPlaysNext => 'Plays next';
 
   @override
@@ -26710,9 +26752,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormatsStatRepeats => 'repeat partners';
-
-  @override
-  String get hostFormatsStatMostSatOut => 'sat out at most';
 
   @override
   String get hostFormatsComingUp => 'Coming up';
@@ -28806,4 +28845,393 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostCreateRepeatOn({required Object weekday}) {
     return 'Every $weekday';
   }
+
+  @override
+  String get hostFollowerUpdateWhatsappToggle => 'Also send on WhatsApp';
+
+  @override
+  String get hostFollowerUpdateWhatsappToggleBody =>
+      'To followers who ticked WhatsApp updates, from your WhatsApp number. It uses the same weekly update.';
+
+  @override
+  String get hostFollowerUpdateWhatsappUnavailable =>
+      'Connect your WhatsApp number and get the follower update template approved to send there too.';
+
+  @override
+  String hostFollowerUpdatePostedWhatsapp({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Posted to followers. Sending on WhatsApp to $count followers.',
+      one: 'Posted to followers. Sending on WhatsApp to 1 follower.',
+      zero: 'Posted to followers. Nobody has ticked WhatsApp updates yet.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostSendsFollowerUpdateWhatsapp({
+    required int sent,
+    required int delivered,
+    required int skipped,
+  }) {
+    return 'WhatsApp: $sent sent, $delivered delivered, $skipped not on WhatsApp';
+  }
+
+  @override
+  String get hostProgrammeInboxTitle => 'Guest messages';
+
+  @override
+  String get hostProgrammeInboxOpen => 'Guest messages';
+
+  @override
+  String get hostProgrammeInboxSettings => 'Assistant settings';
+
+  @override
+  String get hostProgrammeInboxShow => 'Show';
+
+  @override
+  String get hostProgrammeInboxNeedsYou => 'Needs you';
+
+  @override
+  String get hostProgrammeInboxHandled => 'Handled';
+
+  @override
+  String get hostProgrammeInboxAll => 'All';
+
+  @override
+  String hostProgrammeInboxSegmentCount({
+    required Object label,
+    required int count,
+  }) {
+    return '$label $count';
+  }
+
+  @override
+  String get hostProgrammeInboxAnswered => 'Answered';
+
+  @override
+  String get hostProgrammeInboxPassedBadge => 'Passed to you';
+
+  @override
+  String get hostProgrammeInboxUnknownBadge => 'Not on the list';
+
+  @override
+  String get hostProgrammeInboxEmpty => 'No messages here yet.';
+
+  @override
+  String get hostProgrammeInboxNoNumber =>
+      'Connect the wedding’s WhatsApp number in Assistant settings so guests can message you.';
+
+  @override
+  String get hostProgrammeInboxFooter =>
+      'The assistant answers guests from their own itineraries. Read its answers under Handled.';
+
+  @override
+  String get hostProgrammeInboxPick => 'Pick a conversation to read it.';
+
+  @override
+  String hostProgrammeInboxSide({required Object name}) {
+    return '$name’s side';
+  }
+
+  @override
+  String get hostProgrammeInboxOpenHousehold => 'Open household';
+
+  @override
+  String get hostProgrammeInboxTakeOver => 'Take over';
+
+  @override
+  String get hostProgrammeInboxHandBack => 'Hand back to the assistant';
+
+  @override
+  String get hostProgrammeInboxMarkHandled => 'Mark handled';
+
+  @override
+  String hostProgrammeInboxRepliesFor({required int count}) {
+    return 'Replies for the family · $count guests';
+  }
+
+  @override
+  String get hostProgrammeInboxUnknownName => 'Unknown number';
+
+  @override
+  String get hostProgrammeInboxGuest => 'Guest';
+
+  @override
+  String get hostProgrammeInboxAttachment =>
+      'Sent an attachment. Open WhatsApp on the wedding’s phone to see it.';
+
+  @override
+  String hostProgrammeInboxAssistantCaption({required Object language}) {
+    return 'The assistant · from their itinerary · $language';
+  }
+
+  @override
+  String get hostProgrammeInboxAssistantCaptionNoLanguage =>
+      'The assistant · from their itinerary';
+
+  @override
+  String hostProgrammeInboxPlannerCaption({required Object name}) {
+    return '$name · from the inbox';
+  }
+
+  @override
+  String get hostProgrammeInboxPassedTitle => 'Passed to you';
+
+  @override
+  String get hostProgrammeInboxPassedNotInFacts =>
+      'This isn’t in their itinerary, so the assistant said you’d reply.';
+
+  @override
+  String get hostProgrammeInboxPassedPerson => 'They asked for a person.';
+
+  @override
+  String get hostProgrammeInboxPassedUnknown =>
+      'This number isn’t on any household. Add it to a household to reply.';
+
+  @override
+  String get hostProgrammeInboxPassedOff =>
+      'The assistant is off, so this waits for you.';
+
+  @override
+  String hostProgrammeInboxReplyTo({required Object name}) {
+    return 'Reply to $name';
+  }
+
+  @override
+  String get hostProgrammeInboxSend => 'Send';
+
+  @override
+  String hostProgrammeInboxWindowOpen({required Object when}) {
+    return 'You can write freely until $when, inside WhatsApp’s 24-hour window. After that, only an approved message can start the conversation again.';
+  }
+
+  @override
+  String get hostProgrammeInboxWindowClosed =>
+      'WhatsApp’s 24-hour window has closed. Send an approved message from Planned messages instead.';
+
+  @override
+  String get hostProgrammeInboxUnknownClosed =>
+      'Add this number to a household to reply.';
+
+  @override
+  String get hostProgrammeInboxSendFailed =>
+      'That reply wasn’t sent. Check the conversation and try again.';
+
+  @override
+  String get hostProgrammeInboxHandlingFailed =>
+      'That didn’t change. Refresh and try again.';
+
+  @override
+  String get hostProgrammeInboxAssistantTitle => 'Guest messages';
+
+  @override
+  String get hostProgrammeInboxAssistantNumber =>
+      'The wedding’s WhatsApp number';
+
+  @override
+  String hostProgrammeInboxAssistantShowsAs({required Object name}) {
+    return 'Shows as “$name”';
+  }
+
+  @override
+  String get hostProgrammeInboxAssistantConnected => 'Connected';
+
+  @override
+  String get hostProgrammeInboxAssistantNotConnected => 'Not connected';
+
+  @override
+  String get hostProgrammeInboxAssistantNoNumber => 'No number yet';
+
+  @override
+  String get hostProgrammeInboxAssistantNumberNote =>
+      'Guests message the wedding, not your personal number. Your team replies from the same inbox.';
+
+  @override
+  String get hostProgrammeInboxAssistantSharedNumber =>
+      'This uses your organiser number. Connect the wedding’s own number in Messaging setup.';
+
+  @override
+  String get hostProgrammeInboxAssistantOn => 'The assistant answers guests';
+
+  @override
+  String get hostProgrammeInboxAssistantOnNote =>
+      'It answers only from each household’s own itinerary.';
+
+  @override
+  String get hostProgrammeInboxAssistantMayAnswer =>
+      'What the assistant may answer';
+
+  @override
+  String get hostProgrammeInboxTopicSchedule => 'Times and places';
+
+  @override
+  String get hostProgrammeInboxTopicScheduleNote =>
+      'From each household’s own itinerary';
+
+  @override
+  String get hostProgrammeInboxTopicDressCode => 'What to wear';
+
+  @override
+  String get hostProgrammeInboxTopicDressCodeNote =>
+      'The dress code for each function';
+
+  @override
+  String get hostProgrammeInboxTopicTravel => 'Pickups, cars and flights';
+
+  @override
+  String get hostProgrammeInboxTopicTravelNote => 'Their own pickup and driver';
+
+  @override
+  String get hostProgrammeInboxTopicStay => 'Rooms';
+
+  @override
+  String get hostProgrammeInboxTopicStayNote =>
+      'Their own hotel and room numbers';
+
+  @override
+  String get hostProgrammeInboxTopicVenues => 'Venues and directions';
+
+  @override
+  String get hostProgrammeInboxTopicVenuesNote => 'Where each function is';
+
+  @override
+  String get hostProgrammeInboxTopicRsvp => 'Their reply';
+
+  @override
+  String get hostProgrammeInboxTopicRsvpNote => 'Who is coming to what';
+
+  @override
+  String get hostProgrammeInboxAssistantReads =>
+      'What it reads from attachments';
+
+  @override
+  String get hostProgrammeInboxReadTickets => 'Read tickets into flights';
+
+  @override
+  String get hostProgrammeInboxReadTicketsNote =>
+      'The guest confirms before anything is saved';
+
+  @override
+  String get hostProgrammeInboxReadIds => 'Take ID photos for the hotels';
+
+  @override
+  String get hostProgrammeInboxReadIdsNote =>
+      'Your team checks each one before a hotel sees it';
+
+  @override
+  String get hostProgrammeInboxEverythingElse => 'Everything else goes to';
+
+  @override
+  String get hostProgrammeInboxNoStaff =>
+      'Add your team on the Team page to pass messages to them.';
+
+  @override
+  String get hostProgrammeInboxReplyWithin => 'Tell guests you’ll reply within';
+
+  @override
+  String get hostProgrammeInboxWithinHour => 'An hour';
+
+  @override
+  String get hostProgrammeInboxWithinFourHours => 'Four hours';
+
+  @override
+  String get hostProgrammeInboxWithinSameDay => 'The same day';
+
+  @override
+  String get hostProgrammeInboxLanguages => 'Languages';
+
+  @override
+  String get hostProgrammeInboxLanguagesNote =>
+      'It answers in the language the guest writes in.';
+
+  @override
+  String get hostProgrammeInboxNeverDoes => 'What it never does';
+
+  @override
+  String get hostProgrammeInboxNeverPromises =>
+      'Never changes anyone’s replies, rooms or flights';
+
+  @override
+  String get hostProgrammeInboxNeverShares =>
+      'Never shares another guest’s details';
+
+  @override
+  String get hostProgrammeInboxNeverGuesses =>
+      'Never guesses: if it isn’t in the itinerary, it asks you';
+
+  @override
+  String get hostProgrammeInboxNeverPromisesForPlanner =>
+      'Never promises anything on the planner’s behalf';
+
+  @override
+  String get hostProgrammeInboxPassedMedia => 'They sent a photo or a file.';
+
+  @override
+  String get hostProgrammeInboxPassedDistressed =>
+      'They sound worried. Reply soon.';
+
+  @override
+  String get hostProgrammeInboxPassedBudget =>
+      'The assistant reached today’s limit, so this waits for you.';
+
+  @override
+  String get hostProgrammeInboxPassedWindow =>
+      'WhatsApp’s 24-hour window had closed, so the assistant could not reply.';
+
+  @override
+  String get hostProgrammeInboxPassedMoney =>
+      'They asked about gifts or money.';
+
+  @override
+  String get hostProgrammeInboxPassedChange =>
+      'They asked to change something.';
+
+  @override
+  String get hostProgrammeInboxPassedOther =>
+      'The assistant couldn’t answer safely, so it passed this to you.';
+
+  @override
+  String get hostProgrammeInboxPassedPlanner =>
+      'You’re handling this conversation.';
+
+  @override
+  String get hostProgrammeInboxTryIt => 'Try it';
+
+  @override
+  String get hostProgrammeInboxTryItAsk => 'Ask as a guest';
+
+  @override
+  String get hostProgrammeInboxTryItSend => 'Ask';
+
+  @override
+  String get hostProgrammeInboxTryItPassed =>
+      'It would pass this to you and tell the guest you’ll reply.';
+
+  @override
+  String get hostProgrammeInboxTryItOff =>
+      'The assistant is switched off for Catch right now.';
+
+  @override
+  String get hostProgrammeInboxTryItFailed => 'That didn’t work. Try again.';
+
+  @override
+  String get hostProgrammeInboxSaveFailed =>
+      'That setting wasn’t saved. Try again.';
+
+  @override
+  String get hostProgrammeInboxLanguageEn => 'English';
+
+  @override
+  String get hostProgrammeInboxLanguageHi => 'Hindi';
+
+  @override
+  String get hostProgrammeInboxLanguageTa => 'Tamil';
+
+  @override
+  String get hostProgrammeInboxLanguageMr => 'Marathi';
+
+  @override
+  String get hostProgrammeInboxLanguageGu => 'Gujarati';
 }

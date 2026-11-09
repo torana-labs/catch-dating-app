@@ -202,9 +202,42 @@ void main() {
     expect(formatsRuleStrength(50), FormatsRuleStrength.strong);
   });
 
-  test('the console offers the court board or team mixing by format', () {
+  test('the console offers the board each format runs on', () {
     expect(hostLiveFormatView(courtsEvent), HostLiveFormatView.courts);
     expect(hostLiveFormatView(mixEvent), HostLiveFormatView.mix);
-    expect(hostLiveFormatView(crawlEvent), isNull);
+    // A route with stops opens the crawl board from Live.
+    expect(hostLiveFormatView(crawlEvent), HostLiveFormatView.crawl);
+  });
+
+  test('doubles courts show partnerships against each other and court '
+      'minutes', () {
+    final plan = courtsPlan(round: 1);
+    final state = hostFormatsCourtsState(
+      plan: plan,
+      assignments: doublesCourtsAssignments(),
+      drafts: const [],
+      attendees: formatsAttendees(courtsEvent),
+    );
+    final interval = plan.structureConfig.rotationIntervalMinutes ?? 15;
+
+    expect(state.courts, hasLength(2));
+    for (final court in state.courts) {
+      expect(court.isDoubles, isTrue);
+      expect(court.players, hasLength(2));
+      expect(court.opponents, hasLength(2));
+      expect(
+        {...court.players, ...court.opponents},
+        hasLength(4),
+        reason: 'four different people on one court',
+      );
+    }
+    // Round 2 benches players 0 and 1, who each played round 1.
+    expect(state.sitters, hasLength(2));
+    for (final sitter in state.sitters) {
+      expect(sitter.minutesOn, interval);
+      expect(sitter.minutesOff, interval);
+    }
+    // After two rounds, 2 and 3 played twice while 8 and 9 played once.
+    expect(state.courtTimeApartMinutes, interval);
   });
 }

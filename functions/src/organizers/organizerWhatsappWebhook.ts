@@ -31,6 +31,8 @@ import {
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
 import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";
+import {routeProgramWhatsappInbound} from
+  "../programs/programWhatsapp/inbound";
 
 export const metaWhatsappWebhookVerifyToken = defineSecret(
   "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN"
@@ -399,6 +401,10 @@ async function processInbound(
       });
     }
   }
+  // Wedding guests reach their programme's inbox before any CRM matching.
+  // A STOP still falls through so organiser suppression stays unchanged.
+  const programRoute = await routeProgramWhatsappInbound(db, event, now);
+  if (programRoute.kind === "routed") return;
   const stateDocs = recipientDoc ? [] : event.endpointHash ?
     (await db.collection("organizerContactChannelStates")
       .where("organizerId", "==", event.organizerId)

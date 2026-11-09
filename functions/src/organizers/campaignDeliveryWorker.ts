@@ -47,6 +47,17 @@ import {
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
 import {campaignVariables} from "./organizerCampaigns";
+import {followerRecipientSuppression} from "./organizerFollowerWhatsappLeg";
+
+type CampaignRouteId = ProviderBinding["routeId"];
+
+/** Follower-update campaigns send on their own route, never the campaign's. */
+export function campaignRouteId(
+  campaign: Pick<OrganizerCampaignDocument, "recipientSource">
+): CampaignRouteId {
+  return campaign.recipientSource?.kind === "organizerFollowers" ?
+    "organizerFollowerWhatsapp" : "organizerWhatsappCampaign";
+}
 
 /** Claim-time submission evidence for webhook status correlation. */
 export const CAMPAIGN_WHATSAPP_DISPATCHES = "campaignWhatsappDispatches";
@@ -123,7 +134,7 @@ export function campaignDeliveryIntent(params: {
     },
     createdAt: params.now,
     expiresAt: params.now + INTENT_TTL_MS,
-    permittedRoutes: ["organizerWhatsappCampaign"],
+    permittedRoutes: [campaignRouteId(params.campaign)],
     // One extra attempt lets a proven-unsent send (permit/reservation
     // expiry) redispatch; provider rejections still terminate the row.
     deliveryPolicy: {
@@ -193,6 +204,10 @@ async function readCampaignFacts(
     validUntil: Math.min(nowMillis + FACT_SNAPSHOT_MS, intent.expiresAt),
     instructionRevision: campaign.dispatchedAt.toMillis(),
   };
+  if (recipient.followerRecipient) {
+    return readFollowerRecipientFacts(tx, db, intent, gate, campaign,
+      recipient);
+  }
   const program = recipient.programRecipient ?? null;
   const contactRef = recipient.contactId ?
     db.collection("organizerContacts").doc(recipient.contactId) :
@@ -314,6 +329,45 @@ async function readCampaignFacts(
   }
   return {gate, suppression: null,
     snapshot: {campaign, recipient, connection, template, channelState}};
+}
+
+// Follower-update recipients carry no CRM contact: the follow, the
+// followerUpdates consent bound to the frozen phone and STOP are re-read,
+// then the shared sender gate. No campaign frequency cap applies.
+async function readFollowerRecipientFacts(
+  tx: Transaction, db: Firestore, intent: MessageIntent,
+  gate: DeliveryDispatchGate, campaign: OrganizerCampaignDocument,
+  recipient: OrganizerCampaignRecipientDocument
+): Promise<{
+  gate: DeliveryDispatchGate;
+  suppression: ExclusionReason | null;
+  snapshot: CampaignFactSnapshot | null;
+}> {
+  const [connectionSnap, templateSnap] = await Promise.all([
+    tx.get(db.collection("organizerSenderConnections")
+      .doc(intent.whatsapp.connectionId)),
+    tx.get(db.collection("organizerMessageTemplates")
+      .doc(intent.whatsapp.templateId)),
+  ]);
+  const connection = connectionSnap.data() as
+    | OrganizerSenderConnectionDocument
+    | undefined;
+  const template = templateSnap.data() as
+    | OrganizerMessageTemplateDocument
+    | undefined;
+  const suppression = await followerRecipientSuppression({tx, db,
+    organizerId: intent.context.organizerId, recipient}) ??
+    senderGateReason({organizerId: intent.context.organizerId, campaign,
+      connection, template, event: undefined, inviteToken: null});
+  const contentSuppression = !suppression &&
+    hashCanonical(intent.whatsapp.variables) !==
+      recipient.renderedVariablesHash ? "providerBlocked" : suppression;
+  if (contentSuppression || !connection || !template) {
+    return {gate, suppression: contentSuppression ?? "providerBlocked",
+      snapshot: null};
+  }
+  return {gate, suppression: null, snapshot: {campaign, recipient,
+    connection, template, channelState: undefined}};
 }
 
 // The send-time gate shared by CRM and program recipients: the sender
@@ -543,6 +597,10 @@ async function dispatchCampaignWhatsapp(
             intent.whatsapp.connectionId !== liveAttempt.binding.senderId ||
             !tpl || tpl.status !== "APPROVED" ||
             tpl.organizerId !== intent.context.organizerId) {
+          return {kind: "withheld"};
+        }
+        if (recipient.followerRecipient && await followerRecipientSuppression({
+          tx, db, organizerId: intent.context.organizerId, recipient})) {
           return {kind: "withheld"};
         }
         // Reservation evidence may be up to two minutes old. Re-read the
@@ -1013,8 +1071,11 @@ export class CampaignDeliveryWorker {
           tx, this.db, liveIntent, now);
         lastSuppression = suppression;
         const routes: DeliveryRouteReadiness<ProviderBinding>[] = [];
+        const routeId: CampaignRouteId = snapshot ?
+          campaignRouteId(snapshot.campaign) :
+          liveIntent.permittedRoutes[0] ?? "organizerWhatsappCampaign";
         if (gate.kind === "stop" || !snapshot) {
-          routes.push({routeId: "organizerWhatsappCampaign",
+          routes.push({routeId,
             state: {kind: "blocked",
               reason: suppression ??
                 (gate.kind === "stop" ? gate.reason : "policyBlocked")}});
@@ -1022,11 +1083,11 @@ export class CampaignDeliveryWorker {
         }
         const {connection, template, recipient} = snapshot;
         if (!recipient.endpointHash) {
-          routes.push({routeId: "organizerWhatsappCampaign",
+          routes.push({routeId,
             state: {kind: "blocked", reason: "invalidEndpoint"}});
           return {gate, routes};
         }
-        routes.push({routeId: "organizerWhatsappCampaign",
+        routes.push({routeId,
           state: {kind: "eligible", checkedAt: now,
             validUntil: Math.min(now + FACT_SNAPSHOT_MS,
               liveIntent.expiresAt),
@@ -1037,7 +1098,7 @@ export class CampaignDeliveryWorker {
               recipient.endpointHash,
             ]),
             candidate: {mode: "live", binding: {
-              routeId: "organizerWhatsappCampaign", transport: "whatsapp",
+              routeId, transport: "whatsapp",
               senderIdentity: "organizerManaged", provider: "meta",
               senderId: liveIntent.whatsapp.connectionId,
               bindingRevision: connection.revision,

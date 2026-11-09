@@ -11,6 +11,8 @@ import {
   organizerPostPayloadHash,
 } from "./organizerPostDelivery";
 import {createOrganizerPostHandler} from "./organizerPosts";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
 
 type FakeData = Record<string, unknown>;
 type Filter = {field: string; op: string; value: unknown};
@@ -166,14 +168,19 @@ class FakeFirestore {
   update(path: string, data: FakeData) {
     const current = this.docs[path];
     if (!current) throw new Error(`missing: ${path}`);
-    const resolved = Object.fromEntries(Object.entries(data).map(
-      ([key, value]) => [
-        key,
-        value instanceof FakeIncrement ?
-          Number(current[key] ?? 0) + value.value : cloneFake(value),
-      ],
-    ));
-    this.docs[path] = {...cloneFake(current), ...resolved};
+    const next = cloneFake(current);
+    for (const [key, value] of Object.entries(data)) {
+      // Dotted keys address nested fields, as Firestore updates do.
+      const parts = key.split(".");
+      let target = next;
+      for (const part of parts.slice(0, -1)) {
+        target = (target[part] ?? (target[part] = {})) as FakeData;
+      }
+      const leaf = parts.at(-1)!;
+      target[leaf] = value instanceof FakeIncrement ?
+        Number(target[leaf] ?? 0) + value.value : cloneFake(value);
+    }
+    this.docs[path] = next;
   }
   query(path: string, filters: Filter[]) {
     return Object.entries(this.docs)
@@ -662,4 +669,117 @@ test("follower updates reject moderated copy before writing or rate limiting",
       "organizers/organizer-1/posts",
       [],
     ).length, 0);
+  });
+
+function followerWhatsappDocs(): Record<string, FakeData> {
+  const unknown = {status: "unknown", evidenceStatus: "notApplicable",
+    currentReceiptId: null, termsVersion: null, source: null,
+    sourceEventId: null, updatedAt: null};
+  return {
+    "organizerSenderConnections/conn-1": {organizerId: "organizer-1",
+      channel: "whatsapp", status: "active", phoneNumberId: "pn-1",
+      secretVersionResource: "projects/p/secrets/s/versions/1"},
+    "organizerMessageTemplates/tpl-1": {organizerId: "organizer-1",
+      connectionId: "pn-1", name: "organizer_follower_update",
+      status: "APPROVED", hasMediaHeader: false,
+      variableNames: ["update_text"], parameterBindings: [{
+        variableName: "update_text", component: "body", position: 0,
+        buttonIndex: null}]},
+    [`organizerCommunicationPreferences/${
+      organizerCommunicationPreferenceId("organizer-1", "user-1")}`]: {
+      organizerId: "organizer-1", uid: "user-1", whatsapp: unknown,
+      sms: unknown, whatsappPurposes: {followerUpdates: {status: "optedIn",
+        evidenceStatus: "complete", currentReceiptId: "ocpr_user1",
+        endpointE164: "+919812345678", termsVersion: "follower-whatsapp-v1",
+        source: "organizerFollowByPhone", sourceEventId: null,
+        updatedAt: new FakeTimestamp(nowMillis - 1000)}},
+      createdAt: new FakeTimestamp(nowMillis - 1000),
+      updatedAt: new FakeTimestamp(nowMillis - 1000)},
+  };
+}
+
+test("a WhatsApp follower update needs the approved follower template",
+  async () => {
+    const organizer = {name: "Sunday Social", hostUserId: "host-1",
+      ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []};
+    const make = (docs: Record<string, FakeData>) => {
+      const firestore = new FakeFirestore({"organizers/organizer-1": organizer,
+        ...docs});
+      return {firestore, deps: {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        now: () => new Date(nowMillis),
+        timestampFromMillis: (millis: number) => new FakeTimestamp(millis) as
+          unknown as FirebaseFirestore.Timestamp,
+        serverTimestamp: () => new FakeTimestamp(nowMillis) as unknown as
+          FirebaseFirestore.FieldValue,
+        checkRateLimit: async () => undefined,
+        dispatchDelivery: async () => null,
+      }};
+    };
+    const payload = {organizerId: "organizer-1", requestId: "request-wa",
+      text: "New Sunday run.", channels: ["app", "whatsapp"]};
+    const missing = make({});
+    await assert.rejects(createOrganizerPostHandler(
+      callableRequest("host-1", payload), missing.deps),
+    (error) => error instanceof HttpsError &&
+      error.code === "failed-precondition");
+    assert.equal(missing.firestore.query("organizers/organizer-1/posts", [])
+      .length, 0);
+
+    const ready = make(followerWhatsappDocs());
+    const result = await createOrganizerPostHandler(
+      callableRequest("host-1", payload), ready.deps);
+    assert.deepEqual(result.channels, ["app", "whatsapp"]);
+    assert.equal(result.whatsapp?.status, "collecting");
+    assert.equal(result.remainingWeeklyQuota, 2);
+    const campaign = ready.firestore.get(
+      `organizerCampaigns/ofwa_${result.postId}`)!;
+    assert.equal(campaign.status, "approved");
+    assert.deepEqual(campaign.recipientSource, {kind: "organizerFollowers"});
+    assert.deepEqual(campaign.templateVariables,
+      {update_text: "New Sunday run."});
+  });
+
+test("follower pages freeze consented followers into the WhatsApp campaign",
+  async () => {
+    const h = deliveryHarness();
+    for (const [path, value] of Object.entries(followerWhatsappDocs())) {
+      h.firestore.create(path, value);
+    }
+    h.firestore.create("organizerCampaigns/ofwa_post-1", {
+      organizerId: "organizer-1", status: "approved",
+      recipientSource: {kind: "organizerFollowers"},
+      templateVariables: {update_text: "Meet by the east gate."},
+      audienceCounts: {total: 0, reachable: 0},
+      deliveryCounts: {pending: 0}});
+    h.firestore.update("organizerPostDeliveryOperations/post-1", {
+      channels: ["app", "whatsapp"], whatsapp: {campaignId: "ofwa_post-1",
+        status: "collecting", queuedCount: 0, skippedCount: 0, sentCount: 0,
+        deliveredCount: 0, readCount: 0, failedCount: 0, suppressedCount: 0,
+        syncedAt: null}});
+    h.deps.whatsappPage = {
+      verifiedPhones: async () => new Map([["user-1", "+919812345678"],
+        ["user-2", "+919800000000"]]),
+      hasBlockingRelationship: async () => false,
+    };
+    const result = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(result?.deliveryStatus, "completed");
+    // user-2's verified phone is not the one they consented with; the
+    // author is never a recipient.
+    assert.deepEqual(result?.whatsapp, {status: "sending", queuedCount: 1,
+      skippedCount: 2, sentCount: 0, deliveredCount: 0, failedCount: 0});
+    const campaign = h.firestore.get("organizerCampaigns/ofwa_post-1")!;
+    assert.equal(campaign.status, "scheduled");
+    assert.equal((campaign.deliveryCounts as FakeData).pending, 1);
+    const rows = h.firestore.query("organizerCampaignRecipients", []);
+    assert.equal(rows.length, 1);
+    assert.equal((rows[0].data.followerRecipient as FakeData).uid, "user-1");
+    assert.equal(h.firestore.get(`organizerPostDeliveryRecipients/${
+      organizerFollowerReceiptId("post-1", "user-2")}`)?.whatsappStatus,
+    "skipped");
+    // A replayed page neither re-freezes nor re-counts.
+    const replay = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(replay?.whatsapp?.queuedCount, 1);
+    assert.equal(h.firestore.query("organizerCampaignRecipients", []).length,
+      1);
   });

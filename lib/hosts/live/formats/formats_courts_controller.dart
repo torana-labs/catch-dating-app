@@ -103,33 +103,39 @@ HostFormatsCourtsState hostFormatsCourtsState({
     for (final slot in assignment.rotationSlots) {
       if (slot.roundIndex != shown) continue;
       onCourt.add(assignment.uid);
-      final index = slot.unitIndex ?? courts.length;
+      final index = slot.courtIndex ?? slot.unitIndex ?? courts.length;
       final court = courts[index];
       if (court != null) continue;
       courts[index] = HostFormatsCourt(
         index: index,
         players: [name(assignment.uid), name(slot.peerUid)],
+        opponents: [for (final uid in slot.opponentUids) name(uid)],
         endsAt: slot.endsAt,
       );
     }
   }
   bool playsIn(EventSuccessAssignment a, int index) =>
       a.rotationSlots.any((slot) => slot.roundIndex == index);
+  final interval = plan.structureConfig.rotationIntervalMinutes ?? 15;
   final sitters = <HostFormatsSitter>[];
   final comingOn = <String>[];
   final goingOff = <String>[];
   for (final assignment in assignments) {
     final playsNext = playsIn(assignment, shown + 1);
     if (!onCourt.contains(assignment.uid)) {
+      final satOut = assignment.sitOutSlots
+          .where((slot) => slot.roundIndex <= shown)
+          .length;
+      final played = assignment.rotationSlots
+          .where((slot) => slot.roundIndex < shown)
+          .length;
       sitters.add(
         HostFormatsSitter(
           name: name(assignment.uid),
-          satOut: assignment.sitOutSlots
-              .where((slot) => slot.roundIndex <= shown)
-              .length,
-          played: assignment.rotationSlots
-              .where((slot) => slot.roundIndex < shown)
-              .length,
+          satOut: satOut,
+          played: played,
+          minutesOn: played * interval,
+          minutesOff: satOut * interval,
           next: playsNext || shown + 1 >= rounds
               ? HostFormatsSitOutNext.plays
               : HostFormatsSitOutNext.outAgain,
@@ -147,6 +153,8 @@ HostFormatsCourtsState hostFormatsCourtsState({
   var partnerTotal = 0;
   var repeats = 0;
   var mostSatOut = 0;
+  int? leastPlayed;
+  var mostPlayed = 0;
   for (final assignment in assignments) {
     final met = <String, int>{};
     for (final slot in assignment.rotationSlots) {
@@ -154,6 +162,11 @@ HostFormatsCourtsState hostFormatsCourtsState({
       met[slot.peerUid] = (met[slot.peerUid] ?? 0) + 1;
     }
     partnerTotal += met.length;
+    final playedSoFar = assignment.rotationSlots
+        .where((slot) => slot.roundIndex <= shown)
+        .length;
+    mostPlayed = math.max(mostPlayed, playedSoFar);
+    leastPlayed = math.min(leastPlayed ?? playedSoFar, playedSoFar);
     repeats += met.values.fold(0, (sum, n) => sum + math.max(0, n - 1));
     mostSatOut = math.max(
       mostSatOut,
@@ -175,6 +188,7 @@ HostFormatsCourtsState hostFormatsCourtsState({
     // Each repeat is counted once by each of the two partners.
     repeatPartners: repeats ~/ 2,
     mostSatOut: mostSatOut,
+    courtTimeApartMinutes: (mostPlayed - (leastPlayed ?? 0)) * interval,
     comingOn: List.unmodifiable(comingOn..sort()),
     goingOff: List.unmodifiable(goingOff..sort()),
     nextReady:

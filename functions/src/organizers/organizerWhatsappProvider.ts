@@ -340,9 +340,12 @@ export class MetaWhatsappProvider {
     phoneNumberId: string;
     toE164: string;
     body: string;
+    /** Status correlation echoed back on every delivery receipt. */
+    callbackData?: string;
     deadline?: number;
   }): Promise<MetaSendResult> {
     assertRecipient(params.toE164);
+    assertCallbackData(params.callbackData);
     const response = await this.authorizedRequest(
       `${params.phoneNumberId}/messages`,
       params.accessToken,
@@ -355,6 +358,8 @@ export class MetaWhatsappProvider {
           recipient_type: "individual",
           to: params.toE164.slice(1),
           type: "text",
+          ...(params.callbackData === undefined ? {} :
+            {biz_opaque_callback_data: params.callbackData}),
           text: {preview_url: false, body: params.body},
         },
       },

@@ -14,6 +14,52 @@ final class CreateOrganizerCallableResponse {
   final String organizerId;
 }
 
+/// Counts for a follower update's WhatsApp leg (route
+/// organizerFollowerWhatsapp). Queued followers ticked WhatsApp updates on
+/// their verified phone; skipped followers did not.
+final class OrganizerPostWhatsappCounts {
+  const OrganizerPostWhatsappCounts({
+    required this.status,
+    required this.queuedCount,
+    required this.skippedCount,
+    required this.sentCount,
+    required this.deliveredCount,
+    required this.failedCount,
+  });
+
+  /// Reads the optional `whatsapp` counts; null when absent or malformed.
+  static OrganizerPostWhatsappCounts? fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final status = map['status'];
+      final counts = [
+        'queuedCount',
+        'skippedCount',
+        'sentCount',
+        'deliveredCount',
+        'failedCount',
+      ].map((key) => map[key]).toList(growable: false);
+      if (status is String && counts.every((count) => count is int)) {
+        return OrganizerPostWhatsappCounts(
+          status: status,
+          queuedCount: counts[0]! as int,
+          skippedCount: counts[1]! as int,
+          sentCount: counts[2]! as int,
+          deliveredCount: counts[3]! as int,
+          failedCount: counts[4]! as int,
+        );
+      }
+    }
+    return null;
+  }
+
+  final String status;
+  final int queuedCount;
+  final int skippedCount;
+  final int sentCount;
+  final int deliveredCount;
+  final int failedCount;
+}
+
 final class CreateOrganizerPostCallableResponse {
   const CreateOrganizerPostCallableResponse({
     required this.postId,
@@ -27,6 +73,7 @@ final class CreateOrganizerPostCallableResponse {
     required this.pushFailedCount,
     required this.pushUnknownCount,
     required this.idempotentReplay,
+    this.whatsapp,
   });
 
   factory CreateOrganizerPostCallableResponse.fromCallableData(Object? data) {
@@ -66,6 +113,9 @@ final class CreateOrganizerPostCallableResponse {
           pushFailedCount: pushFailedCount,
           pushUnknownCount: pushUnknownCount,
           idempotentReplay: idempotentReplay,
+          whatsapp: OrganizerPostWhatsappCounts.fromCallableData(
+            map['whatsapp'],
+          ),
         );
       }
     }
@@ -86,6 +136,9 @@ final class CreateOrganizerPostCallableResponse {
   final int pushFailedCount;
   final int pushUnknownCount;
   final bool idempotentReplay;
+
+  /// The WhatsApp leg so far; null when the update went to the app only.
+  final OrganizerPostWhatsappCounts? whatsapp;
 }
 
 final class StartOrganizerHostConversationCallableResponse {

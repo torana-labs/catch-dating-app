@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_assistant_settings_payload.schema.json",
+  "title": "GetProgramAssistantSettingsCallablePayload",
+  "description": "Read one programme's assistant settings and the wedding's WhatsApp number. Managers and coordinators.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}

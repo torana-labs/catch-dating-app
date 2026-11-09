@@ -104,7 +104,8 @@ export class CampaignWhatsappDeliveryStore {
           dispatch.context.recipientId ||
         record.intent.context.organizerId !== dispatch.context.organizerId ||
         !attempt || attempt.mode !== "live" ||
-        attempt.binding.routeId !== "organizerWhatsappCampaign" ||
+        (attempt.binding.routeId !== "organizerWhatsappCampaign" &&
+          attempt.binding.routeId !== "organizerFollowerWhatsapp") ||
         attempt.binding.senderId !== dispatch.senderId ||
         attempt.binding.bindingRevision !== dispatch.bindingRevision ||
         attempt.binding.recipientEndpointId !==

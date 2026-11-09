@@ -1,0 +1,10 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "day": "2026-12-12",
+  "tokenCap": 200000,
+  "reservedTokens": 0,
+  "consumedTokens": -5,
+  "runCount": 1,
+  "updatedAtMillis": 1800000002300
+}

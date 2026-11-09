@@ -17,6 +17,7 @@ import {normalizeWhatsappDeliveryStatus} from
 import {programDeliveryAdapter} from "./programDelivery";
 import {PROGRAM_WHATSAPP_DISPATCHES} from "./programDeliveryWorker";
 import type {ProgramDeliveryOutbox} from "./programDeliveryWorker";
+import {recordProgramServiceReceipt} from "./programWhatsapp/replies";
 
 export type {WhatsappDeliveryResult};
 
@@ -93,6 +94,14 @@ export class ProgramWhatsappDeliveryStore {
         millis(queued.providerOccurredAt) >
           millis(queued.createdAt) + 300_000) {
       return {kind: "rejected"};
+    }
+    if (dispatch.kind === "service") {
+      // A free-text reply inside the window has no outbox record; its
+      // status moves the programme WhatsApp message forward instead.
+      const disposition = await recordProgramServiceReceipt(this.db,
+        dispatch, {providerMessageId: queued.providerMessageId,
+          deliveryStatus: queued.deliveryStatus}, now);
+      return {kind: "recorded", messageId: dispatch.messageId, disposition};
     }
     const record = await this.outbox.get(dispatch.messageId);
     const attempt = record?.attempts.find((a) => a.attemptId === attemptId);

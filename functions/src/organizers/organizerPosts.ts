@@ -27,6 +27,12 @@ import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import {isEventPubliclyAccessible} from
   "../events/eventPublicationAccess";
+import {
+  findFollowerWhatsappSender,
+  followerWhatsappCampaign,
+  followerWhatsappCampaignId,
+  initialFollowerWhatsappLeg,
+} from "./organizerFollowerWhatsappLeg";
 
 export {buildOrganizerFollowerDelivery} from "./organizerPostDelivery";
 
@@ -67,6 +73,9 @@ export async function createOrganizerPostHandler(
     [data.text],
     "This follower update contains language that cannot be delivered.",
   );
+  const channels: Array<"app" | "whatsapp"> =
+    data.channels?.includes("whatsapp") ? ["app", "whatsapp"] : ["app"];
+  const wantsWhatsapp = channels.includes("whatsapp");
   const db = deps.firestore();
   const postId = organizerPostId({
     organizerId: data.organizerId,
@@ -79,6 +88,7 @@ export async function createOrganizerPostHandler(
     text: data.text,
     photoPath: data.photoPath,
     eventId: data.eventId,
+    channels,
   });
   const operationRef = db.collection("organizerPostDeliveryOperations")
     .doc(postId);
@@ -107,6 +117,8 @@ export async function createOrganizerPostHandler(
   );
   let remainingWeeklyQuota = 0;
   let idempotentReplay = false;
+  const campaignId = followerWhatsappCampaignId(postId);
+  const campaignRef = db.collection("organizerCampaigns").doc(campaignId);
 
   await db.runTransaction(async (tx) => {
     const eventRef = data.eventId ?
@@ -117,12 +129,17 @@ export async function createOrganizerPostHandler(
       eventSnap,
       postsSnap,
       operationSnap,
+      whatsappSender,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(db.collection("deletedUsers").doc(authorUid)),
       eventRef ? tx.get(eventRef) : Promise.resolve(null),
       tx.get(postsRef.where("createdAt", ">=", quotaWindowStart)),
       tx.get(operationRef),
+      wantsWhatsapp ?
+        findFollowerWhatsappSender(db, data.organizerId,
+          (query) => tx.get(query)) :
+        Promise.resolve(null),
     ]);
     if (operationSnap.exists) {
       const operation = operationSnap.data() as
@@ -172,6 +189,14 @@ export async function createOrganizerPostHandler(
         );
       }
     }
+    if (wantsWhatsapp && !whatsappSender) {
+      throw new HttpsError("failed-precondition",
+        "Connect WhatsApp and get the organizer_follower_update template " +
+        "approved before sending on WhatsApp.");
+    }
+    // One allowance for the update whichever channels it uses: a WhatsApp
+    // send is the same post, so the weekly (and owner-view monthly) caps
+    // count it.
     const activeCount = postsSnap.docs
       .filter((doc) => doc.data().status === "active").length;
     if (activeCount >= weeklyQuota) {
@@ -192,6 +217,11 @@ export async function createOrganizerPostHandler(
     };
     tx.create(postRef, post);
     const createdAt = deps.timestampFromMillis(deps.now().getTime());
+    if (whatsappSender) {
+      tx.create(campaignRef, followerWhatsappCampaign({
+        organizerId: data.organizerId, authorUid, postId, text: data.text,
+        sender: whatsappSender, now: createdAt}));
+    }
     const operation: OrganizerPostDeliveryOperationDocument = {
       organizerId: data.organizerId,
       postId,
@@ -215,6 +245,8 @@ export async function createOrganizerPostHandler(
       createdAt,
       updatedAt: createdAt,
       completedAt: null,
+      ...(whatsappSender ? {channels,
+        whatsapp: initialFollowerWhatsappLeg(campaignId)} : {}),
     };
     tx.create(operationRef, operation);
   });

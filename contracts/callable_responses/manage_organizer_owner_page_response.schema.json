@@ -61,6 +61,21 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 2
+            },
+            "delivery": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Where the message went so far: app recipients (Home and Activity) and the WhatsApp leg, null when it was app-only.",
+              "required": ["appRecipientCount", "whatsapp"],
+              "properties": {
+                "appRecipientCount": {"type": "integer", "minimum": 0},
+                "whatsapp": {
+                  "anyOf": [
+                    {"$ref": "create_organizer_post_response.schema.json#/definitions/whatsappCounts"},
+                    {"type": "null"}
+                  ]
+                }
+              }
             }
           }
         },
