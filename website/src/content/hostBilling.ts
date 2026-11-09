@@ -2,7 +2,7 @@ import {brand} from "./brand.ts";
 
 /**
  * The host billing portal (/host/billing/): an organizer's owner signs in with
- * a phone code and sees the free trial, the plan, Catch's prices and bills, and
+ * a phone code and sees the free trial, the plan, the prices and bills, and
  * pays or switches plan. Paying and choosing a plan happen only here, on the
  * web; the native Host app shows status only (App Store guideline 3.1.3(f)).
  */
