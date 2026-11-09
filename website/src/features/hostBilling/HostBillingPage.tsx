@@ -187,6 +187,9 @@ function BillsSection(props: HostBillingController) {
         const details = [
           fill(copy.bills.sales, {sales: rupees(bill.salesMinor)}),
           bill.toolsOnly ? copy.bills.toolsOnly : bill.capped ? copy.bills.capped : null,
+          bill.refundCreditMinor ? fill(copy.bills.refundCredit, {credit: rupees(bill.refundCreditMinor)}) : null,
+          bill.refundCreditCarriedMinor ?
+            fill(copy.bills.refundCreditCarried, {credit: rupees(bill.refundCreditCarriedMinor)}) : null,
           bill.invoiceNumber ? fill(copy.bills.invoice, {number: bill.invoiceNumber}) : null,
           bill.gstMinor > 0 ? fill(copy.bills.gst, {gst: rupees(bill.gstMinor)}) : null,
         ].filter(Boolean).join(" · ");
