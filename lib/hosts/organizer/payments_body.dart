@@ -245,6 +245,8 @@ class _RazorpayTile extends StatelessWidget {
                 ? l10n.hostOrganizerRazorpayUnavailable
                 : connection == HostRazorpayConnectionState.ready
                 ? l10n.hostOrganizerRazorpayReadyBody
+                : setup.authorizationRevoked
+                ? l10n.hostOrganizerRazorpayRevokedBody
                 : l10n.hostOrganizerRazorpayConnectBody,
             variant: CatchTextVariant.bodySmall,
           ),

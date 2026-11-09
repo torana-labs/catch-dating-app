@@ -73,6 +73,12 @@ export const notificationCopyEn = {
     "body": "Your Catch bill for {period} is still open.",
     "audience": "host",
     "owner": "product"
+  },
+  "organizerRazorpayRevoked": {
+    "title": "Reconnect Razorpay",
+    "body": "{organizerName} can't take payments until you reconnect Razorpay in Catch.",
+    "audience": "host",
+    "owner": "product"
   }
 } as const;
 

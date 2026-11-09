@@ -16803,7 +16803,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy): paid booking refused because the organiser's own payment account is not ready.
   ///
   /// In en, this message translates to:
-  /// **'Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.'**
+  /// **'Paid booking is unavailable until the organiser connects their Razorpay account. You have not been charged.'**
   String get coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.
@@ -30679,6 +30679,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.'**
   String get hostOrganizerRazorpayConnectBody;
+
+  /// Razorpay tile body after the organizer revoked Catch’s access from Razorpay's side (#1255).
+  ///
+  /// In en, this message translates to:
+  /// **'Catch\'\'s access to your Razorpay account was removed, so guests can\'\'t pay for bookings. Reconnect Razorpay to take payments again.'**
+  String get hostOrganizerRazorpayRevokedBody;
 
   /// Razorpay tile body when connections are unavailable.
   ///

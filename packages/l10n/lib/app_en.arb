@@ -19157,7 +19157,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady": "Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.",
+  "coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady": "Paid booking is unavailable until the organiser connects their Razorpay account. You have not been charged.",
   "@coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy): paid booking refused because the organiser's own payment account is not ready.",
     "x-audience": "shared",
@@ -25779,6 +25779,8 @@
   "@hostOrganizerRazorpayReadyBody": {"description": "Razorpay tile body when connected.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
   "hostOrganizerRazorpayConnectBody": "Connect your own Razorpay account so guests pay you directly. Catch never holds ticket money.",
   "@hostOrganizerRazorpayConnectBody": {"description": "Razorpay tile body before it is connected.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
+  "hostOrganizerRazorpayRevokedBody": "Catch''s access to your Razorpay account was removed, so guests can''t pay for bookings. Reconnect Razorpay to take payments again.",
+  "@hostOrganizerRazorpayRevokedBody": {"description": "Razorpay tile body after the organizer revoked Catch’s access from Razorpay's side (#1255).", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
   "hostOrganizerRazorpayUnavailable": "Razorpay connections aren’t open for your organiser yet.",
   "@hostOrganizerRazorpayUnavailable": {"description": "Razorpay tile body when connections are unavailable.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.organizer"},
   "hostOrganizerRazorpayConnect": "Connect Razorpay",

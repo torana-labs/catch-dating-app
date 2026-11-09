@@ -51,26 +51,25 @@ void main() {
   group('hostOrganizerPaymentsRouteFromMessageData', () {
     tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-    test('a bill notice opens Payments in the Host app', () {
-      AppConfig.configureEntrypointRole(AppRole.host);
-      expect(
-        routeFromMessageData({
-          'type': 'organizerBillIssued',
-          'organizerId': 'club-1',
-        }),
-        '/host/organizers/payments?organizerId=club-1',
-      );
-    });
+    for (final type in ['organizerBillIssued', 'organizerRazorpayRevoked']) {
+      test('a $type notice opens Payments in the Host app', () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+        expect(
+          routeFromMessageData({'type': type, 'organizerId': 'club-1'}),
+          '/host/organizers/payments?organizerId=club-1',
+        );
+      });
 
-    test('the consumer app ignores host bill notices', () {
-      expect(
-        hostOrganizerPaymentsRouteFromMessageData({
-          'type': 'organizerBillIssued',
-          'organizerId': 'club-1',
-        }),
-        isNull,
-      );
-    });
+      test('the consumer app ignores a $type notice', () {
+        expect(
+          hostOrganizerPaymentsRouteFromMessageData({
+            'type': type,
+            'organizerId': 'club-1',
+          }),
+          isNull,
+        );
+      });
+    }
   });
 
   group('eventChatRouteFromMessageData', () {

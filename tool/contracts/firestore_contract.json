@@ -251,7 +251,11 @@
       "exportedFunctions": [
         "manageOrganizerFormPaymentConnection",
         "organizerFormPaymentOauthCallback",
-        "refreshOrganizerFormPaymentTokens"
+        "refreshOrganizerFormPaymentTokens",
+        "organizerRazorpayPartnerWebhook",
+        "managePublicEventCheckout",
+        "manageEventOfferCheckout",
+        "prepareOrganizerFormPayment"
       ]
     },
     {

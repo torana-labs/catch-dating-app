@@ -38,6 +38,8 @@ export {organizerFormPaymentOauthCallback, organizerFormPaymentWebhook,
   "./payments/formPayments/formPaymentTriggers";
 export {refreshOrganizerFormPaymentTokens} from
   "./payments/formPayments/formPaymentTokenRefresh";
+export {organizerRazorpayPartnerWebhook} from
+  "./payments/formPayments/razorpayAuthorizationRevocation";
 export {prepareEventOfferInvitation, manageEventOfferCheckout} from
   "./organizerEventOfferRecipients/recipientCallables";
 export {reconcileOrganizerEventOfferPayments} from

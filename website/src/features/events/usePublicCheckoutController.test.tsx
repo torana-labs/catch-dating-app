@@ -9,7 +9,7 @@ vi.mock("../../shared/payments/razorpayCheckout", () => ({openRazorpayCheckout: 
 vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({EventSmsPreferencePanel: () => null}));
 vi.mock("../eventMessaging/EventRcsPreferencesPanel", () => ({EventRcsPreferencesPanel: () => null}));
 vi.mock("../eventMessaging/EventWhatsappPreferencesPanel", () => ({EventWhatsappPreferencesPanel: () => null}));
-import {usePublicCheckoutController} from "./usePublicCheckoutController";
+import {organizerPaymentsNotReady, usePublicCheckoutController} from "./usePublicCheckoutController";
 import {PublicPaidEventRegistration} from "./PublicPaidEventRegistration";
 import {assertPublicCheckoutResponse} from "./publicCheckoutModel";
 const quote = {eventId: "event1", eventName: "Morning run", registrationRevision: 1,
@@ -185,4 +185,12 @@ it("disabled session storage still allows a server-owned checkout", async () => 
   act(() => result.current.setName("Maya"));
   await act(async () => {await result.current.pay();});
   expect(result.current.admission).toEqual(admission);
+});
+
+it("recognises an organizer whose payment account is not ready", () => {
+  expect(organizerPaymentsNotReady({code: "functions/failed-precondition",
+    details: {reason: "organizerPaymentsNotReady"}})).toBe(true);
+  expect(organizerPaymentsNotReady({details: {reason: "other"}})).toBe(false);
+  expect(organizerPaymentsNotReady(new Error("boom"))).toBe(false);
+  expect(organizerPaymentsNotReady(null)).toBe(false);
 });
