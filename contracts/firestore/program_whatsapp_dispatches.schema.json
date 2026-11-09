@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_whatsapp_dispatches.schema.json",
   "title": "ProgramWhatsappDispatchDocument",
-  "description": "Private claim-time binding between one program delivery attempt and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the program delivery outbox.",
+  "description": "Private claim-time binding between one program delivery attempt (or one free-text service reply, kind service) and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the program delivery outbox.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -105,15 +105,31 @@
       "pattern": "^[a-f0-9]{64}$",
       "description": "Hash of the E.164 destination; the raw number never appears here."
     },
-    "templateDocumentId": {
+    "kind": {
       "type": "string",
+      "enum": [
+        "template",
+        "service"
+      ],
+      "description": "template for a programme reminder; service for a free-text reply inside the 24-hour window (no outbox record; the status updates programWhatsappMessages). Absent reads as template."
+    },
+    "templateDocumentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Approved template the attempt sent; null for a service reply.",
       "minLength": 1,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
     "templateHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the template snapshot; null for a service reply."
     },
     "payloadHash": {
       "type": "string",

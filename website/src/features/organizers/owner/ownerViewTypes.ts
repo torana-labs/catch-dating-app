@@ -31,10 +31,24 @@ export interface OwnerLink {
   showUntil: string | null;
 }
 
+/** A follower message's WhatsApp leg so far (route organizerFollowerWhatsapp). */
+export interface OwnerWhatsappCounts {
+  status: "collecting" | "sending" | "completed";
+  queuedCount: number;
+  skippedCount: number;
+  sentCount: number;
+  deliveredCount: number;
+  failedCount: number;
+}
+
 export interface OwnerFollowerMessages {
   month: string;
   limit: 2;
   used: number;
+  /** The organiser's WhatsApp number and follower template are ready. */
+  whatsappAvailable?: boolean;
+  /** After a send: where it went so far. */
+  delivery?: {appRecipientCount: number; whatsapp: OwnerWhatsappCounts | null};
 }
 
 export interface OwnerViewData {
@@ -60,7 +74,8 @@ export interface OwnerViewData {
 export type OwnerPageCommand =
   | {organizerId: string; requestId: string; action: "setLinks"; links: OwnerLink[]}
   | {organizerId: string; requestId: string; action: "setPhotoOrder"; photoIds: string[]}
-  | {organizerId: string; requestId: string; action: "sendFollowerMessage"; text: string};
+  | {organizerId: string; requestId: string; action: "sendFollowerMessage"; text: string;
+    channels?: Array<"app" | "whatsapp">};
 
 export interface OwnerPageResult {
   action: OwnerPageCommand["action"];

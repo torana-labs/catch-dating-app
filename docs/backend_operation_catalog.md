@@ -210,7 +210,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `manageWebsiteAccount` | Callable | Website onboarding, event/follow continuation and the `/account/` page | Private `users/{uid}` identity; reads own follow and public event age policy; with `sections`, reads own `eventParticipations`, active `organizerFollows`, `reviews` and `organizerCommunicationPreferences` (by UID, bounded) plus organizer/event names | Live Auth phone, disabled/deleted-account guards, UID and profile-revision fences. Name and phone only; optional real DOB; no social visibility or marketing opt-in. |
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | Callable | Website and Flutter consumer organizer surfaces | `organizerFollows/{organizerId_uid}` and `organizers/{organizerId}.followerCount` plus legacy shadows | Canonical consumer relationship; never stored in entity/user arrays. |
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | Callable | Flutter Hosts team workspace | `organizerTeamMemberships`, organizer ownership/host projections, legacy shadows | Owner-controlled team membership and audited ownership transfer. |
-| `createOrganizerPost` | Callable | Flutter organizer posts repository | `organizers/{organizerId}/posts/{postId}`, `organizerPostDeliveryOperations/{postId}`, organizer Activity, preference-gated FCM, legacy shadows | Manager-authored, moderated, bounded follower update. A required client-generated request id deterministically owns the post and atomically creates a retry operation, so a lost callable response cannot duplicate the post or consume quota twice. Immediate delivery processes one bounded follower page; deterministic de-identified recipient receipts make cursor replay safe. |
+| `followOrganizerByPhone` | Callable | Website organiser page (signed-out visitors, after the phone-code sign-in) | `organizerFollows/{organizerId_uid}`, `organizers/{organizerId}.followerCount`, and, only with the explicit WhatsApp tick, `organizerCommunicationPreferences.whatsappPurposes.followerUpdates` plus an immutable `organizerCommunicationPermissionReceipts` row (source `organizerFollowByPhone`, terms `follower-whatsapp-v1`) | Follow with just a verified phone (token `phone_number`); no profile gate. The WhatsApp grant is bound to that phone and keyed by the request id, so a replay never duplicates it. |
+| `createOrganizerPost` | Callable | Flutter organizer posts repository | `organizers/{organizerId}/posts/{postId}`, `organizerPostDeliveryOperations/{postId}`, organizer Activity, preference-gated FCM, legacy shadows | Manager-authored, moderated, bounded follower update. A required client-generated request id deterministically owns the post and atomically creates a retry operation, so a lost callable response cannot duplicate the post or consume quota twice. Immediate delivery processes one bounded follower page; deterministic de-identified recipient receipts make cursor replay safe. Optional `channels: ["app", "whatsapp"]` (default app) needs the organiser's active sender and approved `organizer_follower_update` template; it creates an approved follower campaign (`organizerCampaigns`, `recipientSource.kind = organizerFollowers`), freezes consented followers into `organizerCampaignRecipients` in each page's receipt transaction, schedules the campaign after the last page and mirrors its counts onto the operation's `whatsapp` leg. The campaign engine sends on route `organizerFollowerWhatsapp`; receipts route through `campaignWhatsappDispatches`. |
 | `dispatchPendingOrganizerFollowerUpdates` | Scheduled every 5 minutes | Backend | `organizerPostDeliveryOperations`, `organizerPostDeliveryRecipients`, organizer Activity, preference-gated FCM | Resumes pending or expired-lease follower-update delivery. Activity creation is deterministic and durable; push remains best-effort and is never repeated when a prior attempt's outcome is unknowable. Deleted accounts, the author, and blocked relationships are excluded. |
 | `createOrganizerForm` / `duplicateOrganizerForm` | Callable | Host Forms library and template gallery | `organizerForms/{formId}`, `organizerFormDrafts/{formId}` | App-Check-protected, rate-limited manager boundary. A request-scoped deterministic form id makes retries idempotent. Template creation copies versioned source data into organizer-owned state; duplication remaps every section, question, option, rule, and public identity. |
 | `updateOrganizerFormDraft` / `validateOrganizerFormDraft` / `getOrganizerFormEditor` | Callable | Host Forms builder and preview | Mutable `organizerFormDrafts/{formId}` and safe manager projections | Draft replacement is revision-guarded and archived forms fail closed. Save may preserve an invalid work-in-progress; the shared semantic validator reports publish blockers, including duplicate identities, type-invalid rules, backward routing, purpose requirements, and inconsistent validation ranges. |
@@ -522,6 +523,30 @@ board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
 
+## Programme WhatsApp threads, replies and the assistant settings
+
+Wedding guests message the programme's own WhatsApp number (an organiser
+sender connection bound through `updateOrganizerProgram`
+`whatsappSenderConnectionId`; unbound programmes fall back to the
+organiser's first active sender). The organiser webhook's inbound
+processing resolves the programme and the household
+(`programWhatsappEndpointIndex`, kept by triggers on `programHouseholds` and
+`programGuests`) before any CRM matching and stores the message in the
+household's `programWhatsappThreads` thread; a STOP revokes the household's
+messaging consent and keeps the organiser suppression path.
+`listProgramWhatsappThreads`, `getProgramWhatsappThread` and
+`setProgramWhatsappThreadHandling` are the planner inbox (managers and the
+communications duty). `sendProgramWhatsappReply` sends free text only inside
+the 24-hour window: a `programWhatsappReplyOperations` reservation precedes
+the Meta call, an uncertain outcome stays unknown, and a
+`programWhatsappDispatches` record (`kind: service`) routes delivery
+receipts back to the message. `sendProgramServiceReply` is the same path for
+the assistant (lane W2). `listProgramWhatsappCannedReplies` /
+`upsertProgramWhatsappCannedReply` keep saved replies;
+`getProgramAssistantSettings` / `updateProgramAssistantSettings` keep
+`programAssistantSettings` (managers and coordinators).
+`onProgramWhatsappInboundMessageCreated` is the assistant's trigger point.
+
 ## Programme guest IDs, hampers, photos and vendor bills
 
 `createProgramAssetUpload` signs one upload of a programme file (guest ID,
@@ -542,6 +567,24 @@ placed, by a porter through a `hamperPorter` link or by hotel desk staff;
 changes a function photo; `listProgramPhotos` returns albums, photos and the
 cover as signed URLs. Every command keeps a `requestId` receipt on its
 document. The guest ID, hotel and porter web pages are P4.10.
+
+## Programme assistant
+
+The wedding assistant ([owner doc](programme_assistant.md)) has one entry
+point and one callable. `handleProgramWhatsappInbound` is called by the
+programme WhatsApp inbound trigger for each guest message (it exports no
+Function of its own). It skips threads the planner has taken over. While
+the assistant is off it marks the thread `needsYou`. Otherwise it either
+answers from the household's fact pack through `sendProgramServiceReply`,
+or passes the message on: thread `needsYou` with `escalationReason`, a
+staff attention journal row in `organizerMomentSends` (duty
+`communications`), an assigned `programAlerts` row, and a holding reply
+while the 24-hour window is open. `previewProgramAssistantReply`
+(`communications` duty) runs the same path for the settings screen's Try it
+and sends nothing. Both write one `programAssistantRuns` audit row per run
+and draw on the programme's daily `programAssistantBudgets` ledger. The
+run's intent and its reservation commit before any model call, and a run is
+never resubmitted.
 
 ## Paid host membership operations
 

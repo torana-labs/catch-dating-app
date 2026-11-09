@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_whatsapp_reply_operations.schema.json",
+  "title": "ProgramWhatsappReplyOperationDocument",
+  "description": "Durable reservation for one free-text programme WhatsApp reply, written before the Meta call so an uncertain outcome fails closed (state unknown). The id derives from the thread and the caller's idempotency key. Server-only; scrubbed by the programme retention sweep.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programWhatsappReplyOperations",
+  "x-firestore-path": "programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
+  "x-owner": "sendProgramWhatsappReply callable and sendProgramServiceReply",
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "programId",
+    "organizerId",
+    "threadId",
+    "messageId",
+    "attemptId",
+    "bodyHash",
+    "expectedLastInboundAtMillis",
+    "author",
+    "actorUid",
+    "runId",
+    "state",
+    "providerMessageId",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^pwro_[a-f0-9]{48}$",
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "type": "string",
+      "pattern": "^attempt:[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "bodyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "expectedLastInboundAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "author": {
+      "type": "string",
+      "enum": [
+        "assistant",
+        "planner",
+        "system"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "unknown"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "providerMessageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

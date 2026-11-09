@@ -151,6 +151,7 @@ class EventSuccessController extends _$EventSuccessController {
     required String eventId,
     required int activeStepIndex,
     required int expectedRevision,
+    bool? activeStepIsActivity,
   }) async {
     requireSignedInUid(ref, action: 'run live event guide');
     await ref
@@ -159,6 +160,7 @@ class EventSuccessController extends _$EventSuccessController {
           eventId: eventId,
           activeStepIndex: activeStepIndex,
           expectedRevision: expectedRevision,
+          activeStepIsActivity: activeStepIsActivity,
         );
   }
 

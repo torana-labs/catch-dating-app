@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_whatsapp_endpoint_index.schema.json",
+  "title": "ProgramWhatsappEndpointIndexDocument",
+  "description": "Maps one phone endpoint (sha256 of the E.164 number) to the household it belongs to inside one programme, at programWhatsappEndpointIndex/{programId}_{endpointHash}. Kept current by a trigger on programHouseholds and programGuests and backfilled by functions/scripts/backfill-program-whatsapp-endpoint-index.cjs. The WhatsApp webhook resolves an inbound guest by this document instead of scanning households. Holds no raw phone number. Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programWhatsappEndpointIndex",
+  "x-firestore-path": "programWhatsappEndpointIndex/{endpointIndexId}",
+  "x-owner": "programme WhatsApp endpoint index trigger",
+  "required": [
+    "schemaVersion",
+    "programId",
+    "organizerId",
+    "endpointHash",
+    "householdId",
+    "guestId",
+    "source",
+    "ambiguous",
+    "claimants",
+    "updatedAtMillis",
+    "revision"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "householdId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The household this number reaches. When ambiguous, the first household that claimed it.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "guestId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "The guest whose own phone this is, or null when it is the household's primary phone.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "household",
+        "guest"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "ambiguous": {
+      "type": "boolean",
+      "description": "True when more than one household in the programme carries this number; inbound messages then go to the planner as an unknown sender.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "claimants": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "id",
+          "householdId"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "household",
+              "guest"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "householdId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      },
+      "description": "Every household or guest record carrying this number, so a change to one never removes another's claim.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "trigger-owned"
+    }
+  }
+}

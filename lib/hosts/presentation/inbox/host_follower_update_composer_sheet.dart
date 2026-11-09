@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -10,35 +11,55 @@ import 'package:flutter/material.dart';
 
 /// Opens the route-specific composer for an organizer update to followers.
 ///
+/// Signature of the post submission: the WhatsApp switch adds that channel.
+typedef HostFollowerUpdateSubmit =
+    Future<CreateOrganizerPostCallableResponse?> Function({
+      required String requestId,
+      required String text,
+      required bool whatsapp,
+    });
+
 /// Returns true only after the callable accepts the post. Durable Home and
 /// Activity delivery remains server-owned; dismissing the sheet returns false.
+/// [whatsappAvailable] is true when the organiser's WhatsApp number and its
+/// follower update template are ready; otherwise the switch stays off.
 Future<bool> showHostFollowerUpdateComposer({
   required BuildContext context,
   required Organizer organizer,
   required int remainingQuota,
   required String Function() requestIdFactory,
-  required Future<void> Function({
-    required String requestId,
-    required String text,
-  })
-  onSubmitPost,
+  required HostFollowerUpdateSubmit onSubmitPost,
+  bool whatsappAvailable = false,
 }) async {
-  final result = await showCatchBottomSheet<bool>(
+  final result = await showCatchBottomSheet<HostFollowerUpdatePosted>(
     context: context,
     builder: (_) => HostFollowerUpdateComposerSheet(
       organizer: organizer,
       remainingQuota: remainingQuota,
       requestIdFactory: requestIdFactory,
       onSubmitPost: onSubmitPost,
+      whatsappAvailable: whatsappAvailable,
     ),
   );
-  if (result == true && context.mounted) {
+  if (result != null && context.mounted) {
+    final whatsapp = result.response?.whatsapp;
     showCatchNotice(
       context,
-      context.l10n.hostsHostOrganizerToolsCatchbuttonPostedToFollowers,
+      whatsapp == null
+          ? context.l10n.hostsHostOrganizerToolsCatchbuttonPostedToFollowers
+          : context.l10n.hostFollowerUpdatePostedWhatsapp(
+              count: whatsapp.queuedCount,
+            ),
     );
   }
-  return result == true;
+  return result != null;
+}
+
+/// What the composer returns once the callable accepted the post.
+final class HostFollowerUpdatePosted {
+  const HostFollowerUpdatePosted(this.response);
+
+  final CreateOrganizerPostCallableResponse? response;
 }
 
 class HostFollowerUpdateComposerSheet extends StatefulWidget {
@@ -48,13 +69,14 @@ class HostFollowerUpdateComposerSheet extends StatefulWidget {
     required this.remainingQuota,
     required this.requestIdFactory,
     required this.onSubmitPost,
+    this.whatsappAvailable = false,
   });
 
   final Organizer organizer;
   final int remainingQuota;
   final String Function() requestIdFactory;
-  final Future<void> Function({required String requestId, required String text})
-  onSubmitPost;
+  final HostFollowerUpdateSubmit onSubmitPost;
+  final bool whatsappAvailable;
 
   @override
   State<HostFollowerUpdateComposerSheet> createState() =>
@@ -66,6 +88,7 @@ class _HostFollowerUpdateComposerSheetState
   final TextEditingController _controller = TextEditingController();
   Object? _error;
   bool _pending = false;
+  bool _whatsapp = false;
   late String _requestId;
 
   @override
@@ -139,6 +162,27 @@ class _HostFollowerUpdateComposerSheetState
               }),
             ),
           ),
+          gapH12,
+          CatchIndexRow(
+            title: context.l10n.hostFollowerUpdateWhatsappToggle,
+            subtitle: widget.whatsappAvailable
+                ? context.l10n.hostFollowerUpdateWhatsappToggleBody
+                : context.l10n.hostFollowerUpdateWhatsappUnavailable,
+            onTap: null,
+            trailing: CatchToggleInput(
+              key: const ValueKey('host-follower-update-whatsapp'),
+              value: widget.whatsappAvailable && _whatsapp,
+              semanticLabel: context.l10n.hostFollowerUpdateWhatsappToggle,
+              contractExemption:
+                  'Adds whatsapp to the channels array sent with the post.',
+              onChanged: widget.whatsappAvailable && !_pending
+                  ? (value) => setState(() {
+                      _whatsapp = value;
+                      _requestId = widget.requestIdFactory();
+                    })
+                  : null,
+            ),
+          ),
           if (_error != null) ...[
             gapH10,
             CatchLegacyText(
@@ -160,8 +204,14 @@ class _HostFollowerUpdateComposerSheetState
     });
     try {
       // provider-graph: ownership-widget-async-callback:_HostFollowerUpdateComposerSheetState._submit:await:widget.onSubmitPost watch CAT156 -- Existing bounded review signal at _HostFollowerUpdateComposerSheetState._submit (await:widget.onSubmitPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      await widget.onSubmitPost(requestId: _requestId, text: text);
-      if (mounted) Navigator.of(context).pop(true);
+      final response = await widget.onSubmitPost(
+        requestId: _requestId,
+        text: text,
+        whatsapp: widget.whatsappAvailable && _whatsapp,
+      );
+      if (mounted) {
+        Navigator.of(context).pop(HostFollowerUpdatePosted(response));
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() {

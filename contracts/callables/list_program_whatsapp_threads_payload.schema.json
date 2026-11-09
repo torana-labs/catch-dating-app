@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_whatsapp_threads_payload.schema.json",
+  "title": "ListProgramWhatsappThreadsCallablePayload",
+  "description": "List one programme's guest WhatsApp threads, newest first. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "filter"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "needsYou",
+        "handled",
+        "all"
+      ]
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 600
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+}

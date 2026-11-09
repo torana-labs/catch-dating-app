@@ -142,6 +142,84 @@ List<EventSuccessAssignment> courtsAssignments({int rounds = 8}) {
   ];
 }
 
+/// Doubles on two courts: ten players, eight on court and two on the bench
+/// each round. Round 0 puts 0+1 against 2+3 on court 1 and 4+5 against
+/// 6+7 on court 2; 8 and 9 sit out. Round 1 benches 0 and 1.
+List<EventSuccessAssignment> doublesCourtsAssignments() {
+  final slots = <int, List<EventSuccessRotationSlot>>{};
+  final sitOuts = <int, List<EventSuccessSitOutSlot>>{};
+  const rounds = [
+    [
+      [0, 1, 2, 3],
+      [4, 5, 6, 7],
+    ],
+    [
+      [2, 8, 4, 9],
+      [3, 6, 5, 7],
+    ],
+  ];
+  for (var round = 0; round < rounds.length; round++) {
+    final start = formatsMorning.add(Duration(minutes: 15 * round));
+    final end = start.add(const Duration(minutes: 15));
+    final playing = <int>{};
+    for (var court = 0; court < rounds[round].length; court++) {
+      final [a, b, c, d] = rounds[round][court];
+      playing.addAll([a, b, c, d]);
+      for (final (self, partner, opponents) in [
+        (a, b, [c, d]),
+        (b, a, [c, d]),
+        (c, d, [a, b]),
+        (d, c, [a, b]),
+      ]) {
+        slots
+            .putIfAbsent(self, () => [])
+            .add(
+              EventSuccessRotationSlot(
+                roundIndex: round,
+                label: 'Round ${round + 1} · Court ${court + 1}',
+                startsAt: start,
+                endsAt: end,
+                peerUid: formatsUid(partner),
+                partnerUid: formatsUid(partner),
+                opponentUids: [for (final o in opponents) formatsUid(o)],
+                courtIndex: court,
+                peerCount: 3,
+                compatibility: 'social',
+                unitKind: 'pairs',
+                unitIndex: court,
+              ),
+            );
+      }
+    }
+    for (var i = 0; i < 10; i++) {
+      if (playing.contains(i)) continue;
+      sitOuts
+          .putIfAbsent(i, () => [])
+          .add(
+            EventSuccessSitOutSlot(
+              roundIndex: round,
+              label: 'Round ${round + 1}',
+              startsAt: start,
+              endsAt: end,
+              whySummary: 'Sitting out this round.',
+              whyCodes: const ['sit_out'],
+              benchNote: EventSuccessBenchNote.commonArea,
+            ),
+          );
+    }
+  }
+  return [
+    for (var i = 0; i < 10; i++)
+      _assignment(
+        uid: formatsUid(i),
+        moduleId: 'guided_rotations',
+        event: courtsEvent,
+        rotationSlots: slots[i] ?? const [],
+        sitOutSlots: sitOuts[i] ?? const [],
+      ),
+  ];
+}
+
 EventSuccessAssignment _assignment({
   required String uid,
   required String moduleId,

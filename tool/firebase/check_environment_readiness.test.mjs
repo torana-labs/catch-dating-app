@@ -202,7 +202,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
     21,
   );
   // The event-assistance guest keyring is read only by dormant Functions.
-  assert.equal(selected("dev", ["functions"]).length, 33);
+  assert.equal(selected("dev", ["functions"]).length, 34);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],

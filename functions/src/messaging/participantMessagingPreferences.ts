@@ -58,8 +58,15 @@ async function summarize(db: FirebaseFirestore.Firestore,
   const channel = value?.whatsapp;
   const receiptId = channel?.currentReceiptId ?? null;
   const purposes: NonNullable<Page["catchPreference"]["purposes"]> = {};
-  for (const purpose of ["eventOperations", "marketing"] as const) {
-    if (scope === "catch" && purpose === "eventOperations") continue;
+  // Follower updates (organizer WhatsApp follow-by-phone) count towards the
+  // organizer's overall status so a follower can withdraw it here, but the
+  // listed purposes stay the two the settings page names.
+  const followerUpdates: typeof purposes = {};
+  for (const purpose of ["eventOperations", "marketing",
+    "followerUpdates"] as const) {
+    if (scope === "catch" && purpose !== "marketing") continue;
+    const target = purpose === "followerUpdates" ? followerUpdates :
+      purposes;
     const scoped = value?.whatsappPurposes?.[purpose];
     if (!scoped) continue;
     const scopedReceiptId = scoped.currentReceiptId;
@@ -67,7 +74,8 @@ async function summarize(db: FirebaseFirestore.Firestore,
         (channel?.status === "optedOut" && channel.updatedAt &&
           (!scoped.updatedAt ||
             channel.updatedAt.toMillis() >= scoped.updatedAt.toMillis()))) {
-      purposes[purpose] = {status: "optedOut", receiptId: scopedReceiptId};
+      target[purpose === "followerUpdates" ? "marketing" : purpose] =
+        {status: "optedOut", receiptId: scopedReceiptId};
       continue;
     }
     const scopedReceipt = scopedReceiptId ?
@@ -76,12 +84,13 @@ async function summarize(db: FirebaseFirestore.Firestore,
         "organizerCommunicationPermissionReceipts")
         .doc(scopedReceiptId))).data() as CatchReceipt | OrganizerReceipt |
           undefined : undefined;
-    purposes[purpose] = {status:
+    target[purpose === "followerUpdates" ? "marketing" : purpose] = {status:
       scoped.status === "optedIn" && scoped.evidenceStatus === "complete" &&
       scopedReceipt?.uid === value?.uid &&
       scopedReceipt?.purpose === purpose &&
       scopedReceipt?.endpointE164 === scoped.endpointE164 &&
-      scopedReceipt?.sourceResponseId === scoped.sourceResponseId &&
+      (scopedReceipt?.sourceResponseId ?? null) ===
+        (scoped.sourceResponseId ?? null) &&
       scopedReceipt?.decision === "optedIn" &&
       scopedReceipt?.evidenceStatus === "complete" &&
       typeof scopedReceipt?.consentCopyHash === "string" &&
@@ -93,7 +102,8 @@ async function summarize(db: FirebaseFirestore.Firestore,
   }
   const firstActive = purposes.eventOperations?.status === "optedIn" ?
     purposes.eventOperations : purposes.marketing?.status === "optedIn" ?
-      purposes.marketing : null;
+      purposes.marketing : followerUpdates.marketing?.status === "optedIn" ?
+        followerUpdates.marketing : null;
   if (firstActive) {
     return {status: "optedIn", receiptId: firstActive.receiptId, purposes};
   }
@@ -229,7 +239,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
       [previous?.whatsapp.currentReceiptId ?? null,
         ...(scope === "organizer" ?
           [previous?.whatsappPurposes?.eventOperations?.currentReceiptId ??
-            null] : []),
+            null,
+          (previous as OrganizerPreference | null)?.whatsappPurposes
+            ?.followerUpdates?.currentReceiptId ?? null] : []),
         previous?.whatsappPurposes?.marketing?.currentReceiptId ?? null];
     if (!currentIds.includes(data.expectedReceiptId) ||
         (data.expectedReceiptId === null &&
@@ -248,7 +260,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
       (previous?.whatsappPurposes?.eventOperations?.updatedAt?.toMillis() ??
         -1) + 1,
       (previous?.whatsappPurposes?.marketing?.updatedAt?.toMillis() ??
-        -1) + 1));
+        -1) + 1,
+      ((previous as OrganizerPreference | null)?.whatsappPurposes
+        ?.followerUpdates?.updatedAt?.toMillis() ?? -1) + 1));
     const channel: CatchPreference["whatsapp"] = {
       status: "optedOut", evidenceStatus: "complete", currentReceiptId:
         receiptId,
@@ -285,7 +299,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
         unknownOrganizerCommunicationChannel() : channel,
       whatsappPurposes: purpose ? {
         ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
-      } : {eventOperations: channel, marketing: channel},
+      } : {eventOperations: channel, marketing: channel,
+        ...(previous?.whatsappPurposes?.followerUpdates ?
+          {followerUpdates: channel} : {})},
       sms: (previous as OrganizerPreference | null)?.sms ??
           unknownOrganizerCommunicationChannel(), createdAt:
             previous?.createdAt ?? now,

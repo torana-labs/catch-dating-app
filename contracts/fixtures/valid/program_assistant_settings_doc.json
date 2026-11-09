@@ -1,0 +1,35 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "enabled": true,
+  "languages": [
+    "en",
+    "hi"
+  ],
+  "replyWithin": "fourHours",
+  "escalationStaffUids": [
+    "staff-1"
+  ],
+  "neverDoes": [
+    "changesBookings",
+    "sharesOtherGuests",
+    "guesses",
+    "promisesForPlanner"
+  ],
+  "tone": "warm",
+  "dailyTokenBudget": 200000,
+  "answerTopics": [
+    "schedule",
+    "venues",
+    "dressCode",
+    "travel",
+    "stay",
+    "rsvp"
+  ],
+  "attachmentReads": [],
+  "updatedByUid": "manager-1",
+  "updatedAtMillis": 1800000000000,
+  "revision": 1,
+  "lastRequestId": "settings-cmd-1",
+  "lastRequestHash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

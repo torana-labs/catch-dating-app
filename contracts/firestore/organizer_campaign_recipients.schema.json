@@ -28,6 +28,17 @@
         "messagingConsent": {"type": ["object", "null"], "additionalProperties": false, "required": ["granted", "grantedAt", "source"], "properties": {"granted": {"type": "boolean"}, "grantedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}, "source": {"type": ["string", "null"], "enum": ["householdRsvpLink", "staff", "import", "whatsappStop", null]}}, "description": "Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch."}
       }
     },
+    "followerRecipient": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["uid", "postId", "permissionReceiptId"],
+      "description": "Follower identity for recipientSource=organizerFollowers rows (route organizerFollowerWhatsapp); contactId is null on these rows. Send time re-reads the active follow, the followerUpdates consent bound to endpointE164 and any STOP for the endpoint.",
+      "properties": {
+        "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "postId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "permissionReceiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+      }
+    },
     "channel": {"const": "whatsapp"},
     "eligibility": {"type": "string", "enum": ["eligible", "excluded"]},
     "exclusionReason": {"type": ["string", "null"], "enum": [null, "optedOut", "noVerifiedEndpoint", "duplicateEndpoint", "frequencyCapped", "providerBlocked", "invalidEndpoint", "unknownPermission", "identityUnresolved", "deleted"]},
