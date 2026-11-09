@@ -67,7 +67,8 @@ export function ownBillView(bill: Bill): Result["bills"][number] | null {
     totalMinor: bill.totalMinor,
     invoiceNumber: bill.invoiceNumber,
     dueAtMillis: bill.dueAtMillis,
-    paymentUrl: status === "sent" ? bill.paymentLink?.url ?? null : null,
+    paymentUrl: status === "sent" ? bill.razorpayInvoice?.url ??
+      bill.paymentLink?.url ?? null : null,
     paidAtMillis: bill.paidAtMillis,
     paidMinor: bill.paidMinor,
   };

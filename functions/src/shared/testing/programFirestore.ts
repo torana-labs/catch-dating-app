@@ -368,7 +368,10 @@ function resolveSentinel(current: unknown, value: unknown) {
 }
 
 function matchWhere(data: FakeData, where: Where): boolean {
-  const value = data[where.field];
+  // Dotted field paths reach into maps, as in Firestore.
+  const value = where.field.split(".").reduce<unknown>((current, key) =>
+    current && typeof current === "object" ?
+      (current as FakeData)[key] : undefined, data);
   if (where.op === "==") return value === where.value;
   if (where.op === "array-contains") {
     return Array.isArray(value) && value.includes(where.value);

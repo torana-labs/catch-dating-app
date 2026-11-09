@@ -123,11 +123,26 @@
         }
       ]
     },
+    "razorpayInvoice": {
+      "description": "The Razorpay invoice (a numbered invoice document with its own hosted page) on Catch's account that the host pays from. Bills sent before invoices carry paymentLink instead. Absent until created.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["invoiceId", "url"],
+          "properties": {
+            "invoiceId": {"type": "string", "pattern": "^inv_[A-Za-z0-9]{1,40}$"},
+            "url": {"type": "string", "pattern": "^https://", "maxLength": 300}
+          }
+        }
+      ]
+    },
     "sentAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "reminders": {"type": "array", "maxItems": 24, "items": {"$ref": "#/definitions/millis"}},
     "paidAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "paidMinor": {"anyOf": [{"$ref": "#/definitions/minor"}, {"type": "null"}]},
-    "paidVia": {"description": "planPurchase: the tools-only purchase prepaid this cycle.", "enum": ["paymentLink", "manual", "planPurchase", null]},
+    "paidVia": {"description": "planPurchase: the tools-only purchase prepaid this cycle. invoice: paid from its Razorpay invoice.", "enum": ["paymentLink", "invoice", "manual", "planPurchase", null]},
     "writtenOffAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "history": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/historyEntry"}},
     "generatedAtMillis": {"$ref": "#/definitions/millis"},

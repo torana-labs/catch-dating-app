@@ -61,6 +61,18 @@ export const notificationCopyEn = {
     "body": "Open the live guide for your {eventLabel} from {locationName}.",
     "audience": "consumer",
     "owner": "product"
+  },
+  "organizerBillIssued": {
+    "title": "Catch bill issued",
+    "body": "Your Catch bill for {period} has been issued.",
+    "audience": "host",
+    "owner": "product"
+  },
+  "organizerBillReminder": {
+    "title": "Catch bill reminder",
+    "body": "Your Catch bill for {period} is still open.",
+    "audience": "host",
+    "owner": "product"
   }
 } as const;
 

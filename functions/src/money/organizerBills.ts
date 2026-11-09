@@ -23,6 +23,8 @@ import {validateOrganizerBillDocument} from
   "../shared/generated/validators/organizerBillDocument";
 import {cycleBillDueDays} from "./billCycles";
 import {dueAtMillis, monthOf} from "./billComputation";
+import {razorpayBillInvoices, type BillInvoiceClient} from "./billInvoices";
+import {enqueueBillNotice} from "./billNotices";
 import {
   razorpayBillPaymentLinks,
   type BillPaymentLinkClient,
@@ -46,12 +48,17 @@ export interface BillDeps {
   db: () => Db;
   now: () => number;
   links: () => BillPaymentLinkClient;
+  invoices: () => BillInvoiceClient;
+  /** Queues the out-of-app notice; tests replace it. */
+  notify?: (bill: Bill, kind: "issued" | "reminder") => Promise<void>;
 }
 
 export const defaultBillDeps: BillDeps = {
   db: () => admin.firestore(),
   now: Date.now,
   links: () => razorpayBillPaymentLinks(createRazorpayClient(),
+    razorpayRuntimeProject()),
+  invoices: () => razorpayBillInvoices(createRazorpayClient(),
     razorpayRuntimeProject()),
 };
 
@@ -138,11 +145,20 @@ async function actOnBill(deps: BillDeps, actor: AdminContext, data: Payload,
     });
     return next;
   });
+  let delivered = after;
   if ((action === "send" || action === "remind") && !after.paymentLink &&
-      after.totalMinor >= 100) {
-    await attachPaymentLink(deps, after);
+      !after.razorpayInvoice && after.totalMinor >= 100) {
+    delivered = await attachInvoice(deps, after) ?? after;
   }
-  return after;
+  if (action === "send" || action === "remind") {
+    await (deps.notify ?? ((bill, kind) => enqueueBillNotice({db: deps.db,
+      now: deps.now}, bill, kind)))(delivered,
+      action === "send" ? "issued" : "reminder").catch((error) => {
+      logger.error("Bill notice was not queued.", {billId: delivered.billId,
+        error: error instanceof Error ? error.message : String(error)});
+    });
+  }
+  return delivered;
 }
 
 /**
@@ -164,28 +180,78 @@ export function billDueAtMillis(bill: Bill, sentAtMillis: number,
 }
 
 /**
- * Creates the bill's payment link and stores it. A failure leaves the bill
- * sent without a link; the next reminder tries again.
+ * Creates the bill's Razorpay invoice and stores it; when Razorpay refuses
+ * the invoice, a payment link instead, so the host can still pay. A failure
+ * of both leaves the bill sent with neither; the next reminder tries again.
  * @param {BillDeps} deps Dependencies.
  * @param {Bill} bill A sent bill.
- * @return {Promise<void>} Resolves once attempted.
+ * @return {Promise<Bill|null>} The bill with its invoice or link, or null.
  */
-async function attachPaymentLink(deps: BillDeps, bill: Bill): Promise<void> {
-  let link: {linkId: string; url: string};
+async function attachInvoice(deps: BillDeps, bill: Bill):
+  Promise<Bill | null> {
+  let invoice: {invoiceId: string; url: string} | null = null;
+  let link: {linkId: string; url: string} | null = null;
   try {
-    link = await deps.links().create(bill);
+    invoice = await deps.invoices().create(bill);
   } catch (error) {
-    logger.warn("Bill payment link was not created.", {billId: bill.billId,
-      error: error instanceof Error ? error.message : String(error)});
-    return;
+    logger.warn("Bill invoice was not created; trying a payment link.",
+      {billId: bill.billId,
+        error: error instanceof Error ? error.message : String(error)});
+    try {
+      link = await deps.links().create(bill);
+    } catch (linkError) {
+      logger.warn("Bill payment link was not created.", {billId: bill.billId,
+        error: linkError instanceof Error ? linkError.message :
+          String(linkError)});
+      return null;
+    }
   }
   const db = deps.db();
   const ref = db.collection(organizerBillsCollection).doc(bill.billId);
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const current = (await tx.get(ref)).data() as Bill | undefined;
-    if (!current || current.paymentLink || current.status !== "sent") return;
-    tx.set(ref, checked({...current, paymentLink: link,
-      revision: current.revision + 1, updatedAtMillis: deps.now()}));
+    if (!current || current.paymentLink || current.razorpayInvoice ||
+        current.status !== "sent") return current ?? null;
+    const next = checked({...current,
+      ...(invoice ? {razorpayInvoice: invoice} : {paymentLink: link}),
+      revision: current.revision + 1, updatedAtMillis: deps.now()});
+    tx.set(ref, next);
+    return next;
+  });
+}
+
+/**
+ * Marks a bill paid from its Razorpay invoice, once Razorpay says the invoice
+ * is paid in full. Ignores invoices made by another environment.
+ * @param {BillDeps} deps Dependencies.
+ * @param {string} invoiceId Paid invoice.
+ * @param {string} projectId This environment's project.
+ * @return {Promise<boolean>} Whether a bill was marked paid.
+ */
+export async function markBillPaidFromInvoice(
+  deps: Pick<BillDeps, "db" | "now" | "invoices">, invoiceId: string,
+  projectId: string): Promise<boolean> {
+  const invoice = await deps.invoices().fetch(invoiceId);
+  if (invoice.project !== projectId || !invoice.billId ||
+      invoice.status !== "paid") {
+    return false;
+  }
+  const db = deps.db();
+  const ref = db.collection(organizerBillsCollection).doc(invoice.billId);
+  return db.runTransaction(async (tx) => {
+    const bill = (await tx.get(ref)).data() as Bill | undefined;
+    if (!bill || bill.status !== "sent" ||
+        bill.razorpayInvoice?.invoiceId !== invoiceId ||
+        invoice.amountPaid < bill.totalMinor) return false;
+    const now = deps.now();
+    const next: Bill = {...bill, status: "paid", paidAtMillis: now,
+      paidMinor: invoice.amountPaid, paidVia: "invoice",
+      revision: bill.revision + 1, updatedAtMillis: now,
+      history: withHistory(bill, "paid", now, null, "Paid by invoice")};
+    const credit = await prepareNominatorCredit(db, tx, next, now);
+    tx.set(ref, checked(next));
+    credit();
+    return true;
   });
 }
 
@@ -197,7 +263,8 @@ async function attachPaymentLink(deps: BillDeps, bill: Bill): Promise<void> {
  * @param {string} projectId This environment's project.
  * @return {Promise<boolean>} Whether a bill was marked paid.
  */
-export async function markBillPaidFromLink(deps: BillDeps, linkId: string,
+export async function markBillPaidFromLink(
+  deps: Pick<BillDeps, "db" | "now" | "links">, linkId: string,
   projectId: string): Promise<boolean> {
   const link = await deps.links().fetch(linkId);
   if (link.project !== projectId || !link.billId || link.status !== "paid") {
