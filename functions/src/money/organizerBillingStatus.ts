@@ -21,6 +21,7 @@ import {validateGetOrganizerBillingStatusCallablePayload} from
   "../shared/generated/validators/getOrganizerBillingStatusInput";
 import {validateGetOrganizerBillingStatusCallableResponse} from
   "../shared/generated/validators/getOrganizerBillingStatusOutput";
+import {planStatusView, readBillingPlan} from "./organizerBillingPlan";
 import {
   computeTrialStatus,
   trialAnchorsFromFacts,
@@ -87,8 +88,10 @@ export async function getOrganizerBillingStatusHandler(
     throw new HttpsError("permission-denied",
       "Only the organizer's owner can see its billing.");
   }
-  const result: Result = {organizerId,
-    trial: await readOrganizerTrialStatus(db, organizerId, deps.now())};
+  const [trial, plan] = await Promise.all([
+    readOrganizerTrialStatus(db, organizerId, deps.now()),
+    readBillingPlan(db, organizerId)]);
+  const result: Result = {organizerId, trial, plan: planStatusView(plan)};
   if (!validateGetOrganizerBillingStatusCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid billing status.");
   }

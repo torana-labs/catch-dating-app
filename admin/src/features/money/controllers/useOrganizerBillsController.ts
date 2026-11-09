@@ -28,6 +28,8 @@ export interface OrganizerBillsController {
   latest: OrganizerMonthBreakdown | null;
   /** The organizer's free trial, computed by the server. */
   trial: BillsMonth["trial"];
+  /** The organizer's Catch plan: ticketing or tools-only. */
+  billingPlan: BillsMonth["billingPlan"];
   loadState: "loading" | "error" | "ready";
   loadError: string | null;
 }
@@ -85,6 +87,7 @@ export function useOrganizerBillsController(organizerId: string): OrganizerBills
     summary: organizerMoneySummary(bills),
     latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null,
     trial: query.data?.trial ?? null,
+    billingPlan: query.data?.billingPlan ?? null,
     loadState: query.isError ? "error" : query.data ? "ready" : "loading",
     loadError: query.error instanceof Error ? query.error.message : null,
   };

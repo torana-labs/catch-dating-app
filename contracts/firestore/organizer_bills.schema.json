@@ -127,7 +127,7 @@
     "reminders": {"type": "array", "maxItems": 24, "items": {"$ref": "#/definitions/millis"}},
     "paidAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "paidMinor": {"anyOf": [{"$ref": "#/definitions/minor"}, {"type": "null"}]},
-    "paidVia": {"enum": ["paymentLink", "manual", null]},
+    "paidVia": {"description": "planPurchase: the tools-only purchase prepaid this cycle.", "enum": ["paymentLink", "manual", "planPurchase", null]},
     "writtenOffAtMillis": {"$ref": "#/definitions/nullableMillis"},
     "history": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/historyEntry"}},
     "generatedAtMillis": {"$ref": "#/definitions/millis"},

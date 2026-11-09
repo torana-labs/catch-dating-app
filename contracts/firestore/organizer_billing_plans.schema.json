@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_billing_plans.schema.json",
+  "title": "OrganizerBillingPlanDocument",
+  "description": "One organizer's choice of Catch plan (#1126): ticketing (commission on sales, the default) or tools-only (a flat fee per billing cycle and no commission, never both in one cycle). Tools-only is bought only on the web: buying creates a Razorpay payment link on Catch's own account for one tools-only fee, which prepays the first tools-only cycle; the payment_link.paid webhook marks the plan active after reading the link back. The plan applies from the next billing cycle, never mid-cycle. Cancelling ends tools-only when the current cycle closes, and never before the prepaid cycle. Server-only; owners act through manageOrganizerBillingPlan and staff read it through adminManageOrganizerBills.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBillingPlans",
+  "x-firestore-path": "organizerBillingPlans/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Functions organizer billing (manageOrganizerBillingPlan, Razorpay payment link webhook, daily cycle generation)",
+  "required": ["schemaVersion", "organizerId", "plan", "status", "startsAtMillis", "endsAtMillis", "purchase",
+    "prepaidBillId", "revision", "history", "updatedAtMillis"],
+  "definitions": {
+    "millis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "nullableMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991}
+  },
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "plan": {"enum": ["ticketing", "toolsOnly"]},
+    "status": {
+      "description": "pendingPayment: tools-only bought and its payment link not yet paid. active: paid; tools-only applies from startsAtMillis (null: from the first billing cycle) until endsAtMillis (null: until cancelled). ended: back on ticketing.",
+      "enum": ["pendingPayment", "active", "ended"]
+    },
+    "startsAtMillis": {"$ref": "#/definitions/nullableMillis", "description": "The first billing cycle start tools-only applies to; null until the organizer's first cycle is known."},
+    "endsAtMillis": {"$ref": "#/definitions/nullableMillis", "description": "Cycles starting at or after this are ticketing again."},
+    "purchase": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["linkId", "url", "amountMinor", "feeMinor", "createdAtMillis", "paidAtMillis", "paidMinor"],
+          "properties": {
+            "linkId": {"type": "string", "pattern": "^plink_[A-Za-z0-9]{1,40}$"},
+            "url": {"type": "string", "pattern": "^https://", "maxLength": 300},
+            "amountMinor": {"type": "integer", "minimum": 100, "maximum": 100000000000, "description": "What the link asks for: the tools-only fee plus GST while registered."},
+            "feeMinor": {"type": "integer", "minimum": 0, "maximum": 100000000000},
+            "createdAtMillis": {"$ref": "#/definitions/millis"},
+            "paidAtMillis": {"$ref": "#/definitions/nullableMillis"},
+            "paidMinor": {"type": ["integer", "null"], "minimum": 0, "maximum": 100000000000}
+          }
+        }
+      ]
+    },
+    "prepaidBillId": {"type": ["string", "null"], "maxLength": 200, "description": "The cycle bill the purchase paid for, once that cycle is billed."},
+    "revision": {"type": "integer", "minimum": 1},
+    "history": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["atMillis", "action", "byUid"],
+        "properties": {
+          "atMillis": {"$ref": "#/definitions/millis"},
+          "action": {"enum": ["bought", "paid", "cancelled", "ended", "prepaidUsed"]},
+          "byUid": {"type": ["string", "null"], "maxLength": 128}
+        }
+      }
+    },
+    "updatedAtMillis": {"$ref": "#/definitions/millis"}
+  }
+}

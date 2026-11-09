@@ -201,3 +201,17 @@ export function trialLabel(trial: BillsMonth["trial"]): string | null {
   default: return null;
   }
 }
+
+/** An organizer's Catch plan as one line of status for staff. */
+export function billingPlanLabel(plan: BillsMonth["billingPlan"], nowMillis: number): string {
+  if (!plan || plan.plan === "ticketing" || plan.status === "ended") return "Ticketing (commission on sales)";
+  if (plan.status === "pendingPayment") return "Tools-only bought; waiting for its payment";
+  if (plan.endsAtMillis !== null && plan.endsAtMillis <= nowMillis) {
+    return `Ticketing again since ${shortDate(plan.endsAtMillis)}`;
+  }
+  const from = plan.startsAtMillis === null ? "from the first cycle" :
+    plan.startsAtMillis > nowMillis ? `from ${shortDate(plan.startsAtMillis)}` : `since ${shortDate(plan.startsAtMillis)}`;
+  const until = plan.endsAtMillis === null ? "" : `, until ${shortDate(plan.endsAtMillis)}`;
+  const prepaid = plan.prepaidBillId === null ? " · first cycle prepaid" : "";
+  return `Tools-only ${from}${until}${prepaid}`;
+}

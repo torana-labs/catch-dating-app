@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_billing_plan_payload.schema.json",
+  "title": "ManageOrganizerBillingPlanCallablePayload",
+  "description": "An organizer's owner reads or changes the Catch plan on the host billing website. read returns the plan with its price and payment link. buyToolsOnly creates a Razorpay payment link on Catch's account for one tools-only fee (plus GST while registered), which prepays the first tools-only cycle; the plan becomes active when Razorpay reports it paid. cancelToolsOnly drops an unpaid purchase, or ends an active plan when the current billing cycle closes. Changes name the revision they reviewed (0 when no plan exists). Never called from the native Host app, which carries no prices or purchases.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Organizer owners (host billing website)",
+  "required": ["organizerId", "action", "expectedRevision"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "action": {"enum": ["read", "buyToolsOnly", "cancelToolsOnly"]},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 0}
+  }
+}

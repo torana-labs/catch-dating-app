@@ -23,6 +23,7 @@ function renderMonth(status: typeof sample.status, trial: Trial = null) {
         summary: organizerMoneySummary([bill]),
         latest: organizerMonthBreakdown(bill),
         trial,
+        billingPlan: null,
         loadState: "ready",
         loadError: null,
       }}
@@ -58,5 +59,11 @@ describe("OrganizerBillsWorkspace", () => {
       daysLeft: 12});
     expect(screen.getByText("Free trial")).toBeTruthy();
     expect(screen.getByText(/12 days left, ends 19 Nov/u)).toBeTruthy();
+  });
+
+  it("shows the organizer's plan", () => {
+    renderMonth("sent");
+    expect(screen.getByText("Plan")).toBeTruthy();
+    expect(screen.getByText("Ticketing (commission on sales)")).toBeTruthy();
   });
 });

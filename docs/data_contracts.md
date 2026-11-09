@@ -5051,6 +5051,19 @@ than 7 days after it is sent. Sending takes the next number of
 year (`2026-27/031`). All are server-only and reached through
 `adminManageOrganizerBills` and `adminManageMoneySettings`.
 
+`organizerBillingPlans/{organizerId}` is the organizer's plan: ticketing (the
+default) or tools-only. Tools-only is bought only on the host billing website
+through `manageOrganizerBillingPlan`, as a Razorpay payment link on Catch's
+account for one tools-only fee (a plan-based invoice; #1124 rules out
+subscriptions and mandates). The fee prepays the first tools-only cycle, whose
+bill is made already paid (`paidVia: planPurchase`, `prepaidBillId`). The plan
+is `pendingPayment` until `payment_link.paid` reads the link back, then
+`active` from `startsAtMillis`, the next billing cycle (never the cycle under
+way), until `endsAtMillis`. Cancelling ends it when the cycle under way closes,
+never before the prepaid cycle. A tools-only cycle bills the flat fee and no
+commission, whatever was sold. The native Host app reads only the plan's status
+through `getOrganizerBillingStatus`; prices and purchases stay on the web.
+
 Bills made before rolling cycles are calendar months, India time
 (`{organizerId}_{YYYY-MM}`, `periodKind` absent or `calendarMonth`); they keep
 their figures and can still be sent, reminded, paid or written off. The

@@ -15,6 +15,7 @@ import {
   verifyRazorpayWebhookSignature,
 } from "./razorpay";
 import {markBillPaidFromLink} from "../money/organizerBills";
+import {markToolsOnlyPaidFromLink} from "../money/organizerBillingPlan";
 import {razorpayBillPaymentLinks} from "../money/billPaymentLinks";
 import {
   assertRazorpayOrderOwnership,
@@ -79,12 +80,16 @@ export async function razorpayWebhookHandler(
   }
 
   if (event.event === "payment_link.paid") {
-    // An organizer paying Catch's bill; the bill is read back from Razorpay.
+    // An organizer paying Catch's bill or buying tools-only; the link is read
+    // back from Razorpay.
     const linkId = paymentLinkId(event);
     const projectId = (deps.runtimeProjectId ?? razorpayRuntimeProject)();
-    await markBillPaidFromLink({db: () => db, now: Date.now,
-      links: () => razorpayBillPaymentLinks(deps.createClient(), projectId)},
-    linkId, projectId);
+    const billDeps = {db: () => db, now: Date.now,
+      links: () => razorpayBillPaymentLinks(deps.createClient(), projectId)};
+    // A link is a bill's or a tools-only purchase's; each reads it back.
+    if (!await markBillPaidFromLink(billDeps, linkId, projectId)) {
+      await markToolsOnlyPaidFromLink(billDeps, linkId, projectId);
+    }
     return;
   }
 

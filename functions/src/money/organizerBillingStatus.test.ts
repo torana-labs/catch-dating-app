@@ -44,7 +44,9 @@ test("the owner sees days left in the free trial", async () => {
       firstEvent + 18 * dayMillis + 5));
   assert.deepEqual(result, {organizerId: "org", trial: {state: "active",
     anchor: "firstEvent", days: 30, startsAtMillis: firstEvent,
-    endsAtMillis: firstEvent + 30 * dayMillis, daysLeft: 12}});
+    endsAtMillis: firstEvent + 30 * dayMillis, daysLeft: 12},
+  plan: {plan: "ticketing", status: "none", startsAtMillis: null,
+    endsAtMillis: null}});
 });
 
 test("the response carries status only, no prices", async () => {
