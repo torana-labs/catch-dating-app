@@ -19274,6 +19274,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostOrganizerBillToolsOnly => 'Tools-only plan';
 
   @override
+  String hostOrganizerBillWithRefundCredit({required String details}) {
+    return '$details · includes a refund credit';
+  }
+
+  @override
+  String get hostOrganizerBillCoveredByRefundCredit =>
+      'Covered by a refund credit';
+
+  @override
   String hostOrganizerTrialActive({required int days}) {
     String _temp0 = intl.Intl.pluralLogic(
       days,

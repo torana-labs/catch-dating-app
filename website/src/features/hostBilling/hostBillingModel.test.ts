@@ -34,6 +34,16 @@ describe("host billing model", () => {
     expect(month!.periodKind).toBe("calendarMonth");
   });
 
+  it("reads a bill's refund credit, and none from an older server", () => {
+    const [credited, older] = parseBills({bills: [
+      {billId: "a", month: "2026-12", status: "sent", totalMinor: 2_500,
+        refundCredit: {appliedMinor: 2_500, carriedForwardMinor: 500}},
+      {billId: "b", month: "2026-12", status: "sent", totalMinor: 5_000},
+    ]});
+    expect([credited!.refundCreditMinor, credited!.refundCreditCarriedMinor]).toEqual([2_500, 500]);
+    expect([older!.refundCreditMinor, older!.refundCreditCarriedMinor]).toEqual([0, 0]);
+  });
+
   it("offers Pay only for an unpaid bill with an https invoice", () => {
     const [paid, sentHttp] = parseBills({bills: [
       {billId: "a_2026-10", month: "2026-10", status: "paid", totalMinor: 10, paymentUrl: "https://x"},

@@ -68,6 +68,18 @@ describe("Money", () => {
     expect(bills.act).toHaveBeenCalledWith("writeOff", "");
   });
 
+  it("takes a refund credit off the bill, line by line", () => {
+    const padel = month.bills.find((bill) => bill.organizerId === "sample-padel")!;
+    const credited = {...padel, periodKind: "cycle" as const, cycleNumber: 2, refundCredit: {
+      availableMinor: 2_500, appliedMinor: 2_500, carriedForwardMinor: 0, lines: [{
+        billId: "sample-padel_c2026-11-09", cycleNumber: 1, invoiceNumber: "2026-27/031",
+        refundedMinor: 50_000, creditMinor: 2_500, appliedMinor: 2_500}]}};
+    renderMoney("bills", billsController("sample-padel", {selected: credited, rows: [credited]}), issuesController(0));
+    expect(screen.getByText("Refund credit")).toBeTruthy();
+    expect(screen.getByText("₹25 owed from 2026-27/031 (₹500 refunded after it was sent)")).toBeTruthy();
+    expect(screen.getByText("−₹25")).toBeTruthy();
+  });
+
   it("offers no decision on a paid bill", () => {
     renderMoney("bills", billsController("sample-afterfly"), issuesController(0));
     expect(screen.queryByRole("button", {name: "Record a reminder"})).toBeNull();

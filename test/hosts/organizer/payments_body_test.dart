@@ -78,6 +78,38 @@ void main() {
     ]);
   });
 
+  testWidgets('a refund credit is status text on the bill, never an amount', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      OrganizerPaymentsState(
+        isOwner: true,
+        currencyCode: 'INR',
+        now: organizerNow,
+        setup: razorpaySetup(),
+        bills: [
+          organizerBill(refundCreditAppliedMinor: 2500),
+          organizerBill(
+            id: 'bill-sep',
+            month: DateTime(2026, 9),
+            status: HostOrganizerBillStatus.free,
+            commissionMinor: 0,
+            refundCreditAppliedMinor: 5000,
+            refundCreditCarriedMinor: 45000,
+          ),
+        ],
+      ),
+    );
+
+    expect(find.textContaining('includes a refund credit'), findsOneWidget);
+    expect(find.text('Covered by a refund credit'), findsOneWidget);
+    expect(find.text('Your first 30 days'), findsNothing);
+    // App Store guideline 3.1.3(f): no Catch amount for the credit.
+    expect(find.textContaining('₹25'), findsNothing);
+    expect(find.textContaining('₹450'), findsNothing);
+  });
+
   testWidgets('the plan shows tools-only as status, never its price', (
     tester,
   ) async {
