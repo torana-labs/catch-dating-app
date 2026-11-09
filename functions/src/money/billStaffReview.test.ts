@@ -84,7 +84,8 @@ interface Clock {
 function harness(db: FakeFirestore, clock: Clock) {
   const invoices = new FakeInvoices();
   const notices: string[] = [];
-  const deps: BillDeps = {db: () => db as unknown as FirebaseFirestore.Firestore,
+  const deps: BillDeps = {
+    db: () => db as unknown as FirebaseFirestore.Firestore,
     now: () => clock.now, links: () => noLinks, invoices: () => invoices,
     notify: async (bill, kind) => {
       notices.push(`${bill.billId}:${kind}`);
