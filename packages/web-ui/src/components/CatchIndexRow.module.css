@@ -196,7 +196,7 @@
   justify-content: center;
   gap: var(--catch-space-micro2);
   width: 56px;
-  height: var(--catch-space-s16);
+  height: 64px;
   border-radius: var(--catch-radius-sm);
   background: var(--catch-row-date-fill, var(--catch-theme-tile));
   color: var(--catch-theme-ink);

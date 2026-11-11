@@ -1,5 +1,4 @@
-import {forwardRef} from "react";
-import type {AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode} from "react";
+import type {AnchorHTMLAttributes, ReactNode} from "react";
 import {classNames} from "@catch/web-ui";
 import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 
@@ -41,19 +40,6 @@ export function ButtonLink({
     </a>
   );
 }
-
-export const PlainButton = forwardRef<
-  HTMLButtonElement,
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    children: ReactNode;
-  }
->(function PlainButton({children, className, ...props}, ref) {
-  return (
-    <button className={className} ref={ref} {...props}>
-      {children}
-    </button>
-  );
-});
 
 export function PlainLink({
   children,
