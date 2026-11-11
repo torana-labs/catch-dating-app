@@ -198,9 +198,9 @@ void main() {
       find.text('Only Lantern Lane Social sees this, as part of a summary.'),
       findsOneWidget,
     );
-    expect(find.text('Group chat'), findsOneWidget);
+    expect(find.text('GROUP CHAT'), findsOneWidget);
     expect(find.byKey(SwipeKeys.afterEventGroupChat), findsOneWidget);
-    expect(find.text('Stay in touch'), findsOneWidget);
+    expect(find.text('STAY IN TOUCH'), findsOneWidget);
     expect(find.text('Your team · Harbour Lights'), findsOneWidget);
     expect(find.byKey(SwipeKeys.afterEventNext), findsOneWidget);
     expect(find.text('Next Tuesday'), findsOneWidget);

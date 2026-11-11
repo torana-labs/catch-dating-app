@@ -41,7 +41,7 @@ void main() {
     await pumpAppShellFrames(tester);
 
     expect(find.text('How was it?'), findsOneWidget);
-    expect(find.text('Stay in touch'), findsOneWidget);
+    expect(find.text('STAY IN TOUCH'), findsOneWidget);
     expect(find.text('Nobody else to pick'), findsOneWidget);
   });
 
