@@ -16,6 +16,7 @@ import type {
 type RawTrial = GetOrganizerBillingStatusCallableResponse["trial"];
 type RawPlanView = ManageOrganizerBillingPlanCallableResponse;
 type RawBill = ListOrganizerBillsCallableResponse["bills"][number];
+type RawRefundCredit = NonNullable<RawBill["refundCredit"]>;
 
 export type TrialState = RawTrial["state"];
 export type TrialStatus = Pick<RawTrial, "state" | "startsAtMillis" | "endsAtMillis" | "daysLeft">;
@@ -40,6 +41,10 @@ export interface Bill {
   capped: RawBill["commission"]["capped"];
   gstMinor: RawBill["gst"]["amountMinor"];
   totalMinor: RawBill["totalMinor"];
+  /** Credit taken off this bill for refunds after an earlier bill was sent. */
+  refundCreditMinor?: RawRefundCredit["appliedMinor"];
+  /** Refund credit left over, carried to the next bill. */
+  refundCreditCarriedMinor?: RawRefundCredit["carriedForwardMinor"];
   invoiceNumber: RawBill["invoiceNumber"];
   dueAtMillis: RawBill["dueAtMillis"];
   /** Only for an unpaid bill, and only an https URL. */
@@ -110,6 +115,8 @@ export function parseBills(value: unknown): Bill[] {
       salesMinor: Math.max(0, minor(sales?.grossMinor) - minor(sales?.refundedMinor)),
       commissionMinor: minor(commission?.amountMinor), capped: commission?.capped === true,
       gstMinor: minor(record<RawBill["gst"]>(raw.gst)?.amountMinor), totalMinor: minor(raw.totalMinor),
+      refundCreditMinor: minor(record<RawRefundCredit>(raw.refundCredit)?.appliedMinor),
+      refundCreditCarriedMinor: minor(record<RawRefundCredit>(raw.refundCredit)?.carriedForwardMinor),
       invoiceNumber: typeof raw.invoiceNumber === "string" ? raw.invoiceNumber : null,
       dueAtMillis: millis(raw.dueAtMillis), paymentUrl: status === "sent" ? httpsUrl(raw.paymentUrl) : null,
       paidAtMillis: millis(raw.paidAtMillis)}];

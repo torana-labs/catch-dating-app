@@ -92,7 +92,8 @@ export function billState(bill: Bill, nowMillis: number): MoneyLabel {
   case "paid": return {text: bill.paidAtMillis ? `Paid ${shortDate(bill.paidAtMillis)}` : "Paid", tone: "success"};
   case "writtenOff": return {text: "Written off", tone: "secondary"};
   case "free": return {
-    text: bill.trialEndsAtMillis ? `Free until ${shortDate(bill.trialEndsAtMillis)}` : "Free month",
+    text: bill.refundCredit?.appliedMinor ? "Covered by refund credit" :
+      bill.trialEndsAtMillis ? `Free until ${shortDate(bill.trialEndsAtMillis)}` : "Free month",
     tone: "secondary",
   };
   }
@@ -112,8 +113,22 @@ export function billPeriodName(bill: Bill): string {
 export function billSummary(bill: Bill): string {
   const events = `${bill.sales.eventCount} ${bill.sales.eventCount === 1 ? "event" : "events"}`;
   return [billPeriodName(bill), events, bill.plan?.kind === "toolsOnly" ? "tools only" : null,
-    bill.commission.capped ? "capped" : null]
+    bill.commission.capped ? "capped" : null, bill.refundCredit?.appliedMinor ? "refund credit" : null]
     .filter(Boolean).join(" · ");
+}
+
+/**
+ * A bill's refund credit for staff: what came off for refunds after earlier bills were sent,
+ * from which bills, and what carries to the next bill. Null when there is none.
+ */
+export function refundCreditNote(bill: Bill): {title: string; subtitle: string} | null {
+  const credit = bill.refundCredit;
+  if (!credit) return null;
+  const sources = credit.lines.map((line) =>
+    `${line.invoiceNumber ?? (line.cycleNumber ? `cycle ${line.cycleNumber}` : line.billId)}` +
+    ` (${rupees(line.refundedMinor)} refunded after it was sent)`).join(", ");
+  const carried = credit.carriedForwardMinor > 0 ? `; ${rupees(credit.carriedForwardMinor)} carries to the next bill` : "";
+  return {title: "Refund credit", subtitle: `${rupees(credit.availableMinor)} owed from ${sources}${carried}`};
 }
 
 /** A rate in basis points as a percentage: 400 → 4%, 450 → 4.5%. */

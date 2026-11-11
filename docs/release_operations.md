@@ -2504,6 +2504,10 @@ environment and outcome:
   push, pays the invoice, and the bill reads Paid in Admin and the Host app.
 - [ ] Tools-only: buy on the billing website, pay, confirm the next cycle bills
   ₹5,000 and no commission; cancel and confirm the following cycle is ticketing.
+- [ ] Refund credit: after a test organizer's cycle bill is sent, refund part
+  of one of its bookings in Razorpay test mode; the next cycle bill shows the
+  refund credit in Admin, on the billing website and in the bill email, and
+  the Host app says only "includes a refund credit".
 
 ## Firebase Backend Delivery Order
 

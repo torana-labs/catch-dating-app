@@ -71,5 +71,7 @@ export const hostBillingCopy = {
     invoice: "Invoice {number}",
     pay: "Pay {amount}",
     gst: "includes {gst} GST",
+    refundCredit: "less a {credit} refund credit for refunds after an earlier bill",
+    refundCreditCarried: "{credit} refund credit carries to your next bill",
   },
 } as const;
