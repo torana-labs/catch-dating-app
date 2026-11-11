@@ -84,7 +84,7 @@
   width: calc(100% / var(--catch-pipeline-columns));
   height: 100%;
   padding: var(--catch-space-micro14) var(--catch-space-micro14) 0;
-  color: var(--catch-theme-ink3);
+  color: var(--catch-theme-ink2);
 }
 
 .column + .column { border-left: 1px solid color-mix(in srgb, var(--catch-theme-ink) 8%, transparent); }
