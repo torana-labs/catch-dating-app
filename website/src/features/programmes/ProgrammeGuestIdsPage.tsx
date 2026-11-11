@@ -119,11 +119,11 @@ function MemberEditor({member, draft, setKind, choose, save}: {
         <CatchFilePickerButton accept={accept} label={draft.front ? copy.chosen(copy.front) : copy.front}
           leading={<CatchIcon name={draft.front ? "check" : "addPhoto"} />}
           onChanged={disabled ? null : (file) => choose("front", file)}
-          semanticsLabel={copy.chooseFront(member.displayName)} variant="secondary" />
+          semanticsLabel={draft.front ? copy.chosenFor(copy.front, member.displayName) : copy.chooseFront(member.displayName)} variant="secondary" />
         <CatchFilePickerButton accept={accept} label={draft.back ? copy.chosen(copy.back) : copy.back}
           leading={<CatchIcon name={draft.back ? "check" : "addPhoto"} />}
           onChanged={disabled ? null : (file) => choose("back", file)}
-          semanticsLabel={copy.chooseBack(member.displayName)} variant="secondary" />
+          semanticsLabel={draft.back ? copy.chosenFor(copy.back, member.displayName) : copy.chooseBack(member.displayName)} variant="secondary" />
       </CatchStack>
       <CatchText tone="secondary" variant="body-small">{copy.help}</CatchText>
       <CatchButton fill label={disabled ? copy.saving : copy.save(member.displayName)}

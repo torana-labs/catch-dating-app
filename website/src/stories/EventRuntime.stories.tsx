@@ -30,6 +30,12 @@ const guest = viewerGuest(demoEventId);
 const minute = 60_000;
 // The round sits 92 minutes into the night: round two, Mumbai food.
 const roundNow = startMillis + 92 * minute;
+// The runtime clock never runs behind the wall clock, so pin it: the demo night is a fixed date.
+const pinRoundClock = () => {
+  const realNow = Date.now;
+  Date.now = () => roundNow;
+  return () => { Date.now = realNow; };
+};
 
 const plan = [
   {id: "doors", kind: "gather", offsetMinutes: 0, durationMinutes: 30, title: "Doors and teams"},
@@ -137,6 +143,7 @@ export const JoinCode: Story = {
 /** The round: the Now spotlight, the first hello, Tonight and the help button. */
 export const Round: Story = {
   parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["round"]}},
+  beforeEach: pinRoundClock,
   render: () => <EventRuntimeView controller={controller} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);

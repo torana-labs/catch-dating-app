@@ -64,6 +64,8 @@ export const programmeGuestIdsCopy = {
   chosen: (side: string) => `${side} · added`,
   chooseFront: (name: string) => `Choose the front of ${name}'s ID`,
   chooseBack: (name: string) => `Choose the back of ${name}'s ID`,
+  // Starts with the visible `chosen` label so the accessible name contains it.
+  chosenFor: (side: string, name: string) => `${side} · added to ${name}'s ID. Choose again to replace it`,
   help: "A masked Aadhaar is fine: only the last four digits show. Make sure all four corners are in the photo.",
   save: (name: string) => `Save ${name}'s ID`,
   saving: "Saving…",
@@ -151,7 +153,7 @@ export const programmeHampersCopy = {
   doneBadge: "Done",
   placed: "Placed",
   takePhoto: "Placed · take a photo",
-  takePhotoFor: (room: string) => `Take a photo of the hamper in ${room}`,
+  takePhotoFor: (room: string) => `Placed · take a photo of the hamper in ${room}`,
   photos: "Photos",
   photosNote: "Shared with the planner",
   photoAlt: (room: string) => `Hamper in ${room}`,

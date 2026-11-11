@@ -3,8 +3,8 @@ import type {WebsiteAccount} from "../../firebase";
 export const accountTabs = ["plans", "following", "reviews", "details", "messages", "privacy"] as const;
 export type AccountTab = (typeof accountTabs)[number];
 export type AccountPlan = NonNullable<WebsiteAccount["plans"]>[number];
-export type AccountFollow = NonNullable<WebsiteAccount["follows"]>[number];
-export type AccountReview = NonNullable<WebsiteAccount["reviews"]>[number];
+type AccountFollow = NonNullable<WebsiteAccount["follows"]>[number];
+type AccountReview = NonNullable<WebsiteAccount["reviews"]>[number];
 export type AccountMessages = NonNullable<WebsiteAccount["messages"]>[number];
 
 /** Every section the page reads in its one account request. */

@@ -103,25 +103,20 @@
   },
   "src/shared/ui/primitives/actionControls.tsx": {
     "react/forbid-dom-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-elements": {
-      "count": 3
+      "count": 2
     }
   },
   "src/shared/ui/primitives/actions.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 1
     },
     "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/shared/ui/primitives/actions2.tsx": {
-    "react/forbid-component-props": {
       "count": 1
     }
   },
@@ -135,13 +130,13 @@
   },
   "src/shared/ui/primitives/eventRuntime.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 3
     },
     "react/forbid-dom-props": {
-      "count": 34
+      "count": 31
     },
     "react/forbid-elements": {
-      "count": 46
+      "count": 43
     }
   },
   "src/shared/ui/primitives/feedback.tsx": {
@@ -159,11 +154,8 @@
     "react/forbid-component-props": {
       "count": 2
     },
-    "react/forbid-dom-props": {
-      "count": 1
-    },
     "react/forbid-elements": {
-      "count": 2
+      "count": 1
     }
   },
   "src/shared/ui/primitives/forms2.tsx": {
