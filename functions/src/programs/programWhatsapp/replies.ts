@@ -56,8 +56,8 @@ import {
 // mirrors sendOrganizerWhatsappReply: a durable reservation precedes the
 // Meta call, an uncertain outcome fails closed (state unknown), and a
 // replay of the same key returns the stored message. Each send also writes
-// a whatsappDispatches record (source program, kind service) so delivery receipts
-// route back to the message.
+// a whatsappDispatches record (source program, kind service) so delivery
+// receipts route back to the message.
 
 export type ReplyOperation = ProgramWhatsappReplyOperationDocument;
 
