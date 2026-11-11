@@ -608,7 +608,7 @@ test("a tester whose preferences match nobody gets no catches", async () => {
     {interestedInGenders: ["nonBinary"]});
   const world = suvbotWorldBundle.worlds[0];
   const reply = await run(store, uid, "startDemoWorld", `${world.id} after`);
-  assert.match(reply, /Swipe on the guests/u);
+  assert.match(reply, /Pick the guests you'd like to see again/u);
   assertStoreMatchesContracts(store);
 });
 

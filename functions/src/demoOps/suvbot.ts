@@ -130,13 +130,13 @@ const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
   {
     id: "warmPostEventState",
     label: "Warm post-event",
-    description: "Start your city's demo world after the event, catches open.",
+    description: "Start your city's demo world after the event, picks open.",
     icon: "flag",
   },
   {
     id: "warmChatState",
     label: "Warm chats",
-    description: "Start your city's world after the event with catches.",
+    description: "Start your city's world after the event with picks.",
     icon: "chat",
   },
   {
@@ -168,8 +168,8 @@ const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
   },
   {
     id: "matchTesterByPhone",
-    label: "Match tester",
-    description: "Type a tester phone number to create a seeded match.",
+    label: "Mutual pick tester",
+    description: "Type a tester phone number to create a seeded mutual pick.",
     icon: "personAdd",
     requiresText: true,
   },
@@ -1291,11 +1291,13 @@ function worldStartedText(plan: SuvbotWorldPlan): string {
     lines.push(`${summary.savedEventCount} upcoming event(s) saved for you.`);
   }
   if (summary.matchThreadCount > 0) {
-    lines.push(`Catches: ${summary.matchNames.join(", ")}.`);
+    lines.push(`Mutual picks: ${summary.matchNames.join(", ")}.`);
   } else if (summary.moment === "after") {
-    lines.push("Swipe on the guests in Catches.");
+    lines.push(
+      "Pick the guests you'd like to see again on the after-event screen."
+    );
   }
-  lines.push("Reopen Dashboard, Catches and Chats if they were already open.");
+  lines.push("Reopen Dashboard and Chats if they were already open.");
   return lines.filter(Boolean).join("\n");
 }
 
