@@ -5529,7 +5529,9 @@
       "role": "finder",
       "impactPaths": [
         "tool/design/check_reference_screens.test.mjs",
-        "tool/design/check_reference_screens.mjs"
+        "tool/design/check_reference_screens.mjs",
+        "design/reference_screens/**",
+        "design/source_packs/**"
       ]
     },
     {
