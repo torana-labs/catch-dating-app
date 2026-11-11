@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
@@ -749,7 +749,7 @@ void main() {
                   ),
                 ),
               ),
-              watchOrganizerMembershipProvider(
+              watchOrganizerFollowProvider(
                 event.organizerId,
                 user.uid,
               ).overrideWithValue(const AsyncData(null)),

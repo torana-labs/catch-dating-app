@@ -7,10 +7,10 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
@@ -52,9 +52,9 @@ void main() {
           watchOrganizersByLocationProvider(
             'in-mh-mumbai',
           ).overrideWith((ref) => Stream.value(const <Organizer>[])),
-          watchActiveOrganizerMembershipsForUserProvider(
+          watchActiveOrganizerFollowsForUserProvider(
             user.uid,
-          ).overrideWith((ref) => Stream.value(const <OrganizerMembership>[])),
+          ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
           watchEventParticipationsForUserProvider(
             user.uid,
           ).overrideWith((ref) => Stream.value([participation])),

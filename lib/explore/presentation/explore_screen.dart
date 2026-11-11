@@ -21,7 +21,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skele
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/city_data.dart';
@@ -554,7 +554,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [OrganizerMembershipController.joinMutation],
+      mutations: [OrganizerFollowController.joinMutation],
     );
     return Stack(
       children: [
