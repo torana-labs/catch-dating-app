@@ -73,7 +73,7 @@ export function eventRuntimeVisualAssetForMotif(
   return assetId;
 }
 
-export function resolveEventRuntimeStagePresentation(
+function resolveEventRuntimeStagePresentation(
   liveState: EventRuntimeLiveState
 ): EventSuccessMomentPresentationContract {
   const momentKind = liveState.plan?.status === "complete" ? "postEvent" :
@@ -84,7 +84,7 @@ export function resolveEventRuntimeStagePresentation(
   return eventSuccessMomentPresentationFor(momentKind);
 }
 
-export function eventRuntimeActivityIdForPresentation(
+function eventRuntimeActivityIdForPresentation(
   presentation: EventSuccessMomentPresentationContract,
   revealStatus: EventRuntimeRevealStatus
 ): string | null {

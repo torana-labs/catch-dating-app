@@ -147,11 +147,12 @@
       },
       "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
+        "catch.stack",
         "catch.step_header",
         "catch.top_bar",
         "catch.workspace_header"
       ],
-      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today."
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row."
     },
     {
       "id": "shared_public_page_header",
@@ -1949,85 +1950,6 @@
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
     },
     {
-      "id": "shared_plain_button",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_detail_canonical",
-        "help",
-        "home",
-        "host",
-        "host_apply",
-        "not_found",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "privacy",
-        "terms",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actionControls.tsx",
-      "exportName": "PlainButton",
-      "componentId": "catch.button",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "disabled"
-        ]
-      },
-      "notes": "Unstyled native button that duplicates the role of ButtonControl."
-    },
-    {
-      "id": "shared_text_action_button",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "organizer_search"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actions.tsx",
-      "exportName": "TextActionButton",
-      "componentId": "catch.button",
-      "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/host.css",
-        "website/src/styles/organizers.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "disabled"
-        ]
-      },
-      "notes": "Text-styled action button: a text recipe of catch.button."
-    },
-    {
-      "id": "shared_data_table",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "features/host",
-      "source": "website/src/shared/ui/primitives/actions2.tsx",
-      "exportName": "DataTable",
-      "componentId": "catch.table",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "named-table",
-          "keyboard-scroll-region"
-        ]
-      },
-      "notes": "Website adapter of the @catch/web-ui DataTableControl."
-    },
-    {
       "id": "shared_event_runtime_live_header",
       "kind": "supporting-component",
       "routeIds": [
@@ -2153,34 +2075,6 @@
         ]
       },
       "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
-    },
-    {
-      "id": "shared_checkbox_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_booking",
-        "event_detail_canonical",
-        "event_invite",
-        "event_runtime",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "public_form"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "CheckboxField",
-      "componentId": "catch.toggle",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "unchecked",
-          "checked",
-          "disabled"
-        ]
-      },
-      "notes": "Website adapter of CheckboxControl, the one-boolean input."
     },
     {
       "id": "shared_host_preview_section",
@@ -4571,7 +4465,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). Two, three or four equal columns, one or two on a page narrower than 840px, spaced with a CatchGaps role; as ul or ol it wraps each child in a list item. Search aliases: GridLayout, ResponsiveGrid, TileGrid, CardGrid, Columns, MasonryGrid."
+      "notes": "Website T4 under D18 (CAT-248). Two, three or four equal columns, one or two on a page narrower than 840px, spaced with a CatchGaps role; as ul or ol it wraps each child in a list item. Search aliases: GridLayout, ResponsiveGrid, TileGrid, CardGrid, Columns, MasonryGrid.",
+      "comparedWith": [
+        "catch.stack"
+      ],
+      "comparisonReason": "Equal columns whose count follows the page's catch-page container, wrapping into further rows; catch.stack lays children in one column or one row sized by their content. Deprecated: P7 replaces it with CatchStack direction=row equal collapseBelow, after which it is deleted rather than registered as a stack."
     },
     {
       "id": "shared_scroller",
@@ -5004,10 +4902,14 @@
       },
       "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
       "comparedWith": [
+        "catch.analytics_metric",
         "catch.detail_media",
+        "catch.icon_tile",
+        "catch.option_card",
+        "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style."
+      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style. Its figure is marketing copy, not a caller-formatted metric with missing-data states (catch.analytics_metric); it shows no icon (catch.icon_tile) and is not a choice target (catch.option_card); its ground is a fixed v2 palette fill for a photo-less tile, not one of the catch.surface roles that tell children what they sit on."
     },
     {
       "id": "shared_preview_card",

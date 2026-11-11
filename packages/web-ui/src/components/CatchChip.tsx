@@ -107,16 +107,23 @@ function SystemChip({label, kind = "filter", selected, size = "md", dot, leading
       {leading}
       <span>{label}</span>
       {count != null ? <span className={styles.count}>{count}</span> : null}
-      {kind === "input" && onRemove ? (
-        <span aria-label={removeLabel} className={styles.remove} role="button" tabIndex={0}
-          onClick={(event) => { event.stopPropagation(); onRemove(); }}
-          onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onRemove(); } }}>
-          <CatchIcon name="close" size={16} />
-        </span>
-      ) : null}
     </>
   );
   if (kind === "tag") return <span {...shared}>{body}</span>;
+  const inactive = disabled || onPressed === null;
+  if (kind === "input" && onRemove) {
+    // The remove control is a sibling of the label, never nested inside another control.
+    return (
+      <span {...shared} data-disabled={inactive ? "" : undefined}>
+        {onPressed ? (
+          <button className={styles.inputLabel} disabled={inactive} onClick={onPressed} type="button">{body}</button>
+        ) : body}
+        <button aria-label={removeLabel} className={styles.remove} disabled={inactive} onClick={onRemove} type="button">
+          <CatchIcon name="close" size={16} />
+        </button>
+      </span>
+    );
+  }
   if (href) return <a {...shared} href={href}>{body}</a>;
   const toggles = kind === "filter" || kind === "choice";
   return (
@@ -125,7 +132,7 @@ function SystemChip({label, kind = "filter", selected, size = "md", dot, leading
       aria-checked={kind === "choice" ? Boolean(selected) : undefined}
       aria-pressed={kind === "filter" ? Boolean(selected) : undefined}
       data-toggle={toggles ? "" : undefined}
-      disabled={disabled || onPressed === null}
+      disabled={inactive}
       onClick={() => onPressed?.()}
       role={kind === "choice" ? "radio" : undefined}
       type="button"

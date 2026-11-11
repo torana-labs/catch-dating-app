@@ -1,4 +1,4 @@
-import {expect, userEvent, within} from "storybook/test";
+import {expect, fireEvent, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import type {ReactNode} from "react";
@@ -142,8 +142,9 @@ export const PricingCapAndLayerOne: Story = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[0].label}));
     const slider = canvas.getByRole("slider", {name: copy.pricing.sales}) as HTMLInputElement;
-    slider.focus();
-    await userEvent.keyboard("{End}");
+    // user-event cannot drive a native range input's End key (it throws "Not implemented"),
+    // so set the slider to its maximum the way the browser's End key does.
+    fireEvent.change(slider, {target: {value: slider.max}});
     await expect(canvas.getByText(copy.pricing.capped)).toBeInTheDocument();
   },
 };

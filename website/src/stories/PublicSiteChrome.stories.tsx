@@ -35,9 +35,14 @@ export const PublicSiteFooterStory: Story = {
 
 /** The system footer band, with columns and short. */
 export const SiteFooterBandStory: Story = {
+  // A page holds one contentinfo landmark: each footer sits in its own labelled section.
   render: () => <CatchRoot theme="day">
-    <SiteFooterBand columns={[{title: "Explore", links: [{href: "/explore/", label: "What’s on"}]}, {title: "Hosts", links: [{href: "/host/", label: "Catch for hosts"}]}]}
-      label="Footer" tagline="Meet people in real life, through hosts who bring them together." wordmark="Catch" />
-    <SiteFooterBand label="Footer" tagline="Meet people in real life, through hosts who bring them together." wordmark="Catch" />
+    <section aria-label="With columns">
+      <SiteFooterBand columns={[{title: "Explore", links: [{href: "/explore/", label: "What’s on"}]}, {title: "Hosts", links: [{href: "/host/", label: "Catch for hosts"}]}]}
+        label="Footer" tagline="Meet people in real life, through hosts who bring them together." wordmark="Catch" />
+    </section>
+    <section aria-label="Short">
+      <SiteFooterBand label="Footer" tagline="Meet people in real life, through hosts who bring them together." wordmark="Catch" />
+    </section>
   </CatchRoot>,
 };

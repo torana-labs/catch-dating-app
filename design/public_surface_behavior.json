@@ -6108,7 +6108,8 @@
         {
           "path": "website/src/features/organizers/useOrganizerPageController.test.tsx",
           "contains": [
-            "follows through the visitor's account until follow by phone lands, and records the save",
+            "follows a signed-in visitor through their account, and records the save",
+            "follows a signed-out visitor by phone, with WhatsApp only when ticked",
             "resumes the requested follow after account completion",
             "reads an existing follow on a new page mount"
           ]
