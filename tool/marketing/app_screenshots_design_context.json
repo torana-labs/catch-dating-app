@@ -807,6 +807,688 @@
         "caption": "Each lead confirms who left and who arrived.",
         "walkthroughStep": "Run the night"
       }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-rsvp",
+      "status": "pending-fixture",
+      "audience": "guest",
+      "surface": "Household reply link in the browser",
+      "story": {
+        "file": "website/src/stories/HouseholdRsvp.stories.tsx",
+        "id": "marketing-website-household-rsvp--ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-household-rsvp--ready",
+      "routeIds": [
+        "household_rsvp"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-rsvp.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-rsvp.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-rsvp.png"
+      },
+      "copy": {
+        "alt": "A household's reply page open in a phone browser, with each person's answer for every function they are invited to",
+        "caption": "One link per household: everyone's answer for every function, in one reply.",
+        "walkthroughStep": "Invite"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-itinerary",
+      "status": "pending-fixture",
+      "audience": "guest",
+      "surface": "Guest itinerary link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--itinerary-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--itinerary-ready",
+      "routeIds": [
+        "programme_itinerary"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-itinerary.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-itinerary.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-itinerary.png"
+      },
+      "copy": {
+        "alt": "A family's itinerary for the wedding weekend in a phone browser: functions, times, dress codes and their car",
+        "caption": "Each family's own itinerary, with only the functions they are invited to.",
+        "walkthroughStep": "Invite"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-whatsapp",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Planner inbox for the wedding's WhatsApp number",
+      "fixtureKey": "weddingsPilot.planner.inbox",
+      "captureId": "host_programme_inbox_phone",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-whatsapp.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-whatsapp.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-whatsapp.png"
+      },
+      "copy": {
+        "alt": "The planner's inbox on a phone: guest questions the assistant passed to the team",
+        "caption": "Only what the assistant can't answer from the itinerary reaches your team.",
+        "walkthroughStep": "Write in"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-ids",
+      "status": "pending-fixture",
+      "audience": "guest",
+      "surface": "Guest ID upload link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--guest-ids-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--guest-ids-ready",
+      "routeIds": [
+        "programme_ids"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-ids.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-ids.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-ids.png"
+      },
+      "copy": {
+        "alt": "A household's ID page in a phone browser, with each guest's ID marked received or still to send",
+        "caption": "IDs for the hotels, checked by your team and deleted after checkout.",
+        "walkthroughStep": "Write in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-door",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Door check-in for a function",
+      "fixtureKey": "weddingsPilot.staff.door",
+      "captureId": "host_staff_door_phone",
+      "routeIds": [
+        "hostWorkDoorScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-door.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-door.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-door.png"
+      },
+      "copy": {
+        "alt": "Door check-in on a phone for the Sangeet: who is expected, who has arrived",
+        "caption": "The door team checks families in on a phone, even when the hall has no signal.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-departures",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Departures for the hotel desk",
+      "fixtureKey": "weddingsPilot.staff.departures",
+      "captureId": "host_staff_departures_phone",
+      "routeIds": [
+        "hostWorkHotelScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-departures.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-departures.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-departures.png"
+      },
+      "copy": {
+        "alt": "Departures on a phone: which families leave the hotel when, and their cars",
+        "caption": "The hotel desk sees who is leaving when, and which car is theirs.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-driver",
+      "status": "pending-fixture",
+      "audience": "staff",
+      "surface": "Driver trip link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--driver-trip-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--driver-trip-ready",
+      "routeIds": [
+        "programme_trip"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-driver.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-driver.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-driver.png"
+      },
+      "copy": {
+        "alt": "A driver's trip page in a phone browser: pickup, guests and drop at the hotel",
+        "caption": "Drivers get one link per trip. No app to install.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-message",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Planned message to guests",
+      "fixtureKey": "weddingsPilot.planner.message",
+      "captureId": "host_programme_message_phone",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-message.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-message.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-message.png"
+      },
+      "copy": {
+        "alt": "A planned message to every household coming to the haldi, with who it reaches",
+        "caption": "Messages go to the households a function concerns, and to no one who opted out.",
+        "walkthroughStep": "Messages"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-family",
+      "status": "pending-fixture",
+      "audience": "family",
+      "surface": "Family view link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--family-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--family-ready",
+      "routeIds": [
+        "programme_family"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-family.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-family.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-family.png"
+      },
+      "copy": {
+        "alt": "The couple's family view in a phone browser: replies, arrivals and rooms at a glance",
+        "caption": "The family follows replies and arrivals without calling the planner.",
+        "walkthroughStep": "Family"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-guests",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Guest list on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.guestsDesktop",
+      "captureId": "host_programme_guests_desktop",
+      "routeIds": [
+        "hostProgramGuestsScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-guests.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-guests.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-guests.png"
+      },
+      "copy": {
+        "alt": "The wedding's guest list on a desktop: households, who is invited to which function, and replies",
+        "caption": "Functions, households and who is invited to what, on one list.",
+        "walkthroughStep": "Set up"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-rooms",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Rooms by household on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.roomsDesktop",
+      "captureId": "host_programme_rooms_desktop",
+      "routeIds": [
+        "hostProgramLodgingScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-rooms.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-rooms.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-rooms.png"
+      },
+      "copy": {
+        "alt": "Room allocation on a desktop: each household placed in a room at one of two hotels",
+        "caption": "Rooms by household, across every hotel.",
+        "walkthroughStep": "Travel"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-live",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Live board for the weekend on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.liveBoard",
+      "captureId": "host_programme_live_board_phone",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-live.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-live.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-live.png"
+      },
+      "copy": {
+        "alt": "The weekend's live board on a desktop: arrivals, cars on the road and the next function",
+        "caption": "Everyone on the ground sees one job, live.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-reconcile",
+      "status": "pending-fixture",
+      "audience": "host",
+      "surface": "Vendor reconcile on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.reconcileDesktop",
+      "captureId": "host_programme_reconcile_desktop",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-reconcile.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-reconcile.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-reconcile.png"
+      },
+      "copy": {
+        "alt": "The car vendor's bill reconciled on a desktop against every recorded trip",
+        "caption": "Every trip recorded as it happened, so the vendor bill checks itself.",
+        "walkthroughStep": "After"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-hotel",
+      "status": "pending-fixture",
+      "audience": "hotel",
+      "surface": "Hotel handover link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--hotel-handover-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--hotel-handover-ready",
+      "routeIds": [
+        "programme_hotel"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-hotel.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-hotel.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-hotel.png"
+      },
+      "copy": {
+        "alt": "The hotel's handover page on a desktop: arriving households, their rooms and IDs",
+        "caption": "The hotel sees every car on its way, who is in it, and their rooms.",
+        "walkthroughStep": "Travel"
+      }
     }
   ]
 }

@@ -254,6 +254,216 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "wedding-rsvp",
+      "audience": "guest",
+      "surface": "Household reply link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-rsvp.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A household's reply page open in a phone browser, with each person's answer for every function they are invited to",
+      "caption": "Fictional app preview. One link per household: everyone's answer for every function, in one reply.",
+      "walkthroughStep": "Invite",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-itinerary",
+      "audience": "guest",
+      "surface": "Guest itinerary link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-itinerary.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A family's itinerary for the wedding weekend in a phone browser: functions, times, dress codes and their car",
+      "caption": "Fictional app preview. Each family's own itinerary, with only the functions they are invited to.",
+      "walkthroughStep": "Invite",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-whatsapp",
+      "audience": "host",
+      "surface": "Planner inbox for the wedding's WhatsApp number",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-whatsapp.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "The planner's inbox on a phone: guest questions the assistant passed to the team",
+      "caption": "Fictional app preview. Only what the assistant can't answer from the itinerary reaches your team.",
+      "walkthroughStep": "Write in",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-ids",
+      "audience": "guest",
+      "surface": "Guest ID upload link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-ids.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A household's ID page in a phone browser, with each guest's ID marked received or still to send",
+      "caption": "Fictional app preview. IDs for the hotels, checked by your team and deleted after checkout.",
+      "walkthroughStep": "Write in",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-door",
+      "audience": "host",
+      "surface": "Door check-in for a function",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-door.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Door check-in on a phone for the Sangeet: who is expected, who has arrived",
+      "caption": "Fictional app preview. The door team checks families in on a phone, even when the hall has no signal.",
+      "walkthroughStep": "Weekend",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-departures",
+      "audience": "host",
+      "surface": "Departures for the hotel desk",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-departures.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Departures on a phone: which families leave the hotel when, and their cars",
+      "caption": "Fictional app preview. The hotel desk sees who is leaving when, and which car is theirs.",
+      "walkthroughStep": "Weekend",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-driver",
+      "audience": "staff",
+      "surface": "Driver trip link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-driver.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A driver's trip page in a phone browser: pickup, guests and drop at the hotel",
+      "caption": "Fictional app preview. Drivers get one link per trip. No app to install.",
+      "walkthroughStep": "Weekend",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-message",
+      "audience": "host",
+      "surface": "Planned message to guests",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-message.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A planned message to every household coming to the haldi, with who it reaches",
+      "caption": "Fictional app preview. Messages go to the households a function concerns, and to no one who opted out.",
+      "walkthroughStep": "Messages",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-family",
+      "audience": "family",
+      "surface": "Family view link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-family.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "The couple's family view in a phone browser: replies, arrivals and rooms at a glance",
+      "caption": "Fictional app preview. The family follows replies and arrivals without calling the planner.",
+      "walkthroughStep": "Family",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-guests",
+      "audience": "host",
+      "surface": "Guest list on the planner's desktop",
+      "device": "desktop-browser",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-guests.png",
+      "width": 2880,
+      "height": 1800,
+      "alt": "The wedding's guest list on a desktop: households, who is invited to which function, and replies",
+      "caption": "Fictional app preview. Functions, households and who is invited to what, on one list.",
+      "walkthroughStep": "Set up",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-rooms",
+      "audience": "host",
+      "surface": "Rooms by household on the planner's desktop",
+      "device": "desktop-browser",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-rooms.png",
+      "width": 2880,
+      "height": 1800,
+      "alt": "Room allocation on a desktop: each household placed in a room at one of two hotels",
+      "caption": "Fictional app preview. Rooms by household, across every hotel.",
+      "walkthroughStep": "Travel",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-live",
+      "audience": "host",
+      "surface": "Live board for the weekend on the planner's desktop",
+      "device": "desktop-browser",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-live.png",
+      "width": 2880,
+      "height": 1800,
+      "alt": "The weekend's live board on a desktop: arrivals, cars on the road and the next function",
+      "caption": "Fictional app preview. Everyone on the ground sees one job, live.",
+      "walkthroughStep": "Weekend",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-reconcile",
+      "audience": "host",
+      "surface": "Vendor reconcile on the planner's desktop",
+      "device": "desktop-browser",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-reconcile.png",
+      "width": 2880,
+      "height": 1800,
+      "alt": "The car vendor's bill reconciled on a desktop against every recorded trip",
+      "caption": "Fictional app preview. Every trip recorded as it happened, so the vendor bill checks itself.",
+      "walkthroughStep": "After",
+      "pages": [
+        "/weddings/"
+      ]
+    },
+    {
+      "id": "wedding-hotel",
+      "audience": "hotel",
+      "surface": "Hotel handover link in the browser",
+      "device": "desktop-browser",
+      "webPath": "/assets/app-screenshots/placeholders/wedding-hotel.png",
+      "width": 2880,
+      "height": 1800,
+      "alt": "The hotel's handover page on a desktop: arriving households, their rooms and IDs",
+      "caption": "Fictional app preview. The hotel sees every car on its way, who is in it, and their rooms.",
+      "walkthroughStep": "Travel",
+      "pages": [
+        "/weddings/"
+      ]
     }
   ]
 }
