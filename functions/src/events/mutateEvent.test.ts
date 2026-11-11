@@ -16,7 +16,8 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
 
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -286,7 +287,7 @@ function organizer(overrides: FakeData = {}): FakeData {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     eventCityId: "in-mh-mumbai",
     eventMarketId: "in-mh-mumbai",
@@ -320,7 +321,7 @@ function event(overrides: FakeData = {}): FakeData {
     cohortCounts: {},
     waitlistedCohortCounts: {},
     ...overrides,
-  };
+  });
 }
 
 function uploadedEventPhoto(id: string, position: number): FakeData {

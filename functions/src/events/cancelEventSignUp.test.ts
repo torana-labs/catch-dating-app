@@ -16,7 +16,8 @@ import {eventAttendeeId} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -747,7 +748,7 @@ function request(uid: string): CallableRequest<unknown> {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     organizerId: "club-1",
     startTime: admin.firestore.Timestamp.fromMillis(
@@ -781,7 +782,7 @@ function event(overrides: FakeData = {}): FakeData {
     genderCounts: {man: 1},
     cohortCounts: {menInterestedInWomen: 1},
     ...overrides,
-  };
+  });
 }
 
 function user(overrides: FakeData = {}): FakeData {

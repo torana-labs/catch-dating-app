@@ -74,6 +74,29 @@ test("profile-bio-prompts fills prompts from bio once and keeps bio", async () =
   assert.equal((await planMigration(db, bioPrompts)).totals.toCreate, 0);
 });
 
+test("event-policy stores the first-terms policy and cohort counts once", async () => {
+  const eventPolicy = MIGRATIONS.find((migration) => migration.name === "event-policy");
+  const db = fakeDb({
+    "events/capped": {capacityLimit: 12, priceInPaise: 50000,
+      constraints: {minAge: 18, maxAge: 40, maxMen: 6, maxWomen: 6},
+      genderCounts: {man: 2, woman: 1}, cohortCounts: {}},
+    "events/stored": {capacityLimit: 10, priceInPaise: 0, eventPolicy: {version: 1},
+      genderCounts: {}, cohortCounts: {}},
+    "events/draft": {publicationState: "private", genderCounts: {}, cohortCounts: {}},
+  });
+  const plan = await planMigration(db, eventPolicy);
+  assert.equal(plan.totals.toCreate, 1);
+  await applyMigrationPlan(db, plan);
+  const capped = db.data["events/capped"];
+  assert.equal(capped.eventPolicy.admission.format, "fixedCohortCaps");
+  assert.deepEqual(capped.eventPolicy.admission.cohortCapacityLimits,
+    {menInterestedInWomen: 6, womenInterestedInMen: 6});
+  assert.deepEqual(capped.cohortCounts, {menInterestedInWomen: 2, womenInterestedInMen: 1});
+  assert.deepEqual(db.data["events/stored"].eventPolicy, {version: 1});
+  assert.equal(db.data["events/draft"].eventPolicy, undefined);
+  assert.equal((await planMigration(db, eventPolicy)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);

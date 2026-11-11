@@ -5,6 +5,9 @@ import 'package:catch_dating_app/contexts/events/domain/event_service.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'events_test_helpers.dart'
+    show cohortCountsFromGenderCounts, storedPolicyForTerms;
+
 void main() {
   final referenceNow = DateTime(2026, 1, 1, 8);
 
@@ -39,7 +42,13 @@ void main() {
       priceInPaise: 0,
       bookedCount: bookedCount,
       constraints: constraints,
+      eventPolicy: storedPolicyForTerms(
+        capacityLimit: capacityLimit,
+        priceInPaise: 0,
+        constraints: constraints,
+      ),
       genderCounts: genderCounts,
+      cohortCounts: cohortCountsFromGenderCounts(genderCounts),
     );
   }
 

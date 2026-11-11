@@ -17,7 +17,8 @@ import {isDeepStrictEqual} from "node:util";
  *
  * A fill step is {kind: "fill", collection, fill(data, id)}: `fill` returns
  * fields to add to the same document, or null. Only fields the document does
- * not already hold may be returned, so nothing is overwritten, and each update
+ * not already hold (absent, null, or an empty list or map) may be returned, so
+ * no information is overwritten, and each update
  * is preconditioned on the document's last update time.
  */
 
@@ -89,8 +90,7 @@ async function planFillStep(db, step) {
     const data = doc.data();
     const fields = step.fill(data, doc.id);
     if (fields === null) continue;
-    const present = Object.keys(fields).filter((field) => data[field] !== undefined &&
-      !(Array.isArray(data[field]) && data[field].length === 0));
+    const present = Object.keys(fields).filter((field) => !isEmptyValue(data[field]));
     if (present.length > 0) {
       result.conflicts.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, fields: present});
       continue;
@@ -99,6 +99,15 @@ async function planFillStep(db, step) {
       updateTime: doc.updateTime});
   }
   return result;
+}
+
+function isEmptyValue(value) {
+  if (value === undefined || value === null) return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    return Object.keys(value).length === 0;
+  }
+  return false;
 }
 
 async function* pagedDocs(collectionRef) {

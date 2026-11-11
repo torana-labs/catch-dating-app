@@ -18,7 +18,8 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "./seatIdentityAuthority";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 const uid = "person";
 const eventId = "event1";
@@ -28,7 +29,8 @@ const stamp = Timestamp.fromMillis;
 
 function fixture() {
   const store = new Store();
-  const event: Row = {...publishedEventSetup(), organizerId,
+  const event: Row = withStoredEventPolicy({
+    ...publishedEventSetup(), organizerId,
     eventOrigin: catchNativeEventOrigin(),
     startTime: stamp(now + 3600000), endTime: stamp(now + 7200000),
     eventFormat: {version: 1, activityKind: "socialRun",
@@ -41,7 +43,7 @@ function fixture() {
     discoveryMarketId: "in-mh-mumbai", bookedCount: 0, checkedInCount: 0,
     waitlistedCount: 0, genderCounts: {}, cohortCounts: {},
     waitlistedCohortCounts: {},
-    constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+    constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}});
   const user: Row = {name: "Demo person", firstName: "Demo",
     displayName: "Demo",
     dateOfBirth: stamp(Date.parse("1996-01-01T00:00:00Z")), gender: "man",

@@ -14,7 +14,7 @@ import {readEventViewerStateSource as readNative} from
   "./eventViewerStateSource";
 import type {EventDocument} from
   "../shared/generated/firestoreAdminTypes";
-import {eventPolicyFromEvent} from "./eventPolicy";
+import {eventPolicyFromEvent, initialPolicyFromTerms} from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {publicFixture, publicCapturedFixture, uid, phone, now, eventId} from
   "./publicRegistration/testFixture";
@@ -117,7 +117,8 @@ test("free and paid paths share start-time and publication guards",
     const h = await fixture();
     h.event.publicRegistrationMode = "free";
     h.event.priceInPaise = 0;
-    h.event.eventPolicy = undefined;
+    h.event.eventPolicy = initialPolicyFromTerms(
+      {...h.event, eventPolicy: undefined} as unknown as EventDocument);
     assert.equal((await h.read())?.guest.action, "registerFree");
     h.event.status = "cancelled";
     assert.equal((await h.read())?.guest.action, "closed");

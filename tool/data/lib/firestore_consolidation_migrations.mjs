@@ -1,4 +1,14 @@
 import fs from "node:fs";
+import {createFunctionsRequire} from "../../lib/repo_paths.mjs";
+
+// Event policy derivation is shared with Functions so the migration stores
+// exactly what an event gets when it first receives terms. Build Functions
+// (npm --prefix functions run build) before running the event-policy migration.
+let eventPolicyModule = null;
+function functionsEventPolicy() {
+  eventPolicyModule ??= createFunctionsRequire()("./lib/events/eventPolicy.js");
+  return eventPolicyModule;
+}
 
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
@@ -40,6 +50,35 @@ export const MIGRATIONS = [
     ],
   },
   {
+    name: "event-policy",
+    description:
+      "events with capacity and price terms but no stored eventPolicy get the " +
+      "policy an event receives with its first terms; events with gender " +
+      "counts but empty cohortCounts get the matching cohort counts.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "events",
+        fill: (data) => {
+          const fields = {};
+          if (data.eventPolicy === undefined || data.eventPolicy === null) {
+            try {
+              fields.eventPolicy = functionsEventPolicy().initialPolicyFromTerms(data);
+            } catch {
+              // No capacity and price terms yet: nothing to store.
+            }
+          }
+          const cohorts = cohortCountsFromGenderCounts(data.genderCounts);
+          const storedCohorts = data.cohortCounts ?? {};
+          if (Object.keys(storedCohorts).length === 0 && Object.keys(cohorts).length > 0) {
+            fields.cohortCounts = cohorts;
+          }
+          return Object.keys(fields).length > 0 ? fields : null;
+        },
+      },
+    ],
+  },
+  {
     name: "profile-bio-prompts",
     description:
       "users with a legacy bio and no profile prompts get the bio as their " +
@@ -64,6 +103,17 @@ export const MIGRATIONS = [
     ],
   },
 ];
+
+/** The cohort split Functions used to infer from gender counts at read time. */
+function cohortCountsFromGenderCounts(genderCounts) {
+  const counts = genderCounts ?? {};
+  const nonBinaryOrOther = (counts.nonBinary ?? 0) + (counts.other ?? 0);
+  return {
+    ...(counts.man ? {menInterestedInWomen: counts.man} : {}),
+    ...(counts.woman ? {womenInterestedInMen: counts.woman} : {}),
+    ...(nonBinaryOrOther ? {nonBinaryOrOther} : {}),
+  };
+}
 
 export function migrationsByName(names) {
   if (names.length === 1 && names[0] === "all") return MIGRATIONS;

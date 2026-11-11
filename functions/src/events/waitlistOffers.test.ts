@@ -1,3 +1,4 @@
+import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
@@ -417,7 +418,7 @@ function request(data: FakeData, uid = "host-1"): CallableRequest<unknown> {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     organizerId: "organizer-1",
     status: "active",
     startTime: timestamp(60 * 60 * 1000),
@@ -435,7 +436,7 @@ function event(overrides: FakeData = {}): FakeData {
     cohortCounts: {},
     waitlistedCohortCounts: {},
     ...overrides,
-  };
+  });
 }
 
 function user(overrides: FakeData = {}): FakeData {
