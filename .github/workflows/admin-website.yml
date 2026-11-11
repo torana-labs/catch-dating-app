@@ -1,10 +1,49 @@
 name: Admin Website
 
-# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
-# pull requests or pushes; the full run happens once a night on main.
 on:
-  schedule:
-    - cron: '10 22 * * *' # once a night, main
+  push:
+    branches: [main]
+    paths:
+      - ".github/actions/**"
+      - ".github/workflows/_web-hosting-build.yml"
+      - ".github/workflows/_web-hosting-promote.yml"
+      - ".github/workflows/admin-website.yml"
+      - ".github/workflows/react-surface-validation.yml"
+      - ".firebaserc"
+      - "admin/**"
+      # Every contract can reach Admin's generated validators through $ref.
+      - "contracts/**/*.json"
+      - "contracts/shared/**"
+      - "tool/contracts/generate_schema_contracts.mjs"
+      - "tool/contracts/lib/schema_specs.mjs"
+      - "tool/contracts/schema_spec_exceptions.json"
+      - "tool/contracts/schema_spec_order.json"
+      - "design/admin/**"
+      - "design/components/**"
+      - "design/website/**"
+      - "firebase.json"
+      - "package.json"
+      - "package-lock.json"
+      - "packages/web-config/**"
+      - "packages/web-ui/**"
+      - "tool/admin/callable_inventory.mjs"
+      - "tool/admin/generate_admin_action_catalog.mjs"
+      - "tool/lib/admin_registries.mjs"
+      - "tool/ci/toolchain.env"
+      - "tool/ci/delivery_core.mjs"
+      - "tool/ci/package_web_hosting.mjs"
+      - "tool/env/check_web_hosting_env.mjs"
+      - "tool/firebase/check_client_callable_dependencies.mjs"
+      - "tool/lib/firebase_project.mjs"
+      - "tool/firebase_with_env.sh"
+      - "tool/design/check_component_lexicon.mjs"
+      - "tool/web/check_shared_web_ui_adoption.mjs"
+      - "tool/web/lib/**"
+      - "tool/web/check_storybook_visuals.mjs"
+      - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/check_admin_live_data_sources.mjs"
+      - "tool/web/react_dependency_graph.mjs"
+      - "tool/web/check_admin_review_bridge.mjs"
   workflow_dispatch:
     inputs:
       update_visual_baselines:
