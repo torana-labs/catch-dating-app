@@ -6882,12 +6882,32 @@
         ".github/workflows/react-surface-validation.yml",
         ".github/workflows/capture-freshness-ci.yml",
         "tool/ci/wait_main_marketing_validation.mjs",
-        "tool/ci/wait_main_marketing_validation.test.mjs"
+        "tool/ci/wait_main_marketing_validation.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
       ],
       "description": "Reuses exact-main Marketing and capture execution only with matching workflow, repository, source and attempt identity; offline fixtures reject missing, failed or cancelled evidence.",
       "checks": [
         "node --check tool/ci/wait_main_marketing_validation.mjs",
         "node --test tool/ci/wait_main_marketing_validation.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:required-ci-floor",
+      "category": "ci",
+      "path": "tool/ci/required_ci_floor.mjs",
+      "command": "node --test tool/ci/required_ci_floor.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/required_ci_floor.mjs",
+        "tool/ci/required_ci_floor.test.mjs"
+      ],
+      "description": "Decides when a source CI run passes the website release gate: the whole run succeeded, or (sprint floor, owner decision 11 Nov 2026) its Required CI job succeeded and only the reporting-only lanes failed. Pins the reporting lanes to ci.yml's Required CI.",
+      "checks": [
+        "node --check tool/ci/required_ci_floor.mjs",
+        "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
     },
