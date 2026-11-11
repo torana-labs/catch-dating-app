@@ -32,13 +32,12 @@ class _HostProgrammeInviteSheetState extends State<HostProgrammeInviteSheet> {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final ready = _name.trim().isNotEmpty && _phone.trim().startsWith('+');
-    return CatchSheet(
+    return CatchSheet.standard(
       title: l10n.hostProgrammeTeamInvite,
-      keyboardSafe: true,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
         key: const ValueKey<String>('host-programme-invite-send'),
         label: l10n.hostProgrammeTeamInviteSend,
-        fullWidth: true,
+        role: CatchButtonEmphasis.commit,
         onPressed: ready
             ? () => Navigator.of(context).pop<HostProgrammeInvite>((
                 name: _name.trim(),

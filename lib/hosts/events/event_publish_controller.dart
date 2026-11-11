@@ -151,6 +151,7 @@ class HostEventPublishCommands extends _$HostEventPublishCommands {
     final saved = summary.eventPreferences;
     final intents = (saved?.intents ?? const PrivateEventPreferenceIntents())
         .withBookingMode(EventSetupValue.set(mode.name));
+    // provider-graph: ownership-repository-construction:HostEventPublishCommands.saveBookingMode:construct:PrivateEventPreferencesRepository planned CAT156 -- Booking mode is one preferences update from the publish step. PrivateEventPreferencesRepository has no generated provider yet (the preferences controller builds it the same way), so this builds the stateless facade over firebaseFunctionsProvider; route both through a generated repository provider with the CAT156 migration.
     await PrivateEventPreferencesRepository(
       ref.read(firebaseFunctionsProvider),
     ).update(

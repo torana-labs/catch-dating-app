@@ -312,13 +312,12 @@ class _HostProfileSheetState extends State<_HostProfileSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    return CatchSheet(
+    return CatchSheet.standard(
       title: l10n.hostOrganizerProfileTitle,
-      keyboardSafe: true,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
         key: const ValueKey<String>('settings-profile-save'),
         label: l10n.hostOrganizerProfileSave,
-        fullWidth: true,
+        role: CatchButtonEmphasis.commit,
         onPressed: _draft.name.trim().isEmpty
             ? null
             : () => Navigator.of(context).pop(

@@ -553,7 +553,9 @@ test("required CI consumes every bounded Harness v2 target", () => {
     assert.match(ci, new RegExp(`steps\\.plan\\.outputs\\.${target}`));
   }
   assert.match(ci, /docs-policy:/);
-  assert.match(ci, /- docs-policy/);
+  // Sprint floor (owner, 8 Nov 2026): docs-policy runs and reports but does
+  // not gate Required CI. When the sprint ends, assert `- docs-policy` again.
+  assert.doesNotMatch(ci.slice(ci.indexOf("\n  required:\n")), /^      - docs-policy$/mu);
   assert.match(ci, /docs_checkout: \$\{\{ steps\.plan\.outputs\.docs_checkout \}\}/);
   assert.match(ci, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/);
   assert.match(ci, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/);
@@ -925,7 +927,9 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
   assert.match(react, /skip_deployable_build:[\s\S]*?default: false/u);
   const aggregate = ci.slice(ci.indexOf("\n  required:"));
-  assert.match(aggregate, /- tools\n/u);
+  // Sprint floor (owner, 8 Nov 2026): Tools runs and reports but does not gate
+  // Required CI. When the sprint ends, assert `- tools` again.
+  assert.doesNotMatch(aggregate, /- tools\n/u);
   assert.match(aggregate, /- marketing\n/u);
   assert.match(aggregate, /select\(\.value.result != "success" and \.value.result != "skipped"\)/u);
   assert.doesNotMatch(marketingJob, /continue-on-error/u);
@@ -1314,7 +1318,13 @@ test("every selective main consumer reads the exact committed validation window"
 
 test("every ready PR validates in parallel and the merge queue guards main", () => {
   const ci = workflow("ci.yml");
-  assert.match(ci, /^  merge_group:$/mu);
+  // CI is off for the redesign sprint (owner, 8 Nov 2026): it runs once a
+  // night on main and by dispatch, never on pull requests, pushes or the merge
+  // queue. When the sprint ends, assert the merge_group trigger again.
+  const triggers = ci.split(/^on:\n/mu)[1].split(/^\S/mu)[0];
+  assert.doesNotMatch(triggers, /^ {2}(merge_group|pull_request|push):/mu);
+  assert.match(triggers, /^ {2}schedule:\n/mu);
+  assert.match(triggers, /^ {2}workflow_dispatch:\n/mu);
   assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/u);
   assert.match(ci, /github\.event_name == 'push' && github\.ref/u);
   assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| github\.event_name == 'push' \}\}$/mu);
@@ -1347,8 +1357,11 @@ test("CI run names preserve main delivery identity and name every PR run", () =>
   for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
     assert.equal(runName("pull_request", action), "CI PR #42", action);
   }
-  const types = workflow("ci.yml").match(/^    types: \[(.*)\]$/mu)?.[1].split(", ");
-  assert.deepEqual(types, ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"],
+  // CI is off for the redesign sprint (owner, 8 Nov 2026): no pull_request
+  // trigger, so no label can start a run. When the sprint ends, assert its
+  // types are exactly opened, synchronize, reopened, ready_for_review and
+  // converted_to_draft again.
+  assert.doesNotMatch(workflow("ci.yml"), /^    types: \[/mu,
     "label metadata must never start or replace PR validation");
 });
 
@@ -1631,7 +1644,11 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
   assert.match(block, /setup-flutter/u);
   assert.match(block, /flutter pub get --enforce-lockfile/u);
   assert.match(block, /verify_local.mjs/u);
-  assert.doesNotMatch(block, /--allow-deferred|continue-on-error/u);
+  assert.doesNotMatch(block, /--allow-deferred/u);
+  // Sprint floor (owner, 8 Nov 2026): the preflight step reports and does not
+  // block. When the sprint ends, assert no continue-on-error here again.
+  assert.equal(block.match(/continue-on-error/gu)?.length ?? 0, 1);
+  assert.match(block, /# Sprint floor: structural and freshness findings report, they do not block\.\n {8}continue-on-error: true\n/u);
   const after = ci.slice(ci.indexOf("  tools:\n"));
   assert.doesNotMatch(after, /^    needs: plan$/mu);
   for (const id of ["required"]) {
