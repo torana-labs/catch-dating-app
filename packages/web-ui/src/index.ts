@@ -272,7 +272,7 @@ export type {
   CatchSplitRatio,
 } from "./components/CatchSplit";
 export {CatchStack} from "./components/CatchStack";
-export type {CatchStackElement, CatchStackProps} from "./components/CatchStack";
+export type {CatchStackElement, CatchStackProps, CatchStackRailWidth} from "./components/CatchStack";
 export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
@@ -451,3 +451,7 @@ export {CatchTicket, catchTicketStatuses} from "./components/CatchTicket";
 export type {CatchTicketFact, CatchTicketProps, CatchTicketStatus} from "./components/CatchTicket";
 export {CatchMetricTile, catchMetricTileLayouts, catchMetricTileTones} from "./components/CatchMetricTile";
 export type {CatchMetricTileLayout, CatchMetricTileProps, CatchMetricTileTone} from "./components/CatchMetricTile";
+export {CatchVideoEmbed} from "./components/CatchVideoEmbed";
+export type {CatchVideoEmbedProps, CatchVideoEmbedStill} from "./components/CatchVideoEmbed";
+export {CatchNoteCard} from "./components/CatchNoteCard";
+export type {CatchNoteCardAction, CatchNoteCardPhoto, CatchNoteCardProps} from "./components/CatchNoteCard";
