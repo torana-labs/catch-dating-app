@@ -4373,7 +4373,7 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption, optionally sized (sm 280, md 330, lg 380 or fill), turned (tilt) or bleeding off its band (bleed, proposal L3); website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
     },
     {
       "id": "shared_event_backdrop_image",

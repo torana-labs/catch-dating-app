@@ -39,6 +39,13 @@ export interface CatchNightSceneFormat {
 }
 
 export interface CatchNightSceneProps {
+  /**
+   * device (the default): the scene draws a generic phone (CatchDeviceFrame)
+   * around unframed screens. none: each screen already carries its own frame,
+   * such as a framed app capture (CatchAppCaptureImage), so the scene only
+   * stacks and cross-fades them.
+   */
+  frame?: "device" | "none";
   /** The event types the reader can follow; picking one swaps the journey. */
   formats: readonly CatchNightSceneFormat[];
   journey: CatchNightSceneJourney;
@@ -72,7 +79,7 @@ const prefersReducedMotion = () =>
  * scrolls to it; on a phone-width band the chips, phone, progress and a caption
  * stack in the one viewport.
  */
-export function CatchNightScene({formats, journey, label, onSelect, pickerLabel, pickerLead, position, selected, timelineLabel}: CatchNightSceneProps) {
+export function CatchNightScene({frame = "device", formats, journey, label, onSelect, pickerLabel, pickerLead, position, selected, timelineLabel}: CatchNightSceneProps) {
   const moments = journey.moments;
   const count = Math.max(1, moments.length);
   const [ownActive, setOwnActive] = useState(0);
@@ -120,6 +127,16 @@ export function CatchNightScene({formats, journey, label, onSelect, pickerLabel,
   };
 
   const current = moments[active];
+  const screens = (
+    <div className={styles.screens}>
+      {moments.map((moment, index) => (
+        <div aria-hidden={index === active ? undefined : true} className={styles.screen} data-active={index === active || undefined}
+          key={`${moment.time}-${moment.title}`}>
+          {moment.screen}
+        </div>
+      ))}
+    </div>
+  );
   return (
     <div className={styles.track} data-accent={journey.accent} ref={track} style={{"--catch-night-moments": count} as CSSProperties}>
       <div aria-label={label} className={styles.scene} ref={scene} role="group">
@@ -152,17 +169,8 @@ export function CatchNightScene({formats, journey, label, onSelect, pickerLabel,
           ))}
         </ol>
         </div>
-        <div className={styles.phone}>
-          <CatchDeviceFrame kind="phone">
-            <div className={styles.screens}>
-              {moments.map((moment, index) => (
-                <div aria-hidden={index === active ? undefined : true} className={styles.screen} data-active={index === active || undefined}
-                  key={`${moment.time}-${moment.title}`}>
-                  {moment.screen}
-                </div>
-              ))}
-            </div>
-          </CatchDeviceFrame>
+        <div className={styles.phone} data-frame={frame}>
+          {frame === "device" ? <CatchDeviceFrame kind="phone">{screens}</CatchDeviceFrame> : screens}
         </div>
         <div aria-hidden="true" className={styles.segments}>
           {moments.map((moment, index) => <span data-done={index <= active || undefined} key={`${moment.time}-${moment.title}`} />)}

@@ -205,6 +205,10 @@
   overflow: hidden;
 }
 
+/* Framed captures set their own height: the first holds the space and the rest lie over it. */
+.phone[data-frame="none"] .screens { display: grid; }
+.phone[data-frame="none"] .screen { position: relative; grid-area: 1 / 1; inset: auto; }
+
 .screen {
   position: absolute;
   inset: 0;

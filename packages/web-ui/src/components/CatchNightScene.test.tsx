@@ -90,4 +90,11 @@ describe("CatchNightScene", () => {
     expect(onSelect).toHaveBeenCalledWith(1);
     expect(window.scrollTo).toHaveBeenCalledWith({top: -500, behavior: "smooth"});
   });
+
+  it("stacks screens that carry their own frame without drawing a phone", () => {
+    const {container} = render(<CatchNightScene {...props} frame="none" />);
+    expect(container.querySelector("[data-frame='none']")).toBeTruthy();
+    expect(container.querySelector("[data-orientation]")).toBeNull();
+    expect(screen.getByRole("img", {name: "Pace groups"})).toBeTruthy();
+  });
 });
