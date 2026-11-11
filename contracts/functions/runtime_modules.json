@@ -453,6 +453,8 @@
     "ListMyHostAssignmentsCallablePayload",
     "ListMyOrganizerJourneysCallablePayload",
     "ListMyOrganizerJourneysCallableResponse",
+    "ListMyOwnedOrganizersCallablePayload",
+    "ListMyOwnedOrganizersCallableResponse",
     "ListOrganizerBillsCallablePayload",
     "ListOrganizerBillsCallableResponse",
     "ListOrganizerRequestsCallablePayload",

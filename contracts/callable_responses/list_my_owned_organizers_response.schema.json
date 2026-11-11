@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_my_owned_organizers_response.schema.json",
+  "title": "ListMyOwnedOrganizersCallableResponse",
+  "description": "One page of the organizers the caller owns, in organizer id order, each with its name and where it stands with Catch's billing (the free trial and the plan). Status only: no prices or purchase links. nextAfterOrganizerId continues the list, or is null on the last page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizers", "nextAfterOrganizerId"],
+  "properties": {
+    "organizers": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "name", "archived", "trial", "plan"],
+        "properties": {
+          "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "name": {"type": "string", "maxLength": 160},
+          "archived": {"type": "boolean", "description": "An archived organizer is listed: it may still have bills."},
+          "trial": {"$ref": "../embedded/organizer_trial_status.schema.json"},
+          "plan": {"$ref": "../embedded/organizer_billing_plan_status.schema.json"}
+        }
+      }
+    },
+    "nextAfterOrganizerId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    }
+  }
+}

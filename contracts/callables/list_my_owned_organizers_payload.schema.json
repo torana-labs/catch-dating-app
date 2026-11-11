@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_my_owned_organizers_payload.schema.json",
+  "title": "ListMyOwnedOrganizersCallablePayload",
+  "description": "The signed-in user reads the organizers they own (ownerUserId, or the legacy hostUserId when no owner is recorded), a page at a time in organizer id order. afterOrganizerId continues from the previous page's nextAfterOrganizerId; limit is the page size. Used by the host billing website to choose an organizer. Status only; it carries no prices.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Organizer owners (host billing website)",
+  "required": ["afterOrganizerId", "limit"],
+  "properties": {
+    "afterOrganizerId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "limit": {"type": "integer", "minimum": 1, "maximum": 50}
+  }
+}

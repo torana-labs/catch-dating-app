@@ -119,7 +119,12 @@ test("an issued bill is emailed to the owner's verified address and pushed " +
   assert.match(sent[0].text, /Amount: ₹70/u);
   assert.match(sent[0].text, /No GST is charged/u);
   assert.match(sent[0].text, /https:\/\/rzp\.io\/i\/abc/u);
+  // The email also links the host billing website for this organizer.
+  assert.ok(sent[0].text.includes(
+    `${BRAND.web.origin}/host/billing/?organizerId=org`));
   const push = pushes[0] as admin.messaging.TokenMessage;
+  // The push stays store-safe: no web link, no amount.
+  assert.doesNotMatch(JSON.stringify(push), /https?:|host\/billing|₹/u);
   assert.equal(push.notification?.title, "Catch bill issued");
   assert.equal(push.notification?.body,
     "Your Catch bill for 9 Nov – 8 Dec 2026 has been issued.");
