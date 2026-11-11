@@ -74,6 +74,8 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/event_broadcast_doc.json", "eventBroadcastDocumentSchema"],
   ["valid/event_attendee_doc.json", "eventAttendeeDocumentSchema"],
   ["valid/event_attendee_doc_party_size.json", "eventAttendeeDocumentSchema"],
+  ["valid/event_attendee_booking_doc.json", "eventAttendeeDocumentSchema"],
+  ["valid/event_attendee_index_doc.json", "eventAttendeeIndexDocumentSchema"],
   ["valid/event_staff_presence_doc.json", "eventStaffPresenceDocumentSchema"],
   ["invalid/event_staff_presence_doc_invalid_role.json", "eventStaffPresenceDocumentSchema"],
   ["valid/event_id_payload.json", "eventIdCallablePayloadSchema"],

@@ -244,6 +244,68 @@ test(
   }
 );
 
+test("projection carries booking facts and records the account's row",
+  async () => {
+    const booking = participation({paymentId: "pay_1",
+      genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
+      hostApprovalStatus: "approved", waitlistOfferId: "offer-1",
+      inviteSource: "Instagram"});
+    const h = projectionHarness({docs: {
+      "eventParticipations/event-1_user-1": booking as unknown as FakeData,
+      "publicProfiles/user-1": {name: "Asha"},
+    }});
+    await projectEventParticipationToAttendee(undefined, booking, h.deps);
+    const attendeeId = eventAttendeeId("event-1", "uid:user-1");
+    const row = h.firestore.get(`eventAttendees/${attendeeId}`);
+    assert.deepEqual(row?.booking, {paymentId: "pay_1",
+      genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
+      hostApprovalStatus: "approved", hostApprovalDecidedAt: null,
+      hostApprovalDecidedBy: null, waitlistOfferStatus: null,
+      waitlistOfferedAt: null, waitlistOfferExpiresAt: null,
+      waitlistOfferAcceptedAt: null, waitlistOfferId: "offer-1",
+      inviteSource: "Instagram", deletedAt: null});
+    assert.equal(h.firestore.get("eventAttendeeIndex/event-1_user-1")
+      ?.attendeeId, attendeeId);
+  });
+
+test("an existing index pointer is followed instead of a new row",
+  async () => {
+    const h = projectionHarness({authPhone: "+919876543210", docs: {
+      "eventParticipations/event-1_user-1": participation() as unknown as
+        FakeData,
+      "eventAttendeeIndex/event-1_user-1": {eventId: "event-1",
+        organizerId: "organizer-1", uid: "user-1",
+        attendeeId: "att_migrated"},
+      "eventAttendees/att_migrated": {eventId: "event-1",
+        organizerId: "organizer-1", source: "catchBooking",
+        linkedUid: "user-1", status: "registered", displayName: "Asha"},
+    }});
+    await projectEventParticipationToAttendee(undefined, participation(),
+      h.deps);
+    const migrated = h.firestore.get("eventAttendees/att_migrated") as
+      {booking?: {deletedAt: unknown}} | undefined;
+    assert.equal(migrated?.booking?.deletedAt, null);
+    const phoneRow = eventAttendeeId("event-1", "phone:+919876543210");
+    assert.equal(h.firestore.get(`eventAttendees/${phoneRow}`), undefined);
+  });
+
+test("a deleted booking keeps its facts with the deletion time",
+  async () => {
+    const h = projectionHarness({docs: {
+      "eventAttendeeIndex/event-1_user-1": {eventId: "event-1",
+        organizerId: "organizer-1", uid: "user-1", attendeeId: "att_1"},
+      "eventAttendees/att_1": {eventId: "event-1", organizerId: "organizer-1",
+        source: "catchBooking", linkedUid: "user-1", status: "registered",
+        displayName: "Asha"},
+    }});
+    await projectEventParticipationToAttendee(participation(), undefined,
+      h.deps);
+    const row = h.firestore.get("eventAttendees/att_1") as
+      {status?: string; booking?: {deletedAt: unknown}} | undefined;
+    assert.equal(row?.status, "cancelled");
+    assert.ok(row?.booking?.deletedAt);
+  });
+
 test("deleted legacy participation cannot resurrect its roster row",
   async () => {
     const attendeeId = eventAttendeeId("event-1", "uid:user-1");

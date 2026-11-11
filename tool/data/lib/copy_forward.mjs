@@ -53,8 +53,9 @@ async function planStep(db, step) {
   for await (const doc of pagedDocs(db.collection(step.source))) {
     result.scanned += 1;
     const data = doc.data();
-    const targetId = step.targetId(doc.id, data);
-    const next = targetId === null ? null : step.transform(data, doc.id);
+    // Ids and transforms may be async and may read (never write) other data.
+    const targetId = await step.targetId(doc.id, data, db);
+    const next = targetId === null ? null : await step.transform(data, doc.id, db);
     if (targetId === null || next === null) {
       result.skipped.push({sourcePath: doc.ref.path, reason: step.skipReason ?? "not migrated"});
       continue;
