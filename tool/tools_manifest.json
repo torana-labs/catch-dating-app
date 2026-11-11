@@ -2915,12 +2915,13 @@
       "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites.",
       "checks": [
         "node --check tool/data/migrate_firestore_consolidation.mjs",
-        "node --test tool/data/migrate_firestore_consolidation.test.mjs"
+        "npm --prefix functions run build && node --test tool/data/migrate_firestore_consolidation.test.mjs"
       ],
       "impactPaths": [
         "tool/data/migrate_firestore_consolidation.test.mjs",
         "tool/data/lib/firestore_consolidation_migrations.mjs",
-        "tool/data/lib/copy_forward.mjs"
+        "tool/data/lib/copy_forward.mjs",
+        "functions/src/events/eventPolicy.ts"
       ],
       "role": "generator"
     },
