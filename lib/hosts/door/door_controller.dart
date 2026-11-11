@@ -14,7 +14,9 @@ import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -163,8 +165,23 @@ class DoorSession extends _$DoorSession {
       ticket = await ref
           .read(eventTicketCodeRepositoryProvider)
           .resolveTicketCode(eventId: eventId, ticketCode: ticketCode);
-    } catch (error) {
-      return doorTicketNoticeFor(error);
+    } catch (error, stackTrace) {
+      final notice = doorTicketNoticeFor(error);
+      // A refused ticket is an expected answer the door shows as it is; any
+      // other failure shows as unavailable and is logged so it stays visible.
+      if (notice == DoorScanNotice.unavailable && ref.mounted) {
+        app_ops.logAppError(
+          error,
+          stackTrace: stackTrace,
+          context: const app_ops.AppErrorContext(
+            operation: app_ops.AppOperation.ui,
+            action: 'resolve a scanned ticket at the door',
+            resource: 'event_ticket_code',
+          ),
+          logError: ref.read(errorLoggerProvider),
+        );
+      }
+      return notice;
     }
     if (!ref.mounted) return null;
     if (ticket.eventId != eventId) return DoorScanNotice.otherEvent;

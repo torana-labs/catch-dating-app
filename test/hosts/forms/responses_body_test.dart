@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/forms/responses_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
 import 'forms_fixtures.dart';
 
 Future<void> _pumpResponses(
@@ -82,7 +83,7 @@ void main() {
       expect(find.text('2'), findsOneWidget);
       expect(find.text('4'), findsOneWidget);
       await tester.ensureVisible(find.text('Offered'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.tap(find.text('Offered'));
       await tester.pump();
       expect(filters, [HostResponsesFilter.offered]);

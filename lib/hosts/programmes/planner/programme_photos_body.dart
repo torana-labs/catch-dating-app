@@ -57,7 +57,12 @@ class HostProgrammePhotosBody extends StatelessWidget {
         .firstOrNull;
     final tiles = [
       for (var index = 0; index < albums.length; index++)
-        _albumTile(context, albums[index], _albumColors[index % 5]),
+        _HostProgrammeAlbumTile(
+          album: albums[index],
+          color: _albumColors[index % 5],
+          now: now,
+          onAlbum: onAlbum,
+        ),
     ];
     return CatchPageBody.screen(
       children: [
@@ -143,12 +148,25 @@ class HostProgrammePhotosBody extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _albumTile(
-    BuildContext context,
-    ProgramPhotoAlbum album,
-    CatchSurfaceColor color,
-  ) {
+/// One album: a coloured square with its name and photo count, or when it
+/// starts if it has no photos yet.
+class _HostProgrammeAlbumTile extends StatelessWidget {
+  const _HostProgrammeAlbumTile({
+    required this.album,
+    required this.color,
+    required this.now,
+    required this.onAlbum,
+  });
+
+  final ProgramPhotoAlbum album;
+  final CatchSurfaceColor color;
+  final DateTime now;
+  final ValueChanged<String?> onAlbum;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final startsAt = album.startsAt;
     final note = album.photoCount > 0

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_bod
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -21,11 +22,16 @@ class HostProgrammeMessagesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final programme = ref.watch(hostProgrammeControllerProvider(programId));
-    final messages = ref.watch(programPlannedMessagesProvider(programId));
+    final messages = catchAsyncStateFromAsyncValue(
+      ref.watch(programPlannedMessagesProvider(programId)),
+    );
+    final read = hostProgrammeStatusOf(messages);
     final status =
-        messages.hasError || programme.status == HostProgrammeStatus.error
+        read == HostProgrammeStatus.error ||
+            programme.status == HostProgrammeStatus.error
         ? HostProgrammeStatus.error
-        : (messages.hasValue && programme.status == HostProgrammeStatus.ready
+        : (read == HostProgrammeStatus.ready &&
+                  programme.status == HostProgrammeStatus.ready
               ? HostProgrammeStatus.ready
               : HostProgrammeStatus.loading);
     return CatchRoot(

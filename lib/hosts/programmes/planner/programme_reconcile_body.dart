@@ -63,7 +63,13 @@ class HostProgrammeReconcileBody extends StatelessWidget {
     String money(int minor) => hostProgrammeMoney(minor, view.currency);
     final bill = editing ? null : view.bill;
     final main = bill == null
-        ? _form(context, view)
+        ? _HostProgrammeBillForm(
+            view: view,
+            invoiceController: invoiceController,
+            linesController: linesController,
+            busy: busy,
+            onCheck: onCheck,
+          )
         : CatchStack(
             gap: CatchStackGap.g16,
             children: [
@@ -190,15 +196,17 @@ class HostProgrammeReconcileBody extends StatelessWidget {
             ],
           ),
           if (bill.status != ProgramBillStatus.approved) ...[
-            CatchField.input(
-              key: const ValueKey<String>('host-bill-note'),
-              copy: catchFieldCopy(l10n),
-              title: l10n.hostProgrammeBillNote(vendor: view.vendorName),
-              contractExemption: 'Free-text note to a transport vendor.',
-              controller: noteController,
-              maxLines: 5,
-              minLines: 3,
-              maxLength: 1000,
+            CatchFieldLanes.single(
+              child: CatchField.input(
+                key: const ValueKey<String>('host-bill-note'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.hostProgrammeBillNote(vendor: view.vendorName),
+                contractExemption: 'Free-text note to a transport vendor.',
+                controller: noteController,
+                maxLines: 5,
+                minLines: 3,
+                maxLength: 1000,
+              ),
             ),
             CatchButton(
               key: const ValueKey<String>('host-bill-question'),
@@ -263,8 +271,26 @@ class HostProgrammeReconcileBody extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _form(BuildContext context, ProgramVendorBillView view) {
+/// A new bill: the invoice number and the pasted lines, then Check.
+class _HostProgrammeBillForm extends StatelessWidget {
+  const _HostProgrammeBillForm({
+    required this.view,
+    required this.invoiceController,
+    required this.linesController,
+    required this.busy,
+    required this.onCheck,
+  });
+
+  final ProgramVendorBillView view;
+  final TextEditingController invoiceController;
+  final TextEditingController linesController;
+  final bool busy;
+  final VoidCallback onCheck;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     return CatchStack(
       gap: CatchStackGap.g16,
@@ -278,23 +304,27 @@ class HostProgrammeReconcileBody extends StatelessWidget {
           variant: CatchTextVariant.bodySmall,
           tone: CatchTextTone.secondary,
         ),
-        CatchField.input(
-          key: const ValueKey<String>('host-bill-invoice'),
-          copy: catchFieldCopy(l10n),
-          title: l10n.hostProgrammeBillInvoice,
-          contractExemption: 'Vendor invoice number.',
-          controller: invoiceController,
-          maxLength: 80,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('host-bill-invoice'),
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostProgrammeBillInvoice,
+            contractExemption: 'Vendor invoice number.',
+            controller: invoiceController,
+            maxLength: 80,
+          ),
         ),
-        CatchField.input(
-          key: const ValueKey<String>('host-bill-lines'),
-          copy: catchFieldCopy(l10n),
-          title: l10n.hostProgrammeBillLines,
-          helperText: l10n.hostProgrammeBillLinesHelp,
-          contractExemption: 'Pasted vendor bill lines.',
-          controller: linesController,
-          maxLines: 12,
-          minLines: 6,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('host-bill-lines'),
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostProgrammeBillLines,
+            helperText: l10n.hostProgrammeBillLinesHelp,
+            contractExemption: 'Pasted vendor bill lines.',
+            controller: linesController,
+            maxLines: 12,
+            minLines: 6,
+          ),
         ),
         CatchButton(
           key: const ValueKey<String>('host-bill-check'),

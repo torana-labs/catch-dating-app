@@ -35,16 +35,15 @@ class _HostProgrammeTripSheetState extends State<HostProgrammeTripSheet> {
     final canVoid =
         trip.status != TransportTripStatus.voided &&
         trip.status != TransportTripStatus.cancelled;
-    return CatchSheet(
+    return CatchSheet.standard(
       title:
           '${trip.vendorName ?? l10n.hostProgrammeTripsNoVendor} · ${trip.plateDisplay}',
       subtitle: trip.destinationLabel,
-      keyboardSafe: true,
       footer: live
-          ? CatchButton(
+          ? CatchButton.sheet(
               key: const ValueKey<String>('host-programme-trip-arrived'),
               label: l10n.hostProgrammeTripsMarkArrived,
-              fullWidth: true,
+              role: CatchButtonEmphasis.commit,
               onPressed: () => Navigator.of(
                 context,
               ).pop(const HostProgrammeTripDecision.arrived()),
