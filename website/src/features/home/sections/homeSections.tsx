@@ -264,9 +264,11 @@ function useStoryStep(count: number) {
 }
 
 function HomeNight({captures}: {captures: CaptureSlots}) {
-  const screens = [captureSlot(captures, "guest-explore"), captureSlot(captures, "guest-checked-in"), captureSlot(captures, "guest-after-event")];
+  // "Keep in touch" has no capture yet: no guest screen after the night is free of the retired catch
+  // flow, so that step keeps the screen before it rather than leaving the phone empty.
+  const screens = [captureSlot(captures, "guest-explore"), captureSlot(captures, "guest-checked-in")];
   const story = useStoryStep(copy.story.steps.length);
-  const screen = screens[story.step];
+  const screen = screens.slice(0, story.step + 1).reverse().find(Boolean) ?? null;
   return (
     <CatchSurface aria-labelledby="home-story-title" as="section" block="band" color="ink" id="how">
       <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>

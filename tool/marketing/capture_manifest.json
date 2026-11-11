@@ -424,29 +424,6 @@
       ]
     },
     {
-      "id": "guest-after-event",
-      "kind": "app-capture",
-      "audience": "guest",
-      "surface": "A guest's app after the event",
-      "status": "pending-fixture",
-      "device": "generic-phone",
-      "fixtureKey": "salesDemo.member.afterEvent",
-      "scenario": {
-        "world": "host-marketing-india",
-        "event": "event-host-trivia-store-demo",
-        "moment": "followUp"
-      },
-      "sourcePath": "artifacts/marketing/app-screenshots/guest-after-event.png",
-      "websitePath": "website/public/assets/app-screenshots/guest-after-event.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-after-event.png",
-      "alt": "The Catch app the morning after: the night's group and the hosts to follow",
-      "caption": "After the night: your group and the hosts you liked.",
-      "walkthroughStep": "Keep in touch",
-      "pages": [
-        "/"
-      ]
-    },
-    {
       "id": "wedding-rsvp",
       "kind": "web-capture",
       "audience": "guest",

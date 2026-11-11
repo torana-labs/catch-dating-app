@@ -10494,7 +10494,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'dashboard_home_after_event_focus',
     routeIds: const <String>['dashboardScreen'],
     device: CaptureDevice.reviewTall,
-    marketingFixtureKeys: const <String>['salesDemo.member.afterEvent'],
     providerOverrides: _dashboardProviderOverrides(
       attendedEvents: AsyncData([_dashboardAfterEventFocusEvent]),
       reviews: const AsyncData<List<Review>>([]),
