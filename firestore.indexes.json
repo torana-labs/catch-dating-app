@@ -4305,6 +4305,42 @@
       ]
     },
     {
+      "collectionGroup": "publicOrganizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "locationMarketId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "appVisibility",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "publicOrganizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "locationMarketId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "appVisibility",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "rating",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizers",
       "queryScope": "COLLECTION",
       "fields": [

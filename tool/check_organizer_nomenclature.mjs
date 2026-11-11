@@ -91,6 +91,9 @@ const flutterNameRoots = ["lib", "test", "integration_test", "apps", "widgetbook
 const skippedDirectories = new Set(["node_modules", ".dart_tool", "build", ".git"]);
 
 const allowedClubCopyKeys = new Set([
+  // "Supper club" names an event format (a hosted dinner), not a club-type
+  // organizer; the other templates (Trivia night, Social run) are formats too.
+  "hostCreateTemplate",
   "hostsOrganizerTypeClub",
   "launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready",
   "organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle",

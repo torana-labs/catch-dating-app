@@ -35,6 +35,11 @@ const permissionCollectionReviewers = new Set([
   "functions/src/organizers/organizerCrm.ts",
   "functions/src/organizers/organizerSavedAudiences.ts",
   "functions/src/organizers/organizerWhatsappWebhook.ts",
+  // Records the follower's reviewed WhatsApp permission (terms version checked)
+  // with the follow, by organizerCommunicationPreferenceId.
+  "functions/src/organizers/followOrganizerByPhone.ts",
+  // Rechecks each follower's preference and stop record before a WhatsApp send.
+  "functions/src/organizers/organizerFollowerWhatsappLeg.ts",
   "functions/src/safety/accountDeletion.ts",
 ]);
 

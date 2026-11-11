@@ -68,14 +68,9 @@
       "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/events/presentation/host_events_screen.dart",
-          "symbol": "HostEventsRouteScaffold",
-          "owner": "CatchLegacyTopBar.primaryRail"
-        },
-        {
-          "path": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-          "symbol": "_HostEventsOrganizerSectionState",
-          "owner": "CatchRootScreenHeader.title"
+          "path": "lib/hosts/events/events_screen.dart",
+          "symbol": "_HostEventsTabScreenState",
+          "owner": "CatchTopBar"
         }
       ]
     },

@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reconcile_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -71,7 +73,7 @@ class _HostProgrammeReconcileScreenState
     var ok = true;
     try {
       await ref
-          .read(programWorkRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .reconcileVendorBill(
             programId: widget.programId,
             vendorId: widget.vendorId,
@@ -144,8 +146,10 @@ class _HostProgrammeReconcileScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final read = ref.watch(
-      programVendorBillViewProvider(widget.programId, widget.vendorId),
+    final read = catchAsyncStateFromAsyncValue(
+      ref.watch(
+        programVendorBillViewProvider(widget.programId, widget.vendorId),
+      ),
     );
     final view = read.value?.value;
     if (!_noteSeeded && view != null) {
@@ -164,11 +168,7 @@ class _HostProgrammeReconcileScreenState
         ),
         bodyScrolls: false,
         body: HostProgrammeReconcileBody(
-          status: read.hasError
-              ? HostProgrammeStatus.error
-              : view == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          status: hostProgrammeStatusOf(read),
           view: view,
           editing: _editing,
           busy: _busy,
