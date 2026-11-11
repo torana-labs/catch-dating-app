@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import {isDeepStrictEqual} from "node:util";
 
 /**
@@ -169,6 +170,7 @@ export async function applyMigrationPlan(db, plan) {
 
 /** Saves the exact documents an apply will create, before it runs. */
 export function writePlanBackup(filePath, plans) {
+  fs.mkdirSync(path.dirname(filePath), {recursive: true});
   fs.writeFileSync(filePath, JSON.stringify({
     writtenAt: new Date().toISOString(),
     plans: plans.map((plan) => ({
