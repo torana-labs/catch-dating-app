@@ -153,6 +153,7 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
     targetAbsolutePath === path.join(repoRoot, "tool/contracts/generated/schema_contract_validators.mjs")) return true;
   return (
     sourceRelativePath === "features/organizers/types.ts" ||
+    sourceRelativePath === "features/hostBilling/contracts.ts" ||
     sourceRelativePath === "firebase.ts" ||
     sourceRelativePath === "server/repositories/publicPageRepository.ts"
   ) && isInside(functionsGeneratedRoot, targetAbsolutePath);
@@ -449,6 +450,10 @@ function runSelfTest() {
     path.join(repoRoot, "functions/src/shared/generated/organizerPublicPageDocument.ts")), true);
   assert.equal(allowedExternalImport("server/repositories/publicPageRepository.ts",
     path.join(repoRoot, "functions/src/publicPages/pageModel.ts")), false);
+  assert.equal(allowedExternalImport("features/hostBilling/contracts.ts",
+    path.join(repoRoot, "functions/src/shared/generated/listOrganizerBillsCallableResponse.ts")), true);
+  assert.equal(allowedExternalImport("features/hostBilling/hostBillingModel.ts",
+    path.join(repoRoot, "functions/src/shared/generated/listOrganizerBillsCallableResponse.ts")), false);
   assert.equal(allowedExternalImport("server/repositories/organizerRepository.ts",
     path.join(repoRoot, "functions/src/shared/generated/organizerPublicPageDocument.ts")), false);
   assert.equal(allowedExternalImport("stories/fixtures/demoWorld.ts",

@@ -102,3 +102,22 @@ it("no organizer to bill says so", async () => {
   act(() => signIn({uid: "guest"} as User));
   await waitFor(() => expect(result.current.phase).toBe("noOrganizers"));
 });
+
+it("asks for the owner's organizers with a contract-valid payload", async () => {
+  answer();
+  const {result} = renderHook(() => useHostBillingController(), {wrapper});
+  act(() => signIn({uid: "owner"} as User));
+  await waitFor(() => expect(result.current.phase).toBe("ready"));
+  // listMyOrganizerJourneys requires organizerId (null with no preselection).
+  expect(api.call).toHaveBeenCalledWith("listMyOrganizerJourneys", {organizerId: null});
+});
+
+it("a bill link's ?organizerId= reads that organizer's journey", async () => {
+  vi.stubGlobal("location", {...window.location, assign, search: "?organizerId=lantern"});
+  answer();
+  const {result} = renderHook(() => useHostBillingController(), {wrapper});
+  act(() => signIn({uid: "owner"} as User));
+  await waitFor(() => expect(result.current.phase).toBe("ready"));
+  expect(api.call).toHaveBeenCalledWith("listMyOrganizerJourneys", {organizerId: "lantern"});
+  expect(result.current.organizerId).toBe("lantern");
+});
