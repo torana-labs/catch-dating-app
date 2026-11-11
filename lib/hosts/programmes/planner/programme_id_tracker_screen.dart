@@ -5,11 +5,13 @@ import 'package:catch_dating_app/contexts/programmes/data/program_planner_reposi
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_id_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_id_tracker_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_share.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -57,7 +59,7 @@ class _HostProgrammeIdTrackerScreenState
     var ok = true;
     try {
       await ref
-          .read(programWorkRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .decideGuestId(
             programId: widget.programId,
             row: row,
@@ -89,7 +91,7 @@ class _HostProgrammeIdTrackerScreenState
         : box.localToGlobal(Offset.zero) & box.size;
     try {
       final link = await ref
-          .read(programPlannerRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .issueWebLink(
             programId: widget.programId,
             kind: ProgramWebLinkKind.hotelHandover,
@@ -119,7 +121,9 @@ class _HostProgrammeIdTrackerScreenState
   @override
   Widget build(BuildContext context) {
     final programId = widget.programId;
-    final read = ref.watch(programIdTrackerProvider(programId, _hotelId));
+    final read = catchAsyncStateFromAsyncValue(
+      ref.watch(programIdTrackerProvider(programId, _hotelId)),
+    );
     final tracker = read.value;
     final hotels = tracker?.hotels ?? const [];
     final sendTo = hotels.length == 1
@@ -131,11 +135,7 @@ class _HostProgrammeIdTrackerScreenState
         key: const ValueKey<String>('host-programme-id-tracker-screen'),
         bodyScrolls: false,
         body: HostProgrammeIdTrackerBody(
-          status: read.hasError
-              ? HostProgrammeStatus.error
-              : tracker == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          status: hostProgrammeStatusOf(read),
           tracker: tracker,
           filter: _filter,
           selectedGuestId: _guestId,

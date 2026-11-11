@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/data/program_asset_upload.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_branding_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -76,7 +76,7 @@ class _HostProgrammeBrandingScreenState
     });
     try {
       await ref
-          .read(programPlannerRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .saveBranding(
             programId: widget.programId,
             expectedRevision: program.revision,

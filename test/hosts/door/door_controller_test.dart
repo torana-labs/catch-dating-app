@@ -16,6 +16,7 @@ import 'package:catch_dating_app/hosts/door/door_controller.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +52,21 @@ class _FakeRoster implements HostOperationalRosterController {
 
 /// The door's ticket lookup on a fake: each code names the attendee the
 /// test chose, or fails the way the test chose.
+class _RecordingErrorLogger extends ErrorLogger {
+  _RecordingErrorLogger() : super.silent();
+
+  final errors = <Object?>[];
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) => errors.add(error);
+}
+
 class _FakeTickets implements EventTicketCodeRepository {
   final codes = <String, EventTicketResolution>{};
   Object? error;
@@ -259,8 +275,10 @@ void main() {
     late ProviderContainer container;
 
     late _FakeTickets tickets;
+    late _RecordingErrorLogger errors;
 
     setUp(() {
+      errors = _RecordingErrorLogger();
       attendees = StreamController<List<EventAttendee>>.broadcast();
       roster = _FakeRoster();
       tickets = _FakeTickets();
@@ -286,6 +304,7 @@ void main() {
             doorEventId,
           ).overrideWith((ref) => Stream.value([_presence('host-1', 'Me')])),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          errorLoggerProvider.overrideWithValue(errors),
         ],
       );
       addTearDown(attendees.close);
@@ -478,6 +497,11 @@ void main() {
         );
         expect(await session.scanTicket('code-any'), notice);
       }
+      // Only the unrecognised refusal is logged; a known refusal is an answer.
+      expect(errors.errors, hasLength(1));
+      tickets.error = StateError('ticket service down');
+      expect(await session.scanTicket('code-any'), DoorScanNotice.unavailable);
+      expect(errors.errors.last, same(tickets.error));
       expect(roster.calls, isEmpty);
       expect(sub.read().scanned, isNull);
     });

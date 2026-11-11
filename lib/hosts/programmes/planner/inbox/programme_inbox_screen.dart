@@ -72,6 +72,7 @@ class _HostProgrammeInboxScreenState
     setState(() => _busy = true);
     var ok = true;
     try {
+      // provider-graph: ownership-widget-async-callback:_HostProgrammeInboxScreenState._run:await:action watch CAT156 -- Each action is a programmeInboxCommandsProvider command; _run only holds the screen's busy flag, refreshes the thread and shows a failure notice. No loaded data, authority or retry identity lives here; it moves to a generated mutation with the inbox's CAT156 migration.
       await action();
     } on Object {
       ok = false;

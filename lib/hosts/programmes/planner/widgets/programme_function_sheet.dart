@@ -83,15 +83,14 @@ class _HostProgrammeFunctionSheetState
     final slots = [for (var slot = 12; slot < 48; slot++) slot];
     final ready =
         _name.trim().isNotEmpty && _venue.trim().isNotEmpty && _end > _start;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: widget.function == null
           ? l10n.hostProgrammeAddFunction
           : l10n.hostProgrammeFunctionEditTitle,
-      keyboardSafe: true,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
         key: const ValueKey<String>('host-programme-function-save'),
         label: l10n.hostProgrammeSave,
-        fullWidth: true,
+        role: CatchButtonEmphasis.commit,
         onPressed: ready
             ? () => Navigator.of(context).pop(
                 HostProgrammeFunctionDraft(

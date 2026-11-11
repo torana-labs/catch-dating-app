@@ -45,9 +45,11 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
         !(nativePicker && name == 'showCupertinoModalPopup')) {
       failures.add('$path: raw $name');
     }
+    // CatchSheet.contained is the system Sheet drawn in place at the foot of
+    // its screen (redesign); it owns its geometry like standard and filter.
     if (_hostRoots.any(path.startsWith) &&
         (name == 'CatchSheet' || target == 'CatchSheet') &&
-        !{'standard', 'filter'}.contains(constructor ?? name)) {
+        !{'standard', 'filter', 'contained'}.contains(constructor ?? name)) {
       failures.add(
         '$path: use CatchSheet.standard or CatchSheet.filter for shared geometry',
       );
@@ -76,11 +78,15 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
         if (ancestor is NamedExpression &&
             ancestor.name.label.name == 'footer') {
           final owner = ancestor.parent?.parent;
+          // A contained Sheet's footer pairs a primary with quiet or danger
+          // actions of the system Sheet; the role rule is for pushed sheets.
           final isSheet =
               owner is MethodInvocation &&
-                  owner.target?.toSource() == 'CatchSheet' ||
+                  owner.target?.toSource() == 'CatchSheet' &&
+                  owner.methodName.name != 'contained' ||
               owner is InstanceCreationExpression &&
-                  owner.constructorName.type.name.lexeme == 'CatchSheet';
+                  owner.constructorName.type.name.lexeme == 'CatchSheet' &&
+                  owner.constructorName.name?.name != 'contained';
           if (isSheet) {
             failures.add(
               '$path: sheet footer actions must declare their semantic role with CatchButton.sheet',
