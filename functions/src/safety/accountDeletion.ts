@@ -254,6 +254,7 @@ async function queueRelationshipCleanup(params: {
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueCrossPathsInvitationCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
+    queuePushInstallationCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
     queueReviewCleanup(db, uid, now, writer),
@@ -474,6 +475,17 @@ async function queueSavedEventCleanup(
     .where("uid", "==", uid)
     .get();
   savedEvents.forEach((doc) => writer.delete(doc.ref));
+}
+
+/** Removes every device push address so no sender can reach the account. */
+async function queuePushInstallationCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const installations = await db.collection("users").doc(uid)
+    .collection("pushInstallations").get();
+  installations.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**

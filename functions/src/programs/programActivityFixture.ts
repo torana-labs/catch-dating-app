@@ -31,10 +31,17 @@ export const activityRequest: ProgramActivityRequest = {
     endsAtMillis: ACTIVITY_NOW + 2 * ACTIVITY_WINDOW,
     rsvpDeadlineAtMillis: null, revision: 1, messagingEnabled: true,
     cancelled: false, organizerId: "org-1"}, functions: {}, travelLegs: {}},
-  recipient: {recipientKey: "uid:staff", endpoint: {kind: "uid", uid: "staff",
-    fcmToken: "token-1"}, householdId: null},
+  recipient: {recipientKey: "uid:staff", endpoint: {kind: "uid", uid: "staff"},
+    householdId: null},
   copy: {title: "Flight cancelled", body: "Contact the airport desk"},
 };
+
+/** The staff member's Host-app device row; null removes it. */
+export function setStaffDevice(db: FakeFirestore, token: string | null) {
+  const path = "users/staff/pushInstallations/host-token-1";
+  if (token === null) db.deleteDoc(path);
+  else db.setDoc(path, {token, appRole: "host"});
+}
 
 export function activityFirestore(request = activityRequest): FakeFirestore {
   const db = new FakeFirestore({});
@@ -84,7 +91,9 @@ export function activityFirestore(request = activityRequest): FakeFirestore {
     organizerId: "org-1", uid: "staff", status: "active", createdBy: "mgr",
     revision: 1, expiresAt: ts(until), duties: [{duty: "airportGreeter",
       pickupPointIds: ["airport"], hotelIds: [], expiresAtMillis: until}]});
-  db.setDoc("users/staff", {fcmToken: "token-1"});
+  db.setDoc("users/staff", {});
+  db.setDoc("users/staff/pushInstallations/host-token-1",
+    {token: "token-1", appRole: "host"});
   return db;
 }
 

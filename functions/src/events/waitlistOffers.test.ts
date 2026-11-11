@@ -3,6 +3,7 @@ import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   acceptEventWaitlistOfferHandler,
@@ -202,8 +203,8 @@ test("createEventWaitlistOffersHandler creates balanced capacity offers",
       "users/runner-2": user({
         gender: "woman",
         interestedInGenders: ["man"],
-        fcmToken: "token-2",
       }),
+      ...guestInstallation("runner-2", "token-2"),
       "users/runner-3": user({
         gender: "woman",
         interestedInGenders: ["man"],
@@ -344,7 +345,8 @@ test("declineEventWaitlistOfferHandler releases an open offer", async () => {
 test("expireEventWaitlistOffersHandler expires stale offers", async () => {
   const h = harness({
     "events/event-1": event(),
-    "users/runner-2": user({fcmToken: "token-2"}),
+    "users/runner-2": user(),
+    ...guestInstallation("runner-2", "token-2"),
     "eventParticipations/event-1_runner-2":
       participation("runner-2", "waitlisted"),
     "eventWaitlistOffers/event-1_runner-2": offer({

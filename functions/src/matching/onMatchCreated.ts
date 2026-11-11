@@ -129,9 +129,7 @@ export async function onMatchCreatedHandler(
   ];
   const pushTargets = (await Promise.all(recipients.map(async (recipient) => {
     if (!recipient.enabled) return [];
-    const tokens = await resolveTokens(
-      db, recipient.uid, "consumer", recipient.user
-    );
+    const tokens = await resolveTokens(db, recipient.uid, "consumer");
     return tokens.map((token) => ({...recipient, token}));
   }))).flat();
 

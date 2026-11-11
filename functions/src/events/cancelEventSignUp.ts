@@ -41,6 +41,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
@@ -466,7 +467,7 @@ export async function cancelEventSignUpHandler(
       promotedNotification = {
         uid: waitlistUserId,
         token: allowsPushPreference(waitlistUser, "eventStatusUpdates") ?
-          waitlistUser.fcmToken :
+          await readConsumerPushToken(db, waitlistUserId, tx) ?? undefined :
           undefined,
         title: notificationCopy.title,
         body: notificationCopy.body,

@@ -61,6 +61,11 @@ class FakeCollectionRef {
     );
   }
 
+  limit(count: number) {
+    void count;
+    return this;
+  }
+
   async get() {
     return {
       docs: this.firestore.query(this.path, this.filters),

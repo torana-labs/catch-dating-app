@@ -41,7 +41,9 @@ function setup(event: Record<string, unknown> = {
       endTime: NOW + 4_500_000, revision: 1, ...event},
     "eventParticipations/one":
       {eventId: "evt", uid: "one", status: "signedUp"},
-    "users/one": {fcmToken: "token-one"},
+    "users/one": {},
+    "users/one/pushInstallations/device-one":
+      {token: "token-one", appRole: "consumer"},
   });
   const messages: Message[] = [];
   const deps = buildMomentRunnerDeps({firestore: () => db as never,
@@ -135,16 +137,18 @@ for (const length of [180, 181]) {
   }
 }
 
-for (const user of [{fcmToken: "token-one", prefsEventReminders: false}, {}]) {
-  test(`push eligibility ${JSON.stringify(user)} does not erase activity`,
-    async () => {
-      const h = setup();
-      h.db.setDoc("users/one", user);
-      await h.provisionAndSweep();
-      assert.deepEqual(h.messages, []);
-      assert.equal(h.activity().length, 1);
-      assert.equal(h.activity()[0].organizerId, "canonical-org");
-    });
+for (const [user, device] of [[{prefsEventReminders: false}, true],
+  [{}, false]] as const) {
+  test(`push eligibility ${JSON.stringify({user, device})} does not erase ` +
+    "activity", async () => {
+    const h = setup();
+    h.db.setDoc("users/one", user);
+    if (!device) h.db.deleteDoc("users/one/pushInstallations/device-one");
+    await h.provisionAndSweep();
+    assert.deepEqual(h.messages, []);
+    assert.equal(h.activity().length, 1);
+    assert.equal(h.activity()[0].organizerId, "canonical-org");
+  });
 }
 
 test("each participant payload belongs only to its resolved UID and token",
@@ -152,10 +156,14 @@ test("each participant payload belongs only to its resolved UID and token",
     const h = setup();
     h.db.setDoc("eventParticipations/two",
       {eventId: "evt", uid: "two", status: "signedUp"});
-    h.db.setDoc("users/two", {fcmToken: "token-two"});
+    h.db.setDoc("users/two", {});
+    h.db.setDoc("users/two/pushInstallations/device",
+      {token: "token-two", appRole: "consumer"});
     h.db.setDoc("eventParticipations/foreign",
       {eventId: "other-event", uid: "foreign", status: "signedUp"});
-    h.db.setDoc("users/foreign", {fcmToken: "foreign-token"});
+    h.db.setDoc("users/foreign", {});
+    h.db.setDoc("users/foreign/pushInstallations/device",
+      {token: "foreign-token", appRole: "consumer"});
     await h.provisionAndSweep();
     assert.deepEqual(h.messages.map((message) => [message.data?.recipientUid,
       (message as {token: string}).token]),
@@ -182,7 +190,9 @@ for (const kind of ["push", "staffAttention"] as const) {
   test(`event-scoped staff ${kind} stays Host through actual runner`,
     async () => {
       const h = setup();
-      h.db.setDoc("users/staff", {fcmToken: "token-staff"});
+      h.db.setDoc("users/staff", {});
+      h.db.setDoc("users/staff/pushInstallations/device",
+        {token: "token-staff", appRole: "host"});
       h.db.setDoc("eventStaffGrants/staff", {eventId: "evt", uid: "staff",
         status: "active", duties: [{duty: "functionCheckIn"}]});
       const staff: MomentDefinition = {

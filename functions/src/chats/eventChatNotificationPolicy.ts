@@ -69,8 +69,7 @@ export async function dispatchEventChatNotification(
         allowsPushPreference(userData, "messages");
       if (!pushEnabled) return null;
       const tokens = conversationPushTokens(installations.docs.map((row) =>
-        row.data()), role, typeof userData?.fcmToken === "string" ?
-        userData.fcmToken : undefined);
+        row.data()), role);
       if (tokens.length === 0) return null;
       setActivityNotificationInTransaction(tx, db, {
         id: receiptId,

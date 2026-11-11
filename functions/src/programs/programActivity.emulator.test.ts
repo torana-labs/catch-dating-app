@@ -46,7 +46,7 @@ async function fixture() {
     facts: {...activityRequest.facts,
       scope: {...activityRequest.facts.scope, organizerId}},
     recipient: {recipientKey: `uid:${uid}`,
-      endpoint: {kind: "uid" as const, uid, fcmToken: "synthetic-token"},
+      endpoint: {kind: "uid" as const, uid},
       householdId: null}};
   const clock = {now: ACTIVITY_NOW};
   const controls: {failJournal: boolean;
@@ -98,7 +98,9 @@ async function fixture() {
     createdBy: "mgr", revision: 1, expiresAt: Timestamp.fromMillis(until),
     duties: [{duty: "airportGreeter", pickupPointIds: ["airport"],
       hotelIds: [], expiresAtMillis: until}]});
-  batch.set(user, {fcmToken: "synthetic-token"});
+  batch.set(user, {});
+  batch.set(user.collection("pushInstallations").doc("host-device"),
+    {token: "synthetic-token", appRole: "host"});
   await batch.commit();
   const messages: Message[] = [];
   const send = async (message: Message) => {

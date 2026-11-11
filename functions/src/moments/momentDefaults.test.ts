@@ -117,7 +117,7 @@ test("provisioned reminder fires through the sweep and honors the " +
     "events/e1": activeEvent(NOW + 10 * 60 * 1000),
     "eventParticipations/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
-    "users/u1": {fcmToken: "tok"},
+    "users/u1": {},
   });
   await ensureEventDefaultMoments(deps(db));
   const pushed: string[] = [];
@@ -147,7 +147,7 @@ test("an at-anchor run inside the grace window skips once the anchor " +
     "events/e1": activeEvent(start),
     "eventParticipations/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
-    "users/u1": {fcmToken: "tok"},
+    "users/u1": {},
     "organizerMoments/e1_at_start": {
       momentId: "e1_at_start",
       scope: {kind: "event", eventId: "e1"},
