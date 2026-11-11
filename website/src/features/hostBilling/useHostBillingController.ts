@@ -14,15 +14,22 @@ import {
 import type {
   GetOrganizerBillingStatusCallablePayload,
   GetOrganizerBillingStatusCallableResponse,
-  ListMyOrganizerJourneysCallablePayload,
-  ListMyOrganizerJourneysCallableResponse,
+  ListMyOwnedOrganizersCallablePayload,
+  ListMyOwnedOrganizersCallableResponse,
   ListOrganizerBillsCallablePayload,
   ManageOrganizerBillingPlanCallablePayload,
 } from "./contracts";
 
-type Journey = ListMyOrganizerJourneysCallableResponse["journeys"][number];
+type OwnedOrganizer = ListMyOwnedOrganizersCallableResponse["organizers"][number];
 
-export type BillingOrganizer = Pick<Journey, "organizerId" | "organizerName">;
+export interface BillingOrganizer {
+  organizerId: OwnedOrganizer["organizerId"];
+  organizerName: OwnedOrganizer["name"];
+}
+
+/** Organizers read per page, and the most pages read (500 organizers). */
+const organizerPageSize = 50;
+const maxOrganizerPages = 10;
 
 type PlanAction = Exclude<ManageOrganizerBillingPlanCallablePayload["action"], "read">;
 
@@ -71,24 +78,34 @@ function initialOrganizerId(): string | null {
 export function useHostBillingController(): HostBillingController {
   const queryClient = useQueryClient();
   const [identity, setIdentity] = useState<{user: User | null; loaded: boolean}>({user: null, loaded: false});
-  const [requested] = useState<string | null>(initialOrganizerId);
-  const [chosen, setChosen] = useState<string | null>(requested);
+  // A bill email's link preselects its organizer (?organizerId=).
+  const [chosen, setChosen] = useState<string | null>(initialOrganizerId);
   const [actionError, setActionError] = useState<"changed" | "failed" | null>(null);
   useEffect(() => watchWebsiteAccountAuthState((user) => setIdentity({user, loaded: true})), []);
   const uid = identity.user?.uid ?? null;
 
-  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers", requested], enabled: Boolean(uid),
+  // Every organizer the signed-in user owns, a page at a time.
+  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers"], enabled: Boolean(uid),
     retry: false, gcTime: 0, queryFn: async (): Promise<BillingOrganizer[]> => {
-      // The contract requires organizerId: the preselected organizer's journey, or null.
-      const payload: ListMyOrganizerJourneysCallablePayload = {organizerId: requested};
-      const reply = await invokeHostBillingCallable("listMyOrganizerJourneys", {...payload}) as
-        Untrusted<ListMyOrganizerJourneysCallableResponse> | null;
-      const journeys: unknown[] = Array.isArray(reply?.journeys) ? reply.journeys : [];
-      return journeys.flatMap((entry) => {
-        const journey = (entry ?? {}) as Untrusted<Journey>;
-        return typeof journey.organizerId === "string" && journey.waitingClaim !== true ?
-          [{organizerId: journey.organizerId, organizerName: String(journey.organizerName ?? journey.organizerId)}] : [];
-      });
+      const owned: BillingOrganizer[] = [];
+      let after: string | null = null;
+      for (let page = 0; page < maxOrganizerPages; page++) {
+        const payload: ListMyOwnedOrganizersCallablePayload = {afterOrganizerId: after, limit: organizerPageSize};
+        const reply = await invokeHostBillingCallable("listMyOwnedOrganizers", {...payload}) as
+          Untrusted<ListMyOwnedOrganizersCallableResponse> | null;
+        const entries: unknown[] = Array.isArray(reply?.organizers) ? reply.organizers : [];
+        for (const entry of entries) {
+          const item = (entry ?? {}) as Untrusted<OwnedOrganizer>;
+          if (typeof item.organizerId === "string" && !owned.some((known) => known.organizerId === item.organizerId)) {
+            owned.push({organizerId: item.organizerId,
+              organizerName: typeof item.name === "string" && item.name ? item.name : item.organizerId});
+          }
+        }
+        const next = reply?.nextAfterOrganizerId;
+        if (typeof next !== "string" || next === after) break;
+        after = next;
+      }
+      return owned;
     }});
   const organizers = organizersQuery.data ?? [];
   const organizerId = chosen && (organizers.length === 0 || organizers.some((item) => item.organizerId === chosen)) ?

@@ -9,6 +9,7 @@ import {
   type TransactionalEmail,
 } from "../email/emailProvider";
 import {ResendEmailProvider} from "../email/resendEmailProvider";
+import {brandWebUrl} from "../shared/generated/brand";
 import {resolveConversationPushTokens} from
   "../shared/conversationPushTargets";
 import {organizerOwnerUserId} from "../shared/organizerHosts";
@@ -173,6 +174,17 @@ function rupees(minor: number): string {
 }
 
 /**
+ * The host billing website for one organizer: every bill, the plan and the
+ * prices. Only for email and the web; the Host app links to none of it.
+ * @param {string} organizerId Organizer.
+ * @return {string} The portal URL with the organizer chosen.
+ */
+export function billingPortalUrl(organizerId: string): string {
+  return brandWebUrl(
+    `/host/billing/?organizerId=${encodeURIComponent(organizerId)}`);
+}
+
+/**
  * The email's lines about refund credit: what came off this bill for
  * refunds made after earlier bills were sent, and what carries forward.
  * @param {Bill} bill The bill.
@@ -227,6 +239,7 @@ export function billNoticeEmail(input: {bill: Bill; notice: Notice;
     "",
     url ? `See the invoice and pay: ${url}` :
       "Catch will send the invoice link separately.",
+    `All your Catch bills and your plan: ${billingPortalUrl(bill.organizerId)}`,
     "",
     "This is a service message about your Catch account.",
   ];
