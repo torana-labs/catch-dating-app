@@ -244,7 +244,7 @@ test("capture devices: the generic phone frames without an island, and the Dart 
   // Safari's status bar fills the generic phone's 62pt safe area, with a clean 9:41.
   assert.equal(safariScreen("generic-phone").statusBar, 62);
   assert.equal(safariScreen("iphone-17-pro").statusBar, 54);
-  const html = safariScreenHtml({pagePng: "", address: "catchdates.com", device: "generic-phone"});
+  const html = safariScreenHtml({pagePng: "", address: "example.com", device: "generic-phone"});
   assert.match(html, /height: 62px/u);
   assert.match(html, /<span class="time">9:41<\/span>/u);
 });
