@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/events_test_helpers.dart' as event_helpers;

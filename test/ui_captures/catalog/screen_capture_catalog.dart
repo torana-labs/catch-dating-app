@@ -7875,7 +7875,9 @@ List<Object> _eventRecapProviderOverrides({
       eventId,
     ).overrideWith((ref) => resolvedRecapValue),
     watchUserProfileProvider.overrideWith(
-      (ref) => Stream<UserProfile?>.value(_captureViewer),
+      (ref) => Stream<UserProfile?>.value(
+        buildSocialReadyUser(uid: _captureViewerUid, name: 'Rohan Mehta'),
+      ),
     ),
     watchOrganizerProvider(
       _dashboardJoinedOrganizer.id,

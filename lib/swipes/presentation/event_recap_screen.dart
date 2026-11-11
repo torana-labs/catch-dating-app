@@ -124,6 +124,20 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       ),
     );
 
+    final followMutation = event == null
+        ? null
+        : OrganizerMembershipController.joinMutation(event.organizerId);
+    final followPending =
+        followMutation != null && ref.watch(followMutation).isPending;
+    if (followMutation != null) {
+      listenToCatchMutationErrors(
+        context,
+        ref,
+        mutations: [followMutation],
+        errorContext: AppErrorContext.organizer,
+      );
+    }
+
     return CatchRoot(
       format: state is EventRecapReady ? state.format : null,
       child: CatchScreen(
@@ -180,11 +194,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
               },
               extra: next.event,
             ),
-            followPending: ref
-                .watch(
-                  OrganizerMembershipController.joinMutation(state.organizerId),
-                )
-                .isPending,
+            followPending: followPending,
             onFollow: () => _follow(ready.organizerId),
             onOpenOrganizer: () => context.pushNamed(
               Routes.organizerDetailScreen.name,
@@ -270,18 +280,8 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
                 .get(organizerMembershipControllerProvider.notifier)
                 .join(organizerId);
           })
-          .then(
-            (_) {},
-            onError: (Object error) {
-              if (!mounted) return;
-              showCatchNoticeError(
-                context,
-                error,
-                errorContext: AppErrorContext.organizer,
-                onRetry: () => _follow(organizerId),
-              );
-            },
-          ),
+          // listenToCatchMutationErrors in build shows the failure.
+          .then((_) {}, onError: (Object _) {}),
     );
   }
 
@@ -395,9 +395,9 @@ class EventRecapReadyBody extends StatelessWidget {
           ],
         ),
         if (chat != null)
-          CatchSection(
+          CatchSection.divided(
             title: l10n.afterEventChatTitle,
-            dividers: CatchSectionPlacement.none,
+            first: true,
             children: [
               CatchIndexRow(
                 key: SwipeKeys.afterEventGroupChat,
@@ -412,13 +412,15 @@ class EventRecapReadyBody extends StatelessWidget {
               ),
             ],
           ),
-        CatchSection(
+        CatchSection.divided(
           title: l10n.afterEventStayInTouchTitle,
-          action: CatchSectionAction(
+          first: true,
+          trailing: CatchButton(
             label: l10n.afterEventFilters,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
             onPressed: onFilters,
           ),
-          dividers: CatchSectionPlacement.none,
           children: [
             CatchStack(
               gap: CatchStackGap.g4,
@@ -530,7 +532,8 @@ class _PeopleList extends StatelessWidget {
         onRetry: onRetry,
         mode: CatchErrorStateMode.inline,
       ),
-      EventRecapProfileLookupStatus.ready => CatchSection(
+      EventRecapProfileLookupStatus.ready => CatchSection.divided(
+        first: true,
         children: [
           for (final row in people.rows)
             CatchIndexRow(
