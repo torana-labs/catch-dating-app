@@ -183,12 +183,22 @@ function validateWorkflowContracts(readSource = readRepoSource) {
   for (const contract of contracts) {
     const source = readSource(contract.path);
     for (const expected of contract.includes) {
+      // CI is off for the redesign sprint (owner, 8 Nov 2026): a surface
+      // workflow without a push trigger runs nightly on all of main, so it has
+      // no push path to name the shared package. The marker returns with it.
+      if (expected === "packages/web-ui/**" && sprintWithoutPushTrigger(source)) continue;
       if (!source.includes(expected)) {
         findings.push(`${contract.path}: missing shared web contract marker ${expected}`);
       }
     }
   }
   return findings;
+}
+
+export function sprintWithoutPushTrigger(source) {
+  const triggers = source.split(/^on:\n/mu)[1]?.split(/^\S/mu)[0] ?? "";
+  return source.includes("# CI is switched off for the redesign sprint (owner, 8 Nov 2026)") &&
+    !/^ {2}(push|pull_request):/mu.test(triggers) && /^ {2}schedule:\n/mu.test(triggers);
 }
 
 function readRepoSource(relativePath) {
@@ -218,6 +228,14 @@ function runSelfTest() {
   const workflowFindings = validateWorkflowContracts((relativePath) => workflowSources.get(relativePath) ?? "");
   if (!workflowFindings.some((finding) => finding.includes("npm run web:ui:test && npm run web:ui:typecheck"))) {
     throw new Error("self-test failed to reject a reusable workflow missing shared UI validation");
+  }
+  // The sprint waiver covers only the push-path marker, only while the sprint
+  // notice stands and the workflow has no push trigger.
+  const sprint = "# CI is switched off for the redesign sprint (owner, 8 Nov 2026): x\non:\n  schedule:\n    - cron: '1 2 * * *'\n  workflow_dispatch:\n";
+  if (!sprintWithoutPushTrigger(sprint) ||
+      sprintWithoutPushTrigger(sprint.replace("  schedule:", "  push:\n  schedule:")) ||
+      sprintWithoutPushTrigger(sprint.replace("# CI is switched off", "# CI is on"))) {
+    throw new Error("self-test failed: the sprint waiver must need the notice, a schedule and no push trigger");
   }
   // A failing --json run must return its code, not exit, so piped output
   // past the 64 KiB pipe buffer still reaches the caller intact.

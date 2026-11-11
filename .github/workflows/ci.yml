@@ -619,7 +619,8 @@ jobs:
     if: ${{ !cancelled() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     # Sprint floor (owner, 8 Nov 2026): only the lanes that catch a broken
     # build block a merge. tools, operations, docs-policy and app-builds still
-    # run and report, but do not gate; restore them here when the sprint ends.
+    # run and report, but do not gate; restore them here, and drop them from
+    # $reporting below, when the sprint ends.
     needs:
       - plan
       - source-preflight
@@ -681,7 +682,10 @@ jobs:
              flutter_build_web: "app-builds", flutter_web_smoke: "app-builds"} |
             to_entries | all(.[];
               . as $lane | $needs.plan.outputs[$lane.key] as $selected |
+              # Sprint floor: the lanes left out of needs report but do not gate.
+              ["app-builds", "docs-policy", "operations", "tools"] as $reporting |
               if $selected == "false" then true
+              elif $selected == "true" and ($reporting | index($lane.value)) != null then true
               elif $selected == "true" and $needs[$lane.value].result == "success" then true
               elif $selected == "true" and $queue != "" and ($reusable | index($lane.key)) != null and
                 $needs[$lane.value].result == "skipped" then true

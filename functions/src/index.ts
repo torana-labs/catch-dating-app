@@ -221,6 +221,7 @@ export {
 export {syncOrganizerFollowerStats} from
   "./organizers/syncOrganizerFollowerStats";
 export {syncOrganizerNextEvent} from "./organizers/syncOrganizerNextEvent";
+export {syncPublicOrganizer} from "./organizers/publicOrganizerProjection";
 export {syncExternalEventVisibility} from
   "./organizers/externalEventVisibility";
 export {

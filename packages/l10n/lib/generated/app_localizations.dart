@@ -46252,7 +46252,7 @@ abstract class AppLocalizations {
   /// Sends: per-channel counts for a follower update's WhatsApp leg.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp: {sent} sent, {delivered} delivered, {skipped} not on WhatsApp'**
+  /// **'WhatsApp: {sent} sent, {delivered} delivered, {skipped, plural, =1{1 not on WhatsApp} other{{skipped} not on WhatsApp}}'**
   String hostSendsFollowerUpdateWhatsapp({
     required int sent,
     required int delivered,
@@ -46393,12 +46393,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown number'**
   String get hostProgrammeInboxUnknownName;
-
-  /// Guest thread bubble author when the household has no contact name.
-  ///
-  /// In en, this message translates to:
-  /// **'Guest'**
-  String get hostProgrammeInboxGuest;
 
   /// Guest thread bubble for a photo or file, which Catch does not download.
   ///

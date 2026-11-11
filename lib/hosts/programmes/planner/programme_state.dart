@@ -1,7 +1,15 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostProgrammeStatus { loading, error, ready }
+
+/// One planner read's status: a failure reads as an error, as before, even
+/// when an older value is still held; otherwise data is ready.
+HostProgrammeStatus hostProgrammeStatusOf<T>(CatchAsyncState<T> read) {
+  if (read.error != null) return HostProgrammeStatus.error;
+  return read.hasData ? HostProgrammeStatus.ready : HostProgrammeStatus.loading;
+}
 
 /// One guest's answer for one function.
 enum HostProgrammeReply { coming, maybe, declined, noReply, notInvited }
