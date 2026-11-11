@@ -210,7 +210,7 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
       waitlistedCohortCounts: {menInterestedInWomen: 1},
     }),
     "eventParticipations/event-1_runner-2": participation("runner-2"),
-    "userEventScheduleLocks/runner-2_494184": {
+    "scheduleLocks/user_runner-2_494184": {
       uid: "runner-2",
       eventId: "event-1",
     },

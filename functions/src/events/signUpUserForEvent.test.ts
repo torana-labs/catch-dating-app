@@ -350,7 +350,7 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
   assert.equal(
-    fake.get(`userEventScheduleLocks/runner-1_${scheduleSlot(
+    fake.get(`scheduleLocks/user_runner-1_${scheduleSlot(
       "2026-05-02T01:30:00.000Z"
     )}`)?.eventId,
     "event-1"

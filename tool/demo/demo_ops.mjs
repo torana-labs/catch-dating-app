@@ -37,9 +37,9 @@ import {
   buildEventAggregateRepairPlan,
 } from "../data/recompute_event_aggregate_counts.mjs";
 import {
-  applyMemberCountRepairPlan,
-  buildMemberCountRepairPlan,
-} from "../data/recompute_organizer_member_counts.mjs";
+  applyFollowerCountRepairPlan,
+  buildFollowerCountRepairPlan,
+} from "../data/recompute_organizer_follower_counts.mjs";
 import {
   DEFAULT_PERSONA_CATALOG_PATH,
   DEFAULT_PHOTO_ACTIVITY_TAXONOMY_PATH,
@@ -532,9 +532,9 @@ async function runWritePlan({db, args, projectId, title, plan, repair = false}) 
 
 async function repairAggregates(db) {
   const eventPlan = await buildEventAggregateRepairPlan(db);
-  const organizerPlan = await buildMemberCountRepairPlan(db);
+  const organizerPlan = await buildFollowerCountRepairPlan(db);
   await applyEventAggregateRepairPlan(db, eventPlan);
-  await applyMemberCountRepairPlan(db, organizerPlan);
+  await applyFollowerCountRepairPlan(db, organizerPlan);
   return {
     eventRepairs: eventPlan.summary.repairsNeeded,
     eventWarnings: eventPlan.summary.warnings.length,

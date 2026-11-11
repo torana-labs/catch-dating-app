@@ -145,13 +145,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
           },
         },
       },
-      "organizerMemberships/club-1_runner-1": {
-        organizerId: "club-1",
-        uid: "runner-1",
-        role: "member",
-        status: "active",
-        pushNotificationsEnabled: true,
-      },
       "organizerFollows/club-1_runner-1": {
         organizerId: "club-1",
         uid: "runner-1",
@@ -661,8 +654,8 @@ test("requestAccountDeletionHandler short-circuits when already deleted",
           retainedFor: ["safety", "payments", "fraud"],
         },
         "users/runner-1": {deleted: true},
-        // A stale active membership must NOT be re-cleaned / re-decremented.
-        "organizerMemberships/club-1_runner-1": {
+        // A stale active follow must NOT be re-cleaned / re-decremented.
+        "organizerFollows/club-1_runner-1": {
           organizerId: "club-1",
           uid: "runner-1",
           status: "active",

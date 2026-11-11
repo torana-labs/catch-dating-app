@@ -1,14 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/user_event_schedule_locks.schema.json",
-  "title": "UserEventScheduleLockDocument",
-  "description": "Server-owned time-slot claim stored at userEventScheduleLocks/{uid_slot}.",
+  "$id": "https://catch.app/contracts/firestore/schedule_locks.schema.json",
+  "title": "ScheduleLockDocument",
+  "description": "Server-owned time-slot claim stored at scheduleLocks/{ownerType_ownerId_slot}. An organizer lock (ownerType organizer, id organizer_{organizerId}_{slot}) stops one organizer running two events at once; a user lock (ownerType user, id user_{uid}_{slot}, with uid) stops one person booking two overlapping events.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "userEventScheduleLocks",
-  "x-firestore-path": "userEventScheduleLocks/{lockId}",
+  "x-firestore-collection": "scheduleLocks",
+  "x-firestore-path": "scheduleLocks/{lockId}",
   "x-document-id-field": "lockId",
-  "x-owner": "event signup and waitlist callables",
+  "x-owner": "event publication, schedule edit, signup and waitlist callables",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -23,14 +23,16 @@
     "slot",
     "eventId",
     "organizerId",
-    "uid",
     "startTimeMillis",
     "endTimeMillis"
   ],
   "properties": {
     "ownerType": {
       "type": "string",
-      "const": "user",
+      "enum": [
+        "organizer",
+        "user"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "ownerId": {

@@ -25,7 +25,7 @@ export async function main(argv = process.argv.slice(2)) {
     projectId: resolveFirebaseProjectId({...args, defaultEnv: null}),
   });
   const db = admin.firestore();
-  const plan = await buildMemberCountRepairPlan(db);
+  const plan = await buildFollowerCountRepairPlan(db);
 
   if (args.json) {
     console.log(JSON.stringify(plan.summary, null, 2));
@@ -34,25 +34,25 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry run only. Re-run with --apply to write memberCount.");
+    console.log("\nDry run only. Re-run with --apply to write followerCount.");
     return;
   }
 
-  await applyMemberCountRepairPlan(db, plan);
-  console.log("\nApplied club memberCount repairs.");
+  await applyFollowerCountRepairPlan(db, plan);
+  console.log("\nApplied organizer followerCount repairs.");
 }
 
-export async function buildMemberCountRepairPlan(firestore) {
-  const [organizersSnap, membershipsSnap] = await Promise.all([
+export async function buildFollowerCountRepairPlan(firestore) {
+  const [organizersSnap, followsSnap] = await Promise.all([
     firestore.collection("organizers").get(),
-    firestore.collection("organizerMemberships").get(),
+    firestore.collection("organizerFollows").get(),
   ]);
 
   const organizerIds = new Set(organizersSnap.docs.map((doc) => doc.id));
   const activeCounts = new Map();
   const warnings = [];
 
-  for (const doc of membershipsSnap.docs) {
+  for (const doc of followsSnap.docs) {
     const data = doc.data();
     if (data.status !== "active") continue;
     if (typeof data.organizerId !== "string" || data.organizerId.length === 0) {
@@ -70,14 +70,14 @@ export async function buildMemberCountRepairPlan(firestore) {
 
   const repairs = [];
   for (const organizerDoc of organizersSnap.docs) {
-    const current = organizerDoc.data().memberCount;
+    const current = organizerDoc.data().followerCount;
     const expected = activeCounts.get(organizerDoc.id) ?? 0;
     if (current !== expected) {
       repairs.push({
         path: organizerDoc.ref.path,
         organizerId: organizerDoc.id,
-        currentMemberCount: current,
-        expectedMemberCount: expected,
+        currentFollowerCount: current,
+        expectedFollowerCount: expected,
       });
     }
   }
@@ -86,7 +86,7 @@ export async function buildMemberCountRepairPlan(firestore) {
     repairs,
     summary: {
       organizersScanned: organizersSnap.size,
-      membershipsScanned: membershipsSnap.size,
+      followsScanned: followsSnap.size,
       repairsNeeded: repairs.length,
       warnings,
       repairs,
@@ -94,12 +94,12 @@ export async function buildMemberCountRepairPlan(firestore) {
   };
 }
 
-export async function applyMemberCountRepairPlan(firestore, plan) {
+export async function applyFollowerCountRepairPlan(firestore, plan) {
   for (let i = 0; i < plan.repairs.length; i += 450) {
     const batch = firestore.batch();
     for (const repair of plan.repairs.slice(i, i + 450)) {
       batch.update(firestore.doc(repair.path), {
-        memberCount: repair.expectedMemberCount,
+        followerCount: repair.expectedFollowerCount,
       });
     }
     await batch.commit();
@@ -107,10 +107,10 @@ export async function applyMemberCountRepairPlan(firestore, plan) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/data/recompute_organizer_member_counts.mjs [options]
+  console.log(`Usage: node tool/data/recompute_organizer_follower_counts.mjs [options]
 
-Recomputes clubs/{organizerId}.memberCount from active
-organizerMemberships/{organizerId_uid} edge documents.
+Recomputes organizers/{organizerId}.followerCount from active
+organizerFollows/{organizerId_uid} edge documents.
 
 Options:
   --apply                 Write repairs. Default is dry-run.
@@ -124,17 +124,17 @@ Options:
 }
 
 function printSummary(summary) {
-  console.log("Club memberCount repair plan");
-  console.log(`Clubs scanned: ${summary.organizersScanned}`);
-  console.log(`Memberships scanned: ${summary.membershipsScanned}`);
+  console.log("Organizer followerCount repair plan");
+  console.log(`Organizers scanned: ${summary.organizersScanned}`);
+  console.log(`Follows scanned: ${summary.followsScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);
 
   if (summary.repairs.length > 0) {
     console.log("\nRepairs:");
     for (const repair of summary.repairs.slice(0, 100)) {
       console.log(
-        `- ${repair.path}: ${repair.currentMemberCount} -> ` +
-        `${repair.expectedMemberCount}`
+        `- ${repair.path}: ${repair.currentFollowerCount} -> ` +
+        `${repair.expectedFollowerCount}`
       );
     }
     if (summary.repairs.length > 100) {

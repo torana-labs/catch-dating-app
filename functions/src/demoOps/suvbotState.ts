@@ -140,14 +140,10 @@ export async function buildResetPlan(
         (doc) => paths.add(doc.ref.path));
     }
   }
-  if (scope === "all") {
-    await collectQuery(db.collection("organizerMemberships")
-      .where("uid", "==", uid), collect);
-  }
   if (scope === "all" || scope === "bookings") {
     for (const [collection, field] of [
       ["eventParticipations", "uid"],
-      ["userEventScheduleLocks", "uid"],
+      ["scheduleLocks", "uid"],
       ["savedEvents", "uid"],
       ["payments", "userId"],
     ]) {
