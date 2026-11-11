@@ -88,7 +88,7 @@ export function ProgrammeHampersView({screen, refresh, refreshing, draft, pick, 
                 {picked ? <CatchText variant="label-action">{copy.selected(copy.room(picked.roomLabel))}</CatchText> : null}
                 <CatchFilePickerButton accept={HAMPER_PHOTO_TYPES.join(",")} label={draft.pending ? copy.saving : copy.takePhoto}
                   leading={<CatchIcon name="addPhoto" />} onChanged={draft.pending || !picked ? null : photo}
-                  semanticsLabel={picked ? copy.takePhotoFor(copy.room(picked.roomLabel)) : copy.takePhoto} />
+                  semanticsLabel={picked && !draft.pending ? copy.takePhotoFor(copy.room(picked.roomLabel)) : undefined} />
               </CatchStack>
             </CatchDock>
           </>
