@@ -228,12 +228,26 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
       spacing: variant == CatchChoiceTileVariant.day ? 0 : CatchSpacing.micro2,
       children: variant == CatchChoiceTileVariant.day
           ? [
-              CatchText(title, variant: CatchTextVariant.labelBadge),
+              // The rail sets a day tile's width, so a weekday or date too
+              // wide at a large text scale shrinks to fit on one line
+              // instead of breaking mid-word; at normal size nothing changes.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: CatchText(
+                  title,
+                  variant: CatchTextVariant.labelBadge,
+                  maxLines: 1,
+                ),
+              ),
               if (hasSubtitle)
-                CatchText(
-                  subtitle,
-                  variant: CatchTextVariant.displayXs,
-                  numeric: true,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: CatchText(
+                    subtitle,
+                    variant: CatchTextVariant.displayXs,
+                    numeric: true,
+                    maxLines: 1,
+                  ),
                 ),
             ]
           : [
