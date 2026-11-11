@@ -987,6 +987,24 @@ describe("firestore.rules", () => {
       await assertSucceeds(getDoc(doc(anonymous, "organizers", "draft")));
     });
 
+    it("serves publicOrganizers by id, lists only shown ones and never accepts writes", async () => {
+      await seed(["publicOrganizers", "shown"], {name: "Shown", appVisibility: "discoverable",
+        locationMarketId: "mumbai"});
+      await seed(["publicOrganizers", "hidden"], {name: "Hidden", appVisibility: "hidden",
+        locationMarketId: "mumbai"});
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+
+      await assertSucceeds(getDoc(doc(anonymous, "publicOrganizers", "hidden")));
+      const shown = await assertSucceeds(getDocs(query(collection(anonymous, "publicOrganizers"),
+        where("locationMarketId", "==", "mumbai"), where("appVisibility", "==", "discoverable"))));
+      assert.deepEqual(shown.docs.map((document) => document.id), ["shown"]);
+      await assertFails(getDocs(query(collection(anonymous, "publicOrganizers"),
+        where("locationMarketId", "==", "mumbai"))));
+      await assertFails(setDoc(doc(authedDb("host-1"), "publicOrganizers", "mine"), {name: "Mine"}));
+      await assertFails(updateDoc(doc(authedDb("host-1"), "publicOrganizers", "shown"), {name: "Edit"}));
+      await assertFails(deleteDoc(doc(authedDb("host-1"), "publicOrganizers", "shown")));
+    });
+
     it("scopes team and follow reads while keeping writes callable-owned", async () => {
       await seed(["organizers", "organizer-1"], {
         ownerUserId: "owner-1",
