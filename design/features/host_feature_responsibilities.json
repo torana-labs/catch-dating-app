@@ -148,27 +148,27 @@
       "additionalCodeOwners": [
         {
           "id": "events_route",
-          "file": "lib/hosts/events/presentation/host_events_screen.dart",
-          "symbol": "HostEventsScreen",
-          "role": "Actions: retry_host_home."
+          "file": "lib/hosts/events/events_screen.dart",
+          "symbol": "HostEventsTabScreen",
+          "role": "Actions: retry_host_home, create_organizer, create_event (New and saved drafts), manage_event."
         },
         {
           "id": "workspace",
-          "file": "lib/hosts/events/presentation/host_events_screen.dart",
-          "symbol": "HostEventsRouteScaffold",
-          "role": "Actions: create_organizer, manage_event."
+          "file": "lib/hosts/events/events_body.dart",
+          "symbol": "HostEventsBody",
+          "role": "Upcoming, drafts and past tabs. Actions: retry_host_events, open_program."
         },
         {
           "id": "event_entry_flow",
-          "file": "lib/hosts/events/presentation/host_event_entry_flow.dart",
-          "symbol": "runHostEventEntryFlow",
-          "role": "Actions: create_event, repeat_event."
+          "file": "lib/hosts/events/event_workspace_screen.dart",
+          "symbol": "HostEventWorkspaceScreen",
+          "role": "Actions: repeat_event."
         },
         {
           "id": "events_list",
-          "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-          "symbol": "HostEventsOrganizerCard",
-          "role": "Actions: retry_host_events, open_program."
+          "file": "lib/hosts/events/events_controller.dart",
+          "symbol": "hostEventsController",
+          "role": "Events, drafts, history and programmes for one organizer. Actions: retry_host_events (retryHostEventsReads)."
         },
         {
           "id": "events_timeline",
@@ -196,8 +196,8 @@
         },
         {
           "id": "program_inventory_row",
-          "file": "lib/programs/presentation/program_events_row.dart",
-          "symbol": "ProgramEventsRow",
+          "file": "lib/contexts/programmes/parts/host_events_programme_tile.dart",
+          "symbol": "HostEventsProgrammeTile",
           "role": "Identifiable Program date-range, function-count, and lifecycle row inside Events."
         }
       ],
@@ -225,7 +225,8 @@
         }
       ],
       "testFiles": [
-        "test/hosts/host_events_screen_state_test.dart",
+        "test/hosts/events/events_bodies_test.dart",
+        "test/hosts/events/events_controllers_test.dart",
         "test/hosts/host_events_timeline_controller_test.dart",
         "test/hosts/host_operations_screen_test.dart",
         "test/programs/program_create_controller_test.dart",
