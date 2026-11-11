@@ -303,8 +303,9 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
           ),
         ),
       ),
-      CatchChoiceTileVariant.day => SizedBox(
-        height: CatchSpacing.s16,
+      // A minimum, not a fixed height: large text grows the day tile.
+      CatchChoiceTileVariant.day => ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: CatchSpacing.s16),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro6),
           child: Center(child: copy),
