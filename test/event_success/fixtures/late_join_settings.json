@@ -10,8 +10,7 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1789482600000,
-      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
       "ownRevision": 0,
       "own": null,
       "origin": "none",
@@ -86,7 +85,8 @@
             }
           }
         ]
-      }
+      },
+      "serverTime": 1789482600000
     }
   },
   "customInput": {
@@ -99,7 +99,7 @@
     "workflowKind": "lateJoin",
     "requestId": "save",
     "expectedRevision": 0,
-    "expectedSourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+    "expectedSourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
     "preference": {
       "kind": "configured",
       "template": {
@@ -140,8 +140,7 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1789482600000,
-      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
       "ownRevision": 1,
       "own": {
         "schemaVersion": 1,
@@ -182,7 +181,7 @@
             }
           }
         },
-        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
         "updatedBy": "host-1",
         "createdAt": 1789482600000,
         "updatedAt": 1789482600000
@@ -283,7 +282,8 @@
             }
           }
         ]
-      }
+      },
+      "serverTime": 1789482600000
     }
   },
   "disabled": {
@@ -297,8 +297,7 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1789482600000,
-      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
       "ownRevision": 2,
       "own": {
         "schemaVersion": 1,
@@ -339,7 +338,7 @@
             }
           }
         },
-        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
         "updatedBy": "host-1",
         "createdAt": 1789482600000,
         "updatedAt": 1789482600000
@@ -440,7 +439,8 @@
             }
           }
         ]
-      }
+      },
+      "serverTime": 1789482600000
     }
   },
   "replayed": {
@@ -454,8 +454,7 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1789482600000,
-      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
       "ownRevision": 2,
       "own": {
         "schemaVersion": 1,
@@ -496,7 +495,7 @@
             }
           }
         },
-        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "sourceHash": "c7a054494658a58a721180a42a207b7a40dd0bfd2218831f50c2ac10d7908574",
         "updatedBy": "host-1",
         "createdAt": 1789482600000,
         "updatedAt": 1789482600000
@@ -597,7 +596,8 @@
             }
           }
         ]
-      }
+      },
+      "serverTime": 1789482600000
     }
   }
 }
