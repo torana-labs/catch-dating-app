@@ -198,7 +198,7 @@ test("malformed rows are left out without failing the list", async () => {
   const store = setup();
   store.rows.set("events/a", event(NOW + 1000));
   store.rows.set("events/broken", event(NOW + 2000, {name: ""}));
-  store.rows.set("events/legacy", event(NOW + 3000, {clubId: "club1"}));
+  store.rows.set("events/legacy", event(NOW + 3000, {legacyHostId: "h1"}));
   store.rows.set("events/z", event(NOW + 4000));
   const result = await list(store, {organizerId: "org1"});
   assert.deepEqual(result.events.map((row) => row.eventId), ["a", "z"]);
