@@ -1,8 +1,5 @@
-import {
-  catchIconGlyphs,
-  catchIconStrokeWidth,
-  type CatchIconName,
-} from "../icons/catchIconGlyphs";
+import {useCatchIconGlyph} from "../icons/catchIconGlyphLoader";
+import {catchIconStrokeWidth, type CatchIconName} from "../icons/catchIconRoles";
 import styles from "./CatchLegacyIcon.module.css";
 
 /**
@@ -50,7 +47,7 @@ export interface CatchLegacyIconProps {
  * @deprecated Legacy: use CatchIcon; deleted in P7.
  */
 export function CatchLegacyIcon({icon, size = "md", tone = "inherit", semanticLabel}: CatchLegacyIconProps) {
-  const Glyph = catchIconGlyphs[icon];
+  const Glyph = useCatchIconGlyph(icon);
   const extent = catchIconSizes[size];
   return (
     <Glyph

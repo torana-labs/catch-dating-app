@@ -1,5 +1,5 @@
 import {Fragment, type MouseEvent, type ReactNode} from "react";
-import type {CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchIconName} from "../icons/catchIconRoles";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTabBar.module.css";

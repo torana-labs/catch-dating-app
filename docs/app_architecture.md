@@ -1448,10 +1448,16 @@ A role records a `note` where the family has no good match.
 `node tool/design/generate_icon_catalog.mjs` writes both icon layers from the
 catalog. Flutter gets `CatchIcons` in
 `packages/catch_ui/lib/src/foundations/catch_icons.g.dart`, exported by the
-stable `catch_icons.dart` facade. `@catch/web-ui` gets `catchIconGlyphs` (role
-to `lucide-react` component) in `packages/web-ui/src/icons/`, plus SVG node
-data for the activity and Playbook roles so server-rendered artwork can draw
-them (`catchIconSvgMarkup`, `activityIconName`).
+stable `catch_icons.dart` facade. `@catch/web-ui` gets, in
+`packages/web-ui/src/icons/`, the role names, stroke width and activity map
+(`catchIconRoles.ts`) and `catchIconGlyphs` (role to `lucide-react` component),
+plus SVG node data for the activity and Playbook roles so server-rendered
+artwork can draw them (`catchIconSvgMarkup`, `activityIconName`). The glyph
+map is about 50 KB, so it is a lazy chunk that only `catchIconGlyphLoader`
+imports. The first `CatchIcon` to mount starts the download, and each icon is
+an empty box of its final size until the chunk arrives. Never import
+`catchIconGlyphs` statically outside tests: one static import puts it back in
+every app's initial JavaScript and over the Admin bundle budget.
 Each role is a getter returning const `IconData` in the Lucide font vendored
 under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
 glyphs in use. The generator's `--check` mode fails when:
