@@ -9,8 +9,11 @@ import {classifySecretRuntimeAccess, executeReadinessCli} from "./check_environm
 import {collectFunctionBindingIntent, collectSecretConsumers, discoverFunctionExportNames, runCli} from "./function_binding_intent.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+// sendProgramWhatsappReply (#1627) sends a planner's reply on a programme
+// thread exactly as sendOrganizerWhatsappReply does on an organiser thread.
 const whatsappReaderConsumers = ["dispatchOrganizerCampaign", "getOrganizerMessagingSetup",
-  "sendOrganizerWhatsappReply", "sendOrganizerWhatsappTest", "syncOrganizerWhatsappTemplates"];
+  "sendOrganizerWhatsappReply", "sendOrganizerWhatsappTest", "sendProgramWhatsappReply",
+  "syncOrganizerWhatsappTemplates"];
 const whatsappWriterConsumers = ["completeOrganizerWhatsappConnection",
   "disconnectOrganizerWhatsappConnection"];
 const base = {environment: "dev", projectId: "test-project", projectNumber: "123456",
@@ -443,7 +446,7 @@ test("equivalent parenthesized and asserted mutation syntax remains unresolved",
 });
 
 
-test("WhatsApp source separates exactly five readers from the default connection writers in DEV and PROD", () => {
+test("WhatsApp source separates exactly six readers from the default connection writers in DEV and PROD", () => {
   const consumers = discoverFunctionExportNames(fs.readFileSync(
     path.join(repo, "functions/src/index.ts"), "utf8"));
   for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
