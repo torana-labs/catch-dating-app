@@ -969,15 +969,33 @@ void main() {
       },
     );
 
-    test('booking-ready users are sent to profile completion for catches', () {
+    test('booking-ready users open the after-event screen without a social '
+        'profile', () {
+      for (final matchedLocation in [
+        Routes.eventRecapScreen.path,
+        Routes.swipeEventScreen.path,
+      ]) {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: AsyncData(_bookingReadyUser()),
+            location: '/catches/event-1/recap',
+            matchedLocation: matchedLocation,
+          ),
+          isNull,
+        );
+      }
+    });
+
+    test('booking-ready users are sent to profile completion for filters', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(_testUid),
           userProfileAsync: AsyncData(_bookingReadyUser()),
-          location: '/catches/event-1?tab=recent',
-          matchedLocation: Routes.swipeEventScreen.path,
+          location: Routes.filtersScreen.path,
+          matchedLocation: Routes.filtersScreen.path,
         ),
-        '/onboarding?intent=complete-profile&from=%2Fcatches%2Fevent-1%3Ftab%3Drecent',
+        startsWith('/onboarding?intent=complete-profile'),
       );
     });
 

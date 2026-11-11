@@ -407,29 +407,10 @@
     },
     {
       "routeId": "swipeEventScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
-      "captureIds": [
-        "post_run_catch_window",
-        "swipe_event_queue_loading",
-        "swipe_event_queue_error",
-        "swipe_event_offline",
-        "swipe_event_cached_offline",
-        "swipe_event_empty_queue",
-        "swipe_event_missing",
-        "swipe_event_sign_in_required",
-        "swipe_event_in_progress",
-        "swipe_event_did_not_attend",
-        "swipe_event_window_closed",
-        "swipe_event_pass_pending",
-        "swipe_event_reaction_pending",
-        "swipe_event_write_failure_snackbar",
-        "swipe_event_comment_sheet_empty",
-        "swipe_event_comment_sheet_filled",
-        "swipe_event_text_scale_2",
-        "swipe_event_reduced_motion"
-      ],
-      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline/cached-offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, pass/reaction pending action states, write-failure snackbar feedback, comment sheet empty/filled, text-scale, and reduced-motion states."
+      "canonicalRouteId": "eventRecapScreen",
+      "reason": "The retired swipe deck's address now redirects to the event's after-event screen; the deck and its captures were removed."
     },
     {
       "routeId": "eventRecapScreen",
@@ -437,6 +418,7 @@
       "priority": "P2",
       "captureIds": [
         "event_recap_attendees",
+        "event_recap_rated_following",
         "event_recap_loading",
         "event_recap_error",
         "event_recap_missing_event",
@@ -444,7 +426,6 @@
         "event_recap_partial_profiles",
         "event_recap_profile_lookup_loading",
         "event_recap_profile_lookup_error",
-        "event_recap_selected_tiles",
         "event_recap_text_scale_2",
         "event_recap_reduced_motion",
         "event_recap_light_dark"

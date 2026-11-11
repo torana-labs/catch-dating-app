@@ -373,11 +373,9 @@ bool _isOwnAccountRoute(String path) =>
       r'^/events/[^/]+/chat(?:/profile|/people(?:/[^/]+)?)?$',
     ).hasMatch(path);
 
-bool _requiresSocialProfile(String matchedLocation) {
-  // The after-event screen (rating, group chat, follow, next event) is for
-  // everyone who came; only its Stay in touch picks need a social profile,
-  // and that section asks for one itself.
-  if (matchedLocation == Routes.eventRecapScreen.path) return false;
-  return matchedLocation == Routes.filtersScreen.path ||
-      matchedLocation.startsWith('/catches/');
-}
+// The after-event screen (rating, group chat, follow, next event) and the
+// retired deck address that redirects to it are for everyone who came; only
+// its Stay in touch picks need a social profile, and that section asks for
+// one itself.
+bool _requiresSocialProfile(String matchedLocation) =>
+    matchedLocation == Routes.filtersScreen.path;
