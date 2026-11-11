@@ -81,13 +81,18 @@ export function statusLabel(status: string): string {
 }
 
 /** Where a bill is, with a colour when it needs attention: Overdue 3 days, Paid 3 Nov. */
-export function billState(bill: Bill, nowMillis: number): MoneyLabel {
+export function billState(bill: Bill, nowMillis: number, organizerHeld = false): MoneyLabel {
   if (isOverdue(bill, nowMillis) && bill.dueAtMillis !== null) {
     const days = Math.max(1, Math.floor((nowMillis - bill.dueAtMillis) / dayMs));
     return {text: `Overdue ${days} ${days === 1 ? "day" : "days"}`, tone: "danger"};
   }
   switch (bill.status) {
-  case "toSend": return {text: "To send", tone: "warning"};
+  case "toSend": {
+    const sending = billSending(bill, organizerHeld);
+    return sending.automatic && !sending.held ?
+      {text: `Sends ${shortDate(bill.autoSendAtMillis as number)}`, tone: "secondary"} :
+      {text: sending.held ? "To send · held" : "To send", tone: "warning"};
+  }
   case "sent": return {text: bill.sentAtMillis ? `Issued ${shortDate(bill.sentAtMillis)}` : "Issued"};
   case "paid": return {text: bill.paidAtMillis ? `Paid ${shortDate(bill.paidAtMillis)}` : "Paid", tone: "success"};
   case "writtenOff": return {text: "Written off", tone: "secondary"};
@@ -97,6 +102,45 @@ export function billState(bill: Bill, nowMillis: number): MoneyLabel {
     tone: "secondary",
   };
   }
+}
+
+export interface BillSending {
+  /** The daily run sends it without staff once its time comes. */
+  automatic: boolean;
+  /** Staff hold it, or its organizer. */
+  held: boolean;
+  label: MoneyLabel;
+}
+
+/**
+ * How an unsent bill goes out: staff review for a host's first two cycles,
+ * automatically after that, or held (the bill or its organizer).
+ */
+export function billSending(bill: Bill, organizerHeld: boolean): BillSending {
+  const automatic = bill.status === "toSend" && typeof bill.autoSendAtMillis === "number";
+  const held = automatic && (Boolean(bill.sendHold) || organizerHeld);
+  if (bill.status !== "toSend") return {automatic: false, held: false, label: {text: "Sent or closed", tone: "secondary"}};
+  if (!automatic) {
+    return {automatic, held, label: {text: isCycleBill(bill) ?
+      "Waits for staff: one of the host's first two billing cycles" : "Waits for staff", tone: "warning"}};
+  }
+  if (bill.sendHold) {
+    return {automatic, held, label: {text: `On hold${bill.sendHold.note ? `: ${bill.sendHold.note}` : ""}`, tone: "warning"}};
+  }
+  if (organizerHeld) return {automatic, held, label: {text: "On hold: the organizer's bills are held", tone: "warning"}};
+  return {automatic, held, label: {text: `Sends automatically ${shortDate(bill.autoSendAtMillis as number)}`}};
+}
+
+/** An organizer's bill review in one line: how its cycle bills go out. */
+export function billReviewLabel(review: BillsMonth["billReview"]): MoneyLabel | null {
+  if (!review) return null;
+  if (review.hold) {
+    return {text: `On hold${review.hold.note ? `: ${review.hold.note}` : ""} · staff send every bill`, tone: "warning"};
+  }
+  if (review.reviewedCycles < review.reviewRequiredCycles) {
+    return {text: `Staff review: ${review.reviewedCycles} of the first ${review.reviewRequiredCycles} cycles sent`};
+  }
+  return {text: "Sent automatically a day after each cycle is billed"};
 }
 
 /** Whether a bill covers one rolling cycle (#1126) rather than a calendar month. */
@@ -164,6 +208,8 @@ const historyTitles: Record<Bill["history"][number]["action"], string> = {
   reminded: "Reminder recorded",
   paid: "Marked paid",
   writtenOff: "Written off",
+  held: "Held from sending automatically",
+  holdReleased: "Hold released",
 };
 
 export interface MoneyStep {
@@ -187,7 +233,9 @@ export function billJourney(bill: Bill, nowMillis: number): MoneyStep[] {
   }));
   const state = billState(bill, nowMillis);
   if (bill.status === "toSend") {
-    steps.push({title: "Waiting to be issued", subtitle: "Issuing takes the next invoice number", meta: "Now", state: "current", tone: "warning"});
+    const sending = billSending(bill, false);
+    steps.push({title: sending.automatic && !sending.held ? sending.label.text : "Waiting to be issued",
+      subtitle: "Issuing takes the next invoice number", meta: "Now", state: "current", tone: "warning"});
   } else if (bill.status === "sent") {
     steps.push({
       title: state.tone === "danger" ? state.text : "Waiting for payment",

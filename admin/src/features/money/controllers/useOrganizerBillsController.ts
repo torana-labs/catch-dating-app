@@ -1,5 +1,11 @@
-import {useQuery} from "@tanstack/react-query";
-import {loadOrganizerBills, type Bill, type BillsMonth} from "../api/moneyRepository";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {
+  actOnOrganizerBills,
+  loadOrganizerBills,
+  type Bill,
+  type BillsMonth,
+  type OrganizerBillsAction,
+} from "../api/moneyRepository";
 
 export interface OrganizerMoneySummary {
   /** Ticket sales after refunds, every bill together. */
@@ -30,8 +36,14 @@ export interface OrganizerBillsController {
   trial: BillsMonth["trial"];
   /** The organizer's Catch plan: ticketing or tools-only. */
   billingPlan: BillsMonth["billingPlan"];
+  /** How its cycle bills go out: staff review, automatic, or held. */
+  billReview: BillsMonth["billReview"];
   loadState: "loading" | "error" | "ready";
   loadError: string | null;
+  isActing: boolean;
+  actionError: string | null;
+  /** Holds or releases automatic sending for every bill of the organizer. */
+  setHold: (action: OrganizerBillsAction, note: string | null) => Promise<boolean>;
 }
 
 /** Ticket sales after refunds. Commission may be charged on another base. */
@@ -76,10 +88,17 @@ export function organizerMonthBreakdown(bill: Bill): OrganizerMonthBreakdown {
 
 /** One organizer's bills for the Money tab of its page. */
 export function useOrganizerBillsController(organizerId: string): OrganizerBillsController {
+  const client = useQueryClient();
+  const key = ["admin", "money", "organizer-bills", organizerId] as const;
   const query = useQuery({
-    queryKey: ["admin", "money", "organizer-bills", organizerId] as const,
+    queryKey: key,
     queryFn: () => loadOrganizerBills(organizerId),
     retry: false,
+  });
+  const hold = useMutation({
+    mutationFn: (input: {action: OrganizerBillsAction; note: string | null}) =>
+      actOnOrganizerBills(organizerId, input.action, input.note),
+    onSuccess: (data) => client.setQueryData(key, data),
   });
   const bills = query.data?.bills ?? [];
   return {
@@ -88,7 +107,18 @@ export function useOrganizerBillsController(organizerId: string): OrganizerBills
     latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null,
     trial: query.data?.trial ?? null,
     billingPlan: query.data?.billingPlan ?? null,
+    billReview: query.data?.billReview ?? null,
     loadState: query.isError ? "error" : query.data ? "ready" : "loading",
     loadError: query.error instanceof Error ? query.error.message : null,
+    isActing: hold.isPending,
+    actionError: hold.error instanceof Error ? hold.error.message : null,
+    setHold: async (action, note) => {
+      try {
+        await hold.mutateAsync({action, note});
+        return true;
+      } catch {
+        return false;
+      }
+    },
   };
 }

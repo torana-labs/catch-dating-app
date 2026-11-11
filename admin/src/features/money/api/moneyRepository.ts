@@ -17,7 +17,9 @@ import {moneySampleNowMillis, sampleManageOrganizerBills,
 export type BillsMonth = AdminManageOrganizerBillsCallableResponse;
 export type Bill = BillsMonth["bills"][number];
 export type BillAction = Exclude<AdminManageOrganizerBillsCallablePayload["action"],
-  "list" | "generate">;
+  "list" | "generate" | OrganizerBillsAction>;
+/** Holds or releases automatic sending for every bill of one organizer. */
+export type OrganizerBillsAction = "holdOrganizer" | "releaseOrganizerHold";
 export type IssuesView = AdminManagePaymentIssuesCallableResponse;
 export type MoneyIssue = IssuesView["issues"][number];
 
@@ -66,6 +68,15 @@ export function actOnBill(bill: Pick<Bill, "billId" | "revision">,
     "adminManageOrganizerBills", {action, month: null, organizerId: null,
       billId: bill.billId,
       expectedRevision: bill.revision, note: note?.trim() || null},
+    sampleManageOrganizerBills);
+}
+
+/** Holds or releases automatic sending for one organizer, then rereads its bills. */
+export function actOnOrganizerBills(organizerId: string, action: OrganizerBillsAction,
+  note: string | null): Promise<BillsMonth> {
+  return call<AdminManageOrganizerBillsCallablePayload, BillsMonth>(
+    "adminManageOrganizerBills", {action, month: null, organizerId, billId: null,
+      expectedRevision: null, note: note?.trim() || null},
     sampleManageOrganizerBills);
 }
 
