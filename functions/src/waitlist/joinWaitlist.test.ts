@@ -382,19 +382,8 @@ test("host intents preserve changes and exact retries", async (context) => {
     async (run: TransactionRunner) => {
       const writes: Array<{path: string; value: Record<string, unknown>}> = [];
       const tx = {
-        get: async (ref: {
-          path?: string; isEqual?: (q: unknown) => boolean;
-        }) => {
-          if (!ref.path) {
-            const size = [...records.entries()].filter(([path, row]) =>
-              path.startsWith("salesInboundIntents/") && ref.isEqual?.(
-                database.collection("salesInboundIntents")
-                  .where("waitlistId", "==", row.waitlistId).limit(1))).length;
-            return {size};
-          }
-          return {exists: records.has(ref.path),
-            data: () => records.get(ref.path!)};
-        },
+        get: async (ref: {path: string}) => ({exists: records.has(ref.path),
+          data: () => records.get(ref.path)}),
         create: (ref: {path: string}, value: Record<string, unknown>) => {
           assert.equal(records.has(ref.path), false);
           writes.push({path: ref.path, value});
@@ -484,12 +473,18 @@ test("host intents preserve changes and exact retries", async (context) => {
   assert.equal(accepted.hostLead.isNew, true);
   assert.notEqual(accepted.hostLead.eventId, firstReceipt.eventId);
 
-  // Historic Host intent survives a later member-role overwrite.
-  delete records.get(`launchWaitlist/${attendeeId}`)!.hostLead;
+  // A pre-receipt enquiry carries the migrated not-new lead, so a later
+  // member-role overwrite never turns it into a new acquisition.
+  const preReceiptLead = "host_lead_1700000000000_" +
+    "0d5f7c2a-1b3e-4c5d-8e9f-0a1b2c3d4e5f";
+  records.get(`launchWaitlist/${attendeeId}`)!.hostLead =
+    {eventId: preReceiptLead, isNew: false};
   records.get(`launchWaitlist/${attendeeId}`)!.role = "member";
-  const legacy = await submit({...body, email: attendeeEmail,
-    analytics: {...analytics, eventId: "legacy-host-revisit"}});
-  assert.equal((legacy.result as typeof accepted).hostLead.isNew, false);
+  const revisit = await submit({...body, email: attendeeEmail,
+    analytics: {...analytics, eventId: "pre-receipt-host-revisit"}});
+  assert.equal(revisit.status, 200, JSON.stringify(revisit));
+  assert.deepEqual((revisit.result as typeof accepted).hostLead,
+    {eventId: preReceiptLead, isNew: false});
 
   const beforeTrap = committedWrites;
   const trap = await submit({...body, website: "bot"});

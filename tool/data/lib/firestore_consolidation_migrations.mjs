@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import {createFunctionsRequire} from "../../lib/repo_paths.mjs";
 
@@ -111,7 +112,61 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "published-reveal-index",
+    description:
+      "Event Success plans revealed before publishedRevealRoundIndex existed " +
+      "get the round they show as revealed, so nothing infers it from " +
+      "revealStatus any more.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "eventSuccessPlans",
+        fill: (data) => {
+          if (data.revealStatus !== "revealed") return null;
+          if (Number.isInteger(data.publishedRevealRoundIndex)) return null;
+          const active = Number.isInteger(data.activeRevealRoundIndex) ?
+            Math.max(0, data.activeRevealRoundIndex) : 0;
+          return {publishedRevealRoundIndex: active};
+        },
+      },
+    ],
+  },
+  {
+    name: "waitlist-host-leads",
+    description:
+      "launchWaitlist entries that predate host-lead receipts but already " +
+      "have a Sales inbound intent get hostLead {isNew: false}, so joinWaitlist " +
+      "no longer queries salesInboundIntents to avoid recounting them.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "launchWaitlist",
+        fill: async (data, id, db) => {
+          if (data.hostLead !== undefined && data.hostLead !== null) return null;
+          const intents = await db.collection("salesInboundIntents")
+            .where("waitlistId", "==", id).limit(1).get();
+          if (intents.empty) return null;
+          return {hostLead: {eventId: preReceiptHostLeadId(id, data), isNew: false}};
+        },
+      },
+    ],
+  },
 ];
+
+/**
+ * A host-lead id in the joinWaitlist receipt shape (host_lead_<ms>_<uuid>),
+ * stable per waitlist entry: the entry's creation time and a uuid-formatted
+ * digest of its id.
+ */
+export function preReceiptHostLeadId(id, data) {
+  const created = typeof data.createdAt?.toMillis === "function" ?
+    data.createdAt.toMillis() : 1_700_000_000_000;
+  const hex = crypto.createHash("sha256").update(`launchWaitlist/${id}`).digest("hex");
+  const uuid = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-` +
+    `${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+  return `host_lead_${String(created).padStart(13, "0")}_${uuid}`;
+}
 
 /** The cohort split Functions used to infer from gender counts at read time. */
 function cohortCountsFromGenderCounts(genderCounts) {
