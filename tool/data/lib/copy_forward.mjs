@@ -89,7 +89,8 @@ async function planFillStep(db, step) {
   for await (const doc of pagedDocs(db.collection(step.collection))) {
     result.scanned += 1;
     const data = doc.data();
-    const fields = step.fill(data, doc.id);
+    // A fill may be async and may read other collections (never write).
+    const fields = await step.fill(data, doc.id, db);
     if (fields === null) continue;
     const present = Object.keys(fields).filter((field) => !isEmptyValue(data[field]));
     if (present.length > 0) {
