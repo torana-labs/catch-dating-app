@@ -22,12 +22,12 @@ class WidgetbookCatchesRecapReadyBodyPreview extends StatelessWidget {
     super.key,
     required this.event,
     required this.attendeeIds,
-    required this.selectedVibeIds,
+    this.pickedIds = const <String>{},
   });
 
   final Event event;
   final List<String> attendeeIds;
-  final Set<String> selectedVibeIds;
+  final Set<String> pickedIds;
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +35,21 @@ class WidgetbookCatchesRecapReadyBodyPreview extends StatelessWidget {
       context,
       event: event,
       attendeeIds: attendeeIds,
-      selectedVibeIds: selectedVibeIds,
+      pickedIds: pickedIds,
     );
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       body: EventRecapReadyBody(
         state: ready,
-        onToggleVibe: widgetbookIgnoreString,
-        onRetryRosterProfiles: _ignoreStrings,
-        onOpenCatchesDeck: _ignoreRecapOpenDeck,
+        onRate: _ignoreInt,
+        onOpenChat: _ignore,
+        onFilters: _ignore,
+        onPick: widgetbookIgnoreString,
+        onRetryPeople: _ignore,
+        onOpenNext: _ignoreNext,
+        onFollow: _ignore,
+        onOpenOrganizer: _ignore,
       ),
     );
   }
@@ -55,17 +60,21 @@ EventRecapReady widgetbookCatchesRecapReadyState(
   required Event event,
   required List<String> attendeeIds,
   Map<String, PublicProfile>? rosterProfiles,
-  Set<String> selectedVibeIds = const <String>{},
+  Set<String> pickedIds = const <String>{},
 }) {
   final screenState = buildEventRecapScreenState(
     eventId: event.id,
-    viewModel: CatchAsyncState.data(
-      widgetbookCatchesRecapViewModel(event: event, attendeeIds: attendeeIds),
+    inputs: EventRecapInputs(
+      viewModel: CatchAsyncState.data(
+        widgetbookCatchesRecapViewModel(event: event, attendeeIds: attendeeIds),
+      ),
+      rosterProfiles: CatchAsyncState.data(
+        rosterProfiles ?? widgetbookCatchesRecapRosterProfiles(),
+      ),
+      organizerName: 'Bandra Dawn Club',
+      followedOrganizerIds: const <String>{},
+      pickedIds: pickedIds,
     ),
-    rosterProfiles: CatchAsyncState.data(
-      rosterProfiles ?? widgetbookCatchesRecapRosterProfiles(),
-    ),
-    selectedVibeIds: selectedVibeIds,
     l10n: context.l10n,
     now: CatchesSurfaceFixtures.now,
   );
@@ -73,7 +82,11 @@ EventRecapReady widgetbookCatchesRecapReadyState(
   return screenState as EventRecapReady;
 }
 
-void _ignoreStrings(Iterable<String> _) {}
+void _ignore() {}
+
+void _ignoreInt(int _) {}
+
+void _ignoreNext(EventRecapNextState _) {}
 
 const widgetbookCatchesMissingRecapProfileUid =
     'design-catches-missing-profile';
@@ -122,8 +135,6 @@ T widgetbookCatchesProfileSection<T extends ProfileSectionData>(
 ) {
   return widgetbookCatchesProfileView(context).sections.whereType<T>().first;
 }
-
-void _ignoreRecapOpenDeck(EventRecapOpenDeckIntent intent) {}
 
 Future<void> widgetbookCatchesNoopReaction(
   ProfileReactionTarget target,

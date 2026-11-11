@@ -85,6 +85,8 @@ import 'package:catch_dating_app/contexts/messaging/data/conversation_repository
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
@@ -8009,7 +8011,21 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
   };
 }
 
+final _eventRecapNextEvent = _captureFixtures.captureEvent(
+  id: 'event-recap-next-capture',
+  organizer: _dashboardJoinedOrganizer,
+  startTime: DateTime.now().add(const Duration(days: 6, hours: 14)),
+  endTime: DateTime.now().add(const Duration(days: 6, hours: 15)),
+  meetingPoint: 'Carter Road Amphitheatre',
+  bookedCount: 9,
+  checkedInCount: 0,
+  capacityLimit: 18,
+  description: 'The next easy loop from the same club.',
+);
+
 List<Object> _eventRecapProviderOverrides({
+  EventSuccessFeedback? feedback,
+  Set<String> followedOrganizerIds = const <String>{},
   AsyncValue<EventRecapViewModel?>? recapValue,
   Map<String, PublicProfile>? rosterProfiles,
   AsyncValue<Map<String, PublicProfile>>? rosterProfilesValue,
@@ -8022,10 +8038,71 @@ List<Object> _eventRecapProviderOverrides({
     _ => const <String>[],
   };
 
+  final eventId = _eventRecapEvent.id;
+  final now = DateTime.now();
   return <Object>[
     eventRecapViewModelProvider(
-      _eventRecapEvent.id,
+      eventId,
     ).overrideWith((ref) => resolvedRecapValue),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(_captureViewer),
+    ),
+    watchOrganizerProvider(
+      _dashboardJoinedOrganizer.id,
+    ).overrideWith((ref) => Stream.value(_dashboardJoinedOrganizer)),
+    watchEventParticipationProvider(
+      eventId,
+      _captureViewerUid,
+    ).overrideWith((ref) => Stream.value(_eventRecapParticipations.first)),
+    watchUserEventSuccessFeedbackProvider(
+      eventId: eventId,
+      uid: _captureViewerUid,
+    ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(feedback)),
+    watchUserEventSuccessAssignmentProvider(
+      eventId: eventId,
+      uid: _captureViewerUid,
+    ).overrideWith(
+      (ref) => Stream<EventSuccessAssignment?>.value(
+        _hostManageAssignment(
+          event: _eventRecapEvent,
+          uid: _captureViewerUid,
+          label: 'Pod 3',
+          title: 'Pace pod 3',
+          peerUids: [
+            for (final profile in _eventRecapProfiles.take(2)) profile.uid,
+          ],
+          now: now,
+        ),
+      ),
+    ),
+    eventChatAccessProvider(eventId).overrideWith(
+      (ref) async => EventChatAccess(
+        eventId: eventId,
+        title: _eventRecapEvent.title,
+        organizerId: _eventRecapEvent.organizerId,
+        roomStatus: 'open',
+        roomRevision: 1,
+        membershipStatus: 'joined',
+        membershipRevision: 1,
+        canManage: false,
+        canJoin: true,
+        canReadMessages: true,
+        closesAtMillis: _eventRecapEvent.endTime
+            .add(const Duration(days: 7))
+            .millisecondsSinceEpoch,
+        profileClaimRequired: false,
+        termsVersion: 'event-chat-v1',
+      ),
+    ),
+    watchActiveEventsForOrganizerProvider(
+      ActiveOrganizerEventsQuery(
+        organizerId: _eventRecapEvent.organizerId,
+        day: now,
+      ),
+    ).overrideWith((ref) => Stream.value([_eventRecapNextEvent])),
+    currentUserFollowedOrganizerIdsProvider.overrideWithValue(
+      AsyncData(followedOrganizerIds),
+    ),
     publicProfilesByIdsProvider(
       PublicProfilesQuery(attendeeIds),
     ).overrideWithValue(
@@ -14762,17 +14839,24 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(
-    id: 'event_recap_selected_tiles',
+    id: 'event_recap_rated_following',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: _eventRecapProviderOverrides(),
-    builder: (context) => EventRecapScreen(
-      eventId: _eventRecapEvent.id,
-      initialSelectedVibeIds: {
-        _eventRecapProfiles.first.uid,
-        _eventRecapProfiles[1].uid,
-      },
+    providerOverrides: _eventRecapProviderOverrides(
+      feedback: EventSuccessFeedback(
+        id: 'event-recap-capture_runner-viewer',
+        eventId: _eventRecapEvent.id,
+        organizerId: _eventRecapEvent.organizerId,
+        uid: _captureViewerUid,
+        welcomeRating: 4,
+        structureRating: 4,
+        metNewPeopleCount: 3,
+        createdAt: DateTime(2026, 5, 30, 9),
+        updatedAt: DateTime(2026, 5, 30, 9),
+      ),
+      followedOrganizerIds: {_dashboardJoinedOrganizer.id},
     ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(
     id: 'event_recap_text_scale_2',

@@ -46855,6 +46855,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gujarati'**
   String get hostProgrammeInboxLanguageGu;
+
+  /// Kicker over the after-event title: the event and its organiser.
+  ///
+  /// In en, this message translates to:
+  /// **'{eventTitle} · {organizer}'**
+  String afterEventKicker({
+    required String eventTitle,
+    required String organizer,
+  });
+
+  /// After-event screen title, asking how the event went.
+  ///
+  /// In en, this message translates to:
+  /// **'How was it?'**
+  String get afterEventTitle;
+
+  /// Accessibility label for the private star rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the event, from one to five stars'**
+  String get afterEventRatingLabel;
+
+  /// Under the private rating: who sees it.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {organizer} sees this, as part of a summary.'**
+  String afterEventRatingPrivacy({required String organizer});
+
+  /// Under the private rating when the organiser's name hasn't loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the organizer sees this, as part of a summary.'**
+  String get afterEventRatingPrivacyFallback;
+
+  /// Section title for the event's group chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Group chat'**
+  String get afterEventChatTitle;
+
+  /// Group chat row subtitle: when the host closes it.
+  ///
+  /// In en, this message translates to:
+  /// **'Open until {date}, then read-only'**
+  String afterEventChatOpenUntil({required String date});
+
+  /// Section title for picking people to see again.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay in touch'**
+  String get afterEventStayInTouchTitle;
+
+  /// How picks work, under Stay in touch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick anyone you’d like to see again. Only you see your picks. If someone picks you too, you can message each other.'**
+  String get afterEventStayInTouchBody;
+
+  /// Section action opening the people filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get afterEventFilters;
+
+  /// How many people are listed to pick from.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person from {eventTitle}, by your filters} other{{count} people from {eventTitle}, by your filters}}'**
+  String afterEventPeopleCount({
+    required int count,
+    required String eventTitle,
+  });
+
+  /// When picking closes, 24 hours after the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks open until {time}'**
+  String afterEventPicksOpenUntil({required String time});
+
+  /// Picking closed 24 hours after the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks have closed'**
+  String get afterEventPicksClosed;
+
+  /// Row action: pick someone you'd like to see again.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick'**
+  String get afterEventPick;
+
+  /// Row action after picking someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked'**
+  String get afterEventPicked;
+
+  /// Person row subtitle: they were on your team or table.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team'**
+  String get afterEventYourGroup;
+
+  /// Person row subtitle: they were on your named team or table.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team · {group}'**
+  String afterEventYourGroupNamed({required String group});
+
+  /// Person row subtitle: city and age.
+  ///
+  /// In en, this message translates to:
+  /// **'{city} · {age}'**
+  String afterEventPersonCityAge({required String city, required int age});
+
+  /// Person row subtitle: age only.
+  ///
+  /// In en, this message translates to:
+  /// **'{age}'**
+  String afterEventPersonAge({required int age});
+
+  /// Person row subtitle when their profile hasn't loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Came to this event'**
+  String get afterEventPersonCameToo;
+
+  /// Kicker on the organiser's next event.
+  ///
+  /// In en, this message translates to:
+  /// **'Next · {date}'**
+  String afterEventNextKicker({required String date});
+
+  /// Button opening the organiser's next event.
+  ///
+  /// In en, this message translates to:
+  /// **'Book the next one'**
+  String get afterEventBookNext;
+
+  /// Button opening the organiser when nothing is scheduled yet.
+  ///
+  /// In en, this message translates to:
+  /// **'See what the organizer has coming up'**
+  String get afterEventSeeOrganizer;
+
+  /// Button to follow the event's organizer from the after-event screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow {organizer}'**
+  String afterEventFollowOrganizer({required String organizer});
 }
 
 class _AppLocalizationsDelegate

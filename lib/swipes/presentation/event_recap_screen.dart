@@ -1,9 +1,21 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
+import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -12,59 +24,122 @@ import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+/// After the event (RbAppAfter, RbAppDinnerAfter): how it went, the group
+/// chat, the people you'd like to see again and the organiser's next event.
 class EventRecapScreen extends ConsumerStatefulWidget {
-  const EventRecapScreen({
-    super.key,
-    required this.eventId,
-    this.initialSelectedVibeIds = const <String>{},
-  });
+  const EventRecapScreen({super.key, required this.eventId, this.now});
 
   final String eventId;
-  final Set<String> initialSelectedVibeIds;
+
+  /// Fixes the clock for captures and tests.
+  final DateTime? now;
 
   @override
   ConsumerState<EventRecapScreen> createState() => _EventRecapScreenState();
 }
 
 class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
-  late final Set<String> _selectedVibes = {...widget.initialSelectedVibeIds};
+  final Set<String> _picked = <String>{};
+  final Set<String> _pending = <String>{};
+  int? _pendingRating;
+
+  DateTime get _now => widget.now ?? DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final recapAsync = ref.watch(eventRecapViewModelProvider(widget.eventId));
-    final recapState = _catchAsyncState(recapAsync);
-    final viewModel = recapState.value;
-    final rosterProfiles = _watchRosterProfiles(viewModel);
-    final screenState = buildEventRecapScreenState(
-      l10n: context.l10n,
-      eventId: widget.eventId,
-      viewModel: recapState,
-      rosterProfiles: rosterProfiles,
-      selectedVibeIds: _selectedVibes,
+    final eventId = widget.eventId;
+    final viewModelState = catchAsyncStateFromAsyncValue(
+      ref.watch(eventRecapViewModelProvider(eventId)),
     );
-
-    return CatchRouteScaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
-        title: context.l10n.swipesEventRecapScreenTitleEventRecap,
-        emphasis: scrolledUnder
-            ? CatchTopBarEmphasis.divided
-            : CatchTopBarEmphasis.plain,
-        leading: CatchIconAction.toolbar(
-          icon: CatchIcons.close,
-          tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
-          onPressed: () => context.pop(),
+    final viewModel = viewModelState.value;
+    final event = viewModel?.event;
+    final user = catchAsyncStateFromAsyncValue(
+      ref.watch(watchUserProfileProvider),
+    ).value;
+    final uid = user?.uid;
+    final state = buildEventRecapScreenState(
+      eventId: eventId,
+      l10n: context.l10n,
+      now: _now,
+      inputs: EventRecapInputs(
+        viewModel: viewModelState,
+        rosterProfiles: _watchRosterProfiles(viewModel),
+        organizerName: event == null
+            ? null
+            : _value(
+                ref.watch(watchOrganizerProvider(event.organizerId)),
+              )?.name,
+        currentUser: user,
+        participation: uid == null
+            ? null
+            : _value(ref.watch(watchEventParticipationProvider(eventId, uid))),
+        feedback: uid == null
+            ? null
+            : _value(
+                ref.watch(
+                  watchUserEventSuccessFeedbackProvider(
+                    eventId: eventId,
+                    uid: uid,
+                  ),
+                ),
+              ),
+        assignment: uid == null
+            ? null
+            : _value(
+                ref.watch(
+                  watchUserEventSuccessAssignmentProvider(
+                    eventId: eventId,
+                    uid: uid,
+                  ),
+                ),
+              ),
+        chatAccess: uid == null
+            ? null
+            : _value(ref.watch(eventChatAccessProvider(eventId))),
+        organizerEvents: event == null
+            ? const <Event>[]
+            : _value(
+                    ref.watch(
+                      watchActiveEventsForOrganizerProvider(
+                        ActiveOrganizerEventsQuery(
+                          organizerId: event.organizerId,
+                          day: _now,
+                        ),
+                      ),
+                    ),
+                  ) ??
+                  const <Event>[],
+        pickedIds: _picked,
+        pendingRating: _pendingRating,
+        followedOrganizerIds: _value(
+          ref.watch(currentUserFollowedOrganizerIdsProvider),
         ),
       ),
-      body: CatchRouteBody.standard(
-        child: switch (screenState) {
-          EventRecapLoading() => const EventRecapLoadingBody(),
+    );
+
+    return CatchRoot(
+      format: state is EventRecapReady ? state.format : null,
+      child: CatchScreen(
+        key: const ValueKey<String>('after-event-screen'),
+        topBar: CatchTopBar(
+          variant: CatchTopBarVariant.moment,
+          back: CatchTopBarBack(
+            label: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
+            close: true,
+            onPressed: _close,
+          ),
+        ),
+        body: switch (state) {
+          EventRecapLoading() => const CatchPageBody.screen(
+            child: CatchLoadingIndicator(),
+          ),
           EventRecapError(:final error, :final retryIntent) =>
             CatchLocalizedErrorState(
               error,
@@ -78,9 +153,35 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           ),
           EventRecapReady ready => EventRecapReadyBody(
             state: ready,
-            onToggleVibe: _toggleVibe,
-            onRetryRosterProfiles: _retryRosterProfiles,
-            onOpenCatchesDeck: _openCatchesDeck,
+            pendingPicks: _pending,
+            onRate: event == null
+                ? null
+                : (rating) => _rate(event, ready, rating),
+            onOpenChat: () => context.pushNamed(
+              Routes.eventChatScreen.name,
+              pathParameters: {'eventId': eventId},
+            ),
+            onFilters: () => context.pushNamed(Routes.filtersScreen.name),
+            onPick: _pick,
+            onRetryPeople: () => _retryRosterProfiles(ready.people.attendeeIds),
+            onOpenNext: (next) => context.pushNamed(
+              Routes.eventDetailScreen.name,
+              pathParameters: {
+                'organizerId': next.organizerId,
+                'eventId': next.eventId,
+              },
+              extra: next.event,
+            ),
+            followPending: ref
+                .watch(
+                  OrganizerMembershipController.joinMutation(state.organizerId),
+                )
+                .isPending,
+            onFollow: () => _follow(ready.organizerId),
+            onOpenOrganizer: () => context.pushNamed(
+              Routes.organizerDetailScreen.name,
+              pathParameters: {'organizerId': ready.organizerId},
+            ),
           ),
         },
       ),
@@ -94,12 +195,18 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     if (attendeeIds.isEmpty) {
       return const CatchAsyncState.data(<String, PublicProfile>{});
     }
-
-    // Resolve every roster profile in one batched fetch instead of a realtime
-    // stream per grid tile.
-    return _catchAsyncState(
+    // One batched fetch for every row instead of a stream per person.
+    return catchAsyncStateFromAsyncValue(
       ref.watch(publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds))),
     );
+  }
+
+  void _close() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(Routes.dashboardScreen.name);
+    }
   }
 
   void _retry(EventRecapRetryIntent intent) {
@@ -109,508 +216,329 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     ref.invalidate(eventRecapViewModelProvider(intent.eventId));
   }
 
-  void _toggleVibe(String attendeeId) {
-    setState(() {
-      _selectedVibes.contains(attendeeId)
-          ? _selectedVibes.remove(attendeeId)
-          : _selectedVibes.add(attendeeId);
-    });
-  }
-
   void _retryRosterProfiles(Iterable<String> attendeeIds) {
     ref.invalidate(
       publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)),
     );
   }
 
-  void _openCatchesDeck(EventRecapOpenDeckIntent intent) {
-    context.goNamed(
-      Routes.swipeEventScreen.name,
-      pathParameters: {'eventId': intent.eventId},
-      extra: intent.selectedVibeIds,
+  void _pick(String attendeeId) {
+    if (_picked.contains(attendeeId) || _pending.contains(attendeeId)) return;
+    setState(() => _pending.add(attendeeId));
+    unawaited(
+      EventRecapController.pickMutation
+          .run(ref, (tx) async {
+            await tx
+                .get(eventRecapControllerProvider.notifier)
+                .pick(eventId: widget.eventId, targetId: attendeeId);
+          })
+          .then(
+            (_) {
+              if (!mounted) return;
+              setState(() {
+                _pending.remove(attendeeId);
+                _picked.add(attendeeId);
+              });
+            },
+            onError: (Object error) {
+              if (!mounted) return;
+              setState(() => _pending.remove(attendeeId));
+              showCatchNoticeError(
+                context,
+                error,
+                errorContext: AppErrorContext.swipes,
+                onRetry: () => _pick(attendeeId),
+              );
+            },
+          ),
+    );
+  }
+
+  void _follow(String organizerId) {
+    unawaited(
+      OrganizerMembershipController.joinMutation(organizerId)
+          .run(ref, (tx) async {
+            await tx
+                .get(organizerMembershipControllerProvider.notifier)
+                .join(organizerId);
+          })
+          .then(
+            (_) {},
+            onError: (Object error) {
+              if (!mounted) return;
+              showCatchNoticeError(
+                context,
+                error,
+                errorContext: AppErrorContext.organizer,
+                onRetry: () => _follow(organizerId),
+              );
+            },
+          ),
+    );
+  }
+
+  void _rate(Event event, EventRecapReady state, int rating) {
+    setState(() => _pendingRating = rating);
+    unawaited(
+      EventRecapController.rateMutation
+          .run(ref, (tx) async {
+            await tx
+                .get(eventRecapControllerProvider.notifier)
+                .rate(
+                  event: event,
+                  rating: rating,
+                  pickedCount: _picked.length,
+                  existing: state.rating.existingFeedback,
+                );
+          })
+          .then(
+            (_) {},
+            onError: (Object error) {
+              if (!mounted) return;
+              setState(() => _pendingRating = null);
+              showCatchNoticeError(
+                context,
+                error,
+                errorContext: AppErrorContext.event,
+                onRetry: () => _rate(event, state, rating),
+              );
+            },
+          ),
     );
   }
 }
 
+T? _value<T extends Object>(AsyncValue<T?> value) =>
+    catchAsyncStateFromAsyncValue(value).value;
+
+/// The ready screen, provider-free so captures and tests can pump it.
 class EventRecapReadyBody extends StatelessWidget {
   const EventRecapReadyBody({
     super.key,
     required this.state,
-    required this.onToggleVibe,
-    required this.onRetryRosterProfiles,
-    required this.onOpenCatchesDeck,
+    required this.onRate,
+    required this.onOpenChat,
+    required this.onFilters,
+    required this.onPick,
+    required this.onRetryPeople,
+    required this.onOpenNext,
+    required this.onFollow,
+    required this.onOpenOrganizer,
+    this.pendingPicks = const <String>{},
+    this.followPending = false,
   });
 
   final EventRecapReady state;
-  final ValueChanged<String> onToggleVibe;
-  final ValueChanged<Iterable<String>> onRetryRosterProfiles;
-  final ValueChanged<EventRecapOpenDeckIntent> onOpenCatchesDeck;
+  final Set<String> pendingPicks;
+  final ValueChanged<int>? onRate;
+  final VoidCallback onOpenChat;
+  final VoidCallback onFilters;
+  final ValueChanged<String> onPick;
+  final VoidCallback onRetryPeople;
+  final ValueChanged<EventRecapNextState> onOpenNext;
+  final VoidCallback onFollow;
+  final VoidCallback onOpenOrganizer;
+  final bool followPending;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSectionList.responsive(
-      emptyStateOmitted: true,
-      items: [
-        CatchSectionListItem(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              RecapHeader(state: state.hero),
-              gapH24,
-              CatchLegacyText(
-                context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
-                variant: CatchLegacyTextVariant.titleL,
-              ),
-              gapH4,
-              CatchLegacyText(
-                context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
-                variant: CatchLegacyTextVariant.bodyM,
-                color: t.ink2,
-              ),
-              gapH14,
-              if (!state.hasAttendees)
-                CatchEmptyState(
-                  icon: CatchIcons.personRemoved,
-                  title:
-                      context.l10n.swipesEventRecapScreenTitleNoAttendeesToTag,
-                  message: context
-                      .l10n
-                      .swipesEventRecapScreenMessageNoOtherCheckedIn,
-                )
-              else
-                switch (state.profileLookupStatus) {
-                  EventRecapProfileLookupStatus.loading =>
-                    const VibeGridSkeleton(),
-                  EventRecapProfileLookupStatus.error =>
-                    CatchLocalizedErrorState(
-                      state.profileLookupError!,
-                      context: AppErrorContext.profile,
-                      onRetry: () => onRetryRosterProfiles(state.attendeeIds),
-                      mode: CatchErrorStateMode.inline,
-                    ),
-                  EventRecapProfileLookupStatus.ready => VibeGrid(
-                    rows: state.attendeeRows,
-                    onToggleVibe: onToggleVibe,
-                  ),
-                },
-              gapH24,
-              CatchButton(
-                key: SwipeKeys.openCatchesDeckButton,
-                label: context.l10n.swipesEventRecapScreenLabelOpenCatchesDeck,
-                onPressed: state.openDeckActionEnabled
-                    ? () => onOpenCatchesDeck(state.openDeckIntent)
-                    : null,
-                fullWidth: true,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class VibeGrid extends StatelessWidget {
-  const VibeGrid({super.key, required this.rows, required this.onToggleVibe});
-
-  final List<EventRecapAttendeeRow> rows;
-  final ValueChanged<String> onToggleVibe;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchViewport(
-      compactBuilder: (context) => _VibeGridLayout(
-        rows: rows,
-        onToggleVibe: onToggleVibe,
-        crossAxisCount: 2,
-      ),
-      mediumBuilder: (context) => _VibeGridLayout(
-        rows: rows,
-        onToggleVibe: onToggleVibe,
-        crossAxisCount: 3,
-      ),
-      expandedBuilder: (context) => _VibeGridLayout(
-        rows: rows,
-        onToggleVibe: onToggleVibe,
-        crossAxisCount: 4,
-      ),
-    );
-  }
-}
-
-class _VibeGridLayout extends StatelessWidget {
-  const _VibeGridLayout({
-    required this.rows,
-    required this.onToggleVibe,
-    required this.crossAxisCount,
-  });
-
-  final List<EventRecapAttendeeRow> rows;
-  final ValueChanged<String> onToggleVibe;
-  final int crossAxisCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      itemCount: rows.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: CatchLayout.eventRecapGridGap,
-        mainAxisSpacing: CatchLayout.eventRecapGridGap,
-        childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
-      ),
-      itemBuilder: (context, index) {
-        final row = rows[index];
-        return VibeTile(
-          key: SwipeKeys.vibeTile(row.attendeeId),
-          row: row,
-          onTap: () => onToggleVibe(row.attendeeId),
-        );
-      },
-    );
-  }
-}
-
-class EventRecapLoadingBody extends StatelessWidget {
-  const EventRecapLoadingBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSectionList.responsive(
-      emptyStateOmitted: true,
-      items: [
-        CatchSectionListItem(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const RecapHeaderSkeleton(),
-              gapH24,
-              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-              gapH8,
-              FractionallySizedBox(
-                widthFactor: 0.88,
-                alignment: Alignment.centerLeft,
-                child: CatchSkeleton.text(),
-              ),
-              gapH14,
-              const VibeGridSkeleton(),
-              gapH24,
-              CatchSkeleton.box(
-                width: double.infinity,
-                height: CatchButtonTokens.largeHeight,
-                radius: CatchRadius.pill,
-                borderColor: t.line,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class RecapHeaderSkeleton extends StatelessWidget {
-  const RecapHeaderSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchLegacySurface(
-      padding: CatchInsets.contentRelaxed,
-      backgroundColor: t.ink,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH10,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTertiaryWidth),
-          gapH4,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextDescriptionWidth),
-          gapH18,
-          const Row(
-            children: [
-              Expanded(child: RecapStatTileSkeleton()),
-              Expanded(child: RecapStatTileSkeleton()),
-              Expanded(child: RecapStatTileSkeleton()),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RecapStatTileSkeleton extends StatelessWidget {
-  const RecapStatTileSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-          gapH6,
-          CatchSkeleton.text(width: CatchSpacing.s12),
-        ],
-      ),
-    );
-  }
-}
-
-class VibeGridSkeleton extends StatelessWidget {
-  const VibeGridSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchViewport(
-      compactBuilder: (context) =>
-          const _VibeGridSkeletonLayout(crossAxisCount: 2),
-      mediumBuilder: (context) =>
-          const _VibeGridSkeletonLayout(crossAxisCount: 3),
-      expandedBuilder: (context) =>
-          const _VibeGridSkeletonLayout(crossAxisCount: 4),
-    );
-  }
-}
-
-class _VibeGridSkeletonLayout extends StatelessWidget {
-  const _VibeGridSkeletonLayout({required this.crossAxisCount});
-
-  final int crossAxisCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: crossAxisCount,
-      crossAxisSpacing: CatchLayout.eventRecapGridGap,
-      mainAxisSpacing: CatchLayout.eventRecapGridGap,
-      childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    final l10n = context.l10n;
+    final rating = state.rating;
+    final chat = state.chat;
+    final people = state.people;
+    final next = state.next;
+    final organizerName = state.organizerName;
+    return CatchPageBody.screen(
       children: [
-        for (var i = 0; i < 6; i++)
-          CatchSkeleton.box(
-            height: double.infinity,
-            radius: CatchRadius.md,
-            borderColor: CatchTokens.of(context).line,
-          ),
-      ],
-    );
-  }
-}
-
-class RecapHeader extends StatelessWidget {
-  const RecapHeader({super.key, required this.state});
-
-  final EventRecapHeaderState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchLegacySurface(
-      padding: CatchInsets.contentRelaxed,
-      backgroundColor: t.ink,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchLegacyText(
-            state.kicker,
-            variant: CatchLegacyTextVariant.statusLabel,
-            color: t.surface.withValues(
-              alpha: CatchOpacity.eventRecapHeroKicker,
-            ),
-          ),
-          gapH10,
-          CatchLegacyText(
-            state.distanceLabel,
-            variant: CatchLegacyTextVariant.headline,
-            color: t.surface,
-          ),
-          gapH4,
-          CatchLegacyText(
-            state.activityCheckedInLabel,
-            variant: CatchLegacyTextVariant.supporting,
-            color: t.surface.withValues(alpha: CatchOpacity.eventRecapHeroMeta),
-          ),
-          gapH18,
-          Row(
-            children: [
-              RecapStatTile(
-                label: context.l10n.swipesEventRecapScreenLabelWhen,
-                value: state.whenLabel,
-              ),
-              RecapStatTile(
-                label: context.l10n.swipesEventRecapScreenLabelTime,
-                value: state.timeLabel,
-              ),
-              RecapStatTile(
-                label: context.l10n.swipesEventRecapScreenLabelCatches,
-                value: state.windowLabel,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RecapStatTile extends StatelessWidget {
-  const RecapStatTile({super.key, required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        CatchStack(
+          gap: CatchStackGap.g4,
           children: [
-            CatchLegacyText(
-              label.toUpperCase(),
-              variant: CatchLegacyTextVariant.supporting,
-              color: t.surface.withValues(
-                alpha: CatchOpacity.eventRecapHeroStatLabel,
-              ),
+            CatchText(
+              state.kicker,
+              variant: CatchTextVariant.labelKicker,
+              tone: CatchTextTone.secondary,
             ),
-            gapH3,
-            CatchLegacyText(
-              value,
-              variant: CatchLegacyTextVariant.statusLabel,
-              color: t.surface,
-              maxLines: 2,
+            CatchText(
+              l10n.afterEventTitle,
+              variant: CatchTextVariant.pageTitle,
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class VibeTile extends StatelessWidget {
-  const VibeTile({super.key, required this.row, required this.onTap});
-
-  final EventRecapAttendeeRow row;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Tooltip(
-      message: row.tooltip,
-      child: Semantics(
-        button: true,
-        selected: row.selected,
-        label: row.semanticLabel,
-        child: CatchLegacySurface(
-          onTap: onTap,
-          backgroundColor: t.surface,
-          radius: CatchRadius.md,
-          borderSpec: row.selected
-              ? CatchBorderSpec(
-                  role: CatchBorderRole.selected,
-                  color: t.primary,
-                  width: CatchStroke.selection,
-                )
-              : CatchBorder.resolve(t, CatchBorderRole.separator),
-          duration: CatchMotion.micro,
-          clipBehavior: Clip.antiAlias,
-          padding: EdgeInsets.zero,
-          child: Stack(
-            fit: StackFit.expand,
+        CatchStack(
+          gap: CatchStackGap.g4,
+          children: [
+            Semantics(
+              label: l10n.afterEventRatingLabel,
+              child: StarRatingPicker(
+                rating: rating.rating,
+                enabled: rating.enabled && onRate != null,
+                onChanged: (value) => onRate?.call(value),
+                keyBuilder: SwipeKeys.afterEventRatingStar,
+                alignment: MainAxisAlignment.start,
+              ),
+            ),
+            CatchText(
+              rating.privacyNote,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+          ],
+        ),
+        if (chat != null)
+          CatchSection(
+            title: l10n.afterEventChatTitle,
+            dividers: CatchSectionPlacement.none,
             children: [
-              RecapProfilePhoto(profile: row.profile),
-              CatchLegacySurface(
-                tone: CatchSurfaceTone.transparent,
-                radius: 0,
-                padding: EdgeInsets.zero,
-                duration: Duration.zero,
-                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    CatchTokens.editorialBlack.withValues(
-                      alpha: CatchOpacity.none,
-                    ),
-                    CatchTokens.editorialBlack.withValues(
-                      alpha: CatchOpacity.eventRecapTileScrim,
-                    ),
-                  ],
+              CatchIndexRow(
+                key: SwipeKeys.afterEventGroupChat,
+                leading: CatchAvatar.system(
+                  size: CatchAvatarSize.sm,
+                  name: chat.title,
                 ),
-                child: const SizedBox.expand(),
+                title: chat.title,
+                subtitle: chat.subtitle,
+                chevron: true,
+                onTap: onOpenChat,
               ),
-              Positioned(
-                left: CatchSpacing.s2,
-                right: CatchSpacing.s2,
-                bottom: CatchSpacing.s2,
-                child: CatchLegacyText(
-                  row.displayName,
-                  variant: CatchLegacyTextVariant.statusLabel,
-                  color: CatchTokens.editorialWhite,
-                  maxLines: 1,
-                ),
-              ),
-              if (row.selected)
-                Positioned(
-                  right: CatchSpacing.s2,
-                  top: CatchSpacing.s2,
-                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
-                  child: CircleAvatar(
-                    radius: CatchLayout.selectionBadgeRadius,
-                    backgroundColor: t.primary,
-                    child: Icon(
-                      CatchIcons.check,
-                      size: CatchIconSize.xs,
-                      color: t.primaryInk,
-                    ),
-                  ),
-                ),
             ],
           ),
+        CatchSection(
+          title: l10n.afterEventStayInTouchTitle,
+          action: CatchSectionAction(
+            label: l10n.afterEventFilters,
+            onPressed: onFilters,
+          ),
+          dividers: CatchSectionPlacement.none,
+          children: [
+            CatchStack(
+              gap: CatchStackGap.g4,
+              children: [
+                CatchText(
+                  l10n.afterEventStayInTouchBody,
+                  tone: CatchTextTone.secondary,
+                ),
+                CatchText(
+                  [?people.countNote, people.windowNote].join(' · '),
+                  variant: CatchTextVariant.labelKicker,
+                  tone: CatchTextTone.secondary,
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
+        _PeopleList(
+          people: people,
+          pendingPicks: pendingPicks,
+          onPick: onPick,
+          onRetry: onRetryPeople,
+        ),
+        if (next != null)
+          CatchSurface(
+            key: SwipeKeys.afterEventNext,
+            block: CatchSurfaceBlock.spotlight,
+            color: _surfaceColor(state.format),
+            child: CatchStack(
+              children: [
+                CatchText(next.kicker, variant: CatchTextVariant.labelKicker),
+                CatchText(next.title, variant: CatchTextVariant.displaySection),
+                CatchButton(
+                  label: l10n.afterEventBookNext,
+                  onPressed: () => onOpenNext(next),
+                  fullWidth: true,
+                ),
+              ],
+            ),
+          ),
+        if (organizerName != null && state.following == false)
+          CatchButton(
+            key: SwipeKeys.afterEventFollowOrganizer,
+            label: l10n.afterEventFollowOrganizer(organizer: organizerName),
+            variant: CatchButtonVariant.secondary,
+            onPressed: followPending ? null : onFollow,
+            fullWidth: true,
+          )
+        else if (next == null)
+          CatchButton(
+            key: SwipeKeys.afterEventOrganizer,
+            label: l10n.afterEventSeeOrganizer,
+            variant: CatchButtonVariant.secondary,
+            onPressed: onOpenOrganizer,
+            fullWidth: true,
+          ),
+      ],
     );
   }
 }
 
-CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return catchAsyncStateFromAsyncValue(value);
-}
+class _PeopleList extends StatelessWidget {
+  const _PeopleList({
+    required this.people,
+    required this.pendingPicks,
+    required this.onPick,
+    required this.onRetry,
+  });
 
-class RecapProfilePhoto extends StatelessWidget {
-  const RecapProfilePhoto({super.key, required this.profile});
-
-  final PublicProfile? profile;
+  final EventRecapPeopleState people;
+  final Set<String> pendingPicks;
+  final ValueChanged<String> onPick;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    final photoUrl = profile?.primaryPhotoThumbnailUrl;
-    if (photoUrl == null) {
-      return CatchLegacySurface(
-        backgroundColor: CatchTokens.of(context).primarySoft,
-        radius: CatchRadius.none,
-        duration: Duration.zero,
-        child: Align(
-          child: Icon(CatchIcons.person, size: CatchIconSize.fallbackAvatar),
-        ),
+    final l10n = context.l10n;
+    final empty = people.empty;
+    if (empty != null) {
+      return CatchEmptyState(
+        icon: empty.icon,
+        title: empty.title,
+        message: empty.message,
       );
     }
-    return CatchNetworkImage(photoUrl);
+    return switch (people.status) {
+      EventRecapProfileLookupStatus.loading => const CatchLoadingIndicator(),
+      EventRecapProfileLookupStatus.error => CatchLocalizedErrorState(
+        people.error!,
+        context: AppErrorContext.profile,
+        onRetry: onRetry,
+        mode: CatchErrorStateMode.inline,
+      ),
+      EventRecapProfileLookupStatus.ready => CatchSection(
+        children: [
+          for (final row in people.rows)
+            CatchIndexRow(
+              key: SwipeKeys.afterEventPerson(row.attendeeId),
+              leading: CatchAvatar.system(
+                size: CatchAvatarSize.sm,
+                name: row.name,
+                imageUrl: row.photoUrl,
+              ),
+              title: row.name,
+              subtitle: row.subtitle,
+              body: row.body,
+              onTap: null,
+              action: CatchIndexRowAction(
+                label: row.picked ? l10n.afterEventPicked : l10n.afterEventPick,
+                variant: row.picked
+                    ? CatchIndexRowActionVariant.primary
+                    : CatchIndexRowActionVariant.secondary,
+                onPressed:
+                    row.picked ||
+                        !people.canPick ||
+                        pendingPicks.contains(row.attendeeId)
+                    ? null
+                    : () => onPick(row.attendeeId),
+              ),
+            ),
+        ],
+      ),
+    };
   }
 }
+
+CatchSurfaceColor _surfaceColor(CatchFormat format) => switch (format) {
+  CatchFormat.run => CatchSurfaceColor.run,
+  CatchFormat.dinner => CatchSurfaceColor.dinner,
+  CatchFormat.games => CatchSurfaceColor.games,
+  CatchFormat.courts => CatchSurfaceColor.courts,
+  CatchFormat.nightsOut => CatchSurfaceColor.nightsOut,
+};

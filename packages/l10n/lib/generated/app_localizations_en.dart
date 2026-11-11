@@ -29202,4 +29202,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostProgrammeInboxLanguageGu => 'Gujarati';
+
+  @override
+  String afterEventKicker({
+    required String eventTitle,
+    required String organizer,
+  }) {
+    return '$eventTitle · $organizer';
+  }
+
+  @override
+  String get afterEventTitle => 'How was it?';
+
+  @override
+  String get afterEventRatingLabel => 'Rate the event, from one to five stars';
+
+  @override
+  String afterEventRatingPrivacy({required String organizer}) {
+    return 'Only $organizer sees this, as part of a summary.';
+  }
+
+  @override
+  String get afterEventRatingPrivacyFallback =>
+      'Only the organizer sees this, as part of a summary.';
+
+  @override
+  String get afterEventChatTitle => 'Group chat';
+
+  @override
+  String afterEventChatOpenUntil({required String date}) {
+    return 'Open until $date, then read-only';
+  }
+
+  @override
+  String get afterEventStayInTouchTitle => 'Stay in touch';
+
+  @override
+  String get afterEventStayInTouchBody =>
+      'Pick anyone you’d like to see again. Only you see your picks. If someone picks you too, you can message each other.';
+
+  @override
+  String get afterEventFilters => 'Filters';
+
+  @override
+  String afterEventPeopleCount({
+    required int count,
+    required String eventTitle,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people from $eventTitle, by your filters',
+      one: '1 person from $eventTitle, by your filters',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String afterEventPicksOpenUntil({required String time}) {
+    return 'Picks open until $time';
+  }
+
+  @override
+  String get afterEventPicksClosed => 'Picks have closed';
+
+  @override
+  String get afterEventPick => 'Pick';
+
+  @override
+  String get afterEventPicked => 'Picked';
+
+  @override
+  String get afterEventYourGroup => 'Your team';
+
+  @override
+  String afterEventYourGroupNamed({required String group}) {
+    return 'Your team · $group';
+  }
+
+  @override
+  String afterEventPersonCityAge({required String city, required int age}) {
+    return '$city · $age';
+  }
+
+  @override
+  String afterEventPersonAge({required int age}) {
+    return '$age';
+  }
+
+  @override
+  String get afterEventPersonCameToo => 'Came to this event';
+
+  @override
+  String afterEventNextKicker({required String date}) {
+    return 'Next · $date';
+  }
+
+  @override
+  String get afterEventBookNext => 'Book the next one';
+
+  @override
+  String get afterEventSeeOrganizer => 'See what the organizer has coming up';
+
+  @override
+  String afterEventFollowOrganizer({required String organizer}) {
+    return 'Follow $organizer';
+  }
 }
