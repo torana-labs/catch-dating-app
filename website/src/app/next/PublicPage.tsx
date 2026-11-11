@@ -15,6 +15,7 @@ import {useEventPage} from "../../features/events/eventPageContext";
 import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
+import {marketingCaptures} from "../marketingCaptures";
 import {claimRouteStateForLocation, claimUrlStateForListing} from "../../features/claims/claimRouting";
 import {brand} from "@catch/brand";
 
@@ -47,7 +48,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
-    ? <Apply /> : <Host />;
+    ? <Apply /> : <Host captures={marketingCaptures} />;
   else if (page === "weddings") content = location.pathname.replace(/\/$/, "") === "/weddings/apply"
     ? <WeddingsApply /> : <Weddings />;
   else if (page === "listing") {

@@ -47,6 +47,7 @@ import {SiteAccountAction} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
+import {marketingCaptures} from "./marketingCaptures";
 import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
 
 // Distinct compiled entries let a deliberate, bounded retry bypass a browser's
@@ -269,7 +270,7 @@ function CanonicalMarketingRouteShell() {
           />
           <Route
             path={marketingRoutePaths.host}
-            element={<HostPage />}
+            element={<HostPage captures={marketingCaptures} />}
           />
           <Route
             path={marketingRoutePaths.organizer_search}

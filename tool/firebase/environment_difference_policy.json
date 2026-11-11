@@ -80,6 +80,8 @@
     "VITE_FIREBASE_PROJECT_ID": {"class": "identity"},
     "VITE_FIREBASE_STORAGE_BUCKET": {"class": "identity"},
     "VITE_GTM_ID": {"class": "identity"},
+    "VITE_HOST_APP_STORE_URL": {"class": "release-state"},
+    "VITE_HOST_PLAY_STORE_URL": {"class": "release-state"},
     "VITE_PLAY_STORE_URL": {"class": "release-state"},
     "VITE_STORE_LINKS_MODE": {"class": "feature-gate"},
     "VITE_WEBSITE_APPCHECK_SITE_KEY": {"class": "identity"},

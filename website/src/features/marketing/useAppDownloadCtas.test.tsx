@@ -42,4 +42,19 @@ describe("useAppDownloadCtas", () => {
       page_path: "/?source=test",
     });
   });
+
+  it("offers the official badge artwork, named by the badge's words", () => {
+    const {result} = renderHook(() => useAppDownloadCtas({placement: "host_start", app: "host"}));
+    expect(result.current.map((store) => [store.accessibleLabel, store.badgeSrc])).toEqual([
+      ["Download on the App Store", "/assets/store-badges/app-store-download-on-the.svg"],
+      ["Get it on Google Play", "/assets/store-badges/google-play-get-it-on.png"],
+    ]);
+  });
+
+  it("keeps Catch Host's badges pending until its store URLs are configured", () => {
+    const {result} = renderHook(() => useAppDownloadCtas({placement: "host_hero", app: "host"}));
+    expect(result.current.map((store) => store.href)).toEqual(["", ""]);
+    result.current[1].onClick();
+    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", {platform: "android", placement: "host_hero", page_path: "/?source=test"});
+  });
 });

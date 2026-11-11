@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-08",
+  "updated": "2026-11-11",
   "captures": [
     {
       "id": "guest-join-phone",
@@ -14,6 +14,246 @@
       "caption": "Fictional app preview. Guests check in from their phone's browser with the number they booked with. Nothing to download.",
       "walkthroughStep": "Check in",
       "pages": []
+    },
+    {
+      "id": "host-today",
+      "audience": "host",
+      "surface": "Catch Host Today on a Saturday",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-today.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host on a Saturday: a trivia social tonight, two things left before doors",
+      "caption": "Fictional app preview. Today in Catch Host: tonight's event and what's left before doors.",
+      "walkthroughStep": "Today",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-tablet",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/placeholders/host-live-tablet.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet: tonight's run of show beside the room",
+      "caption": "Fictional app preview. The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "guest-explore",
+      "audience": "guest",
+      "surface": "A guest's Explore screen",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/guest-explore.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "A guest's Explore screen in the Catch app, with tonight's plans nearby",
+      "caption": "Fictional app preview. Guests find tonight's plans in the Catch app.",
+      "walkthroughStep": "Get found",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-console",
+      "audience": "host",
+      "surface": "Catch Host live console",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-live-console.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's live console during the night, with who's here and what's next",
+      "caption": "Fictional app preview. The live console: who's here and what's next.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-post-event-report",
+      "audience": "host",
+      "surface": "Catch Host event report",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-post-event-report.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's report after the event: who came, who'd come back and what's next",
+      "caption": "Fictional app preview. After the night: who came and who'd come back.",
+      "walkthroughStep": "Follow up",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-pods",
+      "audience": "host",
+      "surface": "Catch Host groups by pace",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-pods.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host building groups of six to eight from each guest's pace",
+      "caption": "Fictional app preview. Groups built before the night, so no group is all strangers.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-door-in",
+      "audience": "host",
+      "surface": "Catch Host door, checked in",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-door-in.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's door screen with a guest checked in and their group shown",
+      "caption": "Fictional app preview. Guests check in at the door and see their group once.",
+      "walkthroughStep": "Check in",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-door-arriving",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-door-arriving.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's door screen listing guests arriving tonight",
+      "caption": "Fictional app preview. The door: who's arriving and who's in.",
+      "walkthroughStep": "Check in",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-needs",
+      "audience": "host",
+      "surface": "Catch Host live needs",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-live-needs.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's live console showing who needs attention right now",
+      "caption": "Fictional app preview. What needs you right now, in one list.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-rules",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-rules.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's rules for a format: table sizes, levels and who to keep apart",
+      "caption": "Fictional app preview. Set the rules once; Catch plans around them.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-mix",
+      "audience": "host",
+      "surface": "Catch Host mixing groups",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-mix.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host moving one person from each group between rounds",
+      "caption": "Fictional app preview. Mix the room between rounds; only the people moving get a buzz.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-scores",
+      "audience": "host",
+      "surface": "Catch Host scores",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-live-scores.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's scores screen with the leaderboard hidden until the end",
+      "caption": "Fictional app preview. Scores in, standings hidden until the end.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-courts-setup",
+      "audience": "host",
+      "surface": "Catch Host courts setup",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-courts-setup.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host planning rounds on three courts from each player's level",
+      "caption": "Fictional app preview. Rounds planned so every match is close.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-courts",
+      "audience": "host",
+      "surface": "Catch Host courts live",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-courts.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's courts screen with the next round and each player's court time",
+      "caption": "Fictional app preview. Court time counted for every player.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-crawl",
+      "audience": "host",
+      "surface": "Catch Host crawl route",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-crawl.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's route for a four-stop crawl with a lead for each group",
+      "caption": "Fictional app preview. A route with stops, shared with your team.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-crawl-move",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/host-formats-crawl-move.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Catch Host's crawl screen confirming who left one stop and arrived at the next",
+      "caption": "Fictional app preview. Each lead confirms who left and who arrived.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
     }
   ]
 }

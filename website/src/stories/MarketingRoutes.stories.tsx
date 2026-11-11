@@ -6,6 +6,7 @@ import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
+import {marketingCaptures} from "../app/marketingCaptures";
 import {HostPage} from "../features/host/HostPage";
 import {EventDetailPage} from "../features/events/EventDetailPage";
 import {EventInvitePage} from "../features/events/EventInvitePage";
@@ -76,7 +77,7 @@ export const Host: Story = {
       states: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
     },
   },
-  render: () => <HostPage />,
+  render: () => <HostPage captures={marketingCaptures} />,
 };
 
 export const EventRuntime: Story = {
