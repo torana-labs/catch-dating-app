@@ -1,4 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {marketingCaptures} from "./marketingCaptures";
 import {cleanup, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {HomePage} from "../features/home/HomePage";
@@ -24,7 +25,7 @@ function renderPage(page: React.ReactNode) {
 
 describe("public route navigation targets", () => {
   it("gives the homepage the site header with its own sections and the app action", () => {
-    renderPage(<HomePage catalog={mumbaiLiveCatalog} />);
+    renderPage(<HomePage captures={marketingCaptures} catalog={mumbaiLiveCatalog} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
       .toEqual(["#whats-on", "#organisers", "/host/"]);

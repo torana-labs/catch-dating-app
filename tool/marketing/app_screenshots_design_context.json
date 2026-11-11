@@ -807,6 +807,100 @@
         "caption": "Each lead confirms who left and who arrived.",
         "walkthroughStep": "Run the night"
       }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-checked-in",
+      "status": "pending-fixture",
+      "audience": "guest",
+      "surface": "A guest checked in at the event",
+      "fixtureKey": "hostMarketingIndia.guest.checkedIn",
+      "captureId": "event_success_companion_self_check_in",
+      "routeIds": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-checked-in.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-checked-in.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-checked-in.png"
+      },
+      "copy": {
+        "alt": "Checked in at tonight's quiz in the Catch app: your table, who's new, and a first hello",
+        "caption": "Checked in: your table and a first hello.",
+        "walkthroughStep": "Show up"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-after-event",
+      "status": "pending-fixture",
+      "audience": "guest",
+      "surface": "A guest's app after the event",
+      "fixtureKey": "salesDemo.member.afterEvent",
+      "captureId": "dashboard_home_after_event_focus",
+      "routeIds": [
+        "dashboardScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-after-event.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-after-event.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-after-event.png"
+      },
+      "copy": {
+        "alt": "The Catch app the morning after: the night's group and the hosts to follow",
+        "caption": "After the night: your group and the hosts you liked.",
+        "walkthroughStep": "Keep in touch"
+      }
     }
   ]
 }

@@ -45,7 +45,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   useMarketingAnalytics(page, location.pathname);
   let content;
   let structured: unknown = null;
-  if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
+  if (page === "home") content = home ? <Home captures={marketingCaptures} catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={marketingCaptures} />;

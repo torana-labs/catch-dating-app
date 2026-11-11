@@ -25,8 +25,6 @@ export const homePageCopy = {
     label: "Formats",
     liveCount: "{count} this week",
     soonKicker: "Coming to {city}",
-    /** The scoreboard on the games tile. */
-    scores: [{title: "The Quizzicals", value: "42"}, {title: "Table Six", value: "38"}, {title: "Last Orders", value: "35"}],
   },
   week: {
     title: "This week in {city}",
@@ -79,18 +77,12 @@ export const homePageCopy = {
   story: {
     eyebrow: "How a night works",
     title: "Come on your own. Leave knowing a few more people.",
-    lead: "Hosts plan the first ten minutes so you don’t have to. Here’s a Sunday run with Carter Road Runners.",
+    lead: "Hosts plan the first ten minutes so you don’t have to. Here’s a Tuesday quiz with Lantern Lane Social.",
     steps: [
       {title: "Find a plan", body: "Pick something you’d actually enjoy. Every plan shows who’s hosting, where you meet and who it suits."},
-      {title: "Show up", body: "Your host has the first ten minutes planned: a group, a game or a first hello."},
-      {title: "Keep in touch", body: "Pick the people you’d like to see again. If they pick you too, you can message."},
+      {title: "Show up", body: "Your host has a team, a group or a game ready, and a first hello so nobody stands on their own."},
+      {title: "Keep in touch", body: "Your group chat stays open for a week. Follow the hosts you liked and hear about their next one first."},
     ],
-    phone: {
-      kicker: "Tonight’s plans",
-      nowKicker: "Now · first ten minutes",
-      now: "Say hello to your pace group",
-      rows: ["Steady 5K · meet by the fountain", "Chai at the jetty", "Same time next Sunday?"],
-    },
   },
   organisers: {
     liveEyebrow: "Organisers near you",
@@ -116,16 +108,11 @@ export const homePageCopy = {
     eyebrow: "For hosts",
     title: "Bring people together? Run the whole night from one screen.",
     body: "Bookings, the door, groups, the first hello and the follow-up, for runs, dinners, games and nights out. Use it alongside the booking tools you already have.",
-    price: "5% of ticket sales, capped at ₹10,000 a month",
-    priceNote: "Free events stay free. Payment gateway fees are charged separately by the payment provider.",
+    price: "Free for 30 days. Then 5% of ticket sales, capped at ₹10,000 a month.",
+    priceNote: "Your trial starts at your first event. Free events stay free. Payment gateway fees are charged separately by the payment provider.",
+    trial: "Start your free trial",
     action: "See Catch for hosts",
     claim: "Claim your page",
-    live: {
-      kicker: "Tuesday Trivia Night · Live · 9:07 PM",
-      title: "Round two",
-      meter: "Time in this step",
-      scores: [{title: "Quizzy Rascals", value: "41"}, {title: "Harbour Lights", value: "38"}, {title: "Vada Pav Theory", value: "35"}],
-    },
   },
   app: {
     eyebrow: "Get the app",
@@ -140,7 +127,7 @@ export const homePageCopy = {
     items: [
       {question: "Do I need the app?", answer: "You can browse and book on the web. The app keeps your plans, reminders, group chats and the hosts you follow in one place."},
       {question: "Can I come on my own?", answer: "Yes. Lots of people do. Hosts plan a group, a game or a first hello so it’s easy to start talking."},
-      {question: "Who runs these events?", answer: "Independent hosts, clubs and communities. Every listing shows who’s running it. Profiles built from public sources are marked until the organiser claims them."},
+      {question: "Who runs these events?", answer: "Independent hosts, clubs and communities. Every listing shows who’s running it. Pages built from public sources are marked until the organiser claims them."},
       {question: "Is Catch free?", answer: "Browsing and the app are free. Hosts set the price of each plan, many are free, and you see the full price before you book."},
       {question: "Who can see what I share?", answer: "You choose what your profile shows. Hosts see the booking details they need to run their event, and any feedback you give reaches them only as part of a summary."},
       {question: "What if Catch isn’t in my city yet?", answer: "Choose your city and we’ll tell you when it opens. If you know a host who should be on Catch, send them our way."},
