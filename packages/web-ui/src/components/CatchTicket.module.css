@@ -75,6 +75,8 @@
 
 .codeText { display: flex; flex-direction: column; gap: var(--catch-space-s1); }
 
-.ticket:is([data-status="used"], [data-status="refunded"]) .code { opacity: 0.35; }
+/* Fade only the QR graphic; the code text keeps a readable secondary ink. */
+.ticket:is([data-status="used"], [data-status="refunded"]) .qr { opacity: 0.35; }
+.ticket:is([data-status="used"], [data-status="refunded"]) .codeText { color: var(--catch-theme-ink2); }
 
 .status { position: absolute; right: var(--catch-space-s5); bottom: var(--catch-space-s5); }

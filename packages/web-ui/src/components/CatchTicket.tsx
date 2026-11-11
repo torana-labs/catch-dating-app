@@ -38,7 +38,8 @@ export interface CatchTicketProps {
 /**
  * catch.ticket: the guest's ticket. The event in its format colour, the
  * facts in three columns, a perforation and the code to show at the door. A
- * used or refunded ticket fades its code and carries a badge.
+ * used or refunded ticket fades its QR code, sets its code text in the
+ * secondary ink and carries a badge.
  */
 export function CatchTicket({
   title, format, organiser, formatLabel, facts, code, guest, status = "valid",
@@ -46,7 +47,8 @@ export function CatchTicket({
 }: CatchTicketProps) {
   const {ground} = useCatch();
   return (
-    <section aria-label="Ticket" className={styles.ticket} data-on={ground} data-status={status}>
+    // An article, not a region: several tickets on one page must not add duplicate landmarks.
+    <article aria-label="Ticket" className={styles.ticket} data-on={ground} data-status={status}>
       <div className={styles.head} data-format={format}>
         <span className={styles.kicker}><span>{organiser}</span><span>{formatLabel}</span></span>
         <CatchText as="h2" variant="display-section">{title}</CatchText>
@@ -77,6 +79,6 @@ export function CatchTicket({
           <CatchBadge label={status === "used" ? usedLabel : refundedLabel} size="md" tone={status === "used" ? "neutral" : "danger"} />
         </span>
       ) : null}
-    </section>
+    </article>
   );
 }
