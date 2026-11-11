@@ -9,7 +9,7 @@ vi.mock("../../analytics", async (original) => ({...await original<typeof import
 
 // The home page's capture slots, as the website manifest records them (their page bindings are
 // checked against capture_manifest.json in marketingCaptures.test.tsx).
-const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "host-live-tablet"].map((id) => [id, {
+const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "guest-after-event", "host-live-tablet"].map((id) => [id, {
   id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: ["/"],
 }]));
 
@@ -136,8 +136,7 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const story = within(screen.getByRole("region", {name: "Come on your own. Leave knowing a few more people."}));
     fireEvent.click(story.getByRole("button", {name: /Keep in touch/}));
-    // That step has no capture of its own yet, so the check-in screen stays.
-    expect(story.getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
-    expect(story.queryByRole("img", {name: "Screen guest-explore"})).toBeNull();
+    expect(story.getByRole("img", {name: "Screen guest-after-event"})).toBeTruthy();
+    expect(story.queryByRole("img", {name: "Screen guest-checked-in"})).toBeNull();
   });
 });

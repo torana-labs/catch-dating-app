@@ -298,6 +298,7 @@ import '../../hosts/people/people_captures.dart';
 import '../../hosts/programmes/planner/planner_captures.dart';
 import '../../hosts/programmes/staff/staff_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
+import '../../support/profile_readiness_fixtures.dart';
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
@@ -6632,6 +6633,108 @@ EventSuccessPlan _marketingHostPlan(Event event, {bool complete = false}) =>
       frozenAt: hostMarketingIndiaScenario.clock('live'),
       completedAt: complete ? event.endTime : null,
     );
+// The guest's after-event screen in the Mumbai marketing story: the morning
+// after Evening Club's Saturday Trivia Social, picks still open.
+final _marketingAfterEventNow = hostMarketingIndiaScenario.clock('followUp');
+final _marketingAfterEventViewer = buildSocialReadyUser(
+  uid: 'marketing-after-event-viewer',
+  name: _captureFixtures
+      .publicProfile(hostMarketingIndiaScenario.scenario.viewerPersonaId)
+      .name,
+);
+final _marketingAfterEventViewerUid = _marketingAfterEventViewer.uid;
+final _marketingAfterEventProfiles = [
+  for (final guest in hostMarketingIndiaScenario.guestsAt('followUp'))
+    if (guest.checkedInAt != null &&
+        guest.personaId != hostMarketingIndiaScenario.scenario.viewerPersonaId)
+      _captureFixtures.publicProfile(guest.personaId),
+].take(6).toList(growable: false);
+final _marketingAfterEventNext = _marketingHostReportEvent.copyWith(
+  id: 'event-host-trivia-store-demo-next',
+  startTime: _marketingHostReportEvent.startTime.add(const Duration(days: 7)),
+  endTime: _marketingHostReportEvent.endTime.add(const Duration(days: 7)),
+);
+
+List<Object> _marketingAfterEventOverrides() {
+  final event = _marketingHostReportEvent;
+  final uid = _marketingAfterEventViewerUid;
+  final attendeeIds = [
+    for (final profile in _marketingAfterEventProfiles) profile.uid,
+  ];
+  return <Object>[
+    uidProvider.overrideWith((ref) => Stream.value(uid)),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(_marketingAfterEventViewer),
+    ),
+    eventRecapViewModelProvider(event.id).overrideWith(
+      (ref) => AsyncData<EventRecapViewModel?>(
+        EventRecapViewModel(
+          event: event,
+          attendeeIds: attendeeIds,
+          checkedInCount: attendeeIds.length + 1,
+        ),
+      ),
+    ),
+    publicProfilesByIdsProvider(
+      PublicProfilesQuery(attendeeIds),
+    ).overrideWithValue(
+      AsyncData({
+        for (final profile in _marketingAfterEventProfiles)
+          profile.uid: profile,
+      }),
+    ),
+    watchOrganizerProvider(
+      _marketingHostOrganizer.id,
+    ).overrideWith((ref) => Stream.value(_marketingHostOrganizer)),
+    watchEventParticipationProvider(event.id, uid).overrideWith(
+      (ref) => Stream.value(
+        buildEventParticipation(
+          event: event,
+          uid: uid,
+          status: EventParticipationStatus.attended,
+          createdAt: event.startTime,
+        ),
+      ),
+    ),
+    watchUserEventSuccessFeedbackProvider(
+      eventId: event.id,
+      uid: uid,
+    ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(null)),
+    watchUserEventSuccessAssignmentProvider(
+      eventId: event.id,
+      uid: uid,
+    ).overrideWith((ref) => Stream<EventSuccessAssignment?>.value(null)),
+    eventChatAccessProvider(event.id).overrideWith(
+      (ref) async => EventChatAccess(
+        eventId: event.id,
+        title: event.title,
+        organizerId: event.organizerId,
+        roomStatus: 'open',
+        roomRevision: 1,
+        membershipStatus: 'joined',
+        membershipRevision: 1,
+        canManage: false,
+        canJoin: true,
+        canReadMessages: true,
+        closesAtMillis: event.endTime
+            .add(const Duration(days: 7))
+            .millisecondsSinceEpoch,
+        profileClaimRequired: false,
+        termsVersion: 'event-chat-v1',
+      ),
+    ),
+    watchActiveEventsForOrganizerProvider(
+      ActiveOrganizerEventsQuery(
+        organizerId: event.organizerId,
+        day: _marketingAfterEventNow,
+      ),
+    ).overrideWith((ref) => Stream.value([_marketingAfterEventNext])),
+    currentUserFollowedOrganizerIdsProvider.overrideWithValue(
+      const AsyncData(<String>{}),
+    ),
+  ];
+}
+
 List<Object> _marketingHostManageOverrides(
   Event event, {
   bool complete = false,
@@ -14326,6 +14429,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ),
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'guest_after_event',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.genericPhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.afterEvent'],
+    disableAnimations: true,
+    providerOverrides: _marketingAfterEventOverrides(),
+    builder: (context) => EventRecapScreen(
+      eventId: _marketingHostReportEvent.id,
+      now: _marketingAfterEventNow,
+    ),
   ),
   ScreenCaptureEntry(
     id: 'event_recap_rated_following',

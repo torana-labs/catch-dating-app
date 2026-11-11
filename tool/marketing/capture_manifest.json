@@ -424,6 +424,29 @@
       ]
     },
     {
+      "id": "guest-after-event",
+      "kind": "app-capture",
+      "audience": "guest",
+      "surface": "A guest's screen the morning after the event",
+      "status": "active",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.guest.afterEvent",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "followUp"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-after-event.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-after-event.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-after-event.png",
+      "alt": "The morning after Saturday Trivia Social in the Catch app: a private rating for the organizer, the group chat, and the people you met to stay in touch with",
+      "caption": "After the night: rate it privately, keep chatting and stay in touch.",
+      "walkthroughStep": "Keep in touch",
+      "pages": [
+        "/"
+      ]
+    },
+    {
       "id": "wedding-rsvp",
       "kind": "web-capture",
       "audience": "guest",
