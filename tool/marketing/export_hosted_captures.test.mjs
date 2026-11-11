@@ -54,7 +54,7 @@ function fixture(t, {web = false, catalog = null} = {}) {
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
     "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/lib/web_capture_render.mjs",
     "tool/marketing/lib/web_capture_screen.mjs", "tool/marketing/lib/capture_devices.mjs",
-    "tool/ci/wait_main_marketing_validation.mjs",
+    "tool/ci/wait_main_marketing_validation.mjs", "tool/ci/required_ci_floor.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));
   }
