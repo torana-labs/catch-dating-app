@@ -51,6 +51,8 @@ import {
   rosterWithReservedWaitlistOffersInTransaction,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {assertFollowersFirstAllows} from "./followersFirst";
@@ -312,6 +314,7 @@ export async function signUpUserForEvent(
     let currentAuthPhone: string | null = null;
     let guestLink: Awaited<ReturnType<
       typeof prepareVerifiedUidGuestSeatLink>> | null = null;
+    let guestLinkAttendeeId: string | null = null;
     if (seatMode === "ready") {
       currentAuthPhone = options.loadCurrentAuthPhone ?
         await options.loadCurrentAuthPhone(userId) :
@@ -339,14 +342,19 @@ export async function signUpUserForEvent(
             throw new HttpsError("failed-precondition",
               "Guest seat identity needs reconciliation.");
           }
+          guestLinkAttendeeId = matchingAttendees.docs[0].id;
           guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
             eventId, organizerId: event.organizerId,
-            attendeeId: matchingAttendees.docs[0].id,
+            attendeeId: guestLinkAttendeeId,
             uid: userId, authTokenPhoneNumber: currentAuthPhone,
             now: admin.firestore.Timestamp.now()});
         }
       }
     }
+    const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
+      uid: userId, attendeeId: guestLink ? guestLinkAttendeeId : null,
+      verifiedPhone: async () => currentAuthPhone ??
+        await loadVerifiedRosterPhone(userId, options.loadCurrentAuthPhone)});
     const currentBookedCount = seatLedger?.occupied ??
       event.bookedCount ?? signedUpCount;
     const baseRoster = {
@@ -486,7 +494,7 @@ export async function signUpUserForEvent(
       existingParticipation,
       candidate: options.inviteAttribution,
     });
-    tx.set(participationRef, {
+    const participationWrite = {
       ...eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
@@ -505,7 +513,12 @@ export async function signUpUserForEvent(
         communityMembershipAtSignup: admin.firestore.FieldValue.delete(),
       } : {}),
       ...inviteAttributionWriteFields(attribution.write),
-    }, {merge: true});
+    };
+    tx.set(participationRef, participationWrite, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationSnap.data(),
+        participationWrite), now: admin.firestore.Timestamp.now(),
+      seatReady: seatMode === "ready"});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,

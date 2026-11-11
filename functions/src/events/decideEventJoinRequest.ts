@@ -9,6 +9,8 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -113,13 +115,19 @@ export async function decideEventJoinRequestHandler(
   };
 
   await db.runTransaction(async (tx) => {
-    const [eventSnap, participationSnap, requesterSnap, requesterPushToken] =
-      await Promise.all([
-        tx.get(eventRef),
-        tx.get(participationRef),
-        tx.get(requesterRef),
-        readConsumerPushToken(db, userId, tx),
-      ]);
+    const [eventSnap, participationSnap, requesterSnap, requesterPushToken,
+      rosterSlot] = await Promise.all([
+      tx.get(eventRef),
+      tx.get(participationRef),
+      tx.get(requesterRef),
+      readConsumerPushToken(db, userId, tx),
+      readCatchBookingRoster({db, tx, eventId, uid: userId,
+        verifiedPhone: () => loadVerifiedRosterPhone(userId)}),
+    ]);
+    const writeRoster = (patch: Record<string, unknown>) =>
+      writeCatchBookingRoster({db, tx, slot: rosterSlot,
+        booking: participationAfterPatch(participationSnap.data(), patch),
+        now: admin.firestore.Timestamp.now()});
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
@@ -198,7 +206,7 @@ export async function decideEventJoinRequestHandler(
           cohortId
         ),
       });
-      tx.set(participationRef, {
+      const declined = {
         ...eventParticipationPatch({
           exists: participationSnap.exists,
           eventId,
@@ -211,7 +219,9 @@ export async function decideEventJoinRequestHandler(
         hostApprovalStatus: "declined",
         hostApprovalDecidedAt: decidedAt,
         hostApprovalDecidedBy: hostUid,
-      }, {merge: true});
+      };
+      tx.set(participationRef, declined, {merge: true});
+      writeRoster(declined);
       releaseUserEventScheduleInTransaction(tx, db, {
         uid: userId,
         eventId,
@@ -269,11 +279,13 @@ export async function decideEventJoinRequestHandler(
     });
     const amountInPaise = quotePriceInPaise({policy, cohortId, roster});
 
-    tx.set(participationRef, {
+    const approved = {
       hostApprovalStatus: "approved",
       hostApprovalDecidedAt: decidedAt,
       hostApprovalDecidedBy: hostUid,
-    }, {merge: true});
+    };
+    tx.set(participationRef, approved, {merge: true});
+    writeRoster(approved);
 
     if (amountInPaise === 0) {
       shouldBookApprovedFreeRequest = true;
