@@ -6,7 +6,8 @@ import {
   getCrossPathsSuggestionsHandler,
 } from "./getCrossPathsSuggestions";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -488,7 +489,7 @@ test("rejects invalid batches before any reads", async () => {
 });
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     organizerId: "organizer-1",
     startTime: timestamp(eventStartMillis),
@@ -517,7 +518,7 @@ function event(overrides: FakeData = {}): FakeData {
     discoveryAvailability: "open",
     photoUrl: "https://example.com/event.jpg",
     ...overrides,
-  };
+  });
 }
 
 function user(overrides: FakeData): FakeData {

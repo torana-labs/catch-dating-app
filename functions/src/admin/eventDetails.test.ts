@@ -1,3 +1,4 @@
+import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
@@ -365,7 +366,7 @@ function organizerDoc(overrides: FakeData = {}): FakeData {
 function eventDoc(overrides: FakeData = {}): FakeData {
   const startTime = overrides.startTime instanceof Date ?
     overrides.startTime : new Date("2026-07-04T01:30:00.000Z");
-  return {
+  return withStoredEventPolicy({
     organizerId: "afterfly",
     startTime,
     endTime: new Date(startTime.getTime() + 2 * 60 * 60 * 1000),
@@ -414,7 +415,7 @@ function eventDoc(overrides: FakeData = {}): FakeData {
       updatedBySource: "adminEventSearchBackfill",
     },
     ...overrides,
-  };
+  });
 }
 
 function assertHttpsCode(error: unknown, code: string): boolean {
