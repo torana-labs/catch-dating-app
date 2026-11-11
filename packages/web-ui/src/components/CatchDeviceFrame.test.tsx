@@ -22,6 +22,34 @@ describe("CatchDeviceFrame", () => {
     expect(frameOf("Android").dataset.orientation).toBe("portrait");
   });
 
+  it("bleeds off its band only when asked", () => {
+    render(
+      <>
+        <CatchDeviceFrame bleed kind="phone"><img alt="Bleeding" src="/b.png" /></CatchDeviceFrame>
+        <CatchDeviceFrame kind="phone"><img alt="Contained" src="/c.png" /></CatchDeviceFrame>
+      </>,
+    );
+    expect(frameOf("Bleeding").hasAttribute("data-bleed")).toBe(true);
+    expect(frameOf("Contained").hasAttribute("data-bleed")).toBe(false);
+  });
+
+  it("draws a browser window with a decorative bar and the capture at its own aspect", () => {
+    const {container} = render(
+      <CatchDeviceFrame address="catchdates.com/w/meher" bleed kind="browser"><img alt="The running order" src="/desk.png" /></CatchDeviceFrame>,
+    );
+    const window = frameOf("The running order");
+    expect(window.dataset).toMatchObject({kind: "browser", tilt: "none"});
+    expect(window.hasAttribute("data-bleed")).toBe(false);
+    const bar = container.querySelector("[aria-hidden='true']");
+    expect(bar?.textContent).toBe("catchdates.com/w/meher");
+    expect(window.style.getPropertyValue("--catch-device-aspect")).toBe("");
+  });
+
+  it("leaves the address out of a browser bar without one", () => {
+    const {container} = render(<CatchDeviceFrame kind="browser"><img alt="Desk" src="/d.png" /></CatchDeviceFrame>);
+    expect(container.querySelector("[aria-hidden='true']")?.textContent).toBe("");
+  });
+
   it("reads the deprecated iphone and ipad kinds as phone and tablet", () => {
     render(
       <>

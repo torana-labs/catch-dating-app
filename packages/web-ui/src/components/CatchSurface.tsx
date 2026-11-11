@@ -16,6 +16,17 @@ import styles from "./CatchSurface.module.css";
 
 export type CatchSurfaceElement = "div" | "section" | "article" | "aside" | "li";
 
+/**
+ * Band colours the website has beyond the shared vocabulary (which is pinned
+ * to the Flutter enums): indigo, the quiet colour for a band that is not about
+ * one format, such as the host landing's ways to use Catch (proposal L2).
+ */
+export const catchWebBandColors = ["indigo"] as const;
+export type CatchWebBandColor = (typeof catchWebBandColors)[number];
+
+const isWebBandColor = (color: string | undefined): color is CatchWebBandColor =>
+  catchWebBandColors.includes(color as CatchWebBandColor);
+
 export interface CatchSurfaceProps extends Omit<HTMLAttributes<HTMLElement>, "color"> {
   /**
    * plain: no box. tile: the grey block (the default). spotlight: one per
@@ -24,8 +35,8 @@ export interface CatchSurfaceProps extends Omit<HTMLAttributes<HTMLElement>, "co
    * page width.
    */
   block?: CatchSurfaceBlock;
-  /** Spotlight: a format or ink. Band: a format, ink or tile. Ignored for other blocks. */
-  color?: CatchSurfaceColor;
+  /** Spotlight: a format or ink. Band: a format, ink, tile or indigo. Ignored for other blocks. */
+  color?: CatchSurfaceColor | CatchWebBandColor;
   /** sm 12, md 16, lg 20 or none. Defaults by block: plain none, spotlight and floating lg, a nested tile sm, else md; a band's is vertical. */
   padding?: CatchSurfacePadding;
   /** Makes the whole block a button (type button) with press feedback. */
@@ -45,8 +56,12 @@ interface Resolved {
 }
 
 /** What a block tells its children they sit on, from the system's Surface. */
-export function catchSurfaceChildGround(block: CatchSurfaceBlock, color: CatchSurfaceColor | undefined, ground: CatchGround): Resolved {
+export function catchSurfaceChildGround(block: CatchSurfaceBlock, color: CatchSurfaceColor | CatchWebBandColor | undefined, ground: CatchGround): Resolved {
   const night = catchGroundIsNight(ground);
+  if (isWebBandColor(color)) {
+    // Only a band takes a web colour; it is a colour ground in the day theme, its fill and ink set by the band.
+    return block === "band" ? {childGround: "colour", theme: "day", nested: false} : catchSurfaceChildGround(block, undefined, ground);
+  }
   const format = color === "ink" || color === "tile" ? undefined : color;
   switch (block) {
     case "tile": {

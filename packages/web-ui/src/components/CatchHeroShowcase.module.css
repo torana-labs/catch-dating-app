@@ -10,6 +10,8 @@
   align-items: flex-start;
   justify-content: flex-end;
   box-sizing: border-box;
+  /* Full width even when a collapsed CatchStack centres the showcase (proposal L7). */
+  width: 100%;
   min-height: 620px;
   overflow: hidden;
   padding: var(--catch-space-s16) var(--catch-space-s12) 0;

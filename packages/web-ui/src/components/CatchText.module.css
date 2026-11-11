@@ -23,6 +23,22 @@
   letter-spacing: var(--catch-typography-role-display-hero-tracking);
 }
 
+/*
+ * display-giant (proposal L4), website only: the hero face, larger, for one
+ * figure that carries a band. It steps down on a phone-width band.
+ */
+.text[data-variant="display-giant"] {
+  font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
+  font-size: 220px;
+  font-weight: var(--catch-typography-role-display-hero-weight);
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+}
+
+@container catch-page (width < 840px) {
+  .text[data-variant="display-giant"] { font-size: 150px; }
+}
+
 .text[data-variant="display-xl"] {
   font-family: var(--catch-typography-role-display-xl-family), var(--catch-font-stack-display);
   font-size: var(--catch-typography-role-display-xl-size);

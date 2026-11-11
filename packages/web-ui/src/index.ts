@@ -289,6 +289,7 @@ export {CatchStickyAside} from "./components/CatchStickyAside";
 export type {CatchStickyAsideProps} from "./components/CatchStickyAside";
 export {CatchStoreButton} from "./components/CatchStoreButton";
 export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
+export {catchStoreBadgeAspect} from "./components/CatchStoreButton";
 export {CatchPaneLayout} from "./components/CatchPaneLayout";
 export type {CatchPaneLayoutMode, CatchPaneLayoutProps} from "./components/CatchPaneLayout";
 export {useCatchPane} from "./components/catchPaneLayoutContext";
@@ -339,8 +340,8 @@ export type {
   CatchTableColumn,
   CatchTableProps,
 } from "./components/CatchTable";
-export {CatchText} from "./components/CatchText";
-export type {CatchTextAs, CatchTextProps} from "./components/CatchText";
+export {CatchText, catchWebTextVariants} from "./components/CatchText";
+export type {CatchTextAs, CatchTextProps, CatchWebTextVariant} from "./components/CatchText";
 /** Legacy: the pre-redesign text, deleted in P7. */
 export {CatchLegacyText} from "./components/CatchLegacyText";
 export type {
@@ -359,7 +360,8 @@ export type {CatchGroundProviderProps} from "./components/CatchGroundProvider";
 export {useCatch} from "./components/catchRootContext";
 export type {CatchContextValue} from "./components/catchRootContext";
 export {CatchSurface} from "./components/CatchSurface";
-export type {CatchSurfaceElement, CatchSurfaceProps} from "./components/CatchSurface";
+export {catchWebBandColors} from "./components/CatchSurface";
+export type {CatchSurfaceElement, CatchSurfaceProps, CatchWebBandColor} from "./components/CatchSurface";
 /** Legacy: the pre-redesign surface, deleted in P7. */
 export {CatchLegacySurface} from "./components/CatchLegacySurface";
 export type {CatchLegacySurfaceProps, CatchSurfaceEmphasis, CatchSurfaceTone} from "./components/CatchLegacySurface";

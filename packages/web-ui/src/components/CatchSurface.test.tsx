@@ -125,4 +125,15 @@ describe("CatchSurface", () => {
     expect(catchSurfaceChildGround("spotlight", "tile", "ground")).toEqual({childGround: "night", theme: "night", nested: false});
     expect(catchSurfaceChildGround("band", undefined, night)).toEqual({childGround: "night", nested: false});
   });
+
+  it("draws the web-only indigo band as a colour ground in the day theme", () => {
+    render(<CatchSurface block="band" color="indigo"><Probe id="indigo" /></CatchSurface>);
+    expect(surfaceOf("indigo").dataset).toMatchObject({block: "band", band: "indigo", pad: "lg"});
+    expect(surfaceOf("indigo").hasAttribute("data-format")).toBe(false);
+    expect(catchSurfaceChildGround("band", "indigo", "ground")).toEqual({childGround: "colour", theme: "day", nested: false});
+  });
+
+  it("ignores indigo on a block that is not a band", () => {
+    expect(catchSurfaceChildGround("spotlight", "indigo", "ground")).toEqual(catchSurfaceChildGround("spotlight", undefined, "ground"));
+  });
 });

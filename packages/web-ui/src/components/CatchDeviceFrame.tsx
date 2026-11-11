@@ -8,6 +8,13 @@ import styles from "./CatchDeviceFrame.module.css";
  */
 export type CatchDeviceFrameKind = "phone" | "android" | "tablet";
 
+/**
+ * A quiet browser window around a desktop capture (proposal W1): a light bar
+ * with three dots and an optional address, then the capture at its own
+ * aspect. Generic like the devices: no maker's window controls.
+ */
+export type CatchDeviceFrameWindowKind = "browser";
+
 /** @deprecated Use "phone" for "iphone" and "tablet" for "ipad". */
 type CatchDeviceFrameLegacyKind = "iphone" | "ipad";
 
@@ -18,9 +25,17 @@ export type CatchDeviceFrameOrientation = "landscape" | "portrait";
 export type CatchDeviceFrameTilt = "none" | "left" | "right";
 
 export interface CatchDeviceFrameProps {
+  /** Browser only: the address shown in the bar, such as "catchdates.com/w/meher". Decorative. */
+  address?: string;
+  /**
+   * Runs the device off the bottom edge of the band it sits in (proposal L3):
+   * the frame's bottom margin goes negative and the band clips it. Devices
+   * only; a browser window never bleeds.
+   */
+  bleed?: boolean;
   /** The screen, usually an app capture image; it covers the screen from the top. */
   children: ReactNode;
-  kind: CatchDeviceFrameKind | CatchDeviceFrameLegacyKind;
+  kind: CatchDeviceFrameKind | CatchDeviceFrameWindowKind | CatchDeviceFrameLegacyKind;
   /** Tablets only; defaults to landscape. */
   orientation?: CatchDeviceFrameOrientation;
   /** Defaults to none. Reduced motion has no effect: the turn is still. */
@@ -55,7 +70,7 @@ interface CatchDeviceFrameGeometry {
   camera?: {diameter: number; centreY: number};
 }
 
-function catchDeviceFrameKind(kind: CatchDeviceFrameProps["kind"]): CatchDeviceFrameKind {
+function catchDeviceFrameKind(kind: Exclude<CatchDeviceFrameProps["kind"], CatchDeviceFrameWindowKind>): CatchDeviceFrameKind {
   return kind in legacyKinds ? legacyKinds[kind as CatchDeviceFrameLegacyKind] : (kind as CatchDeviceFrameKind);
 }
 
@@ -124,15 +139,30 @@ function frameVariables(geometry: CatchDeviceFrameGeometry): CSSProperties {
 }
 
 /**
- * A generic device bezel around an app screen, for showing the Catch apps on
- * the website. The frame is decoration; the screen carries the description.
+ * A generic device bezel around an app screen, or a browser window around a
+ * desktop capture, for showing the Catch apps on the website. The frame is
+ * decoration; the screen carries the description.
  */
-export function CatchDeviceFrame({children, kind, orientation, tilt = "none"}: CatchDeviceFrameProps) {
+export function CatchDeviceFrame({address, bleed = false, children, kind, orientation, tilt = "none"}: CatchDeviceFrameProps) {
+  if (kind === "browser") {
+    return (
+      <div className={styles.browser} data-kind="browser" data-tilt={tilt}>
+        <div aria-hidden="true" className={styles.bar}>
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+          {address ? <span className={styles.address}>{address}</span> : null}
+        </div>
+        <div className={styles.page}>{children}</div>
+      </div>
+    );
+  }
   const canonical = catchDeviceFrameKind(kind);
   const held = canonical === "tablet" ? (orientation ?? "landscape") : "portrait";
   return (
     <div
       className={styles.frame}
+      data-bleed={bleed ? "" : undefined}
       data-kind={canonical}
       data-orientation={held}
       data-tilt={tilt}

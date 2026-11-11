@@ -57,3 +57,76 @@
   content: "";
   transform: translateX(-50%);
 }
+
+/*
+ * bleed (proposal L3): the device runs off the bottom of its band, which
+ * clips it (CatchSurface band). The overhang is the band's bottom padding and
+ * a little more, smaller on a phone-width band.
+ */
+.frame[data-bleed] { margin-bottom: -140px; }
+
+/*
+ * browser (proposal W1): a quiet window around a desktop capture, for the
+ * planner screens. The bar is decoration; the capture carries the description.
+ */
+.browser {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--catch-palette-ink) 12%, transparent);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-palette-white);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, var(--catch-palette-ink) 4%, transparent),
+    0 28px 64px -28px color-mix(in srgb, var(--catch-palette-ink) 45%, transparent);
+}
+
+.browser[data-tilt="left"] { transform: rotate(-4deg); }
+.browser[data-tilt="right"] { transform: rotate(2deg); }
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-micro6);
+  height: 34px;
+  padding: 0 var(--catch-space-s3);
+  border-bottom: 1px solid color-mix(in srgb, var(--catch-palette-ink) 8%, transparent);
+  background: var(--catch-palette-paper);
+}
+
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--catch-palette-ink) 20%, transparent);
+}
+
+.address {
+  flex: 0 1 360px;
+  min-width: 0;
+  height: 20px;
+  margin-left: var(--catch-space-micro10);
+  padding: 0 var(--catch-space-micro10);
+  overflow: hidden;
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-ink-secondary);
+  font-family: var(--catch-font-stack-sans);
+  font-size: 11px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@container catch-page (width < 840px) {
+  .frame[data-bleed] { margin-bottom: -110px; }
+  .browser { border-radius: var(--catch-radius-sm); }
+  .bar { gap: var(--catch-space-micro3); height: 24px; padding: 0 var(--catch-space-s2); }
+  .dot { width: 7px; height: 7px; }
+  .address { height: 14px; padding: 0 var(--catch-space-micro6); font-size: 9px; line-height: 14px; }
+}

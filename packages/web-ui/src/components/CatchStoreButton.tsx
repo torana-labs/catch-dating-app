@@ -1,22 +1,26 @@
 import styles from "./CatchStoreButton.module.css";
 
-/** The app store a button links to. */
+/** The app store a badge links to. */
 export type CatchStoreButtonStore = "appStore" | "googlePlay";
 
-/** D20 heights: l is 48px, m is 40px. */
+/** Badge heights: l is 48px, m is 40px (the D20 large and medium heights). */
 export type CatchStoreButtonSize = "m" | "l";
 
 export interface CatchStoreButtonProps {
-  /** The full link name when the visible text is short, such as "Download on the App Store". */
-  accessibleLabel?: string;
   /**
-   * The store page. Without one the store is not live yet: the button stays
-   * on the page and only reports the press, so the click can be recorded.
+   * The store's own badge artwork, unaltered: Apple's black "Download on the
+   * App Store" SVG or Google's "Get it on Google Play" PNG with its transparent
+   * padding cropped. The site hosts the files (the library ships no store
+   * artwork); see website/public/assets/store-badges.
+   */
+  badgeSrc: string;
+  /**
+   * The store page. Without one the store is not live yet: the badge stays
+   * on the page as a button and only reports the press, so the click can be
+   * recorded.
    */
   href?: string;
-  /** A small line above the label, such as "Download on the". */
-  kicker?: string;
-  /** The visible store name, such as "App Store". */
+  /** The badge's words, its accessible name: "Download on the App Store" or "Get it on Google Play". */
   label: string;
   /** Called before navigation, such as for click tracking, or on a press while pending. */
   onClick?: () => void;
@@ -25,41 +29,47 @@ export interface CatchStoreButtonProps {
   store: CatchStoreButtonStore;
 }
 
-// Plain marks drawn for Catch, as the boards do; the stores' own logos are not used.
-const marks: Record<CatchStoreButtonStore, {path: string; outline: boolean}> = {
-  appStore: {outline: true, path: "M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5ZM9 16l3-8 3 8M10 13.5h4"},
-  googlePlay: {outline: false, path: "M5 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 5 3.5z"},
+/**
+ * Each badge's intrinsic width over height, so the image reserves its space
+ * before it loads: Apple's SVG is 119.66407 × 40 and Google's cropped PNG is
+ * 564 × 168.
+ */
+export const catchStoreBadgeAspect: Record<CatchStoreButtonStore, number> = {
+  appStore: 119.66407 / 40,
+  googlePlay: 564 / 168,
 };
 
+const heights: Record<CatchStoreButtonSize, number> = {l: 48, m: 40};
+
 /**
- * A link to the app in the App Store or Google Play, drawn as a D20 primary
- * action: the theme primary fill with 4px corners, inverting on the ink ground.
- * A store that is not live yet draws the same, as a button.
+ * A link to the app in the App Store or Google Play, drawn with the store's
+ * official badge (proposal L8): Apple's and Google's badge guidelines do not
+ * allow a drawn button. The badge is never recoloured, stretched, tilted or
+ * overlaid; it keeps its own height at either size, and the focus ring sits
+ * outside it. A store that is not live yet draws the same badge, as a button.
  */
-export function CatchStoreButton({accessibleLabel, href, kicker, label, onClick, size = "l", store}: CatchStoreButtonProps) {
-  const mark = marks[store];
-  const content = (
-    <>
-      <svg aria-hidden="true" className={styles.mark} data-outline={mark.outline || undefined} focusable="false" viewBox="0 0 24 24">
-        <path d={mark.path} />
-      </svg>
-      <span className={styles.copy}>
-        {/* The trailing space keeps the visible text "Download on the App Store", not "theApp". */}
-        {kicker ? <span className={styles.kicker}>{kicker} </span> : null}
-        <span className={styles.label}>{label}</span>
-      </span>
-    </>
+export function CatchStoreButton({badgeSrc, href, label, onClick, size = "l", store}: CatchStoreButtonProps) {
+  const height = heights[size];
+  const badge = (
+    <img
+      alt={label}
+      className={styles.badge}
+      decoding="async"
+      height={height}
+      src={badgeSrc}
+      width={Math.round(height * catchStoreBadgeAspect[store])}
+    />
   );
   if (!href) {
     return (
-      <button aria-label={accessibleLabel} className={styles.button} data-size={size} data-store={store} onClick={onClick} type="button">
-        {content}
+      <button className={styles.button} data-size={size} data-store={store} onClick={onClick} type="button">
+        {badge}
       </button>
     );
   }
   return (
-    <a aria-label={accessibleLabel} className={styles.button} data-size={size} data-store={store} href={href} onClick={onClick}>
-      {content}
+    <a className={styles.button} data-size={size} data-store={store} href={href} onClick={onClick}>
+      {badge}
     </a>
   );
 }
