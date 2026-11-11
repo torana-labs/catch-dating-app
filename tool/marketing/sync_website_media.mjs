@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {framedSize} from "./lib/capture_devices.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const websitePublicPrefix = "website/public/";
@@ -13,8 +14,6 @@ const websiteScreenshotPrefix = `${websitePublicPrefix}assets/app-screenshots/`;
 const websiteManifestPath = fromRepo(`${websiteScreenshotPrefix}manifest.json`);
 const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
 const allowedKinds = new Set(["app-capture", "web-capture"]);
-// Framed PNG size per device, so pages reserve the image's space before it loads.
-const deviceFrameSizes = {"iphone-17-pro": {width: 1020, height: 1964}};
 const scenarioRoot = "tool/demo/demo_seed/scenarios";
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -249,7 +248,8 @@ export function buildWebsiteManifest(manifest) {
         surface: capture.surface,
         device: capture.device,
         webPath,
-        ...deviceFrameSizes[capture.device],
+        // The framed PNG's size, so pages reserve the image's space before it loads.
+        ...framedSize(capture.device),
         alt: capture.alt,
         caption: `${manifest.previewDisclosure} ${capture.caption}`,
         walkthroughStep: capture.walkthroughStep,

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.14.2
-updated: 2026-11-02
+version: 1.15.0
+updated: 2026-11-09
 owner: marketing_website
 status: active
 ---
@@ -40,6 +40,24 @@ Pages ask for a capture by slot id and never name an image path:
 the props of `CatchAppCaptureImage` (`@catch/web-ui`, the website's T4
 component for a device-framed capture with its caption), which the page
 renders. Pages receive the records as their `captures` prop.
+
+### Generic devices
+
+Captures and website frames show generic devices only (owner decision,
+8 Nov 2026): nothing unique to Apple hardware, so no Dynamic Island, notch or
+side buttons, in line with Apple's App Store marketing guidelines. The
+manifest's phone device is `generic-phone`: the 402×874 screen with a 62pt top
+and 34pt bottom safe area (`CaptureDevice.genericPhone`), which draws a clean
+status bar (9:41, full signal, Wi-Fi and battery) in the top safe area. The
+exporter frames it with a generic bezel of the same proportions as the
+website's `CatchDeviceFrame` kind `phone` (bezel 0.028 and outer radius 0.165
+of the frame width), giving a 980×1924 PNG. `tool/marketing/lib/capture_devices.mjs`
+is the one device table the exporter, provenance, website sync and web renderer
+read; `frame_device_capture.dart` draws the same frames. `iphone-17-pro`
+(1020×1964, drawn island) remains supported for existing renders only.
+`CatchDeviceFrame` (kind `phone`, `android` or `tablet`, optional tablet
+`orientation`, `tilt`) frames a screen in CSS from one spec per kind, every
+length a share of the frame width.
 
 `website/src/app/marketingCaptures.ts` bundles
 `website/public/assets/app-screenshots/manifest.json` at build time, so
@@ -86,10 +104,12 @@ check-in story. No page lists it today.
 `tool/marketing/lib/web_capture_render.mjs` serves a built website Storybook on
 loopback and opens the named story in Playwright WebKit on macOS. It verifies
 that the built story came from the declared file, uses the iPhone 17 Pro
-descriptor with a 402×820 viewport at DPR 3, light mode, reduced motion,
+descriptor (the screen `generic-phone` shares) with a viewport of the screen
+less the status bar (402×812 for `generic-phone`) at DPR 3, light mode, reduced motion,
 `Asia/Kolkata` time and `en-IN` locale, and waits for fonts and images. The
-renderer composes Safari status/address bars at 2x and passes the result to
-the existing iPhone frame tool. This is a rendered synthetic story, not proof
+renderer composes a clean Safari status bar (filling the device's top safe
+area) and address bar at 2x and passes the result to the frame tool for the
+capture's device. This is a rendered synthetic story, not proof
 of an authenticated flow or availability on the live website.
 
 `web_capture_inputs.mjs` follows the story and Storybook configuration through
@@ -134,7 +154,7 @@ its images and the preview release reads that binding.
 `node tool/marketing/sync_website_media.mjs --check` run in the producer, after
 any rendering. Pending captures pass only if their placeholders exist and the generated
 website manifest is current. Active captures fail if the source image is missing, is not a framed
-1020×1964 iPhone 17 Pro PNG, lacks canonical render provenance, has changed
+PNG of its device's size (980×1924 for `generic-phone`), lacks canonical render provenance, has changed
 image bytes or capture inputs, or differs from its website copy. The generated
 website manifest must also be current. Both sync commands run the exporter
 check before copying or accepting any active image. Every consumer that

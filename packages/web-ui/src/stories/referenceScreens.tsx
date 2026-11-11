@@ -30,6 +30,12 @@ const captures = {
 
 export type ReferenceCapture = keyof typeof captures;
 
+/**
+ * A whole capture's URL, for stories that need an unframed screen image (a
+ * device frame's screen, say) rather than a crop beside a rendering.
+ */
+export const referenceScreenUrl = (capture: ReferenceCapture) => captures[capture];
+
 /** One region of a capture, in the capture's own CSS pixels. */
 export interface ReferenceRegion {
   capture: ReferenceCapture;

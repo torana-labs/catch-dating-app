@@ -1,68 +1,59 @@
 /*
- * Website v2 device frame (CAT-260). The bezel is padding on the night
- * surface (phones) or ink (tablet), so its width takes the spacing scale; the
- * screen clips to the inner radius. Phones mark the camera with a pill
- * (iPhone) or a dot (Android).
+ * Website v2 device frame: generic devices (owner decision, 8 Nov 2026,
+ * proposal L9). Nothing unique to one maker's hardware: no notch, island or
+ * side buttons. CatchDeviceFrame.tsx computes each kind's geometry from one
+ * spec, as shares of the frame, and sets it here as custom properties, so the
+ * frame keeps its proportions at any width. The body is near-black with a
+ * one-pixel light rim inside and a dark edge outside.
  */
 .frame {
-  --catch-device-bezel: var(--catch-space-micro10);
-  --catch-device-radius: calc(var(--catch-radius-lg) * 2.5);
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  padding: var(--catch-device-bezel);
+  aspect-ratio: var(--catch-device-aspect);
   border-radius: var(--catch-device-radius);
-  background: var(--catch-palette-night-surface);
-  box-shadow: var(--catch-elevation-overlay);
-}
-
-.frame[data-kind="android"] {
-  --catch-device-bezel: var(--catch-space-s2);
-  --catch-device-radius: calc(var(--catch-radius-lg) * 1.6);
-}
-
-.frame[data-kind="ipad"] {
-  --catch-device-bezel: var(--catch-space-micro18);
-  --catch-device-radius: calc(var(--catch-radius-lg) * 2);
-  background: var(--catch-palette-ink);
+  background: color-mix(in srgb, var(--catch-palette-ink) 88%, var(--catch-palette-black));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--catch-palette-white) 10%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--catch-palette-black) 55%, transparent),
+    var(--catch-elevation-overlay);
 }
 
 .frame[data-tilt="left"] { transform: rotate(-4deg); }
 .frame[data-tilt="right"] { transform: rotate(2deg); }
 
 .screen {
+  position: absolute;
+  inset: var(--catch-device-inset);
   overflow: hidden;
-  border-radius: calc(var(--catch-device-radius) - var(--catch-device-bezel));
+  border-radius: var(--catch-device-screen-radius);
   background: var(--catch-palette-ink);
+}
+
+.screen > * {
+  width: 100%;
+  height: 100%;
 }
 
 .screen img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
 }
 
-.frame[data-kind="iphone"]::after,
+/* The android punch-hole camera, centred, over the screen. */
 .frame[data-kind="android"]::after {
   position: absolute;
-  top: calc(var(--catch-device-bezel) + var(--catch-space-s2));
+  z-index: 1;
+  top: var(--catch-device-camera-top);
   left: 50%;
-  width: 30%;
-  height: 24px;
-  border-radius: var(--catch-radius-pill);
+  width: var(--catch-device-camera-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
   background: var(--catch-palette-black);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--catch-palette-white) 7%, transparent);
   content: "";
   transform: translateX(-50%);
-}
-
-.frame[data-kind="android"]::after {
-  width: 12px;
-  height: 12px;
-}
-
-@container catch-page (width < 840px) {
-  .frame[data-kind="ipad"] {
-    --catch-device-bezel: var(--catch-space-micro10);
-    --catch-device-radius: calc(var(--catch-radius-lg) * 1.2);
-  }
 }

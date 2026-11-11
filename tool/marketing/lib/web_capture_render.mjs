@@ -1,7 +1,7 @@
-// Renders website pages as iPhone Safari captures: a built Storybook story in
-// WebKit with Playwright's iPhone 17 Pro descriptor, in Asia/Kolkata time,
-// composed with Safari's status and address bars, then framed by the same
-// bezel as the app captures. export_app_screenshots.mjs --update calls this
+// Renders website pages as phone Safari captures: a built Storybook story in
+// WebKit with Playwright's iPhone 17 Pro descriptor (the screen the generic
+// phone shares), in Asia/Kolkata time, composed with Safari's status and
+// address bars, then framed by the same bezel as the app captures. export_app_screenshots.mjs --update calls this
 // for manifest entries of kind web-capture and stamps their provenance.
 import fs from "node:fs";
 import http from "node:http";
@@ -13,7 +13,7 @@ import {safariScreen, safariScreenHtml, safariViewport} from "./web_capture_scre
 
 const defaultStorybook = "website/storybook-static";
 const rawOutputDir = "artifacts/marketing/app-screenshots/raw/web";
-const device = "iPhone 17 Pro";
+const descriptorName = "iPhone 17 Pro";
 
 /**
  * Renders each capture's story to its sourcePath. `storybook` is a built
@@ -31,9 +31,9 @@ export async function renderWebCaptures(captures, {storybook = defaultStorybook,
     for (const capture of captures) {
       const raw = fromRepo(path.join(rawOutputDir, `${capture.id}.png`));
       fs.mkdirSync(path.dirname(raw), {recursive: true});
-      const page = await renderStory(browser, devices[device], server.origin, capture.story.id);
-      fs.writeFileSync(raw, await composeSafariScreen(browser, page, capture.address));
-      frame(raw, capture.sourcePath);
+      const page = await renderStory(browser, devices[descriptorName], server.origin, capture);
+      fs.writeFileSync(raw, await composeSafariScreen(browser, page, capture));
+      frame(raw, capture);
       console.log(`Rendered ${capture.id} from ${capture.story.id}`);
     }
   } finally {
@@ -65,11 +65,12 @@ async function loadPlaywright(playwrightDir) {
   return import(pathToFileURL(entry).href);
 }
 
-async function renderStory(browser, descriptor, origin, storyId) {
-  if (!descriptor) throw new Error(`Playwright has no ${device} descriptor.`);
+async function renderStory(browser, descriptor, origin, capture) {
+  if (!descriptor) throw new Error(`Playwright has no ${descriptorName} descriptor.`);
+  const storyId = capture.story.id;
   const context = await browser.newContext({
     ...descriptor,
-    viewport: safariViewport,
+    viewport: safariViewport(capture.device),
     timezoneId: "Asia/Kolkata",
     locale: "en-IN",
     colorScheme: "light",
@@ -97,12 +98,14 @@ async function renderStory(browser, descriptor, origin, storyId) {
   }
 }
 
-async function composeSafariScreen(browser, pagePng, address) {
-  const context = await browser.newContext({viewport: {width: safariScreen.width, height: safariScreen.height},
-    deviceScaleFactor: safariScreen.scale});
+async function composeSafariScreen(browser, pagePng, capture) {
+  const screen = safariScreen(capture.device);
+  const context = await browser.newContext({viewport: {width: screen.width, height: screen.height},
+    deviceScaleFactor: screen.scale});
   try {
     const page = await context.newPage();
-    await page.setContent(safariScreenHtml({pagePng: pagePng.toString("base64"), address}), {waitUntil: "load"});
+    await page.setContent(safariScreenHtml({pagePng: pagePng.toString("base64"), address: capture.address,
+      device: capture.device}), {waitUntil: "load"});
     await page.waitForSelector("body[data-ready]", {timeout: 10_000});
     await page.evaluate(() => document.fonts.ready);
     return await page.screenshot({fullPage: false});
@@ -111,10 +114,11 @@ async function composeSafariScreen(browser, pagePng, address) {
   }
 }
 
-function frame(input, output) {
+function frame(input, capture) {
+  const output = capture.sourcePath;
   fs.mkdirSync(path.dirname(fromRepo(output)), {recursive: true});
   const result = spawnSync("dart", ["run", "tool/marketing/frame_device_capture.dart", "--input", input,
-    "--output", output, "--device", "iphone-17-pro"], {cwd: repoRoot, stdio: "inherit"});
+    "--output", output, "--device", capture.device], {cwd: repoRoot, stdio: "inherit"});
   if (result.status !== 0) throw new Error(`Framing ${output} failed.`);
 }
 

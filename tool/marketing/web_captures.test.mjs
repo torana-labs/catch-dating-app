@@ -22,7 +22,8 @@ function fixture(t) {
   };
   for (const name of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/marketing/export_app_screenshots.mjs",
     "tool/marketing/lib/web_capture_render.mjs", "tool/marketing/lib/web_capture_screen.mjs",
-    "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/web_capture_inputs.mjs"]) {
+    "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/web_capture_inputs.mjs",
+    "tool/marketing/lib/capture_devices.mjs"]) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   write("tool/marketing/frame_device_capture.dart", "// frame\n");
@@ -221,3 +222,29 @@ function png(width = 1020, height = 1964) {
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
     chunk("IDAT", deflateSync(pixels)), chunk("IEND", Buffer.alloc(0))]);
 }
+
+test("capture devices: the generic phone frames without an island, and the Dart framer agrees on sizes", async () => {
+  const {captureDevice, deviceFrameSpec, framedSize} = await import("./lib/capture_devices.mjs");
+  const {safariScreen, safariScreenHtml} = await import("./lib/web_capture_screen.mjs");
+  const generic = deviceFrameSpec("generic-phone");
+  assert.deepEqual(generic.logicalSize, {width: 402, height: 874});
+  assert.deepEqual(generic.safeArea, {top: 62, right: 0, bottom: 34, left: 0});
+  assert.equal(generic.frame.dynamicIsland, null);
+  // The website's CatchDeviceFrame phone: bezel 0.028 and outer radius 0.165 of the frame width.
+  const {frameInset, outerRadius, screenRadius, logicalWidth} = captureDevice("generic-phone");
+  const frameWidth = logicalWidth + 2 * frameInset;
+  assert.ok(Math.abs(frameInset / frameWidth - 0.028) < 0.001);
+  assert.ok(Math.abs(outerRadius / frameWidth - 0.165) < 0.002);
+  assert.equal(screenRadius, outerRadius - frameInset);
+  assert.ok(deviceFrameSpec("iphone-17-pro").frame.dynamicIsland);
+  const dartSizes = Object.fromEntries([...fs.readFileSync(fromRepo("tool/marketing/frame_device_capture_test.dart"), "utf8")
+    .matchAll(/'([a-z0-9-]+)': \(width: (\d+), height: (\d+)/gu)].map(([, id, width, height]) => [id, {width: +width, height: +height}]));
+  assert.deepEqual(dartSizes, {"generic-phone": framedSize("generic-phone"), "iphone-17-pro": framedSize("iphone-17-pro")});
+  assert.throws(() => captureDevice("iphone-15"), /Unsupported marketing capture device/u);
+  // Safari's status bar fills the generic phone's 62pt safe area, with a clean 9:41.
+  assert.equal(safariScreen("generic-phone").statusBar, 62);
+  assert.equal(safariScreen("iphone-17-pro").statusBar, 54);
+  const html = safariScreenHtml({pagePng: "", address: "catchdates.com", device: "generic-phone"});
+  assert.match(html, /height: 62px/u);
+  assert.match(html, /<span class="time">9:41<\/span>/u);
+});

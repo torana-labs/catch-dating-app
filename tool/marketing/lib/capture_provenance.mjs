@@ -4,6 +4,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
 import {webCaptureInputHash} from './web_capture_inputs.mjs';
+import {framedSize, isCaptureDevice} from './capture_devices.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
 const chunkType = 'caPt';
@@ -15,6 +16,7 @@ const roots = [
   'tool/marketing/frame_device_capture.dart',
   'tool/marketing/export_app_screenshots.mjs',
   'tool/marketing/lib/capture_provenance.mjs',
+  'tool/marketing/lib/capture_devices.mjs',
   'tool/ui_capture/run_captures.mjs',
   'tool/lib/repo_paths.mjs',
   'pubspec.yaml', 'pubspec.lock', 'tool/ci/toolchain.env',
@@ -148,8 +150,10 @@ function recipeIdentity(capture, captureId) {
 }
 
 function assertFrame(capture, width, height) {
-  if (capture.device !== 'iphone-17-pro' || width !== 1020 || height !== 1964) {
-    throw new Error(`Expected framed iphone-17-pro PNG 1020x1964, got ${width}x${height}.`);
+  if (!isCaptureDevice(capture.device)) throw new Error(`Unsupported capture device ${capture.device}.`);
+  const expected = framedSize(capture.device);
+  if (width !== expected.width || height !== expected.height) {
+    throw new Error(`Expected framed ${capture.device} PNG ${expected.width}x${expected.height}, got ${width}x${height}.`);
   }
 }
 
