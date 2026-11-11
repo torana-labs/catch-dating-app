@@ -4,7 +4,12 @@ import {
   photoPromptCatalog,
   profilePromptCatalog,
 } from "../contracts/generated/schema_contract_registry.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {validateSeedDocuments} from "./seed_demo_data.mjs";
+
+// Events carry their stored policy (#1669). The tool check builds Functions
+// first, so the fixture stores the policy its terms give a new event.
+const {initialPolicyFromTerms} = createFunctionsRequire()("./lib/events/eventPolicy.js");
 
 const profilePrompt = profilePromptCatalog.prompts[0];
 const photoPrompt = photoPromptCatalog.prompts[0];
@@ -576,7 +581,7 @@ function validOrganizerOwnerSeatDoc() {
 }
 
 function validEventDoc() {
-  return {
+  const event = {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
@@ -661,6 +666,7 @@ function validEventDoc() {
     discoveryMinAge: 21,
     discoveryMaxAge: 45,
   };
+  return {...event, eventPolicy: initialPolicyFromTerms(event)};
 }
 
 function validEventParticipationDoc() {
