@@ -26,6 +26,10 @@ export const APPROVAL_ENVIRONMENT = "prod";
 export const PREVIEW_WORKFLOW = "website-next-preview.yml";
 export const PROMOTE_WORKFLOW = "website-next-promote.yml";
 export const CI_WORKFLOW = "ci.yml";
+// The inputs the train's validation dispatch sends. GitHub rejects a dispatch
+// whose inputs the workflow does not declare (HTTP 422, run 42944434174), so
+// ci.yml's workflow_dispatch must declare each of these.
+export const CI_VALIDATION_INPUTS = Object.freeze({full: "true"});
 const BOT = "github-actions[bot]";
 const POLL_MS = 20_000;
 
@@ -174,7 +178,7 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha =
 async function runValidation() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
-  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: {full: "true"}, expectedSha: sourceSha,
+  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: CI_VALIDATION_INPUTS, expectedSha: sourceSha,
     timeoutMs: 140 * 60_000});
   const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
   summary(mainSha === sourceSha ? `Full CI validated \`${sourceSha}\`.` :

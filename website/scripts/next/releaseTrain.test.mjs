@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {APPROVAL_ENVIRONMENT, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewOutcome, previewRunTitle, selectDispatchedRun,
+import {APPROVAL_ENVIRONMENT, CI_VALIDATION_INPUTS, CI_WORKFLOW, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewOutcome, previewRunTitle, selectDispatchedRun,
   websiteChangedBetween} from "./releaseTrain.mjs";
 
 const mainSha = "a".repeat(40);
@@ -127,6 +127,26 @@ test("the train previews the commit it validated, wherever main has moved since"
   assert.equal(previewRunTitle("${{ inputs.source_sha || github.sha }}"),
     workflow.match(/^run-name: (.+)$/mu)?.[1], "the preview's run-name and the train's expected title agree");
   assert.match(workflow, /workflow_dispatch:\n {4}inputs:\n {6}source_sha:\n/u);
+});
+
+test("the CI workflow declares every input the train's validation dispatch sends", () => {
+  // CI went nightly-only for the redesign sprint and lost its dispatch inputs,
+  // so every validation dispatch failed with HTTP 422 "Unexpected inputs
+  // provided" (run 42944434174) and the train never released.
+  const workflow = fs.readFileSync(new URL(`../../../.github/workflows/${CI_WORKFLOW}`, import.meta.url), "utf8");
+  const on = workflow.split(/^on:\n/mu)[1]?.split(/^\S/mu)[0] ?? "";
+  const dispatch = on.split(/^ {2}workflow_dispatch:\n/mu)[1]?.split(/^ {2}\S/mu)[0];
+  assert.ok(dispatch !== undefined, "ci.yml can be dispatched");
+  const declared = new Map([...dispatch.matchAll(/^ {6}([a-z_]+):\n((?: {8}.+\n)*)/gmu)].map(([, name, body]) => [name, body]));
+  assert.ok(Object.keys(CI_VALIDATION_INPUTS).length > 0);
+  for (const [name, value] of Object.entries(CI_VALIDATION_INPUTS)) {
+    assert.ok(declared.has(name), `ci.yml declares the ${name} input the train sends`);
+    if (value === "true" || value === "false") assert.match(declared.get(name), /^ {8}type: boolean$/mu, `${name} is a boolean`);
+  }
+  // A full dispatch must still run the full plan, not the head's own change.
+  assert.match(workflow, /REQUEST_FULL: \$\{\{ github\.event_name == 'schedule' \|\| inputs\.full \}\}/u);
+  // The sprint keeps CI off pull requests and pushes.
+  assert.doesNotMatch(on, /^ {2}(pull_request|push|merge_group):/mu);
 });
 
 test("the train workflow gates production on the protected environment and never cancels a pending approval", () => {
