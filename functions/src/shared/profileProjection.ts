@@ -8,7 +8,6 @@ import type {
 } from "./generated/firestoreAdminTypes";
 import {DemoMetadata, demoMetadataFromSources} from "./demoMetadata";
 import {profilePhotoPolicy} from "./generated/catalogs/profilePhotoPolicy";
-import {profilePromptCatalog} from "./generated/catalogs/profilePromptCatalog";
 
 export type PublicProfileProjection = PublicProfileDocument & DemoMetadata;
 
@@ -44,9 +43,6 @@ type LegacyRunningPreferenceFields = Partial<{
   runPreferencesVersion: number;
 }>;
 
-const perfectRunPromptDefinition = profilePromptCatalog.prompts.find(
-  (prompt) => prompt.id === profilePromptCatalog.defaultPromptIds[0]
-) ?? profilePromptCatalog.prompts[0];
 const maxProfilePhotos = profilePhotoPolicy.maxPhotos;
 
 /**
@@ -158,7 +154,8 @@ export function runningPreferencesFromUserProfileDoc(
 }
 
 /**
- * Normalizes stored profile prompts and migrates legacy bios into prompt one.
+ * Normalizes stored profile prompts. Legacy bios were copied into prompt one
+ * by the profile-bio-prompts migration; bio is no longer read.
  * @param {UserProfileDocument} user Private user profile document.
  * @return {ProfilePromptAnswer[]} Public prompt answers.
  */
@@ -177,19 +174,7 @@ export function normalizeProfilePrompts(
       prompt.answer.length > 0
     );
 
-  if (prompts.length > 0) return prompts.slice(0, 3);
-
-  const legacyUser = user as UserProfileDocument & {bio?: string};
-  const legacyBio = collapseStackedPromptBlankLines(
-    legacyUser.bio ?? ""
-  ).trim();
-  if (legacyBio.length === 0) return [];
-
-  return [{
-    promptId: perfectRunPromptDefinition.id,
-    prompt: perfectRunPromptDefinition.title,
-    answer: legacyBio,
-  }];
+  return prompts.slice(0, 3);
 }
 
 /**

@@ -69,12 +69,5 @@ abstract class Match with _$Match {
 
 Object? _readEventIds(Map json, String key) {
   final eventIds = json[key];
-  if (eventIds is List) return eventIds;
-
-  final legacyEventId = json['eventId'];
-  if (legacyEventId is String && legacyEventId.isNotEmpty) {
-    return [legacyEventId];
-  }
-
-  return null;
+  return eventIds is List ? eventIds : null;
 }

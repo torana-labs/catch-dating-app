@@ -174,19 +174,14 @@ export async function onMatchCreatedHandler(
   );
 }
 
-type LegacyMatchDocument = MatchDocument & {eventId?: string | null};
-
 /**
- * Returns the newest shared event id for a match, including legacy eventId
- * docs.
+ * Returns the newest shared event id for a match.
  *
  * @param {MatchDocument} match Match document data.
  * @return {string | undefined} Latest event id when one is available.
  */
 function latestMatchEventId(match: MatchDocument): string | undefined {
-  const eventIds = match.eventIds ?? [];
-  const legacyEventId = (match as LegacyMatchDocument).eventId;
-  return eventIds.at(-1) ?? legacyEventId ?? undefined;
+  return match.eventIds.at(-1);
 }
 
 export const onMatchCreated = onDocumentCreated(

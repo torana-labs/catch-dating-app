@@ -344,20 +344,6 @@ abstract class UserProfile with _$UserProfile {
 
 Map<String, dynamic> _migrateUserProfileJson(Map<String, dynamic> json) {
   final migrated = Map<String, dynamic>.from(json);
-  final legacyBio = migrated['bio'];
-  final hasStructuredPrompts =
-      migrated['profilePrompts'] is List &&
-      (migrated['profilePrompts'] as List).isNotEmpty;
-
-  if (!hasStructuredPrompts &&
-      legacyBio is String &&
-      legacyBio.trim().isNotEmpty) {
-    migrated['profilePrompts'] = profilePromptsToJson(
-      normalizeProfilePromptAnswers(const [], legacyBio: legacyBio),
-    );
-  }
-
-  migrated.remove('bio');
   _migrateActivityPreferences(migrated);
   return migrated;
 }

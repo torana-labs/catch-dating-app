@@ -249,11 +249,15 @@ void main() {
           buildPublicProfile(
             name: 'A very long display name that should not break the hero',
             age: 26,
-            profilePrompts: normalizeProfilePromptAnswers(
-              const [],
-              legacyBio:
-                  'Long easy events, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
-            ),
+            profilePrompts: normalizeProfilePromptAnswers([
+              profilePromptAnswerFor(
+                definition: profilePromptDefinition(
+                  profilePromptPerfectEventId,
+                ),
+                answer:
+                    'Long easy events, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
+              ),
+            ]),
           ).copyWith(
             city: 'in-mp-indore',
             height: 180,

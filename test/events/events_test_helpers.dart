@@ -200,7 +200,12 @@ UserProfile buildUser({
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
     profilePrompts:
         profilePrompts ??
-        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+        normalizeProfilePromptAnswers([
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(profilePromptPerfectEventId),
+            answer: bio,
+          ),
+        ]),
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
@@ -275,7 +280,12 @@ PublicProfile buildPublicProfile({
     age: age,
     profilePrompts:
         profilePrompts ??
-        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+        normalizeProfilePromptAnswers([
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(profilePromptPerfectEventId),
+            answer: bio,
+          ),
+        ]),
     gender: gender,
     profilePhotos: _profilePhotosFromUrls(
       uid: uid,

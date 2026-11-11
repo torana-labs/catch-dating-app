@@ -58,6 +58,22 @@ test("the backup file records every planned write before apply", async () => {
   assert.equal(saved.plans[0].steps[0].toCreate[0].targetPath, "scheduleLocks/organizer_club-1_100");
 });
 
+test("profile-bio-prompts fills prompts from bio once and keeps bio", async () => {
+  const bioPrompts = MIGRATIONS.find((migration) => migration.name === "profile-bio-prompts");
+  const db = fakeDb({
+    "users/a": {bio: "  Sunrise runs\n\n\n\nthen coffee  ", profilePrompts: []},
+    "users/b": {bio: "ignored", profilePrompts: [{promptId: "p", prompt: "P", answer: "kept"}]},
+    "users/c": {profilePrompts: []},
+  });
+  const plan = await planMigration(db, bioPrompts);
+  assert.equal(plan.totals.toCreate, 1);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["users/a"].profilePrompts[0].answer, "Sunrise runs\n\nthen coffee");
+  assert.equal(db.data["users/a"].bio, "  Sunrise runs\n\n\n\nthen coffee  ");
+  assert.equal(db.data["users/b"].profilePrompts[0].answer, "kept");
+  assert.equal((await planMigration(db, bioPrompts)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
@@ -72,12 +88,19 @@ function fakeDb(seed) {
     batch() {
       const ops = [];
       return {
-        create: (ref, value) => ops.push([ref.path, value]),
+        create: (ref, value) => ops.push(["create", ref.path, value]),
+        update: (ref, value) => ops.push(["update", ref.path, value]),
         async commit() {
-          for (const [docPath] of ops) {
-            if (data[docPath] !== undefined) throw new Error(`ALREADY_EXISTS ${docPath}`);
+          for (const [kind, docPath] of ops) {
+            if (kind === "create" && data[docPath] !== undefined) {
+              throw new Error(`ALREADY_EXISTS ${docPath}`);
+            }
+            if (kind === "update" && data[docPath] === undefined) throw new Error(`NOT_FOUND ${docPath}`);
           }
-          for (const [docPath, value] of ops) data[docPath] = structuredClone(value);
+          for (const [kind, docPath, value] of ops) {
+            data[docPath] = kind === "create" ? structuredClone(value) :
+              {...data[docPath], ...structuredClone(value)};
+          }
         },
       };
     },

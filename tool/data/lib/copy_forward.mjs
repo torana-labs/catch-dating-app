@@ -10,10 +10,15 @@ import {isDeepStrictEqual} from "node:util";
  * no-op for documents already copied. Under the 7 Nov 2026 data hold, the old
  * collections stay in place until the owner lifts the hold.
  *
- * A step is {source, target, targetId(id, data), transform(data, id)}:
+ * A copy step is {source, target, targetId(id, data), transform(data, id)}:
  * - `source` is a top-level collection id;
  * - `targetId` returns the target document id, or null to skip;
  * - `transform` returns the target document data, or null to skip.
+ *
+ * A fill step is {kind: "fill", collection, fill(data, id)}: `fill` returns
+ * fields to add to the same document, or null. Only fields the document does
+ * not already hold may be returned, so nothing is overwritten, and each update
+ * is preconditioned on the document's last update time.
  */
 
 const PAGE_SIZE = 500;
@@ -33,6 +38,7 @@ export async function planMigration(db, migration) {
 }
 
 async function planStep(db, step) {
+  if (step.kind === "fill") return planFillStep(db, step);
   const result = {
     source: step.source,
     target: step.target,
@@ -66,6 +72,35 @@ async function planStep(db, step) {
   return result;
 }
 
+async function planFillStep(db, step) {
+  const result = {
+    kind: "fill",
+    source: step.collection,
+    target: step.collection,
+    scanned: 0,
+    toCreate: [],
+    toFill: [],
+    alreadyCopied: 0,
+    conflicts: [],
+    skipped: [],
+  };
+  for await (const doc of pagedDocs(db.collection(step.collection))) {
+    result.scanned += 1;
+    const data = doc.data();
+    const fields = step.fill(data, doc.id);
+    if (fields === null) continue;
+    const present = Object.keys(fields).filter((field) => data[field] !== undefined &&
+      !(Array.isArray(data[field]) && data[field].length === 0));
+    if (present.length > 0) {
+      result.conflicts.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, fields: present});
+      continue;
+    }
+    result.toFill.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, data: fields,
+      updateTime: doc.updateTime});
+  }
+  return result;
+}
+
 async function* pagedDocs(collectionRef) {
   let last = null;
   for (;;) {
@@ -81,7 +116,7 @@ async function* pagedDocs(collectionRef) {
 function totals(steps) {
   return steps.reduce((sum, step) => ({
     scanned: sum.scanned + step.scanned,
-    toCreate: sum.toCreate + step.toCreate.length,
+    toCreate: sum.toCreate + step.toCreate.length + (step.toFill?.length ?? 0),
     alreadyCopied: sum.alreadyCopied + step.alreadyCopied,
     conflicts: sum.conflicts + step.conflicts.length,
     skipped: sum.skipped + step.skipped.length,
@@ -110,6 +145,15 @@ export async function applyMigrationPlan(db, plan) {
       await batch.commit();
       created += Math.min(WRITE_BATCH, step.toCreate.length - i);
     }
+    for (let i = 0; i < (step.toFill ?? []).length; i += WRITE_BATCH) {
+      const batch = db.batch();
+      for (const write of step.toFill.slice(i, i + WRITE_BATCH)) {
+        batch.update(db.doc(write.targetPath), write.data,
+          write.updateTime ? {lastUpdateTime: write.updateTime} : undefined);
+      }
+      await batch.commit();
+      created += Math.min(WRITE_BATCH, step.toFill.length - i);
+    }
   }
   return {migration: plan.migration, created};
 }
@@ -126,6 +170,10 @@ export function writePlanBackup(filePath, plans) {
         target: step.target,
         toCreate: step.toCreate.map((write) => ({
           sourcePath: write.sourcePath,
+          targetPath: write.targetPath,
+          data: serializable(write.data),
+        })),
+        toFill: (step.toFill ?? []).map((write) => ({
           targetPath: write.targetPath,
           data: serializable(write.data),
         })),
@@ -153,7 +201,7 @@ export function summarizePlan(plan) {
       source: step.source,
       target: step.target,
       scanned: step.scanned,
-      toCreate: step.toCreate.length,
+      toCreate: step.toCreate.length + (step.toFill?.length ?? 0),
       alreadyCopied: step.alreadyCopied,
       conflicts: step.conflicts,
       skipped: step.skipped.length,
