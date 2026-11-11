@@ -6,7 +6,14 @@ import {createFunctionsRequire} from "../../lib/repo_paths.mjs";
 // (npm --prefix functions run build) before running the event-policy migration.
 let eventPolicyModule = null;
 function functionsEventPolicy() {
-  eventPolicyModule ??= createFunctionsRequire()("./lib/events/eventPolicy.js");
+  try {
+    eventPolicyModule ??= createFunctionsRequire()("./lib/events/eventPolicy.js");
+  } catch (error) {
+    throw new Error(
+      "The event-policy migration needs the compiled Functions policy; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
   return eventPolicyModule;
 }
 
@@ -62,8 +69,10 @@ export const MIGRATIONS = [
         fill: (data) => {
           const fields = {};
           if (data.eventPolicy === undefined || data.eventPolicy === null) {
+            // Load outside the try: a missing build is an error, not "no terms".
+            const {initialPolicyFromTerms} = functionsEventPolicy();
             try {
-              fields.eventPolicy = functionsEventPolicy().initialPolicyFromTerms(data);
+              fields.eventPolicy = initialPolicyFromTerms(data);
             } catch {
               // No capacity and price terms yet: nothing to store.
             }

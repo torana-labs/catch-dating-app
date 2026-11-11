@@ -79,7 +79,7 @@ jobs:
             echo
             echo "Source: \`$(git rev-parse HEAD)\`; changed baselines: $count."
             echo
-            sed 's/^/- `/; s/$/`/' build/widgetbook-baselines.txt
+            sed "s/^/- \`/; s/\$/\`/" build/widgetbook-baselines.txt
             echo
             echo "Download the artifact, review the images, and commit the ones you accept."
           } >> "$GITHUB_STEP_SUMMARY"
