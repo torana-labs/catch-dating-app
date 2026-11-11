@@ -48,12 +48,18 @@ class HostOrganizerBill {
     required this.paymentUrl,
     required this.paidAt,
     required this.paidMinor,
+    this.refundCreditAppliedMinor = 0,
+    this.refundCreditCarriedMinor = 0,
   });
 
   factory HostOrganizerBill.fromJson(Map<String, Object?> json) {
     final sales = _map(json['sales']);
     final commission = _map(json['commission']);
     final gst = _map(json['gst']);
+    // A server from before refund credits sends none.
+    final refundCredit = json['refundCredit'] == null
+        ? const <String, Object?>{}
+        : _map(json['refundCredit']);
     return HostOrganizerBill(
       billId: json['billId']! as String,
       month: _monthOf(json['month']! as String),
@@ -80,6 +86,9 @@ class HostOrganizerBill {
       paymentUrl: json['paymentUrl'] as String?,
       paidAt: _dateOf(json['paidAtMillis']),
       paidMinor: json['paidMinor'] as int?,
+      refundCreditAppliedMinor: refundCredit['appliedMinor'] as int? ?? 0,
+      refundCreditCarriedMinor:
+          refundCredit['carriedForwardMinor'] as int? ?? 0,
     );
   }
 
@@ -116,6 +125,17 @@ class HostOrganizerBill {
   final String? paymentUrl;
   final DateTime? paidAt;
   final int? paidMinor;
+
+  /// Credit taken off this bill for refunds made after earlier bills were
+  /// sent. The app says a credit applies, never the amount (3.1.3(f)).
+  final int refundCreditAppliedMinor;
+
+  /// Refund credit left over, carried to the next bill.
+  final int refundCreditCarriedMinor;
+
+  /// A refund credit came off this bill or carries on from it.
+  bool get hasRefundCredit =>
+      refundCreditAppliedMinor > 0 || refundCreditCarriedMinor > 0;
 
   /// Ticket sales after refunds. Commission may be charged on another base.
   int get salesMinor => grossMinor - refundedMinor;

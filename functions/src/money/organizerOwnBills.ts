@@ -65,6 +65,9 @@ export function ownBillView(bill: Bill): Result["bills"][number] | null {
     },
     gst: {registered: bill.gst.registered, amountMinor: bill.gst.amountMinor},
     totalMinor: bill.totalMinor,
+    refundCredit: bill.refundCredit ? {
+      appliedMinor: bill.refundCredit.appliedMinor,
+      carriedForwardMinor: bill.refundCredit.carriedForwardMinor} : null,
     invoiceNumber: bill.invoiceNumber,
     dueAtMillis: bill.dueAtMillis,
     paymentUrl: status === "sent" ? bill.razorpayInvoice?.url ??

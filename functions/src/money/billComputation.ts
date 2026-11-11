@@ -128,11 +128,59 @@ export interface BillInput {
   capMinor?: number | null;
   /** Tools-only OR ticketing, never both; defaults to ticketing. */
   plan?: {kind: "ticketing"} | {kind: "toolsOnly"; feeMinor: number};
+  /**
+   * Refund credit owed from earlier bills, oldest first. It comes off the
+   * amount before GST, never below zero; the rest carries forward.
+   */
+  credit?: RefundCreditSource[];
 }
+
+/** One earlier bill's refund credit still owed. */
+export interface RefundCreditSource {
+  billId: string;
+  cycleNumber: number | null;
+  invoiceNumber: string | null;
+  refundedMinor: number;
+  creditMinor: number;
+}
+
+export type RefundCredit = NonNullable<OrganizerBillDocument["refundCredit"]>;
 
 export type BillFigures = Pick<OrganizerBillDocument, "sales" | "commission" |
   "gst" | "totalMinor" | "trialEndsAtMillis"> &
-  {plan: NonNullable<OrganizerBillDocument["plan"]>};
+  {plan: NonNullable<OrganizerBillDocument["plan"]>;
+    refundCredit: RefundCredit | null};
+
+const creditLineLimit = 24;
+
+/**
+ * Applies refund credit to an amount before GST: oldest credit first, never
+ * more than the amount; what is left carries forward.
+ * @param {number} amountMinor The bill's amount before GST.
+ * @param {RefundCreditSource[]} sources Credit owed, oldest first.
+ * @return {RefundCredit|null} The credit, or null when none is owed.
+ */
+export function applyRefundCredit(amountMinor: number,
+  sources: RefundCreditSource[]): RefundCredit | null {
+  const owed = sources.filter((source) => source.creditMinor > 0);
+  if (owed.length === 0) return null;
+  let room = Math.max(0, amountMinor);
+  let availableMinor = 0;
+  const lines = owed.map((source) => {
+    availableMinor += source.creditMinor;
+    const appliedMinor = Math.min(room, source.creditMinor);
+    room -= appliedMinor;
+    return {...source, appliedMinor};
+  });
+  const appliedMinor = lines.reduce((sum, line) => sum + line.appliedMinor,
+    0);
+  return {availableMinor, appliedMinor,
+    carriedForwardMinor: availableMinor - appliedMinor,
+    // Applied lines first, so none is lost to the line limit.
+    lines: [...lines.filter((line) => line.appliedMinor > 0),
+      ...lines.filter((line) => line.appliedMinor === 0)]
+      .slice(0, creditLineLimit)};
+}
 
 /**
  * What one organizer owes Catch for one billing period. Only hostCollected
@@ -187,7 +235,11 @@ export function computeBill(input: BillInput): BillFigures {
     Math.min(uncappedMinor, capMinor);
   // A tools-only period bills the flat fee instead of any commission.
   const toolsOnly = input.plan?.kind === "toolsOnly" ? input.plan : null;
-  const amountMinor = toolsOnly ? toolsOnly.feeMinor : commissionMinor;
+  const grossAmountMinor = toolsOnly ? toolsOnly.feeMinor : commissionMinor;
+  // Refund credit from earlier bills comes off before GST, never below zero.
+  const refundCredit = applyRefundCredit(grossAmountMinor,
+    input.credit ?? []);
+  const amountMinor = grossAmountMinor - (refundCredit?.appliedMinor ?? 0);
   const rate = input.gstRegistered ? input.gstRateBasisPoints : 0;
   const exclusive = terms.commission.taxTreatment === "exclusive";
   const gstMinor = !rate ? 0 : exclusive ?
@@ -208,6 +260,7 @@ export function computeBill(input: BillInput): BillFigures {
     plan: toolsOnly ?
       {kind: "toolsOnly", toolsOnlyFeeMinor: toolsOnly.feeMinor} :
       {kind: "ticketing", toolsOnlyFeeMinor: null},
+    refundCredit,
   };
 }
 

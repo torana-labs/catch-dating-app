@@ -53,6 +53,10 @@ export interface Bill {
   capped: boolean;
   gstMinor: number;
   totalMinor: number;
+  /** Credit taken off this bill for refunds after an earlier bill was sent. */
+  refundCreditMinor?: number;
+  /** Refund credit left over, carried to the next bill. */
+  refundCreditCarriedMinor?: number;
   invoiceNumber: string | null;
   dueAtMillis: number | null;
   paymentUrl: string | null;
@@ -117,6 +121,8 @@ export function parseBills(value: unknown): Bill[] {
       salesMinor: Math.max(0, minor(sales?.grossMinor) - minor(sales?.refundedMinor)),
       commissionMinor: minor(commission?.amountMinor), capped: commission?.capped === true,
       gstMinor: minor(record(raw.gst)?.amountMinor), totalMinor: minor(raw.totalMinor),
+      refundCreditMinor: minor(record(raw.refundCredit)?.appliedMinor),
+      refundCreditCarriedMinor: minor(record(raw.refundCredit)?.carriedForwardMinor),
       invoiceNumber: typeof raw.invoiceNumber === "string" ? raw.invoiceNumber : null,
       dueAtMillis: millis(raw.dueAtMillis), paymentUrl: status === "sent" ? httpsUrl(raw.paymentUrl) : null,
       paidAtMillis: millis(raw.paidAtMillis)}];

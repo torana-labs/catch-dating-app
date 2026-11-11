@@ -45,6 +45,15 @@ it("shows the trial, Catch's prices and a bill to pay from its invoice", () => {
   expect(props.buyToolsOnly).toHaveBeenCalled();
 });
 
+it("shows a refund credit taken off a bill, and what carries to the next", () => {
+  const [bill] = controller().bills;
+  render(<HostBillingView {...controller({bills: [{...bill!, totalMinor: 697_500, refundCreditMinor: 2_500,
+    refundCreditCarriedMinor: 1_000}]})} />);
+  expect(screen.getByText(/less a ₹25 refund credit for refunds after an earlier bill/u)).toBeTruthy();
+  expect(screen.getByText(/₹10 refund credit carries to your next bill/u)).toBeTruthy();
+  expect(screen.getByRole("button", {name: "Pay ₹6,975"})).toBeTruthy();
+});
+
 it("an unpaid tools-only purchase offers its payment and a way to cancel", () => {
   const props = controller({planView: {plan: {plan: "toolsOnly", status: "pendingPayment",
     startsAtMillis: now + 10 * day, endsAtMillis: null}, revision: 1, paymentUrl: "https://rzp.io/l/tools",

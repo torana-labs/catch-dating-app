@@ -25,6 +25,7 @@ import {
   billPeriod,
   billSending,
   billState,
+  refundCreditNote,
   billSummary,
   dayDate,
   issueKindLabels,
@@ -443,6 +444,7 @@ function MoneyBillInspector({
   const [confirmingWriteOff, setConfirmingWriteOff] = useState(false);
   const due = billDue(bill, nowMillis);
   const sending = billSending(bill, organizerHeld);
+  const credit = refundCreditNote(bill);
   const {sales, commission, gst} = bill;
   const netSales = sales.grossMinor - sales.refundedMinor;
   const facts: CatchMetaEntry[] = [
@@ -507,6 +509,14 @@ function MoneyBillInspector({
             title={`Commission at ${percent(commission.rateBasisPoints)}`}
             trailing={<Amount minor={commission.amountMinor} />}
           />
+          {credit ? (
+            <CatchIndexRow
+              titleVariant="titleS"
+              subtitle={credit.subtitle}
+              title={credit.title}
+              trailing={<Amount empty={!bill.refundCredit?.appliedMinor} minor={-(bill.refundCredit?.appliedMinor ?? 0)} />}
+            />
+          ) : null}
           <CatchIndexRow
             titleVariant="titleS"
             subtitle={gst.registered ? `GST at ${percent(gst.rateBasisPoints)}` :
@@ -517,7 +527,8 @@ function MoneyBillInspector({
           <CatchIndexRow
             titleVariant="titleS"
             subtitle={bill.status === "paid" ? `Paid ${bill.paidVia === "paymentLink" ? "by payment link" : "and marked by hand"}` :
-              bill.status === "free" ? "Every sale fell in the free month" :
+              bill.status === "free" ? bill.refundCredit?.appliedMinor ? "Refund credit covers this bill" :
+                "Every sale fell in the free month" :
                 bill.status === "sent" ? "Share the payment link with them: Catch doesn't message organizers about bills yet" :
                   "Paid by UPI or card from the link"}
             title={bill.dueAtMillis !== null ? `Total due ${due.text.split(" · ")[0]}` : "Total"}

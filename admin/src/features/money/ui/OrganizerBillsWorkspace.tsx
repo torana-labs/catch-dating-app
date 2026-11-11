@@ -116,7 +116,8 @@ export function OrganizerBillsWorkspace({
             <CatchIndexRow
               key={bill.billId}
               onTap={() => onOpenBill(bill.billId)}
-              subtitle={`${rupees(organizerSalesMinor(bill))} in ticket sales${bill.commission.capped ? " · capped" : ""}`}
+              subtitle={`${rupees(organizerSalesMinor(bill))} in ticket sales${bill.commission.capped ? " · capped" : ""}` +
+                (bill.refundCredit?.appliedMinor ? ` · ${rupees(bill.refundCredit.appliedMinor)} refund credit` : "")}
               title={`${billPeriodName(bill)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
               titleVariant="bodyM"
               trailing={(

@@ -23,7 +23,14 @@ import {
   firstCycle,
   type CycleWindow,
 } from "./billCycles";
-import {computeBill, monthOf, type BillablePayment} from "./billComputation";
+import {
+  computeBill,
+  monthOf,
+  type BillablePayment,
+  type RefundCreditSource,
+} from "./billComputation";
+import {refundCreditSources, refundCreditWindowStart} from
+  "./billRefundCredits";
 import {billablePaymentsByOrganizer} from "./billSources";
 import {dayMillis, trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {readMoneySettings} from "./moneySettings";
@@ -78,6 +85,8 @@ interface OrganizerWork {
   cycles: CycleWindow[];
   /** Cycle bills of this organizer that staff have sent. */
   reviewedCycles: number;
+  /** The organizer's bills when the run began, to size the payment read. */
+  bills: Bill[];
 }
 
 function checkedBill(bill: Bill): Bill {
@@ -114,20 +123,6 @@ export function autoSendAtFor(reviewedCycles: number, nowMillis: number):
 }
 
 /**
- * How many of an organizer's cycle bills staff have sent.
- * @param {Db} db Firestore.
- * @param {string} organizerId Organizer.
- * @return {Promise<number>} Reviewed cycles.
- */
-export async function reviewedCycleCount(db: Db, organizerId: string):
-  Promise<number> {
-  const snap = await db.collection(organizerBillsCollectionName)
-    .where("organizerId", "==", organizerId).limit(240).get();
-  return snap.docs.filter((doc) => isReviewedCycleBill(doc.data() as Bill))
-    .length;
-}
-
-/**
  * Validates a cycle pointer before it is written.
  * @param {Pointer} pointer Pointer.
  * @return {Pointer} The same pointer.
@@ -139,6 +134,18 @@ export function checkedPointer(pointer: Pointer): Pointer {
       `Billing cycle pointer ${id} is not valid.`);
   }
   return pointer;
+}
+
+/**
+ * One organizer's bills, in no particular order.
+ * @param {Db} db Firestore.
+ * @param {string} organizerId Organizer.
+ * @return {FirebaseFirestore.Query} Its bills.
+ */
+function organizerBillsQuery(db: Db, organizerId: string):
+  FirebaseFirestore.Query {
+  return db.collection(organizerBillsCollectionName)
+    .where("organizerId", "==", organizerId).limit(240);
 }
 
 /**
@@ -203,11 +210,13 @@ async function organizerWork(db: Db, organizerId: string,
   const cycles = closedCycles({pointer: pointer, lengthMillis,
     countFromMillis: pointer.countFromMillis, nowMillis});
   if (cycles.length === 0) return null;
+  const bills = (await organizerBillsQuery(db, organizerId).get()).docs
+    .map((doc) => doc.data() as Bill);
   return {organizerId, terms, platformRevision: stored.platform.revision,
     organizerRevision: stored.organizer?.revision ?? 0,
     ownTerms: stored.organizer !== null,
-    trialEndsAtMillis: pointer.trialEndsAtMillis, pointer, cycles,
-    reviewedCycles: await reviewedCycleCount(db, organizerId)};
+    trialEndsAtMillis: pointer.trialEndsAtMillis, pointer, cycles, bills,
+    reviewedCycles: bills.filter(isReviewedCycleBill).length};
 }
 
 /**
@@ -251,6 +260,8 @@ export function cycleBill(input: {
   current: Bill | undefined; nowMillis: number; actorUid: string | null;
   /** For a new bill: when it is sent automatically, or null for staff. */
   autoSendAtMillis?: number | null;
+  /** Refund credit owed from earlier bills, oldest first. */
+  credit?: RefundCreditSource[];
 }): Bill | null {
   const {work, cycle, current, nowMillis} = input;
   const figures = computeBill({
@@ -262,9 +273,12 @@ export function cycleBill(input: {
     capMinor: cycleCapMinor(work.terms.commission.capMinor, cycle),
     plan: input.plan,
     gstRegistered: input.gstRegistered,
-    gstRateBasisPoints: input.gstRateBasisPoints});
-  if (!current && figures.totalMinor === 0 &&
-      figures.commission.trialWaivedMinor === 0) return null;
+    gstRateBasisPoints: input.gstRateBasisPoints,
+    credit: input.credit});
+  // A cycle with nothing to bill makes no bill; one that refund credit
+  // brought to zero does, so the credit it used is recorded.
+  if (!current && figures.totalMinor === 0 && !figures.refundCredit?.
+    appliedMinor && figures.commission.trialWaivedMinor === 0) return null;
   const id = cycleBillId(work.organizerId, cycle.startMillis);
   const status = figures.totalMinor > 0 ? "toSend" as const : "free" as const;
   // A recomputed bill keeps how it is sent; one that was free, and now has
@@ -315,8 +329,11 @@ export async function generateCycleBills(deps: CycleBillDeps,
     if (item) work.push(item);
   }
   if (work.length === 0) return 0;
-  const from = Math.min(...work.flatMap((item) =>
-    item.cycles.map((cycle) => cycle.countFromMillis)));
+  // Earlier bills that may owe refund credit need their payments too.
+  const from = Math.min(...work.flatMap((item) => [
+    ...item.cycles.map((cycle) => cycle.countFromMillis),
+    refundCreditWindowStart(item.bills, item.cycles[0].startMillis, now) ??
+      Infinity]));
   const to = Math.max(...work.flatMap((item) =>
     item.cycles.map((cycle) => cycle.endMillis)));
   const byOrganizer = await billablePaymentsByOrganizer(db, from, to);
@@ -337,8 +354,9 @@ export async function generateCycleBills(deps: CycleBillDeps,
       const planRef = db.collection(organizerBillingPlansCollectionName)
         .doc(item.organizerId);
       const wrote = await db.runTransaction(async (tx) => {
-        const [pointerSnap, billSnap, planSnap] = await Promise.all([
-          tx.get(pointerRef), tx.get(billRef), tx.get(planRef)]);
+        const [pointerSnap, billSnap, planSnap, billsSnap] = await Promise.all([
+          tx.get(pointerRef), tx.get(billRef), tx.get(planRef),
+          tx.get(organizerBillsQuery(db, item.organizerId))]);
         const pointer = pointerSnap.data() as Pointer | undefined ??
           item.pointer;
         // Another run already billed this cycle.
@@ -347,16 +365,23 @@ export async function generateCycleBills(deps: CycleBillDeps,
           return false;
         }
         const storedPlan = planSnap.data() as PlanDocument | undefined;
-        let bill = cycleBill({work: item, cycle,
-          payments: byOrganizer.get(item.organizerId) ?? [], plan,
+        // The web purchase prepaid the first tools-only cycle, once.
+        const prepaid = plan.kind === "toolsOnly" ? plan.prepaid : null;
+        const usesPrepaid = prepaid !== null &&
+          storedPlan?.prepaidBillId === null;
+        const payments = byOrganizer.get(item.organizerId) ?? [];
+        let bill = cycleBill({work: item, cycle, payments, plan,
           organizerName, gstRegistered: settings.gstRegistered,
           gstRateBasisPoints: settings.gstRateBasisPoints, current: undefined,
           nowMillis: now, actorUid,
-          autoSendAtMillis: autoSendAtFor(item.reviewedCycles, now)});
-        // The web purchase prepaid the first tools-only cycle, once.
-        const prepaid = plan.kind === "toolsOnly" ? plan.prepaid : null;
+          autoSendAtMillis: autoSendAtFor(item.reviewedCycles, now),
+          // A prepaid bill is already paid; credit waits for the next one.
+          credit: usesPrepaid ? undefined : refundCreditSources({
+            billId: billRef.id, periodStartMillis: cycle.startMillis,
+            bills: billsSnap.docs.map((doc) => doc.data() as Bill), payments,
+            terms: item.terms, nowMillis: now})});
         let credit: () => unknown = () => null;
-        if (bill && prepaid && storedPlan?.prepaidBillId === null) {
+        if (bill && prepaid && usesPrepaid && storedPlan) {
           // The purchase paid for this cycle at the fee it was bought at;
           // GST switched on since is not charged on top.
           bill = checkedBill({...bill, status: "paid", autoSendAtMillis: null,
@@ -407,7 +432,16 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
     .filter((bill) => bill.periodKind === "cycle" &&
       (!onlyBillIds || onlyBillIds.has(bill.billId)));
   if (bills.length === 0) return 0;
-  const from = Math.min(...bills.map((bill) =>
+  // Earlier bills that may owe refund credit need their payments too.
+  const creditStarts = await Promise.all([...new Set(bills.map((bill) =>
+    bill.organizerId))].map(async (organizerId) => {
+    const own = (await organizerBillsQuery(db, organizerId).get()).docs
+      .map((doc) => doc.data() as Bill);
+    return Math.min(...bills.filter((bill) => bill.organizerId === organizerId)
+      .map((bill) => refundCreditWindowStart(own, bill.periodStartMillis,
+        now) ?? Infinity));
+  }));
+  const from = Math.min(...creditStarts, ...bills.map((bill) =>
     bill.countFromMillis ?? bill.periodStartMillis));
   const to = Math.max(...bills.map((bill) => bill.periodEndMillis));
   const byOrganizer = await billablePaymentsByOrganizer(db, from, to);
@@ -425,19 +459,25 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
     const plan = planOfBill(stale);
     const ref = db.collection(organizerBillsCollectionName).doc(stale.billId);
     const wrote = await db.runTransaction(async (tx) => {
-      const current = (await tx.get(ref)).data() as Bill | undefined;
+      const [currentSnap, billsSnap] = await Promise.all([tx.get(ref),
+        tx.get(organizerBillsQuery(db, stale.organizerId))]);
+      const current = currentSnap.data() as Bill | undefined;
       if (!current || !["toSend", "free"].includes(current.status) ||
           current.revision !== stale.revision) return false;
+      const payments = byOrganizer.get(stale.organizerId) ?? [];
       const bill = cycleBill({work: {organizerId: stale.organizerId, terms,
         platformRevision: stored.platform!.revision,
         organizerRevision: stored.organizer?.revision ?? 0,
         ownTerms: stored.organizer !== null,
         trialEndsAtMillis: current.trialEndsAtMillis ?? cycle.startMillis},
-      cycle, payments: byOrganizer.get(stale.organizerId) ?? [], plan,
+      cycle, payments, plan,
       organizerName: current.organizerName,
       gstRegistered: settings.gstRegistered,
       gstRateBasisPoints: settings.gstRateBasisPoints, current, nowMillis: now,
-      actorUid});
+      actorUid, credit: refundCreditSources({billId: current.billId,
+        periodStartMillis: current.periodStartMillis,
+        bills: billsSnap.docs.map((doc) => doc.data() as Bill), payments,
+        terms, nowMillis: now})});
       if (!bill) return false;
       tx.set(ref, bill);
       return true;
