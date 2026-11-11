@@ -42,6 +42,7 @@
       "caption": "Fictional app preview. The live console on a tablet, with the run of show and the room side by side.",
       "walkthroughStep": "Run the night",
       "pages": [
+        "/",
         "/host/"
       ]
     },
@@ -57,6 +58,7 @@
       "caption": "Fictional app preview. Guests find tonight's plans in the Catch app.",
       "walkthroughStep": "Get found",
       "pages": [
+        "/",
         "/host/"
       ]
     },
@@ -253,6 +255,36 @@
       "walkthroughStep": "Run the night",
       "pages": [
         "/host/"
+      ]
+    },
+    {
+      "id": "guest-checked-in",
+      "audience": "guest",
+      "surface": "A guest checked in at the event",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/guest-checked-in.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "Checked in at tonight's quiz in the Catch app: your table, who's new, and a first hello",
+      "caption": "Fictional app preview. Checked in: your table and a first hello.",
+      "walkthroughStep": "Show up",
+      "pages": [
+        "/"
+      ]
+    },
+    {
+      "id": "guest-after-event",
+      "audience": "guest",
+      "surface": "A guest's app after the event",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/placeholders/guest-after-event.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "The Catch app the morning after: the night's group and the hosts to follow",
+      "caption": "Fictional app preview. After the night: your group and the hosts you liked.",
+      "walkthroughStep": "Keep in touch",
+      "pages": [
+        "/"
       ]
     },
     {

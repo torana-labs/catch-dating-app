@@ -266,7 +266,7 @@ function CanonicalMarketingRouteShell() {
             element={<ExplorePage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage catalog={homeCatalog} />}
+            element={<HomePage captures={marketingCaptures} catalog={homeCatalog} />}
           />
           <Route
             path={marketingRoutePaths.host}

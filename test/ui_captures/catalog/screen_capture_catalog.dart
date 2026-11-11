@@ -10485,6 +10485,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'dashboard_home_after_event_focus',
     routeIds: const <String>['dashboardScreen'],
     device: CaptureDevice.reviewTall,
+    marketingFixtureKeys: const <String>['salesDemo.member.afterEvent'],
     providerOverrides: _dashboardProviderOverrides(
       attendedEvents: AsyncData([_dashboardAfterEventFocusEvent]),
       reviews: const AsyncData<List<Review>>([]),
@@ -14979,6 +14980,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_self_check_in',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.checkedIn'],
     providerOverrides: _eventSuccessCompanionProviderOverrides(),
     builder: (context) => _eventSuccessCompanionCapture(
       now: EventSuccessCompanionFixtures.socialStart.subtract(

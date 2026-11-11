@@ -1,4 +1,4 @@
-import {CatchBand, CatchNotice, CatchNoticeRegion, CatchPaneLayout, CatchRoot, CatchStack, type CatchNoticeData} from "@catch/web-ui";
+import {CatchBand, CatchNotice, CatchNoticeRegion, CatchRoot, CatchStack, type CatchNoticeData} from "@catch/web-ui";
 import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
@@ -84,8 +84,8 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
 }
 
 /**
- * The page around the event: the site top bar, then the reading lane (the
- * event and the short footer) beside the booking. Stories render it with a
+ * The page around the event: the site top bar, then the event and the short
+ * footer beside the booking rail. Stories render it with a
  * stand-in for the booking steps.
  */
 export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: {
@@ -99,18 +99,19 @@ export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: 
     <CatchRoot theme="day">
       <PublicPageHeader />
       <WebsitePageMain id="event-detail">
-        {/* The band is only the page container the booking aside measures to dock on a phone. */}
-        <CatchBand as="div" pb="none" pt="none" width="full">
-          <CatchPaneLayout
-            aside={booking}
-            main={(
-              <CatchStack gap={40}>
-                <EventPageMain mapImageUrl={mapImageUrl} onShare={onShare} view={view} />
-                <PublicPageFooter />
-              </CatchStack>
-            )}
-            pattern="reading"
-          />
+        {/*
+          * The band is the page container the booking aside measures to dock on a phone,
+          * at the site's content width. From expanded up the booking keeps a 380px rail that
+          * sticks while the page scrolls, and the page takes the rest (RbWebEventV2, E1).
+          */}
+        <CatchBand as="div" pb="compact" pt="compact" width="content">
+          <CatchStack collapseBelow="expanded" direction="row" gap={48} railWidth={booking ? "narrow" : undefined} stickyRail>
+            <CatchStack gap={40}>
+              <EventPageMain mapImageUrl={mapImageUrl} onShare={onShare} view={view} />
+              <PublicPageFooter />
+            </CatchStack>
+            {booking}
+          </CatchStack>
         </CatchBand>
       </WebsitePageMain>
       {children}
