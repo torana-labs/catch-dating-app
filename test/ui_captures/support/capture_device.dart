@@ -6,12 +6,17 @@ class CaptureDevice {
     required this.size,
     this.devicePixelRatio = 1.0,
     this.safeArea = EdgeInsets.zero,
+    this.showsStatusBar = false,
   });
 
   final String id;
   final Size size;
   final double devicePixelRatio;
   final EdgeInsets safeArea;
+
+  /// Whether captures draw a clean status bar (9:41, full signal, Wi-Fi and
+  /// a full battery) in the top safe area, as a marketing screen shows.
+  final bool showsStatusBar;
 
   static const reviewTall = CaptureDevice(
     id: 'review-tall',
@@ -40,6 +45,17 @@ class CaptureDevice {
     id: 'iphone-17-pro',
     size: Size(402, 874),
     safeArea: EdgeInsets.only(top: 59, bottom: 34),
+  );
+
+  /// A generic phone for marketing captures: the iPhone 17 Pro screen in
+  /// points and safe areas, with nothing unique to Apple hardware. The
+  /// website draws its frame (CatchDeviceFrame kind phone) and the marketing
+  /// exporter frames it the same way, so no notch or island is drawn.
+  static const genericPhone = CaptureDevice(
+    id: 'generic-phone',
+    size: Size(402, 874),
+    safeArea: EdgeInsets.only(top: 62, bottom: 34),
+    showsStatusBar: true,
   );
 
   static const auditTablet = CaptureDevice(
@@ -73,6 +89,7 @@ class CaptureDevice {
     claudePhone390,
     iphone15,
     iphone17Pro,
+    genericPhone,
     auditMedium,
     auditTablet,
     auditTabletLandscape,

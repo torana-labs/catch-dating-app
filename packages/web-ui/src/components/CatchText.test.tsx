@@ -24,6 +24,15 @@ describe("CatchText", () => {
     }
   });
 
+  it("draws the web-only display-giant role at every size class", () => {
+    for (const size of ["compact", "medium", "expanded"] as const) {
+      render(<CatchRoot size={size}><CatchText as="h2" numeric variant="display-giant">{`5% ${size}`}</CatchText></CatchRoot>);
+      const text = screen.getByText(`5% ${size}`);
+      expect(text.dataset.variant).toBe("display-giant");
+      expect(text.tagName).toBe("H2");
+    }
+  });
+
   const responsive: Array<[CatchTextVariant, CatchSizeClass, string, string]> = [
     ["page-title", "compact", "display-title", "H1"],
     ["page-title", "medium", "display-lg", "H1"],

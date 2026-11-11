@@ -97,8 +97,17 @@
  * keeps the size class's gutter and holds its content to the website's page
  * width (--catch-website-content-max, the width CatchBand uses).
  */
+/*
+ * A band is the `catch-page` container (proposal L1): the website parts inside
+ * it (device frames, scroll stories, scrollers, format tiles and the rest)
+ * take their phone layout from the band's width, not the window's. It clips
+ * sideways overflow (L5) with `clip`, not `hidden`, so it does not become a
+ * scroll container and sticky children still pin.
+ */
 .surface[data-block="band"] {
   --catch-surface-fill: var(--catch-theme-ground);
+  container: catch-page / inline-size;
+  overflow-x: clip;
   gap: var(--catch-space-s7);
   width: 100%;
   border-radius: var(--catch-radius-none);
@@ -125,6 +134,27 @@
   --catch-surface-fill: var(--catch-color-dark-ground);
   background: var(--catch-color-dark-ground);
   color: var(--catch-color-dark-ink);
+}
+
+/*
+ * indigo (L2), a web-only band colour: a colour ground whose accent is the
+ * indigo ground, set on the band's ground wrapper so a parent format cannot
+ * repaint it.
+ */
+.surface[data-block="band"][data-band="indigo"] {
+  --catch-surface-fill: var(--catch-ground-indigo-fill);
+  background: var(--catch-ground-indigo-fill);
+  color: var(--catch-palette-indigo-ink);
+}
+
+.surface[data-block="band"][data-band="indigo"] > * {
+  --catch-accent: var(--catch-ground-indigo-fill);
+  --catch-accent-ink: var(--catch-palette-indigo-ink);
+}
+
+/* A device that bleeds off the band's bottom edge (CatchDeviceFrame bleed, L3) is clipped there too. */
+.surface[data-block="band"]:has([data-bleed]) {
+  overflow: clip;
 }
 
 .surface[data-block="band"][data-format] {

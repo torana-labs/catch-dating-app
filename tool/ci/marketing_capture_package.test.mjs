@@ -23,7 +23,8 @@ function fixture(t, {mutate = () => {}, scriptOverride = script, tamper = false,
   };
   for (const file of [
     "tool/ci/package_web_hosting.mjs", "tool/ci/delivery_core.mjs",
-    "tool/marketing/export_hosted_captures.mjs", "tool/marketing/capture_manifest.json",
+    "tool/marketing/export_hosted_captures.mjs", "tool/marketing/lib/capture_devices.mjs",
+    "tool/marketing/capture_manifest.json",
     "firebase.json", ".firebaserc",
   ]) write(file, fs.readFileSync(path.join(repoRoot, file)));
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "tool/marketing/capture_manifest.json")));

@@ -101,3 +101,19 @@ export const Night: Story = {
     </CatchRoot>
   ),
 };
+
+/** The website-only role (proposal L4): display-giant, one figure carrying a band, on a wide and a phone-width band. */
+export const WebOnly: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface block="band" color="courts">
+        <CatchText as="h2" numeric variant="display-giant">5%</CatchText>
+      </CatchSurface>
+      <div style={{width: 390}}>
+        <CatchSurface block="band" color="courts">
+          <CatchText as="h2" numeric variant="display-giant">5%</CatchText>
+        </CatchSurface>
+      </div>
+    </CatchRoot>
+  ),
+};

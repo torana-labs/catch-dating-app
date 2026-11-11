@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 114,
-  "updated": "2026-11-08",
+  "version": 115,
+  "updated": "2026-11-11",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -4373,7 +4373,7 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption, optionally sized (sm 280, md 330, lg 380 or fill), turned (tilt) or bleeding off its band (bleed, proposal L3); website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
     },
     {
       "id": "shared_event_backdrop_image",
@@ -5097,6 +5097,7 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
+        "host",
         "organizer_listing_canonical",
         "event_detail_canonical"
       ],
@@ -5115,14 +5116,12 @@
           "google-play",
           "large",
           "medium",
-          "with-kicker",
-          "label-only",
+          "pending",
           "on-ink",
-          "on-accent",
-          "board-reference"
+          "on-accent"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A link to the Catch app in the App Store or Google Play, drawn as a D20 primary action (theme primary fill, 4px corners, overlay and press feedback) with a plain store mark and an optional kicker line. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
+      "notes": "Website T4 under D18 (CAT-249), proposal L8. A link to the Catch app in the App Store or Google Play drawn with the store's official badge artwork (Apple's black SVG, Google's cropped PNG; Apple's and Google's guidelines forbid a drawn button), never recoloured, stretched or overlaid, at the D20 large (48px) or medium (40px) height. The site hosts the files (website/public/assets/store-badges, with provenance); a store that is not live yet draws the same badge as a button that records the press. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
     },
     {
       "id": "shared_catch_site_header",
@@ -5189,7 +5188,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "weddings"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchDeviceFrame.tsx",
@@ -5202,15 +5202,119 @@
         "story": "packages/web-ui/src/components/CatchDeviceFrame.stories.tsx",
         "exportName": "Kinds",
         "states": [
-          "iphone",
+          "phone",
           "android",
-          "ipad",
+          "tablet",
+          "tablet-portrait",
           "tilt-left",
           "tilt-right",
-          "on-ink"
+          "on-ink",
+          "small",
+          "browser",
+          "browser-compact",
+          "bleed"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). A device bezel (iPhone, Android or iPad) around an app screen for showing the Catch apps on the website, upright or turned. The frame is decoration; the screen image carries the description. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+      "notes": "Website T4 under D18 (CAT-260). A generic device bezel (phone, Android phone with a punch-hole camera, or tablet held either way; nothing unique to Apple hardware) around an app screen for showing the Catch apps on the website, upright or turned. Geometry is one spec per kind as shares of the frame, so proportions hold at any size. The frame is decoration; the screen image carries the description. A browser kind (proposal W1) puts a quiet window with an optional address around a desktop capture, and bleed (L3) runs a device off its band's bottom edge, which clips it. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: BrowserFrame, BrowserWindow, PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+    },
+    {
+      "id": "shared_format_matrix",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFormatMatrix.tsx",
+      "exportName": "CatchFormatMatrix",
+      "css": [
+        "packages/web-ui/src/components/CatchFormatMatrix.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFormatMatrix.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "table",
+          "selected-column",
+          "chips",
+          "pick"
+        ]
+      },
+      "notes": "Website host landing, proposal WebFormatMatrix (\"Built for every kind of night\"). Several event formats' properties side by side: a table on a wide band whose column headings choose a format (its column tinted in the format's colour), and on a phone-width band format chips over the selected format's properties. The selection is shared with the page's night scene. Nearest concept: CatchTable, which lists records rather than comparing formats. Search aliases: WebFormatMatrix, ComparisonTable, FormatComparison, FeatureMatrix."
+    },
+    {
+      "id": "shared_night_scene",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchNightScene.tsx",
+      "exportName": "CatchNightScene",
+      "css": [
+        "packages/web-ui/src/components/CatchNightScene.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchNightScene.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "first-moment",
+          "badge",
+          "format-picker",
+          "compact"
+        ]
+      },
+      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
+    },
+    {
+      "id": "shared_pipeline_board",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPipelineBoard.tsx",
+      "exportName": "CatchPipelineBoard",
+      "css": [
+        "packages/web-ui/src/components/CatchPipelineBoard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchPipelineBoard.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "booked",
+          "compact",
+          "chosen-step"
+        ]
+      },
+      "notes": "Website host landing, proposal WebPipelineBoard (\"From interested to expected\"). Numbered step tabs over a board of columns; each guest is a chip that slides into the furthest column it reaches so far. Plays on its own while on screen (not under reduced motion); a chosen tab stops it, replay starts again. Nearest concept: CatchSection columns. Search aliases: WebPipelineBoard, Kanban, BookingFunnel, ApplicantBoard."
+    },
+    {
+      "id": "shared_layer_map",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchLayerMap.tsx",
+      "exportName": "CatchLayerMap",
+      "css": [
+        "packages/web-ui/src/components/CatchLayerMap.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchLayerMap.stories.tsx",
+        "exportName": "Layers",
+        "states": [
+          "layer-1",
+          "layer-2",
+          "layer-3",
+          "compact"
+        ]
+      },
+      "notes": "Website host landing, proposal WebLayerMap, on the indigo band (L2). Which jobs Catch runs at a chosen layer of adoption: solid white cards for the jobs Catch runs (new ones marked), dashed outlines with what the host keeps for the rest. Paired with a CatchPageTabBar. Nearest concept: CatchTable. Search aliases: WebLayerMap, AdoptionLayers, WaysToUse, FeatureLayers."
     },
     {
       "id": "shared_hero_showcase",

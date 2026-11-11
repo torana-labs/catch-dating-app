@@ -24,9 +24,16 @@ const declared = (css: string) => new Set([...css.matchAll(/(--catch-[\w-]+)\s*:
 const known = new Set([
   ...declared(tokens),
   ...Object.values(sheets).flatMap((css) => [...declared(css)]),
-  // Set inline: CatchRatingSummary for each bar, CatchQrCode for its module count.
+  // Set inline: CatchRatingSummary for each bar, CatchQrCode for its module count,
+  // CatchDeviceFrame for the geometry it computes from each kind's spec.
   "--catch-rating-share",
   "--catch-qr-modules",
+  "--catch-device-aspect",
+  "--catch-device-radius",
+  "--catch-device-inset",
+  "--catch-device-screen-radius",
+  "--catch-device-camera-size",
+  "--catch-device-camera-top",
 ]);
 
 // CatchStoreButton draws as a D20 button, so its heights are the large and

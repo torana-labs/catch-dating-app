@@ -4270,6 +4270,7 @@
         "tool/marketing/lib/web_capture_inputs.mjs",
         "tool/marketing/lib/web_capture_render.mjs",
         "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/lib/capture_devices.mjs",
         "tool/marketing/web_captures.test.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
@@ -4313,6 +4314,7 @@
         "tool/marketing/lib/web_capture_inputs.mjs",
         "tool/marketing/lib/web_capture_render.mjs",
         "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/lib/capture_devices.mjs",
         "tool/marketing/web_captures.test.mjs",
         "tool/ui_capture/check_capture_coverage.mjs"
       ]

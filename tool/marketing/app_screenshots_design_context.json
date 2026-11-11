@@ -3,5 +3,57 @@
   "generatedBy": "tool/marketing/export_app_screenshots.mjs --design-json",
   "coordinateSystem": "px",
   "description": "Figma/AI-friendly design context for marketing captures of the app and of website pages in iPhone Safari.",
-  "captures": []
+  "captures": [
+    {
+      "type": "marketing-web-capture",
+      "id": "guest-join-phone",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Guest check-in in the browser",
+      "story": {
+        "file": "website/src/stories/WebCaptures.stories.tsx",
+        "id": "marketing-website-web-captures--join-phone-check-in"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-web-captures--join-phone-check-in",
+      "routeIds": [
+        "event_runtime"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-join-phone.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-join-phone.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg"
+      },
+      "copy": {
+        "alt": "Saturday Trivia Social check-in page open in Safari at catchdates.com, asking for the mobile number used for the booking",
+        "caption": "Guests check in from their phone's browser with the number they booked with. Nothing to download.",
+        "walkthroughStep": "Check in"
+      }
+    }
+  ]
 }
