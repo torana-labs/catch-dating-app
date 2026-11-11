@@ -903,7 +903,6 @@
         "setEventAttendeeAttendance",
         "setEventSuccessAccountabilityResolution",
         "registerPublicEvent",
-        "onEventParticipationRosterProjected",
         "onOrganizerContactEventEdgeInviteAttributed",
         "resolveEventAssistanceAccountability"
       ],

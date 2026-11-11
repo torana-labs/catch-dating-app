@@ -105,8 +105,9 @@ export function participationAfterPatch(
 /**
  * Writes the roster row (merged, so Host-only fields survive) and, the first
  * time, the index pointer. Call after every transaction read. Under ready
- * seat authority a Host-supplied row keeps its Host-owned status; only the
- * booking facts and pointer are added.
+ * seat authority a Host-supplied row keeps its Host-owned status, and a row
+ * the caller writes itself (factsOnly) is left to the caller; both only gain
+ * the booking facts and pointer.
  * @param {object} params Transaction, slot, booking after this write, time.
  */
 export function writeCatchBookingRoster(params: {
@@ -116,6 +117,8 @@ export function writeCatchBookingRoster(params: {
   booking: EventParticipationDocument;
   now: FirebaseFirestore.Timestamp;
   seatReady?: boolean;
+  /** The caller writes the row itself in this transaction. */
+  factsOnly?: boolean;
 }): void {
   const {tx, slot, booking, now} = params;
   if (slot.ambiguous) {
@@ -123,7 +126,8 @@ export function writeCatchBookingRoster(params: {
       booking.eventId, uid: booking.uid});
     return;
   }
-  const hostOwned = params.seatReady === true && slot.existing !== undefined &&
+  const hostOwned = params.factsOnly === true ||
+    params.seatReady === true && slot.existing !== undefined &&
     slot.existing.source !== "catchBooking";
   const row = hostOwned ? {
     booking: catchBookingFacts(booking, true, now), updatedAt: now,

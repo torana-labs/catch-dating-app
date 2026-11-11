@@ -3,6 +3,8 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import * as logger from "firebase-functions/logger";
 import {requireAuth} from "../shared/auth";
 import type {SelfCheckInAttendanceCallablePayload} from
@@ -92,13 +94,15 @@ export async function selfCheckInAttendanceHandler(
   let signalOrganizerId: string | null = null;
   let changed = false;
   await db.runTransaction(async (tx) => {
-    const [eventSnap, participationSnap, sessionSnap, redemptionSnap] =
-      await Promise.all([
-        tx.get(eventRef),
-        tx.get(participationRef),
-        tx.get(sessionRef),
-        tx.get(redemptionRef),
-      ]);
+    const [eventSnap, participationSnap, sessionSnap, redemptionSnap,
+      rosterSlot] = await Promise.all([
+      tx.get(eventRef),
+      tx.get(participationRef),
+      tx.get(sessionRef),
+      tx.get(redemptionRef),
+      readCatchBookingRoster({db, tx, eventId, uid: userId,
+        verifiedPhone: () => loadVerifiedRosterPhone(userId)}),
+    ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
@@ -141,7 +145,7 @@ export async function selfCheckInAttendanceHandler(
     tx.update(eventRef, {
       checkedInCount: admin.firestore.FieldValue.increment(1),
     });
-    tx.set(participationRef, eventParticipationPatch({
+    const attendance = eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
       organizerId: event.organizerId,
@@ -150,7 +154,11 @@ export async function selfCheckInAttendanceHandler(
       genderAtSignup: participation.genderAtSignup ?? undefined,
       cohortAtSignup: participation.cohortAtSignup ?? undefined,
       paymentId: participation.paymentId ?? undefined,
-    }), {merge: true});
+    });
+    tx.set(participationRef, attendance, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationSnap.data(), attendance),
+      now: admin.firestore.Timestamp.now()});
     signalOrganizerId = event.organizerId;
     changed = true;
   });
