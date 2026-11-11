@@ -1097,6 +1097,7 @@
         "host_programme_messages_phone",
         "host_programme_message_phone",
         "host_programme_live_board_phone",
+        "host_programme_live_board_desktop",
         "host_programme_branding_phone",
         "host_programme_id_tracker_desktop",
         "host_programme_reconcile_desktop",

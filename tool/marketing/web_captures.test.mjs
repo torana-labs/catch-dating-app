@@ -248,3 +248,24 @@ test("capture devices: the generic phone frames without an island, and the Dart 
   assert.match(html, /height: 62px/u);
   assert.match(html, /<span class="time">9:41<\/span>/u);
 });
+
+test("unframed devices render as plain screens: the Dart framer passes them through and web captures skip Safari's bars", async () => {
+  const {framedSize, isFramedCaptureDevice} = await import("./lib/capture_devices.mjs");
+  const {screenContext} = await import("./lib/web_capture_render.mjs");
+  assert.deepEqual(framedSize("desktop-browser"), {width: 2880, height: 1800});
+  assert.deepEqual(framedSize("generic-tablet"), {width: 2388, height: 1668});
+  assert.equal(isFramedCaptureDevice("desktop-browser"), false);
+  assert.equal(isFramedCaptureDevice("generic-phone"), true);
+  // frame_device_capture_test.dart passes the same native sizes through.
+  const dartTest = fs.readFileSync(fromRepo("tool/marketing/frame_device_capture_test.dart"), "utf8");
+  const passThrough = Object.fromEntries([...dartTest.matchAll(/\('([a-z-]+)', (\d+), (\d+)\)/gu)]
+    .map(([, id, width, height]) => [id, {width: +width, height: +height}]));
+  assert.deepEqual(passThrough, {"generic-tablet": framedSize("generic-tablet"), "desktop-browser": framedSize("desktop-browser")});
+  // The Flutter render uses the same screens.
+  const flutterDevices = fs.readFileSync(fromRepo("test/ui_captures/support/capture_device.dart"), "utf8");
+  assert.match(flutterDevices, /id: 'generic-tablet',\s*size: Size\(1194, 834\)/u);
+  assert.match(flutterDevices, /id: 'desktop-browser',\s*size: Size\(1440, 900\)/u);
+  // A desktop web capture is a desktop window at 2x, never the iPhone descriptor.
+  assert.deepEqual(screenContext({device: "desktop-browser"}), {viewport: {width: 1440, height: 900}, deviceScaleFactor: 2,
+    isMobile: false, hasTouch: false, timezoneId: "Asia/Kolkata", locale: "en-IN", colorScheme: "light", reducedMotion: "reduce"});
+});

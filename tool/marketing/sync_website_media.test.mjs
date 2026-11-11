@@ -7,7 +7,9 @@ import {buildWebsiteManifest, scenarioReferenceProblems, validateSourceManifest}
 import {brand} from "@catch/brand";
 
 const authored = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
-const liveConsole = authored.captures.find(capture => capture.id === "host-live-console");
+// A sample record to vary, held pending so the rules under test don't also
+// need its image on disk.
+const liveConsole = {...authored.captures.find(capture => capture.id === "host-live-console"), status: "pending-fixture"};
 
 function manifestWith(changes) {
   return {...authored, captures: [{...liveConsole, ...changes}]};
@@ -53,8 +55,9 @@ test("a web capture names its story and address instead of a catalog fixture", (
 });
 
 test("a pending capture's placeholder is the drawn placeholder at its framed size", () => {
-  const pending = authored.captures.filter(capture => capture.status === "pending-fixture");
-  assert.ok(pending.length > 0);
+  // Every pending capture, and the sample record held pending above (the manifest may have none left).
+  const pending = [...authored.captures.filter(capture => capture.status === "pending-fixture"), liveConsole];
+  assert.deepEqual(validateSourceManifest(manifestWith({})), []);
   for (const capture of pending) {
     const header = fs.readFileSync(fromRepo(capture.placeholderPath));
     assert.deepEqual({width: header.readUInt32BE(16), height: header.readUInt32BE(20)}, framedSize(capture.device), capture.id);

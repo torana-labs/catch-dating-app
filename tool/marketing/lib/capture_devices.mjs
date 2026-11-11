@@ -13,8 +13,7 @@
 // generic-tablet and desktop-browser are unframed (frameInset and canvasMargin
 // 0): the PNG is the screen alone, and the website draws the frame in CSS
 // (CatchDeviceFrame kind "tablet", proposal L9, and kind "browser", W1).
-// frame_device_capture.dart does not frame them yet; rendering them needs a
-// pass-through in the exporter on the macOS capture lane.
+// frame_device_capture.dart passes their native screens through unframed.
 
 const devices = Object.freeze({
   "generic-phone": Object.freeze({

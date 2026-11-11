@@ -58,7 +58,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-today",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host Today on a Saturday",
       "fixtureKey": "hostMarketingIndia.host.todayDashboard",
@@ -106,7 +106,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-live-tablet",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host live console on a tablet",
       "fixtureKey": "hostMarketingIndia.host.liveConsoleTablet",
@@ -153,7 +153,7 @@
     {
       "type": "marketing-app-capture",
       "id": "guest-explore",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "guest",
       "surface": "A guest's Explore screen",
       "fixtureKey": "salesDemo.member.eventDiscovery",
@@ -200,7 +200,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-live-console",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host live console",
       "fixtureKey": "hostMarketingIndia.host.liveConsole",
@@ -247,7 +247,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-post-event-report",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host event report",
       "fixtureKey": "hostMarketingIndia.host.postEventReport",
@@ -294,7 +294,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-pods",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host groups by pace",
       "fixtureKey": "hostMarketingIndia.host.formatsPods",
@@ -341,7 +341,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-door-in",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host door, checked in",
       "fixtureKey": "hostMarketingIndia.host.doorCheckedIn",
@@ -388,7 +388,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-door-arriving",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host door, arrivals",
       "fixtureKey": "hostMarketingIndia.host.doorArriving",
@@ -435,7 +435,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-live-needs",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host live needs",
       "fixtureKey": "hostMarketingIndia.host.liveNeeds",
@@ -482,7 +482,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-rules",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host seating and level rules",
       "fixtureKey": "hostMarketingIndia.host.formatsRules",
@@ -529,7 +529,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-mix",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host mixing groups",
       "fixtureKey": "hostMarketingIndia.host.formatsMix",
@@ -576,7 +576,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-live-scores",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host scores",
       "fixtureKey": "hostMarketingIndia.host.liveScores",
@@ -623,7 +623,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-courts-setup",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host courts setup",
       "fixtureKey": "hostMarketingIndia.host.formatsCourtsSetup",
@@ -670,7 +670,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-courts",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host courts live",
       "fixtureKey": "hostMarketingIndia.host.formatsCourts",
@@ -717,7 +717,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-crawl",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host crawl route",
       "fixtureKey": "hostMarketingIndia.host.formatsCrawl",
@@ -764,7 +764,7 @@
     {
       "type": "marketing-app-capture",
       "id": "host-formats-crawl-move",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Catch Host moving groups between stops",
       "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove",
@@ -811,11 +811,11 @@
     {
       "type": "marketing-app-capture",
       "id": "guest-checked-in",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "guest",
       "surface": "A guest checked in at the event",
       "fixtureKey": "hostMarketingIndia.guest.checkedIn",
-      "captureId": "event_success_companion_self_check_in",
+      "captureId": "event_success_companion_micro_pod_assignment",
       "routeIds": [
         "eventSuccessCompanionScreen"
       ],
@@ -850,62 +850,15 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-checked-in.png"
       },
       "copy": {
-        "alt": "Checked in at tonight's quiz in the Catch app: your table, who's new, and a first hello",
-        "caption": "Checked in: your table and a first hello.",
+        "alt": "Checked in at Monday Morning Run in the Catch app: the small starter group to meet first, four people by name",
+        "caption": "Checked in: the small group you’ll meet first.",
         "walkthroughStep": "Show up"
-      }
-    },
-    {
-      "type": "marketing-app-capture",
-      "id": "guest-after-event",
-      "status": "pending-fixture",
-      "audience": "guest",
-      "surface": "A guest's app after the event",
-      "fixtureKey": "salesDemo.member.afterEvent",
-      "captureId": "dashboard_home_after_event_focus",
-      "routeIds": [
-        "dashboardScreen"
-      ],
-      "device": {
-        "id": "generic-phone",
-        "logicalSize": {
-          "width": 402,
-          "height": 874
-        },
-        "outputScale": 2,
-        "safeArea": {
-          "top": 62,
-          "right": 0,
-          "bottom": 34,
-          "left": 0
-        },
-        "frame": {
-          "framedSize": {
-            "width": 980,
-            "height": 1924
-          },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
-          "dynamicIsland": null
-        }
-      },
-      "assets": {
-        "sourcePath": "artifacts/marketing/app-screenshots/guest-after-event.png",
-        "websitePath": "website/public/assets/app-screenshots/guest-after-event.png",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-after-event.png"
-      },
-      "copy": {
-        "alt": "The Catch app the morning after: the night's group and the hosts to follow",
-        "caption": "After the night: your group and the hosts you liked.",
-        "walkthroughStep": "Keep in touch"
       }
     },
     {
       "type": "marketing-web-capture",
       "id": "wedding-rsvp",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "guest",
       "surface": "Household reply link in the browser",
       "story": {
@@ -956,7 +909,7 @@
     {
       "type": "marketing-web-capture",
       "id": "wedding-itinerary",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "guest",
       "surface": "Guest itinerary link in the browser",
       "story": {
@@ -1007,7 +960,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-whatsapp",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Planner inbox for the wedding's WhatsApp number",
       "fixtureKey": "weddingsPilot.planner.inbox",
@@ -1054,7 +1007,7 @@
     {
       "type": "marketing-web-capture",
       "id": "wedding-ids",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "guest",
       "surface": "Guest ID upload link in the browser",
       "story": {
@@ -1105,7 +1058,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-door",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Door check-in for a function",
       "fixtureKey": "weddingsPilot.staff.door",
@@ -1152,7 +1105,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-departures",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Departures for the hotel desk",
       "fixtureKey": "weddingsPilot.staff.departures",
@@ -1199,7 +1152,7 @@
     {
       "type": "marketing-web-capture",
       "id": "wedding-driver",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "staff",
       "surface": "Driver trip link in the browser",
       "story": {
@@ -1250,7 +1203,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-message",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Planned message to guests",
       "fixtureKey": "weddingsPilot.planner.message",
@@ -1297,7 +1250,7 @@
     {
       "type": "marketing-web-capture",
       "id": "wedding-family",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "family",
       "surface": "Family view link in the browser",
       "story": {
@@ -1348,7 +1301,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-guests",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Guest list on the planner's desktop",
       "fixtureKey": "weddingsPilot.planner.guestsDesktop",
@@ -1395,7 +1348,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-rooms",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Rooms by household on the planner's desktop",
       "fixtureKey": "weddingsPilot.planner.roomsDesktop",
@@ -1442,11 +1395,11 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-live",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Live board for the weekend on the planner's desktop",
       "fixtureKey": "weddingsPilot.planner.liveBoard",
-      "captureId": "host_programme_live_board_phone",
+      "captureId": "host_programme_live_board_desktop",
       "routeIds": [
         "hostProgramWorkspaceScreen"
       ],
@@ -1489,7 +1442,7 @@
     {
       "type": "marketing-app-capture",
       "id": "wedding-reconcile",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "host",
       "surface": "Vendor reconcile on the planner's desktop",
       "fixtureKey": "weddingsPilot.planner.reconcileDesktop",
@@ -1536,7 +1489,7 @@
     {
       "type": "marketing-web-capture",
       "id": "wedding-hotel",
-      "status": "pending-fixture",
+      "status": "active",
       "audience": "hotel",
       "surface": "Hotel handover link in the browser",
       "story": {

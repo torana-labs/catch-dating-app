@@ -107,7 +107,7 @@ export const weddingsCopy = {
         {icon: "chat", title: "One inbox for your team", body: "Only what the assistant can’t answer from the itinerary."},
       ],
       screens: [
-        {slot: "wedding-whatsapp", caption: "Guest · on WhatsApp"},
+        {slot: "wedding-whatsapp", caption: "Your team · guest messages"},
         {slot: "wedding-ids", caption: "Guest · IDs for the hotel"},
       ] satisfies readonly WeddingsScreen[],
     },
