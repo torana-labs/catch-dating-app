@@ -1,5 +1,5 @@
 // Copy for the host landing (/host/), from the owner's RbWebHostV2 board in
-// the "Catch directions" canvas (page "Website · rebuilt"). Copy is the
+// the design canvas (page "Website · rebuilt"). Copy is the
 // owner's: change it on the board first. Capture slot ids name entries in
 // tool/marketing/capture_manifest.json.
 import type {CatchFormat} from "@catch/web-ui";

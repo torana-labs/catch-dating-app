@@ -7,7 +7,6 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {framedSize} from "./lib/capture_devices.mjs";
-import {capturePlaceholderPng} from "./lib/capture_placeholder.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const websitePublicPrefix = "website/public/";
@@ -21,7 +20,7 @@ const command = args[0] ?? "--help";
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) runCli();
 
-function runCli() {
+async function runCli() {
 if (command === "--help" || command === "-h" || command === "help") {
   printHelp();
 } else if (command === "--list" || command === "list") {
@@ -31,7 +30,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 } else if (command === "--check" || command === "check") {
   checkWebsiteMedia(loadSourceManifest());
 } else if (command === "--placeholders" || command === "placeholders") {
-  writePlaceholders(loadSourceManifest());
+  await writePlaceholders(loadSourceManifest());
 } else {
   console.error(`Unknown command: ${command}`);
   printHelp();
@@ -78,7 +77,9 @@ function updateWebsiteMedia(manifest) {
  * Draws each pending capture's placeholder and writes the website manifest,
  * without touching active images (so it runs without the capture lane).
  */
-function writePlaceholders(manifest) {
+async function writePlaceholders(manifest) {
+  // Imported here: release jobs run this tool without installed packages, and only drawing needs pngjs.
+  const {capturePlaceholderPng} = await import("./lib/capture_placeholder.mjs");
   const pending = manifest.captures.filter((capture) => capture.status === "pending-fixture");
   for (const capture of pending) {
     const target = fromRepo(capture.placeholderPath);
@@ -292,7 +293,7 @@ export function buildWebsiteManifest(manifest) {
   };
 }
 
-// A placeholder is the drawn PNG for its device, so its size is the framed size pages reserve.
+// A placeholder is a PNG at its device's framed size, the space pages reserve for the capture.
 function requirePlaceholder(errors, label, capture) {
   const repoPath = capture.placeholderPath;
   if (typeof repoPath !== "string" || !fs.existsSync(fromRepo(repoPath))) return;
@@ -302,12 +303,14 @@ function requirePlaceholder(errors, label, capture) {
   }
   let expected;
   try {
-    expected = capturePlaceholderPng(capture.device);
+    expected = framedSize(capture.device);
   } catch {
     return;
   }
-  if (!fs.readFileSync(fromRepo(repoPath)).equals(expected)) {
-    errors.push(`${label}: placeholder is not the drawn placeholder for ${capture.device}; run node tool/marketing/sync_website_media.mjs --placeholders.`);
+  const header = fs.readFileSync(fromRepo(repoPath));
+  const size = {width: header.readUInt32BE(16), height: header.readUInt32BE(20)};
+  if (size.width !== expected.width || size.height !== expected.height) {
+    errors.push(`${label}: placeholder is ${size.width}x${size.height}, not the ${capture.device} size ${expected.width}x${expected.height}; run node tool/marketing/sync_website_media.mjs --placeholders.`);
   }
 }
 

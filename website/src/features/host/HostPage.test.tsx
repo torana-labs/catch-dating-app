@@ -1,11 +1,19 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
-import {marketingCaptures} from "../../app/marketingCaptures";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
 import {catchFee, effectiveRate} from "./useHostLandingController";
 
 afterEach(cleanup);
+
+// The page's capture slots, as the website manifest records them (the real
+// bindings are checked against capture_manifest.json in marketingCaptures.test.tsx).
+const slotIds = ["host-today", "host-live-tablet", "guest-explore", ...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))];
+const marketingCaptures: CaptureSlots = Object.fromEntries(slotIds.map((id) => [id, {
+  id, audience: "host", surface: id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 980, height: 1924,
+  alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Run the night", pages: ["/host/"],
+}]));
 
 const renderPage = () => render(<HostPage captures={marketingCaptures} />);
 

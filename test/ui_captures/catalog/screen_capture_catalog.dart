@@ -10707,7 +10707,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_door_arriving',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.doorArriving'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.doorArriving',
+    ],
     providerOverrides: _doorCaptureOverrides(),
     builder: (context) => _doorCapture(),
   ),
@@ -10715,7 +10717,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_door_in',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.doorCheckedIn'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.doorCheckedIn',
+    ],
     providerOverrides: _doorCaptureOverrides(),
     builder: (context) => _doorCapture(filter: DoorFilter.checkedIn),
   ),
@@ -10755,7 +10759,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_now_tablet',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLiveTablet,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveConsoleTablet'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.liveConsoleTablet',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
@@ -10813,7 +10819,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_courts_setup_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsCourtsSetup'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCourtsSetup',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10827,7 +10835,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_courts_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsCourts'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCourts',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10862,7 +10872,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_crawl_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsCrawl'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCrawl',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10874,7 +10886,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_crawl_move_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsCrawlMove'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCrawlMove',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10900,7 +10914,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_rules_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsRules'],
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsRules',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),

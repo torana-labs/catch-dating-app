@@ -60,5 +60,5 @@ test("a pending capture's placeholder is the drawn placeholder at its framed siz
     assert.deepEqual({width: header.readUInt32BE(16), height: header.readUInt32BE(20)}, framedSize(capture.device), capture.id);
   }
   const wrong = {...liveConsole, placeholderPath: authored.captures.find(capture => capture.device === "generic-tablet").placeholderPath};
-  assert.match(validateSourceManifest({...authored, captures: [wrong]}).join("\n"), /not the drawn placeholder for generic-phone/);
+  assert.match(validateSourceManifest({...authored, captures: [wrong]}).join("\n"), /not the generic-phone size 980x1924/);
 });

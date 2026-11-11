@@ -69,12 +69,12 @@ export const Host: Story = {
     a11y: {test: "error"},
     catchRoute: {
       id: "host", path: "/host/",
-      reviewStates: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
-      stateCoverage: {storybook: ["default"], manual: ["night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"]},
+      reviewStates: ["default", "night-format", "applicant-replay", "layer-two", "pricing-cap", "start-band", "phone"],
+      stateCoverage: {storybook: ["default"], manual: ["night-format", "applicant-replay", "layer-two", "pricing-cap", "start-band", "phone"]},
     },
     catchComponent: {
       id: "route_host", routeIds: ["host"],
-      states: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
+      states: ["default", "night-format", "applicant-replay", "layer-two", "pricing-cap", "start-band", "phone"],
     },
   },
   render: () => <HostPage captures={marketingCaptures} />,
