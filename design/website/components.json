@@ -478,15 +478,15 @@
         "exportName": "Host",
         "states": [
           "default",
-          "night-chapter",
+          "night-format",
           "applicant-replay",
-          "layer-one",
+          "layer-two",
           "pricing-cap",
-          "apply-card",
+          "start-band",
           "phone"
         ]
       },
-      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with the phone mock, the five formats, on the night (chapters drive the phone), the host stand, from interested to expected (applicant replay), for your guests, what brings people in, the layer picker, the pricing range (5%, capped at ₹10,000), the FAQ and the apply card that continues to /host/apply/. Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
+      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with Start free trial, Catch Host's official store badges, the trial terms and the today capture bleeding off the band; every kind of night with the format matrix; on the night (CatchNightScene, the format shared with the tiles and matrix); the tablet; from interested to expected (CatchPipelineBoard); for your guests; what brings people in; the ways to use Catch on the indigo band (CatchLayerMap); pricing (5% after a 30-day trial from the first event, capped at ₹10,000 a month); the FAQ; and the #start band with three steps, the badges and a link to Catch for weddings. App screens are capture slots (tool/marketing/capture_manifest.json). Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
     },
     {
       "id": "route_organizer_listing",

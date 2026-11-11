@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "updated": "2026-11-08",
+  "updated": "2026-11-11",
   "previewDisclosure": "Fictional app preview.",
-  "description": "Marketing website image slots sourced from deterministic app UI captures. Active entries are regenerated from synthetic demo fixtures and synced into website assets; placeholders remain only for future pending slots. Since the redesign no page shows an app capture; the old Flutter captures were retired in P4 cleanup 2 and the one web capture stays so the hosted capture pipeline keeps a canonical inventory.",
+  "description": "Marketing website image slots sourced from deterministic app UI captures. Active entries are regenerated from synthetic demo fixtures and synced into website assets. Pending entries name the pages that show them and render a drawn placeholder there (node tool/marketing/sync_website_media.mjs --placeholders) until the macOS capture lane renders them.",
   "captures": [
     {
       "id": "guest-join-phone",
@@ -29,6 +29,374 @@
       "caption": "Guests check in from their phone's browser with the number they booked with. Nothing to download.",
       "walkthroughStep": "Check in",
       "pages": []
+    },
+    {
+      "id": "host-today",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host Today on a Saturday",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.todayDashboard",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "today"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-today.png",
+      "websitePath": "website/public/assets/app-screenshots/host-today.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-today.png",
+      "alt": "Catch Host on a Saturday: a trivia social tonight, two things left before doors",
+      "caption": "Today in Catch Host: tonight's event and what's left before doors.",
+      "walkthroughStep": "Today",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-tablet",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet",
+      "status": "pending-fixture",
+      "device": "generic-tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveConsoleTablet",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-tablet.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet.png",
+      "alt": "Catch Host on a tablet: tonight's run of show beside the room",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "guest-explore",
+      "kind": "app-capture",
+      "audience": "guest",
+      "surface": "A guest's Explore screen",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "salesDemo.member.eventDiscovery",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-explore.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-explore.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-explore.png",
+      "alt": "A guest's Explore screen in the Catch app, with tonight's plans nearby",
+      "caption": "Guests find tonight's plans in the Catch app.",
+      "walkthroughStep": "Get found",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-console",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live console",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.liveConsole",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-console.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.png",
+      "alt": "Catch Host's live console during the night, with who's here and what's next",
+      "caption": "The live console: who's here and what's next.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-post-event-report",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host event report",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.postEventReport",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "followUp"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+      "websitePath": "website/public/assets/app-screenshots/host-post-event-report.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.png",
+      "alt": "Catch Host's report after the event: who came, who'd come back and what's next",
+      "caption": "After the night: who came and who'd come back.",
+      "walkthroughStep": "Follow up",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-pods",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host groups by pace",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-pods.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods.png",
+      "alt": "Catch Host building groups of six to eight from each guest's pace",
+      "caption": "Groups built before the night, so no group is all strangers.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-door-in",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host door, checked in",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.doorCheckedIn",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-door-in.png",
+      "websitePath": "website/public/assets/app-screenshots/host-door-in.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-in.png",
+      "alt": "Catch Host's door screen with a guest checked in and their group shown",
+      "caption": "Guests check in at the door and see their group once.",
+      "walkthroughStep": "Check in",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-door-arriving",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving.png",
+      "websitePath": "website/public/assets/app-screenshots/host-door-arriving.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving.png",
+      "alt": "Catch Host's door screen listing guests arriving tonight",
+      "caption": "The door: who's arriving and who's in.",
+      "walkthroughStep": "Check in",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-needs",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host live needs",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.liveNeeds",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-needs.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-needs.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-needs.png",
+      "alt": "Catch Host's live console showing who needs attention right now",
+      "caption": "What needs you right now, in one list.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-rules",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-rules.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules.png",
+      "alt": "Catch Host's rules for a format: table sizes, levels and who to keep apart",
+      "caption": "Set the rules once; Catch plans around them.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-mix",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host mixing groups",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsMix",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-mix.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-mix.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-mix.png",
+      "alt": "Catch Host moving one person from each group between rounds",
+      "caption": "Mix the room between rounds; only the people moving get a buzz.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-live-scores",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host scores",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.liveScores",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-scores.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores.png",
+      "alt": "Catch Host's scores screen with the leaderboard hidden until the end",
+      "caption": "Scores in, standings hidden until the end.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-courts-setup",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host courts setup",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourtsSetup",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-setup.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-courts-setup.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-setup.png",
+      "alt": "Catch Host planning rounds on three courts from each player's level",
+      "caption": "Rounds planned so every match is close.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-courts",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host courts live",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-courts.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts.png",
+      "alt": "Catch Host's courts screen with the next round and each player's court time",
+      "caption": "Court time counted for every player.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-crawl",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host crawl route",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawl",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl.png",
+      "alt": "Catch Host's route for a four-stop crawl with a lead for each group",
+      "caption": "A route with stops, shared with your team.",
+      "walkthroughStep": "Plan",
+      "pages": [
+        "/host/"
+      ]
+    },
+    {
+      "id": "host-formats-crawl-move",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops",
+      "status": "pending-fixture",
+      "device": "generic-phone",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move.png",
+      "alt": "Catch Host's crawl screen confirming who left one stop and arrived at the next",
+      "caption": "Each lead confirms who left and who arrived.",
+      "walkthroughStep": "Run the night",
+      "pages": [
+        "/host/"
+      ]
     }
   ]
 }

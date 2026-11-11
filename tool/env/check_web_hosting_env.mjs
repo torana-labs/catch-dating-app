@@ -185,7 +185,7 @@ function validateStoreUrl({
 
 function validateMarketingStoreLinks(mode) {
   if (mode === "prelaunch") {
-    for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL"]) {
+    for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL", "VITE_HOST_APP_STORE_URL", "VITE_HOST_PLAY_STORE_URL"]) {
       if (process.env[name]?.trim()) {
         errors.push(`${name} must be empty when VITE_STORE_LINKS_MODE is prelaunch.`);
       }
@@ -217,6 +217,25 @@ function validateMarketingStoreLinks(mode) {
     requiredSearchParam: "id",
     description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
   });
+  // Catch Host's store pages are optional while live: until the owner adds
+  // them, the host landing's badges stay pending and record the press.
+  if (process.env.VITE_HOST_APP_STORE_URL?.trim()) {
+    validateStoreUrl({
+      name: "VITE_HOST_APP_STORE_URL",
+      hostname: "apps.apple.com",
+      pathPattern: /\/id\d+(?:$|[/?#])/u,
+      description: "an HTTPS apps.apple.com product URL containing an Apple app id",
+    });
+  }
+  if (process.env.VITE_HOST_PLAY_STORE_URL?.trim()) {
+    validateStoreUrl({
+      name: "VITE_HOST_PLAY_STORE_URL",
+      hostname: "play.google.com",
+      pathPattern: /^\/store\/apps\/details$/u,
+      requiredSearchParam: "id",
+      description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
+    });
+  }
 }
 
 function printUsage() {
