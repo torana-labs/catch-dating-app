@@ -114,14 +114,12 @@ void _migrateActivityPreferences(Map<String, dynamic> migrated) {
   final activityPreferences = _stringKeyedMap(migrated['activityPreferences']);
   final running = _stringKeyedMap(activityPreferences['running']);
 
-  running['paceMinSecsPerKm'] ??=
-      migrated['paceMinSecsPerKm'] ?? defaultPaceMinSecsPerKm;
-  running['paceMaxSecsPerKm'] ??=
-      migrated['paceMaxSecsPerKm'] ?? defaultPaceMaxSecsPerKm;
-  running['preferredDistances'] ??= migrated['preferredDistances'] ?? const [];
-  running['runningReasons'] ??= migrated['runningReasons'] ?? const [];
-  running['preferredRunTimes'] ??= migrated['preferredRunTimes'] ?? const [];
-  running['version'] ??= migrated['runPreferencesVersion'] ?? 0;
+  running['paceMinSecsPerKm'] ??= defaultPaceMinSecsPerKm;
+  running['paceMaxSecsPerKm'] ??= defaultPaceMaxSecsPerKm;
+  running['preferredDistances'] ??= const [];
+  running['runningReasons'] ??= const [];
+  running['preferredRunTimes'] ??= const [];
+  running['version'] ??= 0;
 
   activityPreferences['running'] = running;
   migrated['activityPreferences'] = activityPreferences;

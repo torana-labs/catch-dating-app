@@ -34,15 +34,6 @@ type UserProfileWithPhotos = UserProfileDocument & {
 
 type RunningPreferencesProjection = ActivityPreferences["running"];
 
-type LegacyRunningPreferenceFields = Partial<{
-  paceMinSecsPerKm: number;
-  paceMaxSecsPerKm: number;
-  preferredDistances: string[];
-  runningReasons: string[];
-  preferredRunTimes: string[];
-  runPreferencesVersion: number;
-}>;
-
 const maxProfilePhotos = profilePhotoPolicy.maxPhotos;
 
 /**
@@ -57,9 +48,9 @@ export function publicDisplayName(user: UserProfileDocument): string {
   const firstName = user.firstName?.trim();
   if (firstName) return firstName;
 
-  const legacyName = user.name?.trim();
-  if (!legacyName) return "Runner";
-  return legacyName.split(/\s+/)[0];
+  const fullName = user.name?.trim();
+  if (!fullName) return "Runner";
+  return fullName.split(/\s+/)[0];
 }
 
 /**
@@ -117,8 +108,8 @@ export function publicProfileFromUserProfileDoc(
 }
 
 /**
- * Returns the current nested running preferences, migrating legacy root fields
- * when older documents are still being read.
+ * Returns the nested running preferences, with product defaults for a profile
+ * that has not set them. The retired root-level fields are not read.
  * @param {UserProfileDocument} user Private profile document.
  * @return {RunningPreferencesProjection} Running preference projection.
  */
@@ -126,30 +117,13 @@ export function runningPreferencesFromUserProfileDoc(
   user: UserProfileDocument
 ): RunningPreferencesProjection {
   const nested = user.activityPreferences?.running;
-  const legacy = user as UserProfileDocument & LegacyRunningPreferenceFields;
   return {
-    paceMinSecsPerKm: nested?.paceMinSecsPerKm ??
-      legacy.paceMinSecsPerKm ??
-      300,
-    paceMaxSecsPerKm: nested?.paceMaxSecsPerKm ??
-      legacy.paceMaxSecsPerKm ??
-      420,
-    preferredDistances: nested?.preferredDistances ??
-      (legacy.preferredDistances as RunningPreferencesProjection[
-        "preferredDistances"
-      ] | undefined) ??
-      [],
-    runningReasons: nested?.runningReasons ??
-      (legacy.runningReasons as RunningPreferencesProjection[
-        "runningReasons"
-      ] | undefined) ??
-      [],
-    preferredRunTimes: nested?.preferredRunTimes ??
-      (legacy.preferredRunTimes as RunningPreferencesProjection[
-        "preferredRunTimes"
-      ] | undefined) ??
-      [],
-    version: nested?.version ?? legacy.runPreferencesVersion ?? 0,
+    paceMinSecsPerKm: nested?.paceMinSecsPerKm ?? 300,
+    paceMaxSecsPerKm: nested?.paceMaxSecsPerKm ?? 420,
+    preferredDistances: nested?.preferredDistances ?? [],
+    runningReasons: nested?.runningReasons ?? [],
+    preferredRunTimes: nested?.preferredRunTimes ?? [],
+    version: nested?.version ?? 0,
   };
 }
 

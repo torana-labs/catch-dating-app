@@ -888,9 +888,9 @@ function publicDisplayName(user) {
   const firstName = user.firstName?.trim();
   if (firstName) return firstName;
 
-  const legacyName = user.name?.trim();
-  if (!legacyName) return "Runner";
-  return legacyName.split(/\s+/)[0];
+  const fullName = user.name?.trim();
+  if (!fullName) return "Runner";
+  return fullName.split(/\s+/)[0];
 }
 
 function publicAvatarUrl(user) {
