@@ -144,12 +144,10 @@
 /*
  * Theme ink roles inside resolve to the ground's ink and secondary ink, as on
  * any Website v2 ground, so library text on the band clears AA. A floating
- * card on the band gets the page's ink roles back.
+ * card on the band gets its theme's ink roles back.
  */
 .surface[data-block="band"][data-band="indigo"] {
   --catch-surface-fill: var(--catch-ground-indigo-fill);
-  --catch-band-page-ink: var(--catch-theme-ink);
-  --catch-band-page-ink2: var(--catch-theme-ink2);
   background: var(--catch-ground-indigo-fill);
   color: var(--catch-ground-indigo-ink);
 }
@@ -162,8 +160,13 @@
 }
 
 .surface[data-block="band"][data-band="indigo"] .surface[data-block="floating"] {
-  --catch-theme-ink: var(--catch-band-page-ink);
-  --catch-theme-ink2: var(--catch-band-page-ink2);
+  --catch-theme-ink: var(--catch-color-light-ink);
+  --catch-theme-ink2: var(--catch-color-light-ink2);
+}
+
+:global([data-catch-theme="dark"]) .surface[data-block="band"][data-band="indigo"] .surface[data-block="floating"] {
+  --catch-theme-ink: var(--catch-color-dark-ink);
+  --catch-theme-ink2: var(--catch-color-dark-ink2);
 }
 
 /* A device that bleeds off the band's bottom edge (CatchDeviceFrame bleed, L3) is clipped there too. */
