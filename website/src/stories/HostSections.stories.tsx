@@ -1,4 +1,4 @@
-import {expect, userEvent, within} from "storybook/test";
+import {expect, fireEvent, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import type {ReactNode} from "react";
@@ -130,7 +130,7 @@ export const NightFormat: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(within(canvas.getByRole("radiogroup", {name: copy.night.pickerLabel})).getByRole("radio", {name: "Pickleball"}));
-    await expect(canvas.getByText("Levels in, courts balanced")).toBeInTheDocument();
+    await expect(canvas.getByRole("button", {name: /Levels in, courts balanced/})).toHaveAttribute("aria-current", "step");
   },
 };
 
@@ -142,9 +142,7 @@ export const PricingCapAndLayerTwo: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[1].label}));
-    const slider = canvas.getByRole("slider", {name: copy.pricing.sales}) as HTMLInputElement;
-    slider.focus();
-    await userEvent.keyboard("{End}");
+    fireEvent.change(canvas.getByRole("slider", {name: copy.pricing.sales}), {target: {value: "500000"}});
     await expect(canvas.getByText(copy.pricing.capped)).toBeInTheDocument();
   },
 };
