@@ -9,6 +9,7 @@
   "x-firestore-path": "organizerTeamMemberships/{membershipId}",
   "x-document-id-field": "id",
   "x-owner": "organizer team callables",
+  "x-internal-demo-fields": ["synthetic", "seedPrefix", "scenario", "demoOps", "demoOpsId", "demoOpsCommand"],
   "required": ["organizerId", "uid", "role", "status", "createdAt", "removedAt"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
@@ -16,6 +17,12 @@
     "role": {"type": "string", "enum": ["owner", "manager"], "x-catch-ownership": "callable-owned"},
     "status": {"type": "string", "enum": ["active", "removed"], "x-catch-ownership": "callable-owned"},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
-    "removedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"}
+    "removedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
   }
 }

@@ -209,7 +209,7 @@ type NotificationUserDocument = {
   prefsOrganizerUpdates?: boolean;
 };
 
-type OrganizerMembershipNotificationDocument = {
+type OrganizerFollowNotificationDocument = {
   uid?: string;
   pushNotificationsEnabled?: boolean;
 };
@@ -290,7 +290,6 @@ export async function createEventHandler(
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
-  const useLegacyFollowerProjection = false;
 
   await db.runTransaction(async (tx) => {
     const [
@@ -437,7 +436,6 @@ export async function createEventHandler(
       deps,
       eventId: eventRef.id,
       organizerId,
-      useLegacyFollowerProjection,
       hostUserId,
       organizerName: organizerName,
       event: createdEvent,
@@ -2061,27 +2059,21 @@ async function notifyOrganizerMembersForNewEvent(params: {
   deps: EventMutationDeps;
   eventId: string;
   organizerId: string;
-  useLegacyFollowerProjection: boolean;
   hostUserId: string;
   organizerName: string;
   event: EventDocument;
 }) {
   try {
     const members = await params.db
-      .collection(params.useLegacyFollowerProjection ?
-        "organizerMemberships" : "organizerFollows")
-      .where(
-        params.useLegacyFollowerProjection ? "organizerId" : "organizerId",
-        "==",
-        params.organizerId
-      )
+      .collection("organizerFollows")
+      .where("organizerId", "==", params.organizerId)
       .where("status", "==", "active")
       .get();
     const memberEntries = members.docs
-      .map((doc) => doc.data() as OrganizerMembershipNotificationDocument)
+      .map((doc) => doc.data() as OrganizerFollowNotificationDocument)
       .filter((membership): membership is
-        Required<Pick<OrganizerMembershipNotificationDocument, "uid">> &
-        OrganizerMembershipNotificationDocument =>
+        Required<Pick<OrganizerFollowNotificationDocument, "uid">> &
+        OrganizerFollowNotificationDocument =>
         typeof membership.uid === "string" &&
         membership.uid !== params.hostUserId
       );

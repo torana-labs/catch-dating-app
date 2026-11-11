@@ -471,8 +471,7 @@
       "migrationNotes": [
         "Rules, Functions profile updates, and the generated Dart/TypeScript contract no longer allow new sexualOrientation writes.",
         "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
-        "Legacy bio text now migrates into structured profilePrompts; new prompt text is stored in profilePrompts and photo prompt selections live inside profilePhotos.prompt.",
-        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on organizerMemberships/{organizerId_uid}.",
+        "Global notification category preferences live on users/{uid}; per-organizer push opt-in lives on organizerFollows/{organizerId_uid}.",
         "Event-club membership and saved-event state live in edge collections, not profile arrays."
       ]
     },
@@ -2566,25 +2565,6 @@
       "migrationNotes": [
         "Immutable deterministic credit and reversal facts use one primary invite link per attendee fact; self-use never creates referral credit.",
         "High-impact advocate status requires three referred verified check-ins during the trailing 365 days."
-      ]
-    },
-    {
-      "id": "userEventScheduleLocks",
-      "path": "userEventScheduleLocks/{lockId}",
-      "rulesMatch": "/userEventScheduleLocks/{lockId}",
-      "owner": "event booking and waitlist callables",
-      "read": "server/admin only",
-      "write": "server only",
-      "exportedFunctions": [
-        "signUpForFreeEvent",
-        "verifyRazorpayPayment",
-        "cancelEventSignUp",
-        "joinEventWaitlist",
-        "leaveEventWaitlist"
-      ],
-      "migrationNotes": [
-        "Server-owned minute-bucket lock documents prevent users from signing up or waitlisting for overlapping events.",
-        "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
       ]
     },
     {

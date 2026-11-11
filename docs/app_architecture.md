@@ -195,7 +195,7 @@ to end: Dart types, providers, files, folders, route names and localization
 keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
 `Routes.hostOrganizersScreen`), and on the wire the contracts, Firestore fields
 and collections, rules, indexes, callables, Functions and web code
-(`organizerId`, `organizerMemberships`, `OrganizerCover`), and the BigQuery
+(`organizerId`, `organizerFollows`, `OrganizerCover`), and the BigQuery
 warehouse (`organizer_id`, `organizers_raw_latest`, `bq-host-organizers`). A
 record carries one organizer id; there is no club alias beside it. Club stays
 only as the `club` subtype (`OrganizerType.club`, run clubs), in copy and URLs

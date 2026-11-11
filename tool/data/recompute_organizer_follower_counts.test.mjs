@@ -2,18 +2,18 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {verifyRecomputeCli} from "./lib/recompute_cli_test_support.mjs";
 import {
-  applyMemberCountRepairPlan,
-  buildMemberCountRepairPlan,
-} from "./recompute_organizer_member_counts.mjs";
+  applyFollowerCountRepairPlan,
+  buildFollowerCountRepairPlan,
+} from "./recompute_organizer_follower_counts.mjs";
 
-test("buildMemberCountRepairPlan counts active membership edges", async () => {
+test("buildFollowerCountRepairPlan counts active follow edges", async () => {
   const firestore = fakeFirestore({
     organizers: {
-      "club-1": {memberCount: 1},
-      "club-2": {memberCount: 7},
-      "club-3": {memberCount: 0},
+      "club-1": {followerCount: 1},
+      "club-2": {followerCount: 7},
+      "club-3": {followerCount: 0},
     },
-    organizerMemberships: {
+    organizerFollows: {
       "club-1_host-1": {organizerId: "club-1", status: "active"},
       "club-1_runner-1": {organizerId: "club-1", status: "active"},
       "club-1_runner-2": {organizerId: "club-1", status: "left"},
@@ -22,47 +22,47 @@ test("buildMemberCountRepairPlan counts active membership edges", async () => {
     },
   });
 
-  const plan = await buildMemberCountRepairPlan(firestore);
+  const plan = await buildFollowerCountRepairPlan(firestore);
 
   assert.deepEqual(plan.summary.repairs, [
     {
       path: "organizers/club-1",
       organizerId: "club-1",
-      currentMemberCount: 1,
-      expectedMemberCount: 2,
+      currentFollowerCount: 1,
+      expectedFollowerCount: 2,
     },
     {
       path: "organizers/club-2",
       organizerId: "club-2",
-      currentMemberCount: 7,
-      expectedMemberCount: 0,
+      currentFollowerCount: 7,
+      expectedFollowerCount: 0,
     },
   ]);
   assert.deepEqual(plan.summary.warnings, [
-    "organizerMemberships/missing_runner-1 references missing organizers/missing.",
+    "organizerFollows/missing_runner-1 references missing organizers/missing.",
   ]);
 });
 
-test("applyMemberCountRepairPlan writes only planned repairs", async () => {
+test("applyFollowerCountRepairPlan writes only planned repairs", async () => {
   const firestore = fakeFirestore({
     organizers: {
-      "club-1": {memberCount: 1, name: "Club 1"},
-      "club-2": {memberCount: 7, name: "Club 2"},
+      "club-1": {followerCount: 1, name: "Club 1"},
+      "club-2": {followerCount: 7, name: "Club 2"},
     },
-    organizerMemberships: {},
+    organizerFollows: {},
   });
 
-  await applyMemberCountRepairPlan(firestore, {
+  await applyFollowerCountRepairPlan(firestore, {
     repairs: [
       {
         path: "organizers/club-1",
-        expectedMemberCount: 2,
+        expectedFollowerCount: 2,
       },
     ],
   });
 
-  assert.equal(firestore.data.organizers["club-1"].memberCount, 2);
-  assert.equal(firestore.data.organizers["club-2"].memberCount, 7);
+  assert.equal(firestore.data.organizers["club-1"].followerCount, 2);
+  assert.equal(firestore.data.organizers["club-2"].followerCount, 7);
 });
 
 function fakeFirestore(initialData) {
@@ -108,5 +108,5 @@ function docSnapshot(collectionName, id, value) {
 }
 
 test("CLI shared helpers preserve project precedence and dry-run policy", (t) => {
-  verifyRecomputeCli(t, new URL("./recompute_organizer_member_counts.mjs", import.meta.url), {organizers: {organizer: {memberCount: 7}}, organizerMemberships: {}});
+  verifyRecomputeCli(t, new URL("./recompute_organizer_follower_counts.mjs", import.meta.url), {organizers: {organizer: {followerCount: 7}}, organizerFollows: {}});
 });

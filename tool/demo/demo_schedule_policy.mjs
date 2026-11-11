@@ -12,8 +12,7 @@ const businessRules = JSON.parse(
 
 const MINUTE_MS = 60 * 1000;
 const USER_SCHEDULE_STATUSES = new Set(["signedUp", "waitlisted", "attended"]);
-const ORGANIZER_LOCK_COLLECTION = "organizerScheduleLocks";
-const USER_EVENT_LOCK_COLLECTION = "userEventScheduleLocks";
+const LOCK_COLLECTION = "scheduleLocks";
 
 export const EVENT_MAX_DURATION_MINUTES =
   businessRules.eventScheduling.maxDurationMinutes;
@@ -23,8 +22,7 @@ export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES =
 export function scheduleComplianceIssues({
   events,
   participations = [],
-  organizerScheduleLocks = [],
-  userEventScheduleLocks = [],
+  scheduleLocks = [],
   checkLocks = false,
 }) {
   const issues = [];
@@ -107,8 +105,7 @@ export function scheduleComplianceIssues({
     issues.push(...scheduleLockIssues({
       eventWindows,
       scheduledParticipations,
-      organizerScheduleLocks,
-      userEventScheduleLocks,
+      scheduleLocks,
     }));
   }
 
@@ -130,10 +127,10 @@ export function buildOrganizerScheduleLockDocs({event}) {
   if (window.status === "cancelled") return [];
   validateEventWindow(window);
   return scheduleSlots(window).map((slot) => ({
-    path: `${ORGANIZER_LOCK_COLLECTION}/${window.organizerId}_${slot}`,
+    path: `${LOCK_COLLECTION}/organizer_${window.organizerId}_${slot}`,
     data: {
       ...demoMarkerFor(window.data),
-      ownerType: "club",
+      ownerType: "organizer",
       ownerId: window.organizerId,
       slot,
       eventId: window.eventId,
@@ -151,7 +148,7 @@ export function buildUserEventScheduleLockDocs({event, participation}) {
   if (window.status === "cancelled") return [];
   validateEventWindow(window);
   return scheduleSlots(window).map((slot) => ({
-    path: `${USER_EVENT_LOCK_COLLECTION}/${data.uid}_${slot}`,
+    path: `${LOCK_COLLECTION}/user_${data.uid}_${slot}`,
     data: {
       ...demoMarkerFor(data),
       ownerType: "user",
@@ -218,16 +215,15 @@ export async function assertNoUserEventScheduleConflictInFirestore({
 function scheduleLockIssues({
   eventWindows,
   scheduledParticipations,
-  organizerScheduleLocks,
-  userEventScheduleLocks,
+  scheduleLocks,
 }) {
   const issues = [];
   const expected = new Map();
   for (const event of eventWindows.values()) {
     if (event.status === "cancelled") continue;
     for (const slot of scheduleSlots(event)) {
-      expected.set(`${ORGANIZER_LOCK_COLLECTION}/${event.organizerId}_${slot}`, {
-        ownerType: "club",
+      expected.set(`${LOCK_COLLECTION}/organizer_${event.organizerId}_${slot}`, {
+        ownerType: "organizer",
         ownerId: event.organizerId,
         slot,
         eventId: event.eventId,
@@ -236,7 +232,7 @@ function scheduleLockIssues({
   }
   for (const participation of scheduledParticipations) {
     for (const slot of scheduleSlots(participation)) {
-      expected.set(`${USER_EVENT_LOCK_COLLECTION}/${participation.uid}_${slot}`, {
+      expected.set(`${LOCK_COLLECTION}/user_${participation.uid}_${slot}`, {
         ownerType: "user",
         ownerId: participation.uid,
         slot,
@@ -246,8 +242,7 @@ function scheduleLockIssues({
   }
 
   const actual = new Map([
-    ...organizerScheduleLocks.map((doc) => [doc.path, doc]),
-    ...userEventScheduleLocks.map((doc) => [doc.path, doc]),
+    ...scheduleLocks.map((doc) => [doc.path, doc]),
   ]);
   for (const [pathValue, expectedData] of expected.entries()) {
     const doc = actual.get(pathValue);

@@ -10,7 +10,8 @@ import {catchNativeEventOrigin} from "../shared/testUtils";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -217,7 +218,7 @@ function reservationPath(key: string): string {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     organizerId: "club-1",
     eventOrigin: catchNativeEventOrigin(),
@@ -257,7 +258,7 @@ function event(overrides: FakeData = {}): FakeData {
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {},
     ...overrides,
-  };
+  });
 }
 
 function user(overrides: FakeData = {}): FakeData {
@@ -350,7 +351,7 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
   assert.equal(
-    fake.get(`userEventScheduleLocks/runner-1_${scheduleSlot(
+    fake.get(`scheduleLocks/user_runner-1_${scheduleSlot(
       "2026-05-02T01:30:00.000Z"
     )}`)?.eventId,
     "event-1"

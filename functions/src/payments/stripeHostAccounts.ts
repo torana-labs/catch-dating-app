@@ -5,7 +5,6 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {
-  OrganizerHostClaimDocument,
   HostPaymentAccountDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -37,6 +36,7 @@ import {
   stripeConnectReturnUrlValue,
   stripeSecretKey,
 } from "./stripe";
+import {ownsAnOrganizer} from "./hostPayoutAuthority";
 import {findHostPaymentAccount, providerAccountId} from
   "./hostPaymentAccounts";
 
@@ -71,28 +71,24 @@ export async function createStripeHostOnboardingLinkHandler(
     maxRequests: 5, windowMs: 60 * 1000,
   });
 
-  const [userSnap, hostClaimSnap, existing] = await Promise.all([
+  const [userSnap, isOwner, existing] = await Promise.all([
     db.collection("users").doc(uid).get(),
-    db.collection("organizerHostClaims").doc(uid).get(),
+    ownsAnOrganizer(db, uid),
     findHostPaymentAccount(db, uid, "stripe"),
   ]);
   if (!userSnap.exists) {
     throw new HttpsError("not-found", "User profile not found.");
   }
-  if (!hostClaimSnap.exists) {
+  if (!isOwner) {
     throw new HttpsError(
       "permission-denied",
-      "Only club owners can set up payouts."
+      "Only organizer owners can set up payouts."
     );
   }
 
   const user = requireDoc<UserProfileDocument>(
     userSnap,
     "UserProfileDocument"
-  );
-  requireDoc<OrganizerHostClaimDocument>(
-    hostClaimSnap,
-    "OrganizerHostClaimDocument"
   );
   const stripe = deps.stripe();
   const existingAccount = existing.account;
