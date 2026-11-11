@@ -142,7 +142,7 @@ ActivityNotification _notification({
     id: id,
     uid: uid,
     type: type,
-    title: "It's a catch",
+    title: 'You picked each other',
     body: 'You and Runner Two matched. Say hi!',
     createdAt: createdAt ?? DateTime(2026, 5, 1, 10),
     readAt: readAt,

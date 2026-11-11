@@ -27,6 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
 
 class _FakeSwipeRepository extends Fake implements SwipeRepository {
@@ -74,6 +75,7 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     Set<String> followed = const {},
+    bool socialReady = true,
   }) async {
     tester.view.physicalSize = const Size(430, 2400);
     tester.view.devicePixelRatio = 1;
@@ -91,7 +93,11 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(_viewer)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream<UserProfile?>.value(buildUser(uid: _viewer)),
+            (ref) => Stream<UserProfile?>.value(
+              socialReady
+                  ? buildSocialReadyUser(uid: _viewer)
+                  : buildUser(uid: _viewer),
+            ),
           ),
           watchEventProvider(
             event.id,
@@ -262,5 +268,17 @@ void main() {
     await pump(tester, followed: const {'org'});
 
     expect(find.byKey(SwipeKeys.afterEventFollowOrganizer), findsNothing);
+  });
+
+  testWidgets('asks for a profile before picks, keeping the rest open', (
+    tester,
+  ) async {
+    await pump(tester, socialReady: false);
+
+    expect(find.byKey(SwipeKeys.afterEventFinishProfile), findsOneWidget);
+    expect(find.text('Finish your profile'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventPerson('rhea')), findsNothing);
+    expect(find.byKey(SwipeKeys.afterEventGroupChat), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventRatingStar(1)), findsOneWidget);
   });
 }

@@ -42,7 +42,7 @@ class EventSuccessCoach {
       );
     } else {
       strengths.add(
-        'Arrival data is reliable enough for matching and reports.',
+        'Arrival data is reliable enough for after-event picks and reports.',
       );
     }
 
@@ -136,7 +136,7 @@ class EventSuccessCoach {
       recommendations.add(
         const EventSuccessRecommendation(
           id: 'use_wingman_signal_live',
-          title: 'Use wingman requests before the final reveal',
+          title: 'Use host-help requests before the final reveal',
           rationale:
               'Host-visible help requests are strongest while the room is still live, before attendees lose momentum.',
           priority: EventRecommendationPriority.medium,
@@ -150,16 +150,16 @@ class EventSuccessCoach {
       recommendations.add(
         const EventSuccessRecommendation(
           id: 'improve_first_message',
-          title: 'Give matches event-specific openers',
+          title: 'Give mutual picks event-specific openers',
           rationale:
-              'Matches are forming, but chat is not starting reliably. Shared event context should make the first message easier.',
+              'Mutual picks are forming, but chat is not starting reliably. Shared event context should make the first message easier.',
           priority: EventRecommendationPriority.medium,
           stage: EventSuccessStage.after,
           moduleIds: ['contextual_openers'],
         ),
       );
     } else if (scorecard.mutualMatchCount > 0) {
-      strengths.add('Mutual matches are converting into chat starts.');
+      strengths.add('Mutual picks are converting into chat starts.');
     }
 
     if (scorecard.averageWelcomeRating < 4.0) {

@@ -148,8 +148,8 @@ List<NotificationDayGroup> _notificationDayGroups() {
         ),
         NotificationRowDisplay(
           type: ActivityNotificationType.match,
-          title: "It's a catch",
-          subtitle: 'You and Riya matched after Sunday socials.',
+          title: 'You picked each other',
+          subtitle: 'You and Riya picked each other after Sunday socials.',
           createdAt: DashboardSurfaceFixtures.now.subtract(
             const Duration(hours: 6),
           ),

@@ -9,6 +9,7 @@ abstract final class SwipeKeys {
   static const afterEventNext = ValueKey('after_event.next_event');
   static const afterEventFollowOrganizer = ValueKey('after_event.follow');
   static const afterEventOrganizer = ValueKey('after_event.organizer');
+  static const afterEventFinishProfile = ValueKey('after_event.finish_profile');
 
   static ValueKey<String> genderFilterChip(String genderName) =>
       ValueKey('swipes.filters.gender.$genderName');

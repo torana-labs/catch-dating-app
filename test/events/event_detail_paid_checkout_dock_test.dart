@@ -36,7 +36,10 @@ void main() {
     final state = dock(seats: true);
     expect(state.primaryAction, EventDetailBookingDockAction.book);
     expect(state.label, 'Book event');
-    expect(state.catchLine, 'Matching opens for everyone who goes');
+    expect(
+      state.catchLine,
+      'After the event, stay in touch with anyone who went',
+    );
   });
 
   test('other paid seats are unavailable with a reason before any tap', () {

@@ -643,7 +643,7 @@ abstract class AppLocalizations {
   /// Organiser provider tracking settings in Host Insights.
   ///
   /// In en, this message translates to:
-  /// **'Sensitive social, dating and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.'**
+  /// **'Sensitive social and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.'**
   String get hostsTrackingSettingsPrivacy;
 
   /// Organiser provider tracking settings in Host Insights.
@@ -1586,7 +1586,7 @@ abstract class AppLocalizations {
   /// Event report line under the stay-in-touch count.
   ///
   /// In en, this message translates to:
-  /// **'They matched after the event. Only they see who.'**
+  /// **'They picked each other after the event. Only they see who.'**
   String get hostEventReportStayInTouchBody;
 
   /// Event report section title over the guest reviews.
@@ -2116,7 +2116,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/chats/presentation/widgets/suvbot_action_bar.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Match tester'**
+  /// **'Mutual pick tester'**
   String get chatsSuvbotActionBarTextMatchTester;
 
   /// Product copy used by lib/chats/presentation/widgets/suvbot_action_bar.dart (Text).
@@ -2134,7 +2134,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/chats/presentation/widgets/suvbot_action_bar.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Create match'**
+  /// **'Create a mutual pick'**
   String get chatsSuvbotActionBarLabelCreateMatch;
 
   /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
@@ -2447,7 +2447,7 @@ abstract class AppLocalizations {
   /// Product copy resolved by packages/platform/lib/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'New match'**
+  /// **'New connection'**
   String get coreCatchPersonRowLabelNewMatch;
 
   /// Brand footer copy supplied by chat, organizer, and event share-card callers.
@@ -2621,7 +2621,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/activity_section.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'New catches, bookings, and event reminders will collect here.'**
+  /// **'New connections, bookings and event reminders will collect here.'**
   String get dashboardActivitySectionMessageNewCatchesBookingsAnd;
 
   /// Product copy used by lib/dashboard/presentation/widgets/organizer_posts_home_section.dart (title).
@@ -2651,13 +2651,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/empty_hero_card.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Your catches unlock\nafter your first event.'**
+  /// **'The people you meet\nshow up after your first event.'**
   String get dashboardEmptyHeroCardTextYourCatchesUnlockAfter;
 
   /// Product copy used by lib/dashboard/presentation/widgets/empty_hero_card.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'The dating app where you\'\'ve already met. No cold swiping — just people you actually crossed paths with.'**
+  /// **'Go to something you’d do anyway, meet the people there, and stay in touch with the ones you click with.'**
   String get dashboardEmptyHeroCardTextTheDatingAppWhere;
 
   /// Product copy used by lib/dashboard/presentation/widgets/empty_hero_card.dart (label).
@@ -2706,7 +2706,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Caught someone'**
+  /// **'Picked someone'**
   String get eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone;
 
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
@@ -2879,7 +2879,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Match clue questions'**
+  /// **'Conversation questions'**
   String get eventSuccessEventSuccessSetupBodyTextMatchClueQuestions;
 
   /// Reveal countdown field label in the live event guide.
@@ -3522,19 +3522,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Catches unlock for 24 hours after the event finishes.'**
+  /// **'After the event, you have 24 hours to pick people you’d like to see again.'**
   String get eventsWhoIsGoingMessageCatchesUnlockFor24;
 
   /// Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'The catch window is open for 24 hours after the event finishes.'**
+  /// **'Picks are open for 24 hours after the event finishes.'**
   String get eventsWhoIsGoingMessageTheCatchWindowIs;
 
   /// Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'The catch window for this event has closed.'**
+  /// **'Picks for this event have closed.'**
   String get eventsWhoIsGoingMessageTheCatchWindowFor;
 
   /// Product copy used by lib/events/shared/event_check_in_celebration_screen.dart (eyebrow).
@@ -3630,7 +3630,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (note).
   ///
   /// In en, this message translates to:
-  /// **'Arrive by the meeting time. Catches unlock automatically when the event finishes.'**
+  /// **'Arrive by the meeting time. After the event, you can stay in touch with the people you met.'**
   String get eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting;
 
   /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
@@ -4453,7 +4453,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Track which channels create demand, bookings, arrivals, catches, and chats.'**
+  /// **'Track which channels create demand, bookings, arrivals, connections and chats.'**
   String get hostsHostEventManageScreenTextTrackWhichChannelsCreate;
 
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (Text).
@@ -5341,19 +5341,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (eyebrow).
   ///
   /// In en, this message translates to:
-  /// **'New catch'**
+  /// **'New connection'**
   String get matchesMatchCelebrationDialogEyebrowNewCatch;
 
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'It\'\'s a Catch.'**
+  /// **'You picked each other.'**
   String get matchesMatchCelebrationDialogTitleItSACatch;
 
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Match'**
+  /// **'Mutual pick'**
   String get matchesMatchCelebrationDialogLabelMatch;
 
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (note).
@@ -5371,7 +5371,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Keep catching'**
+  /// **'Not now'**
   String get matchesMatchCelebrationDialogLabelKeepCatching;
 
   /// Product copy used by lib/onboarding/presentation/pages/gender_interest_page.dart (label).
@@ -6313,65 +6313,11 @@ abstract class AppLocalizations {
   /// **'Unblock'**
   String get safetySettingsScreenLabelUnblock;
 
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Event recap'**
-  String get swipesEventRecapScreenTitleEventRecap;
-
   /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Close recap'**
   String get swipesEventRecapScreenTooltipCloseRecap;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Who brought the vibe?'**
-  String get swipesEventRecapScreenTextWhoBroughtTheVibe;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Tap people you remember. They\'\'ll be easier to spot when you open the catches deck.'**
-  String get swipesEventRecapScreenTextTapPeopleYouRemember;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No attendees to tag'**
-  String get swipesEventRecapScreenTitleNoAttendeesToTag;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'No other checked-in attendees are attached to this event yet.'**
-  String get swipesEventRecapScreenMessageNoOtherCheckedIn;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Open catches deck'**
-  String get swipesEventRecapScreenLabelOpenCatchesDeck;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'When'**
-  String get swipesEventRecapScreenLabelWhen;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Time'**
-  String get swipesEventRecapScreenLabelTime;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Catches'**
-  String get swipesEventRecapScreenLabelCatches;
 
   /// Product copy used by lib/swipes/presentation/filters_screen.dart (title).
   ///
@@ -6408,42 +6354,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apply filters'**
   String get swipesFiltersScreenLabelApplyFilters;
-
-  /// Product copy used by lib/swipes/presentation/swipe_screen.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Catches'**
-  String get swipesSwipeScreenTooltipBackToCatches;
-
-  /// Product copy used by lib/swipes/presentation/swipe_screen.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Filters'**
-  String get swipesSwipeScreenTooltipFilters;
-
-  /// Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Passing'**
-  String get swipesCatchesPassButtonMessagePassing;
-
-  /// Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Pass'**
-  String get swipesCatchesPassButtonMessagePass;
-
-  /// Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Passing profile'**
-  String get swipesCatchesPassButtonLabelPassingProfile;
-
-  /// Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Pass profile'**
-  String get swipesCatchesPassButtonLabelPassProfile;
 
   /// Product copy used by lib/swipes/shared/profile_surface/catch_profile_view.dart (label).
   ///
@@ -7504,7 +7414,7 @@ abstract class AppLocalizations {
   /// Fallback title for a foreground match arrival when the server supplies no title.
   ///
   /// In en, this message translates to:
-  /// **'It\'\'s a catch'**
+  /// **'You picked each other'**
   String get notificationArrivalMatchTitle;
 
   /// Fallback title for a foreground message arrival when the server supplies no title.
@@ -7705,7 +7615,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'You and {name} both liked each other.'**
+  /// **'You and {name} both want to stay in touch.'**
   String matchesMatchCelebrationDialogMessageYouAndNameBoth({
     required Object name,
   });
@@ -7891,14 +7801,6 @@ abstract class AppLocalizations {
   /// **'This event is no longer available.'**
   String get swipesEventRecapScreenMessageThisEventIsNo;
 
-  /// Product copy used by lib/swipes/presentation/swipe_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Catches · {remainingCount} left'**
-  String swipesSwipeScreenTextCatchesRemainingcountLeft({
-    required Object remainingCount,
-  });
-
   /// Product copy used by lib/swipes/shared/profile_surface/catch_profile_view.dart (Text).
   ///
   /// In en, this message translates to:
@@ -8056,7 +7958,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Private afterglow'**
+  /// **'Your recap'**
   String get eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow;
 
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart (Text).
@@ -8797,7 +8699,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'Use one after a mutual match opens.'**
+  /// **'Use one when you message someone you met.'**
   String get eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA;
 
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (subtitle).
@@ -8857,7 +8759,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'Close with one suggested first message after mutual matches.'**
+  /// **'Close with one suggested first message for people who pick each other.'**
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested;
 
   /// Title for the Host presence and late-arrival control.
@@ -9127,7 +9029,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.'**
+  /// **'Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.'**
   String get eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent;
 
   /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
@@ -9316,7 +9218,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Caught someone'**
+  /// **'Picked someone'**
   String get eventSuccessEventSuccessHostReportLabelCaughtSomeone;
 
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
@@ -9334,7 +9236,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Wingman help'**
+  /// **'Host-help requests'**
   String get eventSuccessEventSuccessHostReportLabelWingmanHelp;
 
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
@@ -9350,7 +9252,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'{attendeesWhoCaughtSomeone} caught someone'**
+  /// **'{attendeesWhoCaughtSomeone} picked someone'**
   String
   eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone({
     required Object attendeesWhoCaughtSomeone,
@@ -9359,7 +9261,7 @@ abstract class AppLocalizations {
   /// Label for the number of post-event catches sent.
   ///
   /// In en, this message translates to:
-  /// **'Catches sent'**
+  /// **'Picks sent'**
   String get eventSuccessEventSuccessHostReportLabelCatchesSent;
 
   /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
@@ -9594,7 +9496,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Match clue questions'**
+  /// **'Conversation questions'**
   String get eventSuccessEventSuccessHostSharedTextMatchClueQuestions;
 
   /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (label).
@@ -10644,7 +10546,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.'**
+  /// **'You will stop seeing each other in chats, after-event picks and future event slots where the other person is already booked.'**
   String get coreBlockUserDialogMessageYouWillStopSeeing;
 
   /// Product copy supplied by packages/platform/lib/l10n/catch_ui_copy.dart (Text).
@@ -10706,7 +10608,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/pages/welcome_page.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Show up to something you\'\'d do anyway — a long run, a long table, trivia night. Match only with the people who were actually there.'**
+  /// **'Show up to something you’d do anyway — a long run, a long table, trivia night. Stay in touch with the people who were actually there.'**
   String get onboardingWelcomePageTextShowUpToSomething;
 
   /// Product copy used by lib/payments/presentation/payment_confirmation_screen.dart (Text).
@@ -10742,7 +10644,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/payments/presentation/payment_confirmation_screen.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Bring a water bottle and arrive by the meeting time. Catches unlock automatically when the event finishes — keep your phone charged.'**
+  /// **'Bring a water bottle and arrive by the meeting time. After the event, you can stay in touch with the people you met, so keep your phone charged.'**
   String get paymentsPaymentConfirmationScreenTextBringAWaterBottle;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (message).
@@ -10766,7 +10668,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'Last name stays private until you catch.'**
+  /// **'Last name stays private until you message someone.'**
   String get onboardingOnboardingStepSubtitleLastNameStaysPrivate;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
@@ -10790,13 +10692,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Complete your profile for Catches'**
+  /// **'Complete your profile to stay in touch'**
   String get onboardingOnboardingStepTitleCompleteYourProfileFor;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'**
+  /// **'People you met see your photos when you pick them. You can still book events with your current details.'**
   String get onboardingOnboardingStepSubtitleCatchesNeedPhotosSo;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
@@ -10814,13 +10716,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Add prompts to start catching'**
+  /// **'Add prompts so people know you'**
   String get onboardingOnboardingStepTitleAddPromptsToStart;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'Prompts give people something real to respond to before you match.'**
+  /// **'Prompts give people something real to talk about.'**
   String get onboardingOnboardingStepSubtitlePromptsGivePeopleSomething;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
@@ -10838,13 +10740,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Finish your Catches profile'**
+  /// **'Finish your profile'**
   String get onboardingOnboardingStepTitleFinishYourCatchesProfile;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
-  /// **'These are optional, but they help us rank compatible people in Catches.'**
+  /// **'These are optional, but they help us suggest people you’d get on with.'**
   String get onboardingOnboardingStepSubtitleTheseAreOptionalBut;
 
   /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
@@ -11352,7 +11254,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.'**
+  /// **'Keep the useful parts of the room, send private feedback, and use event-specific openers when you message someone you met.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts;
 
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
@@ -11474,19 +11376,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No more attendees'**
+  /// **'Nobody else to pick'**
   String get swipesSwipeEmptyContentTitleNoMoreAttendees;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Join more events to meet new people'**
+  /// **'You’ve seen everyone from this event. Join more events to meet new people.'**
   String get swipesSwipeEmptyContentMessageJoinMoreEventsTo;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Catch unavailable'**
+  /// **'Picks aren’t available'**
   String get swipesSwipeEmptyContentTitleCatchUnavailable;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
@@ -11504,13 +11406,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Sign in again to catch fellow attendees.'**
+  /// **'Sign in again to see who came.'**
   String get swipesSwipeEmptyContentMessageSignInAgainTo;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'You can only catch attendees from events you attended.'**
+  /// **'You can pick people from events you checked in to.'**
   String get swipesSwipeEmptyContentMessageYouCanOnlyCatch;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).
@@ -11522,19 +11424,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Catches unlock for 24 hours after the event finishes.'**
+  /// **'After the event, you have 24 hours to pick people you’d like to see again.'**
   String get swipesSwipeEmptyContentMessageCatchesUnlockFor24;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Catch window closed'**
+  /// **'Picks have closed'**
   String get swipesSwipeEmptyContentTitleCatchWindowClosed;
 
   /// Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'This event is past the 24-hour catch window.'**
+  /// **'Picks close 24 hours after the event.'**
   String get swipesSwipeEmptyContentMessageThisEventIsPast;
 
   /// Product copy used by lib/reviews/presentation/reviews_history_view_model.dart (title).
@@ -12290,31 +12192,31 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Meet the organizer at the event. No cold matching happens here.'**
+  /// **'Meet the organizer and the group at the event.'**
   String get dashboardDashboardEmptyBodyMeetTheOrganizerAt;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Catch within 24 hours'**
+  /// **'Stay in touch within 24 hours'**
   String get dashboardDashboardEmptyTitleCatchWithin24Hours;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'You get the roster of who came. Catch anyone who caught your eye.'**
+  /// **'See who came, rate the event and pick anyone you’d like to see again.'**
   String get dashboardDashboardEmptyBodyYouGetTheRoster;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'They catch you back?'**
+  /// **'They pick you too?'**
   String get dashboardDashboardEmptyTitleTheyCatchYouBack;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Match. Message. Plan the next event together.'**
+  /// **'Message each other. Plan the next event together.'**
   String get dashboardDashboardEmptyBodyMatchMessagePlanThe;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (title).
@@ -12434,65 +12336,11 @@ abstract class AppLocalizations {
   /// **'Your guide stays private to your ticket and attendance.'**
   String get eventSuccessEventSuccessCompanionSharedLabelYourGuideStaysPrivate;
 
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Catches open until {time}'**
-  String swipesEventRecapScreenStateVisiblecopyCatchesOpenUntilTime({
-    required Object time,
-  });
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Catch window closed'**
-  String get swipesEventRecapScreenStateVisiblecopyCatchWindowClosed;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (kicker).
-  ///
-  /// In en, this message translates to:
-  /// **'{toUpperCase} · COMPLETE'**
-  String swipesEventRecapScreenStateKickerTouppercaseComplete({
-    required Object toUpperCase,
-  });
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{activitySummaryLabel} · {checkedInCount} checked in'**
-  String
-  swipesEventRecapScreenStateVisiblecopyActivitysummarylabelCheckedincountCheckedIn({
-    required Object activitySummaryLabel,
-    required Object checkedInCount,
-  });
-
   /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (displayName).
   ///
   /// In en, this message translates to:
   /// **'Guest'**
   String get swipesEventRecapScreenStateDisplaynameGuest;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'guest'**
-  String get swipesEventRecapScreenStateVisiblecopyGuest;
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {tooltipName}'**
-  String swipesEventRecapScreenStateTooltipRemoveTooltipname({
-    required Object tooltipName,
-  });
-
-  /// Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Remember {tooltipName}'**
-  String swipesEventRecapScreenStateTooltipRememberTooltipname({
-    required Object tooltipName,
-  });
 
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
   ///
@@ -12880,7 +12728,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Start catching'**
+  /// **'See who you met'**
   String get dashboardEventFocusRailLabelStartCatching;
 
   /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
@@ -13078,7 +12926,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Post-match opener'**
+  /// **'First-message opener'**
   String get eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener;
 
   /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
@@ -13554,7 +13402,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Use the shared event context when a match opens.'**
+  /// **'Use the shared event context when you message someone you met.'**
   String
   get eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent;
 
@@ -13728,7 +13576,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'afterglow-recap'**
+  /// **'after-event-recap'**
   String
   get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap;
 
@@ -13772,7 +13620,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'wingman'**
+  /// **'host-help'**
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman;
 
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).
@@ -13869,7 +13717,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Match clues'**
+  /// **'Conversation questions'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues;
 
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
@@ -13882,7 +13730,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Hosts do not see individual match clue answers.'**
+  /// **'Hosts do not see your individual answers.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee;
 
@@ -14004,13 +13852,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Afterglow'**
+  /// **'Recap'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow;
 
   /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Your afterglow is ready.'**
+  /// **'Your recap is ready.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady;
 
@@ -14378,7 +14226,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Matching opens for everyone who goes'**
+  /// **'After the event, stay in touch with anyone who went'**
   String get eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone;
 
   /// Product copy used by lib/events/presentation/location_picker_screen.dart (visibleCopy).
@@ -15935,13 +15783,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Caught you'**
+  /// **'Picked you'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Mutual catches'**
+  /// **'Mutual picks'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
@@ -15977,13 +15825,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Matches where interest was mutual.'**
+  /// **'Picks that were mutual.'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Conversations that opened after matching.'**
+  /// **'Conversations that opened after a mutual pick.'**
   String
   get userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter;
 
@@ -15996,7 +15844,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Chats started from mutual catches.'**
+  /// **'Chats started from mutual picks.'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
@@ -16014,7 +15862,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Matches'**
+  /// **'Mutual picks'**
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMatches;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).
@@ -16050,7 +15898,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'A short message after a mutual catch is the clearest follow-through signal.'**
+  /// **'A short message after a mutual pick is the clearest follow-through signal.'**
   String get userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter;
 
   /// Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (title).
@@ -16532,7 +16380,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Catches unavailable'**
+  /// **'People unavailable'**
   String get coreAppErrorMessageVisiblecopyCatchesUnavailable;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
@@ -16598,7 +16446,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Reload catches'**
+  /// **'Reload people'**
   String get coreAppErrorMessageVisiblecopyReloadCatches;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
@@ -16646,7 +16494,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Catches not found'**
+  /// **'People not found'**
   String get coreAppErrorMessageVisiblecopyCatchesNotFound;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
@@ -16725,13 +16573,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/pages/photos_page_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'This only gates Catches. Event booking stays available.'**
+  /// **'Photos are only needed to stay in touch after events. Booking stays available.'**
   String get onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches;
 
   /// Product copy used by lib/onboarding/presentation/pages/photos_page_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Running photos boost catches by 2.3x.'**
+  /// **'A photo from an event helps people recognise you.'**
   String get onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches;
 
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
@@ -16935,7 +16783,7 @@ abstract class AppLocalizations {
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Please choose your dating preferences before continuing.'**
+  /// **'Please choose who you’d like to meet before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseChooseYourDating;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
@@ -17269,13 +17117,13 @@ abstract class AppLocalizations {
   /// Consumer inbox empty-state title before a mutual Catch.
   ///
   /// In en, this message translates to:
-  /// **'No catches yet'**
+  /// **'No messages yet'**
   String get chatsEmptyStateNoCatchesTitle;
 
   /// Consumer inbox empty-state guidance before a mutual Catch.
   ///
   /// In en, this message translates to:
-  /// **'When someone catches you back after a shared event, the conversation opens here with that event as context.'**
+  /// **'When you and someone you met both pick each other after an event, your conversation opens here with that event as context.'**
   String get chatsEmptyStateNoCatchesMessage;
 
   /// Host inbox empty-state title.
@@ -17443,7 +17291,7 @@ abstract class AppLocalizations {
   /// Brand descriptor on the event invite share card.
   ///
   /// In en, this message translates to:
-  /// **'Curated singles event'**
+  /// **'Curated social event'**
   String get eventsInviteShareFooter;
 
   /// Remaining-capacity label on an event share card.
@@ -17689,7 +17537,7 @@ abstract class AppLocalizations {
   /// Match celebration detail after a mutual like.
   ///
   /// In en, this message translates to:
-  /// **'{name} liked you back.'**
+  /// **'{name} picked you too.'**
   String matchesCelebrationLikedBack({required String name});
 
   /// Action after editing run preferences during booking.
@@ -25290,7 +25138,7 @@ abstract class AppLocalizations {
   /// Afterglow playbook module.
   ///
   /// In en, this message translates to:
-  /// **'Afterglow'**
+  /// **'Recap'**
   String get hostEventRehearsalModuleAfterglow;
 
   /// Accountability playbook module.
@@ -32294,7 +32142,7 @@ abstract class AppLocalizations {
   /// Participant form profile review copy.
   ///
   /// In en, this message translates to:
-  /// **'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.'**
+  /// **'Choose which form details to use. Saving does not change your original submission, admit you to an event, or share your profile with other guests.'**
   String get formProfileReviewDescription;
 
   /// Participant form profile review copy.
@@ -32648,7 +32496,7 @@ abstract class AppLocalizations {
   /// Event conversation interface copy.
   ///
   /// In en, this message translates to:
-  /// **'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.'**
+  /// **'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not share your Catch profile with other guests.'**
   String get eventChatJoinDisclosure;
 
   /// Event conversation interface copy.
@@ -47005,6 +46853,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Follow {organizer}'**
   String afterEventFollowOrganizer({required String organizer});
+
+  /// Stay in touch, when picks need a profile: title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo to stay in touch'**
+  String get afterEventNeedsProfileTitle;
+
+  /// Stay in touch, when picks need a profile: body.
+  ///
+  /// In en, this message translates to:
+  /// **'People you met see your photo and a few details when you pick them. You can still rate the event and use the group chat.'**
+  String get afterEventNeedsProfileBody;
+
+  /// Stay in touch, when picks need a profile: action.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your profile'**
+  String get afterEventNeedsProfileAction;
 }
 
 class _AppLocalizationsDelegate

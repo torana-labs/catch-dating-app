@@ -189,7 +189,7 @@ Widget catchAttributionRowCatalogStates(BuildContext context) {
         label: 'default',
         child: CatchAttributionRow(
           brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
-          trailing: 'Curated singles event',
+          trailing: 'Curated social event',
         ),
       ),
       WidgetbookCatalogStateCard(

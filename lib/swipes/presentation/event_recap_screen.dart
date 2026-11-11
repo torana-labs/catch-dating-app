@@ -164,6 +164,14 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
             onFilters: () => context.pushNamed(Routes.filtersScreen.name),
             onPick: _pick,
             onRetryPeople: () => _retryRosterProfiles(ready.people.attendeeIds),
+            onFinishProfile: () => context.push(
+              profileCompletionLocation(
+                from: Routes.eventRecapScreen.path.replaceFirst(
+                  ':eventId',
+                  eventId,
+                ),
+              ),
+            ),
             onOpenNext: (next) => context.pushNamed(
               Routes.eventDetailScreen.name,
               pathParameters: {
@@ -321,6 +329,7 @@ class EventRecapReadyBody extends StatelessWidget {
     required this.onFilters,
     required this.onPick,
     required this.onRetryPeople,
+    required this.onFinishProfile,
     required this.onOpenNext,
     required this.onFollow,
     required this.onOpenOrganizer,
@@ -335,6 +344,7 @@ class EventRecapReadyBody extends StatelessWidget {
   final VoidCallback onFilters;
   final ValueChanged<String> onPick;
   final VoidCallback onRetryPeople;
+  final VoidCallback onFinishProfile;
   final ValueChanged<EventRecapNextState> onOpenNext;
   final VoidCallback onFollow;
   final VoidCallback onOpenOrganizer;
@@ -431,6 +441,7 @@ class EventRecapReadyBody extends StatelessWidget {
           pendingPicks: pendingPicks,
           onPick: onPick,
           onRetry: onRetryPeople,
+          onFinishProfile: onFinishProfile,
         ),
         if (next != null)
           CatchSurface(
@@ -476,16 +487,33 @@ class _PeopleList extends StatelessWidget {
     required this.pendingPicks,
     required this.onPick,
     required this.onRetry,
+    required this.onFinishProfile,
   });
 
   final EventRecapPeopleState people;
   final Set<String> pendingPicks;
   final ValueChanged<String> onPick;
   final VoidCallback onRetry;
+  final VoidCallback onFinishProfile;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    if (people.needsProfile) {
+      return CatchEmptyState(
+        key: SwipeKeys.afterEventFinishProfile,
+        icon: CatchIcons.person,
+        title: l10n.afterEventNeedsProfileTitle,
+        message: l10n.afterEventNeedsProfileBody,
+        actions: [
+          CatchButton(
+            label: l10n.afterEventNeedsProfileAction,
+            variant: CatchButtonVariant.secondary,
+            onPressed: onFinishProfile,
+          ),
+        ],
+      );
+    }
     final empty = people.empty;
     if (empty != null) {
       return CatchEmptyState(

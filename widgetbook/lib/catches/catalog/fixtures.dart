@@ -47,6 +47,7 @@ class WidgetbookCatchesRecapReadyBodyPreview extends StatelessWidget {
         onFilters: _ignore,
         onPick: widgetbookIgnoreString,
         onRetryPeople: _ignore,
+        onFinishProfile: _ignore,
         onOpenNext: _ignoreNext,
         onFollow: _ignore,
         onOpenOrganizer: _ignore,

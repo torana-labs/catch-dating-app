@@ -446,7 +446,7 @@ Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
     EventSuccessModuleCatalog.wingmanRequests.id:
         'Explicit host-help requests let shy attendees ask for a natural introduction while the room is live.',
     EventSuccessModuleCatalog.contextualOpeners.id:
-        'Post-match openers use event context without exposing private answers.',
+        'First-message openers use event context without exposing private answers.',
     EventSuccessModuleCatalog.decomposedFeedback.id:
         'Feedback should be specific enough to improve the next event without becoming a public score.',
     EventSuccessModuleCatalog.hostAnalytics.id:
@@ -460,7 +460,7 @@ Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
       return {
         ...common,
         EventSuccessModuleCatalog.microPods.id:
-            'For runs and walks this behaves as pace or arrival grouping, not romance scoring.',
+            'For runs and walks this behaves as pace or arrival grouping, not a ranking of people.',
         EventSuccessModuleCatalog.guidedRotations.id:
             'Timed pair rotations interrupt a moving group and should not be shown for this format.',
         EventSuccessModuleCatalog.liveReveal.id:
@@ -490,7 +490,7 @@ Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
         EventSuccessModuleCatalog.guidedRotations.id:
             'Pair rotations are not the main quiz structure; keep this advanced until team reshuffles need it.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
-            'Answers can help balance teams or generate clues when the host wants a more dating-forward quiz.',
+            'Answers can help balance teams or generate clues when the host wants more mixing.',
       };
     case EventInteractionModel.seatedTable:
       return {
@@ -562,7 +562,7 @@ Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
 String _summaryFor(EventInteractionModel interactionModel) {
   return switch (interactionModel) {
     EventInteractionModel.pacePods =>
-      'Keep the moving event primary. Use check-in, light grouping, prompts, and follow-up without turning it into speed dating.',
+      'Keep the moving event primary. Use check-in, light grouping, prompts, and follow-up without turning it into a rotation event.',
     EventInteractionModel.pairedRotations =>
       'Use the natural court/pair structure: timed rounds, partner reveals, and optional compatibility clues.',
     EventInteractionModel.teamRotations =>

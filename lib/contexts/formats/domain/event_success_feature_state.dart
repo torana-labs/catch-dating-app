@@ -294,7 +294,7 @@ class EventSuccessHostDraft {
           EventSuccessModuleCatalog.wingmanRequests.id,
         )) {
       issues.add(
-        'Wingman requests are enabled, but the host-help tool is not selected.',
+        'Host-help requests are enabled, but the host-help tool is not selected.',
       );
     }
     if (contextualOpenersEnabled &&
@@ -302,7 +302,7 @@ class EventSuccessHostDraft {
           EventSuccessModuleCatalog.contextualOpeners.id,
         )) {
       issues.add(
-        'Post-match openers are enabled, but the conversation tool is not selected.',
+        'First-message openers are enabled, but the conversation tool is not selected.',
       );
     }
     return issues;

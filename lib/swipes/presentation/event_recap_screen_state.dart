@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
@@ -114,6 +115,7 @@ class EventRecapPeopleState {
     required this.canPick,
     this.error,
     this.empty,
+    this.needsProfile = false,
   });
 
   final EventRecapProfileLookupStatus status;
@@ -132,6 +134,9 @@ class EventRecapPeopleState {
 
   /// Why there's nobody to pick, when the list is empty.
   final SwipeEmptyContent? empty;
+
+  /// Picks need a social profile; the section asks for one instead.
+  final bool needsProfile;
 }
 
 class EventRecapPersonRow {
@@ -318,6 +323,18 @@ EventRecapPeopleState _peopleState({
       ? l10n.afterEventPicksOpenUntil(time: EventFormatters.time(closesAt))
       : l10n.afterEventPicksClosed;
   final attendeeIds = viewModel.attendeeIds;
+  final user = inputs.currentUser;
+  if (user != null && canPick && !user.hasSocialReadyProfileOn(now)) {
+    return EventRecapPeopleState(
+      status: EventRecapProfileLookupStatus.ready,
+      rows: const [],
+      attendeeIds: const [],
+      windowNote: windowNote,
+      countNote: null,
+      canPick: canPick,
+      needsProfile: true,
+    );
+  }
   if (attendeeIds.isEmpty) {
     return EventRecapPeopleState(
       status: EventRecapProfileLookupStatus.ready,

@@ -17,7 +17,7 @@ void main() {
         currentUserParticipation: null,
       );
 
-      expect(content.title, 'Catch unavailable');
+      expect(content.title, 'Picks aren’t available');
     });
 
     test('explains that Catches opens after the event ends', () {
@@ -36,7 +36,7 @@ void main() {
       expect(content.title, 'Event in progress');
       expect(
         content.message,
-        'Catches unlock for 24 hours after the event finishes.',
+        'After the event, you have 24 hours to pick people you’d like to see again.',
       );
     });
 
@@ -57,10 +57,10 @@ void main() {
         ),
       );
 
-      expect(content.title, 'Catch unavailable');
+      expect(content.title, 'Picks aren’t available');
       expect(
         content.message,
-        'You can only catch attendees from events you attended.',
+        'You can pick people from events you checked in to.',
       );
     });
 
@@ -81,7 +81,7 @@ void main() {
         ),
       );
 
-      expect(content.title, 'Catch window closed');
+      expect(content.title, 'Picks have closed');
     });
 
     test(

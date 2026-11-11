@@ -37,7 +37,7 @@ void main() {
       ),
     );
 
-    expect(find.text('MATCHED AFTER DINNER'), findsWidgets);
+    expect(find.text('MET AT DINNER'), findsWidgets);
     expect(find.text('After dinner'), findsOneWidget);
     expect(
       find.text('Still thinking about the dessert debate.'),

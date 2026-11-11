@@ -11,8 +11,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.crowdBalance,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.before,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise: 'The room feels intentional instead of random.',
     hostPromise:
         'Shows waitlist, cohort, skill, and pace gaps before the event.',
@@ -33,16 +32,16 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.checkIn,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.arrival,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise: 'Arrival is quick and the right people enter the loop.',
-    hostPromise: 'Confirms who actually attended before matching and reviews.',
+    hostPromise:
+        'Confirms who actually attended before after-event picks and reviews.',
     requiresLivePhoneUse: true,
     setupSteps: [
       'Use the shared event attendance system as the source of truth.',
       'Support QR check-in as one arrival method, not a separate product loop.',
       'Let hosts mark manual arrivals when phones fail.',
-      'Use checked-in attendees as the eligible pool for post-event Catches.',
+      'Use checked-in attendees as the eligible pool for after-event picks.',
     ],
     riskControls: [
       'Never publish the full roster by default.',
@@ -104,7 +103,7 @@ abstract final class EventSuccessModuleCatalog {
     hostPromise: 'Creates mixing without forcing one-to-one pressure.',
     setupSteps: [
       'Group attendees into four to six person pods.',
-      'Prefer pace, skill, geography, or interests over hidden romance scoring.',
+      'Prefer pace, skill, geography, or interests over hidden scoring of people.',
       'Let hosts reshuffle pods when real arrivals differ from signups.',
     ],
     riskControls: ['Offer an opt-out for attendees who arrive with friends.'],
@@ -174,17 +173,17 @@ abstract final class EventSuccessModuleCatalog {
     ],
     riskControls: [
       'Frame compatibility clues as conversation context, not certainty.',
-      'Do not expose normal post-event catch targets to hosts.',
+      "Do not expose guests' after-event picks to hosts.",
     ],
   );
 
   static const compatibilityQuestionnaire = EventSuccessModule(
     id: 'compatibility_questionnaire',
-    title: 'Match clue questions',
+    title: 'Conversation questions',
     type: EventSuccessModuleType.compatibilityQuestionnaire,
     productLayer: EventSuccessProductLayer.compatibility,
     stage: EventSuccessStage.before,
-    attendeePromise: 'Matching moments have a reason beyond looks.',
+    attendeePromise: 'Conversations start with a reason beyond looks.',
     hostPromise:
         'Creates reveal clues and optional pairing context without promising chemistry.',
     enabledByDefault: false,
@@ -205,8 +204,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.wingmanRequests,
     productLayer: EventSuccessProductLayer.hostFacilitation,
     stage: EventSuccessStage.mixing,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise:
         'Ask the host for help with a specific introduction while the event is still live.',
     hostPromise:
@@ -229,9 +227,9 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.contextualOpeners,
     productLayer: EventSuccessProductLayer.conversation,
     stage: EventSuccessStage.after,
-    hostConfigurable:
-        false,
-    attendeePromise: 'A match starts with shared context instead of a cold hi.',
+    hostConfigurable: false,
+    attendeePromise:
+        'A first message starts with shared context instead of a cold hi.',
     hostPromise: 'Improves downstream chat starts without host involvement.',
     setupSteps: [
       'Use event, team, route, prompt, or table context.',
@@ -248,8 +246,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise: 'Feedback is specific and private.',
     hostPromise:
         'Separates welcome, balance, structure, safety, and chemistry.',
@@ -265,8 +262,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.hostAnalytics,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.hostDebrief,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise:
         'The next event should feel better because this one taught us something.',
     hostPromise:
@@ -284,8 +280,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.safetyControls,
     productLayer: EventSuccessProductLayer.safety,
     stage: EventSuccessStage.before,
-    hostConfigurable:
-        false,
+    hostConfigurable: false,
     attendeePromise: 'Attendees can participate without losing control.',
     hostPromise: 'Gives hosts escalation and boundary tools.',
     setupSteps: [

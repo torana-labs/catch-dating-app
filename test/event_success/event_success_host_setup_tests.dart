@@ -125,7 +125,7 @@ void _registerEventSuccessHostSetupTests() {
     expect(find.text('"Help me say hi" requests'), findsNothing);
     expect(find.text('Suggested first-message openers'), findsNothing);
     // Match clue questions is a first-class field, not nested in Advanced.
-    expect(find.text('Match clue questions'), findsOneWidget);
+    expect(find.text('Conversation questions'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
     await pumpFeatureUi(tester);
@@ -915,16 +915,16 @@ void _registerEventSuccessHostSetupTests() {
     expect(find.text('Feedback'), findsOneWidget);
     expect(find.text('Conversation exclusions'), findsOneWidget);
     expect(find.text('3/5 responses'), findsOneWidget);
-    expect(find.text('Caught someone'), findsWidgets);
+    expect(find.text('Picked someone'), findsWidgets);
     expect(find.text('People included'), findsOneWidget);
     expect(find.text('Opted out'), findsOneWidget);
-    expect(find.text('Wingman help'), findsOneWidget);
+    expect(find.text('Host-help requests'), findsOneWidget);
     expect(find.text('40%'), findsWidgets);
     expect(find.text('80%'), findsWidgets);
     expect(find.text('20%'), findsWidgets);
     expect(find.text('2/5 feedback'), findsOneWidget);
-    expect(find.text('2 caught someone'), findsOneWidget);
-    expect(find.text('Catches sent'), findsOneWidget);
+    expect(find.text('2 picked someone'), findsOneWidget);
+    expect(find.text('Picks sent'), findsOneWidget);
     expect(find.text('4 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('1 host-help requests'), findsOneWidget);

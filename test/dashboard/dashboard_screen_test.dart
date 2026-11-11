@@ -294,7 +294,7 @@ void main() {
       );
       expect(rootScaffold.bodyLayout, CatchPageBodyMode.standard);
       expect(
-        find.text('Your catches unlock\nafter your first event.'),
+        find.text('The people you meet\nshow up after your first event.'),
         findsOneWidget,
       );
       expect(find.byType(HowCatchWorksSection), findsOneWidget);
@@ -428,7 +428,7 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(
-        find.text('Your catches unlock\nafter your first event.'),
+        find.text('The people you meet\nshow up after your first event.'),
         findsOneWidget,
       );
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
@@ -533,7 +533,7 @@ void main() {
       expect(find.text('Your clubs'), findsNothing);
       expect(find.text('Home Run Club'), findsNothing);
       expect(
-        find.text('Your catches unlock\nafter your first event.'),
+        find.text('The people you meet\nshow up after your first event.'),
         findsOneWidget,
       );
     });
@@ -646,7 +646,7 @@ void main() {
       expect(find.byTooltip('Notifications'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(
-        find.text('Your catches unlock\nafter your first event.'),
+        find.text('The people you meet\nshow up after your first event.'),
         findsOneWidget,
       );
     });
@@ -687,7 +687,7 @@ void main() {
 
       expect(find.byType(CatchRouteScaffold), findsOneWidget);
       expect(find.text('Activity'), findsOneWidget);
-      expect(find.text("It's a catch"), findsNWidgets(2));
+      expect(find.text('You picked each other'), findsNWidgets(2));
       expect(find.text('Mark all read'), findsOneWidget);
       expect(repository.markReadCalls, isEmpty);
 
@@ -991,7 +991,7 @@ ActivityNotification _activityNotification({
   required String id,
   required String uid,
   ActivityNotificationType type = ActivityNotificationType.match,
-  String title = "It's a catch",
+  String title = 'You picked each other',
   String body = 'You and Runner Two matched. Say hi!',
   String? organizerId,
   String? postId,

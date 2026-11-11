@@ -28,7 +28,7 @@ Widget eventSuccessStrictEventSuccessSetupBody(BuildContext context) {
   );
   final rotations = context.knobs.boolean(label: "Timed partner rotations");
   final reveal = context.knobs.boolean(label: "Synchronized partner reveal");
-  final questionnaire = context.knobs.boolean(label: "Match clue questions");
+  final questionnaire = context.knobs.boolean(label: 'Conversation questions');
 
   return StrictCoverageScaffold(
     componentName: "EventSuccessSetupBody",
