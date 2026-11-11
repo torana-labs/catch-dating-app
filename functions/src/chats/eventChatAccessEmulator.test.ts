@@ -95,12 +95,13 @@ test("Firestore room access follows current authority and explicit choices",
       assert.deepEqual(joins.map((r) => r.replayed).sort(), [false, true]);
       assert.equal(validMember((await member(person).get()).data()), true);
       assert.equal((await view(person)).canReadMessages, true);
+      // A stored receipt replays its exact payload; a changed one is refused.
       const oldClose = change(host, "close", 1);
-      const oldHash = (value: unknown) => createHash("sha256")
+      const sha = (value: unknown) => createHash("sha256")
         .update(JSON.stringify(value)).digest("hex");
-      await ref("eventChatAccessReceipts", oldHash([host,
+      await ref("eventChatAccessReceipts", sha([host,
         (oldClose.data as {requestId: string}).requestId])).set({eventId,
-        uid: host, payloadHash: oldHash([eventId, "close", 1, null]),
+        uid: host, payloadHash: sha([eventId, "close", 1, null, null, null]),
         revision: 2, createdAt: Timestamp.now()});
       assert.deepEqual(await update(oldClose, deps),
         {revision: 2, replayed: true});

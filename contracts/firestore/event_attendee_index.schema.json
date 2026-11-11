@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_attendee_index.schema.json",
+  "title": "EventAttendeeIndexDocument",
+  "description": "Server-only pointer from a Catch account to its one roster row on an event, stored at eventAttendeeIndex/{eventId}_{uid}. Gives booking transactions a deterministic, create-once key per guest.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAttendeeIndex",
+  "x-firestore-path": "eventAttendeeIndex/{indexId}",
+  "x-document-id-field": "id",
+  "x-owner": "Catch-booking roster writers (projection, booking callables)",
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "attendeeId",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
