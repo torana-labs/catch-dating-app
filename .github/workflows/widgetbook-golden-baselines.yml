@@ -1,0 +1,95 @@
+name: Widgetbook golden baselines
+run-name: Widgetbook baselines for ${{ inputs.ref }} (${{ inputs.name_pattern }})
+
+# The Widgetbook corpus baselines are macOS-rendered (test/goldens/README.md),
+# so a layout change cannot regenerate them on Linux. This manual job renders
+# the selected cases on the same macOS runner image as the goldens lane and
+# uploads only the baselines that changed, for a person to review and commit.
+# It never pushes, opens a pull request or changes anything in the repository.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or full commit SHA in this repository to render
+        required: true
+        type: string
+      name_pattern:
+        description: >-
+          Regular expression over the corpus test names, as `flutter test --name`
+          takes it (for example `CatchChoiceTile.*at scale 2\.0`)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: widgetbook-golden-baselines-${{ inputs.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    name: Render Widgetbook baselines on macOS
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/generate-contracts
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter pub get
+
+      - name: Resolve Widgetbook dependencies
+        run: (cd widgetbook && flutter pub get)
+
+      - name: Generate Widgetbook directories
+        run: (cd widgetbook && dart run build_runner build)
+
+      - name: Render the selected corpus cases
+        env:
+          NAME_PATTERN: ${{ inputs.name_pattern }}
+        run: |
+          set -euo pipefail
+          cd widgetbook
+          flutter test --concurrency=1 --update-goldens \
+            test/primitive_goldens_test.dart --name "$NAME_PATTERN"
+
+      - name: Collect changed baselines
+        id: collect
+        run: |
+          set -euo pipefail
+          out="build/widgetbook-baselines"
+          mkdir -p "$out"
+          git status --porcelain=v1 -z --untracked-files=all -- 'test/goldens/baseline/widgetbook/*.png' |
+            while IFS= read -r -d '' entry; do
+              path="${entry:3}"
+              mkdir -p "$out/$(dirname "$path")"
+              cp "$path" "$out/$path"
+              echo "$path"
+            done > build/widgetbook-baselines.txt
+          count="$(wc -l < build/widgetbook-baselines.txt | tr -d ' ')"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Widgetbook baselines rendered on macOS"
+            echo
+            echo "Source: \`$(git rev-parse HEAD)\`; changed baselines: $count."
+            echo
+            sed 's/^/- `/; s/$/`/' build/widgetbook-baselines.txt
+            echo
+            echo "Download the artifact, review the images, and commit the ones you accept."
+          } >> "$GITHUB_STEP_SUMMARY"
+          cp build/widgetbook-baselines.txt "$out/CHANGED.txt"
+
+      - name: Upload changed baselines for review
+        if: ${{ steps.collect.outputs.count != '0' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: widgetbook-baselines-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/widgetbook-baselines
+          if-no-files-found: error
+          retention-days: 14

@@ -26,6 +26,15 @@ function Width({children, width}: {children: ReactNode; width: 390 | 1280}) {
 
 // Storybook has no server: city changes stay on the story.
 const stay = () => undefined;
+// Storybook's preview targets links at the parent frame, so an in-page "#" link would
+// navigate the test runner away; keep fragment links on the story.
+const stayOnFragmentLinks = () => {
+  const keep = (event: MouseEvent) => {
+    if (event.target instanceof Element && event.target.closest('a[href^="#"]')) event.preventDefault();
+  };
+  document.addEventListener("click", keep, true);
+  return () => document.removeEventListener("click", keep, true);
+};
 const page = (catalog: HomeCatalog, width: 390 | 1280) => <Width width={width}><HomePage captures={marketingCaptures} catalog={catalog} navigate={stay} /></Width>;
 
 /** Mumbai live on a 1280px page, as the RbWebHomeV2 board's mumbai_live state. */
@@ -78,6 +87,7 @@ export const CatalogUnavailable: Story = {
 export const FormatFilterAndCityPicker: Story = {
   name: "Format filter and city picker · 1280",
   parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["format-filter", "city-picker"]}},
+  beforeEach: stayOnFragmentLinks,
   render: () => page(mumbaiLiveCatalog, 1280),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
