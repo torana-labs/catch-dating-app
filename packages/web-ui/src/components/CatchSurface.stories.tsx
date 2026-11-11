@@ -5,7 +5,7 @@ import {catchFormats, catchSurfaceBlocks, type CatchSurfaceColor} from "./catchC
 import {useGround} from "./CatchGroundProvider";
 import {CatchRoot} from "./CatchRoot";
 import {CatchStack} from "./CatchStack";
-import {CatchSurface} from "./CatchSurface";
+import {type CatchWebBandColor, CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
 
 const meta = {
@@ -37,7 +37,7 @@ function State({label, children}: {label: string; children: ReactNode}) {
   );
 }
 
-const bandColours: Array<CatchSurfaceColor | undefined> = [undefined, "tile", "ink", ...catchFormats];
+const bandColours: Array<CatchSurfaceColor | CatchWebBandColor | undefined> = [undefined, "tile", "ink", ...catchFormats, "indigo"];
 
 function PressableSurface() {
   const [count, setCount] = useState(0);

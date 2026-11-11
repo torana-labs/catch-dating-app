@@ -4,6 +4,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchDeviceFrame} from "./CatchDeviceFrame";
 import {CatchGap} from "./CatchGap";
+import {CatchSurface} from "./CatchSurface";
 
 const meta = {
   title: "Web UI/CatchDeviceFrame",
@@ -61,6 +62,40 @@ export const Kinds: Story = {
           </div>
         </CatchGap>
       </CatchBand>
+    </StoryPage>
+  ),
+};
+
+/** A browser window around a desktop capture (proposal W1), with and without an address, on a wide and a phone-width band. */
+export const Browser: Story = {
+  parameters: {catchComponent: {id: "shared_device_frame", routeIds: [...storyRoutes, "weddings"], states: ["browser", "browser-compact"]}},
+  render: () => (
+    <StoryPage>
+      <CatchSurface aria-label="Browser on a wide band" block="band" color="tile">
+        <div style={{maxWidth: 720}}>
+          <CatchDeviceFrame address="example.com/w/shah-mehta" kind="browser">{screenImage("An organiser's own page on a desktop", tabletScreen)}</CatchDeviceFrame>
+        </div>
+      </CatchSurface>
+      <div style={{width: 390}}>
+        <CatchSurface aria-label="Browser on a phone-width band" block="band">
+          <CatchDeviceFrame kind="browser">{screenImage("The same page on a narrow band", tabletScreen)}</CatchDeviceFrame>
+        </CatchSurface>
+      </div>
+    </StoryPage>
+  ),
+};
+
+/** A phone that runs off the bottom of its band (proposal L3); the band clips it. */
+export const Bleed: Story = {
+  parameters: {catchComponent: {id: "shared_device_frame", routeIds: storyRoutes, states: ["bleed"]}},
+  render: () => (
+    <StoryPage>
+      <CatchSurface aria-label="A device bleeding off the band" block="band" color="run">
+        <div style={{margin: "0 auto", width: 280}}>
+          <CatchDeviceFrame bleed kind="phone" tilt="right">{screenImage("An organiser's page", phoneScreen)}</CatchDeviceFrame>
+        </div>
+      </CatchSurface>
+      <CatchSurface aria-label="The next band" block="band"><span>The next band starts here.</span></CatchSurface>
     </StoryPage>
   ),
 };

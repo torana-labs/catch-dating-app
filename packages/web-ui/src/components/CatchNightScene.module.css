@@ -1,0 +1,295 @@
+/*
+ * Website night scene (proposal WebNightScene). The track is one scene tall
+ * plus 55% of a scene per moment; the scene pins at the top of the viewport
+ * for the length of the track, so the whole evening reads in one screen.
+ * The phone is sized from the scene's height so it always fits. Colours are
+ * the theme ink roles (the scene is made for the ink band) and the journey's
+ * accent: the accent itself on the night theme, its deep shade on a light one.
+ */
+.track {
+  --catch-night-scene-height: clamp(560px, 100svh, 900px);
+  --catch-night-accent: var(--catch-theme-ink);
+  position: relative;
+  height: calc(var(--catch-night-scene-height) * (1 + 0.55 * var(--catch-night-moments)));
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-stack-sans);
+}
+
+.track[data-accent="coral"] { --catch-night-accent: var(--catch-palette-coral-deep); }
+.track[data-accent="pink"] { --catch-night-accent: var(--catch-palette-pink-deep); }
+.track[data-accent="yellow"] { --catch-night-accent: var(--catch-palette-yellow-deep); }
+.track[data-accent="mint"] { --catch-night-accent: var(--catch-palette-mint-deep); }
+.track[data-accent="indigo"] { --catch-night-accent: var(--catch-palette-indigo-deep); }
+.track[data-accent="magenta"] { --catch-night-accent: var(--catch-palette-magenta-deep); }
+[data-catch-theme="dark"] .track[data-accent="coral"] { --catch-night-accent: var(--catch-palette-coral); }
+[data-catch-theme="dark"] .track[data-accent="pink"] { --catch-night-accent: var(--catch-palette-pink); }
+[data-catch-theme="dark"] .track[data-accent="yellow"] { --catch-night-accent: var(--catch-palette-yellow); }
+[data-catch-theme="dark"] .track[data-accent="mint"] { --catch-night-accent: var(--catch-palette-mint); }
+[data-catch-theme="dark"] .track[data-accent="indigo"] { --catch-night-accent: var(--catch-palette-indigo); }
+[data-catch-theme="dark"] .track[data-accent="magenta"] { --catch-night-accent: var(--catch-palette-magenta); }
+
+.scene {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 56px;
+  box-sizing: border-box;
+  height: var(--catch-night-scene-height);
+  padding: var(--catch-space-s7) 0;
+}
+
+/* The wide arrangement's left column: chips, the event, then the timeline. */
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro18);
+  min-width: 0;
+  max-height: 100%;
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--catch-space-s2);
+}
+
+.lead {
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-role-body-small-size);
+  font-weight: 600;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--catch-space-micro2) var(--catch-space-s3);
+  padding-top: var(--catch-space-micro14);
+  border-top: 1px solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+}
+
+.event {
+  font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
+  font-size: 26px;
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  font-weight: var(--catch-typography-role-display-hero-weight);
+  line-height: 1.1;
+}
+
+.where,
+.intro {
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-role-body-small-size);
+}
+
+.where { font-weight: 600; }
+
+.intro {
+  flex-basis: 100%;
+  max-width: 600px;
+  margin-top: var(--catch-space-micro3);
+  line-height: 1.5;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moment {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--catch-space-micro14);
+  width: 100%;
+  padding: var(--catch-space-micro6) 0 var(--catch-space-micro6) var(--catch-space-s4);
+  border: 0;
+  border-left: 2px solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--catch-duration-standard) var(--catch-motion-standard-curve),
+    padding var(--catch-duration-standard) var(--catch-motion-standard-curve);
+}
+
+.moment[data-active] {
+  padding-block: var(--catch-space-s3);
+  border-left-color: var(--catch-night-accent);
+}
+
+.moment:focus-visible {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.time {
+  color: var(--catch-theme-ink3);
+  font-size: var(--catch-typography-role-body-meta-size);
+  font-weight: 600;
+}
+
+.moment[data-active] .time { color: var(--catch-night-accent); }
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  min-width: 0;
+}
+
+.title {
+  color: var(--catch-theme-ink3);
+  font-size: var(--catch-typography-role-title-row-size);
+  font-weight: 600;
+}
+
+.moment[data-active] .title,
+.nowTitle {
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
+  font-size: clamp(28px, calc(var(--catch-night-scene-height) * 0.04), 36px);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  font-weight: var(--catch-typography-role-display-hero-weight);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.body,
+.nowBody {
+  max-width: 540px;
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-role-body-lead-size);
+  line-height: 1.5;
+}
+
+/* The property the focused moment relies on: a capitalised kicker in the accent with a small square mark. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  color: var(--catch-night-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+
+.mark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--catch-night-accent);
+}
+
+.phone {
+  align-self: center;
+  width: clamp(150px, calc((var(--catch-night-scene-height) - 76px) * 0.43), 380px);
+}
+
+.screens {
+  position: relative;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--catch-duration-standard) var(--catch-motion-standard-curve);
+}
+
+.screen[data-active] { opacity: 1; }
+
+.segments,
+.now { display: none; }
+
+@container catch-page (width < 840px) {
+  .track { --catch-night-scene-height: clamp(560px, 100svh, 860px); }
+
+  .scene {
+    display: flex;
+    flex-direction: column;
+    gap: var(--catch-space-s3);
+    padding: var(--catch-space-micro14) 0 var(--catch-space-micro18);
+  }
+
+  .story { display: contents; }
+
+  .picker {
+    flex: none;
+    flex-wrap: nowrap;
+    margin: 0 calc(-1 * var(--catch-space-s5));
+    padding: 0 var(--catch-space-s5);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .lead,
+  .head,
+  .timeline { display: none; }
+
+  .phone {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    min-height: 0;
+    width: clamp(150px, calc((var(--catch-night-scene-height) - 320px) * 0.43), 300px);
+  }
+
+  .phone > * { width: 100%; }
+
+  .segments {
+    display: flex;
+    flex: none;
+    gap: var(--catch-space-micro6);
+  }
+
+  .segments > span {
+    flex: 1;
+    height: 4px;
+    border-radius: var(--catch-radius-pill);
+    background: color-mix(in srgb, var(--catch-theme-ink) 18%, transparent);
+    transition: background var(--catch-duration-standard) var(--catch-motion-standard-curve);
+  }
+
+  .segments > span[data-done] { background: var(--catch-night-accent); }
+
+  .now {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--catch-space-micro6);
+    min-height: 150px;
+  }
+
+  .kicker {
+    color: var(--catch-theme-ink2);
+    font-size: var(--catch-typography-role-body-meta-size);
+    font-weight: 600;
+  }
+
+  .nowTitle { font-size: 28px; line-height: 1.05; letter-spacing: -0.02em; }
+  .nowBody { font-size: var(--catch-typography-role-body-small-size); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moment,
+  .screen,
+  .segments > span { transition: none; }
+}

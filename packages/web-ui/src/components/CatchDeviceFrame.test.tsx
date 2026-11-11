@@ -35,13 +35,13 @@ describe("CatchDeviceFrame", () => {
 
   it("draws a browser window with a decorative bar and the capture at its own aspect", () => {
     const {container} = render(
-      <CatchDeviceFrame address="catchdates.com/w/meher" bleed kind="browser"><img alt="The running order" src="/desk.png" /></CatchDeviceFrame>,
+      <CatchDeviceFrame address="example.com/w/meher" bleed kind="browser"><img alt="The running order" src="/desk.png" /></CatchDeviceFrame>,
     );
     const window = frameOf("The running order");
     expect(window.dataset).toMatchObject({kind: "browser", tilt: "none"});
     expect(window.hasAttribute("data-bleed")).toBe(false);
     const bar = container.querySelector("[aria-hidden='true']");
-    expect(bar?.textContent).toBe("catchdates.com/w/meher");
+    expect(bar?.textContent).toBe("example.com/w/meher");
     expect(window.style.getPropertyValue("--catch-device-aspect")).toBe("");
   });
 

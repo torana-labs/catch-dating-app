@@ -25,7 +25,7 @@ export type CatchDeviceFrameOrientation = "landscape" | "portrait";
 export type CatchDeviceFrameTilt = "none" | "left" | "right";
 
 export interface CatchDeviceFrameProps {
-  /** Browser only: the address shown in the bar, such as "catchdates.com/w/meher". Decorative. */
+  /** Browser only: the address shown in the bar, such as "example.com/w/meher". Decorative. */
   address?: string;
   /**
    * Runs the device off the bottom edge of the band it sits in (proposal L3):
