@@ -530,7 +530,6 @@
         "website/src/styles/consumer-home.css",
         "packages/web-ui/src/components/CatchRoot.module.css",
         "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
         "packages/web-ui/src/components/CatchBand.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchNoticeRegion.module.css"
@@ -548,7 +547,7 @@
           "mobile-sticky-action"
         ]
       },
-      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, a reading lane beside the booking card (sticky aside from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
+      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, the page beside the booking card's 380px rail at the site content width (CatchStack railWidth, proposal E1; the rail sticks from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
     },
     {
       "id": "event_page_frame",
