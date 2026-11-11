@@ -50,7 +50,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={marketingCaptures} />;
   else if (page === "weddings") content = location.pathname.replace(/\/$/, "") === "/weddings/apply"
-    ? <WeddingsApply /> : <Weddings />;
+    ? <WeddingsApply /> : <Weddings captures={marketingCaptures} />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",

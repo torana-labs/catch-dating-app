@@ -4099,16 +4099,25 @@
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css"
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchAppCaptureImage.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
+        "story": "website/src/stories/Weddings.stories.tsx",
+        "exportName": "Desktop",
         "states": [
           "default",
           "phone"
         ]
       },
-      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares the route review states but no catchComponent: the landing story fails its axe check (colour-contrast on the row subtitles over the coral ground, 2.7:1), so the record stays planned until that is fixed."
+      "notes": "Catch for weddings from the RbWebWeddings board: a sales-led pilot on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply. Bands: the hero (\"One wedding, one running order.\" on phones, the full headline from medium up) with the RSVP capture, the running order, the problem, one wedding through six chapters in real programme screens (desktop screens in the W1 browser frame, phones in the generic frame; all 14 slots are pending captures showing placeholders), the team, messages and the family, pricing by headcount with no numbers and Apply for a quote, the pilot on the indigo band with the step-1 card and the Catch Host trial tile, questions and the ink foot band. Weddings.stories.tsx Desktop (default) and Phone (phone) pass their axe checks."
     },
     {
       "id": "weddings_bands",
@@ -4143,7 +4152,7 @@
           "phone"
         ]
       },
-      "notes": "The landing's bands in board order: the running-order hero, why planners switch, one wedding through six chapters (illustrative interface excerpts that run nothing), the team, messages and the family, pricing by headcount, the guided pilot with the step-1 card, questions and the foot band."
+      "notes": "The landing's bands in board order (see route_weddings). Screens come from capture slots wedding-* in tool/marketing/capture_manifest.json by literal id; the step-1 card shows what is missing on Continue and links to /weddings/apply/ only once complete."
     },
     {
       "id": "route_weddings_apply",
@@ -4181,7 +4190,7 @@
           "sent"
         ]
       },
-      "notes": "/weddings/apply/ (noindex): step 2 and the sent state of the guided-pilot application, taking step 1 from the landing through sessionStorage in the same tab. No intake front door yet, so Send stays disabled until one is chosen."
+      "notes": "/weddings/apply/ (noindex), from the RbWebWeddingsApply board: step 1 again when the landing did not hand it over (sessionStorage, same tab), then step 2 on the tile band with the summary and next steps beside the form (every answer starts empty; who is flying, what they want and how they heard are required), then the sent state, which can reopen the answers. Send goes through the waitlist route as a programme application with applicantRole and programmeKind."
     },
     {
       "id": "weddings_application_flow",
@@ -4216,7 +4225,7 @@
           "sent"
         ]
       },
-      "notes": "The application drawn from the weddings controller: the stepper, step 2's summary of step 1 and its fields, then the sent state."
+      "notes": "The application drawn from the weddings controller: step 1's card, step 2's summary of step 1 and its required answers, then the sent state."
     },
     {
       "id": "weddings_step_one_card",

@@ -11,6 +11,8 @@
 .capture[data-size="md"] { width: min(100%, 330px); }
 .capture[data-size="lg"] { width: min(100%, 380px); }
 .capture[data-size] { justify-self: center; margin-inline: auto; }
+/* A fixed size keeps its width beside other content in a row instead of shrinking away. */
+.capture:is([data-size="sm"], [data-size="md"], [data-size="lg"]) { flex: none; }
 .capture[data-size="fill"] { width: 100%; }
 
 .capture[data-tilt="left"] .image { transform: rotate(-4deg); }

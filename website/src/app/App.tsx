@@ -259,7 +259,7 @@ function CanonicalMarketingRouteShell() {
         <Routes>
           <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
           <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
-          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage />} />
+          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage captures={marketingCaptures} />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}

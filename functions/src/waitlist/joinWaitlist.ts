@@ -336,6 +336,8 @@ export function normalizeProgrammeApplication(
   if (!isRecord(value)) return null;
   const date = normalizeText(value.weddingDate);
   const application: Record<string, unknown> = {
+    applicantRole: normalizeOptionalMarketingText(value.applicantRole, 80),
+    programmeKind: normalizeOptionalMarketingText(value.programmeKind, 80),
     planningCompany: normalizeOptionalMarketingText(value.planningCompany, 140),
     city: normalizeOptionalMarketingText(value.city, 80),
     weddingDate: /^\d{4}-\d{2}-\d{2}$/u.test(date) ? date : null,
