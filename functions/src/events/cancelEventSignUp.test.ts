@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
@@ -328,8 +329,8 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
   const h = harness({
     "events/event-1": event({bookedCount: 1, waitlistedCount: 1}),
     "users/runner-1": user(),
+    ...guestInstallation("runner-2", "token-2"),
     "users/runner-2": user({
-      fcmToken: "token-2",
       gender: "woman",
       interestedInGenders: ["man"],
     }),
@@ -554,7 +555,8 @@ test("retried cancellation with committed no-op sends no stale push or refund",
     const sourceEvent = event({bookedCount: 1, waitlistedCount: 1});
     const h = harness({"events/event-1": sourceEvent,
       "users/runner-1": user(),
-      "users/runner-2": user({fcmToken: "push-2", gender: "woman",
+      ...guestInstallation("runner-2", "push-2"),
+      "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
@@ -608,8 +610,8 @@ test(
     const h = harness({
       "events/event-1": event({bookedCount: 1, waitlistedCount: 1}),
       "users/runner-1": user(),
+      ...guestInstallation("runner-2", "token-2"),
       "users/runner-2": user({
-        fcmToken: "token-2",
         gender: "woman",
         interestedInGenders: ["man"],
       }),

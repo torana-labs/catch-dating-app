@@ -461,7 +461,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 |---|---|---|---|---|
 | `UserProfileRepository.setUserProfile` | `users/{uid}` | Initial profile create after onboarding identity step. | Owner create plus full shape validation. | Yes. This is initial owner-owned profile creation. |
 | `SavedEventRepository.watchSavedEvent` / `saveEvent` / `unsaveEvent` | `savedEvents/{uid_eventId}` | Render, save, or unsave one event for the current user. | Owner direct edge read/create/delete with deterministic ids. | Yes. No user-profile projection is maintained. |
-| `FcmService._saveToken` | `users/{uid}/pushInstallations/{installationId}` plus legacy consumer `users/{uid}.fcmToken` | Store app-role scoped push tokens for side-by-side host/consumer installs; consumer attempts both representations independently so one rollout-era denial cannot suppress the other write. | Owner direct create/update of bounded push installation docs; legacy owner update of only `fcmToken`. | Yes. Runtime token update. |
+| `FcmService._saveToken` | `users/{uid}/pushInstallations/{installationId}` | Store app-role scoped push tokens for side-by-side host/consumer installs. Installations are the only push address store; the app no longer writes `users/{uid}.fcmToken`. | Owner direct create/update of bounded push installation docs. | Yes. Runtime token update. |
 | `OnboardingDraftRepository.saveDraft/deleteDraft`; first public OTP registration seed | `onboarding_drafts/{uid}` | Private draft set/delete; server creates a name/phone continuation seed only when no draft exists. | Owner-only direct access plus server callable ownership. | Yes. Private volatile draft state, never a public/Consumer profile by itself. |
 | `LaunchAccessRepository.fetchApplication/watchApplication/submitApplication` | `accessApplications/{uid}` | Read the current user's application and create or revise editable application fields. | Owner-only path, strict field/enum/length shape, server timestamps, monotonic submission count, and editable-status boundary; review/cohort/activation fields remain Admin-SDK-owned. | Yes. One narrow owner-authored source document; review decisions remain callable-owned. |
 | `SwipeRepository.recordSwipe` | `profileDecisions/{uid}/outgoing/{targetId}` | Create own outgoing profile decision. | Path/data identity, attended-event, block, and payload rules. | Yes. Match creation remains trigger-owned. |
@@ -758,12 +758,15 @@ read by updating only `readAt`.
 | New event posted by followed organizer | `createEvent` callable best-effort fan-out after the event commits | Yes, deterministic `organizerUpdate_${eventId}` item for active followers, excluding the host. | Two-tier: activity for followers; push only when the follow preference and user preference allow it. | Implemented. |
 | New follower post by followed organizer | `createOrganizerPost` callable plus retryable `dispatchPendingOrganizerFollowerUpdates` scheduler | Yes, deterministic `organizerUpdate_${postId}` item for active followers, excluding the host, deleted accounts, and blocked relationships, with `postId` routing metadata. | Two-tier: durable Activity for followers; preference-gated at-most-once push with accepted, failed, or unknown receipt state. | Live source; deployment required for the new retry scheduler. |
 
-Match/message pushes resolve `users/{uid}/pushInstallations` by `appRole` and
-deduplicate token addresses. Only Consumer may fall back to legacy `fcmToken`;
-Host never uses that fallback. Explicit `prefsMessages: false` and
+Every push reads `users/{uid}/pushInstallations`; nothing reads the retired
+`users/{uid}.fcmToken`. Match/message pushes send to every installation of the
+recipient's `appRole` and deduplicate token addresses. Single-recipient
+producers (event, waitlist, broadcast, Cross Paths, follower and moment pushes)
+send to the newest Consumer installation; staff moment and programme activity
+pushes send to the newest Host installation. Account deletion removes every
+installation. Explicit `prefsMessages: false` and
 `prefsNewCatches: false` still suppress their respective categories. Host-only
-recipients may lack a Consumer profile; absent message preferences default on.
-Existing non-conversation producers are unchanged. Stable notification IDs,
+recipients may lack a Consumer profile; absent message preferences default on. Stable notification IDs,
 recipient UID, app role and optional public/professional avatar metadata travel
 in the push data for foreground validation and rendering. A per-trigger receipt
 prevents repeated fan-out, but FCM remains best-effort, not guaranteed delivery.

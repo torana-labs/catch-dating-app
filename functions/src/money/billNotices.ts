@@ -21,7 +21,6 @@ import type {
   OrganizerBillDocument,
   OrganizerBillNoticeDocument,
   OrganizerDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {validateBillingNoticeSettingsDocument} from
   "../shared/generated/validators/billingNoticeSettingsDocument";
@@ -72,12 +71,8 @@ export const defaultNoticeDeps: NoticeDeps = {
     const user = await admin.auth().getUser(uid).catch(() => null);
     return user?.email && user.emailVerified ? user.email : null;
   },
-  hostTokens: async (uid) => {
-    const db = admin.firestore();
-    const user = (await db.collection("users").doc(uid).get()).data() as
-      UserProfileDocument | undefined;
-    return resolveConversationPushTokens(db, uid, "host", user);
-  },
+  hostTokens: async (uid) =>
+    resolveConversationPushTokens(admin.firestore(), uid, "host"),
   sendPush: async (message) => {
     await admin.messaging().send(message);
   },

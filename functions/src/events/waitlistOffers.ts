@@ -42,6 +42,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
   eventParticipationId,
@@ -138,7 +139,7 @@ export async function createEventWaitlistOffersHandler(
 
   const nowMillis = deps.nowMillis();
   const now = deps.timestampFromMillis(nowMillis);
-  const pushNotifications: FcmParams[] = [];
+  const pushNotifications: QueuedOfferPush[] = [];
   const result: CreateOffersResult = {
     createdCount: 0,
     skippedCount: 0,
@@ -367,7 +368,7 @@ export async function createEventWaitlistOffersHandler(
     }
   });
 
-  await sendQueuedPushes(pushNotifications, deps);
+  await sendQueuedPushes(db, pushNotifications, deps);
   return result;
 }
 
@@ -590,7 +591,7 @@ export async function expireEventWaitlistOffersHandler(
   const expiringCutoff = deps.timestampFromMillis(
     nowMillis + 60 * 60 * 1000
   );
-  const pushNotifications: FcmParams[] = [];
+  const pushNotifications: QueuedOfferPush[] = [];
   let expiredCount = 0;
   let expiringNotifiedCount = 0;
 
@@ -634,7 +635,7 @@ export async function expireEventWaitlistOffersHandler(
     }
   }
 
-  await sendQueuedPushes(pushNotifications, deps);
+  await sendQueuedPushes(db, pushNotifications, deps);
   return {expiredCount, expiringNotifiedCount};
 }
 
@@ -644,7 +645,7 @@ async function notifyOfferExpiringIfCurrent(params: {
   offerRef: FirebaseFirestore.DocumentReference;
   now: FirebaseFirestore.Timestamp;
   nowMillis: number;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }): Promise<boolean> {
   let notified = false;
   await params.db.runTransaction(async (tx) => {
@@ -697,7 +698,7 @@ async function expireOfferIfCurrent(params: {
   offerRef: FirebaseFirestore.DocumentReference;
   now: FirebaseFirestore.Timestamp;
   nowMillis: number;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }): Promise<boolean> {
   let expired = false;
   await params.db.runTransaction(async (tx) => {
@@ -765,7 +766,7 @@ function queueOfferNotification(params: {
   user: UserProfileDocument;
   type: WaitlistOfferNotificationType;
   createdAt: FirebaseFirestore.Timestamp;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }) {
   const copy = eventActivityNotificationCopy(params.type, params.event);
   setActivityNotificationInTransaction(params.tx, params.db, {
@@ -778,12 +779,9 @@ function queueOfferNotification(params: {
     eventId: params.eventId,
     organizerId: params.event.organizerId,
   });
-  if (
-    params.user.fcmToken &&
-    allowsPushPreference(params.user, "eventStatusUpdates")
-  ) {
+  if (allowsPushPreference(params.user, "eventStatusUpdates")) {
     params.pushNotifications.push({
-      token: params.user.fcmToken,
+      uid: params.uid,
       title: copy.title,
       body: copy.body,
       type: params.type,
@@ -793,12 +791,19 @@ function queueOfferNotification(params: {
   }
 }
 
+/** An offer push awaiting its recipient's device token after commit. */
+type QueuedOfferPush = Omit<FcmParams, "token"> & {uid: string};
+
 async function sendQueuedPushes(
-  pushes: FcmParams[],
+  db: FirebaseFirestore.Firestore,
+  pushes: QueuedOfferPush[],
   deps: WaitlistOfferDeps
 ) {
   const results = await Promise.allSettled(
-    pushes.map((push) => deps.sendNotification(push))
+    pushes.map(async ({uid, ...push}) => {
+      const token = await readConsumerPushToken(db, uid);
+      if (token) await deps.sendNotification({...push, token});
+    })
   );
   for (const result of results) {
     if (result.status === "rejected") {

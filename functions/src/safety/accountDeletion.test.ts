@@ -257,6 +257,9 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         participantIds: ["runner-2", "runner-1"],
       },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
+      "users/runner-1/pushInstallations/device-1": {
+        token: "push-1", appRole: "consumer",
+      },
       "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
         targetId: "runner-2",
@@ -448,6 +451,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
   );
+  assert.ok(harness.deletedPublicDocs.includes(
+    "users/runner-1/pushInstallations/device-1"));
   assert.ok(
     harness.deletedPublicDocs.includes("onboarding_drafts/runner-1")
   );

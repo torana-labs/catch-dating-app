@@ -41,6 +41,7 @@ import {
   NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {deferCompanionReadyCue} from "../eventSuccess/deferredGuestCues";
 
 interface MarkEventAttendanceDeps {
@@ -256,17 +257,14 @@ async function notifyCompanionReadyBestEffort(params: {
       return;
     }
 
-    const user = userSnap.data() as (
-      NotificationPreferenceDocument & {fcmToken?: string}
-    ) | undefined;
-    if (!user?.fcmToken ||
-        !allowsPushPreference(user, "eventStatusUpdates")) {
-      return;
-    }
+    const user = userSnap.data() as NotificationPreferenceDocument | undefined;
+    if (!allowsPushPreference(user, "eventStatusUpdates")) return;
+    const token = await readConsumerPushToken(params.db, params.userId);
+    if (!token) return;
 
     const copy = eventCompanionReadyNotificationCopy(params.event);
     await params.deps.sendNotification({
-      token: user.fcmToken,
+      token,
       title: copy.title,
       body: copy.body,
       type: "eventCompanionReady",

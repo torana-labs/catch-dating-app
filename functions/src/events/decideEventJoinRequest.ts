@@ -8,6 +8,7 @@ import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -112,11 +113,13 @@ export async function decideEventJoinRequestHandler(
   };
 
   await db.runTransaction(async (tx) => {
-    const [eventSnap, participationSnap, requesterSnap] = await Promise.all([
-      tx.get(eventRef),
-      tx.get(participationRef),
-      tx.get(requesterRef),
-    ]);
+    const [eventSnap, participationSnap, requesterSnap, requesterPushToken] =
+      await Promise.all([
+        tx.get(eventRef),
+        tx.get(participationRef),
+        tx.get(requesterRef),
+        readConsumerPushToken(db, userId, tx),
+      ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
@@ -222,6 +225,7 @@ export async function decideEventJoinRequestHandler(
         eventId,
         userId,
         requester,
+        requesterPushToken,
         decision: "declined",
         pushNotifications,
       });
@@ -284,6 +288,7 @@ export async function decideEventJoinRequestHandler(
       eventId,
       userId,
       requester,
+      requesterPushToken,
       decision: "approved",
       pushNotifications,
     });
@@ -313,6 +318,7 @@ function queueRequestDecisionNotification(params: {
   eventId: string;
   userId: string;
   requester: UserProfileDocument;
+  requesterPushToken: string | null;
   decision: "approved" | "declined";
   pushNotifications: FcmParams[];
 }) {
@@ -331,9 +337,9 @@ function queueRequestDecisionNotification(params: {
     organizerId: params.event.organizerId,
   });
   if (allowsPushPreference(params.requester, "eventStatusUpdates") &&
-      params.requester.fcmToken) {
+      params.requesterPushToken) {
     params.pushNotifications.push({
-      token: params.requester.fcmToken,
+      token: params.requesterPushToken,
       title: copy.title,
       body: copy.body,
       type: "eventUpdated",

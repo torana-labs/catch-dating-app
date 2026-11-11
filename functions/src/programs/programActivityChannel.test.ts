@@ -10,7 +10,7 @@ import {deliverProgramActivity, programActivityIntent,
   "./programActivityDelivery";
 import {prepareProgramActivityChannel} from "./programActivityChannel";
 import {ACTIVITY_NOW, ACTIVITY_WINDOW, activityFirestore, activityHarness,
-  activityItems, activityRecord, activityRequest} from
+  activityItems, activityRecord, activityRequest, setStaffDevice} from
   "./programActivityFixture";
 
 function reservedChannel() {
@@ -43,14 +43,15 @@ test("FCM acceptance uses the real SDK id and canonical Host payload",
     assert.equal(activityItems(h.db).length, 1);
   });
 
-for (const [user, reason] of [
-  [{}, "noEndpoint"],
-  [{fcmToken: "token-1", prefsRunStatusUpdates: false}, "preferenceOff"],
+for (const [user, device, reason] of [
+  [{}, null, "noEndpoint"],
+  [{prefsRunStatusUpdates: false}, "token-1", "preferenceOff"],
 ] as const) {
   test(`local activity persists ${reason} and never gains a later push`,
     async () => {
       const h = activityHarness();
       h.db.setDoc("users/staff", user);
+      setStaffDevice(h.db, device);
       const first = await h.deliver();
       assert.equal(first.kind, "suppressed");
       if (first.kind === "suppressed") {
@@ -64,7 +65,7 @@ for (const [user, reason] of [
       assert.equal("providerMessageId" in record.attempts[0].state &&
         record.attempts[0].state.providerMessageId, item[0]);
       h.db.updateDoc(item[0], {readAt: ACTIVITY_NOW + 1});
-      h.db.setDoc("users/staff", {fcmToken: "new-token"});
+      setStaffDevice(h.db, "new-token");
       assert.deepEqual(await h.deliver({copy: {title: "Changed", body: ""}}),
         first);
       assert.equal(h.messages.length, 0);
@@ -159,10 +160,9 @@ for (const [label, mutate] of [
   ["deleted account", (h: ReturnType<typeof reservedChannel>) =>
     h.db.setDoc("deletedUsers/staff", {})],
   ["changed token", (h: ReturnType<typeof reservedChannel>) =>
-    h.db.setDoc("users/staff", {fcmToken: "changed"})],
+    setStaffDevice(h.db, "changed")],
   ["changed preference", (h: ReturnType<typeof reservedChannel>) =>
-    h.db.setDoc("users/staff", {fcmToken: "token-1",
-      prefsRunStatusUpdates: false})],
+    h.db.setDoc("users/staff", {prefsRunStatusUpdates: false})],
   ["edited moment", (h: ReturnType<typeof reservedChannel>) =>
     h.db.updateDoc("organizerMoments/m_flight", {revision: 4})],
   ["ended program", (h: ReturnType<typeof reservedChannel>) =>
@@ -275,7 +275,7 @@ test("third reserved attempt can send after two definitely-unsent expirations",
 test("local receipt failure retains original suppression and never gains FCM",
   async () => {
     const h = activityHarness();
-    h.db.setDoc("users/staff", {});
+    setStaffDevice(h.db, null);
     const write = h.db.setDoc.bind(h.db);
     let fail = true;
     h.db.setDoc = (path, data) => {
@@ -291,7 +291,7 @@ test("local receipt failure retains original suppression and never gains FCM",
     assert.equal(activityRecord(h.db).attempts[0].state.kind, "unknown");
     assert.equal(activityItems(h.db).length, 1);
     fail = false;
-    h.db.setDoc("users/staff", {fcmToken: "new-token"});
+    setStaffDevice(h.db, "new-token");
     const outcome = await h.deliver();
     assert.equal(outcome.kind, "suppressed");
     assert.equal(outcome.kind === "suppressed" && outcome.reason, "noEndpoint");

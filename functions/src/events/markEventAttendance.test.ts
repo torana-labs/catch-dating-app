@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {markEventAttendanceHandler} from "./markEventAttendance";
@@ -40,6 +41,14 @@ class FakeCollectionRef {
   doc(docId: string): FakeDocRef {
     return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
   }
+
+  limit(count: number) {
+    return {get: async () => {
+      const docs = this.firestore.children(this.path).slice(0, count)
+        .map((data) => ({data: () => ({...data})}));
+      return {docs, size: docs.length, empty: docs.length === 0};
+    }};
+  }
 }
 
 class FakeFirestore {
@@ -69,6 +78,13 @@ class FakeFirestore {
 
   merge(path: string, data: FakeData): void {
     this.docs[path] = {...(this.docs[path] ?? {}), ...data};
+  }
+
+  children(collectionPath: string): FakeData[] {
+    const prefix = `${collectionPath}/`;
+    return Object.entries(this.docs).flatMap(([path, data]) =>
+      path.startsWith(prefix) && !path.slice(prefix.length).includes("/") &&
+        data !== undefined ? [data] : []);
   }
 }
 
@@ -153,10 +169,8 @@ test(
     "opted out",
   async () => {
     const h = buildHarness({
-      "users/runner-1": {
-        fcmToken: "token-1",
-        prefsRunStatusUpdates: false,
-      },
+      "users/runner-1": {prefsRunStatusUpdates: false},
+      ...guestInstallation("runner-1", "token-1"),
     });
 
     await markEventAttendanceHandler(
@@ -192,10 +206,8 @@ function buildHarness(
       selectedModuleIds: ["qr_check_in"],
       contextualOpenersEnabled: false,
     },
-    "users/runner-1": {
-      fcmToken: "token-1",
-      prefsRunStatusUpdates: true,
-    },
+    "users/runner-1": {prefsRunStatusUpdates: true},
+    ...guestInstallation("runner-1", "token-1"),
     ...overrides,
   });
 

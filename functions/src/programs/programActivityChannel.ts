@@ -10,6 +10,8 @@ import {momentFromDocument, programMomentStaffDeadline,
 import {isTravelOccurrence} from "../moments/momentConditions";
 import type {MomentDefinition} from "../moments/momentModel";
 import {programStaffGrantId} from "../shared/programAuthority";
+import {newestPushToken, pushInstallationsQuery} from
+  "../shared/consumerPushToken";
 import {activityNotificationId, allowsPushPreference, buildFcmMessage,
   setActivityNotificationInTransaction,
   type ActivityNotificationType, type NotificationPreference} from
@@ -83,15 +85,16 @@ async function readActivityFacts(tx: Transaction, db: Firestore,
   }
   const uid = intent.recipient.recipientKey;
   const grantId = programStaffGrantId(intent.programId, uid);
-  const [programSnap, momentSnap, runSnap, grantSnap, userSnap, deleted] =
-    await Promise.all([
-      tx.get(db.collection("organizerPrograms").doc(intent.programId)),
-      tx.get(db.collection("organizerMoments").doc(intent.workflow.momentId)),
-      tx.get(db.collection("organizerMomentRuns").doc(intent.workflow.runId)),
-      tx.get(db.collection("programStaffGrants").doc(grantId)),
-      tx.get(db.collection("users").doc(uid)),
-      tx.get(db.collection("deletedUsers").doc(uid)),
-    ]);
+  const [programSnap, momentSnap, runSnap, grantSnap, userSnap, deleted,
+    installations] = await Promise.all([
+    tx.get(db.collection("organizerPrograms").doc(intent.programId)),
+    tx.get(db.collection("organizerMoments").doc(intent.workflow.momentId)),
+    tx.get(db.collection("organizerMomentRuns").doc(intent.workflow.runId)),
+    tx.get(db.collection("programStaffGrants").doc(grantId)),
+    tx.get(db.collection("users").doc(uid)),
+    tx.get(db.collection("deletedUsers").doc(uid)),
+    tx.get(pushInstallationsQuery(db, uid)),
+  ]);
   const program = programSnap.data() as OrganizerProgramDocument | undefined;
   if (!program || program.organizerId !== intent.context.organizerId ||
       !["active", "draft"].includes(program.status)) {
@@ -135,8 +138,10 @@ async function readActivityFacts(tx: Transaction, db: Firestore,
   const allowed = intent.activity.actionKind === "staffAttention" ||
     allowsPushPreference(user,
       intent.activity.preferenceKey as NotificationPreference) === true;
-  const token = allowed && typeof user?.fcmToken === "string" &&
-      user.fcmToken.length > 0 ? user.fcmToken : null;
+  // Staff activity is a Host-app notification.
+  const hostToken = newestPushToken(installations.docs.map((row) =>
+    row.data()), "host");
+  const token = allowed ? hostToken : null;
   const validUntil = Math.min(now + FACT_WINDOW_MS, deadline, intent.expiresAt);
   const binding: ProviderBinding = {
     routeId: "catchProgramActivity", transport: "catchApp",
@@ -144,9 +149,8 @@ async function readActivityFacts(tx: Transaction, db: Firestore,
     senderId: "catch-program-activity", bindingRevision: 1,
     recipientEndpointId: (token ? "fcm:" : "activity:") +
       operationContentHash(token ?? uid), fallbackOwner: "catch",
-    ...(!token ? {pushSuppressionReason:
-      typeof user?.fcmToken === "string" && user.fcmToken.length > 0 ?
-        "preferenceOff" as const : "noEndpoint" as const} : {}),
+    ...(!token ? {pushSuppressionReason: hostToken ?
+      "preferenceOff" as const : "noEndpoint" as const} : {}),
   };
   return {token, facts: {gate: {kind: "allow", checkedAt: now, validUntil,
     instructionRevision: moment.revision}, routes: [{
