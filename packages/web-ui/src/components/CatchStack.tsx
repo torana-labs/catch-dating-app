@@ -25,8 +25,20 @@ export interface CatchStackProps extends HTMLAttributes<HTMLElement> {
   equal?: boolean;
   /** Rows only: stack into a column below this size class (a two-column web section on a phone). */
   collapseBelow?: "medium" | "expanded";
+  /**
+   * Rows only (proposal E1): one child keeps a fixed rail width, 380px
+   * (`narrow`, a booking rail) or 420px (`wide`, an organiser rail), and the
+   * other takes the rest. Pair it with `collapseBelow` so the two stack on a phone.
+   */
+  railWidth?: CatchStackRailWidth;
+  /** With `railWidth`: the child that is the rail. Defaults to end (the last child). */
+  railSide?: "start" | "end";
+  /** With `railWidth`: the rail sticks below the top of the window while the other child scrolls past. */
+  stickyRail?: boolean;
   as?: CatchStackElement;
 }
+
+export type CatchStackRailWidth = "narrow" | "wide";
 
 /**
  * catch.stack: lays children out in a column or a row with a token gap. Use
@@ -41,6 +53,9 @@ export function CatchStack({
   wrap,
   equal,
   collapseBelow,
+  railWidth,
+  railSide = "end",
+  stickyRail,
   as: Element = "div",
   className,
   children,
@@ -50,10 +65,12 @@ export function CatchStack({
   let resolvedDirection = direction;
   let resolvedEqual = equal;
   let resolvedAlign = align;
+  let resolvedRail = direction === "row" ? railWidth : undefined;
   if (direction === "row" && collapseBelow && catchSizeClasses.indexOf(sizeClass) < catchSizeClasses.indexOf(collapseBelow)) {
     resolvedDirection = "column";
     resolvedEqual = false;
     resolvedAlign = align === "center" || align === "end" ? align : undefined;
+    resolvedRail = undefined;
   }
   return (
     <Element
@@ -64,6 +81,9 @@ export function CatchStack({
       data-equal={resolvedEqual ? "" : undefined}
       data-gap={gap}
       data-justify={justify}
+      data-rail={resolvedRail}
+      data-rail-side={resolvedRail ? railSide : undefined}
+      data-sticky-rail={resolvedRail && stickyRail ? "" : undefined}
       data-wrap={wrap ? "" : undefined}
     >
       {children}

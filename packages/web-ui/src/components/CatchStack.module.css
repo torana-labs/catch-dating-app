@@ -23,6 +23,23 @@
 
 .stack[data-equal] > * { flex: 1 1 0; min-width: 0; }
 
+/*
+ * A railed row (proposal E1) is a grid: the rail keeps its width, the other
+ * child takes the rest. A sticky rail pins below the top of the window.
+ */
+.stack[data-rail] { display: grid; }
+.stack[data-rail="narrow"] { grid-template-columns: minmax(0, 1fr) 380px; }
+.stack[data-rail="wide"] { grid-template-columns: minmax(0, 1fr) 420px; }
+.stack[data-rail="narrow"][data-rail-side="start"] { grid-template-columns: 380px minmax(0, 1fr); }
+.stack[data-rail="wide"][data-rail-side="start"] { grid-template-columns: 420px minmax(0, 1fr); }
+.stack[data-rail] > * { min-width: 0; }
+.stack[data-sticky-rail] { align-items: start; }
+.stack[data-sticky-rail][data-rail-side="end"] > :last-child,
+.stack[data-sticky-rail][data-rail-side="start"] > :first-child {
+  position: sticky;
+  top: var(--catch-space-s6);
+}
+
 .stack[data-gap="0"] { gap: var(--catch-space-s0); }
 .stack[data-gap="2"] { gap: var(--catch-space-micro2); }
 .stack[data-gap="4"] { gap: var(--catch-space-s1); }
