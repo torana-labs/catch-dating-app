@@ -212,7 +212,7 @@ async function handoff(db: FakeFirestore,
 
 function recordOf(db: FakeFirestore): AutomationDeliveryMessageDocument {
   const entries = [...db.docs.entries()]
-    .filter(([path]) => path.startsWith("automationDeliveryMessages/"));
+    .filter(([path]) => path.startsWith("deliveryMessages/"));
   assert.equal(entries.length, 1);
   return entries[0][1] as unknown as AutomationDeliveryMessageDocument;
 }

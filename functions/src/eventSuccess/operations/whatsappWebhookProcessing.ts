@@ -12,16 +12,13 @@ import {validateOrganizerCampaignWebhookReceiptDocument} from
 import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
 import {ProgramWhatsappDeliveryStore} from
   "../../programs/programWhatsappDeliveryStore";
-import {PROGRAM_WHATSAPP_DISPATCHES} from
-  "../../programs/programDeliveryWorker";
 import {CampaignWhatsappDeliveryStore} from
   "../../organizers/campaignWhatsappDeliveryStore";
 import {CAMPAIGN_WHATSAPP_DISPATCHES} from
   "../../organizers/campaignDeliveryWorker";
 import {AutomationWhatsappDeliveryStore} from
   "../../organizers/automationWhatsappDeliveryStore";
-import {AUTOMATION_WHATSAPP_DISPATCHES} from
-  "../../organizers/automationDeliveryWorker";
+import {WHATSAPP_DISPATCHES} from "../../delivery/whatsappDispatches";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {whatsappAttemptFromReplyId} from "./whatsappReplyProtocol";
 import {whatsappAttemptFromStatus} from "./whatsappDeliveryProtocol";
@@ -57,22 +54,21 @@ implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
     const attemptId = validateOrganizerMessagingWebhookEventDocument(queued) ?
       whatsappAttemptFromStatus(queued.callbackData) : null;
     if (attemptId) {
-      const [programDispatch, campaignDispatch, automationDispatch] =
-        await Promise.all([
-          this.db.collection(PROGRAM_WHATSAPP_DISPATCHES).doc(attemptId)
-            .get(),
-          this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId)
-            .get(),
-          this.db.collection(AUTOMATION_WHATSAPP_DISPATCHES).doc(attemptId)
-            .get(),
-        ]);
-      if (programDispatch.exists) {
+      // Programme and automation dispatches share whatsappDispatches; the
+      // stored source names the owner.
+      const [sharedDispatch, campaignDispatch] = await Promise.all([
+        this.db.collection(WHATSAPP_DISPATCHES).doc(attemptId).get(),
+        this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId).get(),
+      ]);
+      const source = sharedDispatch.exists ?
+        sharedDispatch.get("source") : null;
+      if (source === "program") {
         return this.programStore.consumeQueued(eventId);
       }
       if (campaignDispatch.exists) {
         return this.campaignStore.consumeQueued(eventId);
       }
-      if (automationDispatch.exists) {
+      if (source === "automation") {
         return this.automationStore.consumeQueued(eventId);
       }
     }

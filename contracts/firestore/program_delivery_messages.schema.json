@@ -5,8 +5,8 @@
   "description": "Private durable program delivery outbox. The immutable intent and bounded attempt history survive moment-run completion and delayed provider callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "programDeliveryMessages",
-  "x-firestore-path": "programDeliveryMessages/{messageId}",
+  "x-firestore-collection": "deliveryMessages",
+  "x-firestore-path": "deliveryMessages/{messageId}",
   "x-document-id-field": "messageId",
   "x-owner": "trusted program delivery workers",
   "required": [
@@ -18,9 +18,15 @@
     "attempts",
     "deliveryConflict",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "source"
   ],
   "properties": {
+    "source": {
+      "type": "string",
+      "const": "program",
+      "description": "Which delivery source wrote this document; the collection holds several."
+    },
     "schemaVersion": {
       "const": 1,
       "x-catch-ownership": "server-only"

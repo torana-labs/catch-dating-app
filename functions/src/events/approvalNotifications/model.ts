@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../../delivery/deliveryMessages";
 import {operationContentHash as hash} from "../../operations/durableActions";
 import {
   evaluateDelivery,
@@ -18,7 +19,7 @@ import {validateEventApprovalNotificationMessageDocument as validMessage} from
 import {brandWebUrl} from "../../shared/generated/brand";
 export type {Intent, Attempt, Message};
 export type Binding = Attempt["binding"];
-export const messages = "eventApprovalNotificationMessages";
+export const messages = DELIVERY_MESSAGES;
 export const preferenceId = (eventId: string, uid: string) =>
   "eap_" + hash([eventId, uid]);
 export const eventUrl = (eventId: string) =>
@@ -91,6 +92,7 @@ export function newMessage(intent: Intent, now: number): Message {
   if (now >= intent.expiresAt) throw invalid();
   return parseMessage({
     schemaVersion: 1,
+    source: "approvalNotification",
     messageId: messageId(intent),
     revision: 0,
     intent,

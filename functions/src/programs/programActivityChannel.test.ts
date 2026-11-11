@@ -115,7 +115,7 @@ test("receipt write failure cannot resend accepted FCM on changed-copy replay",
     h.db.setDoc = (path, data) => {
       const attempts = data.attempts as
         Array<{state: {kind: string}}> | undefined;
-      if (failReceipt && path.startsWith("programDeliveryMessages/") &&
+      if (failReceipt && path.startsWith("deliveryMessages/") &&
           attempts?.some((attempt) => attempt.state.kind === "accepted")) {
         throw new Error("receipt unavailable");
       }
@@ -219,7 +219,7 @@ test("first committed six-hour window cannot be renewed by deferred dueAt",
     assert.deepEqual(result, {kind: "suppressed", reason: "expired"});
     assert.equal(h.messages.length, 0);
     assert.equal([...db.docs.keys()].some((p) =>
-      p.startsWith("programDeliveryMessages/")), false);
+      p.startsWith("deliveryMessages/")), false);
   });
 
 test("claim retry preserves an activity item already read",
@@ -281,7 +281,7 @@ test("local receipt failure retains original suppression and never gains FCM",
     h.db.setDoc = (path, data) => {
       const attempts = data.attempts as
         Array<{state: {kind: string}}> | undefined;
-      if (fail && path.startsWith("programDeliveryMessages/") &&
+      if (fail && path.startsWith("deliveryMessages/") &&
           attempts?.some((attempt) => attempt.state.kind === "delivered")) {
         throw new Error("local receipt unavailable");
       }
@@ -350,7 +350,7 @@ for (const change of ["accepted", "laterUnknown", "binding", "intent",
         if (change === "closed") record.lifecycle = "cancelled";
         if (change === "conflict") record.deliveryConflict = true;
         expected = record;
-        h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+        h.db.setDoc(`deliveryMessages/${record.messageId}`, {...record});
         throw new Error("SDK settled without acceptance evidence");
       }, () => h.clock.now);
     assert.equal(channel.kind, "ready");

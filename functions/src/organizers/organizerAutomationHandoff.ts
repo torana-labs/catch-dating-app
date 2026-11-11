@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
@@ -401,7 +402,7 @@ export async function handoffAutomationMessage(params: {
       },
     };
     const record = newAutomationDeliveryRecord(intent, now);
-    const outboxRef = db.collection("automationDeliveryMessages")
+    const outboxRef = db.collection(DELIVERY_MESSAGES)
       .doc(record.messageId);
     const outboxSnap = await tx.get(outboxRef);
     if (outboxSnap.exists) {

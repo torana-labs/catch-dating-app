@@ -91,7 +91,7 @@ export function activityFirestore(request = activityRequest): FakeFirestore {
 export function activityRecord(db: FakeFirestore):
   ProgramDeliveryMessageDocument {
   const rows = [...db.docs].filter(([path]) =>
-    path.startsWith("programDeliveryMessages/"));
+    path.startsWith("deliveryMessages/"));
   assert.equal(rows.length, 1);
   return rows[0][1] as unknown as ProgramDeliveryMessageDocument;
 }
