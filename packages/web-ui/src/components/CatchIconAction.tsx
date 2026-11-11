@@ -38,19 +38,22 @@ export interface CatchIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButt
 /** catch.icon_button: back, close, share, more and every other icon-only action. Always labelled. */
 export function CatchIconAction({icon, label, variant = "outlined", size = "lg", shape = "round", badge, pressed, onPressed, onClick, href, className, disabled, type = "button", ...rest}: CatchIconActionProps) {
   const {ground} = useCatch();
+  const count = badge ? badge > 99 ? "99+" : String(badge) : undefined;
+  // The visible count belongs in the accessible name (WCAG 2.5.3 label in name).
+  const name = count ? `${label} ${count}` : label;
   const shared = {
-    "aria-label": label,
+    "aria-label": name,
     className: className ? `${styles.button} ${className}` : styles.button,
     "data-on": ground,
     "data-shape": shape,
     "data-size": size,
     "data-variant": variant,
-    title: label,
+    title: name,
   };
   const body = (
     <>
       <CatchIcon name={icon} size={size === "sm" ? 16 : 20} />
-      {badge ? <span aria-hidden="true" className={styles.badge}>{badge > 99 ? "99+" : badge}</span> : null}
+      {count ? <span aria-hidden="true" className={styles.badge}>{count}</span> : null}
     </>
   );
   if (href) return <a {...shared} href={href}>{body}</a>;

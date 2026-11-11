@@ -25,5 +25,6 @@ describe("CatchIconAction", () => {
   it("caps its badge at 99+", () => {
     render(<CatchIconAction badge={120} icon="notifications" label="Notifications" />);
     expect(screen.getByText("99+")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Notifications 99+"})).toBeTruthy();
   });
 });
