@@ -61,7 +61,7 @@ export const SUVBOT_DEMO_MOMENTS = [
     id: "after",
     worldMoment: "followUp",
     label: "After",
-    description: "You attended; catches and chats are open.",
+    description: "You attended; picks and chats are open.",
   },
 ] as const;
 
@@ -978,8 +978,9 @@ function matchThreadDocs(params: {
         ...params.marker,
         uid,
         type: "match",
-        title: "It's a catch",
-        body: `You and ${partner.persona.displayName} matched. Say hi!`,
+        title: "You picked each other",
+        body: `You and ${partner.persona.displayName} picked each other. ` +
+          "Say hi!",
         createdAt: ts(matchedAt),
         readAt: null,
         matchId,

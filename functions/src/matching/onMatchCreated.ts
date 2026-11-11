@@ -86,8 +86,8 @@ export async function onMatchCreatedHandler(
       id: activityNotificationId("match", matchId),
       uid: user1Id,
       type: "match",
-      title: "It's a catch",
-      body: `You and ${profile2Name} matched. Say hi!`,
+      title: "You picked each other",
+      body: `You and ${profile2Name} picked each other. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
       eventId: latestEventId,
@@ -99,8 +99,8 @@ export async function onMatchCreatedHandler(
       id: activityNotificationId("match", matchId),
       uid: user2Id,
       type: "match",
-      title: "It's a catch",
-      body: `You and ${profile1Name} matched. Say hi!`,
+      title: "You picked each other",
+      body: `You and ${profile1Name} picked each other. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
       eventId: latestEventId,
@@ -117,14 +117,14 @@ export async function onMatchCreatedHandler(
       user: user1,
       actor: profile2,
       enabled: allowsPushPreference(user1, "matches"),
-      body: `You and ${profile2Name} matched. Say hi!`,
+      body: `You and ${profile2Name} picked each other. Say hi!`,
     },
     {
       uid: user2Id,
       user: user2,
       actor: profile1,
       enabled: allowsPushPreference(user2, "matches"),
-      body: `You and ${profile1Name} matched. Say hi!`,
+      body: `You and ${profile1Name} picked each other. Say hi!`,
     },
   ];
   const pushTargets = (await Promise.all(recipients.map(async (recipient) => {
@@ -156,7 +156,7 @@ export async function onMatchCreatedHandler(
         pushTargets.map((target) =>
           deps.sendNotification({
             token: target.token,
-            title: "It's a catch",
+            title: "You picked each other",
             body: target.body,
             type: "match",
             matchId,

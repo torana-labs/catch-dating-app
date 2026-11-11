@@ -142,8 +142,8 @@ test(
       {
         uid: "runner-1",
         type: "match",
-        title: "It's a catch",
-        body: "You and Runner Two matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner Two picked each other. Say hi!",
         createdAt: {kind: "serverTimestamp"},
         matchId: "match-1",
         eventId: "event-1",
@@ -157,8 +157,8 @@ test(
       {
         uid: "runner-2",
         type: "match",
-        title: "It's a catch",
-        body: "You and Runner One matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner One picked each other. Say hi!",
         createdAt: {kind: "serverTimestamp"},
         matchId: "match-1",
         eventId: "event-1",
@@ -170,8 +170,8 @@ test(
     assert.deepEqual(h.notifications, [
       {
         token: "token-1",
-        title: "It's a catch",
-        body: "You and Runner Two matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner Two picked each other. Say hi!",
         type: "match",
         matchId: "match-1",
         notificationId: "match_match-1",
@@ -182,8 +182,8 @@ test(
       },
       {
         token: "token-2",
-        title: "It's a catch",
-        body: "You and Runner One matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner One picked each other. Say hi!",
         type: "match",
         matchId: "match-1",
         notificationId: "match_match-1",
