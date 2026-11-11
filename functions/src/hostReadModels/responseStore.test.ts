@@ -7,8 +7,6 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
 import {withdrawOrganizerFormResponseHandler} from
   "../organizers/organizerFormResponses";
-import {revokeParticipantOrganizerDataGrantHandler} from
-  "../organizers/participantOrganizerApplications";
 import {genericFormApplicationId} from
   "../organizers/organizerApplicationAccess";
 import {reconcileResponseSummary, reconcileApplicationSummary,
@@ -29,7 +27,7 @@ function store() {
     "organizerForms/form": {organizerId: "org", title: "Survey",
       submittedResponseCount: 1},
     "organizerFormVersions/version": {organizerId: "org", formId: "form",
-      version: 1},
+      version: 1, definition: {sections: []}},
     "organizerFormResponses/response": {
       organizerId: "org", formId: "form", versionId: "version",
       publicFormId: "publicform123456789012", draftId: "draft",
@@ -49,18 +47,13 @@ function app(latestResponseId = "evidence") {
     applicantDisplayName: "Private name", reviewStatus: "submitted",
     latestResponseId, source, revision: 1, submittedAt: now};
 }
-function nativeApplication(db: AudienceTestStore) {
-  db.docs["organizerApplications/app"] = app();
+function importedApplication(db: AudienceTestStore) {
+  const imported = {...source, kind: "tabularImport", importReceiptId: "r1"};
+  db.docs["organizerApplications/app"] = {...app(), source: imported};
   db.docs["organizerApplicationResponses/evidence"] = {
     organizerId: "org", applicationId: "app", formId: "form",
-    formVersionId: "version", linkedUid: "user", answers: [], source,
-    grantId: "app_grant"};
-  db.docs["participantOrganizerDataGrants/app_grant"] = {
-    participantUid: "user", organizerId: "org", applicationId: "app",
-    responseId: "evidence", formVersionId: "version",
-    purpose: "organizerApplicationReview", grantedQuestionIds: ["secret"],
-    grantedCanonicalFieldIds: [], consentVersion: "v1",
-    consentCopyHash: "a".repeat(64), grantedAt: now, revokedAt: null};
+    formVersionId: "version", linkedUid: "user", answers: [],
+    source: imported, grantId: null};
 }
 
 test("withdrawal redacts PII atomically; replay stays redacted",
@@ -87,41 +80,10 @@ test("withdrawal redacts PII atomically; replay stays redacted",
     assert.equal(JSON.stringify(db.docs[key]).includes("+919999999999"), false);
   });
 
-test("grant revocation defeats delayed identity projections",
-  async () => {
-    const db = store(); nativeApplication(db);
-    const key = "hostResponseSummaries/" +
-      responseSummaryId("application", "app");
-    await reconcileApplicationSummary(db.asFirestore(), "app");
-    assert.equal(JSON.stringify(db.docs[key]).includes("Private name"), true);
-    const request = {auth: {uid: "user", token: {}}, data: {organizerId: "org",
-      applicationId: "app", expectedRevision: 1}} as CallableRequest<unknown>;
-    const deps = {firestore: () => db.asFirestore(),
-      checkRateLimit: async () => undefined,
-      timestamp: () => Timestamp.fromMillis(2000)};
-    await revokeParticipantOrganizerDataGrantHandler(request, deps);
-    assert.equal(JSON.stringify(db.docs[key])
-      .includes("Private name"), false);
-    await reconcileApplicationSummary(db.asFirestore(), "app");
-    const projected = db.docs as Record<string, Record<string, unknown>>;
-    const entry = projected[key].row as {application: {
-      applicantDisplayName: string;
-      contactId: string | null}};
-    assert.equal(entry.application.applicantDisplayName,
-      "Withdrawn applicant");
-    assert.equal(entry.application.contactId, null);
-    await revokeParticipantOrganizerDataGrantHandler(request, deps);
-    assert.equal(JSON.stringify(db.docs[key])
-      .includes("Private name"), false, "replay stays redacted");
-  });
-
 test("converted applications retain one response entry", async () => {
   const db = store();
   const id = genericFormApplicationId("response");
-  db.docs[`organizerApplications/${id}`] = app("response");
-  db.docs["organizerApplicationResponses/response"] = {
-    organizerId: "org", applicationId: id, formId: "form",
-    formVersionId: "version", linkedUid: "user", answers: [],
+  db.docs[`organizerApplications/${id}`] = {...app("response"),
     source: {...source, externalResponseId: "response"}};
   await backfillResponseSummaries(db.asFirestore(), "org", true);
   assert.equal(await activateResponseSummaries(db.asFirestore(), "org"), 1);
@@ -143,31 +105,9 @@ test("foreign form metadata never projects into this inbox", async () => {
 });
 
 
-test("an unauthorized or stale revocation cannot redact a valid view",
-  async () => {
-    const db = store(); nativeApplication(db);
-    const key = "hostResponseSummaries/" +
-      responseSummaryId("application", "app");
-    await reconcileApplicationSummary(db.asFirestore(), "app");
-    const before = JSON.stringify(db.docs[key]);
-    const deps = {firestore: () => db.asFirestore(),
-      checkRateLimit: async () => undefined, timestamp: () => now};
-    const attempts = [["other", 1], ["user", 9]] as const;
-    for (const [uid, expectedRevision] of attempts) {
-      await assert.rejects(revokeParticipantOrganizerDataGrantHandler({
-        auth: {uid, token: {}}, data: {organizerId: "org",
-          applicationId: "app", expectedRevision},
-      } as CallableRequest<unknown>, deps));
-      assert.equal(JSON.stringify(db.docs[key]), before);
-      assert.equal(db.docs["participantOrganizerDataGrants/app_grant"]
-        .revokedAt, null);
-    }
-  });
-
-
 test("application contact metadata follows the current merge origin",
   async () => {
-    const db = store(); nativeApplication(db);
+    const db = store(); importedApplication(db);
     const originId = organizerContactOriginId({organizerId: "org",
       sourceKind: "hostForm", sourceEntityKind: "hostApplicationResponse",
       sourceEntityId: "evidence"});

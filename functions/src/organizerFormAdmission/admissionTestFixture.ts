@@ -243,9 +243,5 @@ export function approvedApplicationFixture() {
     reviewStatus: "approved", latestResponseId: responseId, source,
     assignedReviewerUid: actorUid, reviewNote: "Accepted", revision: 2,
     submittedAt: ts(1100), updatedAt: ts(1500), reviewedAt: ts(1500)});
-  store.put(`organizerApplicationResponses/${responseId}`, {organizerId: org,
-    applicationId, formId: "form1", formVersionId: "version1",
-    linkedUid: null, answers: [], source, consentVersion: "v1",
-    grantId: null, submittedAt: ts(1100)});
   return {...current, applicationId};
 }

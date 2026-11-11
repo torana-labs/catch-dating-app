@@ -340,11 +340,6 @@ export {
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
 export {
-  getParticipantOrganizerApplicationForm,
-  revokeParticipantOrganizerDataGrant,
-  submitParticipantOrganizerApplication,
-} from "./organizers/participantOrganizerApplications";
-export {
   mergeOrganizerContacts,
   unmergeOrganizerContacts,
 } from "./organizers/organizerContactMerges";

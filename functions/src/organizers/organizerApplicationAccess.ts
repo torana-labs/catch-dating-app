@@ -5,12 +5,8 @@ import type {
   OrganizerContactOriginDocument,
   OrganizerFormResponseDocument,
   OrganizerFormVersionDocument,
-  ParticipantOrganizerDataGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {
-  hostVisibleApplicationAnswers,
-  participantOrganizerGrantId,
-} from "./participantOrganizerApplications";
+import {genericApplicationAnswers} from "./genericApplicationAnswers";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 
 export type ApplicationRead = (collection: string, id: string) =>
@@ -56,6 +52,10 @@ export interface OrganizerApplicationAccess {
 
 /**
  * Generic forms retain their own submission authority; no grant is invented.
+ * A generic-form application reads its answers straight from the submitted
+ * organizerFormResponses document and its version. An imported application
+ * reads the immutable organizerApplicationResponses snapshot its import wrote.
+ * Any other application (the retired participant application flow) is denied.
  */
 export async function organizerApplicationAccess(params: {
   db: FirebaseFirestore.Firestore;
@@ -72,18 +72,13 @@ export async function organizerApplicationAccess(params: {
   const denied: OrganizerApplicationAccess = {
     answers: [], accessState: "revokedParticipantGrant", sourceResponseId: null,
   };
-  const response = (await read("organizerApplicationResponses",
-    application.latestResponseId)).data() as
-    OrganizerApplicationResponseDocument | undefined;
-  if (!response || response.applicationId !== applicationId ||
-      response.organizerId !== application.organizerId ||
-      response.formId !== application.formId ||
-      response.formVersionId !== application.formVersionId ||
-      response.linkedUid !== application.linkedUid ||
-      response.source.kind !== application.source.kind) return denied;
-  if (application.source.kind === "native" &&
-      applicationId === genericFormApplicationId(
-        application.latestResponseId)) {
+  if (application.source.kind === "native") {
+    if (applicationId !== genericFormApplicationId(
+      application.latestResponseId) ||
+        application.source.externalResponseId !==
+          application.latestResponseId) {
+      return denied;
+    }
     const [submittedSnap, versionSnap] = await Promise.all([
       read("organizerFormResponses", application.latestResponseId),
       read("organizerFormVersions", application.formVersionId),
@@ -98,22 +93,25 @@ export async function organizerApplicationAccess(params: {
         submitted.versionId !== application.formVersionId ||
         submitted.respondentUid !== application.linkedUid ||
         version.organizerId !== application.organizerId ||
-        version.formId !== application.formId ||
-        response.source.externalResponseId !== application.latestResponseId) {
+        version.formId !== application.formId) {
       return denied;
     }
     return {
-      answers: response.answers,
+      answers: genericApplicationAnswers(submitted, version),
       accessState: "submittedFormResponse",
       sourceResponseId: application.latestResponseId,
       identity: submitted.identity,
     };
   }
-  const grant = response.source.kind === "native" && response.grantId ?
-    (await read("participantOrganizerDataGrants",
-      participantOrganizerGrantId(applicationId))).data() as
-      ParticipantOrganizerDataGrantDocument | undefined : undefined;
-  return {...hostVisibleApplicationAnswers({
-    response, responseId: application.latestResponseId, grant,
-  }), sourceResponseId: null};
+  const response = (await read("organizerApplicationResponses",
+    application.latestResponseId)).data() as
+    OrganizerApplicationResponseDocument | undefined;
+  if (!response || response.applicationId !== applicationId ||
+      response.organizerId !== application.organizerId ||
+      response.formId !== application.formId ||
+      response.formVersionId !== application.formVersionId ||
+      response.linkedUid !== application.linkedUid ||
+      response.source.kind !== application.source.kind) return denied;
+  return {answers: response.answers, accessState: "organizerImported",
+    sourceResponseId: null};
 }
