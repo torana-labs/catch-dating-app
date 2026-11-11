@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -56,8 +56,8 @@ AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
   final uidState = catchAsyncStateFromAsyncValue(uidAsync);
   final uid = uidState.value;
   final membershipAsync = uid == null
-      ? const AsyncData<OrganizerMembership?>(null)
-      : ref.watch(watchOrganizerMembershipProvider(organizerId, uid));
+      ? const AsyncData<OrganizerFollow?>(null)
+      : ref.watch(watchOrganizerFollowProvider(organizerId, uid));
 
   // Log errors from secondary (non-blocking) providers so they don't
   // silently disappear when discarded while building
@@ -98,7 +98,7 @@ AsyncValue<OrganizerDetailViewModel?> buildOrganizerDetailViewModel({
   required AsyncValue<List<Review>> reviewsAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<String?> uidAsync,
-  required AsyncValue<OrganizerMembership?> membershipAsync,
+  required AsyncValue<OrganizerFollow?> membershipAsync,
   AppRole appRole = AppRole.consumer,
   DateTime? now,
 }) {
@@ -162,7 +162,7 @@ AsyncValue<OrganizerDetailViewModel?> buildOrganizerDetailViewModel({
   final userProfileValue = isAuthenticated ? userProfile.value : null;
   final membershipValue = membership.value;
   final isActiveMember =
-      membershipValue?.status == OrganizerMembershipStatus.active;
+      membershipValue?.status == OrganizerFollowStatus.active;
 
   return AsyncData(
     OrganizerDetailViewModel(

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'organizer_membership_controller.dart';
+part of 'organizer_follow_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -13,37 +13,36 @@ part of 'organizer_membership_controller.dart';
 /// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 
-@ProviderFor(OrganizerMembershipController)
-final organizerMembershipControllerProvider =
-    OrganizerMembershipControllerProvider._();
+@ProviderFor(OrganizerFollowController)
+final organizerFollowControllerProvider = OrganizerFollowControllerProvider._();
 
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
-final class OrganizerMembershipControllerProvider
-    extends $NotifierProvider<OrganizerMembershipController, void> {
+final class OrganizerFollowControllerProvider
+    extends $NotifierProvider<OrganizerFollowController, void> {
   /// **Pattern A: Action controller + static Mutations**
   ///
   /// Owns follow actions from both the organizer list and detail screens.
   /// The UI watches mutation state to show loading spinners and error banners.
-  OrganizerMembershipControllerProvider._()
+  OrganizerFollowControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'organizerMembershipControllerProvider',
+        name: r'organizerFollowControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$organizerMembershipControllerHash();
+  String debugGetCreateSourceHash() => _$organizerFollowControllerHash();
 
   @$internal
   @override
-  OrganizerMembershipController create() => OrganizerMembershipController();
+  OrganizerFollowController create() => OrganizerFollowController();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
@@ -54,15 +53,15 @@ final class OrganizerMembershipControllerProvider
   }
 }
 
-String _$organizerMembershipControllerHash() =>
-    r'235af6766ff5b70eb5799420c600c36bde00995c';
+String _$organizerFollowControllerHash() =>
+    r'314999749db4c7662231b91e331867da553678eb';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 
-abstract class _$OrganizerMembershipController extends $Notifier<void> {
+abstract class _$OrganizerFollowController extends $Notifier<void> {
   void build();
   @$mustCallSuper
   @override

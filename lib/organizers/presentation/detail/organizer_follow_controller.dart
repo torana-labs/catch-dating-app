@@ -3,14 +3,14 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'organizer_membership_controller.g.dart';
+part 'organizer_follow_controller.g.dart';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 @riverpod
-class OrganizerMembershipController extends _$OrganizerMembershipController {
+class OrganizerFollowController extends _$OrganizerFollowController {
   static final joinMutation = Mutation<void>();
   static final leaveMutation = Mutation<void>();
   static final pushNotificationsMutation = Mutation<void>();

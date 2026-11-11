@@ -476,9 +476,7 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.joinMutation.run(container, (
-        tx,
-      ) async {
+      await OrganizerFollowController.joinMutation.run(container, (tx) async {
         throw StateError('join failed');
       });
     } catch (_) {}
@@ -513,7 +511,7 @@ void _registerExploreErrorsAndCreationTests() {
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
-            watchOrganizerMembershipProvider(
+            watchOrganizerFollowProvider(
               organizer.id,
               'runner-1',
             ).overrideWith((ref) => Stream.value(null)),
@@ -591,7 +589,7 @@ void _registerExploreErrorsAndCreationTests() {
         watchUserProfileProvider.overrideWith(
           (ref) => Stream.value(buildUser(uid: 'runner-1')),
         ),
-        watchOrganizerMembershipProvider(
+        watchOrganizerFollowProvider(
           'club-1',
           'runner-1',
         ).overrideWith((ref) => Stream.value(null)),
@@ -625,9 +623,7 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.joinMutation.run(container, (
-        tx,
-      ) async {
+      await OrganizerFollowController.joinMutation.run(container, (tx) async {
         throw StateError('join failed');
       });
     } catch (_) {}
@@ -637,7 +633,7 @@ void _registerExploreErrorsAndCreationTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    OrganizerMembershipController.joinMutation.reset(container);
+    OrganizerFollowController.joinMutation.reset(container);
     await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
     container.dispose();
     await _pumpOrganizerUi(tester);
@@ -652,7 +648,7 @@ void _registerExploreErrorsAndCreationTests() {
         watchUserProfileProvider.overrideWith(
           (ref) => Stream.value(buildUser(uid: 'runner-1')),
         ),
-        watchOrganizerMembershipProvider(
+        watchOrganizerFollowProvider(
           'club-1',
           'runner-1',
         ).overrideWith((ref) => Stream.value(null)),
@@ -686,9 +682,7 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.leaveMutation.run(container, (
-        tx,
-      ) async {
+      await OrganizerFollowController.leaveMutation.run(container, (tx) async {
         throw StateError('leave failed');
       });
     } catch (_) {}
@@ -698,7 +692,7 @@ void _registerExploreErrorsAndCreationTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    OrganizerMembershipController.leaveMutation.reset(container);
+    OrganizerFollowController.leaveMutation.reset(container);
     await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
     container.dispose();
     await _pumpOrganizerUi(tester);
