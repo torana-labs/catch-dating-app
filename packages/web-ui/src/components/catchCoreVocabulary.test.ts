@@ -21,7 +21,7 @@ const dartTokens = read("../../../catch_tokens/lib/generated/catch_design_tokens
 const value = (name: string) => sheet.match(new RegExp(`${name}: ([^;]+);`))?.[1];
 const cssFiles = ["CatchRoot", "CatchGroundProvider", "CatchSurface", "CatchText", "CatchIcon", "CatchStack"].map((name) => `./${name}.module.css`);
 /** Custom properties the core components set for each other; every other variable comes from the sheet. */
-const componentProperties = new Set(["--catch-surface-fill", "--catch-accent", "--catch-accent-ink", "--catch-gutter", "--catch-section-gap"]);
+const componentProperties = new Set(["--catch-surface-fill", "--catch-accent", "--catch-accent-ink", "--catch-accent-ink-secondary", "--catch-gutter", "--catch-section-gap"]);
 
 describe("core library vocabulary", () => {
   it("lists the palette's formats in its order, each with its sheet colours", () => {

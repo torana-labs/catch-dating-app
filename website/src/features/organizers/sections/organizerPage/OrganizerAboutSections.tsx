@@ -61,7 +61,8 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
 export function OrganizerPageFooter({controller}: {controller: OrganizerPageController}) {
   const {footer} = controller.view;
   return (
-    <CatchStack align="center" as="footer" direction="row" gap={8} justify="center" wrap>
+    // Not a <footer>: the page's PublicPageFooter is its one contentinfo landmark.
+    <CatchStack align="center" direction="row" gap={8} justify="center" wrap>
       <CatchText tone="secondary" variant="label-action">{footer.line}</CatchText>
       <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
     </CatchStack>

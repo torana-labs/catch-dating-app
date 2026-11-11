@@ -1,4 +1,4 @@
-import {ButtonLink, PlainButton, PlainLink, buttonClassName} from "./actionControls";
+import {ButtonLink, PlainLink, buttonClassName} from "./actionControls";
 import type {ButtonSize, ButtonVariant} from "./actionControls";
 
 import type {
@@ -15,7 +15,7 @@ import type {AppDownloadStorePlatform} from "./marketing";
 import {actionGroupClassNames} from "./foundation";
 import {UiLabel} from "./layout";
 
-export {ButtonLink, PlainButton, PlainLink} from "./actionControls";
+export {ButtonLink, PlainLink} from "./actionControls";
 export type {ButtonSize, ButtonVariant} from "./actionControls";
 
 export type ActionGroupVariant = "flow" | "hero" | "host-create-flow" | "marketing";
@@ -81,20 +81,6 @@ export function Button({
     >
       {loading ? loadingLabel ?? children : children}
     </ButtonControl>
-  );
-}
-
-export function TextActionButton({
-  children,
-  className,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <PlainButton className={classNames("see-all-button", className)} type="button" {...props}>
-      {children}
-    </PlainButton>
   );
 }
 
