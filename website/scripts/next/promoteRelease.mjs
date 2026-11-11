@@ -3,7 +3,7 @@ import {createHash} from "node:crypto";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
-import {LIVE_RELEASE_TAG, preview, assertSuccessfulSourceRun, currentReleaseLineage, unpackPreview} from "./previewRelease.mjs";
+import {LIVE_RELEASE_TAG, preview, assertSuccessfulSourceRun, currentReleaseLineage, sourceCiJobs, unpackPreview} from "./previewRelease.mjs";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {CANONICAL_REPOSITORY_ID, canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 
@@ -102,7 +102,7 @@ async function authorize() {
   assert.equal(validation.validated, true); assert.ok(validation.captureBinding);
   const ci = github(`repos/${repository}/actions/runs/${validation.sourceCiRunId}`);
   assert.equal(ci.run_attempt, validation.sourceCiRunAttempt);
-  assertSuccessfulSourceRun({run: ci, sourceSha, repository});
+  assertSuccessfulSourceRun({run: ci, sourceSha, repository, jobs: sourceCiJobs(ci)});
   await currentReleaseLineage(repository, sourceSha);
   const workflow = github(`repos/${repository}/actions/workflows/website-next-preview.yml`);
   return selectPreviewArtifact({run, workflow, artifacts, sourceSha});
