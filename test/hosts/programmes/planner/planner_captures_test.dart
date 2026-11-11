@@ -36,6 +36,11 @@ void main() {
       phone,
     ),
     (
+      'host_programme_live_board_desktop',
+      (_) => plannerLiveBoardCapture(),
+      desktop,
+    ),
+    (
       'host_programme_id_tracker_desktop',
       (_) => plannerIdTrackerCapture(),
       desktop,

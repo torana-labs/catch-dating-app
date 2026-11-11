@@ -21,6 +21,19 @@ void main() {
     expect(CaptureDevice.iphone17Pro.showsStatusBar, isFalse);
   });
 
+  test('the unframed marketing devices match the exporter\'s device table', () {
+    const tablet = CaptureDevice.genericTablet;
+    expect(CaptureDevice.fromId('generic-tablet'), same(tablet));
+    expect(tablet.size, const Size(1194, 834));
+    expect(tablet.safeArea, const EdgeInsets.only(top: 24, bottom: 20));
+    expect(tablet.showsStatusBar, isFalse);
+    const desktop = CaptureDevice.desktopBrowser;
+    expect(CaptureDevice.fromId('desktop-browser'), same(desktop));
+    expect(desktop.size, const Size(1440, 900));
+    expect(desktop.safeArea, EdgeInsets.zero);
+    expect(desktop.showsStatusBar, isFalse);
+  });
+
   testWidgets('generic phone captures draw a clean status bar in the top '
       'safe area, light and dark', (tester) async {
     final colors = <Color?>[];

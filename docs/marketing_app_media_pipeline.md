@@ -96,8 +96,10 @@ device-frame stories read seven; those files stay until their readers move.
 
 `generic-tablet` (1194×834) and `desktop-browser` (1440×900) are unframed
 devices: the PNG is the screen alone, and the website draws the frame in CSS
-(`CatchDeviceFrame` kind `tablet`, or kind `browser`). Rendering them needs a
-pass-through in `frame_device_capture.dart`, which frames phones only today.
+(`CatchDeviceFrame` kind `tablet`, or kind `browser`). The Flutter render uses
+`CaptureDevice.genericTablet` and `CaptureDevice.desktopBrowser` (the same
+screens and safe areas; neither draws the phone status bar), and
+`frame_device_capture.dart` passes their native 2x screens through unframed.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is

@@ -7,7 +7,9 @@ import {buildWebsiteManifest, scenarioReferenceProblems, validateSourceManifest}
 import {brand} from "@catch/brand";
 
 const authored = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
-const liveConsole = authored.captures.find(capture => capture.id === "host-live-console");
+// A sample record to vary, held pending so the rules under test don't also
+// need its image on disk.
+const liveConsole = {...authored.captures.find(capture => capture.id === "host-live-console"), status: "pending-fixture"};
 
 function manifestWith(changes) {
   return {...authored, captures: [{...liveConsole, ...changes}]};

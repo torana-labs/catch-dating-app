@@ -9248,6 +9248,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_live_board_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerLiveBoardCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_live_board_desktop',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.auditDesktop,
     marketingFixtureKeys: const <String>['weddingsPilot.planner.liveBoard'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerLiveBoardCapture(),
@@ -9270,7 +9277,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_reconcile_desktop',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.auditDesktop,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.reconcileDesktop'],
+    marketingFixtureKeys: const <String>[
+      'weddingsPilot.planner.reconcileDesktop',
+    ],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerReconcileCapture(),
   ),
@@ -14980,7 +14989,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_self_check_in',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.checkedIn'],
     providerOverrides: _eventSuccessCompanionProviderOverrides(),
     builder: (context) => _eventSuccessCompanionCapture(
       now: EventSuccessCompanionFixtures.socialStart.subtract(
@@ -15167,6 +15175,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_micro_pod_assignment',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.checkedIn'],
     providerOverrides: _eventSuccessCompanionProviderOverrides(),
     builder: (context) => _eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
