@@ -154,25 +154,32 @@ class _HostProgrammeInboxScreenState
           ref.watch(programCannedRepliesProvider(widget.programId)),
         ).value?.value ??
         const <ProgramCannedReply>[];
+    final status = read.hasError
+        ? HostProgrammeStatus.error
+        : inbox == null
+        ? HostProgrammeStatus.loading
+        : HostProgrammeStatus.ready;
     return CatchRoot(
       format: CatchFormat.nightsOut,
       child: CatchScreen(
         key: const ValueKey<String>('host-programme-inbox-screen'),
         bodyScrolls: false,
-        topBar: CatchTopBar(
-          variant: CatchTopBarVariant.tool,
-          back: CatchTopBarBack(
-            label: l10n.hostProgrammeBackToProgramme,
-            onPressed: _back,
-          ),
-          title: l10n.hostProgrammeInboxTitle,
-        ),
+        // Once the inbox is ready its pane header carries the title, back
+        // and settings, as on Rooms and the ID tracker; a top bar as well
+        // would show "Guest messages" twice. While it loads or fails the
+        // body has no header, so the top bar keeps the way back.
+        topBar: status == HostProgrammeStatus.ready
+            ? null
+            : CatchTopBar(
+                variant: CatchTopBarVariant.tool,
+                back: CatchTopBarBack(
+                  label: l10n.hostProgrammeBackToProgramme,
+                  onPressed: _back,
+                ),
+                title: l10n.hostProgrammeInboxTitle,
+              ),
         body: HostProgrammeInboxBody(
-          status: read.hasError
-              ? HostProgrammeStatus.error
-              : inbox == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          status: status,
           inbox: inbox,
           filter: _filter,
           selectedThreadId: threadId,
