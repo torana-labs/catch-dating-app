@@ -191,8 +191,10 @@ export type {CatchIconProps} from "./components/CatchIcon";
 /** Legacy: the pre-redesign icon, deleted in P7. */
 export {CatchLegacyIcon, catchIconSizes} from "./components/CatchLegacyIcon";
 export type {CatchIconSizeName, CatchIconTone, CatchLegacyIconProps} from "./components/CatchLegacyIcon";
-export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs";
-export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
+export {catchIconStrokeWidth} from "./icons/catchIconRoles";
+export type {CatchActivityKind, CatchIconName} from "./icons/catchIconRoles";
+export {loadCatchIconGlyphs} from "./icons/catchIconGlyphLoader";
+export type {CatchIconGlyphs} from "./icons/catchIconGlyphLoader";
 export {catchIconNodes} from "./icons/catchIconNodes";
 export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes";
 export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";

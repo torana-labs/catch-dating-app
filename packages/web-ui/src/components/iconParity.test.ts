@@ -2,7 +2,8 @@
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
-import {catchIconGlyphs, catchIconStrokeWidth} from "../icons/catchIconGlyphs";
+import {catchIconGlyphs} from "../icons/catchIconGlyphs";
+import {catchIconStrokeWidth} from "../icons/catchIconRoles";
 import {catchIconSizes} from "./CatchLegacyIcon";
 
 // The Flutter implementation is the reference (blueprint D11). These tests
