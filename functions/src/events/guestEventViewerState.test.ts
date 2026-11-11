@@ -166,7 +166,6 @@ test("application review and withdrawal stay separate from admission",
     const app =
     h.store.get(`organizerApplications/${application.applicationId}`)!;
     app.linkedUid = uid;
-  h.store.get(`organizerApplicationResponses/${responseId}`)!.linkedUid = uid;
   h.store.get(`organizerFormResponses/${responseId}`)!.respondentUid = uid;
   for (const [status, action] of [["submitted", "applicationPending"],
     ["inReview", "applicationPending"], ["waitlisted", "applicationWaitlisted"],

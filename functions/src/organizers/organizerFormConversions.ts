@@ -16,7 +16,6 @@ import type {ConvertOrganizerFormResponseCallableResponse} from
   "../shared/generated/convertOrganizerFormResponseCallableResponse";
 import type {
   OrganizerApplicationDocument,
-  OrganizerApplicationResponseDocument,
   OrganizerContactDocument,
   OrganizerContactOriginDocument,
   OrganizerFormConversionReceiptDocument,
@@ -56,11 +55,6 @@ import {formConversionReceiptId} from "./organizerFormAdmissionIdentity";
 type ConversionFields =
   PreviewOrganizerFormConversionCallableResponse["fields"];
 type ConversionField = ConversionFields[number];
-type FormSections = OrganizerFormVersionDocument["definition"]["sections"];
-type FormSection = FormSections[number];
-type FormQuestionKind = FormSection["questions"][number]["kind"];
-type ApplicationAnswers = OrganizerApplicationResponseDocument["answers"];
-type ApplicationAnswerValue = ApplicationAnswers[number]["value"];
 
 export const organizerFormFollowUpUnavailableMessage =
   "Follow-up handoff needs an approved messaging template and recipient " +
@@ -625,31 +619,20 @@ async function applyApplicationConversion(params: {
   );
   const applicationRef = params.db.collection("organizerApplications")
     .doc(applicationId);
-  const compatibilityResponseRef = params.db
-    .collection("organizerApplicationResponses")
-    .doc(params.data.responseId);
   const displayName = String(
     fieldValue(params.context.fields, "displayName") ??
     params.context.response.identity.displayName ?? "Form respondent"
   ).slice(0, 160);
   const {tx} = params;
-  const [existing, response] = await Promise.all([
-    tx.get(applicationRef), tx.get(compatibilityResponseRef),
-  ]);
+  const existing = await tx.get(applicationRef);
   if (existing.exists) {
     const application = existing.data() as OrganizerApplicationDocument;
-    const snapshot = response.data() as
-      OrganizerApplicationResponseDocument | undefined;
     if (application.organizerId !== params.data.organizerId ||
         application.formId !== params.context.response.formId ||
         application.formVersionId !== params.context.response.versionId ||
         application.latestResponseId !== params.data.responseId ||
         application.source.kind !== "native" ||
-        application.source.externalResponseId !== params.data.responseId ||
-        snapshot?.organizerId !== params.data.organizerId ||
-        snapshot.applicationId !== applicationId ||
-        snapshot.formId !== application.formId ||
-        snapshot.formVersionId !== application.formVersionId) {
+        application.source.externalResponseId !== params.data.responseId) {
       throw new HttpsError("already-exists", "Conversion result conflict.");
     }
     return applicationId;
@@ -682,35 +665,7 @@ async function applyApplicationConversion(params: {
     updatedAt: params.now,
     reviewedAt: null,
   };
-  const questions = new Map(params.context.version.definition.sections
-    .flatMap((section) => section.questions)
-    .map((question) => [question.questionId, question]));
-  const compatibility: OrganizerApplicationResponseDocument = {
-    organizerId: params.data.organizerId,
-    applicationId,
-    formId: params.context.response.formId,
-    formVersionId: params.context.response.versionId,
-    linkedUid: params.context.response.respondentUid,
-    answers: params.context.response.answerSnapshots.flatMap((answer) => {
-      const question = questions.get(answer.questionId);
-      return question ? [{
-        questionId: answer.questionId,
-        questionKey: answer.key,
-        questionLabel: answer.label,
-        questionKind: compatibilityQuestionKind(question.kind),
-        canonicalFieldId: question.canonicalFieldId,
-        privacyClass: question.privacyClass,
-        hostPresentation: question.hostPresentation,
-        value: compatibilityAnswer(question.kind, answer.answer),
-      }] : [];
-    }).slice(0, 100),
-    source,
-    consentVersion: params.context.response.consentVersion,
-    grantId: null,
-    submittedAt: params.context.response.submittedAt,
-  };
   tx.create(applicationRef, application);
-  tx.create(compatibilityResponseRef, compatibility);
   return applicationId;
 }
 
@@ -806,50 +761,6 @@ async function findExistingContact(
       "The response matches conflicting contacts. Review duplicates first.");
   }
   return [...candidates][0] ?? null;
-}
-
-function compatibilityQuestionKind(
-  kind: FormQuestionKind
-): OrganizerApplicationResponseDocument["answers"][number]["questionKind"] {
-  if (kind === "acknowledgement") return "boolean";
-  if (kind === "signature") return "file";
-  return kind;
-}
-
-function compatibilityAnswer(
-  kind: FormQuestionKind,
-  answer: OrganizerFormResponseDocument["answers"][string]
-): ApplicationAnswerValue {
-  const empty = {
-    textValue: null,
-    numberValue: null,
-    booleanValue: null,
-    dateValue: null,
-    optionValues: [] as string[],
-    assetIds: [] as string[],
-  };
-  if (answer === null || answer === "" ||
-      Array.isArray(answer) && answer.length === 0) {
-    return {valueKind: "empty", ...empty};
-  }
-  if (kind === "file" || kind === "signature") {
-    return {valueKind: "assets", ...empty, assetIds: Array.isArray(answer) ?
-      answer : [String(answer)]};
-  }
-  if (kind === "singleChoice" || kind === "multiChoice") {
-    return {valueKind: "options", ...empty, optionValues:
-      Array.isArray(answer) ? answer : [String(answer)]};
-  }
-  if (kind === "date") {
-    return {valueKind: "date", ...empty, dateValue: String(answer)};
-  }
-  if (typeof answer === "number") {
-    return {valueKind: "number", ...empty, numberValue: answer};
-  }
-  if (typeof answer === "boolean") {
-    return {valueKind: "boolean", ...empty, booleanValue: answer};
-  }
-  return {valueKind: "text", ...empty, textValue: String(answer)};
 }
 
 function fieldValue(

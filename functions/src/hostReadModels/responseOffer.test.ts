@@ -31,7 +31,7 @@ function store() {
     "organizerForms/form": {organizerId: "org", title: "Supper club",
       submittedResponseCount: 1},
     "organizerFormVersions/version": {organizerId: "org", formId: "form",
-      version: 1},
+      version: 1, definition: {sections: []}},
     "organizerFormResponses/response": {
       organizerId: "org", formId: "form", versionId: "version",
       publicFormId: "publicform123456789012", draftId: "draft",
@@ -46,9 +46,6 @@ function store() {
       targetId: null, linkedUid: "user", contactId: "contact",
       applicantDisplayName: "Asha", reviewStatus: "approved",
       latestResponseId: "response", source, revision: 2, submittedAt: now},
-    "organizerApplicationResponses/response": {organizerId: "org",
-      applicationId, formId: "form", formVersionId: "version",
-      linkedUid: "user", answers: [], source},
   });
 }
 
