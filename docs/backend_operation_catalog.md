@@ -541,7 +541,7 @@ messaging consent and keeps the organiser suppression path.
 communications duty). `sendProgramWhatsappReply` sends free text only inside
 the 24-hour window: a `programWhatsappReplyOperations` reservation precedes
 the Meta call, an uncertain outcome stays unknown, and a
-`programWhatsappDispatches` record (`kind: service`) routes delivery
+`whatsappDispatches` record (`source: program`, `kind: service`) routes delivery
 receipts back to the message. `sendProgramServiceReply` is the same path for
 the assistant (lane W2). `listProgramWhatsappCannedReplies` /
 `upsertProgramWhatsappCannedReply` keep saved replies;
@@ -641,6 +641,20 @@ server-owned; clients write nothing.
   contacts (CRM definition version 4).
 - `requestAccountDeletion` cancels a deleted member's live subscriptions
   immediately, then erases membership, checkout and benefit-use roots.
+
+### Shared delivery collections
+
+`deliveryMessages/{messageId}` is the outbox for automation, programme and
+approval-notification sends, and `whatsappDispatches/{attemptId}` holds their
+WhatsApp dispatch evidence. Every document carries a `source`
+(`automation`, `program` or `approvalNotification`); ids are content hashes
+over the source's own context, so sources never collide. Each source keeps its
+own contract and parser, and the WhatsApp receipt router picks the owning
+store by `source`. Campaign sends still use `campaignDeliveryMessages` and
+`campaignWhatsappDispatches` until the parked CAT-106 claim on their tests is
+resolved; event-day assistance keeps its per-channel collections by owner
+decision (12 Nov 2026).
+
 
 ## Backend-Owned Collections And Fields
 
@@ -823,7 +837,7 @@ secrets, answers or endpoint payloads.
 Campaign actions reuse an unscheduled, reviewed WhatsApp draft and its revision.
 At handoff the engine mints a deterministic server-managed companion
 `organizerMoments` row per messaging action, a stable `organizerMomentRuns`
-occurrence, and a durable `automationDeliveryMessages` intent in one
+occurrence, and a durable `deliveryMessages` intent (`source: automation`) in one
 transaction. The shared delivery core owns reservation, claim-time authority
 rechecks, provider submission, uncertain outcomes and receipt reconciliation;
 Moments owns scheduling, deferral and the organizer-visible journal. The

@@ -158,7 +158,7 @@ test("receipt repair pages all recipients and preserves journals",
         ...db.getDoc("programStaffGrants/prog__staff"), uid});
       await activityHarness(db, request).deliver();
       const actual = activityRecord(db);
-      h.db.setDoc(`programDeliveryMessages/${actual.messageId}`, {...actual});
+      h.db.setDoc(`deliveryMessages/${actual.messageId}`, {...actual});
     }
     const preserve = "organizerMomentSends/" +
       activityRequest.run.runId + "_uid:staff";
@@ -188,7 +188,7 @@ test("uncommitted intent with expired window is not journaled as sent",
     const h = runnerHarness();
     const intent = programActivityIntent(activityRequest);
     const record = newProgramDeliveryRecord(intent, ACTIVITY_NOW);
-    h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+    h.db.setDoc(`deliveryMessages/${record.messageId}`, {...record});
     h.clock.now += ACTIVITY_WINDOW;
     await h.dispatch();
     assert.equal(h.messages.length, 0);
@@ -360,7 +360,7 @@ test("a full page of held receipts cannot starve newly due activity",
     const h = runnerHarness();
     await h.deliver();
     const source = activityRecord(h.db);
-    h.db.deleteDoc(`programDeliveryMessages/${source.messageId}`);
+    h.db.deleteDoc(`deliveryMessages/${source.messageId}`);
     h.messages.length = 0;
     for (let index = 0; index < 200; index++) {
       const run = {...activityRequest.run,
@@ -371,7 +371,7 @@ test("a full page of held receipts cannot starve newly due activity",
         state: {kind: "unknown", at: ACTIVITY_NOW, providerMessageId: null,
           reason: "workerInterrupted",
           reconcileAfter: ACTIVITY_NOW + 120_000}}];
-      h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+      h.db.setDoc(`deliveryMessages/${record.messageId}`, {...record});
       h.db.setDoc(`organizerMomentRuns/${run.runId}`, {...run});
     }
     h.clock.now += ACTIVITY_WINDOW + 1;

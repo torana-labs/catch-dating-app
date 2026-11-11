@@ -96,7 +96,7 @@ function harness(db: FakeFirestore, resolved = recipient) {
 
 function record(db: FakeFirestore): ProgramDeliveryMessageDocument {
   const entries = [...db.docs.entries()]
-    .filter(([path]) => path.startsWith("programDeliveryMessages/"));
+    .filter(([path]) => path.startsWith("deliveryMessages/"));
   assert.equal(entries.length, 1);
   return entries[0][1] as unknown as ProgramDeliveryMessageDocument;
 }
@@ -241,7 +241,7 @@ for (const change of ["assertionDeleted", "consentRevoked"]) {
         }},
         now: () => {
           const doc = [...db.docs.entries()].find(([path]) =>
-            path.startsWith("programDeliveryMessages/"))?.[1] as
+            path.startsWith("deliveryMessages/"))?.[1] as
             ProgramDeliveryMessageDocument | undefined;
           if (!changed && doc?.attempts.some((attempt) =>
             attempt.state.kind === "reserved")) {
@@ -262,7 +262,7 @@ for (const change of ["assertionDeleted", "consentRevoked"]) {
       assert.equal(sends, 0);
       assert.equal(outcome.kind, "retry");
       assert.equal([...db.docs.keys()].filter((path) =>
-        path.startsWith("programWhatsappDispatches/")).length, 0);
+        path.startsWith("whatsappDispatches/")).length, 0);
     });
 }
 
@@ -378,7 +378,7 @@ test("uncommitted enqueue failure preserves its error and performs no send",
     await assert.rejects(h.deliver(), (error) => error === failure);
     assert.equal(h.calls.length, 0);
     assert.equal([...db.docs.keys()].filter((path) =>
-      path.startsWith("programDeliveryMessages/")).length, 0);
+      path.startsWith("deliveryMessages/")).length, 0);
     db.beforeCommit = undefined;
     assert.equal((await h.deliver()).kind, "sent");
   });
@@ -412,7 +412,7 @@ test("failed initial intent read is not treated as an absent record",
     const failure = new Error("intent read unavailable");
     db.collection = (path) => {
       const result = collection(path);
-      if (path !== "programDeliveryMessages") return result;
+      if (path !== "deliveryMessages") return result;
       const doc = result.doc.bind(result);
       result.doc = (id) => {
         const ref = doc(id);
@@ -459,7 +459,7 @@ test("failed recovery read rejects instead of claiming enqueue recovery",
     let rejectReads = false;
     db.collection = (path) => {
       const result = collection(path);
-      if (path !== "programDeliveryMessages") return result;
+      if (path !== "deliveryMessages") return result;
       const doc = result.doc.bind(result);
       result.doc = (id) => {
         const ref = doc(id);

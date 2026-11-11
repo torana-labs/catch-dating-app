@@ -5,6 +5,8 @@
   "description": "Private claim-time binding between one program delivery attempt (or one free-text service reply, kind service) and the exact Meta WhatsApp submission. Webhook status callbacks verify against this record before a receipt can merge into the program delivery outbox.",
   "type": "object",
   "additionalProperties": false,
+  "x-firestore-collection": "whatsappDispatches",
+  "x-firestore-path": "whatsappDispatches/{attemptId}",
   "required": [
     "schemaVersion",
     "attemptId",
@@ -20,9 +22,15 @@
     "templateDocumentId",
     "templateHash",
     "payloadHash",
-    "createdAt"
+    "createdAt",
+    "source"
   ],
   "properties": {
+    "source": {
+      "type": "string",
+      "const": "program",
+      "description": "Which delivery source wrote this document; the collection holds several."
+    },
     "schemaVersion": {
       "type": "integer",
       "const": 1

@@ -136,7 +136,7 @@
           "description": "Durable intent record this run executes; the outbox owns the actual attempt history."
         }
       },
-      "description": "Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages."
+      "description": "Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in deliveryMessages (source automation)."
     }
   }
 }

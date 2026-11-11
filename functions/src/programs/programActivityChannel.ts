@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {Message} from "firebase-admin/messaging";
@@ -257,7 +258,7 @@ async function settleSdkUnknown(db: Firestore,
   permit: DeliveryPermit<MessageIntent, DeliveryAttempt>,
   clock: () => number): Promise<void> {
   await runDeliveryTransaction(db, async (tx) => {
-    const ref = db.collection("programDeliveryMessages").doc(permit.messageId);
+    const ref = db.collection(DELIVERY_MESSAGES).doc(permit.messageId);
     const snapshot = await tx.get(ref);
     if (!snapshot.exists) {
       throw new Error("Program activity record disappeared");
