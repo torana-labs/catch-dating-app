@@ -206,7 +206,7 @@
     },
     {
       "path": "host-coverage-manifest.json",
-      "sha256": "d24ac2c5471a6ad2ad5d5b72fb162c43fd127b653fe6f30b41bc7132c246465f"
+      "sha256": "b9a60a12b21e152f5267e0fdf978104fd205ed4569aa1d0ababb003f1a9b7562"
     },
     {
       "path": "image-slot.js",
