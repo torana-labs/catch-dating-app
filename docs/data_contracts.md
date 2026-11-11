@@ -5136,11 +5136,18 @@ reminder queues one `organizerBillNotices/{billId}_issued` or
 `{billId}_reminder{n}` row: email to the owner's verified Firebase Auth address
 through the credential named in `billingNoticeSettings/platform` (pinned Secret
 Manager version; never the key itself), and a Host app push that says only that
-a bill was issued. Both are server-only.
+a bill was issued. Both are server-only. The email links the Razorpay invoice
+and the host billing website for that organizer
+(`/host/billing/?organizerId={organizerId}`); the push carries no link.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent
 bills and everything only staff need (reminders, history, terms revisions).
+The host billing website finds the caller's organizers through
+`listMyOwnedOrganizers`: the organizers whose `ownerUserId` is the caller, or
+whose legacy `hostUserId` is when no owner is recorded (the owner rule of every
+billing callable), archived ones included, a page of at most 50 at a time in
+organizer id order, each with its name and trial and plan status. No prices.
 
 The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled

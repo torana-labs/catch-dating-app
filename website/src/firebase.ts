@@ -1524,7 +1524,7 @@ export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayloa
 }
 /** The host billing portal's owner callables; the feature parses the replies. */
 export type HostBillingCallable = "getOrganizerBillingStatus" |
-  "manageOrganizerBillingPlan" | "listOrganizerBills" | "listMyOrganizerJourneys";
+  "manageOrganizerBillingPlan" | "listOrganizerBills" | "listMyOwnedOrganizers";
 export function invokeHostBillingCallable(name: HostBillingCallable,
   payload: Record<string, unknown>): Promise<unknown> {
   return invokeWebsiteCallable(name, payload, claimFirebaseConfigured, "Host billing");

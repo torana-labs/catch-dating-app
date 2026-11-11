@@ -7,10 +7,10 @@ export type {GetOrganizerBillingStatusCallablePayload} from
   "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallablePayload";
 export type {GetOrganizerBillingStatusCallableResponse} from
   "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallableResponse";
-export type {ListMyOrganizerJourneysCallablePayload} from
-  "../../../../functions/src/shared/generated/listMyOrganizerJourneysCallablePayload";
-export type {ListMyOrganizerJourneysCallableResponse} from
-  "../../../../functions/src/shared/generated/listMyOrganizerJourneysCallableResponse";
+export type {ListMyOwnedOrganizersCallablePayload} from
+  "../../../../functions/src/shared/generated/listMyOwnedOrganizersCallablePayload";
+export type {ListMyOwnedOrganizersCallableResponse} from
+  "../../../../functions/src/shared/generated/listMyOwnedOrganizersCallableResponse";
 export type {ListOrganizerBillsCallablePayload} from
   "../../../../functions/src/shared/generated/listOrganizerBillsCallablePayload";
 export type {ListOrganizerBillsCallableResponse} from
