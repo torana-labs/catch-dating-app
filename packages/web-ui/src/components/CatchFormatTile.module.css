@@ -1,6 +1,7 @@
 /*
  * Website v2 format tile (CAT-260): the format's accent ground and ink, a
- * 340px tile (310px below 840px) with the photo held to its foot. A pressed
+ * 340px tile (310px below 840px) with the photo, or the format's artwork,
+ * held to its foot. A pressed
  * tile draws the selection stroke inside its edge in ink.
  */
 .tile {
@@ -72,6 +73,21 @@
   margin-top: auto;
   border-radius: var(--catch-radius-md);
   object-fit: cover;
+}
+
+/*
+ * Without a photo the foot carries the format's activity artwork (the app's
+ * EventBackdropImage), filling the room the photo would take and at least
+ * the photo's height, so the tile never shows an empty lower half.
+ */
+.art {
+  position: relative;
+  display: block;
+  flex: 1 1 118px;
+  min-height: 118px;
+  margin-top: auto;
+  overflow: hidden;
+  border-radius: var(--catch-radius-md);
 }
 
 @container catch-page (width < 840px) {

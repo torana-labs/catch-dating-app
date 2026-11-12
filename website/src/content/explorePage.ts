@@ -8,6 +8,13 @@ export const explorePageCopy = {
   lead: "Plans for the next two weeks, and the hosts who run them.",
   soonTitle: `${brand.name} is coming to {city}`,
   soonLead: "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in {liveCity} meanwhile.",
+  /** The lead when no other city is open to point to. */
+  soonLeadAlone: "Hosts here are setting up their first plans.",
+  /** A city not yet open, with no plans and no filter set: waiting, not a filter miss. */
+  soonNoPlans: "No plans in {city} yet.",
+  soonNoPlansBody: "Hosts here are setting up their first plans. Check back soon.",
+  soonNoOrganisers: "No organisers in {city} yet.",
+  soonNoOrganisersBody: "The first hosts here will show up as soon as they join.",
   search: {label: "Search plans and organisers", placeholder: "A plan, an organiser or a place", clear: "Clear {query}", close: "Close search"},
   view: {label: "Show", plans: "Plans", organisers: "Organisers"},
   when: {label: "When", any: "Next two weeks", today: "Today", weekend: "This weekend", week: "Next 7 days"},

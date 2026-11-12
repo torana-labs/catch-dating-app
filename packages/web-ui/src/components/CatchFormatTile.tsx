@@ -1,8 +1,10 @@
 "use client";
 
 import {useState} from "react";
+import type {CatchActivityKind} from "./activityArtwork";
 import {CatchLegacyText} from "./CatchLegacyText";
-import type {Format} from "./palette";
+import {EventBackdropImage} from "./EventBackdropImage";
+import {formatActivityKinds, type Format} from "./palette";
 import styles from "./CatchFormatTile.module.css";
 
 interface CatchFormatTileBase {
@@ -15,7 +17,8 @@ interface CatchFormatTileBase {
   body: string;
   /**
    * A photo of a real plan in this format, held to the tile's foot. Without
-   * one, or when it fails to load, the tile is its accent alone.
+   * one, or when it fails to load, the foot carries the format's activity
+   * artwork instead, so the tile never shows an empty lower half.
    */
   photoUrl?: string | null;
 }
@@ -51,7 +54,11 @@ export function CatchFormatTile(props: CatchFormatTileProps) {
       <CatchLegacyText as="span" color="inherit" variant="bodyM">{body}</CatchLegacyText>
       {photoUrl && failedUrl !== photoUrl ? (
         <img alt="" className={styles.photo} decoding="async" loading="lazy" onError={() => setFailedUrl(photoUrl)} src={photoUrl} />
-      ) : null}
+      ) : (
+        <span className={styles.art} data-format-art="">
+          <EventBackdropImage activityKind={formatActivityKinds[format][0] as CatchActivityKind} mirrored />
+        </span>
+      )}
     </>
   );
   if (props.href !== undefined) {

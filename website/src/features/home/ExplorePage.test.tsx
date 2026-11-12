@@ -56,6 +56,23 @@ describe("Explore", {timeout: 20_000}, () => {
     expect(screen.getAllByText("Joining at launch")).toHaveLength(2);
   });
 
+  it("tells a launching-soon city with no plans that it is waiting, not that filters missed", () => {
+    const waiting: HomeCatalog = {...puneLaunchingSoonCatalog, liveCity: null,
+      plans: {...puneLaunchingSoonCatalog.plans, plans: [], planCount: 0}};
+    show(waiting, "/pune/");
+    expect(screen.getByText("No plans in Pune yet.")).toBeTruthy();
+    expect(screen.getByText("Hosts here are setting up their first plans. Check back soon.")).toBeTruthy();
+    expect(screen.queryByText("0 plans")).toBeNull();
+    expect(screen.queryByText("No plans match these filters.")).toBeNull();
+    // With no other city open, the lead does not promise one.
+    expect(screen.queryByText(/meanwhile/u)).toBeNull();
+    cleanup();
+    // A filter the visitor set still reads as a filter miss, with Clear filters.
+    show(waiting, "/pune/?format=run");
+    expect(screen.getByText("No plans match these filters.")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Clear filters"})).toBeTruthy();
+  });
+
   it("says when plans could not load", () => {
     show({...homeCatalogFixture("mumbai"), phase: "unavailable"});
     expect(screen.getByText("We couldn’t load plans right now.")).toBeTruthy();
