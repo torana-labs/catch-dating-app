@@ -1,11 +1,11 @@
 {
   "$schema": "./catch.icons.schema.json",
   "version": 1,
-  "updated": "2026-10-24",
+  "updated": "2026-11-12",
   "family": {
     "id": "lucide",
     "name": "Lucide",
-    "version": "1.61.0",
+    "version": "1.68.0",
     "license": "ISC",
     "homepage": "https://lucide.dev",
     "strokeWidth": 2,
@@ -13,7 +13,7 @@
       "fontFamily": "Lucide",
       "fontPackage": "catch_ui",
       "fontAsset": "assets/fonts/lucide/lucide.ttf",
-      "fontSha256": "0b98954b05aba6a770306609847f2d2194395ab225288346c7841a4a50ce2300",
+      "fontSha256": "76967aa77be97351cec68e5a9e6fe36bc64ce53bf848f61390e3a3e1526e7540",
       "codepoints": "packages/catch_ui/assets/fonts/lucide/codepoints.json",
       "fontSource": { "package": "lucide-static", "font": "font/lucide.ttf", "codepoints": "font/codepoints.json" }
     },
