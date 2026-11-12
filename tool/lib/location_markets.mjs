@@ -3,6 +3,7 @@
 import {
   assertValidMarketCatalog,
   canonicalMarketsFromCatalog,
+  countryRecordsFromCatalog,
   readMarketCatalog,
   slugifyLocationKey,
 } from "./market_catalog.mjs";
@@ -55,6 +56,7 @@ export function configCitiesDocument() {
     launchMarketIds: launchedMarketIds,
     cities: launchMarkets.map(cityDataFromMarket),
     markets: canonicalMarkets.map((entry) => ({...entry})),
+    countries: countryRecordsFromCatalog(catalog),
   };
 }
 
@@ -76,5 +78,8 @@ function cityDataFromMarket(entry) {
     hostCreatable: entry.hostCreatable,
     eventCreatable: entry.eventCreatable,
     exploreVisible: entry.exploreVisible,
+    lifecycle: entry.lifecycle,
+    websiteListed: entry.websiteListed,
+    ...(entry.launchDate === undefined ? {} : {launchDate: entry.launchDate}),
   };
 }

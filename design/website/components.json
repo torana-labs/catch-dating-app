@@ -96,9 +96,8 @@
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
       "exportName": "PublicSiteFooter",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/site-footer.css",
-        "website/src/styles/consumer-home.css"
+        "packages/web-ui/src/components/CatchSiteFooter.module.css",
+        "packages/web-ui/src/components/CatchWordmark.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -108,7 +107,7 @@
           "global-links"
         ]
       },
-      "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner."
+      "notes": "The one site footer on every public marketing page (CatchSiteFooter on the ink band): Explore, Hosts with Weddings and Help and legal ending in Privacy choices, each link flush with its title; the homepage and city pages add Cities; product pages name themselves. Replaces the legacy SiteFooter and SiteFooterBand."
     },
     {
       "id": "shared_public_site_header",
@@ -216,39 +215,6 @@
         ]
       },
       "notes": "The boards' short footer. The organiser and event pages close their main column with the default links (Privacy, Terms, For organisers, Help); the claim, form and offer pages pass the site and legal links and the operator line. Only the claim page records footer clicks."
-    },
-    {
-      "id": "shared_site_footer_band",
-      "kind": "supporting-component",
-      "routeIds": [
-        "home",
-        "host",
-        "host_apply"
-      ],
-      "owner": "shared/site",
-      "source": "website/src/shared/site/PublicSiteChrome.tsx",
-      "exportName": "SiteFooterBand",
-      "comparedWith": [
-        "catch.button",
-        "catch.stack",
-        "catch.surface",
-        "catch.text"
-      ],
-      "comparisonReason": "The home and host pages' ink footer: link columns of quiet buttons, then the wordmark across from the tagline. It arranges Stack, Surface, Text and Button and implements none of them.",
-      "css": [
-        "packages/web-ui/src/components/CatchStack.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "columns",
-          "short"
-        ]
-      },
-      "notes": "The system pages' footer band. The home and host pages pass link columns; the host application leaves them out and keeps the wordmark and tagline. PublicSiteChrome.stories.tsx draws both without a catchComponent declaration yet."
     },
     {
       "id": "route_home",

@@ -22,6 +22,9 @@ class CityOption implements Labelled {
     this.hostCreatable = false,
     this.eventCreatable = false,
     this.exploreVisible = false,
+    this.lifecycle = 'hidden',
+    this.websiteListed = false,
+    this.launchDate,
     this.aliases = const [],
   });
 
@@ -42,6 +45,15 @@ class CityOption implements Labelled {
   final bool hostCreatable;
   final bool eventCreatable;
   final bool exploreVisible;
+
+  /// Launch lifecycle: hidden, waitlist, launching, live or paused.
+  final String lifecycle;
+
+  /// Whether the public website lists this city.
+  final bool websiteListed;
+
+  /// Planned launch day (YYYY-MM-DD) of a launching city.
+  final String? launchDate;
   final List<String> aliases;
 
   String get effectiveMarketId => marketId ?? name;
@@ -65,6 +77,9 @@ class CityOption implements Labelled {
     hostCreatable: hostCreatable,
     eventCreatable: eventCreatable,
     exploreVisible: exploreVisible,
+    lifecycle: lifecycle,
+    websiteListed: websiteListed,
+    launchDate: launchDate,
   );
 
   @override

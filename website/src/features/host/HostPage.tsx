@@ -27,7 +27,7 @@ import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {interpolateContent as fill} from "@content/interpolate";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import {feeCap, salesRange, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
@@ -392,7 +392,7 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
-      <SiteFooterBand label={copy.header.title} tagline={copy.footer.tagline} wordmark={copy.footer.wordmark} />
+      <PublicSiteFooter tagline={copy.footer.tagline} />
     </CatchRoot>
   );
 }

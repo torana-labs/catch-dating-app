@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.192.0
+version: 1.193.0
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -79,16 +79,25 @@ Never edit a copy. Edit the catalog, then run
 |---|---|
 | `functions/src/shared/generated/marketCatalog.ts` | `functions/src/locations/marketConfig.ts` |
 | `packages/kernel/lib/market_catalog.dart` | `city_catalog.dart` and `country_markets.dart`, the apps' offline fallback |
-| `admin/src/shared/config/generated/marketCatalog.ts` | Admin launch markets (live cities) |
+| `admin/src/shared/config/generated/marketCatalog.ts` | Admin launch markets (live cities), every city with its lifecycle, and the countries; `marketCityFor` and `marketLabel` in `launchMarkets.ts` resolve any market key |
 | The launch-market block in `firestore.rules` | `isDefaultCity` |
 
 Tools read the catalog directly through `tool/lib/market_catalog.mjs`;
 `tool/firebase/create_config_cities.mjs` writes `config/cities` from it.
+From `config/cities` version 3, every city and market entry also carries
+`lifecycle`, `websiteListed` and, for a launching city, `launchDate`, and the
+document carries a `countries` array. The fields are optional in the schema
+because older documents lack them: the app's `CityData.effectiveLifecycle`
+infers a lifecycle from `launchStatus` when it is absent.
 The registered check `contracts:market-lists` runs on every change: it fails
 when a copy is stale, a cross-record rule breaks, or tracked source names three
 or more catalog cities outside `tool/contracts/market_list_allowlist.json`,
-which may only shrink. `contracts:market-catalog` adds JSON Schema validation
-whenever the catalog changes.
+which may only shrink. Files that select catalog cities by slug, such as the
+supply-intake crawl targets, are `reference` entries: each names a
+`validatedBy` test that reads the catalog and checks every slug, name and
+country (`operations/test/supply-intake-market-catalog.test.mjs`).
+`contracts:market-catalog` adds JSON Schema validation whenever the catalog
+changes.
 
 ### Profile information by capability
 

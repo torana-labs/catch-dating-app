@@ -133,17 +133,7 @@ export const homePageCopy = {
       {question: "What if Catch isn’t in my city yet?", answer: "Choose your city and we’ll tell you when it opens. If you know a host who should be on Catch, send them our way."},
     ],
   },
-  footer: {
-    nav: "Footer",
-    tagline: "Meet people in real life, through hosts who bring them together.",
-    soon: "soon",
-    groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
-    wordmark: "Catch",
-    /** A city that has not opened: "Pune · soon". */
-    soonCity: "{city} · soon",
-    links: {whatsOn: "What’s on", organisers: "Organisers", app: "Get the app", hosts: "Catch for hosts", pricing: "Pricing",
-      claim: "Claim your page", help: "Help", safety: "Safety", privacy: "Privacy", terms: "Terms"},
-  },
+
   stores: {
     appStore: {kicker: "Download on the", label: "App Store", accessibleLabel: "Download on the App Store",
       /** A store with no link yet: a chip, not the store's badge. */

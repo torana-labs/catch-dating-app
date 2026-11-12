@@ -18,6 +18,7 @@ export 'src/components/catch_banner_action.dart';
 export 'src/components/catch_banner_status.dart';
 export 'src/components/catch_banner_status_scope.dart';
 export 'src/components/catch_bar_indicator.dart';
+export 'src/components/catch_baseline_overhang_layout.dart';
 export 'src/components/catch_button.dart';
 export 'src/components/catch_button_content_row.dart';
 export 'src/components/catch_calendar.dart';
