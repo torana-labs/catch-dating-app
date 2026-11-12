@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import type {CampaignDeliveryMessageDocument as MessageRecord} from
   "../shared/generated/campaignDeliveryMessageDocument";
 import type {CampaignDeliveryMessageIntent as MessageIntent} from
@@ -97,7 +98,7 @@ export function newCampaignDeliveryRecord(
   if (!Number.isSafeInteger(now) || now >= intent.expiresAt) {
     throw new Error("Campaign delivery intent expired or clock invalid");
   }
-  return parseCampaignDeliveryRecord({schemaVersion: 1,
+  return parseCampaignDeliveryRecord({schemaVersion: 1, source: "campaign",
     messageId: campaignDeliveryMessageId(intent), revision: 0, intent,
     lifecycle: "active", attempts: [], deliveryConflict: false,
     createdAt: now, updatedAt: now});
@@ -121,7 +122,7 @@ export const campaignDeliveryAdapter: DeliverySourceAdapter<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
   MessageRecord
 > = {
-  collection: "campaignDeliveryMessages",
+  collection: DELIVERY_MESSAGES,
   messageId: (intent) => campaignDeliveryMessageId(intent),
   parseIntent: (value) => parseCampaignDeliveryIntent(value),
   parseAttempt: (value) => parseCampaignDeliveryAttempt(value),

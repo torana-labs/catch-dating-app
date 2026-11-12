@@ -5,8 +5,8 @@
   "description": "Private durable campaign delivery outbox. The immutable intent and bounded attempt history survive dispatch interruption and delayed provider callbacks. The organizerCampaignRecipients row remains the CRM/report mirror; this record is the execution authority. Recipient endpoints are references; transport credentials stay in their own private stores.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "campaignDeliveryMessages",
-  "x-firestore-path": "campaignDeliveryMessages/{messageId}",
+  "x-firestore-collection": "deliveryMessages",
+  "x-firestore-path": "deliveryMessages/{messageId}",
   "x-document-id-field": "messageId",
   "x-owner": "trusted campaign delivery workers",
   "required": [
@@ -18,9 +18,15 @@
     "attempts",
     "deliveryConflict",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "source"
   ],
   "properties": {
+    "source": {
+      "type": "string",
+      "const": "campaign",
+      "description": "Which delivery source wrote this document; the collection holds several."
+    },
     "schemaVersion": {
       "const": 1,
       "x-catch-ownership": "server-only"
