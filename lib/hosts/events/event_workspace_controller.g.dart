@@ -103,7 +103,8 @@ final class HostEventWorkspaceStaffFamily extends $Family
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff
-/// read; ticket sales from the cached host report.
+/// read; ticket sales and the arrival message from the setup view's facts,
+/// with the cached host report standing in for sales before they exist.
 
 @ProviderFor(hostEventWorkspaceController)
 final hostEventWorkspaceControllerProvider =
@@ -111,7 +112,8 @@ final hostEventWorkspaceControllerProvider =
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff
-/// read; ticket sales from the cached host report.
+/// read; ticket sales and the arrival message from the setup view's facts,
+/// with the cached host report standing in for sales before they exist.
 
 final class HostEventWorkspaceControllerProvider
     extends
@@ -123,7 +125,8 @@ final class HostEventWorkspaceControllerProvider
     with $Provider<HostEventWorkspaceState> {
   /// The event workspace: the event, its roster insight view and attendees,
   /// tonight's plan through their listeners; the door team from the staff
-  /// read; ticket sales from the cached host report.
+  /// read; ticket sales and the arrival message from the setup view's facts,
+  /// with the cached host report standing in for sales before they exist.
   HostEventWorkspaceControllerProvider._({
     required HostEventWorkspaceControllerFamily super.from,
     required HostEventRequest super.argument,
@@ -178,11 +181,12 @@ final class HostEventWorkspaceControllerProvider
 }
 
 String _$hostEventWorkspaceControllerHash() =>
-    r'573c4cdec240fedf37d87b01c3bcfa6b198e459a';
+    r'c88e54ad467061148ec473d89bd39d6c1473999f';
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff
-/// read; ticket sales from the cached host report.
+/// read; ticket sales and the arrival message from the setup view's facts,
+/// with the cached host report standing in for sales before they exist.
 
 final class HostEventWorkspaceControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostEventWorkspaceState, HostEventRequest> {
@@ -197,7 +201,8 @@ final class HostEventWorkspaceControllerFamily extends $Family
 
   /// The event workspace: the event, its roster insight view and attendees,
   /// tonight's plan through their listeners; the door team from the staff
-  /// read; ticket sales from the cached host report.
+  /// read; ticket sales and the arrival message from the setup view's facts,
+  /// with the cached host report standing in for sales before they exist.
 
   HostEventWorkspaceControllerProvider call(HostEventRequest request) =>
       HostEventWorkspaceControllerProvider._(argument: request, from: this);

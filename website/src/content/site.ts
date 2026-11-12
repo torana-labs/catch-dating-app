@@ -1,5 +1,6 @@
 import {brand} from "./brand.ts";
 import {publishedLegalContent} from "./legal.ts";
+import {marketingConsentPreferencesCopy} from "./marketingConsent.ts";
 import type {StoreCtaCopy} from "./types";
 
 export const ownerGatedSiteDestinations = {
@@ -20,6 +21,8 @@ export const publicSiteCopy = {
   menu: {openLabel: "Menu", navLabel: "Primary"},
   nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
   footerOperator: publishedLegalContent.ui.footerBody,
+  /** The footer control that reopens the consent banner. */
+  privacyChoices: marketingConsentPreferencesCopy.preferences,
 } as const;
 
 /**

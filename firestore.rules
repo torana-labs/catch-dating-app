@@ -2901,6 +2901,24 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    // Photos the event's host team shared after the event started. The
+    // files stay in private Storage and leave the server only as short-lived
+    // signed URLs from listEventHostPhotos; this document is readable by the
+    // guests who checked in and by the organizer's owner and managers.
+    // addEventHostPhoto and deleteEventHostPhoto own every write.
+    match /eventHostPhotos/{eventHostPhotoId} {
+      allow get, list: if isAuthed()
+        && resource.data.eventId is string
+        && (
+          isOrganizerHostForEvent(resource.data.eventId)
+          || hasCheckedInEventSuccessAccess(
+            resource.data.eventId,
+            request.auth.uid
+          )
+        );
+      allow create, update, delete: if false;
+    }
+
     match /eventSuccessPlans/{eventId} {
       // Guests see the plan unless the host turned it off for the event;
       // a missing planVisibleToGuests reads as visible.

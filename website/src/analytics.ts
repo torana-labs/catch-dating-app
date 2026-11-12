@@ -60,6 +60,14 @@ const legacyAttributionStorageKey = "catch_marketing_attribution_v1";
 const attributionStorageKey = "catch_marketing_attribution_v3";
 const attributionMaxAgeMs = 30 * 24 * 60 * 60 * 1000;
 export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
+/** Asks the consent banner to reopen with every choice (the footer's "Privacy choices"). */
+export const marketingConsentOpenEvent = "catch:marketing-consent-open";
+
+export function openMarketingConsentPreferences() {
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event(marketingConsentOpenEvent));
+  }
+}
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
 const previousConsentStorageKey = "catch_marketing_consent_v2";
 const consentStorageKey = "catch_marketing_consent_v4";

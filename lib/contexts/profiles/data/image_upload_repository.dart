@@ -21,6 +21,7 @@ enum ImageUploadPurpose {
   organizerProfileImage,
   organizerLogo,
   eventPhoto,
+  eventHostPhoto,
   chatImage,
 }
 
@@ -95,6 +96,14 @@ class ImageUploadRepository {
     maxHeight: 1200,
     quality: 82,
   );
+
+  /// Photos the host team shares with checked-in guests. The server
+  /// re-encodes them (dropping EXIF and location) to at most 2048 px.
+  static const eventHostPhotoPolicy = ImageUploadPolicy(
+    maxWidth: 2048,
+    maxHeight: 2048,
+    quality: 85,
+  );
   static const chatImagePolicy = ImageUploadPolicy(
     maxWidth: 1440,
     maxHeight: 1920,
@@ -125,6 +134,11 @@ class ImageUploadRepository {
     resource: 'event_photos',
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
+  );
+  static const _eventHostPhotoUploadsContract = _StorageUploadContract(
+    resource: 'event_host_photo_uploads',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/(jpeg|png)',
   );
   static const _matchChatImagesContract = _StorageUploadContract(
     resource: 'match_chat_images',
@@ -216,6 +230,7 @@ class ImageUploadRepository {
     ValueChanged<ImageUploadProgress>? onProgress,
     ImageUploadCancellationToken? cancellationToken,
     bool requireJpeg = false,
+    bool resolveDownloadUrl = true,
   }) async {
     final context = _storageContextForPath(storagePath);
     return withBackendErrorContext(() async {
@@ -291,7 +306,8 @@ class ImageUploadRepository {
           fraction: 1,
         ),
       );
-      final url = await ref.getDownloadURL();
+      // Private staging paths deny reads, so they never get a download URL.
+      final url = resolveDownloadUrl ? await ref.getDownloadURL() : '';
       return UploadedImage(url: url, storagePath: finalStoragePath);
     }, context: context);
   }
@@ -432,6 +448,26 @@ class ImageUploadRepository {
     requireJpeg: true,
   );
 
+  /// Stages one original the host team is sharing with checked-in guests.
+  /// The object is private: Storage rules deny every read, so no download
+  /// URL is requested. `addEventHostPhoto` re-encodes it and removes it.
+  Future<String> stageEventHostPhoto({
+    required String eventId,
+    required String photoId,
+    required String uploaderUid,
+    required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
+  }) async => (await uploadWithMetadata(
+    storagePath: 'events/$eventId/hostPhotoUploads/$photoId/original',
+    image: image,
+    purpose: ImageUploadPurpose.eventHostPhoto,
+    customMetadata: {'uploaderUid': uploaderUid},
+    onProgress: onProgress,
+    cancellationToken: cancellationToken,
+    resolveDownloadUrl: false,
+  )).storagePath;
+
   Future<String> uploadChatImage({
     required String matchId,
     required String messageId,
@@ -507,6 +543,7 @@ class ImageUploadRepository {
       ImageUploadPurpose.organizerProfileImage => organizerProfileImagePolicy,
       ImageUploadPurpose.organizerLogo => organizerProfileImagePolicy,
       ImageUploadPurpose.eventPhoto => eventPhotoPolicy,
+      ImageUploadPurpose.eventHostPhoto => eventHostPhotoPolicy,
       ImageUploadPurpose.chatImage => chatImagePolicy,
     };
   }
@@ -641,6 +678,10 @@ class ImageUploadRepository {
             storagePath.startsWith('clubs/')) &&
         storagePath.contains('/logo/')) {
       return _organizerLogoMediaContract;
+    }
+    if (storagePath.startsWith('events/') &&
+        storagePath.contains('/hostPhotoUploads/')) {
+      return _eventHostPhotoUploadsContract;
     }
     if (storagePath.startsWith('events/') &&
         (storagePath.contains('/photos/') || storagePath.contains('/media/'))) {
