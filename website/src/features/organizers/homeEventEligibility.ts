@@ -1,10 +1,12 @@
+import type {MarketCityStatus} from "../../content/markets/types";
+
 export interface HomeEventEligibilityOptions {
   readonly now: number;
   readonly cities: ReadonlyArray<{
     readonly id: string;
     readonly label: string;
     readonly aliases: readonly string[];
-    readonly status: "live" | "waitlist";
+    readonly status: MarketCityStatus;
   }>;
 }
 

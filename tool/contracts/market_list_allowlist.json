@@ -53,11 +53,6 @@
       "kind": "fixture",
       "reason": "Demo seed scenarios keyed by city (neighbourhoods, languages); resolves markets through location_markets.mjs."
     },
-    "website/src/content/markets/in.ts": {
-      "cities": 6,
-      "kind": "pending",
-      "reason": "Website market pack with its own ids and statuses; PR 3 of the market catalog work generates it from the catalog."
-    },
     "website/src/generated/hostListings.demo.json": {
       "cities": 3,
       "kind": "fixture",

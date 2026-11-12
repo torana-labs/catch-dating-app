@@ -2,7 +2,7 @@ import {CatchButton, CatchMenu} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
-import {cityStatusLabel} from "../homeModel";
+import {cityFooterNote, cityStatusLabel} from "../homeModel";
 import type {HomeCity} from "../homeTypes";
 
 // A link button's press only navigates.
@@ -52,6 +52,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
-      cities={cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live"}))} />
+      cities={cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live",
+        note: cityFooterNote(item)}))} />
   </>;
 }

@@ -43,8 +43,8 @@ describe("homepage catalog", () => {
     assemblePublicCatalog.mockResolvedValue({listings: [mumbaiListing], readAt});
     const catalog = await assembleHomeCatalog(reader({"cityPlans/indore": indore}), "indore", readAt);
     expect(catalog.cities.map((city) => [city.slug, city.status])).toEqual([
-      ["mumbai", "live"], ["indore", "live"], ["delhi", "launchingSoon"], ["bangalore", "launchingSoon"],
-      ["pune", "launchingSoon"], ["hyderabad", "launchingSoon"],
+      ["mumbai", "live"], ["indore", "live"], ["delhi-ncr", "launchingSoon"], ["bengaluru", "launchingSoon"],
+      ["hyderabad", "launchingSoon"], ["pune", "launchingSoon"],
     ]);
     expect(catalog.selected.slug).toBe("indore");
     expect(catalog.plans.plans.map((plan) => plan.eventId)).toEqual(["indore-run-1", "indore-quiz-1", "indore-dinner-1", "indore-crawl-1"]);

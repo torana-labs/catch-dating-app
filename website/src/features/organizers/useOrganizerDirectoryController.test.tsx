@@ -82,7 +82,7 @@ describe("useOrganizerDirectoryController", () => {
 
     expect(result.current.summary.profileCount).toBe(2);
     expect(result.current.summary.unclaimedCount).toBe(2);
-    expect(result.current.cityOptions).toEqual(expect.arrayContaining(["Indore", "Mumbai", "Delhi"]));
+    expect(result.current.cityOptions).toEqual(expect.arrayContaining(["Indore", "Mumbai", "Delhi NCR"]));
     expect(result.current.results.map((listing) => listing.id)).toEqual([
       "preview-mumbai",
       "preview-indore",

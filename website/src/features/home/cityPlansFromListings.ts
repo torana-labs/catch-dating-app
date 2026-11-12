@@ -7,9 +7,8 @@ import type {HostListing, HostListingCatchEvent} from "../organizers/types";
 import type {HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
 
 const day = 24 * 60 * 60 * 1000;
-// The read model's window and live threshold (functions/src/cityPlans).
+// The read model's window (functions/src/cityPlans).
 const windowDays = 14;
-const livePlanMinimum = 4;
 const planLimit = 120;
 const organizerLimit = 24;
 const formats: HomeFormat[] = ["run", "dinner", "games", "courts", "nightsOut", "other"];
@@ -18,7 +17,7 @@ const formats: HomeFormat[] = ["run", "dinner", "games", "courts", "nightsOut", 
  * A city's plans from the public catalog, for an environment whose Functions
  * have not built its cityPlans document yet (prod deploys on approval). It
  * keeps the website reader's publication and home eligibility rules, and the
- * read model's window, threshold and ordering, so the page renders the same
+ * read model's window, status and ordering, so the page renders the same
  * either way. Imported plans are left out: only the read model carries them.
  */
 export function cityPlansFromListings(
@@ -70,7 +69,8 @@ export function cityPlansFromListings(
     citySlug: city.marketSlug,
     cityLabel: city.label,
     marketStatus: launched ? "launched" : "planned",
-    status: launched && plans.length >= livePlanMinimum ? "live" : "launchingSoon",
+    // A launched city is open however few plans it has; the page shows the count.
+    status: launched ? "live" : "launchingSoon",
     windowStart: new Date(now).toISOString(),
     windowEnd: new Date(windowEnd).toISOString(),
     planCount: plans.length,
