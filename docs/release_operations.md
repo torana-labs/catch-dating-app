@@ -348,9 +348,26 @@ ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
 Tests that inspect files through `dart:io` are filesystem probes and are always
 selected. Dart files anywhere in the repository are covered by the import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, firebase configuration and
-Markdown outside test or asset directories) are probe-only. A root test can only
-read them from disk, so the probes cover them without broadening the selection.
+golden and integration suites, other packages' apps, the `packages/catch_ui`
+and `packages/kernel` test suites that the package-tests job runs, firebase
+configuration and Markdown outside test or asset directories) are probe-only.
+A root test can only read them from disk, so the probes cover them without
+broadening the selection; a root test that imports one is still selected
+through the import graph.
+The schema contract Dart under `packages/platform/lib/schema_contracts/generated`
+and `lib/contexts/*/data/generated` is not tracked, so the selector renders it:
+`tool/harness/lib/flutter_contract_outputs.mjs` runs
+`tool/contracts/generate_schema_contracts.mjs` on archives of the base and head
+commits (once when their `contracts/` and `tool/contracts/` trees match) with
+the job's installed `functions/node_modules`. The rendered files join both
+import graphs, so a change to a tracked file a generated module imports selects
+that module's importers, and a `contracts/**` or generator change selects the
+importers of each generated file whose content changed. An input that changes
+no generated Dart, such as a BigQuery, Admin or runtime-module contract, selects
+only the filesystem probes. A changed generated file with no importing test,
+a render failure, a `functions/package-lock.json` at a rendered commit that
+differs from the installed one, or a commit window that touches a generator
+input keeps the full suite.
 These inputs keep the full suite: package manifests and the lockfile, analyzer,
 runner, build and localization configuration, `.arb` sources, the Flutter SDK
 pin and the Flutter CI job, and any path that either snapshot's `flutter:`
