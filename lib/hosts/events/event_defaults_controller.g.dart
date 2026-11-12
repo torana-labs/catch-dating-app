@@ -79,7 +79,7 @@ final class HostEventDefaultsControllerProvider
 }
 
 String _$hostEventDefaultsControllerHash() =>
-    r'2f4e70720434df80a2e9846b13ce2944b4350f5e';
+    r'1c0db141925c92e0cd6df4f491c64f92312d081b';
 
 /// Event defaults, read through the organizer's defaults view listener.
 

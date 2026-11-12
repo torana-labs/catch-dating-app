@@ -419,7 +419,9 @@
       "exportName": "MarketingConsentBannerShell",
       "css": [
         "website/src/styles/site-footer.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchAccordion.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -429,7 +431,52 @@
           "action-row"
         ]
       },
-      "notes": "Shared website consent banner presentation shell used by the app-level marketing consent feature wrapper; raw consent-banner markup is blocked by web:react-component-governance while consent state and analytics choices stay feature-owned."
+      "notes": "Shared website consent banner presentation shell used by the app-level marketing consent feature wrapper: a summary line, the full statement under Details, and the choices; a corner card from 600px and a bottom sheet below it. Raw consent-banner markup is blocked by web:react-component-governance while consent state and analytics choices stay feature-owned.",
+      "comparedWith": [
+        "catch.accordion",
+        "catch.stack",
+        "catch.text"
+      ],
+      "comparisonReason": "Composes the system's text for its summary line, a one-item accordion (a native disclosure) for the full statement and a row stack for the choices; it is the consent banner's fixed card and bottom sheet, not an accordion, stack or text contract of its own."
+    },
+    {
+      "id": "shared_privacy_choices_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "host",
+        "claim",
+        "claim_lookup",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+        "organizer_search",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "event_detail_canonical",
+        "host_apply",
+        "weddings",
+        "weddings_apply"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/PublicSiteChrome.tsx",
+      "exportName": "PrivacyChoicesButton",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "Configures CatchButton's text recipe to read as a link in its footer's own type and colour; it is the footer's consent reopen control, not a new button contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "footer-legal-link"
+        ]
+      },
+      "notes": "\"Privacy choices\" in each footer's legal area. It reopens the consent banner through marketingConsentOpenEvent, so no control floats over the page once a choice exists."
     },
     {
       "id": "shared_organizer_result_shell",
@@ -5560,23 +5607,59 @@
     {
       "id": "route_host_billing",
       "kind": "route",
-      "routeIds": ["host_billing"],
+      "routeIds": [
+        "host_billing"
+      ],
       "owner": "features/hostBilling",
       "source": "website/src/features/hostBilling/HostBillingPage.tsx",
       "exportName": "HostBillingPage",
-      "css": ["packages/web-ui/src/components/CatchPaneLayout.module.css", "packages/web-ui/src/components/CatchStack.module.css"],
-      "storybook": {"status": "planned", "states": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"]},
+      "css": [
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "loading",
+          "ticketing",
+          "trial-active",
+          "tools-only-pending",
+          "tools-only-active",
+          "not-owner",
+          "failed"
+        ]
+      },
       "notes": "/host/billing/: the organiser owner's billing on the web (trial, plan with prices, bills to pay, tools-only buy or cancel); private and noindex; signed out it offers the sign-in sheet. The native Host app shows status only (App Store 3.1.3(f))."
     },
     {
       "id": "host_billing_view",
       "kind": "supporting-component",
-      "routeIds": ["host_billing"],
+      "routeIds": [
+        "host_billing"
+      ],
       "owner": "features/hostBilling",
       "source": "website/src/features/hostBilling/HostBillingPage.tsx",
       "exportName": "HostBillingView",
-      "css": ["packages/web-ui/src/components/CatchPaneLayout.module.css", "packages/web-ui/src/components/CatchSection.module.css", "packages/web-ui/src/components/CatchStack.module.css", "packages/web-ui/src/components/CatchText.module.css"],
-      "storybook": {"status": "planned", "states": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"]},
+      "css": [
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out",
+          "loading",
+          "ticketing",
+          "trial-active",
+          "tools-only-pending",
+          "tools-only-active",
+          "not-owner",
+          "failed"
+        ]
+      },
       "notes": "The billing page drawn from the system: trial tile, plan tile with Catch's prices and the tools-only actions, and the bills list with each invoice's Pay action."
     },
     {

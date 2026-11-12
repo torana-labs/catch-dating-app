@@ -105,23 +105,29 @@ final class HostEventsProgrammesFamily extends $Family
 }
 
 /// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. Nothing
-/// here refreshes on return; the listener keeps Upcoming current.
+/// past events through the events read owner, and the programmes. The
+/// listener keeps Upcoming current; the screen calls
+/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+/// saved or published there shows on return.
 
 @ProviderFor(hostEventsController)
 final hostEventsControllerProvider = HostEventsControllerFamily._();
 
 /// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. Nothing
-/// here refreshes on return; the listener keeps Upcoming current.
+/// past events through the events read owner, and the programmes. The
+/// listener keeps Upcoming current; the screen calls
+/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+/// saved or published there shows on return.
 
 final class HostEventsControllerProvider
     extends
         $FunctionalProvider<HostEventsState, HostEventsState, HostEventsState>
     with $Provider<HostEventsState> {
   /// The Events tab: the coming events through their listener, drafts and
-  /// past events through the events read owner, and the programmes. Nothing
-  /// here refreshes on return; the listener keeps Upcoming current.
+  /// past events through the events read owner, and the programmes. The
+  /// listener keeps Upcoming current; the screen calls
+  /// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+  /// saved or published there shows on return.
   HostEventsControllerProvider._({
     required HostEventsControllerFamily super.from,
     required HostEventsRequest super.argument,
@@ -174,11 +180,13 @@ final class HostEventsControllerProvider
 }
 
 String _$hostEventsControllerHash() =>
-    r'e2f431e78f260ff4cc25da76ccee6ce5a9908761';
+    r'51dc3c9f919568dcf5e1de01bd8ea1772b235635';
 
 /// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. Nothing
-/// here refreshes on return; the listener keeps Upcoming current.
+/// past events through the events read owner, and the programmes. The
+/// listener keeps Upcoming current; the screen calls
+/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+/// saved or published there shows on return.
 
 final class HostEventsControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostEventsState, HostEventsRequest> {
@@ -192,8 +200,10 @@ final class HostEventsControllerFamily extends $Family
       );
 
   /// The Events tab: the coming events through their listener, drafts and
-  /// past events through the events read owner, and the programmes. Nothing
-  /// here refreshes on return; the listener keeps Upcoming current.
+  /// past events through the events read owner, and the programmes. The
+  /// listener keeps Upcoming current; the screen calls
+  /// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
+  /// saved or published there shows on return.
 
   HostEventsControllerProvider call(HostEventsRequest request) =>
       HostEventsControllerProvider._(argument: request, from: this);
