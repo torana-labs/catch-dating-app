@@ -50,6 +50,25 @@ come from their own tools.
 3. Re-render marketing captures (they show the domain in Safari's address bar).
 4. Register the external surfaces listed in the rebrand PR checklist.
 
+## Store links
+
+`stores.consumer` and `stores.host` each hold an `ios` (App Store) and an
+`android` (Google Play) listing URL, or `null` while that app is not on that
+store. The schema checks the URL shape, and a test checks that a Play link
+names the role's production `applicationId` from `tool/app_targets.json`. Use
+the storefront-neutral App Store form (`https://apps.apple.com/app/<slug>/id<digits>`,
+no country code) so visitors land on their own storefront.
+
+To add a link, set it in `brand.json` and run `node packages/brand/generate.mjs`.
+Every store badge and download link reads these slots; a null slot renders as
+"Coming soon" and still records the press.
+
+**Launch gate.** `launch_gate.mjs` checks that once any market city is live,
+both Consumer links are set. City status comes from the website market pack
+(`website/src/content/markets/in.ts`) until the markets catalog lands. It
+prints a warning naming the missing slots; set `LAUNCH_GATE_MODE` to `"error"`
+once city statuses are honest.
+
 ## CI
 
 `meta:brand-literals` is a mandatory check in `tool/tools_manifest.json`, so
