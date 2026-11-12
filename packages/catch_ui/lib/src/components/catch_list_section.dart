@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_baseline_overhang_layout.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_index_row.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
@@ -6,7 +7,6 @@ import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 /// Where the lines of a system section go: between its rows, also under the
 /// last row, or nowhere (a row of stats, a map).
@@ -129,7 +129,7 @@ class CatchListSection extends StatelessWidget {
                     ),
                     child: button,
                   )
-                : _BaselineOverhang(child: button)
+                : CatchBaselineOverhangLayout(child: button)
           : note != null
           ? CatchText(
               note,
@@ -147,7 +147,7 @@ class CatchListSection extends StatelessWidget {
               spacing: CatchSpacing.s1,
               children: [heading, trailing],
             )
-          : _OverhangFlex(
+          : CatchOverhangStack(
               direction: Axis.horizontal,
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -159,7 +159,7 @@ class CatchListSection extends StatelessWidget {
             );
       header = kicker == null
           ? titleLine
-          : _OverhangFlex(
+          : CatchOverhangStack(
               direction: Axis.vertical,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -174,7 +174,7 @@ class CatchListSection extends StatelessWidget {
               ],
             );
     }
-    return _OverhangFlex(
+    return CatchOverhangStack(
       direction: Axis.vertical,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -258,96 +258,5 @@ class CatchListSection extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-/// A [Flex] that hit-tests its children even outside its own bounds, so a
-/// section action's target that overhangs the title line still receives its
-/// taps.
-class _OverhangFlex extends Flex {
-  const _OverhangFlex({
-    required super.direction,
-    required super.children,
-    super.crossAxisAlignment,
-    super.mainAxisSize,
-    super.textBaseline,
-    super.spacing,
-  });
-
-  @override
-  RenderFlex createRenderObject(BuildContext context) => _RenderOverhangFlex(
-    direction: direction,
-    mainAxisAlignment: mainAxisAlignment,
-    mainAxisSize: mainAxisSize,
-    crossAxisAlignment: crossAxisAlignment,
-    textDirection: getEffectiveTextDirection(context),
-    verticalDirection: verticalDirection,
-    textBaseline: textBaseline,
-    clipBehavior: clipBehavior,
-    spacing: spacing,
-  );
-}
-
-class _RenderOverhangFlex extends RenderFlex {
-  _RenderOverhangFlex({
-    super.direction,
-    super.mainAxisAlignment,
-    super.mainAxisSize,
-    super.crossAxisAlignment,
-    super.textDirection,
-    super.verticalDirection,
-    super.textBaseline,
-    super.clipBehavior,
-    super.spacing,
-  });
-
-  @override
-  bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    if (!hitTestChildren(result, position: position)) return false;
-    result.add(BoxHitTestEntry(this, position));
-    return true;
-  }
-}
-
-/// A child laid out at its full size but taking no height in its row: its
-/// baseline is this box's top, so in a baseline row it hangs on the
-/// neighbouring text's baseline without making the row taller.
-class _BaselineOverhang extends SingleChildRenderObjectWidget {
-  const _BaselineOverhang({required super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderBaselineOverhang();
-}
-
-class _RenderBaselineOverhang extends RenderShiftedBox {
-  _RenderBaselineOverhang() : super(null);
-
-  @override
-  void performLayout() {
-    final child = this.child;
-    if (child == null) {
-      size = constraints.smallest;
-      return;
-    }
-    child.layout(
-      BoxConstraints(maxWidth: constraints.maxWidth),
-      parentUsesSize: true,
-    );
-    final baseline =
-        child.getDistanceToBaseline(TextBaseline.alphabetic) ??
-        child.size.height;
-    (child.parentData! as BoxParentData).offset = Offset(0, -baseline);
-    size = constraints.constrain(Size(child.size.width, 0));
-  }
-
-  @override
-  double? computeDistanceToActualBaseline(TextBaseline baseline) => 0;
-
-  @override
-  bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    if (!hitTestChildren(result, position: position)) return false;
-    result.add(BoxHitTestEntry(this, position));
-    return true;
   }
 }

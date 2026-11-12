@@ -417,6 +417,8 @@ import 'package:widgetbook_workspace/primitives/contracts/app_shell.dart'
     as _widgetbook_workspace_primitives_contracts_app_shell;
 import 'package:widgetbook_workspace/primitives/contracts/avatars.dart'
     as _widgetbook_workspace_primitives_contracts_avatars;
+import 'package:widgetbook_workspace/primitives/contracts/baseline_overhang.dart'
+    as _widgetbook_workspace_primitives_contracts_baseline_overhang;
 import 'package:widgetbook_workspace/primitives/contracts/buttons.dart'
     as _widgetbook_workspace_primitives_contracts_buttons;
 import 'package:widgetbook_workspace/primitives/contracts/chat_bubble.dart'
@@ -4497,6 +4499,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBaselineOverhangLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_baseline_overhang
+                        .catchBaselineOverhangLayoutContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchHorizontalScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4513,6 +4526,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_list_section
                     .catchListSectionContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchOverhangStack',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_baseline_overhang
+                        .catchOverhangStackContractStates,
               ),
             ],
           ),
