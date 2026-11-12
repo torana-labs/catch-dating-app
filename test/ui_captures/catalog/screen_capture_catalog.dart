@@ -166,6 +166,10 @@ import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
+import 'package:catch_dating_app/hosts/events/events_controller.dart'
+    show HostEventsRequest, hostEventsControllerProvider;
+import 'package:catch_dating_app/hosts/events/events_screen.dart'
+    show HostEventsTabScreen;
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
@@ -292,6 +296,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../hosts/events/events_fixtures.dart' as events_fixtures;
 import '../../hosts/forms/forms_captures.dart';
 import '../../hosts/live/formats/formats_captures.dart';
 import '../../hosts/live/live_captures.dart';
@@ -3296,6 +3301,34 @@ Widget _hostTodayCapture() => _HostRoutedShellCapture(
   child: HostTodayScreen(
     initialOrganizerId: _hostTodayOrganizer.id,
     now: _hostTodayNow,
+  ),
+);
+
+// The Events tab the afternoon before Tuesday trivia: tonight and three more
+// coming nights, a draft, last Sunday's run and a wedding programme, through
+// the real Host shell with Events selected.
+final _hostEventsOrganizer = HostOperationsFixtures.primaryOrganizer;
+
+List<Object> _hostEventsCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [_hostEventsOrganizer],
+    ownedOrganizers: [_hostEventsOrganizer],
+  ),
+  hostEventsControllerProvider(
+    HostEventsRequest(
+      organizerId: _hostEventsOrganizer.id,
+      now: events_fixtures.eventsNow,
+    ),
+  ).overrideWithValue(events_fixtures.eventsReady()),
+];
+
+Widget _hostEventsCapture() => _HostRoutedShellCapture(
+  initialLocation: '/host/events',
+  activeIndex: 1,
+  child: HostEventsTabScreen(
+    initialOrganizerId: _hostEventsOrganizer.id,
+    now: events_fixtures.eventsNow,
   ),
 );
 
@@ -10664,6 +10697,34 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.auditTablet,
     providerOverrides: _hostTodayCaptureOverrides(),
     builder: (context) => _hostTodayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_home_events_list',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_medium',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditMedium,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_tablet',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_desktop',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_forms_phone',
