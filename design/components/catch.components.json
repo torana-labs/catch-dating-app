@@ -25,6 +25,7 @@
         "choices",
         "optionCards",
         "stepper",
+        "slider",
         "inputActions",
         "add",
         "select"
