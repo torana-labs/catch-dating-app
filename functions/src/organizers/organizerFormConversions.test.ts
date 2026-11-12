@@ -195,7 +195,8 @@ for (const kind of ["application", "crmContact"] as const) {
         assert.equal(h.records("organizerAudienceSummaries")[0][1]
           .contactCount, 1);
       } else {
-        assert.equal(h.records("organizerApplicationResponses").length, 1);
+        // Generic-form applications keep no answer copy.
+        assert.equal(h.records("organizerApplicationResponses").length, 0);
       }
       h.withdraw();
       const before = clone(h.store.docs);

@@ -1,7 +1,7 @@
 "use client";
 
 import type {ReactNode} from "react";
-import type {CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchIconName} from "../icons/catchIconRoles";
 import {CatchButton} from "./CatchButton";
 import type {CatchFormat} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
@@ -16,7 +16,7 @@ import styles from "./CatchIndexRow.module.css";
 export const catchIndexRowDensities = ["compact", "regular", "roomy"] as const;
 export type CatchIndexRowDensity = (typeof catchIndexRowDensities)[number];
 
-export const catchIndexRowStatusTones = ["secondary", "success", "warning", "danger"] as const;
+export const catchIndexRowStatusTones = ["secondary", "success", "warning", "danger", "info"] as const;
 export type CatchIndexRowStatusTone = (typeof catchIndexRowStatusTones)[number];
 
 /** The tint behind a leading icon: a format colour or a status. */

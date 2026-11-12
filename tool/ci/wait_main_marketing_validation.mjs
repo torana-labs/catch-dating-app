@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {sourceCiPasses} from "./required_ci_floor.mjs";
 import {CAPTURE_PRODUCER_JOBS, selectCaptureProducerJob, verifyArtifactMetadata} from "../marketing/import_hosted_captures.mjs";
 
 const workflowPath = ".github/workflows/ci.yml";
@@ -111,8 +112,8 @@ export function selectCaptureBinding({artifacts, run, canonical, repository, sou
     eventSha: sourceSha, runHeadSha: sourceSha,
     runId: String(run.id), runAttempt: String(run.run_attempt),
     artifactId: String(artifact.id), artifactDigest: artifact.digest};
-  const producerJob = run.conclusion === "cancelled" ? selectCaptureProducerJob({jobs, binding, artifact}) : null;
-  verifyArtifactMetadata({binding, artifact, repositoryId: run.repository.id, run, workflow: canonical, producerJob});
+  const producerJob = ["cancelled", "failure"].includes(run.conclusion) ? selectCaptureProducerJob({jobs, binding, artifact}) : null;
+  verifyArtifactMetadata({binding, artifact, repositoryId: run.repository.id, run, workflow: canonical, producerJob, runJobs: jobs});
   return binding;
 }
 
@@ -165,12 +166,16 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
   // evidence for a commit that reached main without the queue.
   const settledEvidence = async event => {
     const run = await latestRun(event);
-    if (run?.status !== "completed" || run.conclusion !== "success") return null;
+    // A run passes when it succeeded, or (sprint floor, owner 11 Nov 2026) when
+    // its Required CI job succeeded and only reporting lanes failed. See
+    // required_ci_floor.mjs.
+    if (run?.status !== "completed" || !["success", "failure"].includes(run.conclusion)) return null;
     const {allJobs, decision} = await inspect(run, false);
+    if (!sourceCiPasses({run, jobs: allJobs})) return null;
     if (!decision?.validated && !decision?.captureProduced) return null;
     const captureBinding = decision.captureProduced ? await bindingFor(run, allJobs) : undefined;
     const current = await latestRun(event);
-    assert.ok(current?.id === run.id && current.run_attempt === run.run_attempt && current.conclusion === "success",
+    assert.ok(current?.id === run.id && current.run_attempt === run.run_attempt && current.conclusion === run.conclusion,
       `${event === "merge_group" ? "Merge queue" : "Main CI"} validation changed during inspection.`);
     return result(run, decision, captureBinding);
   };

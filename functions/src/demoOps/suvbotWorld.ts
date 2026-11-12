@@ -6,6 +6,9 @@
 // reset deletes it.
 import {createHash} from "node:crypto";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
+import {catchBookingAttendeeDocument, eventAttendeeIndexDocument,
+  eventAttendeeIndexId} from "../events/eventAttendeeProjection";
+import {eventAttendeeId} from "../events/eventAttendees";
 import {cohortIdForUser, normalizePolicy} from "../events/eventPolicy";
 import {publishedEventBasics} from "../events/progressiveSetup/basics";
 import {marketForIdOrAlias} from "../locations/marketConfig";
@@ -18,6 +21,7 @@ import {
 } from "../shared/generated/catalogs/profilePromptCatalog";
 import type {
   EventDocument,
+  EventParticipationDocument,
   EventPolicyBundleDocument,
   Gender,
   UserProfileDocument,
@@ -61,7 +65,7 @@ export const SUVBOT_DEMO_MOMENTS = [
     id: "after",
     worldMoment: "followUp",
     label: "After",
-    description: "You attended; catches and chats are open.",
+    description: "You attended; picks and chats are open.",
   },
 ] as const;
 
@@ -325,6 +329,22 @@ export function buildSuvbotWorldPlan(
       docs.push({
         path: `eventParticipations/${eventDocId}_${row.uid}`,
         data: row.doc,
+      });
+      // The booking's roster row and pointer, as a booking callable writes.
+      const booking = row.doc as unknown as EventParticipationDocument;
+      const attendeeId = eventAttendeeId(eventDocId, `uid:${row.uid}`);
+      const rosterNow = booking.updatedAt as FirebaseFirestore.Timestamp;
+      docs.push({
+        path: `eventAttendees/${attendeeId}`,
+        data: catchBookingAttendeeDocument({source: booking,
+          sourceExists: true, existing: undefined,
+          organizerId: ids.organizer,
+          displayName: rosterDisplayName(row.user, row.uid), now: rosterNow}),
+      });
+      docs.push({
+        path: `eventAttendeeIndex/${eventAttendeeIndexId(eventDocId, row.uid)}`,
+        data: eventAttendeeIndexDocument({source: booking,
+          attendeeId, organizerId: ids.organizer, now: rosterNow}),
       });
     }
     const eventDoc = worldEventDoc({
@@ -978,8 +998,9 @@ function matchThreadDocs(params: {
         ...params.marker,
         uid,
         type: "match",
-        title: "It's a catch",
-        body: `You and ${partner.persona.displayName} matched. Say hi!`,
+        title: "You picked each other",
+        body: `You and ${partner.persona.displayName} picked each other. ` +
+          "Say hi!",
         createdAt: ts(matchedAt),
         readAt: null,
         matchId,
@@ -1138,4 +1159,13 @@ function previewText(text: string): string {
 function uniqueByPath(docs: DemoDocWrite[]): DemoDocWrite[] {
   return [...new Map(docs.map((doc) => [doc.path, doc])).values()]
     .sort((a, b) => a.path.localeCompare(b.path));
+}
+
+/** The public name a cast member shows on the Host roster. */
+function rosterDisplayName(
+  user: FirebaseFirestore.DocumentData,
+  uid: string
+): string {
+  const name = typeof user.name === "string" ? user.name.trim() : "";
+  return name || uid;
 }

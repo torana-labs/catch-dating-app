@@ -4,7 +4,12 @@ import {
   photoPromptCatalog,
   profilePromptCatalog,
 } from "../contracts/generated/schema_contract_registry.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {validateSeedDocuments} from "./seed_demo_data.mjs";
+
+// Events carry their stored policy (#1669). The tool check builds Functions
+// first, so the fixture stores the policy its terms give a new event.
+const {initialPolicyFromTerms} = createFunctionsRequire()("./lib/events/eventPolicy.js");
 
 const profilePrompt = profilePromptCatalog.prompts[0];
 const photoPrompt = photoPromptCatalog.prompts[0];
@@ -17,8 +22,12 @@ test("seed document validation accepts valid profile and event docs", () => {
       {path: "publicProfiles/runner-1", data: validPublicProfileDoc()},
       {path: "organizers/club-1", data: validOrganizerDoc()},
       {
-        path: "organizerMemberships/club-1_runner-1",
-        data: validOrganizerMembershipDoc(),
+        path: "organizerFollows/club-1_runner-1",
+        data: validOrganizerFollowDoc(),
+      },
+      {
+        path: "organizerTeamMemberships/club-1_host-1",
+        data: validOrganizerOwnerSeatDoc(),
       },
       {path: "events/event-1", data: validEventDoc()},
       {
@@ -33,7 +42,8 @@ test("seed document validation accepts valid profile and event docs", () => {
     users: 1,
     publicProfiles: 1,
     organizers: 1,
-    organizerMemberships: 1,
+    organizerFollows: 1,
+    organizerTeamMemberships: 1,
     events: 1,
     eventParticipations: 1,
     eventSuccessPlans: 0,
@@ -43,8 +53,7 @@ test("seed document validation accepts valid profile and event docs", () => {
     eventSuccessAssignments: 0,
     eventSuccessFeedback: 0,
     eventSuccessScorecards: 0,
-    organizerScheduleLocks: 0,
-    userEventScheduleLocks: 0,
+    scheduleLocks: 0,
     savedEvents: 1,
     payments: 0,
     profileDecisions: 0,
@@ -238,19 +247,18 @@ test("seed document validation accepts schedule locks and seed manifests", () =>
   const result = validateSeedDocuments({
     docs: [
       {
-        path: "organizerScheduleLocks/club-1_494080",
+        path: "scheduleLocks/organizer_club-1_494080",
         data: validOrganizerScheduleLockDoc(),
       },
       {
-        path: "userEventScheduleLocks/runner-1_494080",
+        path: "scheduleLocks/user_runner-1_494080",
         data: validUserEventScheduleLockDoc(),
       },
     ],
     manifest: validSeedEventManifestDoc(),
   });
 
-  assert.equal(result.organizerScheduleLocks, 1);
-  assert.equal(result.userEventScheduleLocks, 1);
+  assert.equal(result.scheduleLocks, 2);
   assert.equal(result.seedManifests, 1);
 });
 
@@ -319,12 +327,12 @@ test("seed document validation rejects stale schedule lock owners", () => {
     () => validateSeedDocuments({
       docs: [
         {
-          path: "organizerScheduleLocks/club-1_494080",
-          data: {...validOrganizerScheduleLockDoc(), ownerType: "user"},
+          path: "scheduleLocks/organizer_club-1_494080",
+          data: {...validOrganizerScheduleLockDoc(), ownerType: "club"},
         },
       ],
     }),
-    /organizerScheduleLocks\/club-1_494080 failed schema validation/
+    /scheduleLocks\/organizer_club-1_494080 failed schema validation/
   );
 });
 
@@ -550,24 +558,30 @@ function validOrganizerDoc() {
   };
 }
 
-function validOrganizerMembershipDoc() {
+function validOrganizerFollowDoc() {
   return {
-    synthetic: true,
-    seedPrefix: "demo_test",
-    scenario: "schema-test",
     organizerId: "club-1",
     uid: "runner-1",
-    role: "member",
     status: "active",
     pushNotificationsEnabled: true,
-    joinedAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
-    leftAt: null,
-    deletedAt: null,
+    followedAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    unfollowedAt: null,
+  };
+}
+
+function validOrganizerOwnerSeatDoc() {
+  return {
+    organizerId: "club-1",
+    uid: "host-1",
+    role: "owner",
+    status: "active",
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    removedAt: null,
   };
 }
 
 function validEventDoc() {
-  return {
+  const event = {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
@@ -652,6 +666,7 @@ function validEventDoc() {
     discoveryMinAge: 21,
     discoveryMaxAge: 45,
   };
+  return {...event, eventPolicy: initialPolicyFromTerms(event)};
 }
 
 function validEventParticipationDoc() {

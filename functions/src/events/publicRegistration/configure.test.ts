@@ -1,3 +1,4 @@
+import {initialPolicyFromTerms} from "../eventPolicy";
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {
@@ -88,7 +89,8 @@ test("external free opt-in and closing preserve event origin", async () => {
   const h = await publicFixture();
   Object.assign(h.event, {
     priceInPaise: 0,
-    eventPolicy: undefined,
+    eventPolicy: initialPolicyFromTerms({...h.event, priceInPaise: 0,
+      eventPolicy: undefined} as unknown as EventDocument),
     eventOrigin: {kind: "externalCompanion", provider: "luma"},
   });
   const command = {
@@ -168,7 +170,8 @@ test("public OTP cannot bypass restricted eligibility", async () => {
 test("free registration does not require an INR collection route", async () => {
   const h = await publicFixture();
   Object.assign(h.event, {priceInPaise: 0, currency: "USD",
-    eventPolicy: undefined});
+    eventPolicy: initialPolicyFromTerms({...h.event, priceInPaise: 0,
+      eventPolicy: undefined} as unknown as EventDocument)});
   await configureEventRegistration({db: h.store.db(), actorUid,
     command: {organizerId: org, eventId, requestId: "configure_usd_free",
       expectedRegistrationRevision: 1, mode: "free"},

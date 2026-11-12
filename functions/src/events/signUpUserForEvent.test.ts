@@ -10,7 +10,8 @@ import {catchNativeEventOrigin} from "../shared/testUtils";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -217,7 +218,7 @@ function reservationPath(key: string): string {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     organizerId: "club-1",
     eventOrigin: catchNativeEventOrigin(),
@@ -257,7 +258,7 @@ function event(overrides: FakeData = {}): FakeData {
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {},
     ...overrides,
-  };
+  });
 }
 
 function user(overrides: FakeData = {}): FakeData {
@@ -349,8 +350,17 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   assert.equal(notification?.organizerId, "club-1");
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
+  // The roster row and its pointer land in the same transaction.
+  const pointer = fake.get("eventAttendeeIndex/event-1_runner-1");
+  const row = fake.get(`eventAttendees/${pointer?.attendeeId}`) as
+    {status?: string; linkedUid?: string; source?: string;
+      booking?: {deletedAt: unknown}} | undefined;
+  assert.equal(row?.status, "registered");
+  assert.equal(row?.linkedUid, "runner-1");
+  assert.equal(row?.source, "catchBooking");
+  assert.equal(row?.booking?.deletedAt, null);
   assert.equal(
-    fake.get(`userEventScheduleLocks/runner-1_${scheduleSlot(
+    fake.get(`scheduleLocks/user_runner-1_${scheduleSlot(
       "2026-05-02T01:30:00.000Z"
     )}`)?.eventId,
     "event-1"
@@ -454,6 +464,9 @@ test("verified imported guest becomes a Catch signup without a second seat",
     assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
     assert.equal(fake.get("events/event-1")?.bookedCount, 1);
     assert.equal(fake.get("eventAttendees/guest-1")?.linkedUid, "runner-1");
+    assert.equal(fake.get("eventAttendees/guest-1")?.source, "hostImport");
+    assert.equal(fake.get("eventAttendeeIndex/event-1_runner-1")?.attendeeId,
+      "guest-1");
     assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
       "signedUp");
   });

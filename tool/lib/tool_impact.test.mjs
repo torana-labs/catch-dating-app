@@ -238,7 +238,7 @@ const consumedInputs = new Map([
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
   ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",
-    "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
+    "data:repair-organizer-follower-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
   ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
     "web:react-dependency-graph", "web:shared-ui-adoption"]],
 ]);

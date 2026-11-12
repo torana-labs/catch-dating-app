@@ -375,6 +375,14 @@
           "additionalProperties": false,
           "description": "The weddings pilot application from /weddings/apply/. Every field is optional; the page sends what the planner answered.",
           "properties": {
+            "applicantRole": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "programmeKind": {
+              "type": "string",
+              "maxLength": 80
+            },
             "planningCompany": {
               "type": "string",
               "maxLength": 140

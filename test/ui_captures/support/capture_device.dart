@@ -58,6 +58,24 @@ class CaptureDevice {
     showsStatusBar: true,
   );
 
+  /// A generic 11-inch tablet held landscape for marketing captures. The
+  /// website draws its frame (CatchDeviceFrame kind tablet) and the exporter
+  /// passes the screen through unframed. The phone status bar's geometry does
+  /// not fit the 24pt top inset, so none is drawn.
+  static const genericTablet = CaptureDevice(
+    id: 'generic-tablet',
+    size: Size(1194, 834),
+    safeArea: EdgeInsets.only(top: 24, bottom: 20),
+  );
+
+  /// A desktop browser's content area for marketing captures. The website
+  /// draws the window (CatchDeviceFrame kind browser) and the exporter passes
+  /// the screen through unframed.
+  static const desktopBrowser = CaptureDevice(
+    id: 'desktop-browser',
+    size: Size(1440, 900),
+  );
+
   static const auditTablet = CaptureDevice(
     id: 'audit-tablet-1024x1366',
     size: Size(1024, 1366),
@@ -90,6 +108,8 @@ class CaptureDevice {
     iphone15,
     iphone17Pro,
     genericPhone,
+    genericTablet,
+    desktopBrowser,
     auditMedium,
     auditTablet,
     auditTabletLandscape,

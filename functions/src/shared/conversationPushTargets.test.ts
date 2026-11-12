@@ -13,23 +13,15 @@ const installations = [
   {appRole: "unknown", token: "invalid"},
 ];
 
-test("Consumer uses unique Consumer installations and legacy fallback", () => {
-  assert.deepEqual(
-    conversationPushTokens(installations, "consumer", "consumer-a"),
+test("Consumer uses unique Consumer installations only", () => {
+  assert.deepEqual(conversationPushTokens(installations, "consumer"),
     ["consumer-a", "consumer-b"]);
-  assert.deepEqual(
-    conversationPushTokens([], "consumer", "legacy"), ["legacy"]);
+  assert.deepEqual(conversationPushTokens([], "consumer"), []);
 });
 
-test("Host never falls back to the Consumer token", () => {
-  assert.deepEqual(
-    conversationPushTokens(installations, "host", "consumer-a"), ["host-a"]);
-  assert.deepEqual(conversationPushTokens([], "host", "legacy"), []);
-});
-
-test("known Host addresses cannot receive legacy dating pushes", () => {
-  assert.deepEqual(conversationPushTokens(installations, "consumer", "host-a"),
-    ["consumer-a", "consumer-b"]);
+test("Host uses Host installations only", () => {
+  assert.deepEqual(conversationPushTokens(installations, "host"), ["host-a"]);
+  assert.deepEqual(conversationPushTokens([], "host"), []);
 });
 
 test("resolver reads installations for a Host-only account", async () => {
@@ -47,7 +39,7 @@ test("resolver reads installations for a Host-only account", async () => {
     }};
   }};
   assert.deepEqual(await resolveConversationPushTokens(
-    db as unknown as FirebaseFirestore.Firestore, "host-uid", "host", undefined
+    db as unknown as FirebaseFirestore.Firestore, "host-uid", "host"
   ), ["host-a"]);
   assert.deepEqual(paths, ["users", "host-uid", "pushInstallations"]);
 });

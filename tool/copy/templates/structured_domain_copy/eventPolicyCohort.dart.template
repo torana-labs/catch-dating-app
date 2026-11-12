@@ -97,9 +97,15 @@ class EventRosterSnapshot {
     this.waitlistedCountsByCohort = const {},
     this.offeredCountsByCohort = const {},
     this.crossPathsPairConfirmedCount = 0,
+    this.bookedTotal,
   });
 
   final Map<String, int> bookedCountsByCohort;
+
+  /// The event's projected booked count. Like Functions' roster, it is the
+  /// authoritative total when known; bookings without a cohort (host imports,
+  /// walk-ins) count toward capacity without being attributed to a cohort.
+  final int? bookedTotal;
   final Map<String, int> waitlistedCountsByCohort;
   final Map<String, int> offeredCountsByCohort;
   final int crossPathsPairConfirmedCount;
@@ -116,7 +122,7 @@ class EventRosterSnapshot {
       waitlistedCountFor(cohortId) +
       offeredCountFor(cohortId);
 
-  int get totalBooked => _sum(bookedCountsByCohort);
+  int get totalBooked => bookedTotal ?? _sum(bookedCountsByCohort);
   int get totalWaitlisted => _sum(waitlistedCountsByCohort);
   int get totalOffered => _sum(offeredCountsByCohort);
 

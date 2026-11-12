@@ -12,7 +12,6 @@ export type RecipientEndpoint = {
 } | {
   kind: "uid";
   uid: string;
-  fcmToken: string | null;
 };
 
 /**

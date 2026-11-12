@@ -23,8 +23,11 @@ test("createStripeHostOnboardingLinkHandler creates and stores host account",
         email: "host@example.com",
         displayName: "Catch Host",
       },
-      "organizerHostClaims/host-1": {
-        organizerIds: ["club-1"],
+      "organizerTeamMemberships/club-1_host-1": {
+        organizerId: "club-1",
+        uid: "host-1",
+        role: "owner",
+        status: "active",
       },
     });
     const accountInputs: StripeAccountCreateInput[] = [];
@@ -94,12 +97,24 @@ test("createStripeHostOnboardingLinkHandler creates and stores host account",
     });
   });
 
-test("createStripeHostOnboardingLinkHandler requires a host claim",
+test("createStripeHostOnboardingLinkHandler requires an active owner seat",
   async () => {
     const firestore = new FakeFirestore({
       "users/host-1": {
         email: "host@example.com",
         displayName: "Catch Host",
+      },
+      "organizerTeamMemberships/club-1_host-1": {
+        organizerId: "club-1",
+        uid: "host-1",
+        role: "owner",
+        status: "removed",
+      },
+      "organizerTeamMemberships/club-2_host-1": {
+        organizerId: "club-2",
+        uid: "host-1",
+        role: "manager",
+        status: "active",
       },
     });
 
@@ -117,7 +132,10 @@ test("createStripeHostOnboardingLinkHandler requires a host claim",
           checkRateLimit: async () => undefined,
         }
       ),
-      isHttpsError("permission-denied", "Only club owners can set up payouts.")
+      isHttpsError(
+        "permission-denied",
+        "Only organizer owners can set up payouts."
+      )
     );
   });
 
@@ -308,6 +326,19 @@ class FakeQuery {
     }>,
     private readonly limitCount?: number
   ) {}
+
+  where(
+    field: string,
+    op: FirebaseFirestore.WhereFilterOp,
+    value: unknown
+  ) {
+    return new FakeQuery(
+      this.firestore,
+      this.collectionPath,
+      [...this.filters, {field, op, value}],
+      this.limitCount
+    );
+  }
 
   limit(limitCount: number) {
     return new FakeQuery(

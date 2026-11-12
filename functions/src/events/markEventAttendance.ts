@@ -1,6 +1,8 @@
 import {CallableRequest, onCall, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
@@ -41,6 +43,7 @@ import {
   NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {deferCompanionReadyCue} from "../eventSuccess/deferredGuestCues";
 
 interface MarkEventAttendanceDeps {
@@ -157,16 +160,22 @@ export async function markEventAttendanceHandler(
       );
     }
     const alreadyAttended = existingParticipation.status === "attended";
+    const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
+      uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
     tx.update(eventRef, {
       checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
     });
-    tx.set(participationRef, eventParticipationPatch({
+    const attendance = eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
       organizerId: event.organizerId,
       uid: userId,
       status: alreadyAttended ? "signedUp" : "attended",
-    }), {merge: true});
+    });
+    tx.set(participationRef, attendance, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationSnap.data(), attendance),
+      now: admin.firestore.Timestamp.now()});
     return {
       alreadyAttended,
       inviteLinkId: existingParticipation.inviteLinkId,
@@ -256,17 +265,14 @@ async function notifyCompanionReadyBestEffort(params: {
       return;
     }
 
-    const user = userSnap.data() as (
-      NotificationPreferenceDocument & {fcmToken?: string}
-    ) | undefined;
-    if (!user?.fcmToken ||
-        !allowsPushPreference(user, "eventStatusUpdates")) {
-      return;
-    }
+    const user = userSnap.data() as NotificationPreferenceDocument | undefined;
+    if (!allowsPushPreference(user, "eventStatusUpdates")) return;
+    const token = await readConsumerPushToken(params.db, params.userId);
+    if (!token) return;
 
     const copy = eventCompanionReadyNotificationCopy(params.event);
     await params.deps.sendNotification({
-      token: user.fcmToken,
+      token,
       title: copy.title,
       body: copy.body,
       type: "eventCompanionReady",

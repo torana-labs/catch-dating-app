@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import type {ProgramDeliveryMessageDocument as MessageRecord} from
   "../shared/generated/programDeliveryMessageDocument";
 import type {ProgramDeliveryMessageIntent as MessageIntent} from
@@ -88,7 +89,7 @@ export function newProgramDeliveryRecord(
   if (!Number.isSafeInteger(now) || now >= intent.expiresAt) {
     throw new Error("Program delivery intent expired or clock invalid");
   }
-  return parseProgramDeliveryRecord({schemaVersion: 1,
+  return parseProgramDeliveryRecord({schemaVersion: 1, source: "program",
     messageId: programDeliveryMessageId(intent), revision: 0, intent,
     lifecycle: "active", attempts: [], deliveryConflict: false,
     createdAt: now, updatedAt: now});
@@ -110,7 +111,7 @@ export const programDeliveryAdapter: DeliverySourceAdapter<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
   MessageRecord
 > = {
-  collection: "programDeliveryMessages",
+  collection: DELIVERY_MESSAGES,
   messageId: (intent) => programDeliveryMessageId(intent),
   parseIntent: (value) => parseProgramDeliveryIntent(value),
   parseAttempt: (value) => parseProgramDeliveryAttempt(value),

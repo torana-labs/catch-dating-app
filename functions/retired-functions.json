@@ -13,9 +13,13 @@
   "getEventSuccessPresenceSummary",
   "getOrganizerEventSetupDefaults",
   "getOrganizerProviderSetup",
+  "getParticipantOrganizerApplicationForm",
   "getPrivateEventSetup",
   "listEventAssistanceCases",
   "listEventAssistanceDeliveries",
   "listEventAssistanceDepartureRosters",
-  "listOrganizerAttentionItems"
+  "listOrganizerAttentionItems",
+  "onEventParticipationRosterProjected",
+  "revokeParticipantOrganizerDataGrant",
+  "submitParticipantOrganizerApplication"
 ]

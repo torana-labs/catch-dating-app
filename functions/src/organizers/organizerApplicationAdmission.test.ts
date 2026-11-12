@@ -4,6 +4,7 @@ import {Timestamp} from "firebase-admin/firestore";
 import {CallableRequest} from "firebase-functions/v2/https";
 import type {OrganizerApplicationDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {genericApplicationSources} from "./genericApplicationFixture";
 import {genericFormApplicationId, organizerApplicationAccess} from
   "./organizerApplicationAccess";
 import {getOrganizerApplicationDetailHandler,
@@ -42,18 +43,15 @@ function harness() {
     "organizers/org-1": {ownerUserId: "host-1", hostUserIds: ["host-1"],
       hostProfiles: []},
     [appPath]: {...application},
-    "organizerApplicationResponses/response-1": {
-      organizerId: "org-1", applicationId, formId: "form-1",
-      formVersionId: "version-1", linkedUid: "user-1", answers, source,
-      grantId: null, consentVersion: "v1", submittedAt: now,
-    },
     "organizerFormResponses/response-1": {
       organizerId: "org-1", formId: "form-1", versionId: "version-1",
       respondentUid: "user-1", status: "submitted",
+      ...genericApplicationSources(answers).response,
     },
     "organizerFormVersions/version-1": {
       organizerId: "org-1", formId: "form-1",
-      definition: {purpose: "application"},
+      definition: {purpose: "application",
+        ...genericApplicationSources(answers).version},
     },
   });
   const deps = {firestore: () => store.asFirestore(), timestamp: () => now,
@@ -262,7 +260,8 @@ test("customer queue includes verified-account applications before admission",
 test("review contact actions use authorized identity endpoints before approval",
   async () => {
     const h = harness();
-    h.store.docs["organizerApplicationResponses/response-1"].answers = [];
+    Object.assign(h.store.docs["organizerFormResponses/response-1"],
+      genericApplicationSources([]).response);
     h.store.docs["organizerFormResponses/response-1"].identity = {
       phoneE164: "+919876543210", email: "ADA@example.com",
     };

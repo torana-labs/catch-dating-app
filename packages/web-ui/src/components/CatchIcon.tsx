@@ -1,5 +1,6 @@
 import type {SVGAttributes} from "react";
-import {catchIconGlyphs, catchIconStrokeWidth, type CatchIconName} from "../icons/catchIconGlyphs";
+import {useCatchIconGlyph} from "../icons/catchIconGlyphLoader";
+import {catchIconStrokeWidth, type CatchIconName} from "../icons/catchIconRoles";
 import type {CatchIconSizeStep} from "./catchCoreVocabulary";
 import styles from "./CatchIcon.module.css";
 
@@ -26,7 +27,7 @@ export function catchIconStrokeFor(size: CatchIconSizeStep): number {
 
 /** catch.icon: a Lucide icon chosen by role. It takes the colour of the text around it. */
 export function CatchIcon({name, size = 20, label, className, ...rest}: CatchIconProps) {
-  const Glyph = catchIconGlyphs[name];
+  const Glyph = useCatchIconGlyph(name);
   return (
     <Glyph
       aria-hidden={label ? undefined : true}

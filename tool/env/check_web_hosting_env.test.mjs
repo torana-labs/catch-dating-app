@@ -64,6 +64,34 @@ test("prelaunch marketing deploy requires both store URLs to remain empty", () =
   assert.match(misleading.stderr, /VITE_PLAY_STORE_URL must be empty/u);
 });
 
+test("Catch Host's store URLs stay empty while prelaunch and are optional but checked when live", () => {
+  const prelaunch = runMarketing({
+    VITE_STORE_LINKS_MODE: "prelaunch",
+    VITE_APP_STORE_URL: "",
+    VITE_PLAY_STORE_URL: "",
+    VITE_HOST_APP_STORE_URL: "https://apps.apple.com/in/app/catch-host/id0000000001",
+  });
+  assert.equal(prelaunch.status, 1);
+  assert.match(prelaunch.stderr, /VITE_HOST_APP_STORE_URL must be empty/u);
+
+  const liveWithout = runMarketing({VITE_HOST_APP_STORE_URL: "", VITE_HOST_PLAY_STORE_URL: ""});
+  assert.equal(liveWithout.status, 0, liveWithout.stderr);
+
+  const liveInvalid = runMarketing({
+    VITE_HOST_APP_STORE_URL: "https://example.com/host",
+    VITE_HOST_PLAY_STORE_URL: "https://play.google.com/store/apps/details",
+  });
+  assert.equal(liveInvalid.status, 1);
+  assert.match(liveInvalid.stderr, /VITE_HOST_APP_STORE_URL must be an HTTPS apps\.apple\.com/u);
+  assert.match(liveInvalid.stderr, /VITE_HOST_PLAY_STORE_URL must be an HTTPS play\.google\.com/u);
+
+  const liveValid = runMarketing({
+    VITE_HOST_APP_STORE_URL: "https://apps.apple.com/in/app/catch-host/id0000000001",
+    VITE_HOST_PLAY_STORE_URL: "https://play.google.com/store/apps/details?id=com.catchdating.host",
+  });
+  assert.equal(liveValid.status, 0, liveValid.stderr);
+});
+
 test("marketing deploy requires an explicit supported store-link mode", () => {
   const missing = runMarketing({VITE_STORE_LINKS_MODE: ""});
   assert.equal(missing.status, 1);

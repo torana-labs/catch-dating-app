@@ -4,7 +4,7 @@ import {initialStepTwoDraft, type WeddingsApplication} from "./weddingsModel";
 import {createWeddingsSubmit, weddingsApplicationRequest, weddingsPhone} from "./weddingsSubmit";
 
 const application: WeddingsApplication = {
-  name: " Meher Shah ", company: "Meher Shah Weddings", phone: "98201 44718", date: "2026-12-12",
+  who: "A wedding planner", what: "A wedding", name: " Meher Shah ", company: "Meher Shah Weddings", phone: "98201 44718", date: "2026-12-12",
   destination: "Udaipur", guests: "150 to 400", tools: ["Spreadsheets"], ...initialStepTwoDraft, lastTime: "",
 };
 
@@ -19,7 +19,9 @@ describe("weddings submit", () => {
     expect(request).toMatchObject({fullName: "Meher Shah", phone: "+919820144718", role: "host", programme: "weddings"});
     expect(request.programmeApplication).toMatchObject({planningCompany: "Meher Shah Weddings", weddingDate: "2026-12-12",
       functions: initialStepTwoDraft.functions, teamSize: initialStepTwoDraft.team});
+    expect(request.programmeApplication).toMatchObject({applicantRole: "A wedding planner", programmeKind: "A wedding"});
     expect(request.programmeApplication).not.toHaveProperty("freeText");
+    expect(weddingsApplicationRequest({...application, company: " "}).programmeApplication).not.toHaveProperty("planningCompany");
     expect("email" in request).toBe(false);
     expect(isJoinWaitlistHttpRequest({...request, analytics: {consent: null, eventId: "weddings_lead_1", formVariant: "host",
       pagePath: "/weddings/apply/", pageTitle: "Catch", submittedAt: "2026-11-08T08:05:00.000Z"}})).toBe(true);

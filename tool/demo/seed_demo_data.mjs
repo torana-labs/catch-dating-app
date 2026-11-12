@@ -39,15 +39,15 @@ import {
   validateProfilePromptAnswer,
   validatePublicProfileDocument,
   validateReviewDocument,
-  validateOrganizerScheduleLockDocument,
   validateOrganizerDocument,
-  validateOrganizerMembershipDocument,
+  validateOrganizerFollowDocument,
+  validateOrganizerTeamMembershipDocument,
   validateEventDocument,
   validateEventParticipationDocument,
   validateSavedEventDocument,
   validateSeedEventManifestDocument,
   validateSwipeDocument,
-  validateUserEventScheduleLockDocument,
+  validateScheduleLockDocument,
   validateUserProfileDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
 import {marketForIdOrAlias} from "../lib/location_markets.mjs";
@@ -854,7 +854,9 @@ function buildSeed({
         ...rotate(syntheticCityUsers, organizerIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
       ]);
       for (const member of organizerMembers) {
-        memberships.push(buildMembership({seedMarker, organizerId: organizer.id, uid: member.uid, role: member.uid === host.uid ? "owner" : "member", now}));
+        memberships.push(member.uid === host.uid ?
+          buildOwnerSeat({organizerId: organizer.id, uid: member.uid, now}) :
+          buildFollow({organizerId: organizer.id, uid: member.uid, now}));
       }
 
       for (let runIndex = 0; runIndex < scenario.eventsPerOrganizer; runIndex += 1) {
@@ -933,7 +935,7 @@ function buildSeed({
       {path: `publicProfiles/${user.uid}`, data: user.publicProfileDoc},
     ]),
     ...organizers.map((organizer) => ({path: `organizers/${organizer.id}`, data: organizer.doc})),
-    ...memberships.map((membership) => ({path: `organizerMemberships/${membership.id}`, data: membership.doc})),
+    ...memberships.map((membership) => ({path: `${membership.collection}/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
     ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
     ...eventSuccessPlans.map((plan) => ({path: `eventSuccessPlans/${plan.id}`, data: plan.doc})),
@@ -1322,7 +1324,6 @@ function buildOrganizer({seedPrefix, seedMarker, city, organizerIndex, host}) {
       imageUrl: organizerImages[organizerIndex % organizerImages.length],
       profileImageUrl: null,
       tags: ["social", organizerIndex % 2 === 0 ? "beginner-friendly" : "tempo", cityMeta.label.toLowerCase()],
-      memberCount: 0,
       followerCount: 0,
       organizerType: "club",
       organizerPhotos: [],
@@ -1341,19 +1342,32 @@ function buildOrganizer({seedPrefix, seedMarker, city, organizerIndex, host}) {
   };
 }
 
-function buildMembership({seedMarker, organizerId, uid, role, now}) {
+function buildFollow({organizerId, uid, now}) {
   return {
+    collection: "organizerFollows",
     id: `${organizerId}_${uid}`,
     doc: {
-      ...seedMarker,
       organizerId,
       uid,
-      role,
       status: "active",
       pushNotificationsEnabled: true,
-      joinedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -18})),
-      leftAt: null,
-      deletedAt: null,
+      followedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -18})),
+      unfollowedAt: null,
+    },
+  };
+}
+
+function buildOwnerSeat({organizerId, uid, now}) {
+  return {
+    collection: "organizerTeamMemberships",
+    id: `${organizerId}_${uid}`,
+    doc: {
+      organizerId,
+      uid,
+      role: "owner",
+      status: "active",
+      createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -18})),
+      removedAt: null,
     },
   };
 }
@@ -2388,7 +2402,10 @@ function notificationDoc({
 }
 
 function updateOrganizerAggregates({organizers, memberships, reviews, events}) {
-  const membersByOrganizer = groupBy(memberships, (membership) => membership.doc.organizerId);
+  const followersByOrganizer = groupBy(
+    memberships.filter((membership) => membership.collection === "organizerFollows"),
+    (membership) => membership.doc.organizerId
+  );
   const reviewsByOrganizer = groupBy(reviews, (review) => review.organizerId);
   const upcomingByOrganizer = groupBy(
     events
@@ -2397,12 +2414,12 @@ function updateOrganizerAggregates({organizers, memberships, reviews, events}) {
     (event) => event.organizerId
   );
   for (const organizer of organizers) {
-    const activeMembers = (membersByOrganizer.get(organizer.id) ?? [])
-      .filter((membership) => membership.doc.status === "active");
+    const activeFollowers = (followersByOrganizer.get(organizer.id) ?? [])
+      .filter((follow) => follow.doc.status === "active");
     const organizerReviews = reviewsByOrganizer.get(organizer.id) ?? [];
     const totalRating = organizerReviews.reduce((sum, review) => sum + review.rating, 0);
     const nextEvent = upcomingByOrganizer.get(organizer.id)?.[0];
-    organizer.doc.memberCount = activeMembers.length;
+    organizer.doc.followerCount = activeFollowers.length;
     organizer.doc.reviewCount = organizerReviews.length;
     organizer.doc.rating = organizerReviews.length > 0 ?
       Number((totalRating / organizerReviews.length).toFixed(1)) :
@@ -2425,7 +2442,8 @@ export function validateSeedDocuments(writePlan) {
     users: 0,
     publicProfiles: 0,
     organizers: 0,
-    organizerMemberships: 0,
+    organizerFollows: 0,
+    organizerTeamMemberships: 0,
     events: 0,
     eventParticipations: 0,
     eventSuccessPlans: 0,
@@ -2435,8 +2453,7 @@ export function validateSeedDocuments(writePlan) {
     eventSuccessAssignments: 0,
     eventSuccessFeedback: 0,
     eventSuccessScorecards: 0,
-    organizerScheduleLocks: 0,
-    userEventScheduleLocks: 0,
+    scheduleLocks: 0,
     savedEvents: 0,
     payments: 0,
     profileDecisions: 0,
@@ -2492,13 +2509,20 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.organizers += 1;
-    } else if (isOrganizerMembershipPath(doc.path)) {
+    } else if (isOrganizerFollowPath(doc.path)) {
       assertValidSchemaPayload(
-        validateOrganizerMembershipDocument,
+        validateOrganizerFollowDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.organizerMemberships += 1;
+      result.organizerFollows += 1;
+    } else if (isOrganizerTeamMembershipPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateOrganizerTeamMembershipDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.organizerTeamMemberships += 1;
     } else if (isRunPath(doc.path)) {
       const data = schemaSerializableFirestoreData(doc.data);
       assertValidSchemaPayload(
@@ -2567,20 +2591,13 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.eventSuccessScorecards += 1;
-    } else if (isOrganizerScheduleLockPath(doc.path)) {
+    } else if (isScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
-        validateOrganizerScheduleLockDocument,
+        validateScheduleLockDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.organizerScheduleLocks += 1;
-    } else if (isUserEventScheduleLockPath(doc.path)) {
-      assertValidSchemaPayload(
-        validateUserEventScheduleLockDocument,
-        schemaSerializableFirestoreData(doc.data),
-        doc.path
-      );
-      result.userEventScheduleLocks += 1;
+      result.scheduleLocks += 1;
     } else if (isSavedEventPath(doc.path)) {
       assertValidSchemaPayload(
         validateSavedEventDocument,
@@ -2759,8 +2776,12 @@ function isOrganizerPath(docPath) {
   return /^organizers\/[^/]+$/.test(docPath);
 }
 
-function isOrganizerMembershipPath(docPath) {
-  return /^organizerMemberships\/[^/]+$/.test(docPath);
+function isOrganizerFollowPath(docPath) {
+  return /^organizerFollows\/[^/]+$/.test(docPath);
+}
+
+function isOrganizerTeamMembershipPath(docPath) {
+  return /^organizerTeamMemberships\/[^/]+$/.test(docPath);
 }
 
 function isRunPath(docPath) {
@@ -2799,12 +2820,8 @@ function isEventSuccessScorecardPath(docPath) {
   return /^eventSuccessScorecards\/[^/]+$/.test(docPath);
 }
 
-function isOrganizerScheduleLockPath(docPath) {
-  return /^organizerScheduleLocks\/[^/]+$/.test(docPath);
-}
-
-function isUserEventScheduleLockPath(docPath) {
-  return /^userEventScheduleLocks\/[^/]+$/.test(docPath);
+function isScheduleLockPath(docPath) {
+  return /^scheduleLocks\/[^/]+$/.test(docPath);
 }
 
 function isSavedEventPath(docPath) {
@@ -2998,7 +3015,8 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
 
 function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   const parts = doc.path.split("/");
-  if (doc.path.startsWith("organizerMemberships/")) {
+  if (doc.path.startsWith("organizerFollows/") ||
+      doc.path.startsWith("organizerTeamMemberships/")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("eventParticipations/")) {
@@ -3018,7 +3036,7 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
       (Array.isArray(doc.data.peerUids) &&
         doc.data.peerUids.some((uid) => newAnchorSet.has(uid)));
   }
-  if (doc.path.startsWith("userEventScheduleLocks/")) {
+  if (doc.path.startsWith("scheduleLocks/user_")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("savedEvents/")) {
@@ -3289,10 +3307,10 @@ function buildAppendAggregateUpdates(docs) {
   const organizerUpdates = new Map();
 
   for (const doc of docs) {
-    if (doc.path.startsWith("organizerMemberships/") &&
+    if (doc.path.startsWith("organizerFollows/") &&
         doc.data.status === "active") {
       const organizerUpdate = mapEntry(organizerUpdates, `organizers/${doc.data.organizerId}`);
-      organizerUpdate.memberCount = (organizerUpdate.memberCount ?? 0) + 1;
+      organizerUpdate.followerCount = (organizerUpdate.followerCount ?? 0) + 1;
     }
 
     if (!doc.path.startsWith("eventParticipations/")) continue;

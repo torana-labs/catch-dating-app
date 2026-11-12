@@ -175,7 +175,7 @@ class HostProgrammeInboxBody extends StatelessWidget {
               )
             : threadStatus != HostProgrammeStatus.ready || thread == null
             ? HostProgrammeStateBody(status: threadStatus, onRetry: onRetry)
-            : HostProgrammeInboxThread(
+            : HostProgrammeInboxThreadSection(
                 thread: thread,
                 cannedReplies: cannedReplies,
                 composer: composer,
@@ -199,8 +199,8 @@ class HostProgrammeInboxBody extends StatelessWidget {
 
 /// One conversation: the household, the messages, the hand-over and the
 /// composer.
-class HostProgrammeInboxThread extends StatelessWidget {
-  const HostProgrammeInboxThread({
+class HostProgrammeInboxThreadSection extends StatelessWidget {
+  const HostProgrammeInboxThreadSection({
     super.key,
     required this.thread,
     required this.cannedReplies,
@@ -308,7 +308,7 @@ class HostProgrammeInboxThread extends StatelessWidget {
             onTap: null,
           ),
         for (final message in thread.messages)
-          HostProgrammeInboxMessage(
+          HostProgrammeInboxMessageBubble(
             message: message,
             guestName: guestName,
             language: summary.language,
@@ -377,8 +377,8 @@ class HostProgrammeInboxThread extends StatelessWidget {
 }
 
 /// One message bubble, with the assistant's or planner's caption.
-class HostProgrammeInboxMessage extends StatelessWidget {
-  const HostProgrammeInboxMessage({
+class HostProgrammeInboxMessageBubble extends StatelessWidget {
+  const HostProgrammeInboxMessageBubble({
     super.key,
     required this.message,
     required this.guestName,

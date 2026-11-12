@@ -40,6 +40,7 @@ import {
   FcmParams,
   sendFcmNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {blockDocIdsForPairs} from "../safety/blocking";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
@@ -842,13 +843,11 @@ async function deliverToRecipient(params: {
         },
       };
     }
-    // Host broadcasts target Consumer attendees. The legacy consumer token is
-    // intentional in v1; all producers migrate to pushInstallations together.
-    if (!params.recipient.user.fcmToken ||
-        !allowsPushPreference(
-          params.recipient.user,
-          "eventStatusUpdates"
-        )) {
+    // Host broadcasts target the attendee's newest Guest-app device.
+    const token = allowsPushPreference(params.recipient.user,
+      "eventStatusUpdates") ?
+      await readConsumerPushToken(params.db, params.recipient.uid) : null;
+    if (!token) {
       return {
         key,
         evidence: {
@@ -860,7 +859,7 @@ async function deliverToRecipient(params: {
     }
     try {
       await params.deps.sendNotification({
-        token: params.recipient.user.fcmToken,
+        token,
         title: params.claim.title,
         body: params.data.body,
         type: "eventUpdated",

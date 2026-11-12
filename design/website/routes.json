@@ -121,11 +121,11 @@
         ],
         "states": [
         "default",
-        "night-chapter",
+        "night-format",
         "applicant-replay",
-        "layer-one",
+        "layer-two",
         "pricing-cap",
-        "apply-card",
+        "start-band",
         "phone"
       ],
         "stateCoverage": {
@@ -133,11 +133,11 @@
           "default"
         ],
           "manual": [
-          "night-chapter",
+          "night-format",
           "applicant-replay",
-          "layer-one",
+          "layer-two",
           "pricing-cap",
-          "apply-card",
+          "start-band",
           "phone"
         ]
         }

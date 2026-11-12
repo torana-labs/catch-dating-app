@@ -1701,6 +1701,22 @@
       ],
       "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
+    "hostProgramsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramsScreen"
+          ],
+          "file": "lib/hosts/programmes/planner/programmes_home_screen.dart",
+          "symbol": "HostProgrammesHomeScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The organizer's programmes home, pushed from Events; a link without an organizer still redirects to Events. Its typed layout owner lives here."
+    },
     "hostWorkAttentionScreen": {
       "owners": [
         {
@@ -1708,7 +1724,7 @@
             "hostWorkAttentionScreen"
           ],
           "file": "lib/hosts/programmes/staff/staff_alerts_screen.dart",
-          "symbol": "StaffAlertsScreen",
+          "symbol": "_StaffAlertsScreenState",
           "family": "pushed-route",
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
@@ -1939,6 +1955,19 @@
       ],
       "reason": "The court board pushes its setup as a system pushed screen."
     },
+    "HostFormatsCrawlScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_crawl_screen.dart",
+          "symbol": "_HostFormatsCrawlScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the crawl board as a system pushed screen."
+    },
     "HostFormatsMixScreen": {
       "owners": [
         {
@@ -1951,6 +1980,19 @@
         }
       ],
       "reason": "The live console pushes the mix board as a system pushed screen."
+    },
+    "HostFormatsPodsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_pods_screen.dart",
+          "symbol": "_HostFormatsPodsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the pods board as a system pushed screen."
     },
     "HostFormatsRulesScreen": {
       "owners": [

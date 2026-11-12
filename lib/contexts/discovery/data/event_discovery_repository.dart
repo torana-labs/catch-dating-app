@@ -327,6 +327,7 @@ String? _eventCohortAvailability(Event event, String cohortId) {
 
   final roster = EventRosterSnapshot(
     bookedCountsByCohort: event.effectiveCohortCounts,
+    bookedTotal: event.bookedCount,
     waitlistedCountsByCohort: event.effectiveWaitlistedCohortCounts,
     crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
   );

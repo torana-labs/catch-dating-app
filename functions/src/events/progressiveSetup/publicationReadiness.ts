@@ -7,6 +7,7 @@ import {validateEventDocument} from
 import {isEventPolicyTerms, isEventTimeRange, isRuntimeVenueEvent,
   requireConfiguredEvent} from "../configuredEvent";
 import {eventDiscoveryProjection} from "../eventDiscoveryProjection";
+import {initialPolicyFromTerms} from "../eventPolicy";
 
 export const publicationRequirementIds = ["futureActive", "organizerVisibility",
   "duration", "venue", "format", "description", "admissionTerms",
@@ -35,10 +36,12 @@ export function externalBookingTermsPatch(event: EventDocument):
   if (event.externalBooking === undefined || isEventPolicyTerms(event)) {
     return {};
   }
-  return {capacityLimit: 1000, priceInPaise: 0,
+  const terms = {capacityLimit: 1000, priceInPaise: 0,
     currency: event.currency ?? "INR",
     constraints: event.constraints ?? {minAge: 0, maxAge: 99,
       maxMen: null, maxWomen: null}};
+  return {...terms,
+    eventPolicy: initialPolicyFromTerms({...event, ...terms} as EventDocument)};
 }
 
 /** Same candidate projection and validation for manager preview and commit. */

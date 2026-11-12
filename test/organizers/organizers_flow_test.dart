@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -80,11 +80,9 @@ void main() {
               'mumbai',
             ).overrideWith((ref) => Stream.value([organizer])),
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
-            watchActiveOrganizerMembershipsForUserProvider(
+            watchActiveOrganizerFollowsForUserProvider(
               user.uid,
-            ).overrideWith(
-              (ref) => Stream.value(const <OrganizerMembership>[]),
-            ),
+            ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
             exploreFeedViewModelProvider.overrideWithValue(
               const AsyncData(ExploreFeedViewModel(items: [])),
             ),
@@ -294,7 +292,7 @@ void main() {
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(_buildUser(uid: 'host-1')),
             ),
-            watchOrganizerMembershipProvider(
+            watchOrganizerFollowProvider(
               organizer.id,
               'host-1',
             ).overrideWith((ref) => Stream.value(null)),
@@ -324,7 +322,7 @@ void main() {
         final organizer = _buildOrganizer();
         final controller = StreamController<Organizer?>.broadcast();
         final membershipController =
-            StreamController<OrganizerMembership?>.broadcast();
+            StreamController<OrganizerFollow?>.broadcast();
         addTearDown(controller.close);
         addTearDown(membershipController.close);
 
@@ -344,7 +342,7 @@ void main() {
               watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(_buildUser(uid: 'runner-2')),
               ),
-              watchOrganizerMembershipProvider(
+              watchOrganizerFollowProvider(
                 organizer.id,
                 'runner-2',
               ).overrideWith((ref) => membershipController.stream),
@@ -439,14 +437,13 @@ UserProfile _buildUser({required String uid}) {
   );
 }
 
-OrganizerMembership _membership({
+OrganizerFollow _membership({
   required String organizerId,
   required String uid,
-}) => OrganizerMembership(
-  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+}) => OrganizerFollow(
+  id: organizerFollowId(organizerId: organizerId, uid: uid),
   organizerId: organizerId,
   uid: uid,
-  role: OrganizerMembershipRole.member,
-  status: OrganizerMembershipStatus.active,
-  joinedAt: DateTime(2026),
+  status: OrganizerFollowStatus.active,
+  followedAt: DateTime(2026),
 );

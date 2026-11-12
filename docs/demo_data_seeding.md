@@ -39,8 +39,9 @@ so the same synthetic world can be deleted and recreated.
 Depending on the scenario, the seeder creates:
 
 - synthetic `users/{uid}` and `publicProfiles/{uid}` documents;
-- `clubs/{organizerId}` across supported Indian cities;
-- `organizerMemberships/{organizerId_uid}` for synthetic users and optional real anchor users;
+- `organizers/{organizerId}` across supported Indian cities, each with an owner
+  seat in `organizerTeamMemberships/{organizerId_uid}`;
+- `organizerFollows/{organizerId_uid}` for synthetic users and optional real anchor users;
 - `events/{eventId}` with upcoming, full, waitlisted, cancelled, recently completed,
   and older completed states;
 - `eventParticipations/{eventId_uid}` for signed-up, waitlisted, attended, and
@@ -134,7 +135,7 @@ events, mid-term events, three-week-ahead events, past attended events, and canc
 events. That gives TestFlight accounts enough upcoming inventory for ongoing
 manual QA instead of aging out after a couple of days.
 
-The world seed does not write `organizerScheduleLocks` or `userEventScheduleLocks`
+The world seed does not write `scheduleLocks`
 by default. Those collections are denormalized server-owned race guards for
 callable writes; the Functions also query canonical `events` and
 `eventParticipations`, so seeded existing state remains conflict-safe without
@@ -412,9 +413,8 @@ node tool/demo/demo_ops.mjs reset-user-demo-state \
 The reset command deletes only demo-owned relationship/activity docs connected
 to that user:
 
-- `organizerMemberships` by `uid`;
 - `eventParticipations` by `uid`;
-- `userEventScheduleLocks` by `uid`;
+- `scheduleLocks` by `uid`;
 - `savedEvents` by `uid`;
 - `payments` by `userId`;
 - `profileDecisions/{uid}/outgoing/*` and incoming demo profile decisions;
@@ -709,8 +709,8 @@ node tool/demo/demo_ops.mjs cleanup-demo-data \
 ```
 
 Cleanup scans known top-level and nested demo surfaces for `demoOps`,
-`synthetic`, and known `seedPrefix` markers. It includes both legacy `clubs`
-and canonical `organizers`, deletes match messages before match docs, and
+`synthetic`, and known `seedPrefix` markers. It scans `organizers` and their
+owner seats, deletes match messages before match docs, and
 includes `seedEvents` plus `demoOpsEvents` manifests. A keep prefix protects
 documents that carry or reference the retained QA seed. Event
 `validate-demo-state` and the broader Firestore validator after cleanup to prove

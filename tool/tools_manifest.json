@@ -2888,20 +2888,40 @@
       }
     },
     {
-      "id": "data:repair-club-member-counts",
+      "id": "data:repair-organizer-follower-counts",
       "category": "data",
-      "path": "tool/data/recompute_organizer_member_counts.mjs",
-      "command": "node tool/data/recompute_organizer_member_counts.mjs",
+      "path": "tool/data/recompute_organizer_follower_counts.mjs",
+      "command": "node tool/data/recompute_organizer_follower_counts.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
-      "description": "Repairs club memberCount projections.",
+      "description": "Repairs organizer followerCount projections from active organizerFollows.",
       "checks": [
-        "node --check tool/data/recompute_organizer_member_counts.mjs",
-        "node --test tool/data/recompute_organizer_member_counts.test.mjs"
+        "node --check tool/data/recompute_organizer_follower_counts.mjs",
+        "node --test tool/data/recompute_organizer_follower_counts.test.mjs"
       ],
       "impactPaths": [
-        "tool/data/recompute_organizer_member_counts.test.mjs",
+        "tool/data/recompute_organizer_follower_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:migrate-firestore-consolidation",
+      "category": "data",
+      "path": "tool/data/migrate_firestore_consolidation.mjs",
+      "command": "node tool/data/migrate_firestore_consolidation.mjs --migration <name|all>",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites.",
+      "checks": [
+        "node --check tool/data/migrate_firestore_consolidation.mjs",
+        "npm --prefix functions run build && node --test tool/data/migrate_firestore_consolidation.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_firestore_consolidation.test.mjs",
+        "tool/data/lib/firestore_consolidation_migrations.mjs",
+        "tool/data/lib/copy_forward.mjs",
+        "functions/src/events/eventPolicy.ts"
       ],
       "role": "generator"
     },
@@ -5509,7 +5529,9 @@
       "role": "finder",
       "impactPaths": [
         "tool/design/check_reference_screens.test.mjs",
-        "tool/design/check_reference_screens.mjs"
+        "tool/design/check_reference_screens.mjs",
+        "design/reference_screens/**",
+        "design/source_packs/**"
       ]
     },
     {
@@ -6860,12 +6882,32 @@
         ".github/workflows/react-surface-validation.yml",
         ".github/workflows/capture-freshness-ci.yml",
         "tool/ci/wait_main_marketing_validation.mjs",
-        "tool/ci/wait_main_marketing_validation.test.mjs"
+        "tool/ci/wait_main_marketing_validation.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
       ],
       "description": "Reuses exact-main Marketing and capture execution only with matching workflow, repository, source and attempt identity; offline fixtures reject missing, failed or cancelled evidence.",
       "checks": [
         "node --check tool/ci/wait_main_marketing_validation.mjs",
         "node --test tool/ci/wait_main_marketing_validation.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:required-ci-floor",
+      "category": "ci",
+      "path": "tool/ci/required_ci_floor.mjs",
+      "command": "node --test tool/ci/required_ci_floor.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/required_ci_floor.mjs",
+        "tool/ci/required_ci_floor.test.mjs"
+      ],
+      "description": "Decides when a source CI run passes the website release gate: the whole run succeeded, or (sprint floor, owner decision 11 Nov 2026) its Required CI job succeeded and only the reporting-only lanes failed. Pins the reporting lanes to ci.yml's Required CI.",
+      "checks": [
+        "node --check tool/ci/required_ci_floor.mjs",
+        "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
     },
