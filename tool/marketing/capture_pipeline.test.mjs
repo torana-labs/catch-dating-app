@@ -44,22 +44,33 @@ function fixture(t, {second = false} = {}) {
   write('tool/ci/toolchain.env', 'FLUTTER_VERSION=fixture');
   write('tool/demo/demo_seed/scenarios/sample.json', '{}');
   write('tool/demo/demo_seed/personas/sample.json', '{}');
-  write('test/ui_captures/capture_runner_test.dart', "import 'package:catch_dating_app/parent.dart';\n");
+  write('test/ui_captures/capture_runner_test.dart', "import 'package:catch_dating_app/parent.dart';\nfinal shown = title;\n");
   write('lib/parent.dart', "export 'leaf.dart';\n");
   write('lib/leaf.dart', 'const title = \'Today\';\n');
   write('test/ui_captures/flutter_test_config.dart', '');
   write('tool/marketing/frame_device_capture.dart', '');
   // Each marketing entry renders its own widget; both widgets share the theme.
   write('lib/theme.dart', "const accent = 0xFF0000;\n");
-  write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\n");
-  write('lib/other_widget.dart', "import 'theme.dart';\n");
+  write('packages/catch_tokens/lib/tokens.dart', 'const spacing = 4;\n');
+  write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\nconst color = accent;\n");
+  write('lib/other_widget.dart', "import 'theme.dart';\nconst color = accent;\n");
   writeCaptureCatalog(write, captures.map(entry => ({id: `${entry.id}_screen`, fixtureKey: entry.fixtureKey,
     imports: [`package:catch_dating_app/${entry.id}_widget.dart`]})));
+  // What each capture's render executes (its coverage), by capture id. The
+  // theme is not executed: it enters as a direct import of the widget.
+  write('executed.json', JSON.stringify(Object.fromEntries(captures.map(entry => [entry.id,
+    [`lib/${entry.id}_widget.dart`, `test/ui_captures/catalog/entries/${entry.id}_screen.dart`]]))));
   const calls = path.join(root, 'calls.jsonl');
   // Stub only external render/frame executables. The actual Node wrappers run.
   const fakeCommand = name => {
     const file = write(`bin/${name}`, `#!${process.execPath}\n` +
       (name === 'dart' ? `const args=process.argv.slice(2); const output=args[args.indexOf('--output')+1]; require('node:fs').writeFileSync(output,Buffer.from(process.env.CAPTURE_TEST_PNG,'base64'));\n` : '') +
+      // A coverage run writes the executed files of its one capture as lcov.
+      (name === 'flutter' ? `const fs=require('node:fs'); const a=process.argv.slice(2); const cov=a.find(x=>x.startsWith('--coverage-path='));
+if (cov) { const id=process.env.CAPTURE_IDS.replace(/_screen$/,'');
+  const files=JSON.parse(fs.readFileSync('executed.json','utf8'))[id];
+  fs.mkdirSync(require('node:path').dirname(cov.slice(16)),{recursive:true});
+  fs.writeFileSync(cov.slice(16), files.map(f=>'SF:'+f+'\\nDA:1,1\\nend_of_record\\n').join('')); }\n` : '') +
       `require('node:fs').appendFileSync(process.env.CAPTURE_TEST_CALLS, JSON.stringify({name: ${JSON.stringify(name)}, args: process.argv.slice(2)})+'\\n');\n`);
     fs.chmodSync(file, 0o755);
   };
@@ -68,8 +79,8 @@ function fixture(t, {second = false} = {}) {
   const git = write('bin/git', `#!${process.execPath}\nprocess.stdout.write('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n');\n`);
   fs.chmodSync(git, 0o755);
   const font = write('fonts/native.ttf', 'native font fixture');
-  write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; for (const c of JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures) stampCapture(c, c.id + '_screen', 'fonts/native.ttf');`);
-  write('hash.mjs', `import {captureInputHash} from './tool/marketing/lib/capture_provenance.mjs'; process.stdout.write(captureInputHash(JSON.parse(process.argv[2])));`);
+  write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; const executed = JSON.parse(fs.readFileSync('executed.json', 'utf8')); for (const c of JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures) stampCapture(c, c.id + '_screen', 'fonts/native.ttf', {executedFiles: executed[c.id]});`);
+  write('hash.mjs', `import {captureInputHash, recordedInputFiles} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; const c = JSON.parse(process.argv[2]); const executed = JSON.parse(fs.readFileSync('executed.json', 'utf8'))[c.id] ?? []; process.stdout.write(captureInputHash(c, recordedInputFiles(c, executed)));`);
   const run = (script, ...args) => spawnSync(process.execPath, [path.join(root, script), ...args], {
     encoding: 'utf8', cwd: root,
     env: {...process.env, PATH: `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`, CAPTURE_TEST_CALLS: calls, CAPTURE_TEST_PNG: png().toString('base64')},
@@ -218,7 +229,7 @@ test('ambiguous fixture mappings fail instead of choosing the first entry', t =>
 test("a screen's own widget stales only that screen; the theme stales all; the index stales none", t => {
   const f = fixture(t, {second: true});
   assert.deepEqual(f.stale(), {sample: false, other: false});
-  f.write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\nconst title = 'Changed';\n");
+  f.write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\nconst color = accent;\nconst title = 'Changed';\n");
   assert.deepEqual(f.stale(), {sample: true, other: false});
   f.stamp();
   f.write('test/ui_captures/catalog/entries/other_screen.dart', fs.readFileSync(path.join(f.root,
@@ -226,6 +237,10 @@ test("a screen's own widget stales only that screen; the theme stales all; the i
   assert.deepEqual(f.stale(), {sample: false, other: true});
   f.stamp();
   f.write('lib/theme.dart', 'const accent = 0x00FF00;\n');
+  assert.deepEqual(f.stale(), {sample: true, other: true});
+  f.stamp();
+  // Design tokens style every screen, named or not.
+  f.write('packages/catch_tokens/lib/tokens.dart', 'const spacing = 8;\n');
   assert.deepEqual(f.stale(), {sample: true, other: true});
   f.stamp();
   // A review-only entry or a reordered index is not a render input.
@@ -326,4 +341,123 @@ test('only render fields enter the render hash; presentation fields, known or ne
     ['fixtureKey', 'salesDemo.other'], ['sourcePath', 'artifacts/other.png']]) {
     assert.notEqual(f.hash({...f.capture, [field]: value}), base, field);
   }
+});
+
+// Rewrites a capture PNG's caPt provenance record, keeping the PNG valid.
+function editProvenance(file, edit) {
+  const bytes = fs.readFileSync(file);
+  const out = [bytes.subarray(0, 8)];
+  for (let offset = 8; offset < bytes.length;) {
+    const length = bytes.readUInt32BE(offset);
+    const type = bytes.toString('ascii', offset + 4, offset + 8);
+    const end = offset + length + 12;
+    if (type === 'caPt') {
+      const data = Buffer.from(JSON.stringify(edit(JSON.parse(bytes.toString('utf8', offset + 8, end - 4)))));
+      const payload = Buffer.concat([Buffer.from(type), data]);
+      let crc = 0xffffffff;
+      for (const byte of payload) { crc ^= byte; for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); }
+      const head = Buffer.alloc(4); head.writeUInt32BE(data.length);
+      const tail = Buffer.alloc(4); tail.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
+      out.push(head, payload, tail);
+    } else out.push(bytes.subarray(offset, end));
+    offset = end;
+  }
+  fs.writeFileSync(file, Buffer.concat(out));
+}
+
+function recordedList(f, capture) {
+  const script = `import fs from 'node:fs'; import {decodeInputFiles} from './tool/marketing/lib/capture_provenance.mjs';
+    const c = JSON.parse(process.argv[2]); const b = fs.readFileSync(c.sourcePath); let o = 8, r;
+    while (o < b.length) { const n = b.readUInt32BE(o); if (b.toString('ascii', o + 4, o + 8) === 'caPt') r = JSON.parse(b.toString('utf8', o + 8, o + 8 + n)); o += n + 12; }
+    process.stdout.write(JSON.stringify(decodeInputFiles(c, r.inputFiles)));`;
+  f.write('list.mjs', script);
+  const result = f.run('list.mjs', JSON.stringify(capture));
+  assert.equal(result.status, 0, result.stderr);
+  return JSON.parse(result.stdout);
+}
+
+test('the exporter renders each app capture alone and records the files that render executed', t => {
+  const f = fixture(t, {second: true});
+  const font = path.join(f.root, 'fonts/native.ttf');
+  const result = f.run('tool/marketing/export_app_screenshots.mjs', '--update', '--sf-font', font);
+  assert.equal(result.status, 0, result.stderr);
+  const flutterCalls = f.readCalls().filter(call => call.name === 'flutter');
+  assert.equal(flutterCalls.length, 2, 'one render process per capture');
+  for (const call of flutterCalls) assert.ok(call.args.some(arg => arg.startsWith('--coverage-path=')));
+  const list = recordedList(f, f.capture);
+  for (const file of ['lib/sample_widget.dart', 'lib/theme.dart', 'test/ui_captures/catalog/entries/sample_screen.dart',
+    'test/ui_captures/capture_runner_test.dart', 'lib/leaf.dart', 'tool/demo/demo_seed/personas/sample.json']) {
+    assert.ok(list.includes(file), file);
+  }
+  for (const file of ['lib/other_widget.dart', 'test/ui_captures/catalog/screen_capture_catalog.dart']) {
+    assert.ok(!list.includes(file), file);
+  }
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+});
+
+test('only executed files and their direct imports count; a navigation target two hops away does not', t => {
+  const f = fixture(t);
+  f.write('lib/sample_widget.dart', "import 'theme.dart';\nimport 'nav_target.dart';\nconst next = targetTitle;\n");
+  f.write('lib/nav_target.dart', "import 'nav_deep.dart';\nconst targetTitle = 'Next';\n");
+  f.write('lib/nav_deep.dart', "const deepTitle = 'Deep';\n");
+  f.stamp();
+  assert.deepEqual(f.stale(), {sample: false});
+  f.write('lib/nav_deep.dart', "const deepTitle = 'Changed';\n");
+  assert.deepEqual(f.stale(), {sample: false});
+  // A direct import holds constants the executed widget reads by name.
+  f.write('lib/nav_target.dart', "import 'nav_deep.dart';\nconst targetTitle = 'Changed';\n");
+  assert.deepEqual(f.stale(), {sample: true});
+});
+
+test('a barrel adds only the re-exported files whose names an executed file uses', t => {
+  const f = fixture(t);
+  f.write('lib/kit.dart', "export 'kit_button.dart';\nexport 'kit_chart.dart';\n");
+  f.write('lib/kit_button.dart', "class KitButton {}\n");
+  f.write('lib/kit_chart.dart', "class KitChart {}\n");
+  f.write('lib/sample_widget.dart', "import 'kit.dart';\nfinal button = KitButton();\n");
+  f.stamp();
+  f.write('lib/kit_chart.dart', "class KitChart { final int bars = 3; }\n");
+  assert.deepEqual(f.stale(), {sample: false});
+  f.write('lib/kit_button.dart', "class KitButton { final int size = 2; }\n");
+  assert.deepEqual(f.stale(), {sample: true});
+});
+
+test('fail closed: an old format, another recipe, a bad list or a missing input is stale', t => {
+  const f = fixture(t);
+  const file = path.join(f.root, f.capture.sourcePath);
+  const exporter = 'tool/marketing/export_app_screenshots.mjs';
+  const font = path.join(f.root, 'fonts/native.ttf');
+  const reasons = () => JSON.parse(f.run(exporter, '--plan', '--sf-font', font).stdout)[0];
+  const cases = [
+    [record => { const {inputFiles: _files, inputRecipe: _recipe, ...v1} = record; return {...v1, version: 1}; }, /predates/],
+    [record => ({...record, inputRecipe: record.inputRecipe - 1}), /predates/],
+    [record => ({...record, inputFiles: 'not deflate data'}), /unreadable|malformed/],
+    [record => ({...record, inputFiles: Buffer.from('lib/leaf.dart').toString('base64')}), /unreadable|malformed/],
+  ];
+  for (const [edit, reason] of cases) {
+    f.stamp();
+    editProvenance(file, edit);
+    const plan = reasons();
+    assert.equal(plan.render, true);
+    assert.match(plan.reasons.join('\n'), reason);
+  }
+  f.stamp();
+  fs.unlinkSync(path.join(f.root, 'lib/sample_widget.dart'));
+  const plan = reasons();
+  assert.equal(plan.render, true);
+  assert.match(plan.reasons.join('\n'), /missing: lib\/sample_widget\.dart/);
+});
+
+test('lcov executed files ignore const constructor heads and files outside the repository', async t => {
+  const f = fixture(t);
+  f.write('lib/route_only.dart', "class RouteOnly {\n  const RouteOnly({this.id});\n  final String? id;\n}\n");
+  f.write('lib/built.dart', "class Built {\n  const Built();\n  int build() => 1;\n}\n");
+  f.write('executed_test.mjs', `import {executedFilesFromLcov} from './tool/marketing/lib/capture_provenance.mjs';
+    process.stdout.write(JSON.stringify(executedFilesFromLcov(process.argv[2])));`);
+  const lcov = ['SF:lib/route_only.dart', 'DA:2,1', 'DA:3,0', 'end_of_record',
+    `SF:${path.join(f.root, 'lib/built.dart')}`, 'DA:2,1', 'DA:3,4', 'end_of_record',
+    'SF:/elsewhere/pub_cache/lib/x.dart', 'DA:1,1', 'end_of_record'].join('\n');
+  const result = f.run('executed_test.mjs', lcov);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), ['lib/built.dart']);
 });
