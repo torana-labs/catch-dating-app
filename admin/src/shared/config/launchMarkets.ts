@@ -1,23 +1,10 @@
-export const launchMarkets = [
-  {
-    id: "in-mh-mumbai",
-    label: "Mumbai · Maharashtra",
-    cityName: "Mumbai",
-    regionName: "Maharashtra",
-    countryCode: "IN",
-    countryName: "India",
-    publicPageCitySlug: "mumbai",
-  },
-  {
-    id: "in-mp-indore",
-    label: "Indore · Madhya Pradesh",
-    cityName: "Indore",
-    regionName: "Madhya Pradesh",
-    countryCode: "IN",
-    countryName: "India",
-    publicPageCitySlug: "indore",
-  },
-] as const;
+import {generatedLaunchMarkets} from "./generated/marketCatalog";
+
+/**
+ * Live cities, generated from contracts/catalogs/markets.json. Edit the
+ * catalog, then run node tool/contracts/generate_market_catalog.mjs.
+ */
+export const launchMarkets = generatedLaunchMarkets;
 
 export type LaunchMarket = typeof launchMarkets[number];
 export const launchMarketSlugs =

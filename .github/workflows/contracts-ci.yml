@@ -34,6 +34,11 @@ jobs:
       - name: Validate contract sources
         run: node tool/contracts/validate_schema_contracts.mjs
 
+      - name: Check the market catalog and its generated copies
+        run: |
+          node --test tool/contracts/generate_market_catalog.test.mjs
+          node tool/contracts/generate_market_catalog.mjs --check
+
       - name: Generated schema contract tests
         run: |
           node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs
