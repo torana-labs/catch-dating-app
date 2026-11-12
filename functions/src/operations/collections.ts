@@ -1,13 +1,10 @@
-/** Canonical collection names for a future persistence adapter. */
+/** Firestore collections the operations engine persists. Decisions,
+ * publication plans and rule proposals/evaluations live only in memory. */
 export const operationCollections = {
   runs: "operationRuns",
   workItems: "operationWorkItems",
   actionReceipts: "operationActionReceipts",
-  decisions: "operationDecisions",
   leases: "operationLeases",
-  publicationPlans: "operationPublicationPlans",
-  ruleProposals: "operationRuleProposals",
-  ruleEvaluations: "operationRuleEvaluations",
 } as const;
 
 export type OperationCollectionName =
