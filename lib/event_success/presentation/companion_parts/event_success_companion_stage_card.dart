@@ -42,7 +42,7 @@ class _StagePromptCardState extends State<StagePromptCard> {
             variant: CatchLegacyTextVariant.titleL,
           ),
           gapH12,
-          CompanionPromptSkip(onSkip: () => setState(() => _skipped = true)),
+          CompanionPromptSkipRow(onSkip: () => setState(() => _skipped = true)),
         ],
       ),
     );
@@ -51,8 +51,8 @@ class _StagePromptCardState extends State<StagePromptCard> {
 
 /// Every prompt can be skipped. Skipping records nothing: it only puts the
 /// prompt away for this step.
-class CompanionPromptSkip extends StatelessWidget {
-  const CompanionPromptSkip({super.key, required this.onSkip});
+class CompanionPromptSkipRow extends StatelessWidget {
+  const CompanionPromptSkipRow({super.key, required this.onSkip});
 
   final VoidCallback onSkip;
 
@@ -138,7 +138,7 @@ class _StageConversationCueCardState extends State<StageConversationCueCard> {
           gapH14,
           for (final cue in cues.take(3)) StageCueCard(cue: cue),
           gapH4,
-          CompanionPromptSkip(onSkip: () => setState(() => _skipped = true)),
+          CompanionPromptSkipRow(onSkip: () => setState(() => _skipped = true)),
         ],
       ),
     );
