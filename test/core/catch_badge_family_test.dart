@@ -184,7 +184,7 @@ void main() {
                 ),
                 CatchStatusIndicator(
                   size: CatchSpacing.s2,
-                  semanticsLabel: 'New match',
+                  semanticsLabel: 'New connection',
                 ),
               ],
             ),
@@ -194,7 +194,7 @@ void main() {
         expect(find.text('0'), findsNothing);
         expect(find.bySemanticsLabel('120 unread messages'), findsOneWidget);
         expect(find.bySemanticsLabel('No unread messages'), findsOneWidget);
-        expect(find.bySemanticsLabel('New match'), findsOneWidget);
+        expect(find.bySemanticsLabel('New connection'), findsOneWidget);
         expect(find.bySemanticsLabel('99+'), findsNothing);
         expect(
           tester.getSize(find.byType(CatchStatusIndicator)),

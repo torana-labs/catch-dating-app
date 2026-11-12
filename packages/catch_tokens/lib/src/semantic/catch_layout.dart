@@ -662,8 +662,6 @@ abstract final class CatchLayout {
   // LayoutBuilder; 216 = divider + the 2-line stub headroom the old rail reserved.)
   static const double exploreTicketRailHeight =
       exploreTicketRailCardWidth * 10 / 16 + 216.0;
-  static const double eventRecapGridGap = 10.0;
-  static const double eventRecapStatInset = 10.0;
   static const double eventActivityStampExtent = 42.0;
   static const double eventActivityStampIconSize = 22.0;
   static const double eventCompactDatePillWidth = 52.0;

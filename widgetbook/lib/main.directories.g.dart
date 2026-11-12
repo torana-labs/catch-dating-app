@@ -11,12 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
-import 'package:widgetbook_workspace/catches/catalog/deck.dart'
-    as _widgetbook_workspace_catches_catalog_deck;
-import 'package:widgetbook_workspace/catches/catalog/deck_route.dart'
-    as _widgetbook_workspace_catches_catalog_deck_route;
-import 'package:widgetbook_workspace/catches/catalog/empty.dart'
-    as _widgetbook_workspace_catches_catalog_empty;
 import 'package:widgetbook_workspace/catches/catalog/filters.dart'
     as _widgetbook_workspace_catches_catalog_filters;
 import 'package:widgetbook_workspace/catches/catalog/profile_media.dart'
@@ -6467,66 +6461,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchesPassButton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Pass button states',
-                    builder: _widgetbook_workspace_catches_catalog_deck
-                        .catchesPassButtonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesProfileBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Deck composition',
-                    builder: _widgetbook_workspace_catches_catalog_deck
-                        .catchesProfileReviewStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesProfileBodySkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Review skeleton states',
-                    builder: _widgetbook_workspace_catches_catalog_skeletons
-                        .catchesProfileReviewSkeletonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesScrimOverlay',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Bottom scrim states',
-                    builder: _widgetbook_workspace_catches_catalog_deck
-                        .catchesBottomScrimStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesTopOverlay',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Top overlay states',
-                    builder: _widgetbook_workspace_catches_catalog_deck
-                        .catchesTopOverlayStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventRecapLoadingBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Loading composition',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .eventRecapLoadingBodyStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventRecapReadyBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6724,16 +6658,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileSurface',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Catches profile states',
-                    builder: _widgetbook_workspace_catches_catalog_deck
-                        .catchesProfileSurfaceStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'ProfileSurfaceDivider',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6803,76 +6727,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .profileSurfaceSkeletonStates,
                   ),
                 ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RecapHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Header states',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .recapHeaderStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RecapHeaderSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Header skeleton',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .recapHeaderSkeletonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RecapStatTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Stat tile states',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .recapStatTileStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RecapStatTileSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Stat tile skeleton',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .recapStatTileSkeletonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'SwipeEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Deck empty states',
-                    builder: _widgetbook_workspace_catches_catalog_empty
-                        .swipeEmptyStateStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'VibeGrid',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Vibe grid states',
-                    builder: _widgetbook_workspace_catches_catalog_recap
-                        .eventRecapVibeGridStates,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'SwipeScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Event deck route states',
-                builder: _widgetbook_workspace_catches_catalog_deck_route
-                    .catchesEventDeckRouteStates,
               ),
             ],
           ),

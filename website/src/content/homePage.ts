@@ -81,7 +81,7 @@ export const homePageCopy = {
     steps: [
       {title: "Find a plan", body: "Pick something you’d actually enjoy. Every plan shows who’s hosting, where you meet and who it suits."},
       {title: "Show up", body: "Your host has a team, a group or a game ready, and a first hello so nobody stands on their own."},
-      {title: "Keep in touch", body: "Your group chat stays open for a week. Follow the hosts you liked and hear about their next one first."},
+      {title: "Stay in touch", body: "Your group chat stays open for a week. Follow the hosts you liked and hear about their next one first."},
     ],
   },
   organisers: {

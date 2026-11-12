@@ -213,7 +213,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                       ),
                       CatchField<_MatchCluePrototypeMode>.choices(
                         copy: catchFieldCopy(context.l10n),
-                        title: 'Match clue questions',
+                        title: 'Conversation questions',
                         body: _matchClueDescription(_matchClues),
                         values: _MatchCluePrototypeMode.values,
                         itemLabelBuilder: _matchClueLabel,

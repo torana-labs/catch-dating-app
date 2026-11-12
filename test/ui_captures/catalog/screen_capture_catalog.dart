@@ -38,7 +38,6 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
-import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
@@ -46,11 +45,13 @@ import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
@@ -82,9 +83,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
@@ -123,7 +126,6 @@ import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
@@ -171,6 +173,8 @@ import 'package:catch_dating_app/hosts/events/events_controller.dart'
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
@@ -231,15 +235,13 @@ import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
@@ -306,6 +308,7 @@ import '../../hosts/people/people_captures.dart';
 import '../../hosts/programmes/planner/planner_captures.dart';
 import '../../hosts/programmes/staff/staff_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
+import '../../support/profile_readiness_fixtures.dart';
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
@@ -351,6 +354,27 @@ const _organizerHeroPortraitAssetImage = AssetImage(
 );
 const _profilePortraitAssetPath = 'assets/fixtures/profile_portrait.jpg';
 const _profilePortraitAssetImage = AssetImage(_profilePortraitAssetPath);
+
+/// Event scenes (a social run, a rooftop social, a long dinner table, a
+/// pickleball doubles game) for photos a host shares after an event.
+const _eventScenePhotoAssetPaths = [
+  'assets/fixtures/event_social_run.jpg',
+  'assets/fixtures/event_rooftop_social.jpg',
+  'assets/fixtures/event_dinner_table.jpg',
+  'assets/fixtures/event_pickleball.jpg',
+];
+const _eventScenePhotoAssetImages = [
+  AssetImage('assets/fixtures/event_social_run.jpg'),
+  AssetImage('assets/fixtures/event_rooftop_social.jpg'),
+  AssetImage('assets/fixtures/event_dinner_table.jpg'),
+  AssetImage('assets/fixtures/event_pickleball.jpg'),
+];
+const _eventScenePhotoSizes = [
+  (1200, 675),
+  (1200, 668),
+  (1200, 900),
+  (1200, 900),
+];
 final _organizerHeroPortraitBytes = File(
   _organizerHeroPortraitAssetPath,
 ).readAsBytesSync();
@@ -1121,273 +1145,6 @@ class _NoopCelebrationEffectsController extends CelebrationEffectsController {
   Future<void> dispose() async {}
 }
 
-final _postRunEvent = buildEvent(
-  id: 'event-post-run-catches',
-  organizerId: 'club-post-run',
-  startTime: DateTime(2026, 5, 30, 7),
-  endTime: DateTime(2026, 5, 30, 8, 10),
-  meetingPoint: 'Carter Road Amphitheatre',
-  startingPointLat: 19.0706,
-  startingPointLng: 72.8223,
-  bookedCount: 22,
-  checkedInCount: 19,
-  capacityLimit: 24,
-  description: 'A post-run social loop with structured conversation prompts.',
-);
-final _postRunViewer =
-    buildUser(
-      uid: 'runner-viewer',
-      name: 'Rohan Mehta',
-      email: 'rohan@example.com',
-    ).copyWith(
-      city: 'Mumbai',
-      relationshipGoal: RelationshipGoal.relationship,
-      activityPreferences: const ActivityPreferences(
-        running: RunningPreferences(
-          paceMinSecsPerKm: 315,
-          paceMaxSecsPerKm: 390,
-          preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
-          runningReasons: [RunReason.community, RunReason.social],
-          preferredRunTimes: [PreferredRunTime.earlyMorning],
-          version: currentRunPreferencesVersion,
-        ),
-      ),
-    );
-final _postRunViewerParticipation = buildEventParticipation(
-  event: _postRunEvent,
-  uid: _postRunViewer.uid,
-  status: EventParticipationStatus.attended,
-  createdAt: DateTime(2026, 5, 28, 9),
-);
-final _postRunProfiles = [
-  buildPublicProfile(
-    uid: 'runner-meera',
-    name: 'Meera',
-    age: 28,
-    gender: Gender.woman,
-    bio:
-        'Ask me about the bookshop detour I take after long runs and the breakfast order I defend every Sunday.',
-  ).copyWith(
-    city: 'Bandra',
-    height: 168,
-    occupation: 'Brand strategist',
-    company: 'Studio Coast',
-    education: EducationLevel.masters,
-    languages: const [Language.english, Language.hindi],
-    relationshipGoal: RelationshipGoal.relationship,
-    drinking: DrinkingHabit.socially,
-    workout: WorkoutFrequency.often,
-    activityPreferences: const ActivityPreferences(
-      running: RunningPreferences(
-        paceMinSecsPerKm: 320,
-        paceMaxSecsPerKm: 400,
-        preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
-        runningReasons: [RunReason.mindfulness, RunReason.social],
-        preferredRunTimes: [PreferredRunTime.earlyMorning],
-        version: currentRunPreferencesVersion,
-      ),
-    ),
-  ),
-  buildPublicProfile(
-    uid: 'runner-isha',
-    name: 'Isha',
-    age: 27,
-    gender: Gender.woman,
-    bio: 'Easy miles, strong coffee, and one excellent playlist per week.',
-  ).copyWith(
-    city: 'Juhu',
-    occupation: 'Architect',
-    relationshipGoal: RelationshipGoal.casual,
-    workout: WorkoutFrequency.often,
-  ),
-];
-
-final _catchesOpenEvent = CatchesSurfaceFixtures.openWindowEvent(
-  id: 'capture-catches-open',
-);
-final _catchesClosedEvent = CatchesSurfaceFixtures.closedWindowEvent();
-final _catchesUpcomingEvent = CatchesSurfaceFixtures.upcomingEvent();
-
-NetworkException _catchesOfflineException({required String action}) {
-  return obviousOfflineException(
-    context: BackendErrorContext(
-      service: BackendService.firestore,
-      action: action,
-      resource: 'catches',
-    ),
-  );
-}
-
-List<Object> _swipeDeckProviderOverrides({
-  required Event event,
-  String? uid = CatchesSurfaceFixtures.viewerUid,
-  Stream<Event?>? eventStream,
-  Stream<UserProfile?>? profileStream,
-  EventParticipation? participation,
-  Future<List<PublicProfile>> Function()? queue,
-  Set<String> vibeIds = const <String>{},
-  SwipeRepository swipeRepository = const _CaptureNoopSwipeRepository(),
-}) {
-  final viewerParticipation =
-      participation ??
-      CatchesSurfaceFixtures.attendedParticipation(event: event);
-
-  return [
-    uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-    watchUserProfileProvider.overrideWith(
-      (ref) =>
-          profileStream ??
-          Stream<UserProfile?>.value(
-            uid == null ? null : CatchesSurfaceFixtures.viewer,
-          ),
-    ),
-    watchEventProvider(
-      event.id,
-    ).overrideWith((ref) => eventStream ?? Stream<Event?>.value(event)),
-    watchEventParticipationProvider(
-      event.id,
-      CatchesSurfaceFixtures.viewerUid,
-    ).overrideWith(
-      (ref) => Stream<EventParticipation?>.value(viewerParticipation),
-    ),
-    swipeQueueProvider(event.id, vibeIds: vibeIds).overrideWithBuild((
-      ref,
-      notifier,
-    ) async {
-      if (queue != null) return queue();
-      final candidates = CatchesSurfaceFixtures.candidates;
-      if (vibeIds.isEmpty) return candidates;
-      return [
-        ...candidates.where((profile) => vibeIds.contains(profile.uid)),
-        ...candidates.where((profile) => !vibeIds.contains(profile.uid)),
-      ];
-    }),
-    swipeRepositoryProvider.overrideWithValue(swipeRepository),
-  ];
-}
-
-class _CatchesReactionCommentSheetCapture extends StatelessWidget {
-  const _CatchesReactionCommentSheetCapture({this.initialComment});
-
-  final String? initialComment;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 390),
-          child: ProfileReactionCommentSheet(
-            target: _catchesReactionTarget,
-            initialComment: initialComment,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SwipeWriteFailureNoticeCapture extends ConsumerStatefulWidget {
-  const _SwipeWriteFailureNoticeCapture();
-
-  @override
-  ConsumerState<_SwipeWriteFailureNoticeCapture> createState() =>
-      _SwipeWriteFailureNoticeCaptureState();
-}
-
-class _SwipeWriteFailureNoticeCaptureState
-    extends ConsumerState<_SwipeWriteFailureNoticeCapture> {
-  bool _started = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _started) return;
-      _started = true;
-      unawaited(_runFailingSwipe());
-    });
-  }
-
-  Future<void> _runFailingSwipe() async {
-    try {
-      await ref
-          .read(swipeQueueProvider(_catchesOpenEvent.id).notifier)
-          .swipe(SwipeDirection.pass);
-    } catch (error) {
-      if (!mounted) return;
-      showCatchNoticeError(
-        context,
-        error,
-        errorContext: AppErrorContext.swipes,
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => SwipeScreen(
-    eventId: _catchesOpenEvent.id,
-    now: CatchesSurfaceFixtures.now,
-  );
-}
-
-Widget _swipeEventPendingActionCapture(
-  CatchesProfileReviewActionState actionState,
-) {
-  return CatchesProfileBody(
-    profile: CatchesSurfaceFixtures.candidates.first,
-    remainingCount: CatchesSurfaceFixtures.candidates.length,
-    viewerProfile: CatchesSurfaceFixtures.viewer,
-    sharedRunTitle: _catchesOpenEvent.title,
-    actionState: actionState,
-    onBack: () {},
-    onFilters: () {},
-    onPass: () {},
-    onReact: (target, comment) {},
-  );
-}
-
-const _catchesReactionTarget = ProfileReactionTarget(
-  id: 'prompt-sunday-loop',
-  type: SwipeReactionTargetType.profilePrompt,
-  label: 'Sunday loop',
-  preview: 'My ideal Sunday starts with a sea-facing loop and ends with dosa.',
-);
-
-class _CaptureNoopSwipeRepository implements SwipeRepository {
-  const _CaptureNoopSwipeRepository();
-
-  @override
-  Future<Set<String>> fetchSwipedUserIds({required String uid}) async =>
-      const <String>{};
-
-  @override
-  Future<void> recordSwipe({required Swipe swipe}) async {}
-}
-
-class _CaptureThrowingSwipeRepository implements SwipeRepository {
-  const _CaptureThrowingSwipeRepository();
-
-  @override
-  Future<Set<String>> fetchSwipedUserIds({required String uid}) async =>
-      const <String>{};
-
-  @override
-  Future<void> recordSwipe({required Swipe swipe}) async {
-    throw const BackendOperationException(
-      code: 'capture-swipe-write-failed',
-      message: 'Unable to save that catch. Please try again.',
-      context: BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'record swipe',
-        resource: 'profile_decisions',
-      ),
-      retryable: true,
-    );
-  }
-}
-
 const _matchChatViewerUid = 'nyc_jordan_ellis_002';
 const _matchChatOtherProfile = PublicProfile(
   uid: 'nyc_aanya_reference_001',
@@ -1788,8 +1545,8 @@ final _dashboardNotifications = [
     id: 'notification-dashboard-match',
     uid: _captureViewerUid,
     type: ActivityNotificationType.match,
-    title: 'New match',
-    body: 'Maya matched after Sunday Table Club.',
+    title: 'New connection',
+    body: 'Maya picked you too after Sunday Table Club.',
     createdAt: DateTime(2026, 5, 31, 8, 40),
   ),
 ];
@@ -3838,7 +3595,62 @@ List<Object> _hostReportCaptureOverrides() => [
       day: _hostReportNow,
     ),
   ).overrideWith((ref) => Stream.value([_hostReportNext])),
+  eventHostPhotoAlbumProvider(
+    _hostReportEvent.id,
+  ).overrideWith((ref) async => _hostReportPhotoAlbum),
 ];
+
+/// Three shared photos, drawn from the capture fixture portraits.
+final _hostReportPhotoAlbum = EventHostPhotoAlbum(
+  eventId: _hostReportEvent.id,
+  organizerName: _hostTodayOrganizer.name,
+  access: EventHostPhotoAccess.host,
+  maxPhotos: 100,
+  photos: [
+    for (final (index, path) in _eventScenePhotoAssetPaths.take(3).indexed)
+      EventHostPhoto(
+        photoId: 'capture-host-photo-$index',
+        thumbnailUrl: path,
+        displayUrl: path,
+        width: _eventScenePhotoSizes[index].$1,
+        height: _eventScenePhotoSizes[index].$2,
+        uploadedByUid: HostOperationsFixtures.hostUid,
+        createdAt: _hostReportNow.subtract(Duration(minutes: index)),
+      ),
+  ],
+  urlsExpireAt: _hostReportNow.add(const Duration(minutes: 15)),
+);
+
+/// The report's photos while one picked photo uploads and one failed.
+class _HostReportUploadingPhotosController extends HostEventPhotosController {
+  @override
+  Future<HostEventPhotosState> build(String eventId) async =>
+      HostEventPhotosState(
+        album: _hostReportPhotoAlbum,
+        uploads: const [
+          HostEventPhotoUpload(
+            photoId: 'capture-upload-1',
+            stage: HostEventPhotoUploadStage.uploading,
+            progress: 0.64,
+          ),
+          HostEventPhotoUpload(
+            photoId: 'capture-upload-2',
+            stage: HostEventPhotoUploadStage.failed,
+          ),
+        ],
+      );
+}
+
+Future<void> _driveHostReportToPhotos(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const ValueKey('host-event-photos')),
+    320,
+    scrollable: findVerticalScrollable(
+      within: find.byKey(const ValueKey('host-event-report-scroll-view')),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
 
 Widget _hostReportCapture() => _AppRoleCapture(
   role: AppRole.host,
@@ -6345,7 +6157,7 @@ ChatThreadPreview _matchesThreadPreviewFor({
   final previewText = !hasConversation
       ? match.isOrganizerHostInquiry
             ? 'Ask the host'
-            : 'You matched!'
+            : 'You picked each other'
       : match.lastMessageSenderId == uid
       ? 'You: ${match.lastMessagePreview}'
       : match.lastMessagePreview!;
@@ -6931,6 +6743,111 @@ EventSuccessPlan _marketingHostPlan(Event event, {bool complete = false}) =>
       frozenAt: hostMarketingIndiaScenario.clock('live'),
       completedAt: complete ? event.endTime : null,
     );
+// The guest's after-event screen in the Mumbai marketing story: the morning
+// after Evening Club's Saturday Trivia Social, picks still open.
+final _marketingAfterEventNow = hostMarketingIndiaScenario.clock('followUp');
+final _marketingAfterEventViewer = buildSocialReadyUser(
+  uid: 'marketing-after-event-viewer',
+  name: _captureFixtures
+      .publicProfile(hostMarketingIndiaScenario.scenario.viewerPersonaId)
+      .name,
+);
+final _marketingAfterEventViewerUid = _marketingAfterEventViewer.uid;
+final _marketingAfterEventProfiles = [
+  for (final guest in hostMarketingIndiaScenario.guestsAt('followUp'))
+    if (guest.checkedInAt != null &&
+        guest.personaId != hostMarketingIndiaScenario.scenario.viewerPersonaId)
+      _captureFixtures.publicProfile(guest.personaId),
+].take(6).toList(growable: false);
+final _marketingAfterEventNext = _marketingHostReportEvent.copyWith(
+  id: 'event-host-trivia-store-demo-next',
+  startTime: _marketingHostReportEvent.startTime.add(const Duration(days: 7)),
+  endTime: _marketingHostReportEvent.endTime.add(const Duration(days: 7)),
+);
+
+List<Object> _marketingAfterEventOverrides() {
+  final event = _marketingHostReportEvent;
+  final uid = _marketingAfterEventViewerUid;
+  final attendeeIds = [
+    for (final profile in _marketingAfterEventProfiles) profile.uid,
+  ];
+  return <Object>[
+    uidProvider.overrideWith((ref) => Stream.value(uid)),
+    eventHostPhotoAlbumProvider(
+      event.id,
+    ).overrideWith((ref) async => EventHostPhotoAlbum.empty(event.id)),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(_marketingAfterEventViewer),
+    ),
+    eventRecapViewModelProvider(event.id).overrideWith(
+      (ref) => AsyncData<EventRecapViewModel?>(
+        EventRecapViewModel(
+          event: event,
+          attendeeIds: attendeeIds,
+          checkedInCount: attendeeIds.length + 1,
+        ),
+      ),
+    ),
+    publicProfilesByIdsProvider(
+      PublicProfilesQuery(attendeeIds),
+    ).overrideWithValue(
+      AsyncData({
+        for (final profile in _marketingAfterEventProfiles)
+          profile.uid: profile,
+      }),
+    ),
+    watchOrganizerProvider(
+      _marketingHostOrganizer.id,
+    ).overrideWith((ref) => Stream.value(_marketingHostOrganizer)),
+    watchEventParticipationProvider(event.id, uid).overrideWith(
+      (ref) => Stream.value(
+        buildEventParticipation(
+          event: event,
+          uid: uid,
+          status: EventParticipationStatus.attended,
+          createdAt: event.startTime,
+        ),
+      ),
+    ),
+    watchUserEventSuccessFeedbackProvider(
+      eventId: event.id,
+      uid: uid,
+    ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(null)),
+    watchUserEventSuccessAssignmentProvider(
+      eventId: event.id,
+      uid: uid,
+    ).overrideWith((ref) => Stream<EventSuccessAssignment?>.value(null)),
+    eventChatAccessProvider(event.id).overrideWith(
+      (ref) async => EventChatAccess(
+        eventId: event.id,
+        title: event.title,
+        organizerId: event.organizerId,
+        roomStatus: 'open',
+        roomRevision: 1,
+        membershipStatus: 'joined',
+        membershipRevision: 1,
+        canManage: false,
+        canJoin: true,
+        canReadMessages: true,
+        closesAtMillis: event.endTime
+            .add(const Duration(days: 7))
+            .millisecondsSinceEpoch,
+        profileClaimRequired: false,
+        termsVersion: 'event-chat-v1',
+      ),
+    ),
+    watchActiveEventsForOrganizerProvider(
+      ActiveOrganizerEventsQuery(
+        organizerId: event.organizerId,
+        day: _marketingAfterEventNow,
+      ),
+    ).overrideWith((ref) => Stream.value([_marketingAfterEventNext])),
+    currentUserFollowedOrganizerIdsProvider.overrideWithValue(
+      const AsyncData(<String>{}),
+    ),
+  ];
+}
+
 List<Object> _marketingHostManageOverrides(
   Event event, {
   bool complete = false,
@@ -8038,10 +7955,26 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
   };
 }
 
+final _eventRecapNextEvent = _captureFixtures.captureEvent(
+  id: 'event-recap-next-capture',
+  organizer: _dashboardJoinedOrganizer,
+  // Two days out, so its weekday-based title never matches the event just
+  // attended (11 hours ago) on the same screen.
+  startTime: DateTime.now().add(const Duration(days: 2)),
+  endTime: DateTime.now().add(const Duration(days: 2, hours: 1)),
+  meetingPoint: 'Carter Road Amphitheatre',
+  bookedCount: 9,
+  capacityLimit: 18,
+  description: 'The next easy loop from the same club.',
+);
+
 List<Object> _eventRecapProviderOverrides({
+  EventSuccessFeedback? feedback,
+  Set<String> followedOrganizerIds = const <String>{},
   AsyncValue<EventRecapViewModel?>? recapValue,
   Map<String, PublicProfile>? rosterProfiles,
   AsyncValue<Map<String, PublicProfile>>? rosterProfilesValue,
+  List<EventHostPhoto> hostPhotos = const <EventHostPhoto>[],
 }) {
   final resolvedRecapValue =
       recapValue ?? AsyncData<EventRecapViewModel?>(_eventRecapViewModel());
@@ -8051,17 +7984,122 @@ List<Object> _eventRecapProviderOverrides({
     _ => const <String>[],
   };
 
+  final eventId = _eventRecapEvent.id;
+  final now = DateTime.now();
   return <Object>[
     eventRecapViewModelProvider(
-      _eventRecapEvent.id,
+      eventId,
     ).overrideWith((ref) => resolvedRecapValue),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(
+        buildSocialReadyUser(uid: _captureViewerUid, name: 'Rohan Mehta'),
+      ),
+    ),
+    watchOrganizerProvider(
+      _dashboardJoinedOrganizer.id,
+    ).overrideWith((ref) => Stream.value(_dashboardJoinedOrganizer)),
+    watchEventParticipationProvider(
+      eventId,
+      _captureViewerUid,
+    ).overrideWith((ref) => Stream.value(_eventRecapParticipations.first)),
+    watchUserEventSuccessFeedbackProvider(
+      eventId: eventId,
+      uid: _captureViewerUid,
+    ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(feedback)),
+    watchUserEventSuccessAssignmentProvider(
+      eventId: eventId,
+      uid: _captureViewerUid,
+    ).overrideWith(
+      (ref) => Stream<EventSuccessAssignment?>.value(
+        _hostManageAssignment(
+          event: _eventRecapEvent,
+          uid: _captureViewerUid,
+          label: 'Pod 3',
+          title: 'Pace pod 3',
+          peerUids: [
+            for (final profile in _eventRecapProfiles.take(2)) profile.uid,
+          ],
+          now: now,
+        ),
+      ),
+    ),
+    eventChatAccessProvider(eventId).overrideWith(
+      (ref) async => EventChatAccess(
+        eventId: eventId,
+        title: _eventRecapEvent.title,
+        organizerId: _eventRecapEvent.organizerId,
+        roomStatus: 'open',
+        roomRevision: 1,
+        membershipStatus: 'joined',
+        membershipRevision: 1,
+        canManage: false,
+        canJoin: true,
+        canReadMessages: true,
+        closesAtMillis: _eventRecapEvent.endTime
+            .add(const Duration(days: 7))
+            .millisecondsSinceEpoch,
+        profileClaimRequired: false,
+        termsVersion: 'event-chat-v1',
+      ),
+    ),
+    watchActiveEventsForOrganizerProvider(
+      ActiveOrganizerEventsQuery(
+        organizerId: _eventRecapEvent.organizerId,
+        day: now,
+      ),
+    ).overrideWith((ref) => Stream.value([_eventRecapNextEvent])),
+    currentUserFollowedOrganizerIdsProvider.overrideWithValue(
+      AsyncData(followedOrganizerIds),
+    ),
     publicProfilesByIdsProvider(
       PublicProfilesQuery(attendeeIds),
     ).overrideWithValue(
       rosterProfilesValue ??
           AsyncData(rosterProfiles ?? _eventRecapRosterProfiles()),
     ),
+    eventHostPhotoAlbumProvider(eventId).overrideWith(
+      (ref) async => _eventRecapHostPhotoAlbum(eventId, hostPhotos),
+    ),
   ];
+}
+
+/// The host's photos as a checked-in guest sees them; an empty list is what
+/// every guest sees before the host shares any.
+EventHostPhotoAlbum _eventRecapHostPhotoAlbum(
+  String eventId,
+  List<EventHostPhoto> photos,
+) => EventHostPhotoAlbum(
+  eventId: eventId,
+  organizerName: _dashboardJoinedOrganizer.name,
+  access: EventHostPhotoAccess.guest,
+  maxPhotos: 100,
+  photos: photos,
+  urlsExpireAt: DateTime(2030),
+);
+
+/// Four event scenes the host shared after the run.
+final _eventRecapHostPhotos = <EventHostPhoto>[
+  for (final (index, path) in _eventScenePhotoAssetPaths.indexed)
+    EventHostPhoto(
+      photoId: 'capture-guest-photo-$index',
+      thumbnailUrl: path,
+      displayUrl: path,
+      width: _eventScenePhotoSizes[index].$1,
+      height: _eventScenePhotoSizes[index].$2,
+      uploadedByUid: 'capture-host',
+      createdAt: DateTime(2026, 5, 30, 8, index),
+    ),
+];
+
+Future<void> _driveEventRecapToHostPhotos(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const ValueKey('after-event-host-photos')),
+    320,
+    scrollable: findVerticalScrollable(
+      within: find.byKey(const ValueKey('after-event-screen')),
+    ),
+  );
+  await pumpFeatureUi(tester);
 }
 
 final _activityScreenNotifications = UtilitySurfaceFixtures.notifications;
@@ -11009,8 +11047,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_event_report_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.claudePhone390,
+    precache: _eventScenePhotoAssetImages,
     providerOverrides: _hostReportCaptureOverrides(),
     builder: (context) => _hostReportCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_report_photos_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.claudePhone390,
+    precache: _eventScenePhotoAssetImages,
+    providerOverrides: [
+      ..._hostReportCaptureOverrides(),
+      hostEventPhotosControllerProvider.overrideWith2(
+        (_) => _HostReportUploadingPhotosController(),
+      ),
+    ],
+    builder: (context) => _hostReportCapture(),
+    drive: _driveHostReportToPhotos,
   ),
   ScreenCaptureEntry(
     id: 'host_organizer_tab_phone',
@@ -14337,245 +14390,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       initialSection: HostEventManageSection.report,
     ),
   ),
-  ScreenCaptureEntry(
-    id: 'post_run_catch_window',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    marketingFixtureKeys: const <String>['salesDemo.member.postRunCatchWindow'],
-    providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_postRunViewer.uid)),
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_postRunViewer),
-      ),
-      watchEventProvider(
-        _postRunEvent.id,
-      ).overrideWith((ref) => Stream.value(_postRunEvent)),
-      watchEventParticipationProvider(
-        _postRunEvent.id,
-        _postRunViewer.uid,
-      ).overrideWith((ref) => Stream.value(_postRunViewerParticipation)),
-      swipeQueueProvider(
-        _postRunEvent.id,
-      ).overrideWithBuild((ref, notifier) async => _postRunProfiles),
-    ],
-    builder: (context) =>
-        SwipeScreen(eventId: _postRunEvent.id, now: _captureNow),
-  ),
 
-  ScreenCaptureEntry(
-    id: 'swipe_event_queue_loading',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      queue: () => Completer<List<PublicProfile>>().future,
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_queue_error',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      queue: () => Future<List<PublicProfile>>.error(
-        StateError('Capture Catches queue failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_offline',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      queue: () => Future<List<PublicProfile>>.error(
-        _catchesOfflineException(action: 'load swipe candidates'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_cached_offline',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: [
-      appConnectivityProvider.overrideWith(
-        (ref) => Stream<List<ConnectivityResult>>.value(
-          const <ConnectivityResult>[ConnectivityResult.none],
-        ),
-      ),
-      ..._swipeDeckProviderOverrides(event: _catchesOpenEvent),
-    ],
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_empty_queue',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_missing',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      eventStream: Stream<Event?>.value(null),
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_sign_in_required',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      uid: null,
-      profileStream: Stream<UserProfile?>.value(null),
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_in_progress',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesUpcomingEvent,
-      participation: CatchesSurfaceFixtures.attendedParticipation(
-        event: _catchesUpcomingEvent,
-      ),
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesUpcomingEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_did_not_attend',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      participation: CatchesSurfaceFixtures.signedUpParticipation(
-        event: _catchesOpenEvent,
-      ),
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_window_closed',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesClosedEvent,
-      participation: CatchesSurfaceFixtures.attendedParticipation(
-        event: _catchesClosedEvent,
-      ),
-      queue: () async => const <PublicProfile>[],
-    ),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesClosedEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_pass_pending',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    builder: (context) => _swipeEventPendingActionCapture(
-      const CatchesProfileReviewActionState.passPending(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_reaction_pending',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    builder: (context) => _swipeEventPendingActionCapture(
-      const CatchesProfileReviewActionState.reactionPending(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_write_failure_snackbar',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeDeckProviderOverrides(
-      event: _catchesOpenEvent,
-      swipeRepository: const _CaptureThrowingSwipeRepository(),
-    ),
-    builder: (context) => const _SwipeWriteFailureNoticeCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_text_scale_2',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    textScale: 2,
-    providerOverrides: _swipeDeckProviderOverrides(event: _catchesOpenEvent),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_reduced_motion',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    disableAnimations: true,
-    providerOverrides: _swipeDeckProviderOverrides(event: _catchesOpenEvent),
-    builder: (context) => SwipeScreen(
-      eventId: _catchesOpenEvent.id,
-      now: CatchesSurfaceFixtures.now,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_comment_sheet_empty',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    builder: (context) => const _CatchesReactionCommentSheetCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_event_comment_sheet_filled',
-    routeIds: const <String>['swipeEventScreen'],
-    device: CaptureDevice.reviewTall,
-    builder: (context) => const _CatchesReactionCommentSheetCapture(
-      initialComment: 'Your sunrise loop sounds like my kind of Sunday.',
-    ),
-  ),
   ScreenCaptureEntry(
     id: 'notifications_activity',
     routeIds: const <String>['notificationsScreen'],
@@ -14741,6 +14556,34 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(
+    id: 'event_recap_host_photos',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    precache: _eventScenePhotoAssetImages,
+    providerOverrides: _eventRecapProviderOverrides(
+      hostPhotos: _eventRecapHostPhotos,
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+    drive: _driveEventRecapToHostPhotos,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_host_photos_none',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_host_photo_viewer',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    precache: _eventScenePhotoAssetImages,
+    builder: (context) => EventHostPhotoViewerScreen(
+      photos: _eventRecapHostPhotos,
+      initialIndex: 1,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_recap_loading',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
@@ -14818,17 +14661,36 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(
-    id: 'event_recap_selected_tiles',
+    id: 'guest_after_event',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.genericPhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.afterEvent'],
+    disableAnimations: true,
+    providerOverrides: _marketingAfterEventOverrides(),
+    builder: (context) => EventRecapScreen(
+      eventId: _marketingHostReportEvent.id,
+      now: _marketingAfterEventNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_rated_following',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: _eventRecapProviderOverrides(),
-    builder: (context) => EventRecapScreen(
-      eventId: _eventRecapEvent.id,
-      initialSelectedVibeIds: {
-        _eventRecapProfiles.first.uid,
-        _eventRecapProfiles[1].uid,
-      },
+    providerOverrides: _eventRecapProviderOverrides(
+      feedback: EventSuccessFeedback(
+        id: 'event-recap-capture_runner-viewer',
+        eventId: _eventRecapEvent.id,
+        organizerId: _eventRecapEvent.organizerId,
+        uid: _captureViewerUid,
+        welcomeRating: 4,
+        structureRating: 4,
+        metNewPeopleCount: 3,
+        createdAt: DateTime(2026, 5, 30, 9),
+        updatedAt: DateTime(2026, 5, 30, 9),
+      ),
+      followedOrganizerIds: {_dashboardJoinedOrganizer.id},
     ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(
     id: 'event_recap_text_scale_2',

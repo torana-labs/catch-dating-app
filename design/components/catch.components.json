@@ -7143,7 +7143,8 @@
         "file": "packages/web-ui/src/components/CatchText.tsx",
         "api": "styled",
         "additionalSymbols": [
-          "CatchLegacyText"
+          "CatchLegacyText",
+          "CatchWordmark"
         ],
         "storybook": {
           "status": "ready",
@@ -7157,7 +7158,7 @@
             "numeric"
           ]
         },
-        "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7."
+        "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7. CatchWordmark (CatchWordmark.tsx) is the brand typed in the display voice (the 78% width, display weight and tracking ratio) at the site top bar's or footer band's size, with an optional sub-brand; the top bar and the footers render it so their wordmarks cannot drift."
       },
       "design": {
         "figma": {

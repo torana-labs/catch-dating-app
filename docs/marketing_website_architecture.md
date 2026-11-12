@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.23.0
-updated: 2026-11-08
+version: 0.23.1
+updated: 2026-11-12
 owner: marketing_website
 status: active
 ---
@@ -117,13 +117,18 @@ isolated local emulator and packaged server described in `website/README.md`.
 `shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`,
 `SiteFooterBand`, `PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
-`PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`):
-the wordmark, page links that move into a menu under 600px, and actions. Every
-public route renders it with the global destinations from `content/site.ts`
-(Find events, Organisers, For organisers); a product page passes its own name,
-section links and action, as the homepage (Explore, Organisers, For hosts, the
-city picker and Get the app) and the host landing ("Catch for hosts", its
-sections and Apply) do, from their boards. Home and the host landing end with
+`PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`)
+and the one header on every public route, Explore and the city pages included.
+Left: the wordmark (`CatchWordmark`, the display voice at 78% width), the page
+links and the visitor's account entry ("Sign in" or "Account"). Right: only the
+page's actions, a setting such as the city picker, then the one primary action.
+Under 600px the links and the account entry move into the phone menu, and a
+sub-brand steps under the wordmark. General pages carry the main site's links
+from `content/site.ts` (Explore, Organisers, For hosts) and Get the app; a
+product page passes its own name, section links and action, as the host landing
+("Catch for hosts", its sections and Start free trial) and weddings do. The
+account entry comes from `SiteAccountProvider` (`features/account`) through
+`SiteAccountActionProvider`. Home and the host landing end with
 `SiteFooterBand` (the board's ink footer).
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event

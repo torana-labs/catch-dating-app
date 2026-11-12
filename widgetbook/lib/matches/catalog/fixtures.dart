@@ -177,7 +177,7 @@ ChatThreadPreview widgetbookMatchesThreadPreviewFor({
   final previewText = !hasConversation
       ? match.isOrganizerHostInquiry
             ? 'Ask the host'
-            : 'You matched!'
+            : 'You picked each other'
       : match.lastMessageSenderId == uid
       ? 'You: ${match.lastMessagePreview}'
       : match.lastMessagePreview!;

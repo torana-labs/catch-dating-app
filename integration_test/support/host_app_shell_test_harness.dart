@@ -204,6 +204,15 @@ class HostShellBackend {
       },
       // The event workspace's door reads its staff: nobody granted yet.
       'listEventStaff' => {'eventId': eventId, 'members': const <Object?>[]},
+      // The event report's photos for checked-in guests: none shared yet.
+      'listEventHostPhotos' => {
+        'eventId': eventId,
+        'organizerName': null,
+        'access': 'host',
+        'maxPhotos': 100,
+        'photos': const <Object?>[],
+        'urlsExpireAtMillis': now,
+      },
       // Setup's Getting paid step: Razorpay is open and nothing is connected.
       'manageOrganizerFormPaymentConnection' => {
         'available': true,

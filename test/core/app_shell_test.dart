@@ -683,7 +683,7 @@ void main() {
         .show(
           const CatchNoticeData(
             id: 'match.created',
-            title: 'New match',
+            title: 'New connection',
             message: 'You matched with Ananya.',
             tone: CatchNoticeTone.event,
             duration: Duration(milliseconds: 20),
@@ -691,12 +691,12 @@ void main() {
         );
 
     await tester.pump();
-    expect(find.text('New match'), findsOneWidget);
+    expect(find.text('New connection'), findsOneWidget);
 
     final autoDismissDelay = const Duration(milliseconds: 25);
     await tester.pump(autoDismissDelay);
     await tester.pump();
-    expect(find.text('New match'), findsNothing);
+    expect(find.text('New connection'), findsNothing);
   });
 }
 

@@ -101,7 +101,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.byKey(const ValueKey('event-focus-closing-first')),
-          matching: find.text('Start catching'),
+          matching: find.text('See who you met'),
         ),
       );
       expect(opened, ['closing-first']);

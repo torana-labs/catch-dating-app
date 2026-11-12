@@ -196,24 +196,24 @@ void main() {
 
     expect(_field('How the room is grouped'), findsNothing);
     expect(_field('Group people into'), findsOneWidget);
-    expect(_field('Match clue questions'), findsOneWidget);
+    expect(_field('Conversation questions'), findsOneWidget);
     expect(
       find.ancestor(
-        of: _field('Match clue questions'),
+        of: _field('Conversation questions'),
         matching: find.byType(CatchSection),
       ),
       findsOneWidget,
     );
     final flowFieldBounds = tester.getRect(_field('Group people into'));
-    final matchClueBounds = tester.getRect(_field('Match clue questions'));
+    final matchClueBounds = tester.getRect(_field('Conversation questions'));
     expect(matchClueBounds.left, flowFieldBounds.left);
     expect(matchClueBounds.right, flowFieldBounds.right);
-    await _openField(tester, 'Match clue questions');
+    await _openField(tester, 'Conversation questions');
     expect(_choice('Clues only', selected: true), findsOneWidget);
 
     _invokeChoiceInField(
       tester,
-      'Match clue questions',
+      'Conversation questions',
       'Clues + soft pairing',
     );
     await tester.pump();
@@ -226,7 +226,7 @@ void main() {
     expect(draft.compatibilityAffectsRanking, isTrue);
     expect(_choice('Clues + soft pairing', selected: true), findsOneWidget);
 
-    _invokeChoiceInField(tester, 'Match clue questions', 'Off');
+    _invokeChoiceInField(tester, 'Conversation questions', 'Off');
     await tester.pump();
     expect(
       draft.isModuleSelected(

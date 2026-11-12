@@ -1,7 +1,8 @@
 import {CatchButton, CatchField, CatchSheet, CatchStack, CatchText} from "@catch/web-ui";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState, type ReactNode} from "react";
 import {signInCopy as copy} from "../../content/account";
+import {SiteAccountActionProvider, type SiteAccountEntry} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {emailForSignInKey, isMarkedEmailLinkReturn, readLocal, signedInHintKey, withoutEmailLinkParams, writeLocal} from "./signInModel";
 import {useSignInSheetController, type SignInSheetController} from "./useSignInSheetController";
@@ -140,12 +141,15 @@ function useEmailLinkReturn(onSignedIn: () => void) {
 }
 
 /**
- * The header's account entry: "Sign in" opens the sheet, and a signed-in
- * reader gets "Account". Firebase loads only for a reader this device has
- * seen signed in, or one coming back from an email link, so a first visit
- * pays nothing for it. It renders nothing until the browser has decided.
+ * The header's account entry, provided to the public header: "Sign in"
+ * opens the sheet, and a signed-in reader gets "Account". Wide pages draw it
+ * as the last item of the top bar's left group; under 600px it joins the
+ * phone menu. One state and one sheet serve both. Firebase loads only for a
+ * reader this device has seen signed in, or one coming back from an email
+ * link, so a first visit pays nothing for it; there is no entry until the
+ * browser has decided.
  */
-export function SiteAccountAction() {
+export function SiteAccountProvider({children}: {children: ReactNode}) {
   const [state, setState] = useState<"pending" | "signedOut" | "signedIn">("pending");
   const [watch, setWatch] = useState(false);
   const [open, setOpen] = useState(false);
@@ -167,13 +171,23 @@ export function SiteAccountAction() {
     }).catch(() => setState("signedOut"));
     return () => {cancelled = true; stop();};
   }, [watch]);
-  if (!claimFirebaseConfigured || state === "pending") return null;
-  if (state === "signedIn") return <CatchButton href="/account/" label={copy.headerAccount} size="sm" variant="quiet" />;
-  return <>
-    <CatchButton label={copy.headerSignIn} onPressed={() => setOpen(true)} size="sm" variant="quiet" />
-    {open || link.confirm ? <SignInSheet confirmEmail={link.confirm} onClose={() => {setOpen(false); link.dismiss();}}
-      onSignedIn={() => setWatch(true)} open /> : null}
-  </>;
+  const entry = useMemo<SiteAccountEntry | null>(() => {
+    if (!claimFirebaseConfigured || state === "pending") return null;
+    if (state === "signedIn") {
+      return {bar: <CatchButton href="/account/" label={copy.headerAccount} size="sm" variant="quiet" />,
+        menu: {label: copy.headerAccount, href: "/account/"}};
+    }
+    const signIn = () => setOpen(true);
+    return {bar: <CatchButton label={copy.headerSignIn} onPressed={signIn} size="sm" variant="quiet" />,
+      menu: {label: copy.headerSignIn, onPressed: signIn}};
+  }, [state]);
+  return (
+    <SiteAccountActionProvider value={entry}>
+      {children}
+      {entry && state === "signedOut" && (open || link.confirm) ? <SignInSheet confirmEmail={link.confirm} onClose={() => {setOpen(false); link.dismiss();}}
+        onSignedIn={() => setWatch(true)} open /> : null}
+    </SiteAccountActionProvider>
+  );
 }
 
 /**

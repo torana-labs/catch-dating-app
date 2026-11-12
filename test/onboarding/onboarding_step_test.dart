@@ -52,7 +52,7 @@ void main() {
       expect(copy(OnboardingStep.nameDob).title, "What's your name?");
       expect(
         copy(OnboardingStep.nameDob).subtitle,
-        'Last name stays private until you catch.',
+        'Last name stays private until you message someone.',
       );
       expect(copy(OnboardingStep.genderInterest).title, 'How do you identify?');
       expect(copy(OnboardingStep.genderInterest).subtitle, isNull);
@@ -63,12 +63,12 @@ void main() {
       expect(copy(OnboardingStep.photos).title, 'Show yourself');
       expect(
         copy(OnboardingStep.photos, profileCompletionOnly: true).title,
-        'Complete your profile for Catches',
+        'Complete your profile to stay in touch',
       );
       expect(copy(OnboardingStep.prompts).title, 'Show your personality');
       expect(
         copy(OnboardingStep.prompts, profileCompletionOnly: true).title,
-        'Add prompts to start catching',
+        'Add prompts so people know you',
       );
     });
 
@@ -76,7 +76,7 @@ void main() {
       expect(copy(OnboardingStep.runningPrefs).title, 'Your running style');
       expect(
         copy(OnboardingStep.runningPrefs, profileCompletionOnly: true).title,
-        'Finish your Catches profile',
+        'Finish your profile',
       );
       expect(
         copy(OnboardingStep.runningPrefs, runPreferencesOnly: true).title,

@@ -21,18 +21,18 @@ void main() {
             onActivate: () => taps++,
             content: const CatchConversationLayout(
               name: 'Taylor',
-              preview: 'You matched!',
+              preview: 'You picked each other',
               timestamp: '2m',
-              activityLabel: 'New match',
-              activitySemantics: 'New match',
+              activityLabel: 'New connection',
+              activitySemantics: 'New connection',
             ),
           ),
         ),
       );
       expect(find.text('Taylor'), findsOneWidget);
-      expect(find.text('You matched!'), findsOneWidget);
+      expect(find.text('You picked each other'), findsOneWidget);
       expect(find.text('2m'), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp('New match')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('New connection')), findsOneWidget);
       await tester.tap(find.text('Taylor'));
       expect(taps, 1);
       semantics.dispose();

@@ -111,8 +111,8 @@ void main() {
           theme: AppTheme.light,
           home: CelebrationScreen(
             kind: CelebrationMomentKind.match,
-            title: "It's a Catch.",
-            message: 'You both liked each other.',
+            title: 'You picked each other.',
+            message: 'You both want to stay in touch.',
             playEffects: false,
             primaryAction: CelebrationAction(
               label: 'Continue',

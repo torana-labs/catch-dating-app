@@ -10,9 +10,11 @@
   overflow-wrap: break-word;
 }
 
+/* Display roles open Archivo's space by the voice's word-spacing token (font.wordSpacing.voice): at 78% width it nearly closes. */
 .text[data-variant^="display"] {
   font-stretch: 78%;
   font-variation-settings: "wdth" 78;
+  word-spacing: var(--catch-font-word-spacing-voice);
 }
 
 .text[data-variant="display-hero"] {

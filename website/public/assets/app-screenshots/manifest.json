@@ -273,6 +273,21 @@
       ]
     },
     {
+      "id": "guest-after-event",
+      "audience": "guest",
+      "surface": "A guest's screen the morning after the event",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-after-event.png",
+      "width": 980,
+      "height": 1924,
+      "alt": "The morning after Saturday Trivia Social in the Catch app: a private rating for the organizer, the group chat, and the people you met to stay in touch with",
+      "caption": "Fictional app preview. After the night: rate it privately, keep chatting and stay in touch.",
+      "walkthroughStep": "Stay in touch",
+      "pages": [
+        "/"
+      ]
+    },
+    {
       "id": "wedding-rsvp",
       "audience": "guest",
       "surface": "Household reply link in the browser",

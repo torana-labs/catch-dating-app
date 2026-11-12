@@ -32,6 +32,7 @@
   font-family: var(--catch-typography-role-display-section-family), var(--catch-font-stack-display);
   font-size: var(--catch-typography-role-display-section-size);
   font-stretch: 78%;
+  word-spacing: var(--catch-font-word-spacing-voice);
   font-variation-settings: "wdth" 78;
   font-weight: var(--catch-typography-role-display-section-weight);
   line-height: var(--catch-typography-role-display-section-line-height);

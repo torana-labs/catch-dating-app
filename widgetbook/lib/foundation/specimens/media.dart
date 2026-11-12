@@ -83,10 +83,6 @@ class FoundationIconMediaTokens extends StatelessWidget {
                 'profileSlotFeedback',
                 CatchAspectRatio.profileSlotFeedback,
               ),
-              WidgetbookFoundationMetricSpec(
-                'eventRecapVibeTile',
-                CatchAspectRatio.eventRecapVibeTile,
-              ),
             ],
           ),
         ),

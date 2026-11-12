@@ -106,7 +106,7 @@ void main() {
     await pump(const Locale('en'));
     expect(find.text('Typing...'), findsOneWidget);
     expect(find.bySemanticsLabel('99+ unread chats'), findsOneWidget);
-    expect(find.bySemanticsLabel('New match'), findsOneWidget);
+    expect(find.bySemanticsLabel('New connection'), findsOneWidget);
     expect(
       catchPersonRowCopy(AppLocalizationsEn()).unreadCountLabel(1),
       'Unread chat',
