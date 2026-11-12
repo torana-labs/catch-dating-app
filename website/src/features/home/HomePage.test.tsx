@@ -1,6 +1,7 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {brand} from "@catch/brand";
 import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import {HomePage} from "./HomePage";
 
@@ -110,11 +111,22 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/i);
   });
 
-  it("records a store that is not live yet instead of following it", () => {
+  it("shows each Catch app store as brand.json has it: a badge link, or a coming-soon chip that records the press", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
-    const [appStore] = screen.getAllByRole("button", {name: "Download on the App Store"});
-    fireEvent.click(appStore);
-    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
+    const {ios, android} = brand.stores.consumer;
+    if (ios) {
+      expect(screen.getAllByRole("link", {name: "Download on the App Store"})[0].getAttribute("href")).toBe(ios);
+    } else {
+      const [chip] = screen.getAllByRole("button", {name: "Coming soon on the App Store"});
+      fireEvent.click(chip);
+      expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
+      expect(screen.queryByRole("img", {name: "Download on the App Store"})).toBeNull();
+    }
+    if (android) {
+      expect(screen.getAllByRole("link", {name: "Get it on Google Play"})[0].getAttribute("href")).toBe(android);
+    } else {
+      expect(screen.getAllByRole("button", {name: "Coming soon on Google Play"}).length).toBeGreaterThan(0);
+    }
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 
@@ -128,10 +140,8 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
   });
 
-  it("shows the official store badges and the app in a tilted phone with plan stickers", () => {
+  it("shows the app in a tilted phone with plan stickers", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
-    const [badge] = screen.getAllByRole("img", {name: "Download on the App Store"});
-    expect(badge.getAttribute("src")).toBe("/assets/store-badges/app-store-download-on-the.svg");
     expect(screen.getAllByRole("img", {name: "Screen guest-explore"}).length).toBeGreaterThan(0);
   });
 

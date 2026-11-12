@@ -5045,7 +5045,7 @@
       "comparedWith": [
         "catch.button"
       ],
-      "comparisonReason": "Shows the official App Store or Google Play badge artwork as a link, or a pending button that records the tap. The badge must appear exactly as Apple and Google supply it (no recolour, label or redraw), so it cannot be a catch.button, which draws its own labelled control; it only shares the D20 heights.",
+      "comparisonReason": "Shows the official App Store or Google Play badge artwork as a link, or, while the store has no link, a coming-soon chip with the badge's footprint that records the tap. The badge must appear exactly as Apple and Google supply it (no recolour, label or redraw), so it cannot be a catch.button, which draws its own labelled control; it only shares the D20 heights.",
       "css": [
         "packages/web-ui/src/components/CatchStoreButton.module.css"
       ],
@@ -5063,7 +5063,7 @@
           "on-accent"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249), proposal L8. A link to the Catch app in the App Store or Google Play drawn with the store's official badge artwork (Apple's black SVG, Google's cropped PNG; Apple's and Google's guidelines forbid a drawn button), never recoloured, stretched or overlaid, at the D20 large (48px) or medium (40px) height. The site hosts the files (website/public/assets/store-badges, with provenance); a store that is not live yet draws the same badge as a button that records the press. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
+      "notes": "Website T4 under D18 (CAT-249), proposal L8. A link to the Catch app in the App Store or Google Play drawn with the store's official badge artwork (Apple's black SVG, Google's cropped PNG; Apple's and Google's guidelines forbid a drawn button), never recoloured, stretched or overlaid, at the D20 large (48px) or medium (40px) height. The site hosts the files (website/public/assets/store-badges, with provenance); a store with no link yet (stores.* null in packages/brand/brand.json) draws a “Coming soon on …” chip with the badge's footprint, as a button that records the press. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
     },
     {
       "id": "shared_catch_site_header",

@@ -36,3 +36,38 @@ button.button {
   width: auto;
   height: var(--catch-store-height);
 }
+
+/*
+ * A store with no link yet: a chip with the badge's footprint (width set
+ * inline from the badge's aspect) in the badges' black-and-white, with words
+ * instead of the store's artwork.
+ */
+.comingSoon {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: var(--catch-store-height);
+  padding: 0 var(--catch-space-s3);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-color-dark-ink) 45%, var(--catch-color-light-ink));
+  border-radius: var(--catch-radius-sm);
+  /* light-ink is the near-black ink of light grounds, like the badges' black. */
+  background: var(--catch-color-light-ink);
+  color: var(--catch-color-dark-ink);
+  line-height: 1.15;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.kicker {
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: var(--catch-typography-role-body-meta-weight);
+}
+
+.store {
+  font-size: var(--catch-typography-web-control-size);
+  font-weight: var(--catch-typography-web-status-weight);
+}
+
+.button[data-size="m"] .store {
+  font-size: var(--catch-typography-role-body-meta-size);
+}
