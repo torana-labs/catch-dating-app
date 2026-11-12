@@ -1,8 +1,7 @@
-import {CatchButton, CatchMenu, CatchSiteFooter} from "@catch/web-ui";
+import {CatchButton, CatchMenu} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
-import {siteFooterLegalLinks} from "@content/site";
 import type {ReactNode} from "react";
-import {PrivacyChoicesButton, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {cityStatusLabel} from "../homeModel";
 import type {HomeCity} from "../homeTypes";
 
@@ -28,7 +27,6 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
   exploreHref: string;
   onChooseCity: (slug: string) => void;
 }) {
-  const links = copy.footer.links;
   return <>
     <PublicSiteHeader
       actions={<>
@@ -53,19 +51,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
       ]}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
-    <CatchSiteFooter
-      brandHref="/"
-      brandLabel="Catch"
-      groups={[
-        {title: copy.footer.groups.explore, links: [{href: exploreHref, label: links.whatsOn}, {href: organisersHref, label: links.organisers}, {href: appHref, label: links.app}]},
-        {title: copy.footer.groups.cities, links: cities.map((item) => ({href: cityPagePath(item.slug), label: item.label,
-          note: item.status === "live" ? undefined : copy.footer.soon}))},
-        {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
-        {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label})),
-          trailing: <PrivacyChoicesButton tone="link" />},
-      ]}
-      navLabel={copy.footer.nav}
-      tagline={copy.footer.tagline}
-    />
+    <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
+      cities={cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live"}))} />
   </>;
 }

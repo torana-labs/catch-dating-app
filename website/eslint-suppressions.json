@@ -90,17 +90,6 @@
       "count": 2
     }
   },
-  "src/shared/site/SiteFooter.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 3
-    }
-  },
   "src/shared/ui/primitives/actionControls.tsx": {
     "react/forbid-dom-props": {
       "count": 2

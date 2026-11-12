@@ -1,27 +1,4 @@
 
-.site-footer {
-  display: grid;
-  gap: var(--catch-space-s6);
-  padding: var(--catch-space-s9) 0 var(--catch-space-s11);
-  border-top: var(--catch-stroke-hairline) solid var(--website-line);
-  color: var(--website-copy-muted);
-}
-
-.site-footer nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--catch-space-micro18);
-  font-size: 14px;
-}
-
-.catch-dark .site-footer .brand__logo--on-light {
-  display: none;
-}
-
-.catch-dark .site-footer .brand__logo--on-dark {
-  display: block;
-}
-
 .consent-banner {
   position: fixed;
   inset: auto var(--website-gutter) calc(var(--website-gutter) + env(safe-area-inset-bottom, 0)) auto;
