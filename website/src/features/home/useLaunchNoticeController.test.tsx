@@ -38,4 +38,12 @@ describe("useLaunchNoticeController", () => {
     expect(result.current.joined).toBe(false);
     expect(result.current.status).toMatchObject({tone: "is-error", message: "Please try again."});
   });
+
+  it("sends the catalog city and how the page reached it", async () => {
+    const submit = vi.fn().mockResolvedValue({ok: true, alreadyJoined: false});
+    const {result} = renderHook(() => useLaunchNoticeController("Pune", submit, {slug: "pune", source: "precise"}));
+    act(() => result.current.setPhone("98765 43210"));
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(submit.mock.calls[0][0]).toMatchObject({city: "Pune", cityId: "in-mh-pune", countryIsoCode: "IN", citySource: "precise"});
+  });
 });
