@@ -2945,6 +2945,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-city-interest",
+      "category": "data",
+      "path": "tool/data/backfill_city_interest.mjs",
+      "command": "node tool/data/backfill_city_interest.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Maps existing launch-notice cities to market catalog ids where one city matches, counts each person once per city in cityInterest, and reports the rest.",
+      "checks": [
+        "node --check tool/data/backfill_city_interest.mjs",
+        "node --test tool/data/backfill_city_interest.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-event-discovery",
       "category": "data",
       "path": "tool/data/backfill_event_discovery_fields.mjs",

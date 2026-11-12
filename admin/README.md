@@ -239,6 +239,11 @@ events, how full they are, no-shows, guests who book again by month, bookings
 each week and organizers going quiet. It reads the warehouse, and says so when
 the warehouse can't be read rather than showing zeros.
 
+Interest by city reads `adminGetCityInterest`: how many different people asked
+to hear when each city opens, from the website's launch notice, with the last
+7 and 30 days against the days before. Cities the catalog does not have show
+as their country's Other.
+
 Finance reads `adminGetFinanceMonth` for one month line by line: sales, what
 Catch earned, what it cost and what isn't Catch's money. Costs other than ad
 spend are entered by hand through `adminManagePlatformCosts`, and the ledger

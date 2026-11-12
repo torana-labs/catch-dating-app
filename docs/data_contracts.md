@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.194.0
+version: 1.195.0
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -3164,7 +3164,32 @@ when an `organizerEventOffers` document changes; `--model response-offers` in
 Responses screen reads its Offered list and per-filter counts from these fields.
 
 `launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
-website submission needs an email or a phone. A weddings pilot application
+website submission needs an email or a phone.
+
+### Waitlist City Attribution
+
+The website launch notice names its city by catalog id. `joinWaitlist` accepts
+`cityId` (a market catalog id, or null for a city the catalog does not have),
+`countryIsoCode`, `citySource` (`picked`, `network_guess`, `precise` or
+`typed`) and `cityOther` (the typed city when `cityId` is null), alongside the
+old free-text `city`, which stays required and readable. Functions reject a
+`cityId` the catalog does not have or that is `hidden`, take the country from
+the catalog, and reject a different `countryIsoCode`; a null `cityId` needs
+`cityOther`. The fields are stored on the `launchWaitlist` row. A submission
+without `cityId` (older clients, Host and weddings forms) is unchanged.
+
+Each WhatsApp launch notice with a city counts its person once per city:
+`cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same
+transaction as `cityInterest/{cityKey}` gains `total` and `daily[YYYY-MM-DD]`
+(UTC) increments. `cityKey` is the catalog id, or `other-<country>` for cities
+the catalog does not have. Both collections are server-only
+(`city_interest.schema.json`, `city_interest_markers.schema.json`);
+`adminGetCityInterest` reads them for Admin's Interest by city view, with 7-
+and 30-day windows against the days before.
+`tool/data/backfill_city_interest.mjs` gives existing member rows the catalog
+id their free-text city names when exactly one catalog city matches by id,
+label, alias or legacy id, counts them through the same markers (a rerun counts
+nothing twice), and reports the rest without printing contacts. A weddings pilot application
 carries `programme: "weddings"` and `programmeApplication`; older intents carry
 neither and read as an events Host enquiry.
 
