@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/admin_action_executions.schema.json",
+  "title": "AdminActionExecutionDocument",
+  "description": "One Admin action run from the Admin CLI or app: who ran which catalogued action, request and response hashes, outcome and times.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adminActionExecutions",
+  "x-firestore-path": "adminActionExecutions/{executionId}",
+  "x-document-id-field": "id",
+  "x-owner": "Admin action execution recorder",
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "actionId",
+    "callable",
+    "actorUid",
+    "actorRoles",
+    "status",
+    "requestHash",
+    "responseHash",
+    "target",
+    "errorCode",
+    "errorMessage",
+    "cliVersion",
+    "startedAt",
+    "finishedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "actionId": {
+      "enum": [
+        "access.decide",
+        "access.get",
+        "admin-roles.get",
+        "admin-roles.list",
+        "admin-roles.set",
+        "analytics.host",
+        "analytics.user",
+        "catch.whatsapp.inbound.review",
+        "catch.whatsapp.inbound.send",
+        "event-intake.get",
+        "events.directory",
+        "events.get",
+        "events.list",
+        "events.update",
+        "external-events.list",
+        "external-events.takedown",
+        "finance.decide-event-messaging-budget",
+        "finance.export-money-ledger",
+        "finance.get-month",
+        "finance.grant-organizer-entitlement",
+        "finance.list-commercial-terms",
+        "finance.manage-commercial-terms",
+        "finance.manage-money-settings",
+        "finance.manage-nominator-credits",
+        "finance.manage-organizer-bills",
+        "finance.manage-payment-issues",
+        "finance.manage-payment-routing",
+        "finance.manage-platform-costs",
+        "finance.review-event-messaging-budget",
+        "finance.revoke-organizer-entitlement-grant",
+        "finance.stage-event-messaging-budget",
+        "growth.get",
+        "inbox.get",
+        "inbox.get-listing-event-review",
+        "inbox.get-listing-review",
+        "inbox.list",
+        "inbox.update",
+        "marketing.create-draft",
+        "marketing.get",
+        "marketing.record-decision",
+        "marketplace.get",
+        "nominations.list",
+        "operations.list-executions",
+        "operations.record-execution",
+        "organizer-claims.decide",
+        "organizer-claims.get",
+        "organizer-claims.recommend",
+        "organizer-intake.approve-listing",
+        "organizer-intake.decide-policy-gap",
+        "organizer-intake.list-supply-intake-policies",
+        "organizer-intake.publish-listing-events",
+        "organizer-intake.refresh-organizer-events",
+        "organizers.directory",
+        "organizers.get",
+        "organizers.list",
+        "organizers.overview",
+        "organizers.set-index-status",
+        "organizers.update",
+        "overview.get",
+        "people.search",
+        "safety.actions.lift",
+        "safety.actions.list",
+        "safety.actions.take",
+        "safety.appeals.decide",
+        "safety.assign",
+        "safety.decide",
+        "safety.get",
+        "safety.settings.get",
+        "safety.settings.update",
+        "sales.accounts.setSuppression",
+        "sales.activities.log",
+        "sales.commercial.detail",
+        "sales.commercial.finance.attest",
+        "sales.commercial.pilots.upsert",
+        "sales.commercial.quotes.accept",
+        "sales.commercial.quotes.approve",
+        "sales.commercial.quotes.revise",
+        "sales.commercial.report",
+        "sales.contacts.list",
+        "sales.contacts.setContactability",
+        "sales.contacts.upsert",
+        "sales.demo.GetSalesDemoBlueprint",
+        "sales.demo.GetSalesDemoCapability",
+        "sales.demo.GetSalesDemoInvitation",
+        "sales.demo.GetSalesDemoPartnerReview",
+        "sales.demo.IssueSalesDemoInvitation",
+        "sales.demo.ListSalesDemoBlueprints",
+        "sales.demo.ListSalesDemoInvitations",
+        "sales.demo.ReviewSalesDemoBlueprint",
+        "sales.demo.RevokeSalesDemoInvitation",
+        "sales.demo.SaveSalesDemoBlueprint",
+        "sales.demo.ShareSalesDemoPartnerReview",
+        "sales.demo.WithdrawSalesDemoBlueprint",
+        "sales.evidence.add",
+        "sales.evidence.list",
+        "sales.evidence.propose",
+        "sales.evidence.reviewProposal",
+        "sales.evidenceProposals.list",
+        "sales.fields.create",
+        "sales.fields.list",
+        "sales.fields.setValue",
+        "sales.fitQueue.list",
+        "sales.fitQueue.refresh",
+        "sales.fitQueue.refresh_batch",
+        "sales.hosts.create",
+        "sales.hosts.get",
+        "sales.hosts.search",
+        "sales.hosts.update",
+        "sales.imports.apply",
+        "sales.imports.compensation.apply",
+        "sales.imports.compensation.preview",
+        "sales.imports.history.apply",
+        "sales.imports.history.list",
+        "sales.imports.history.preview",
+        "sales.imports.history.rows.list",
+        "sales.imports.hosts",
+        "sales.imports.list",
+        "sales.imports.preview",
+        "sales.intake.list-message-nominators",
+        "sales.intake.nominate-organizer",
+        "sales.intake.set-message-nominator",
+        "sales.intelligence.BuildSalesOutreachInput",
+        "sales.intelligence.CopySalesOutreachDraft",
+        "sales.intelligence.GenerateSalesOutreachDraft",
+        "sales.intelligence.GetSalesIntelligenceCatalog",
+        "sales.intelligence.GetSalesIntelligenceScore",
+        "sales.intelligence.GetSalesOutreachDraft",
+        "sales.intelligence.GetSalesOutreachDraftJob",
+        "sales.intelligence.ListSalesOutreachDrafts",
+        "sales.intelligence.ReviewSalesIntelligenceClause",
+        "sales.intelligence.ReviewSalesOutreachDraft",
+        "sales.intelligence.SaveSalesFactorAssessment",
+        "sales.intelligence.SaveSalesIntelligenceClause",
+        "sales.intelligence.SaveSalesIntelligencePolicy",
+        "sales.intelligence.SaveSalesScoreSnapshot",
+        "sales.intents.link",
+        "sales.intents.list",
+        "sales.opportunities.list",
+        "sales.opportunities.upsert",
+        "sales.partners.offer",
+        "sales.privacy.batch.apply",
+        "sales.privacy.case.get",
+        "sales.privacy.organizer.restrict",
+        "sales.privacy.plan.preview",
+        "sales.privacy.plan.review",
+        "sales.privacy.policy.review",
+        "sales.receipts.get",
+        "sales.reporting.funnel",
+        "sales.tasks.list",
+        "sales.tasks.upsert",
+        "support.conversations.get",
+        "support.conversations.list",
+        "support.conversations.update",
+        "support.messages.record",
+        "support.replies.list",
+        "support.replies.upsert"
+      ],
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "actorRoles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "salesStaff"
+        ]
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "callable": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "cliVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "errorMessage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "executionId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "finishedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "requestHash": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "responseHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "schemaVersion": {
+      "const": 1,
+      "type": "number",
+      "x-catch-ownership": "server-only"
+    },
+    "startedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "enum": [
+        "started",
+        "succeeded",
+        "failed",
+        "indeterminate"
+      ],
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "target": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

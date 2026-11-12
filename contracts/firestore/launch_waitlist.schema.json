@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/launch_waitlist.schema.json",
+  "title": "LaunchWaitlistDocument",
+  "description": "One person's launch waitlist entry, keyed by contact: website member and host sign-ups, and WhatsApp city launch notices. Core fields are typed; writers add channel-specific fields (host application, consents, analytics, attribution, host lead receipt).",
+  "type": "object",
+  "additionalProperties": true,
+  "x-firestore-collection": "launchWaitlist",
+  "x-firestore-path": "launchWaitlist/{waitlistId}",
+  "x-document-id-field": "id",
+  "x-owner": "joinWaitlist",
+  "required": [
+    "role",
+    "source",
+    "createdAt"
+  ],
+  "properties": {
+    "channel": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "phone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "fullName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "member",
+        "host",
+        "both"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "source": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "consents": {
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "hostLead": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "lastSubmittedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "submissionCount": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
