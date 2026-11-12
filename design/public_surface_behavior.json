@@ -4841,7 +4841,6 @@
           "path": "lib/routing/route_destinations.dart",
           "contains": [
             "bool _requiresSocialProfile",
-            "matchedLocation.startsWith('/catches/')",
             "Routes.filtersScreen.path"
           ]
         }

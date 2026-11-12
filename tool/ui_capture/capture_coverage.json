@@ -428,7 +428,8 @@
         "event_recap_profile_lookup_error",
         "event_recap_text_scale_2",
         "event_recap_reduced_motion",
-        "event_recap_light_dark"
+        "event_recap_light_dark",
+        "guest_after_event"
       ],
       "reason": "Event Recap captures now cover populated attendees, loading, view-model error, missing event, empty roster, profile-enrichment loading/error, partial profile fallback, selected tiles, text scale 2.0, reduced motion, and paired light/dark output."
     },
