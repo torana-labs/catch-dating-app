@@ -52,6 +52,9 @@ describe("consolidated public sitemap", () => {
       }
     }
     expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=old", hash: "#founding-hosts"})).toBe("/host/apply/?utm_source=old");
+    expect(retiredMarketingDestination({pathname: "/delhi/", search: "?utm_source=old", hash: ""})).toBe("/delhi-ncr/?utm_source=old");
+    expect(retiredMarketingDestination({pathname: "/bangalore", search: "", hash: ""})).toBe("/bengaluru/");
+    expect(retiredMarketingDestination({pathname: "/mumbai/", search: "", hash: ""})).toBeNull();
     expect(retiredMarketingDestination({pathname: "/host/", search: "", hash: "#features?utm_source=partner&listing=real-id"}))
       .toBe("/host/?utm_source=partner&listing=real-id#features");
     expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=partner", hash: "#features"})).toBeNull();

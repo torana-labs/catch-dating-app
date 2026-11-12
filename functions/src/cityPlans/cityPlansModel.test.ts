@@ -120,14 +120,17 @@ test("ended plans and other cities' plans are left out", () => {
   assert.deepEqual(city.plans.map((plan) => plan.eventId), ["run-1"]);
 });
 
-test("a launched city too thin to fill a page reads as launching soon", () => {
-  const pages = [page("carter", [event("run-1", day), event("run-2", 2 * day),
-    event("run-3", 3 * day)])];
+test("a launched city with few plans stays live with its honest count", () => {
+  const pages = [page("carter",
+    [event("run-1", day), event("run-2", 2 * day)])];
   const city = buildCityPlans({market: mumbai, now, organizerPages: pages,
     joiningOrganizers: []});
-  assert.equal(cityPlanLimits.livePlanMinimum, 4);
-  assert.equal(city.status, "launchingSoon");
-  assert.equal(city.plans.length, 3);
+  assert.equal(city.status, "live");
+  assert.equal(city.planCount, 2);
+  const empty = buildCityPlans({market: mumbai, now, organizerPages: [],
+    joiningOrganizers: []});
+  assert.equal(empty.status, "live");
+  assert.equal(empty.planCount, 0);
 });
 
 test("a city that has not launched lists who is joining, with no pages", () => {

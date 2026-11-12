@@ -3,7 +3,7 @@ import {homePageCopy as copy} from "@content/homePage";
 import {siteFooterLegalLinks} from "@content/site";
 import type {ReactNode} from "react";
 import {PrivacyChoicesButton, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
-import {cityStatusLabel} from "../homeModel";
+import {cityFooterNote, cityStatusLabel} from "../homeModel";
 import type {HomeCity} from "../homeTypes";
 
 // A link button's press only navigates.
@@ -59,7 +59,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
       groups={[
         {title: copy.footer.groups.explore, links: [{href: exploreHref, label: links.whatsOn}, {href: organisersHref, label: links.organisers}, {href: appHref, label: links.app}]},
         {title: copy.footer.groups.cities, links: cities.map((item) => ({href: cityPagePath(item.slug), label: item.label,
-          note: item.status === "live" ? undefined : copy.footer.soon}))},
+          note: cityFooterNote(item)}))},
         {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
         {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label})),
           trailing: <PrivacyChoicesButton tone="link" />},

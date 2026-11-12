@@ -33,7 +33,7 @@ import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot"
 import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {cityStatusLabel} from "../homeModel";
+import {cityFooterNote, cityStatusLabel} from "../homeModel";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {cityPagePath, organisersHref} from "./cityChrome";
@@ -383,7 +383,7 @@ function HomeFooter({home}: {home: Home}) {
       columns={[
         {title: copy.footer.groups.explore, links: [{href: home.exploreHref, label: links.whatsOn}, {href: organisersHref, label: links.organisers}, {href: "#app", label: links.app}]},
         {title: copy.footer.groups.cities, links: home.cities.map((item) => ({href: cityPagePath(item.slug),
-          label: item.status === "live" ? item.label : fill(copy.footer.soonCity, {city: item.label})}))},
+          label: fill(copy.footer.cityWithNote, {city: item.label, note: cityFooterNote(item)})}))},
         {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
         {title: copy.footer.groups.help, links: [{href: helpHref, label: links.help}, {href: helpHref, label: links.safety},
           {href: legalHref("/privacy"), label: links.privacy}, {href: legalHref("/terms"), label: links.terms}]},

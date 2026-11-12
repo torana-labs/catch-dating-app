@@ -2,12 +2,12 @@
 // app, so both Consumer store links must be set. It replaces the website's
 // retired VITE_STORE_LINKS_MODE=live check.
 //
-// City status comes from the website market pack until the markets catalog
-// (contracts/catalogs/markets.json) lands. The gate warns for now: the pack
-// marks cities live before the apps are on the stores, so an error would block
-// every PR. It becomes an error once city statuses are honest.
+// City lifecycles come from contracts/catalogs/markets.json, where only a city
+// that is really open is live. The gate still warns: Mumbai and Indore are live
+// while stores.consumer.ios and .android are null, so an error would block
+// every PR. Flip LAUNCH_GATE_MODE to "error" in the change that sets both links.
+import fs from "node:fs";
 import path from "node:path";
-import {pathToFileURL} from "node:url";
 
 export const LAUNCH_GATE_MODE = "warn";
 
@@ -26,8 +26,8 @@ export function launchGateMessage({live, missing}) {
   return `Launch gate: ${live.join(", ")} ${live.length === 1 ? "is" : "are"} live but ${missing.join(" and ")} ${missing.length === 1 ? "is" : "are"} null in packages/brand/brand.json.`;
 }
 
+/** Catalog cities as {id, label, status}, status being the city's lifecycle. */
 export async function loadMarketCities(repoRoot) {
-  const pack = path.join(repoRoot, "website/src/content/markets/in.ts");
-  const {inMarket} = await import(pathToFileURL(pack).href);
-  return inMarket.cities;
+  const catalog = JSON.parse(fs.readFileSync(path.join(repoRoot, "contracts/catalogs/markets.json"), "utf8"));
+  return catalog.cities.map((city) => ({id: city.marketId, label: city.label, status: city.lifecycle}));
 }

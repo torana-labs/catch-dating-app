@@ -44,8 +44,6 @@ export const cityPlanLimits = {
   windowDays: 14,
   plans: 120,
   organizers: 24,
-  /** A launched city with fewer plans than this reads as launching soon. */
-  livePlanMinimum: 4,
 } as const;
 
 export const cityFormats = ["run", "dinner", "games",
@@ -115,8 +113,9 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
     citySlug: market.slug,
     cityLabel: market.label,
     marketStatus: market.launchStatus,
-    status: launched && plans.length >= cityPlanLimits.livePlanMinimum ?
-      "live" : "launchingSoon",
+    // A launched city is open however few plans it has; the page shows the
+    // honest count. Only a city that has not launched reads as launching.
+    status: launched ? "live" : "launchingSoon",
     windowStart: new Date(now).toISOString(),
     windowEnd: new Date(windowEnd).toISOString(),
     planCount: plans.length,

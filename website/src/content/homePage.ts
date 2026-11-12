@@ -6,7 +6,9 @@ import type {CatchFormat} from "@catch/web-ui";
 
 export const homePageCopy = {
   header: {nav: "Main", explore: "Explore", organisers: "Organisers", hosts: "For hosts", app: "Get the app",
-    cityMenu: "Choose your city", liveStatus: "{count} plans this week", soonStatus: "Launching soon"},
+    cityMenu: "Choose your city", liveStatus: "{count} plans this week", liveStatusOne: "1 plan this week",
+    /** A live city with no plans this week yet. */
+    newStatus: "New", soonStatus: "Launching soon"},
   hero: {
     liveEyebrow: "In {city} this week",
     soonEyebrow: "Launching soon in {city}",
@@ -137,10 +139,12 @@ export const homePageCopy = {
     nav: "Footer",
     tagline: "Meet people in real life, through hosts who bring them together.",
     soon: "soon",
+    /** Notes after a footer city: "2 plans this week", "new" or "soon". */
+    cityNotes: {plans: "{count} plans this week", plan: "1 plan this week", new: "new"},
     groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
     wordmark: "Catch",
-    /** A city that has not opened: "Pune · soon". */
-    soonCity: "{city} · soon",
+    /** A footer city and its note: "Mumbai · 2 plans this week", "Pune · soon". */
+    cityWithNote: "{city} · {note}",
     links: {whatsOn: "What’s on", organisers: "Organisers", app: "Get the app", hosts: "Catch for hosts", pricing: "Pricing",
       claim: "Claim your page", help: "Help", safety: "Safety", privacy: "Privacy", terms: "Terms"},
   },

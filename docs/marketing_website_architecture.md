@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.23.1
+version: 0.24.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -954,8 +954,9 @@ website/src/
   event name/venue/city/currency belong in that pack rather than page or
   shared-UI modules. Host create-flow fixtures and application defaults read
   those values through `@content/markets`.
-- Market cities are structured by stable id, slug, aliases, IANA timezone, and
-  `live`/`waitlist` status. Country/store availability, locale, ISO currency,
+- Market cities come from `contracts/catalogs/markets.json` through the
+  generated `content/markets/generated/catalog.ts`: catalog id, slug, aliases,
+  retired `legacySlugs` (redirected), IANA timezone, and lifecycle `status`. Country/store availability, locale, ISO currency,
   and featured city are pack-level contracts; event-live and form options are
   derived from the city records rather than parallel city lists.
   `check:market-pack` validates references and formatting; Home eligibility
