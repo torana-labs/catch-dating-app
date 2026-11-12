@@ -25,7 +25,15 @@
   },
   "stores": {
     "consumerAppName": "Lumen",
-    "hostAppName": "Lumen Host"
+    "hostAppName": "Lumen Host",
+    "consumer": {
+      "ios": "https://apps.apple.com/app/lumen/id1000000001",
+      "android": null
+    },
+    "host": {
+      "ios": null,
+      "android": "https://play.google.com/store/apps/details?id=com.catchdates.host"
+    }
   },
   "adminName": "Lumen Admin",
   "senders": {
