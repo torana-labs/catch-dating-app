@@ -80,9 +80,6 @@ class CatchListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = this.title;
-    final kicker = this.kicker;
-    final note = this.note;
-    final action = this.action;
     final empty = this.empty;
     final columns = this.columns;
     final split =
@@ -98,52 +95,7 @@ class CatchListSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: CatchSpacing.s2,
       children: [
-        if (title != null)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            spacing: CatchSpacing.s3,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: CatchSpacing.s1,
-                  children: [
-                    if (kicker != null)
-                      CatchText(
-                        kicker,
-                        variant: CatchTextVariant.labelKicker,
-                        tone: CatchTextTone.secondary,
-                      ),
-                    Semantics(
-                      header: true,
-                      child: CatchText(
-                        title,
-                        variant: CatchTextVariant.sectionTitle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (action != null)
-                CatchButton(
-                  label: action.label,
-                  onPressed: action.onPressed,
-                  variant: CatchButtonVariant.quiet,
-                  size: CatchButtonSize.sm,
-                )
-              else if (note != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
-                  child: CatchText(
-                    note,
-                    variant: CatchTextVariant.labelKicker,
-                    tone: CatchTextTone.secondary,
-                    maxLines: 1,
-                  ),
-                ),
-            ],
-          ),
+        if (title != null) _header(context, title),
         if (children.isEmpty && empty != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
@@ -183,6 +135,67 @@ class CatchListSection extends StatelessWidget {
               if (dividers == CatchSectionPlacement.all) ?line,
             ],
           ),
+      ],
+    );
+  }
+
+  /// The kicker over the title, with the [action] or [note] on the title's
+  /// baseline. At large text the action takes its own line under the title,
+  /// so the title wraps only between words.
+  Widget _header(BuildContext context, String title) {
+    final kicker = this.kicker;
+    final action = this.action;
+    final note = this.note;
+    final heading = Semantics(
+      header: true,
+      child: CatchText(title, variant: CatchTextVariant.sectionTitle),
+    );
+    final Widget? trailing = action != null
+        ? CatchButton(
+            label: action.label,
+            onPressed: action.onPressed,
+            variant: CatchButtonVariant.quiet,
+            size: CatchButtonSize.sm,
+          )
+        : note != null
+        ? CatchText(
+            note,
+            variant: CatchTextVariant.labelKicker,
+            tone: CatchTextTone.secondary,
+            maxLines: 1,
+          )
+        : null;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final Widget titleLine = trailing == null
+        ? heading
+        : largeText && action != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            spacing: CatchSpacing.s1,
+            children: [heading, trailing],
+          )
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            spacing: CatchSpacing.s3,
+            children: [
+              Expanded(child: heading),
+              trailing,
+            ],
+          );
+    if (kicker == null) return titleLine;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      spacing: CatchSpacing.s1,
+      children: [
+        CatchText(
+          kicker,
+          variant: CatchTextVariant.labelKicker,
+          tone: CatchTextTone.secondary,
+        ),
+        titleLine,
       ],
     );
   }

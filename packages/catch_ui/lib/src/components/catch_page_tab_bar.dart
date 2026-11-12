@@ -261,7 +261,7 @@ class _CatchSegmentedPill<T> extends StatelessWidget {
         ? Duration.zero
         : GeneratedCatchDurationTokens.standard;
     final radius = BorderRadius.circular(CatchRadius.pill);
-    Widget item(int at, double? width) {
+    Widget item(int at, double? width, {bool fit = false}) {
       final option = options[at];
       final on = at == index;
       final count = option.count;
@@ -317,7 +317,9 @@ class _CatchSegmentedPill<T> extends StatelessWidget {
                 width: width,
                 child: Center(
                   widthFactor: width == null ? 1 : null,
-                  child: body,
+                  child: fit
+                      ? FittedBox(fit: BoxFit.scaleDown, child: body)
+                      : body,
                 ),
               ),
             ),
@@ -338,14 +340,21 @@ class _CatchSegmentedPill<T> extends StatelessWidget {
         : LayoutBuilder(
             builder: (context, constraints) {
               // Each item keeps at least its own width and shares the rest
-              // equally; when they cannot all fit the track scrolls.
+              // equally. When they cannot all fit, as at large text, every
+              // item takes an equal share and its label scales down to it,
+              // so all of them stay visible instead of scrolling off.
               final natural = [
                 for (final option in options) _naturalWidth(context, option),
               ];
               final total = natural.fold<double>(0, (sum, w) => sum + w);
-              if (total > constraints.maxWidth) return scroller;
-              final share = (constraints.maxWidth - total) / options.length;
-              final widths = [for (final w in natural) w + share];
+              final fit = total > constraints.maxWidth;
+              final share = fit
+                  ? 0.0
+                  : (constraints.maxWidth - total) / options.length;
+              final widths = [
+                for (final w in natural)
+                  fit ? constraints.maxWidth / options.length : w + share,
+              ];
               final start = widths
                   .take(index)
                   .fold<double>(0, (sum, w) => sum + w);
@@ -369,7 +378,7 @@ class _CatchSegmentedPill<T> extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (var at = 0; at < options.length; at++)
-                        item(at, widths[at]),
+                        item(at, widths[at], fit: fit),
                     ],
                   ),
                 ],
