@@ -96,6 +96,6 @@ export const FormatFilterAndCityPicker: Story = {
     await userEvent.click(canvas.getByRole("button", {name: /3 this week.*Games and quizzes/}));
     await expect(canvas.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeInTheDocument();
     await userEvent.click(canvas.getByRole("button", {name: "Mumbai"}));
-    await expect(within(canvasElement.ownerDocument.body).getByRole("option", {name: /Pune/})).toBeInTheDocument();
+    await expect(within(canvasElement.ownerDocument.body).getByRole("menuitemradio", {name: /Pune/})).toBeInTheDocument();
   },
 };

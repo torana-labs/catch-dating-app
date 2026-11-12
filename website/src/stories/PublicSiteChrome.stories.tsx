@@ -33,15 +33,19 @@ export const PublicSiteFooterStory: Story = {
   render: () => <PublicSiteFooter />,
 };
 
-/** The one site footer with a page's Cities column, and named for a product. */
-export const PublicSiteFooterVariantsStory: Story = {
-  // A page holds one contentinfo landmark: each footer sits in its own labelled section.
+// A page holds one footer, so each variant is its own story: two footers on one
+// page repeat the "Footer" navigation landmark (axe landmark-unique).
+
+/** The one site footer with a page's Cities column. */
+export const PublicSiteFooterWithCitiesStory: Story = {
   render: () => <CatchRoot theme="day">
-    <section aria-label="With cities">
-      <PublicSiteFooter cities={[{href: "/mumbai/", label: "Mumbai", soon: false}, {href: "/pune/", label: "Pune", soon: true}]} />
-    </section>
-    <section aria-label="Product">
-      <PublicSiteFooter tagline="Part of Catch. For planners running weddings and destination events in India." wordmark="Catch for weddings" />
-    </section>
+    <PublicSiteFooter cities={[{href: "/mumbai/", label: "Mumbai", soon: false}, {href: "/pune/", label: "Pune", soon: true}]} />
+  </CatchRoot>,
+};
+
+/** The one site footer named for a product. */
+export const PublicSiteFooterProductStory: Story = {
+  render: () => <CatchRoot theme="day">
+    <PublicSiteFooter tagline="Part of Catch. For planners running weddings and destination events in India." wordmark="Catch for weddings" />
   </CatchRoot>,
 };
