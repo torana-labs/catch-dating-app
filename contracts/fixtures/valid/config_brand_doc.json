@@ -1,0 +1,36 @@
+{
+  "name": "Lumen",
+  "shortName": "Lumen",
+  "web": {
+    "domain": "lumen.example",
+    "origin": "https://lumen.example",
+    "wwwOrigin": "https://www.lumen.example",
+    "appOrigin": "https://app.lumen.example",
+    "adminOrigin": "https://admin.lumen.example"
+  },
+  "support": {
+    "email": "help@lumen.example",
+    "phone": null,
+    "phoneDisplay": null,
+    "whatsapp": null
+  },
+  "operator": {
+    "legalName": "Lumen Labs",
+    "postalAddress": "1 Example Street, Example City",
+    "governingCourts": "Example City",
+    "grievanceOfficer": "A. Person, Founder"
+  },
+  "social": {
+    "instagramHandle": "lumen_app"
+  },
+  "stores": {
+    "consumerAppName": "Lumen",
+    "hostAppName": "Lumen Host"
+  },
+  "adminName": "Lumen Admin",
+  "senders": {
+    "emailDomain": "notify.lumen.example",
+    "emailDisplayName": "Lumen",
+    "whatsappDisplayName": "Lumen"
+  }
+}

@@ -327,6 +327,17 @@
       ]
     },
     {
+      "id": "config_brand",
+      "path": "config/brand",
+      "rulesMatch": "/config/brand",
+      "owner": "public read, admin write through tool/firebase/create_config_brand.mjs",
+      "read": "any user, authenticated or not",
+      "write": "server/admin only",
+      "migrationNotes": [
+        "The apps fall back to their generated Brand constants when this document is absent, unreadable or invalid."
+      ]
+    },
+    {
       "id": "config_public_contact",
       "path": "config/publicContact",
       "rulesMatch": "/config/{docId}",

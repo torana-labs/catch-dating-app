@@ -658,6 +658,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The published brand record (packages/brand/brand.json), written only by
+    // tool/firebase/create_config_brand.mjs with admin credentials.
+    match /config/brand {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /config/{docId} {
       allow read, write: if false;
     }
