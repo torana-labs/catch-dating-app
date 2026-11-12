@@ -14,8 +14,6 @@ import {ProgramWhatsappDeliveryStore} from
   "../../programs/programWhatsappDeliveryStore";
 import {CampaignWhatsappDeliveryStore} from
   "../../organizers/campaignWhatsappDeliveryStore";
-import {CAMPAIGN_WHATSAPP_DISPATCHES} from
-  "../../organizers/campaignDeliveryWorker";
 import {AutomationWhatsappDeliveryStore} from
   "../../organizers/automationWhatsappDeliveryStore";
 import {WHATSAPP_DISPATCHES} from "../../delivery/whatsappDispatches";
@@ -54,18 +52,16 @@ implements Pick<WhatsappDeliveryStore, "consumeQueued"> {
     const attemptId = validateOrganizerMessagingWebhookEventDocument(queued) ?
       whatsappAttemptFromStatus(queued.callbackData) : null;
     if (attemptId) {
-      // Programme and automation dispatches share whatsappDispatches; the
-      // stored source names the owner.
-      const [sharedDispatch, campaignDispatch] = await Promise.all([
-        this.db.collection(WHATSAPP_DISPATCHES).doc(attemptId).get(),
-        this.db.collection(CAMPAIGN_WHATSAPP_DISPATCHES).doc(attemptId).get(),
-      ]);
+      // Programme, campaign and automation dispatches share
+      // whatsappDispatches; the stored source names the owner.
+      const sharedDispatch = await this.db.collection(WHATSAPP_DISPATCHES)
+        .doc(attemptId).get();
       const source = sharedDispatch.exists ?
         sharedDispatch.get("source") : null;
       if (source === "program") {
         return this.programStore.consumeQueued(eventId);
       }
-      if (campaignDispatch.exists) {
+      if (source === "campaign") {
         return this.campaignStore.consumeQueued(eventId);
       }
       if (source === "automation") {

@@ -653,7 +653,7 @@ for (const change of ["assertionDeleted", "consentRevoked", "householdMoved"]) {
       assert.equal(sends.includes("+919800000001"), false);
       assert.equal(sends.includes("+919800000003"), true);
       const dispatches = [...db.docs.entries()].filter(([path]) =>
-        path.startsWith("campaignWhatsappDispatches/"));
+        path.startsWith(CAMPAIGN_WHATSAPP_DISPATCHES + "/"));
       assert.equal(dispatches.length, 1);
     });
 }
