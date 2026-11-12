@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/admin_audit_logs.schema.json",
+  "title": "AdminAuditLogDocument",
+  "description": "One audited Admin change: the actor and their roles, the action, the target document, optional before/after snapshots and note.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adminAuditLogs",
+  "x-firestore-path": "adminAuditLogs/{logId}",
+  "x-document-id-field": "id",
+  "x-owner": "Admin callables (writeAdminAuditLog)",
+  "required": [
+    "actorUid",
+    "roles",
+    "action",
+    "targetPath",
+    "createdAt"
+  ],
+  "properties": {
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "salesStaff"
+        ]
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "targetPath": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "requestId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "before": {
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "after": {
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "note": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
