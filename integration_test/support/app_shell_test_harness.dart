@@ -26,11 +26,11 @@ import 'package:catch_dating_app/contexts/messaging/data/conversation_repository
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_draft_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
@@ -429,19 +429,18 @@ List<Object> appShellTestOverrides({
         AsyncData<List<Review>>(organizerReviews[organizer.id] ?? const []),
       ),
       if (uid != null)
-        watchOrganizerMembershipProvider(organizer.id, uid).overrideWith(
+        watchOrganizerFollowProvider(organizer.id, uid).overrideWith(
           (ref) => Stream.value(
             joinedOrganizerIds.contains(organizer.id)
-                ? OrganizerMembership(
-                    id: organizerMembershipId(
+                ? OrganizerFollow(
+                    id: organizerFollowId(
                       organizerId: organizer.id,
                       uid: uid,
                     ),
                     organizerId: organizer.id,
                     uid: uid,
-                    role: OrganizerMembershipRole.member,
-                    status: OrganizerMembershipStatus.active,
-                    joinedAt: DateTime(2026),
+                    status: OrganizerFollowStatus.active,
+                    followedAt: DateTime(2026),
                   )
                 : null,
           ),
@@ -531,16 +530,15 @@ List<Object> appShellTestOverrides({
       watchReviewsByUserProvider(
         uid,
       ).overrideWith((ref) => Stream.value(reviewsByUser)),
-      watchActiveOrganizerMembershipsForUserProvider(uid).overrideWith(
+      watchActiveOrganizerFollowsForUserProvider(uid).overrideWith(
         (ref) => Stream.value([
           for (final organizerId in joinedOrganizerIds)
-            OrganizerMembership(
-              id: organizerMembershipId(organizerId: organizerId, uid: uid),
+            OrganizerFollow(
+              id: organizerFollowId(organizerId: organizerId, uid: uid),
               organizerId: organizerId,
               uid: uid,
-              role: OrganizerMembershipRole.member,
-              status: OrganizerMembershipStatus.active,
-              joinedAt: DateTime(2026),
+              status: OrganizerFollowStatus.active,
+              followedAt: DateTime(2026),
             ),
         ]),
       ),

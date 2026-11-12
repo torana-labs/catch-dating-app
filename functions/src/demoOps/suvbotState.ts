@@ -1,5 +1,6 @@
 // Reads, resets and repairs the demo state Suvbot owns for one tester. Every
 // write goes through the Firestore contracts first (suvbotDocValidation.ts).
+import {EVENT_ATTENDEE_INDEX} from "../events/eventAttendeeProjection";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
 import {cohortIdForUser} from "../events/eventPolicy";
 import type {
@@ -127,6 +128,8 @@ export async function buildResetPlan(
       paths.add(`eventSuccessScorecards/${eventId}`);
       await collectQuery(db.collection("eventAttendees")
         .where("eventId", "==", eventId), (doc) => paths.add(doc.ref.path));
+      await collectQuery(db.collection(EVENT_ATTENDEE_INDEX)
+        .where("eventId", "==", eventId), (doc) => paths.add(doc.ref.path));
       await collectQuery(db.collection("eventParticipations")
         .where("eventId", "==", eventId), collect);
     }
@@ -143,6 +146,7 @@ export async function buildResetPlan(
   if (scope === "all" || scope === "bookings") {
     for (const [collection, field] of [
       ["eventParticipations", "uid"],
+      [EVENT_ATTENDEE_INDEX, "uid"],
       ["scheduleLocks", "uid"],
       ["savedEvents", "uid"],
       ["payments", "userId"],

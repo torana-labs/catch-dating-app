@@ -2022,6 +2022,15 @@ recheck this right before they sign in, and promotion rechecks it before
 every production step. A train's commit that a newer release has overtaken is
 refused, so live only moves forward.
 
+**Sprint floor (owner decision, 11 Nov 2026).** While Required CI leaves the
+tools, operations, docs-policy and app-builds lanes out of its needs, a failure
+in one of those lanes fails the whole CI run even though Required CI passed.
+The source's CI therefore counts as successful when the run succeeded, or when
+its `Required CI` job succeeded and every job that did not succeed belongs to
+one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
+validation, exact-source captures, the main lineage and the live-release order
+are checked exactly as before. Revisit this when the floor ends.
+
 Recovery:
 
 - **A train failed in validation.** Later trains skip that head

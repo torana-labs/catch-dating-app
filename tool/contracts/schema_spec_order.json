@@ -685,6 +685,7 @@
   "EventInviteAttributionDocument",
   "EventParticipationDocument",
   "EventAttendeeDocument",
+  "EventAttendeeIndexDocument",
   "EventStaffGrantDocument",
   "OrganizerProgramDocument",
   "ProgramFunctionDocument",

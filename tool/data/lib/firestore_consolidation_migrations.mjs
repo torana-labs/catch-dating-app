@@ -6,6 +6,35 @@ import {createFunctionsRequire} from "../../lib/repo_paths.mjs";
 // exactly what an event gets when it first receives terms. Build Functions
 // (npm --prefix functions run build) before running the event-policy migration.
 let eventPolicyModule = null;
+let rosterModules = null;
+function functionsRoster() {
+  try {
+    const load = createFunctionsRequire();
+    rosterModules ??= {
+      projection: load("./lib/events/eventAttendeeProjection.js"),
+      attendees: load("./lib/events/eventAttendees.js"),
+      admin: load("firebase-admin"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The catch-booking-roster migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return rosterModules;
+}
+
+/** The one roster row linked to this account on this event, if any. */
+async function linkedAttendeeId(db, eventId, uid) {
+  const rows = await db.collection("eventAttendees")
+    .where("eventId", "==", eventId).where("linkedUid", "==", uid).limit(2).get();
+  if (rows.docs.length > 1) return {ambiguous: true};
+  return {id: rows.docs[0]?.id ?? null};
+}
+
+function uidAttendeeId(eventId, uid) {
+  return functionsRoster().attendees.eventAttendeeId(eventId, `uid:${uid}`);
+}
 function functionsEventPolicy() {
   try {
     eventPolicyModule ??= createFunctionsRequire()("./lib/events/eventPolicy.js");
@@ -148,6 +177,65 @@ export const MIGRATIONS = [
             .where("waitlistId", "==", id).limit(1).get();
           if (intents.empty) return null;
           return {hostLead: {eventId: preReceiptHostLeadId(id, data), isNew: false}};
+        },
+      },
+    ],
+  },
+  {
+    name: "catch-booking-roster",
+    description:
+      "Every eventParticipations booking gets one eventAttendees row carrying " +
+      "its booking facts, and an eventAttendeeIndex pointer from the account " +
+      "to that row. Existing linked rows are filled, never replaced; " +
+      "participations stay in place.",
+    steps: [
+      {
+        source: "eventParticipations",
+        target: "eventAttendees",
+        skipReason: "already has a roster row (filled by the next step)",
+        targetId: async (id, data, db) => {
+          if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
+          const linked = await linkedAttendeeId(db, data.eventId, data.uid);
+          if (linked.ambiguous || linked.id) return null;
+          return uidAttendeeId(data.eventId, data.uid);
+        },
+        transform: async (data, id, db) => {
+          const {projection, admin} = functionsRoster();
+          const profile = (await db.collection("publicProfiles").doc(data.uid).get()).data();
+          const name = typeof profile?.name === "string" && profile.name.trim() ?
+            profile.name.trim() : data.uid;
+          return projection.catchBookingAttendeeDocument({source: data,
+            sourceExists: true, existing: undefined, organizerId: data.organizerId,
+            displayName: name, now: admin.firestore.Timestamp.now()});
+        },
+      },
+      {
+        kind: "fill",
+        collection: "eventAttendees",
+        fill: async (data, id, db) => {
+          if (data.booking || typeof data.linkedUid !== "string") return null;
+          const booking = await db.collection("eventParticipations")
+            .doc(`${data.eventId}_${data.linkedUid}`).get();
+          if (!booking.exists) return null;
+          const {projection, admin} = functionsRoster();
+          return {booking: projection.catchBookingFacts(booking.data(), true,
+            admin.firestore.Timestamp.now())};
+        },
+      },
+      {
+        source: "eventParticipations",
+        target: "eventAttendeeIndex",
+        skipReason: "more than one roster row is linked to this account",
+        targetId: async (id, data, db) => {
+          if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
+          const linked = await linkedAttendeeId(db, data.eventId, data.uid);
+          return linked.ambiguous ? null : `${data.eventId}_${data.uid}`;
+        },
+        transform: async (data, id, db) => {
+          const linked = await linkedAttendeeId(db, data.eventId, data.uid);
+          return {eventId: data.eventId, organizerId: data.organizerId, uid: data.uid,
+            attendeeId: linked.id ?? uidAttendeeId(data.eventId, data.uid),
+            createdAt: data.createdAt};
         },
       },
     ],

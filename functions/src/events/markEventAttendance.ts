@@ -1,6 +1,8 @@
 import {CallableRequest, onCall, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
@@ -158,16 +160,22 @@ export async function markEventAttendanceHandler(
       );
     }
     const alreadyAttended = existingParticipation.status === "attended";
+    const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
+      uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
     tx.update(eventRef, {
       checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
     });
-    tx.set(participationRef, eventParticipationPatch({
+    const attendance = eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
       organizerId: event.organizerId,
       uid: userId,
       status: alreadyAttended ? "signedUp" : "attended",
-    }), {merge: true});
+    });
+    tx.set(participationRef, attendance, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationSnap.data(), attendance),
+      now: admin.firestore.Timestamp.now()});
     return {
       alreadyAttended,
       inviteLinkId: existingParticipation.inviteLinkId,

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
@@ -159,10 +159,10 @@ class _HostOrganizerDetailScope extends StatelessWidget {
             (ref) =>
                 Stream.value(uid == null ? null : HostOperationsFixtures.owner),
           ),
-          watchOrganizerMembershipProvider(
+          watchOrganizerFollowProvider(
             widgetbookOrganizer.id,
             effectiveUid,
-          ).overrideWith((ref) => Stream<OrganizerMembership?>.value(null)),
+          ).overrideWith((ref) => Stream<OrganizerFollow?>.value(null)),
           organizerDetailViewModelProvider(widgetbookOrganizer.id).overrideWith(
             (ref) =>
                 viewModel ??

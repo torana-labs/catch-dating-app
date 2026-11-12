@@ -420,7 +420,6 @@ enter previews.
 | `onCrossPathsEventWritten` | `src/crossPaths/` | `events/{eventId}` onWrite — invalidates invitations/holds when an event becomes unavailable |
 | `onCrossPathsParticipationWritten` | `src/crossPaths/` | `eventParticipations/{id}` onWrite — invalidates invitations/holds when participation ends |
 | `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations/holds and closes accepted event plans |
-| `onEventParticipationRosterProjected` | `src/events/eventAttendeeProjection.ts` | `eventParticipations/{id}` onWrite — projects public display identity and booking status into the operational Host roster without disclosing private-profile contact fields |
 | `onEventAttendeeAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Event attendee writes project organizer-scoped contact and attendance history |
 | `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |
 | `onOrganizerContactEventEdgeInviteAttributed` | `src/events/eventInviteAttributionProjection.ts` | Verified invite outcomes update contact advocacy evidence |
