@@ -1,3 +1,4 @@
+import type {ReactNode} from "react";
 import {CatchBand} from "./CatchBand";
 import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchSiteFooter.module.css";
@@ -24,10 +25,12 @@ export interface CatchSiteFooterProps {
   navLabel: string;
   /** The line across from the wordmark. */
   tagline: string;
+  /** Controls beside the tagline, such as the site's "Privacy choices". */
+  legal?: ReactNode;
 }
 
 /** The Website v2 site footer on the ink ground: link columns, then the wordmark and tagline. */
-export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, tagline}: CatchSiteFooterProps) {
+export function CatchSiteFooter({brandHref, brandLabel, groups, legal, navLabel, tagline}: CatchSiteFooterProps) {
   return (
     <CatchBand as="footer" ground="ink" pb="compact" pt="regular">
       <nav aria-label={navLabel} className={styles.groups}>
@@ -51,7 +54,10 @@ export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, taglin
         <a className={styles.brand} href={brandHref}>
           <CatchLegacyText as="span" color="inherit" variant="displayL">{brandLabel}</CatchLegacyText>
         </a>
-        <CatchLegacyText as="p" color="ink2" variant="supporting">{tagline}</CatchLegacyText>
+        <div className={styles.legal}>
+          <CatchLegacyText as="p" color="ink2" variant="supporting">{tagline}</CatchLegacyText>
+          {legal ? <CatchLegacyText as="span" color="ink2" variant="supporting">{legal}</CatchLegacyText> : null}
+        </div>
       </div>
     </CatchBand>
   );

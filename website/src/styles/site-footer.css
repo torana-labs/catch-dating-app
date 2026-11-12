@@ -22,16 +22,23 @@
   display: block;
 }
 
+/*
+ * The consent banner: a summary line, the full statement under Details and
+ * the three choices. A card in the corner from 600px; below that a sheet
+ * docked to the bottom edge, and the page gains its height in bottom padding
+ * (--consent-banner-height, measured by MarketingConsentBanner) so no band
+ * or footer link stays covered.
+ */
 .consent-banner {
   position: fixed;
   right: var(--website-gutter);
-  bottom: calc(var(--website-gutter) + env(safe-area-inset-bottom, 0px));
-  z-index: 80;
+  bottom: calc(var(--website-gutter) + env(safe-area-inset-bottom, 0));
+  z-index: var(--catch-layer-toast);
   display: grid;
-  width: min(420px, calc(100vw - (var(--website-gutter) * 2)));
-  max-height: calc(100dvh - (var(--website-gutter) * 2) - env(safe-area-inset-bottom, 0px));
+  width: min(44ch, calc(100vw - (var(--website-gutter) * 2)));
+  max-height: calc(100dvh - (var(--website-gutter) * 2) - env(safe-area-inset-bottom, 0));
   overflow-y: auto;
-  gap: var(--catch-space-micro14);
+  gap: var(--catch-space-s3);
   padding: var(--catch-space-s4);
   border: var(--catch-stroke-hairline) solid var(--website-line);
   border-radius: var(--catch-radius-sm);
@@ -39,14 +46,24 @@
   box-shadow: var(--website-shadow-soft);
 }
 
-.consent-banner p {
-  color: var(--website-copy-muted);
-  font-size: 13px;
-  line-height: 1.45;
+.consent-banner:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--website-copy);
+  outline-offset: var(--catch-space-micro2);
 }
 
-.consent-banner div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--catch-space-micro10);
+@media (width < 600px) {
+  .consent-banner {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: 70dvh;
+    padding: var(--catch-space-s4) var(--website-gutter) calc(var(--catch-space-s4) + env(safe-area-inset-bottom, 0));
+    border-width: var(--catch-stroke-hairline) 0 0;
+    border-radius: var(--catch-radius-sm) var(--catch-radius-sm) 0 0;
+  }
+
+  html[data-consent-open] body {
+    padding-bottom: var(--consent-banner-height, 0);
+  }
 }

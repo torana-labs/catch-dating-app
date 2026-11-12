@@ -2,7 +2,7 @@ import {CatchButton, CatchMenu, CatchSiteFooter, CatchSiteHeader} from "@catch/w
 import {homePageCopy as copy} from "@content/homePage";
 import {siteFooterLegalLinks} from "@content/site";
 import type {ReactNode} from "react";
-import {WebsitePageMain} from "../../../shared/site";
+import {PrivacyChoicesButton, WebsitePageMain} from "../../../shared/site";
 import {cityStatusLabel} from "../homeModel";
 import type {HomeCity} from "../homeTypes";
 
@@ -65,6 +65,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
         {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
         {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label}))},
       ]}
+      legal={<PrivacyChoicesButton />}
       navLabel={copy.footer.nav}
       tagline={copy.footer.tagline}
     />

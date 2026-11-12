@@ -1,5 +1,6 @@
 import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar} from "@catch/web-ui";
 import {createContext, useContext, type ReactNode} from "react";
+import {openMarketingConsentPreferences} from "../../analytics";
 import {publicPageChromeCopy, publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
 import {ConsumerHome} from "../ui/primitives/consumerHome";
 import {SiteFooter, type SiteNavItem} from "./SiteFooter";
@@ -38,6 +39,21 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
   );
 }
 
+// The footer's own type and colour, underlined as its links are on hover.
+const privacyChoicesText = {font: "inherit", textDecoration: "underline", textUnderlineOffset: "0.2em"} as const;
+
+/**
+ * "Privacy choices": reopens the consent banner. It sits in each footer's
+ * legal area as a text link in the surrounding colour and type, so no control
+ * floats over the page once a choice exists.
+ */
+export function PrivacyChoicesButton() {
+  return (
+    <CatchButton foregroundColor="currentColor" label={publicSiteCopy.privacyChoices} minimumSize={{width: 0, height: 0}}
+      onPressed={openMarketingConsentPreferences} padding={0} recipe="text" textStyle={privacyChoicesText} />
+  );
+}
+
 /** The rebuilt public pages' site top bar: the wordmark, Explore and For organisers, and Get the app. */
 export function PublicPageHeader() {
   return <PublicSiteHeader actions={<CatchButton href={publicPageChromeCopy.getAppHref} label={publicPageChromeCopy.getApp} size="sm" />} links={publicPageChromeCopy.links} />;
@@ -65,6 +81,7 @@ export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, link
             <CatchButton href={link.href} key={`${link.label}-${link.href}`} label={link.label}
               onPressed={onLinkPressed ? () => onLinkPressed(link) : undefined} size="sm" variant="quiet" />
           ))}
+          <CatchButton label={publicSiteCopy.privacyChoices} onPressed={openMarketingConsentPreferences} size="sm" variant="quiet" />
         </CatchStack>
       </CatchStack>
       {note ? <CatchText tone="secondary" variant="body-meta">{note}</CatchText> : null}
@@ -74,7 +91,13 @@ export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, link
 
 /** The footer of routes not yet rebuilt on the system. */
 export function PublicSiteFooter() {
-  return <ConsumerHome><SiteFooter brandHref="/" body={publicSiteCopy.footerOperator} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} /></ConsumerHome>;
+  return (
+    <ConsumerHome>
+      <SiteFooter brandHref="/" body={publicSiteCopy.footerOperator} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]}>
+        <PrivacyChoicesButton />
+      </SiteFooter>
+    </ConsumerHome>
+  );
 }
 
 /** One footer column: a kicker over its links. */
@@ -113,7 +136,10 @@ export function SiteFooterBand({columns, label, tagline, wordmark}: {
         ) : null}
         <CatchStack align="end" direction="row" gap={16} justify="between" wrap>
           <CatchText variant="display-xl">{wordmark}</CatchText>
-          <CatchText tone="secondary" variant="body-small">{tagline}</CatchText>
+          <CatchStack align="center" direction="row" gap={16} wrap>
+            <CatchText tone="secondary" variant="body-small">{tagline}</CatchText>
+            <CatchText tone="secondary" variant="body-small"><PrivacyChoicesButton /></CatchText>
+          </CatchStack>
         </CatchStack>
       </CatchSurface>
     </CatchStack>
