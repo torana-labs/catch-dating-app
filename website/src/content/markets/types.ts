@@ -24,6 +24,9 @@ export interface MarketCity {
   /** Planned launch day (YYYY-MM-DD) of a launching city. */
   readonly launchDate?: string;
   readonly countryIsoCode: string;
+  /** The city centre, used only to snap an approximate location to a city. */
+  readonly latitude: number;
+  readonly longitude: number;
 }
 
 export interface MarketPack {

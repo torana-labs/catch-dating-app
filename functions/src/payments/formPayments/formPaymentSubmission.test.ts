@@ -146,14 +146,14 @@ test("event cancellation prevents new checkout and routes capture to refund",
     h.store.records.set("events/event", {...event, status: "cancelled"});
     await assert.rejects(h.reserve(), {code: "failed-precondition"});
     assert.equal([...h.store.records.keys()].some((key) =>
-      key.startsWith("organizerFormPayments/")), false);
+      key.startsWith("guestPayments/")), false);
     h.store.records.set("events/event", event);
     const {paymentId} = await h.reserve();
     h.store.records.set("events/event", {...event, status: "cancelled"});
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "refundPending");
     assert.equal(await h.finalize(paymentId), "refundPending");
-    assert.equal(h.store.records.get(`organizerFormPayments/${paymentId}`)
+    assert.equal(h.store.records.get(`guestPayments/${paymentId}`)
       ?.lastErrorCode, "formEventUnavailable");
     assert.equal(h.store.records.get("organizerForms/form")
       ?.submittedResponseCount, 0);

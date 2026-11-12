@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {findRecipientAdmission} from "./recipientAdmission";
 import {createHash} from "node:crypto";
 import {commitOrganizerFormAdmission, previewOrganizerFormAdmission} from
@@ -192,7 +193,8 @@ function checkedResponse(result: Response, nowMillis: number,
 
 async function findOwnedPayment(db: FirebaseFirestore.Firestore, uid: string,
   grantId: string, deps: Deps): Promise<Response["payment"]> {
-  const candidates = await db.collection(OFFER_PAYMENT_COLLECTION)
+  const candidates = await db.collection(GUEST_PAYMENTS)
+    .where("purpose", "==", "offer")
     .where("grantId", "==", grantId).where("recipientUid", "==", uid)
     .orderBy("createdAt", "desc").limit(1).get();
   const snap = candidates.docs[0];

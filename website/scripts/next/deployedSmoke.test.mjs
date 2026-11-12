@@ -155,13 +155,17 @@ test("acceptance waits, within a bound, for the deployment to answer as the rele
 test("a launching-soon Explore or city page is healthy; a page with neither lead is not", async () => {
   const soon = `<h1>Catch is coming to Mumbai</h1><p>${explorePageCopy.soonLead.replace("{liveCity}", "Indore")}</p>`;
   // Preview run 41083582506: a healthy launching-soon /explore/ failed on the live lead alone.
+  // Release run 43280021079: with no open city to point to, the lead is soonLeadAlone.
+  const soonAlone = `<h1>Catch is coming to Mumbai</h1><p>${explorePageCopy.soonLeadAlone}</p>`;
   for (const route of ["/explore/", "/mumbai/"]) {
     await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = soon;})});
+    await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = soonAlone;})});
     await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = "<h1>Something else</h1>";})}),
       new RegExp(`${route.replaceAll("/", "\\/")} rendered content`, "u"));
     await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = `<p>${explorePageCopy.lead}</p>`;})}),
       /rendered content/u);
   }
-  assert.deepEqual(exploreLeads, [explorePageCopy.lead, "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in "]);
+  assert.deepEqual(exploreLeads, [explorePageCopy.lead, "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in ",
+    "Hosts here are setting up their first plans."]);
   assert.ok(!exploreLeads.some(lead => lead.includes("{")), "a lead never carries a placeholder");
 });

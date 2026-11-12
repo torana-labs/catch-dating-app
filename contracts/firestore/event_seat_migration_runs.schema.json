@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_migration_runs.schema.json",
+  "title": "EventSeatMigrationRunDocument",
+  "description": "Progress of one paged seat-ledger bootstrap for an event: which source and cursor it is scanning, the plan hash, and how many outputs have been applied.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatMigrationRuns",
+  "x-firestore-path": "eventSeatMigrationRuns/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+  "required": [
+    "eventId",
+    "organizerId",
+    "migrationRevision",
+    "asOfMillis",
+    "fenceToken",
+    "policyHash",
+    "phase",
+    "sourceIndex",
+    "cursor",
+    "sourceCounts",
+    "planHash",
+    "outputCursor",
+    "outputCount"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "asOfMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "fenceToken": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "scan",
+        "plan",
+        "apply",
+        "cleanup",
+        "complete",
+        "discard"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "x-catch-ownership": "server-only"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCounts": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 3,
+      "maxItems": 3,
+      "x-catch-ownership": "server-only"
+    },
+    "planHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "outputCursor": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "outputCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "reviewedRequestHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

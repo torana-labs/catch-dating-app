@@ -41,7 +41,7 @@ export const PublicSiteFooterVariantsStory: Story = {
       <PublicSiteFooter cities={[{href: "/mumbai/", label: "Mumbai", soon: false}, {href: "/pune/", label: "Pune", soon: true}]} />
     </section>
     <section aria-label="Product">
-      <PublicSiteFooter tagline="Part of Catch. For planners running weddings and destination events in India." wordmark="Catch for weddings" />
+      <PublicSiteFooter navLabel="Footer, product page" tagline="Part of Catch. For planners running weddings and destination events in India." wordmark="Catch for weddings" />
     </section>
   </CatchRoot>,
 };

@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {assertFollowersFirstAllows} from "../followersFirst";
 import * as admin from "firebase-admin";
 import {
@@ -147,7 +148,8 @@ export async function managePublicEventCheckoutHandler(
     result.quote = quoted.quote;
   } else if (data.action === "find") {
     const rows = await db
-      .collection(PUBLIC_PAYMENT_COLLECTION)
+      .collection(GUEST_PAYMENTS)
+      .where("purpose", "==", "publicEvent")
       .where("eventId", "==", data.eventId)
       .where("recipientUid", "==", uid)
       .orderBy("createdAt", "desc")

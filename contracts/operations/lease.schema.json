@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/operations/lease.schema.json",
   "title": "OperationLease",
+  "x-firestore-collection": "operationLeases",
+  "x-firestore-path": "operationLeases/{leaseId}",
   "description": "A time-bounded lease with a monotonically increasing fencing token.",
   "type": "object",
   "additionalProperties": false,

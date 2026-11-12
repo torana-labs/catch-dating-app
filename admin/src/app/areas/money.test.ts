@@ -4,7 +4,7 @@ import {moneyPath} from "./money";
 
 describe("Money routes", () => {
   it.each([
-    ["/money/issues/publicEventPayments%3Apay-1", "moneyIssueId", "publicEventPayments:pay-1"],
+    ["/money/issues/publicEvent%3Apay-1", "moneyIssueId", "publicEvent:pay-1"],
     ["/money/resolved/payments%3Apay-2", "moneyIssueId", "payments:pay-2"],
     ["/money/bills/org-1_2026-10", "billId", "org-1_2026-10"],
   ])("resolves %s", (path, key, value) => {

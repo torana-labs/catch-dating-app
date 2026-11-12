@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_verified_phones.schema.json",
+  "title": "EventSeatVerifiedPhoneDocument",
+  "description": "Server-held proof of the phone number Auth verified for an account on an event, used to join a signed-in guest to their roster seat. Never client-written.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatVerifiedPhones",
+  "x-firestore-path": "eventSeatVerifiedPhones/{proofId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "phoneE164",
+    "migrationRevision",
+    "state"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "current",
+        "revoked"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

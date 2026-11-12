@@ -1,3 +1,4 @@
+import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
 import {readProgramGuestFields} from
   "../workspaces/workspaceFieldAuthority";
 import * as admin from "firebase-admin";
@@ -60,7 +61,7 @@ export function campaignRouteId(
 }
 
 /** Claim-time submission evidence for webhook status correlation. */
-export const CAMPAIGN_WHATSAPP_DISPATCHES = "campaignWhatsappDispatches";
+export const CAMPAIGN_WHATSAPP_DISPATCHES = WHATSAPP_DISPATCHES;
 
 export type CampaignDeliveryOutbox = FirestoreDeliveryOutbox<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
@@ -637,7 +638,8 @@ async function dispatchCampaignWhatsapp(
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp.variables]);
         const dispatch = {
-          schemaVersion: 1, attemptId: liveAttempt.attemptId,
+          schemaVersion: 1, source: "campaign",
+          attemptId: liveAttempt.attemptId,
           messageId: liveRecord.messageId, context: intent.context,
           senderId: intent.whatsapp.connectionId,
           bindingRevision: conn.revision,

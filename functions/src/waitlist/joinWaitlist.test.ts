@@ -48,6 +48,8 @@ test(
       "fixtures/valid/join_waitlist_request_whatsapp.json",
       "fixtures/valid/join_waitlist_request_weddings.json",
       "fixtures/valid/join_waitlist_request_host_phone_only.json",
+      "fixtures/valid/join_waitlist_request_whatsapp_city_id.json",
+      "fixtures/valid/join_waitlist_request_whatsapp_city_other.json",
     ]) {
       assert.equal(validateJoinWaitlistHTTPRequest(readFixture(fixture)), true);
     }
@@ -58,6 +60,8 @@ test(
       "fixtures/invalid/join_waitlist_request_whatsapp_marketing_unset.json",
       "fixtures/invalid/join_waitlist_request_weddings_member.json",
       "fixtures/invalid/join_waitlist_request_host_missing_contact.json",
+      "fixtures/invalid/join_waitlist_request_city_id_not_catalog_shape.json",
+      "fixtures/invalid/join_waitlist_request_unknown_city_source.json",
     ]) {
       assert.equal(
         validateJoinWaitlistHTTPRequest(readFixture(fixture)), false, fixture);
@@ -171,6 +175,94 @@ test("WhatsApp launch notices store the consented phone per city",
     }
     assert.equal(records.size, before);
   });
+
+test("a launch notice records its catalog city and counts each person " +
+  "once per city", async (context) => {
+  if (!admin.apps.length) {
+    admin.initializeApp({projectId: "demo-sales-intent"});
+  }
+  const database = admin.firestore();
+  const records = new Map<string, Record<string, unknown>>();
+  const counted: string[] = [];
+  context.mock.method(database, "runTransaction",
+    async (run: (tx: unknown) => Promise<unknown>) => {
+      const writes: Array<[string, Record<string, unknown>]> = [];
+      await run({
+        get: async (ref: {path: string}) => {
+          assert.equal(writes.length, 0, "every read precedes the writes");
+          return {exists: records.has(ref.path),
+            data: () => records.get(ref.path)};
+        },
+        create: (ref: {path: string}, value: Record<string, unknown>) => {
+          assert.equal(records.has(ref.path), false);
+          writes.push([ref.path, value]);
+        },
+        update: (ref: {path: string}, value: Record<string, unknown>) => {
+          writes.push([ref.path, {...records.get(ref.path), ...value}]);
+        },
+        set: (ref: {path: string}, value: Record<string, unknown>) => {
+          if (ref.path.startsWith("cityInterest/")) counted.push(ref.path);
+          writes.push([ref.path, value]);
+        },
+      });
+      for (const [key, value] of writes) records.set(key, value);
+    });
+  const body = readFixture(
+    "fixtures/valid/join_waitlist_request_whatsapp_city_id.json") as
+    Record<string, unknown>;
+  let attempt = 0;
+  const submit = async (payload: unknown) => {
+    let status = 0;
+    let result: unknown;
+    const response = {set: () => undefined,
+      status: (value: number) => {
+        status = value; return response;
+      },
+      json: (value: unknown) => {
+        result = value; return response;
+      },
+      send: () => undefined};
+    await joinWaitlist({method: "POST", body: payload,
+      ip: `synthetic-city-interest-${++attempt}`,
+      get: () => undefined} as never, response as never);
+    return {status, result};
+  };
+
+  assert.equal((await submit(body)).status, 200);
+  const notice = records.get(`launchWaitlist/${
+    whatsappLaunchNoticeId("+919812345678", "Pune")}`)!;
+  assert.equal(notice.cityId, "in-mh-pune");
+  assert.equal(notice.countryIsoCode, "IN");
+  assert.equal(notice.citySource, "network_guess");
+  assert.equal(notice.cityOther, null);
+  assert.deepEqual(counted, ["cityInterest/in-mh-pune"]);
+  const markers = [...records.keys()]
+    .filter((key) => key.startsWith("cityInterestMarkers/"));
+  assert.equal(markers.length, 1);
+  assert.equal(markers[0].includes("9812345678"), false,
+    "the marker id never carries the number");
+
+  // Asking again for the same city counts once.
+  assert.equal((await submit({...body, citySource: "picked"})).status, 200);
+  assert.deepEqual(counted, ["cityInterest/in-mh-pune"]);
+
+  // A city the catalog does not have counts under its country's Other.
+  const other = readFixture(
+    "fixtures/valid/join_waitlist_request_whatsapp_city_other.json");
+  assert.equal((await submit(other)).status, 200);
+  assert.deepEqual(counted,
+    ["cityInterest/in-mh-pune", "cityInterest/other-in"]);
+
+  const before = records.size;
+  for (const rejected of [
+    {...body, cityId: "in-xx-atlantis"},
+    {...body, cityId: "in-mh-pune", countryIsoCode: "NP"},
+    {...body, cityId: null},
+  ]) {
+    assert.equal((await submit(rejected)).status, 400);
+  }
+  assert.equal(records.size, before);
+});
 
 test("join waitlist response schema distinguishes success and errors", () => {
   assert.equal(

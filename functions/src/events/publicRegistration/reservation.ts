@@ -218,6 +218,7 @@ export async function reservePublicPayment(input: {
     });
     const now = Timestamp.fromMillis(nowMillis);
     const payment: Payment = {
+      purpose: "publicEvent",
       eventId,
       organizerId,
       recipientUid: uid,

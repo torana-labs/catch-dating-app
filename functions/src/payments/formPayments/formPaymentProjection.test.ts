@@ -41,7 +41,7 @@ test("only a real submitted response exposes completion; paid alone does not",
     const {paymentId} = await h.reserve();
     h.capture(paymentId);
     const read = () => h.store.records.get(
-      `organizerFormPayments/${paymentId}`)!;
+      `guestPayments/${paymentId}`)!;
     const project = () => projectFormPayment({db: h.db, paymentId,
       payment: read() as unknown as Parameters<
         typeof projectFormPayment>[0]["payment"],

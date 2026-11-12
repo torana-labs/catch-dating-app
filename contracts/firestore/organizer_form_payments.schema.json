@@ -35,9 +35,16 @@
     "checkoutExpiresAt",
     "capturedAt",
     "submittedAt",
-    "lastErrorCode"
+    "lastErrorCode",
+    "purpose"
   ],
   "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "form",
+      "description": "A paid form submission. guestPayments holds every guest checkout; purpose names the flow that owns this document.",
+      "x-catch-ownership": "server-only"
+    },
     "routing": {
       "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
     },
@@ -188,8 +195,8 @@
       "maxLength": 80
     }
   },
-  "x-firestore-collection": "organizerFormPayments",
-  "x-firestore-path": "organizerFormPayments/{paymentId}",
+  "x-firestore-collection": "guestPayments",
+  "x-firestore-path": "guestPayments/{paymentId}",
   "x-document-id-field": "paymentId",
   "x-owner": "organizer form payment server operations"
 }

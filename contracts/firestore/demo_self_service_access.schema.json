@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/demo_self_service_access.schema.json",
+  "title": "DemoSelfServiceAccessDocument",
+  "description": "Whether a seeded beta tester may be targeted by other testers' Suvbot self-service operations. Only `enabled` is read; the record is managed by demo tooling.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-firestore-collection": "demoSelfServiceAccess",
+  "x-firestore-path": "demoSelfServiceAccess/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "Demo tooling; read by Suvbot",
+  "required": [
+    "enabled"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

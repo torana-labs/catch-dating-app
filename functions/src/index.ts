@@ -1158,8 +1158,7 @@ export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,
-  onOrganizerGrowthPublicPaymentWritten,
-  onOrganizerGrowthOfferPaymentWritten,
+  onOrganizerGrowthGuestPaymentWritten,
   onOrganizerGrowthNativePaymentWritten,
 } from "./growth/organizerGrowthTriggers";
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
@@ -1184,3 +1183,4 @@ export {adminGetFinanceMonth} from "./money/financeMonth";
 export {adminManagePaymentIssues} from "./money/paymentIssues";
 export {adminGetGrowth} from "./growth/adminGetGrowth";
 export {adminGetMarketplace} from "./marketplace/adminGetMarketplace";
+export {adminGetCityInterest} from "./cityInterest/adminGetCityInterest";

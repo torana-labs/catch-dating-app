@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/marketing_ops_dashboards.schema.json",
+  "title": "MarketingOpsDashboardDocument",
+  "description": "The marketing operations dashboard (one document, `current`): the content bridge state Admin edits, and when it changed.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-firestore-collection": "marketingOpsDashboards",
+  "x-firestore-path": "marketingOpsDashboards/{dashboardId}",
+  "x-document-id-field": "id",
+  "x-owner": "adminCreateMarketingContentDraft and related Admin callables",
+  "required": [
+    "updatedAt"
+  ],
+  "properties": {
+    "bridge": {
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {applyLanes, nxChooses} from "./select_lanes.mjs";
+import {applyLanes, nxChooses, unionLanes} from "./select_lanes.mjs";
 
 const plan = {mode: "merge_group", full: false,
   operations: {ciTargets: ["flutter", "flutter_build_ios", "tools"],
@@ -24,4 +24,16 @@ test("nightly, full and main runs keep the planner's selection", () => {
   assert.equal(nxChooses({mode: "main"}), false);
   assert.equal(nxChooses({mode: "nightly", full: true}), false);
   assert.equal(nxChooses({mode: "pr", commitWindow: true}), false);
+});
+
+// Run 43244338235 (12 Nov 2026): Nx missed nine lanes the planner selected,
+// and the PR never ran them.
+test("Nx can add lanes but never drop one the planner selected", () => {
+  assert.deepEqual(unionLanes(plan, ["tools"]),
+    {selected: ["flutter", "flutter_build_ios", "tools"], restored: ["flutter", "flutter_build_ios"]});
+  assert.deepEqual(unionLanes(plan, ["admin", "flutter", "flutter_build_ios", "tools"]),
+    {selected: ["admin", "flutter", "flutter_build_ios", "tools"], restored: []});
+  assert.deepEqual(unionLanes({operations: {ciTargets: ["not_a_lane"]}}, ["unknown", "docs"]),
+    {selected: ["docs"], restored: []}, "only CI lanes count");
+  assert.deepEqual(unionLanes({operations: {}}, []), {selected: [], restored: []});
 });

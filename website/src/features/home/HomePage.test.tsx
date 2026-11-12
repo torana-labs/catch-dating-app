@@ -100,7 +100,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const navigate = vi.fn();
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} navigate={navigate} />);
     fireEvent.click(screen.getByRole("button", {name: "Mumbai"}));
-    fireEvent.click(screen.getByRole("option", {name: /Pune/}));
+    fireEvent.click(screen.getByRole("menuitemradio", {name: /Pune/}));
     expect(navigate).toHaveBeenCalledWith("/?city=pune");
   });
 
@@ -144,7 +144,7 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));
     const mumbai = mumbaiLiveCatalog.cities.find((city) => city.slug === "mumbai")!;
-    const mumbaiName = mumbai.weekPlanCount === 0 ? "Mumbai · new" :
+    const mumbaiName = mumbai.weekPlanCount === 0 ? "Mumbai · New" :
       mumbai.weekPlanCount === 1 ? "Mumbai · 1 plan this week" : `Mumbai · ${mumbai.weekPlanCount} plans this week`;
     expect(footer.getByRole("link", {name: mumbaiName}).getAttribute("href")).toBe("/mumbai/");
     expect(footer.queryByRole("link", {name: /^Pune/u})).toBeNull();
