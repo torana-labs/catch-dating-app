@@ -508,12 +508,16 @@
         "npmProjectTargets": {
           "functions": {
             "check": {
-              "command": "node tool/audit/check_fn_readme_inventory.mjs",
+              "command": "node tool/run.mjs check audit:fn-rate-limits audit:fn-readme-inventory",
               "inputs": [
                 "{projectRoot}/README.md",
-                "{projectRoot}/src/index.ts",
+                "{projectRoot}/src/**/*",
+                "!{projectRoot}/src/**/*.md",
+                "{workspaceRoot}/tool/audit/check_fn_rate_limits.mjs",
                 "{workspaceRoot}/tool/audit/check_fn_readme_inventory.mjs",
-                "{workspaceRoot}/tool/audit/fn_readme_inventory_baseline.json"
+                "{workspaceRoot}/tool/audit/fn_readme_inventory_baseline.json",
+                "{workspaceRoot}/tool/run.mjs",
+                "{workspaceRoot}/tool/tools_manifest.json"
               ]
             }
           }

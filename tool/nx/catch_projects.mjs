@@ -11,7 +11,8 @@
 //   sources its committed generated code comes from.
 // - `npmProjectTargets` adds command targets, in the same shape, to an
 //   independently locked npm package, keyed by its root: a check that reads a
-//   file the package's own targets ignore, such as functions/README.md.
+//   file the package's own targets ignore. functions:check is functions-ci's
+//   governance step, which reads functions/README.md and tool/tools_manifest.json.
 // - Markdown is not an input of a Dart or npm project's own targets. Where a
 //   check reads a document, that check's target names it.
 //

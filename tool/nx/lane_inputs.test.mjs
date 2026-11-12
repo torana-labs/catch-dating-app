@@ -50,5 +50,7 @@ test("documents select the docs lane and the checks that read them, nothing else
   const functionsSource = affectedTasks("functions/src/index.ts");
   assert.ok(["functions:check", "functions:test", "lane-firestore-rules:lane"].every((task) => functionsSource.includes(task)),
     "a Functions source change still runs Functions and its inventory check");
+  assert.ok(affectedTasks("tool/tools_manifest.json").includes("functions:check"),
+    "functions-ci runs its governance checks through the tool manifest");
   assert.deepEqual(affectedTasks("contracts/README.md"), ["contracts:check", "contracts:conformance", "lane-docs:lane"]);
 });
