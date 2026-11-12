@@ -107,7 +107,37 @@ export function savedEventId(uid: string, eventId: string): string {
 }
 
 /**
- * Reads event participation edges by status inside a transaction.
+ * The Catch booking a roster row carries, in the participation shape the
+ * booking callables use. Null for rows with no linked Catch booking.
+ * @param {FirebaseFirestore.DocumentData} row eventAttendees row.
+ * @return {EventParticipationSnapshot["data"] | null} Booking.
+ */
+export function catchBookingFromRow(
+  row: FirebaseFirestore.DocumentData | undefined
+): EventParticipationSnapshot["data"] | null {
+  const booking = row?.booking;
+  if (!booking || typeof booking !== "object" ||
+      typeof row?.linkedUid !== "string") {
+    return null;
+  }
+  return {...booking, eventId: row.eventId, organizerId: row.organizerId,
+    uid: row.linkedUid} as EventParticipationSnapshot["data"];
+}
+
+/** Bookings from roster rows, keyed to the participation each still writes. */
+function catchBookingSnapshots(
+  db: FirebaseFirestore.Firestore,
+  docs: FirebaseFirestore.QueryDocumentSnapshot[]
+): EventParticipationSnapshot[] {
+  return docs.flatMap((doc) => {
+    const data = catchBookingFromRow(doc.data());
+    return data ? [{data, ref: db.collection("eventParticipations")
+      .doc(eventParticipationId(data.eventId, data.uid))}] : [];
+  });
+}
+
+/**
+ * Reads Catch bookings by status from the event roster inside a transaction.
  * @param {FirebaseFirestore.Transaction} tx Transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {string} eventId Event id.
@@ -122,20 +152,19 @@ export async function eventParticipationsByStatusInTransaction(
   options: {limit?: number} = {}
 ): Promise<EventParticipationSnapshot[]> {
   if (statuses.length === 0) return [];
+  // The roster row carries each Catch booking; its booking status is the
+  // booking's own lifecycle even when a Host owns the row's status.
   let query = db
-    .collection("eventParticipations")
+    .collection("eventAttendees")
     .where("eventId", "==", eventId)
-    .where("status", "in", statuses);
+    .where("booking.status", "in", statuses);
   if (options.limit !== undefined) query = query.limit(options.limit);
   const snap = await tx.get(query);
-  return snap.docs.map((doc) => ({
-    ref: doc.ref,
-    data: doc.data() as EventParticipationSnapshot["data"],
-  }));
+  return catchBookingSnapshots(db, snap.docs);
 }
 
 /**
- * Reads waitlisted participation edges in promotion order.
+ * Reads waitlisted Catch bookings from the event roster in promotion order.
  * @param {FirebaseFirestore.Transaction} tx Transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {string} eventId Event id.
@@ -147,15 +176,12 @@ export async function waitlistedEventParticipationsInTransaction(
   eventId: string
 ): Promise<EventParticipationSnapshot[]> {
   const query = db
-    .collection("eventParticipations")
+    .collection("eventAttendees")
     .where("eventId", "==", eventId)
-    .where("status", "==", "waitlisted")
-    .orderBy("waitlistedAt", "asc");
+    .where("booking.status", "==", "waitlisted")
+    .orderBy("booking.waitlistedAt", "asc");
   const snap = await tx.get(query);
-  return snap.docs.map((doc) => ({
-    ref: doc.ref,
-    data: doc.data() as EventParticipationSnapshot["data"],
-  }));
+  return catchBookingSnapshots(db, snap.docs);
 }
 
 /**
