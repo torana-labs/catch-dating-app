@@ -13,38 +13,36 @@ const _copy = CatchPickerCopy(
 );
 
 void main() {
-  testWidgets(
-    'shared date picker uses resolved copy and clamps its date',
-    (tester) async {
-      DateTime? selected;
-      await tester.pumpWidget(
-        _wrap((context) async {
-          selected = await showCatchDatePicker(
-            context: context,
-            copy: _copy,
-            initialDate: DateTime(2025),
-            firstDate: DateTime(2026, 5, 1, 12),
-            lastDate: DateTime(2026, 5, 31, 23),
-          );
-        }),
-      );
-      await tester.tap(find.text('Open'));
-      await pumpFeatureUi(tester);
-      expect(find.text(_copy.title), findsOneWidget);
-      expect(find.text(_copy.cancelLabel), findsOneWidget);
-      expect(find.text('Done'), findsNothing);
-      final picker = tester.widget<CupertinoDatePicker>(
-        find.byType(CupertinoDatePicker),
-      );
-      expect(picker.initialDateTime, DateTime(2026, 5));
-      expect(picker.minimumDate, DateTime(2026, 5));
-      expect(picker.maximumDate, DateTime(2026, 5, 31));
-      await tester.tap(find.text(_copy.doneLabel));
-      await pumpFeatureUi(tester);
-      expect(selected, DateTime(2026, 5));
-    },
-    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-  );
+  testWidgets('shared date picker uses resolved copy and clamps its date', (
+    tester,
+  ) async {
+    DateTime? selected;
+    await tester.pumpWidget(
+      _wrap((context) async {
+        selected = await showCatchDatePicker(
+          context: context,
+          copy: _copy,
+          initialDate: DateTime(2025),
+          firstDate: DateTime(2026, 5, 1, 12),
+          lastDate: DateTime(2026, 5, 31, 23),
+        );
+      }),
+    );
+    await tester.tap(find.text('Open'));
+    await pumpFeatureUi(tester);
+    expect(find.text(_copy.title), findsOneWidget);
+    expect(find.text(_copy.cancelLabel), findsOneWidget);
+    expect(find.text('Done'), findsNothing);
+    final picker = tester.widget<CupertinoDatePicker>(
+      find.byType(CupertinoDatePicker),
+    );
+    expect(picker.initialDateTime, DateTime(2026, 5));
+    expect(picker.minimumDate, DateTime(2026, 5));
+    expect(picker.maximumDate, DateTime(2026, 5, 31));
+    await tester.tap(find.text(_copy.doneLabel));
+    await pumpFeatureUi(tester);
+    expect(selected, DateTime(2026, 5));
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   testWidgets(
     'shared time picker cancels without committing its initial time',
@@ -71,28 +69,26 @@ void main() {
     variant: TargetPlatformVariant.only(TargetPlatform.iOS),
   );
 
-  testWidgets(
-    'Material date selection retains the framework picker',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap((context) async {
-          await showCatchDatePicker(
-            context: context,
-            copy: _copy,
-            initialDate: DateTime(2026, 5, 12),
-            firstDate: DateTime(2026, 5),
-            lastDate: DateTime(2026, 5, 31),
-          );
-        }),
-      );
-      await tester.tap(find.text('Open'));
-      await pumpFeatureUi(tester);
-      expect(find.byType(DatePickerDialog), findsOneWidget);
-      expect(find.byType(CatchWheelPickerSheet), findsNothing);
-      expect(find.text(_copy.title), findsNothing);
-    },
-    variant: TargetPlatformVariant.only(TargetPlatform.android),
-  );
+  testWidgets('Material date selection retains the framework picker', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap((context) async {
+        await showCatchDatePicker(
+          context: context,
+          copy: _copy,
+          initialDate: DateTime(2026, 5, 12),
+          firstDate: DateTime(2026, 5),
+          lastDate: DateTime(2026, 5, 31),
+        );
+      }),
+    );
+    await tester.tap(find.text('Open'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(DatePickerDialog), findsOneWidget);
+    expect(find.byType(CatchWheelPickerSheet), findsNothing);
+    expect(find.text(_copy.title), findsNothing);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
 
   testWidgets('shared confirmation resolves supplied defaults and overrides', (
     tester,

@@ -120,49 +120,6 @@
       "notes": "Canonical Event Success Companion default live-guide Claude reference for advisory comparison against event_success_companion light captures rendered on the design-phone device. Dynamic ticket, progress, guide copy, and CTA regions are masked until the companion state adapters and activity-specific variants stabilize. 2026-06-25 paper companion shell pass: above advisory threshold but improved from 75.47% to 22.94% mismatch and from 117.85 to 33.16 meanDelta; maxDelta 226, masked 227228."
     },
     {
-      "id": "screen.catches.event.active_profile",
-      "screenId": "screen.catches.event",
-      "stateId": "active_profile",
-      "captureId": "post_run_catch_window",
-      "theme": "light",
-      "textScale": 1,
-      "device": {
-        "id": "claude-phone-390x812",
-        "width": 390,
-        "height": 812,
-        "pixelRatio": 1
-      },
-      "referencePath": "design/reference_screens/screen.catches.event/active_profile.png",
-      "maskPath": "design/reference_screens/screen.catches.event/masks.json",
-      "source": {
-        "kind": "claude",
-        "id": "claude.catches-event",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/catch-website/assets/app/post-run-catch-window.png",
-        "exportedAt": "2026-06-22",
-        "exportTool": "sips crop + resize from website app asset",
-        "sourceImage": {
-          "width": 1020,
-          "height": 1964
-        },
-        "crop": {
-          "x": 106,
-          "y": 104,
-          "width": 808,
-          "height": 1760
-        },
-        "resize": {
-          "width": 390,
-          "height": 812
-        }
-      },
-      "thresholds": {
-        "perChannelDelta": 16,
-        "maxMismatchRatio": 0.2,
-        "maxMeanDelta": 22
-      },
-      "notes": "First Catches Event Deck active-profile reference normalized from the Claude website app screenshot asset. Device chrome, profile fixture content, compatibility copy, reaction controls, and pass/scroll extent are masked until Catches deck adapters and dedicated interaction variants stabilize. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 27.31%, meanDelta 51.09, maxDelta 244, masked 279632."
-    },
-    {
       "id": "screen.profile.public.public_profile",
       "screenId": "screen.profile.public",
       "stateId": "public_profile",
@@ -807,11 +764,11 @@
         "maxMeanDelta": 18
       },
       "parityDebtId": "HOST-V2-EVENTS-VISUAL-DRIFT-001",
-    "regressionThresholds": {
-      "maxMismatchRatio": 0.18,
-      "maxMeanDelta": 19.1
-    },
-    "notes": "Canonical Claude Host Events-list reference. The lifecycle workspace remains functional, but the integrated sliver, option-group, and app-shell consolidation no longer meets the canonical mean-delta threshold. The 2026-08-12 macOS CI capture, after adding the first-class Audience destination to Host navigation, matches at 14.93% mismatch, 19.05 meanDelta, maxDelta 240, masked 17160. HOST-V2-EVENTS-VISUAL-DRIFT-001 bounds this intentional shell change without weakening the canonical thresholds."
+      "regressionThresholds": {
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 19.1
+      },
+      "notes": "Canonical Claude Host Events-list reference. The lifecycle workspace remains functional, but the integrated sliver, option-group, and app-shell consolidation no longer meets the canonical mean-delta threshold. The 2026-08-12 macOS CI capture, after adding the first-class Audience destination to Host navigation, matches at 14.93% mismatch, 19.05 meanDelta, maxDelta 240, masked 17160. HOST-V2-EVENTS-VISUAL-DRIFT-001 bounds this intentional shell change without weakening the canonical thresholds."
     },
     {
       "id": "screen.host.clubs.organizer_overview",

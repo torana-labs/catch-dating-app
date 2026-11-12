@@ -191,8 +191,10 @@ export type {CatchIconProps} from "./components/CatchIcon";
 /** Legacy: the pre-redesign icon, deleted in P7. */
 export {CatchLegacyIcon, catchIconSizes} from "./components/CatchLegacyIcon";
 export type {CatchIconSizeName, CatchIconTone, CatchLegacyIconProps} from "./components/CatchLegacyIcon";
-export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs";
-export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
+export {catchIconStrokeWidth} from "./icons/catchIconRoles";
+export type {CatchActivityKind, CatchIconName} from "./icons/catchIconRoles";
+export {loadCatchIconGlyphs} from "./icons/catchIconGlyphLoader";
+export type {CatchIconGlyphs} from "./icons/catchIconGlyphLoader";
 export {catchIconNodes} from "./icons/catchIconNodes";
 export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes";
 export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
@@ -272,7 +274,7 @@ export type {
   CatchSplitRatio,
 } from "./components/CatchSplit";
 export {CatchStack} from "./components/CatchStack";
-export type {CatchStackElement, CatchStackProps} from "./components/CatchStack";
+export type {CatchStackElement, CatchStackProps, CatchStackRailWidth} from "./components/CatchStack";
 export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
@@ -316,6 +318,8 @@ export type {
   CatchTabBarProps,
 } from "./components/CatchTabBar";
 export {CatchTopBar} from "./components/CatchTopBar";
+export {CatchWordmark} from "./components/CatchWordmark";
+export type {CatchWordmarkProps, CatchWordmarkSize} from "./components/CatchWordmark";
 export type {CatchTopBarAction, CatchTopBarBack, CatchTopBarProps, CatchTopBarVariant} from "./components/CatchTopBar";
 export {CatchViewport} from "./components/CatchViewport";
 export type {CatchViewportProps} from "./components/CatchViewport";
@@ -451,3 +455,7 @@ export {CatchTicket, catchTicketStatuses} from "./components/CatchTicket";
 export type {CatchTicketFact, CatchTicketProps, CatchTicketStatus} from "./components/CatchTicket";
 export {CatchMetricTile, catchMetricTileLayouts, catchMetricTileTones} from "./components/CatchMetricTile";
 export type {CatchMetricTileLayout, CatchMetricTileProps, CatchMetricTileTone} from "./components/CatchMetricTile";
+export {CatchVideoEmbed} from "./components/CatchVideoEmbed";
+export type {CatchVideoEmbedProps, CatchVideoEmbedStill} from "./components/CatchVideoEmbed";
+export {CatchNoteCard} from "./components/CatchNoteCard";
+export type {CatchNoteCardAction, CatchNoteCardPhoto, CatchNoteCardProps} from "./components/CatchNoteCard";

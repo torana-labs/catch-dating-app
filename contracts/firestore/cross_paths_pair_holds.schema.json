@@ -5,7 +5,7 @@
   "description": "Server-owned, short-lived companion-seat reservation for an accepted Cross Paths invitation.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "cross_paths_pair_holds",
+  "x-firestore-collection": "crossPathsPairHolds",
   "x-firestore-path": "crossPathsPairHolds/{holdId}",
   "x-document-id-field": "id",
   "x-owner": "Cross Paths pair-inventory callables and payment fulfillment",

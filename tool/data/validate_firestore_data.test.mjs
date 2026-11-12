@@ -26,10 +26,9 @@ function doc(docPath, data) {
   return {id: docPath.split("/").at(-1), path: docPath, data: timestamp(data), bytes: 100};
 }
 function collections(overrides = {}) {
-  return Object.fromEntries(["users", "hostProfiles", "publicProfiles", "clubs",
-    "organizers", "organizerMemberships", "events", "eventParticipations", "savedEvents",
-    "reviews", "matches", "onboarding_drafts", "organizerScheduleLocks",
-    "userEventScheduleLocks", "outgoing", "messages"]
+  return Object.fromEntries(["users", "hostProfiles", "publicProfiles",
+    "organizers", "organizerFollows", "events", "eventParticipations", "savedEvents",
+    "reviews", "matches", "onboarding_drafts", "scheduleLocks", "outgoing", "messages"]
     .map((name) => [name, overrides[name] ?? []]));
 }
 function reportFor(overrides, maxDocs = 5000, options = {}) {
@@ -65,27 +64,25 @@ function privateEvent() {
       timezone: {value: "Asia/Kolkata", source: "event"}, organizerDefaultsRevision: null,
       organizerDefaultsHash: "a".repeat(64)}};
 }
-const organizer = () => doc("clubs/club-1", {...fixture("organizer_doc.json"), memberCount: 0});
+const organizer = () => doc("organizers/club-1", {...fixture("organizer_doc.json"), followerCount: 0});
+const followData = () => ({organizerId: "club-1", uid: "runner-1", status: "active",
+  pushNotificationsEnabled: true, followedAt: {_seconds: 1778716800, _nanoseconds: 0}, unfollowedAt: null});
 
-test("an organizer with no memberCount has nothing to drift, and a wrong one still fails", () => {
-  const without = organizer();
-  delete without.data.memberCount;
-  assert.equal(reportFor({organizers: [without]}).issues.some((entry) => entry.code === "member-count-drift"), false);
-  const wrong = organizer();
-  wrong.data.memberCount = 3;
-  assert.equal(reportFor({organizers: [wrong]}).issues.some((entry) => entry.code === "member-count-drift"), true);
+test("followerCount must match active organizerFollows", () => {
+  const follow = doc("organizerFollows/club-1_runner-1", followData());
+  assert.equal(reportFor({organizers: [organizer()], organizerFollows: []}).issues
+    .some((entry) => entry.code === "follower-count-drift"), false);
+  assert.equal(reportFor({organizers: [organizer()], organizerFollows: [follow]}).issues
+    .some((entry) => entry.code === "follower-count-drift"), true);
 });
 
-test("generated membership contract accepts owner and rejects unknown roles and missing fields", () => {
-  const membershipPath = "organizerMemberships/club-1_runner-1";
-  for (const role of ["owner", "host", "member"]) {
-    const data = {...fixture("organizer_membership_doc.json"), role};
-    assert.equal(findings(reportFor({organizerMemberships: [doc(membershipPath, data)]}), membershipPath)
-      .filter((item) => item.severity === "error").length, 0);
-  }
-  for (const patch of [{role: "admin"}, {role: null}, {pushNotificationsEnabled: undefined}]) {
-    const data = {...fixture("organizer_membership_doc.json"), ...patch};
-    assert.ok(reportFor({organizerMemberships: [doc(membershipPath, data)]}).issues
+test("generated follow contract accepts a follow and rejects unknown statuses and missing fields", () => {
+  const followPath = "organizerFollows/club-1_runner-1";
+  assert.equal(findings(reportFor({organizerFollows: [doc(followPath, followData())]}), followPath)
+    .filter((item) => item.severity === "error").length, 0);
+  for (const patch of [{status: "member"}, {status: null}, {pushNotificationsEnabled: undefined}]) {
+    const data = {...followData(), ...patch};
+    assert.ok(reportFor({organizerFollows: [doc(followPath, data)]}).issues
       .some((item) => item.code === "schema-contract"));
   }
 });
@@ -159,7 +156,7 @@ test("denominators expose capped queries and metadata includes only allowlisted 
   const report = reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}, 1);
   assert.equal(report.summary.completeWithinCap, false);
   assert.equal(report.summary.collections.events.limitReached, true);
-  assert.equal(report.summary.collections.organizerScheduleLocks.enabled, false);
+  assert.equal(report.summary.collections.scheduleLocks.enabled, false);
   assert.deepEqual(report.documentStates["events/e1"], {collection: "events", synthetic: true,
     hasSeedMarker: true, status: "unrecognized", publicationState: "private",
     hasEndTime: false, hasMeetingLocation: false, hasSetupRevision: true});
@@ -178,7 +175,7 @@ test("collection loader stays read-only and bounded and includes canonical organ
   assert.ok(queries.some((item) => item.kind === "collection" && item.name === "organizers"));
   assert.ok(queries.some((item) => item.kind === "group" && item.name === "outgoing"));
   assert.ok(queries.every((item) => item.value === 17));
-  assert.deepEqual(result.organizerScheduleLocks, []);
+  assert.deepEqual(result.scheduleLocks, []);
 });
 
 function runOffline(rows, args, {blockOutput = false} = {}) {
@@ -211,9 +208,9 @@ function runOffline(rows, args, {blockOutput = false} = {}) {
 }
 
 test("failing report larger than 64 KiB saves parseable JSON and reconciles every total", (t) => {
-  const rows = Array.from({length: 350}, (_, index) => ({path: `organizerMemberships/club-1_user-${index}`,
-    data: {...fixture("organizer_membership_doc.json"), uid: `user-${index}`, role: "invalid"}}));
-  const result = runOffline({organizerMemberships: rows}, []);
+  const rows = Array.from({length: 350}, (_, index) => ({path: `organizerFollows/club-1_user-${index}`,
+    data: {...followData(), uid: `user-${index}`, status: "invalid"}}));
+  const result = runOffline({organizerFollows: rows}, []);
   assert.equal(result.status, 1, result.stderr);
   assert.ok(Buffer.byteLength(result.saved) > 65536);
   assert.deepEqual(JSON.parse(result.stdout), JSON.parse(result.saved));
@@ -245,10 +242,10 @@ test("missing schedule locks reconcile into zero-document collection denominator
     {checkScheduleLocks: true});
   const missing = report.issues.filter((item) => item.code === "missing-schedule-lock");
   assert.ok(missing.length > 0);
-  assert.equal(report.summary.collections.organizerScheduleLocks.errors, missing.length);
-  assert.equal(report.summary.collections.organizerScheduleLocks.scannedDocuments, 0);
-  assert.equal(report.summary.collections.organizerScheduleLocks.documentsWithIssues, 0);
-  assert.equal(report.summary.collections.organizerScheduleLocks.enabled, true);
+  assert.equal(report.summary.collections.scheduleLocks.errors, missing.length);
+  assert.equal(report.summary.collections.scheduleLocks.scannedDocuments, 0);
+  assert.equal(report.summary.collections.scheduleLocks.documentsWithIssues, 0);
+  assert.equal(report.summary.collections.scheduleLocks.enabled, true);
 });
 
 test("a complete published fixture is valid and wrong time ordering still fails", () => {
@@ -269,10 +266,10 @@ test("an event without its publication state or setup revision is reported", () 
 });
 
 test("serialized timestamp maps cannot impersonate native Firestore Timestamp values", () => {
-  const membership = doc("organizerMemberships/club-1_runner-1", fixture("organizer_membership_doc.json"));
+  const follow = doc("organizerFollows/club-1_runner-1", followData());
   const event = doc("events/e1", privateEvent());
   const decision = doc("profileDecisions/a/outgoing/b", {...fixture("swipe_doc.json"), swiperId: "a", targetId: "b"});
-  const cases = [["organizerMemberships", membership, "joinedAt"], ["organizers", organizer(), "createdAt"],
+  const cases = [["organizerFollows", follow, "followedAt"], ["organizers", organizer(), "createdAt"],
     ["events", event, "startTime"], ["outgoing", decision, "createdAt"]];
   for (const [collection, record, field] of cases) {
     record.data[field] = new Timestamp(1792328400, 123456789);

@@ -1,41 +1,46 @@
 import {
   CatchAccordion,
+  CatchAppCaptureImage,
   CatchButton,
   CatchCheckboxInput,
   CatchChip,
+  CatchDeviceFrame,
   CatchEventCard,
   CatchField,
+  CatchFormatTile,
+  CatchHeroShowcase,
   CatchIndexRow,
   CatchMenu,
-  CatchMeter,
   CatchOrganizerCard,
   CatchQrCode,
   CatchRail,
+  CatchScroller,
   CatchSection,
   CatchStack,
+  CatchStoreButton,
   CatchSurface,
   CatchText,
+  catchFormatAccentOf,
+  type CatchHeroShowcaseSticker,
   type CatchTextTone,
 } from "@catch/web-ui";
-import type {ReactNode} from "react";
+import {useEffect, useState, type ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {siteFooterLegalLinks} from "@content/site";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../../shared/site";
+import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {cityStatusLabel} from "../homeModel";
+import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
-import {cityPagePath, organisersHref} from "./cityChrome";
+import {cityPagePath, footerCities} from "./cityChrome";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
 const areasOf = (home: Home) => homeCityAreas[home.city.marketSlug];
 const posterOf = (format: string | null) => homeFormats.find((item) => item.format === format)?.poster;
-const helpHref = siteFooterLegalLinks.find((link) => link.href.startsWith("/help"))?.href ?? "/help/";
-const legalHref = (prefix: string) => siteFooterLegalLinks.find((link) => link.href.startsWith(prefix))?.href ?? helpHref;
 
 /** A section opening: a coloured kicker over a display headline. */
 function Heading({id, kicker, title, tone = "secondary", as = "h2"}: {id?: string; kicker: string; title: string; tone?: CatchTextTone; as?: "h1" | "h2"}) {
@@ -52,34 +57,34 @@ function HeadingRow({children, aside}: {children: ReactNode; aside: ReactNode}) 
   return <CatchStack align="end" collapseBelow="medium" direction="row" gap={32} justify="between">{children}{aside}</CatchStack>;
 }
 
-function StoreButtons({placement}: {placement: string}) {
+/** The Catch app's official store badges for one placement. */
+function StoreButtons({placement, size = "l"}: {placement: string; size?: "m" | "l"}) {
   const stores = useAppDownloadCtas({placement});
   return (
-    <CatchStack direction="row" gap={8} wrap>
+    <CatchStack align="center" direction="row" gap={12} wrap>
       {stores.map((store) => (
-        <CatchButton href={store.href || undefined} key={store.store} label={store.label} leadingIcon="download" onPressed={store.onClick}
-          semanticsLabel={store.accessibleLabel} size="md" variant="secondary" />
+        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} size={size} store={store.store} />
       ))}
     </CatchStack>
   );
 }
 
-function CityPicker({home}: {home: Home}) {
-  return (
-    <CatchMenu
-      align="end"
-      builder={(menu) => <CatchButton {...menu.triggerProps} label={home.city.label} onPressed={menu.toggle} size="sm" trailingIcon="expand" variant="secondary" />}
-      items={home.cities.map((item) => ({value: item.slug, label: item.label, sublabel: cityStatusLabel(item), selected: item.slug === home.city.slug, variant: "choice" as const}))}
-      label={copy.header.cityMenu}
-      onSelected={home.chooseCity}
-      recipe="anchored"
-      width={300}
-    />
-  );
-}
+// The hero's stickers sit on white, ink and yellow, as the board sets them.
+const stickerGrounds = ["white", "ink", "yellow"] as const;
 
-function HomeHero({home}: {home: Home}) {
+function HomeHero({captures, home}: {captures: CaptureSlots; home: Home}) {
   const city = home.city.label;
+  const explore = captureSlot(captures, "guest-explore", "eager");
+  const stickers: CatchHeroShowcaseSticker[] = home.stickers.map((plan, index) => {
+    const ground = stickerGrounds[index % stickerGrounds.length];
+    const accent = plan.format ? catchFormatAccentOf(plan.format) : null;
+    return {
+      label: fill(copy.hero.chipKicker, {format: posterOf(plan.format) ?? plan.formatLabel, when: plan.when}),
+      title: plan.title,
+      ground,
+      labelAccent: ground === "yellow" || !accent ? undefined : accent,
+    };
+  });
   return (
     <CatchSurface aria-labelledby="home-title" as="section" block="band">
       <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
@@ -93,16 +98,11 @@ function HomeHero({home}: {home: Home}) {
           </CatchStack>
           <StoreButtons placement="home_hero" />
         </CatchStack>
-        {home.stickers.length ? (
-          <CatchSurface aspect={1.05} block="spotlight" color="dinner">
-            {home.stickers.map((plan) => (
-              <CatchSurface block="floating" key={plan.key} padding="sm">
-                <CatchText tone="secondary" variant="label-kicker">{fill(copy.hero.chipKicker, {format: posterOf(plan.format) ?? plan.formatLabel, when: plan.when})}</CatchText>
-                <CatchText variant="title-row">{plan.title}</CatchText>
-              </CatchSurface>
-            ))}
-          </CatchSurface>
-        ) : null}
+        <CatchHeroShowcase
+          device={explore ? <CatchAppCaptureImage {...explore} caption={undefined} tilt="left" /> : null}
+          ground="pink"
+          stickers={stickers}
+        />
       </CatchStack>
     </CatchSurface>
   );
@@ -114,21 +114,17 @@ function HomeFormats({home}: {home: Home}) {
       <HeadingRow aside={<CatchText tone="secondary" variant="body">{copy.formats.lead}</CatchText>}>
         <Heading id="home-formats-title" kicker={copy.formats.eyebrow} title={copy.formats.title} tone="success" />
       </HeadingRow>
-      <CatchStack align="stretch" collapseBelow="medium" direction="row" equal gap={12}>
-        {home.tiles.map((tile) => (
-          <CatchSurface block="spotlight" color={tile.format} data-selected={home.live && home.filter === tile.format ? "" : undefined} href="#whats-on" key={tile.format}
-            onClick={home.live ? () => home.chooseTile(tile.format) : undefined} padding="md">
-            <CatchText variant="label-kicker">{tile.kicker}</CatchText>
-            <CatchText variant="display-sm">{tile.title}</CatchText>
-            <CatchText variant="body-small">{tile.body}</CatchText>
-            {tile.format === "games" ? (
-              <CatchSection container="tile">
-                {copy.formats.scores.map((score) => <CatchIndexRow density="compact" key={score.title} title={score.title} value={score.value} />)}
-              </CatchSection>
-            ) : null}
-          </CatchSurface>
+      {/* The band already pads to the content edge, so the rail's first tile lines up with the heading. */}
+      <CatchScroller edge="none" gap="related" itemWidth="m" label={copy.formats.label}>
+        {home.tiles.map((tile) => home.live ? (
+          <CatchFormatTile body={tile.body} format={tile.format} key={tile.format} kicker={tile.kicker} onPressed={() => {
+            home.chooseTile(tile.format);
+            if (typeof document !== "undefined") document.getElementById("whats-on")?.scrollIntoView?.({behavior: "smooth", block: "start"});
+          }} photoUrl={tile.photoUrl} pressed={home.filter === tile.format} title={tile.title} />
+        ) : (
+          <CatchFormatTile body={tile.body} format={tile.format} href="#whats-on" key={tile.format} kicker={tile.kicker} photoUrl={tile.photoUrl} title={tile.title} />
         ))}
-      </CatchStack>
+      </CatchScroller>
     </CatchSurface>
   );
 }
@@ -153,7 +149,7 @@ function HomeThisWeek({home}: {home: Home}) {
           ))}
         </CatchStack>
       {home.plans.length ? (
-        <CatchRail itemWidth={240} label={fill(copy.week.title, {city})} wrap="always">
+        <CatchRail itemWidth={240} label={fill(copy.week.title, {city})} wrap="auto">
           {home.plans.map((plan) => (
             <CatchEventCard format={plan.format ?? "games"} formatLabel={plan.formatLabel || undefined} href={plan.href} imageUrl={plan.photoUrl ?? undefined} key={plan.key}
               place={plan.detail} price={plan.availability ? `${plan.price} · ${plan.availability}` : plan.price} title={plan.title} variant="compact" when={plan.when} />
@@ -218,7 +214,7 @@ function HomeLaunchingSoon({home}: {home: Home}) {
           </CatchStack>
           <CatchStack gap={8}>
             <CatchText as="h3" variant="title-row">{copy.soon.appTitle}</CatchText>
-            <StoreButtons placement="home_launching_soon" />
+            <StoreButtons placement="home_launching_soon" size="m" />
           </CatchStack>
         </CatchSurface>
       </CatchStack>
@@ -235,38 +231,42 @@ function HomeLaunchingSoon({home}: {home: Home}) {
   );
 }
 
-/** A phone-shaped ink spotlight, centred in its column. */
-function PhoneMock({children}: {children: ReactNode}) {
-  return (
-    <CatchStack direction="row" justify="center">
-      <CatchSurface aspect={0.52} block="spotlight" color="ink" padding="md">{children}</CatchSurface>
-    </CatchStack>
-  );
+/** How long each step of the guest story shows before the next, until the reader picks one. */
+const storyStepMs = 4_000;
+
+/** The guest story's step: it moves on by itself until the reader picks one, and holds still under reduced motion. */
+function useStoryStep(count: number) {
+  const [step, setStep] = useState(0);
+  const [auto, setAuto] = useState(true);
+  useEffect(() => {
+    const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (!auto || reduced) return undefined;
+    const timer = window.setInterval(() => setStep((current) => (current + 1) % count), storyStepMs);
+    return () => window.clearInterval(timer);
+  }, [auto, count]);
+  return {step, pick: (index: number) => { setStep(index); setAuto(false); }};
 }
 
-function HomeNight() {
+function HomeNight({captures}: {captures: CaptureSlots}) {
+  // One screen per story step; a step without a capture keeps the screen before it.
+  const screens = [captureSlot(captures, "guest-explore"), captureSlot(captures, "guest-checked-in"),
+    captureSlot(captures, "guest-after-event")];
+  const story = useStoryStep(copy.story.steps.length);
+  const screen = screens.slice(0, story.step + 1).reverse().find(Boolean) ?? null;
   return (
     <CatchSurface aria-labelledby="home-story-title" as="section" block="band" color="ink" id="how">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={64}>
-        <CatchStack gap={24}>
+      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
+        <CatchStack gap={20}>
           <Heading id="home-story-title" kicker={copy.story.eyebrow} title={copy.story.title} tone="danger" />
           <CatchText tone="secondary" variant="body-lead">{copy.story.lead}</CatchText>
-          <CatchSection>
+          <CatchSection dividers="none">
             {copy.story.steps.map((step, index) => (
-              <CatchIndexRow density="regular" key={step.title} rank={index + 1} selected={index === 0} subtitle={step.body} title={step.title} wrap />
+              <CatchIndexRow density="regular" key={step.title} onTap={() => story.pick(index)} rank={index + 1} selected={index === story.step}
+                subtitle={step.body} title={step.title} wrap />
             ))}
           </CatchSection>
         </CatchStack>
-        <PhoneMock>
-          <CatchText tone="secondary" variant="label-kicker">{copy.story.phone.kicker}</CatchText>
-          <CatchSurface block="spotlight" color="run" padding="md">
-            <CatchText variant="label-kicker">{copy.story.phone.nowKicker}</CatchText>
-            <CatchText variant="display-sm">{copy.story.phone.now}</CatchText>
-          </CatchSurface>
-          <CatchSection>
-            {copy.story.phone.rows.map((row) => <CatchIndexRow density="compact" key={row} marker={{tone: "format", format: "run"}} title={row} />)}
-          </CatchSection>
-        </PhoneMock>
+        {screen ? <CatchAppCaptureImage {...screen} caption={undefined} size="md" tilt="right" /> : null}
       </CatchStack>
     </CatchSurface>
   );
@@ -301,7 +301,8 @@ function HomeOrganisers({home}: {home: Home}) {
   );
 }
 
-function HomeHosts() {
+function HomeHosts({captures}: {captures: CaptureSlots}) {
+  const tablet = captureSlot(captures, "host-live-tablet");
   return (
     <CatchSurface aria-labelledby="home-host-title" as="section" block="band" color="run" id="hosts">
       <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
@@ -313,18 +314,12 @@ function HomeHosts() {
             <CatchText variant="body-small">{copy.host.priceNote}</CatchText>
           </CatchSurface>
           <CatchStack direction="row" gap={8} wrap>
-            <CatchButton href="/host/" label={copy.host.action} />
+            <CatchButton href="/host/#start" label={copy.host.trial} />
+            <CatchButton href="/host/" label={copy.host.action} variant="secondary" />
             <CatchButton href="/claim/" label={copy.host.claim} variant="ghost" />
           </CatchStack>
         </CatchStack>
-        <CatchSurface aspect={1.35} block="spotlight" color="ink">
-          <CatchText tone="secondary" variant="label-kicker">{copy.host.live.kicker}</CatchText>
-          <CatchText variant="display-lg">{copy.host.live.title}</CatchText>
-          <CatchMeter label={copy.host.live.meter} thickness={6} value={60} />
-          <CatchSection>
-            {copy.host.live.scores.map((score, index) => <CatchIndexRow density="compact" key={score.title} rank={index + 1} title={score.title} value={score.value} />)}
-          </CatchSection>
-        </CatchSurface>
+        {tablet ? <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : null}
       </CatchStack>
     </CatchSurface>
   );
@@ -365,22 +360,11 @@ function HomeFaq() {
   );
 }
 
+/** The one site footer, with the homepage's cities (each city's status as the picker reads it). */
 function HomeFooter({home}: {home: Home}) {
-  const links = copy.footer.links;
   return (
-    <SiteFooterBand
-      columns={[
-        {title: copy.footer.groups.explore, links: [{href: home.exploreHref, label: links.whatsOn}, {href: organisersHref, label: links.organisers}, {href: "#app", label: links.app}]},
-        {title: copy.footer.groups.cities, links: home.cities.map((item) => ({href: cityPagePath(item.slug),
-          label: item.status === "live" ? item.label : fill(copy.footer.soonCity, {city: item.label})}))},
-        {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
-        {title: copy.footer.groups.help, links: [{href: helpHref, label: links.help}, {href: helpHref, label: links.safety},
-          {href: legalHref("/privacy"), label: links.privacy}, {href: legalHref("/terms"), label: links.terms}]},
-      ]}
-      label={copy.footer.nav}
-      tagline={copy.footer.tagline}
-      wordmark={copy.footer.wordmark}
-    />
+    <PublicSiteFooter appHref="#app" exploreHref={home.exploreHref}
+      cities={footerCities(home.cities)} />
   );
 }
 
@@ -391,20 +375,20 @@ function HomeFooter({home}: {home: Home}) {
  * footer. It arranges system components and binds the controller's view of
  * the city to them.
  */
-export function HomePageSections({downloadUrl, home}: {home: Home; downloadUrl?: string}) {
+export function HomePageSections({captures, downloadUrl, home}: {captures: CaptureSlots; home: Home; downloadUrl?: string}) {
   return (
     <>
       <PublicSiteHeader
-        actions={<><CityPicker home={home} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
+        actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
         links={[{href: "#whats-on", label: copy.header.explore}, {href: "#organisers", label: copy.header.organisers}, {href: "/host/", label: copy.header.hosts}]}
       />
       <WebsitePageMain id="top">
-        <HomeHero home={home} />
+        <HomeHero captures={captures} home={home} />
         <HomeFormats home={home} />
         {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} />}
-        <HomeNight />
+        <HomeNight captures={captures} />
         <HomeOrganisers home={home} />
-        <HomeHosts />
+        <HomeHosts captures={captures} />
         <HomeApp downloadUrl={downloadUrl} />
         <HomeFaq />
       </WebsitePageMain>

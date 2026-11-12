@@ -1,12 +1,15 @@
 // copy:allow-file(Canonical geographic proper-noun country catalog)
 import 'package:catch_kernel/labelled.dart';
+import 'package:catch_kernel/market_catalog.dart';
 
-const defaultCountryIsoCode = 'IN';
-const defaultCountryDialCode = '+91';
-const defaultCurrencyCode = 'INR';
-const defaultTimeZone = 'Asia/Kolkata';
+// Countries come from contracts/catalogs/markets.json through the generated
+// market_catalog.dart.
+const defaultCountryIsoCode = generatedDefaultCountryIsoCode;
+const defaultCountryDialCode = generatedDefaultCountryDialCode;
+const defaultCurrencyCode = generatedDefaultCurrencyCode;
+const defaultTimeZone = generatedDefaultTimeZone;
 
-const supportedCountryPickerFavorites = ['IN', 'NP', 'AU', 'US'];
+const supportedCountryPickerFavorites = generatedCountryPickerFavorites;
 
 class CountryMarket implements Labelled {
   const CountryMarket({
@@ -49,46 +52,9 @@ class CurrencyDefinition {
   }
 }
 
-const defaultCountryMarket = CountryMarket(
-  isoCode: 'IN',
-  label: 'India',
-  dialCode: '+91',
-  currencyCode: 'INR',
-  currencySymbol: '₹',
-  defaultCityName: 'mumbai',
-  timeZone: 'Asia/Kolkata',
-);
+const defaultCountryMarket = generatedDefaultCountryMarket;
 
-const supportedCountryMarkets = [
-  defaultCountryMarket,
-  CountryMarket(
-    isoCode: 'NP',
-    label: 'Nepal',
-    dialCode: '+977',
-    currencyCode: 'NPR',
-    currencySymbol: 'Rs ',
-    defaultCityName: 'kathmandu',
-    timeZone: 'Asia/Kathmandu',
-  ),
-  CountryMarket(
-    isoCode: 'AU',
-    label: 'Australia',
-    dialCode: '+61',
-    currencyCode: 'AUD',
-    currencySymbol: 'A\$',
-    defaultCityName: 'sydney',
-    timeZone: 'Australia/Sydney',
-  ),
-  CountryMarket(
-    isoCode: 'US',
-    label: 'United States',
-    dialCode: '+1',
-    currencyCode: 'USD',
-    currencySymbol: '\$',
-    defaultCityName: 'new-york',
-    timeZone: 'America/New_York',
-  ),
-];
+const supportedCountryMarkets = generatedCountryMarkets;
 
 const supportedCurrencyDefinitions = [
   CurrencyDefinition(code: 'INR', symbol: '₹'),

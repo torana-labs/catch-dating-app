@@ -4329,12 +4329,15 @@
         "launchAccessScreen",
         "paymentHistoryScreen",
         "myMembershipsScreen",
-        "paymentConfirmationScreen"
+        "paymentConfirmationScreen",
+        "eventRecapScreen",
+        "swipeEventScreen"
       ],
       "screenIds": [
         "screen.dashboard.home",
         "screen.calendar.home",
-        "screen.reviews.history"
+        "screen.reviews.history",
+        "screen.event.recap"
       ],
       "decisionDimensions": [
         "viewer.session",
@@ -4736,16 +4739,12 @@
           "description": "Authentication and profile-readiness route guard."
         }
       ],
-      "coverageRationale": "Filters and active event-matching routes require a social-ready profile in addition to authentication.",
+      "coverageRationale": "People filters require a social-ready profile in addition to authentication.",
       "routeIds": [
-        "filtersScreen",
-        "swipeEventScreen",
-        "eventRecapScreen"
+        "filtersScreen"
       ],
       "screenIds": [
-        "screen.filters.preferences",
-        "screen.catches.event",
-        "screen.event.recap"
+        "screen.filters.preferences"
       ],
       "decisionDimensions": [
         "viewer.session",
@@ -4842,7 +4841,6 @@
           "path": "lib/routing/route_destinations.dart",
           "contains": [
             "bool _requiresSocialProfile",
-            "matchedLocation.startsWith('/catches/')",
             "Routes.filtersScreen.path"
           ]
         }
@@ -6108,7 +6106,8 @@
         {
           "path": "website/src/features/organizers/useOrganizerPageController.test.tsx",
           "contains": [
-            "follows through the visitor's account until follow by phone lands, and records the save",
+            "follows a signed-in visitor through their account, and records the save",
+            "follows a signed-out visitor by phone, with WhatsApp only when ticked",
             "resumes the requested follow after account completion",
             "reads an existing follow on a new page mount"
           ]

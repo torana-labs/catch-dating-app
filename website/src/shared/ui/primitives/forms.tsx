@@ -1,8 +1,6 @@
 import {forwardRef} from "react";
-import {CheckboxControl} from "@catch/web-ui";
 import type {
   FormHTMLAttributes,
-  InputHTMLAttributes,
   ReactNode,
 } from "react";
 import type {FormStatus as FormStatusModel} from "../../forms/types";
@@ -11,21 +9,6 @@ import {LiveStatus} from "./feedback";
 import {classNames} from "@catch/web-ui";
 
 export type SearchFormVariant = "organizer";
-
-export function CheckboxField({
-  children,
-  className,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <label className={className}>
-      <CheckboxControl {...props} />
-      {children}
-    </label>
-  );
-}
 
 export function FormStatus({
   status,

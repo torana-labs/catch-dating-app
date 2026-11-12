@@ -1,3 +1,4 @@
+import {WHATSAPP_DISPATCHES} from "../../delivery/whatsappDispatches";
 import type {Firestore} from "firebase-admin/firestore";
 import {FirestoreDeliveryOutbox} from "../../delivery/firestoreDeliveryOutbox";
 import {operationContentHash as hash} from "../../operations/durableActions";
@@ -33,7 +34,7 @@ export type Outbox = FirestoreDeliveryOutbox<
   Attempt,
   Message
 >;
-export const dispatches = "eventApprovalNotificationDispatches";
+export const dispatches = WHATSAPP_DISPATCHES;
 export interface Execution {
   status: "waiting" | "pending" | "review" | "complete";
   reason: string;
@@ -194,6 +195,7 @@ export class ApprovalNotificationWorker {
         route === "approvalWhatsapp" ?
           {
             schemaVersion: 1,
+            source: "approvalNotification",
             attemptId: live.attemptId,
             messageId,
             context: record.intent.context,

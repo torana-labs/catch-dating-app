@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.23.0
-updated: 2026-11-08
+version: 0.26.0
+updated: 2026-11-12
 owner: marketing_website
 status: active
 ---
@@ -39,7 +39,7 @@ The Next validator adapter compiles the same generated schemas as repository
 checks, with parity tests, without the CLI dependency-discovery loader.
 
 Firebase Hosting's CDN caches public organiser, event and city-aware discovery
-pages (`/`, `/explore/`, `/organizers/…` and `/events/…`) for up to a minute:
+pages (`/`, `/explore/`, `/cities/`, `/organizers/…` and `/events/…`) for up to a minute:
 they send `Cache-Control: public, s-maxage=60`. The organiser page is meant to
 replace the link in organisers' Instagram bios, so repeat and shared visits
 should not wait for a server render and two catalog reads. Hosting cannot purge
@@ -57,7 +57,7 @@ pages read their plans in the page, so a city that cannot be read renders its
 own unavailable message and marks the render unavailable; the hook then sends
 it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
 ([unavailable public reads](web_surface_architecture.md#unavailable-public-reads)). Claim, booking, follow,
-signed-in, Host, legal, `/api/public-catalog` and private-shell responses stay
+signed-in, Host, legal, `/api/public-catalog`, `/api/home-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
 ISR fallback. The request gate checks
@@ -115,16 +115,30 @@ isolated local emulator and packaged server described in `website/README.md`.
 ## Canonical public chrome
 
 `shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`,
-`SiteFooterBand`, `PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
+`PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
-`PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`):
-the wordmark, page links that move into a menu under 600px, and actions. Every
-public route renders it with the global destinations from `content/site.ts`
-(Find events, Organisers, For organisers); a product page passes its own name,
-section links and action, as the homepage (Explore, Organisers, For hosts, the
-city picker and Get the app) and the host landing ("Catch for hosts", its
-sections and Apply) do, from their boards. Home and the host landing end with
-`SiteFooterBand` (the board's ink footer).
+`PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`)
+and the one header on every public route, Explore and the city pages included.
+Left: the wordmark (`CatchWordmark`, the display voice at 78% width), the page
+links and the visitor's account entry ("Sign in" or "Account"). Right: only the
+page's actions, a setting such as the city picker, then the one primary action.
+Under 600px the links and the account entry move into the phone menu, and a
+sub-brand steps under the wordmark. General pages carry the main site's links
+from `content/site.ts` (Explore, Organisers, For hosts) and Get the app; a
+product page passes its own name, section links and action, as the host landing
+("Catch for hosts", its sections and Start free trial) and weddings do. The
+account entry comes from `SiteAccountProvider` (`features/account`) through
+`SiteAccountActionProvider`.
+
+`PublicSiteFooter` is the one site footer, `CatchSiteFooter` on the ink band:
+Explore, Hosts (with Weddings) and Help and legal, each link flush with its
+column title on one row rhythm, Help and legal ending with Privacy choices,
+then the wordmark with the tagline on its baseline and the operator line. The
+homepage and the city pages add their Cities column; a product page (host,
+weddings) may name itself in the wordmark and give its own line, with the same
+columns. Home, Explore and the city pages, the host landing and application,
+weddings, legal, help and 404 all end with it; its links come from
+`siteFooterCopy` in `content/site.ts`.
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
 page (`/events/<id>/`) carry the site top bar as `PublicPageHeader` (Explore,
@@ -135,8 +149,7 @@ main column (the organiser page's list-detail main, the event page's reading
 lane) rather than an ink band. The claim, public form and offer pages render
 the same `PublicPageFooter` below their reading layout with the site and legal
 links and the operator line; only the claim page records footer clicks. Import
-both from `shared/site`. Pages not yet rebuilt keep `PublicSiteFooter`;
-`SiteFooter` is the legacy footer's presentation.
+both from `shared/site`.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -474,8 +487,7 @@ The website is already split out of the old monolithic shell:
   `website/src/features/claims/sections/ClaimPageSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
 - `website/src/shared/site/**` owns neutral site shell/display primitives:
-  the public chrome in `PublicSiteChrome.tsx`, `SiteFooter`, and
-  `SectionHeader`.
+  the public chrome in `PublicSiteChrome.tsx` and `SectionHeader`.
 - The legacy `website/src/components/site.tsx` barrel is retired. New website
   code must import neutral site primitives from `website/src/shared/site/**`,
   governed visual primitives from `website/src/shared/ui/primitives/`, and
@@ -897,7 +909,6 @@ website/src/
     lib/
     site/
       PublicSiteChrome.tsx
-      SiteFooter.tsx
     ui/
       Button.tsx
       Field.tsx
@@ -949,8 +960,9 @@ website/src/
   event name/venue/city/currency belong in that pack rather than page or
   shared-UI modules. Host create-flow fixtures and application defaults read
   those values through `@content/markets`.
-- Market cities are structured by stable id, slug, aliases, IANA timezone, and
-  `live`/`waitlist` status. Country/store availability, locale, ISO currency,
+- Market cities come from `contracts/catalogs/markets.json` through the
+  generated `content/markets/generated/catalog.ts`: catalog id, slug, aliases,
+  retired `legacySlugs` (redirected), IANA timezone, and lifecycle `status`. Country/store availability, locale, ISO currency,
   and featured city are pack-level contracts; event-live and form options are
   derived from the city records rather than parallel city lists.
   `check:market-pack` validates references and formatting; Home eligibility
@@ -1009,8 +1021,8 @@ website/src/
 
 4. Keep shared site primitives split.
 
-   The public chrome (`PublicSiteChrome.tsx`), `SiteFooter`, and
-   `SectionHeader` live in `shared/site`.
+   The public chrome (`PublicSiteChrome.tsx`) and `SectionHeader` live in
+   `shared/site`.
    Keep using direct `shared/site` imports for new page code. Do not turn
    one-off host/listing/product sections into shared primitives. Do not recreate
    the retired `website/src/components/site.tsx` barrel; import from the
@@ -1185,8 +1197,59 @@ the city's read model to the sections. `/explore/?city=…&format=…#events`
 shows all matching events and retains app availability and the member
 waitlist.
 
-A city that has not launched, or has too few plans to fill a page, shows the
-launching-soon state instead of a sparse page. An unavailable catalogue does
+A launched city is open however few plans it has: it shows its honest count
+("2 plans this week", or "New" before its first plan). A city that has not
+launched shows the launching-soon state.
+
+The header's `CityPicker` (`features/home/sections/CityPicker.tsx`) serves the
+homepage, Explore, the city pages and `/cities/`. One country with up to eight
+cities opens a menu under the trigger; more countries open a sheet grouped by
+country, which searches once there are more than eight cities. A country with
+no city open says "Launching soon in {country}" once instead of marking each
+city. The footer's Cities column lists the open cities with their notes, one
+launching-soon line per country with none open, and "More cities →" to
+`/cities/`, which lists every listed city by country: an open city links its
+page, any other city the homepage launch notice (`/?city=<slug>#whats-on`).
+Story fixtures with 2 and 25 cities (`stories/fixtures/homeCatalogs.ts`) keep
+both layouts in the Storybook visual review.
+
+### City guess and "Use my location"
+
+The CDN keeps one homepage for everyone, so the HTML always shows the default
+city. When the address names no city (`?city=`), the browser (`useHomeCity`)
+asks `/api/home-catalog` for the city the visitor chose last (`?city=<slug>`)
+or, with no choice, for a guess (`?guess=1`), and swaps that city's read model
+in. The endpoint answers `private, no-store`. A named city always wins, and a
+guess of "Other" or a city that cannot be read leaves the default in place.
+
+The guess (`server/cityGuess.ts`) uses network location only. It tries the
+nearest listed city to the network's coordinates within
+`citySnapRadiusKm` (80 km, `content/markets/nearestCity.ts`, from the catalog's
+latitude and longitude), then a listed city the network names (label or
+alias), then the country's default city if the website lists it; anything else
+is "Other". What reaches Cloud Run:
+
+| Hop | Location headers |
+|---|---|
+| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` only with the "Add visitor location headers" managed transform, which `tool/cloudflare/edge_policy.json` does not enable. Turning it on is an edge-policy change to propose there, not a website change. |
+| Firebase Hosting (Fastly) | Adds none. Whether it forwards Cloudflare's `cf-*` request headers to Cloud Run is not yet measured. |
+| Cloud Run | Adds none; Next reads the request headers as forwarded. |
+
+So today the guess is country-level at best: an Indian visitor gets India's
+default city, as before. The endpoint logs, once per server instance for each
+distinct set, which location header names arrived and what the guess rested on
+(`website_city_guess_headers`), never their values; that log is the measurement
+for the Fastly hop.
+
+"Use my location" in the picker calls the browser's Geolocation API only when
+tapped, never on load. `features/home/locateCity.ts` snaps the position to the
+nearest listed city in the browser and drops it; coordinates are never stored,
+logged or sent. A city picked or found this way is remembered in
+`localStorage` (`catch_city_choice_v1`, the slug and how it was reached:
+`picked` or `precise`), which is essential storage for a choice the visitor
+made, not consented measurement. The source (`CitySource`) is what the
+waitlist contract's `citySource` records. The privacy page says what is
+inferred. An unavailable catalogue does
 not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback
 photographs are labelled. Catch Experience explains active guest participation;

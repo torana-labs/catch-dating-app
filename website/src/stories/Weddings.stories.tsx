@@ -3,6 +3,7 @@ import {expect, userEvent, within} from "storybook/test";
 import {weddingsCopy as copy} from "@content/weddings";
 import {WeddingsApplicationPage} from "../features/weddings/WeddingsApplicationPage";
 import {WeddingsPage} from "../features/weddings/WeddingsPage";
+import {marketingCaptures} from "../app/marketingCaptures";
 import type {WeddingsStepOneDraft} from "../features/weddings/weddingsModel";
 
 // Catch for weddings at the RbWebWeddings board's widths, and the application
@@ -17,14 +18,17 @@ const desktop = {viewport: {value: "weddingsDesktop", isRotated: false}};
 
 const one = copy.stepOne;
 const stepOne: WeddingsStepOneDraft = {
+  who: one.who.options[0],
+  what: one.what.options[0],
   name: one.name.hint,
   company: one.company.hint,
   phone: one.phone.hint,
   date: "2026-12-12",
   destination: one.destination.hint,
-  guests: one.guests.initial,
-  tools: one.tools.initial,
+  guests: one.guests.options[1],
+  tools: [one.tools.options[0], one.tools.options[1]],
 };
+const two = copy.stepTwo;
 const resolves = () => Promise.resolve();
 
 const meta = {
@@ -33,6 +37,7 @@ const meta = {
     layout: "fullscreen",
     viewport: {options: viewports},
     catchRouteContract: {path: "design/website/routes.json"},
+    catchComponentRegistry: {path: "design/website/components.json"},
   },
   globals: desktop,
 } satisfies Meta;
@@ -49,20 +54,25 @@ export const Desktop: Story = {
       reviewStates: ["default", "phone"],
       stateCoverage: {storybook: ["default", "phone"], manual: []},
     },
+    catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["default"]},
   },
-  render: () => <WeddingsPage />,
+  render: () => <WeddingsPage captures={marketingCaptures} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("heading", {level: 1, name: copy.hero.title})).toBeVisible();
+    // The visual check also renders this story at a phone width, where the headline shortens.
+    const headline = canvas.getByRole("heading", {level: 1});
+    await expect([copy.hero.title, copy.hero.titleShort]).toContain(headline.textContent);
+    await expect(headline).toBeVisible();
     await expect(canvas.queryByRole("link", {name: one.continue})).toBeNull();
   },
 };
 
-/** The landing on a phone (RbWebWeddingsPhone): every row stacks and the header's links fold into its menu. */
+/** The landing on a phone: every row stacks, the headline shortens and the header's links fold into its menu. */
 export const Phone: Story = {
   name: "Landing · 390 (phone)",
   globals: phone,
-  render: () => <WeddingsPage />,
+  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["phone"]}},
+  render: () => <WeddingsPage captures={marketingCaptures} />,
 };
 
 /** Step 1 on the application page, when the landing did not hand its answers over. */
@@ -89,12 +99,12 @@ export const ApplyStepTwo: Story = {
   render: () => <WeddingsApplicationPage initialStepOne={stepOne} submit={resolves} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("heading", {level: 1, name: copy.stepTwo.title})).toBeVisible();
-    await expect(canvas.getByRole("button", {name: copy.stepTwo.send})).toBeEnabled();
+    await expect(canvas.getByRole("heading", {level: 1, name: two.heading})).toBeVisible();
+    await expect(canvas.getByRole("button", {name: two.send})).toBeEnabled();
   },
 };
 
-/** After Send: the thanks tile and what happens next. */
+/** After Send: the thanks, what was sent and the way back. Step 2 starts empty, so the story answers it first. */
 export const ApplySent: Story = {
   name: "Application · sent",
   globals: phone,
@@ -102,7 +112,10 @@ export const ApplySent: Story = {
   render: () => <WeddingsApplicationPage initialStepOne={stepOne} submit={resolves} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", {name: copy.stepTwo.send}));
-    await expect(await canvas.findByText(copy.sent.badge)).toBeVisible();
+    await userEvent.click(canvas.getByRole("radio", {name: two.flying.options[2]}));
+    await userEvent.click(canvas.getByRole("button", {name: two.wants.options[0]}));
+    await userEvent.click(canvas.getByRole("radio", {name: two.heard.options[0]}));
+    await userEvent.click(canvas.getByRole("button", {name: two.send}));
+    await expect(await canvas.findByRole("heading", {level: 1, name: copy.sent.heading})).toBeVisible();
   },
 };

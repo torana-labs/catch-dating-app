@@ -18,10 +18,10 @@ test("shared browser configuration receives only explicitly public environment v
     assert.equal(environment.MODE, "production");
     assert.equal(environment.VITE_FIREBASE_PROJECT_ID, process.env.VITE_FIREBASE_PROJECT_ID ?? "");
     assert.deepEqual(Object.keys(environment).sort(), [
-      "DEV", "MODE", "VITE_APP_STORE_URL", "VITE_CONSUMER_APP_URL",
+      "DEV", "MODE", "VITE_CONSUMER_APP_URL",
       "VITE_FIREBASE_API_KEY", "VITE_FIREBASE_APP_ID", "VITE_FIREBASE_AUTH_DOMAIN",
       "VITE_FIREBASE_MEASUREMENT_ID", "VITE_FIREBASE_MESSAGING_SENDER_ID",
-      "VITE_FIREBASE_PROJECT_ID", "VITE_FIREBASE_STORAGE_BUCKET", "VITE_PLAY_STORE_URL",
+      "VITE_FIREBASE_PROJECT_ID", "VITE_FIREBASE_STORAGE_BUCKET",
       "VITE_WEBSITE_APPCHECK_SITE_KEY",
     ].sort());
     assert(!JSON.stringify(definitions).includes(process.env[key]));

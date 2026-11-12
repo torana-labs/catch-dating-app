@@ -70,7 +70,7 @@ final class DoorSessionProvider
   }
 }
 
-String _$doorSessionHash() => r'2256cb07726b9fce077e0c69afdd24b992f1684d';
+String _$doorSessionHash() => r'5a6917dcaed8ee8f9224ec5372d9703f752f8ee6';
 
 /// The door's commands and local state. Check-in and undo go through the
 /// attendance outbox; let in and offer through the roster commands. After

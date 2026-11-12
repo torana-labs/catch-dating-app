@@ -194,7 +194,7 @@ final class HostEventReportControllerProvider
 }
 
 String _$hostEventReportControllerHash() =>
-    r'b9aeefeaea37225ccd5768c7a13dd83ad2ab0fc6';
+    r'25445f688500bd12e2ef57346dd36555833a9655';
 
 /// The report for one past event, composed from its read owners: the
 /// participation roster (who booked and came), the roster view (new faces),

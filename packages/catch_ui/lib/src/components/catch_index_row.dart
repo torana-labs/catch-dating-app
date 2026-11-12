@@ -229,12 +229,16 @@ class CatchIndexRow extends StatelessWidget {
     final progress = this.progress;
     final action = this.action;
     final badge = this.badge;
+    // At large text the title may take a second line and a status moves
+    // under it, rather than the status squeezing the title to an ellipsis.
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final titleLines = largeText && titleMaxLines < 2 ? 2 : titleMaxLines;
     final Widget titleText;
     if (titleStyle == null && system) {
       final base = CatchTextVariant.titleRow.style(sizeClass);
       titleText = Text(
         title,
-        maxLines: titleMaxLines,
+        maxLines: titleLines,
         overflow: TextOverflow.ellipsis,
         style: switch (emphasis) {
           CatchIndexRowEmphasis.regular => base,
@@ -250,7 +254,7 @@ class CatchIndexRow extends StatelessWidget {
     } else {
       titleText = Text(
         title,
-        maxLines: titleMaxLines,
+        maxLines: titleLines,
         overflow: TextOverflow.ellipsis,
         style: titleStyle ?? CatchTextStyles.titleL(context, color: t.ink),
       );
@@ -278,10 +282,10 @@ class CatchIndexRow extends StatelessWidget {
             emphasis: badge.emphasis,
             dot: badge.dot,
           ),
-          if (statusText != null) ...[const Spacer(), statusText],
+          if (statusText != null && !largeText) ...[const Spacer(), statusText],
         ],
       );
-    } else if (statusText != null) {
+    } else if (statusText != null && !largeText) {
       titleLine = Row(
         spacing: CatchSpacing.s2,
         children: [
@@ -289,19 +293,29 @@ class CatchIndexRow extends StatelessWidget {
           statusText,
         ],
       );
+    } else if (statusText != null) {
+      titleLine = titleText;
     } else {
       titleLine = titleText;
     }
     final lineGap = system ? gapH3 : gapH2;
+    final Widget headLine = largeText && statusText != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            spacing: CatchSpacing.s1,
+            children: [titleLine, statusText],
+          )
+        : titleLine;
     final stacked =
         hasSubtitle || footer != null || hasMeta || hasBody || progress != null;
     final copy = !stacked
-        ? titleLine
+        ? headLine
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              titleLine,
+              headLine,
               if (hasSubtitle) ...[
                 lineGap,
                 if (system)
@@ -514,9 +528,11 @@ class CatchIndexRow extends StatelessWidget {
     final date = this.date;
     if (date != null) {
       final format = date.format;
-      return SizedBox(
-        width: dateTileWidth,
-        height: CatchSpacing.s16,
+      // The tile is at least [CatchSpacing.s16] tall; large text grows it.
+      return ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(
+          width: dateTileWidth,
+        ).copyWith(minHeight: CatchSpacing.s16),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: format?.accent ?? t.tile,
@@ -526,6 +542,7 @@ class CatchIndexRow extends StatelessWidget {
             style: TextStyle(color: format?.ink ?? t.ink),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               spacing: CatchSpacing.micro2,
               children: [
                 CatchText(date.day, variant: CatchTextVariant.labelBadge),

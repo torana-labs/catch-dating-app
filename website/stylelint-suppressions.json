@@ -14,7 +14,7 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 36
+      "count": 26
     },
     "declaration-property-value-allowed-list": {
       "count": 4
@@ -36,10 +36,10 @@
   },
   "src/styles/flows.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 85
+      "count": 83
     },
     "declaration-property-value-allowed-list": {
-      "count": 16
+      "count": 15
     },
     "media-feature-name-value-allowed-list": {
       "count": 3
@@ -113,14 +113,6 @@
   "src/styles/reveal.css": {
     "declaration-property-unit-allowed-list": {
       "count": 1
-    }
-  },
-  "src/styles/site-footer.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 5
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 2
     }
   },
   "src/styles/site-shell.css": {

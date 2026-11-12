@@ -1,3 +1,6 @@
+// Relative with an extension: the postbuild test loads this module in Node.
+import {inMarket} from "../content/markets/in.ts";
+
 // Compatibility only: retired URLs have no route components or static pages.
 const retiredDestinations: Readonly<Record<string, string>> = {
   overview: "/", platform: "/host/#features", workflows: "/host/#how-it-works",
@@ -33,6 +36,11 @@ export function retiredMarketingDestination(location: {pathname: string; search:
   if (location.pathname === "/" && ["#waitlist", "#events", "#formats", "#members", "#hosts", "#trust", "#download-app"].includes(location.hash)) {
     destination = `/explore/${location.hash}`;
   }
+  // A city's retired path slug (/delhi/, /bangalore/) moves to its catalog
+  // slug (/delhi-ncr/, /bengaluru/), keeping the query.
+  const pathSlug = /^\/([a-z0-9-]+)\/?$/.exec(location.pathname)?.[1];
+  const movedCity = pathSlug ? inMarket.cities.find((city) => (city.legacySlugs as readonly string[]).includes(pathSlug)) : undefined;
+  if (movedCity) return `/${movedCity.slug}/${location.search}${location.hash}`;
   if (/^\/organizers\/?$/.test(location.pathname)) {
     return `${organizerDirectoryDestination(new URLSearchParams(location.search))}${location.hash}`;
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import type {CSSProperties, MouseEvent, ReactNode} from "react";
-import type {CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchIconName} from "../icons/catchIconRoles";
 import {useCatch} from "./catchRootContext";
 import {CatchIcon} from "./CatchIcon";
 import styles from "./CatchButton.module.css";

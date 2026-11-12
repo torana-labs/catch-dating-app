@@ -29,6 +29,7 @@
   top: calc(100% + var(--catch-space-s2));
   z-index: var(--catch-layer-overlay);
   min-width: 100%;
+  max-width: calc(100vw - 32px);
 }
 
 .anchor > .panel[data-place="above"] {

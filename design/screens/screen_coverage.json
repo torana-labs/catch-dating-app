@@ -170,16 +170,16 @@
     },
     {
       "routeId": "swipeEventScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.catches.event as the event-specific Catches deck route.",
-      "screenId": "screen.catches.event"
+      "canonicalRouteId": "eventRecapScreen",
+      "reason": "The retired swipe deck's address redirects to the event's after-event screen; the deck and its contract are retired."
     },
     {
       "routeId": "eventRecapScreen",
       "status": "contracted",
       "priority": "P2",
-      "reason": "Covered by screen.event.recap as the attended-event recap route.",
+      "reason": "Covered by screen.event.recap as the guest's after-event screen.",
       "screenId": "screen.event.recap"
     },
     {
@@ -573,10 +573,9 @@
     },
     {
       "routeId": "hostProgramsScreen",
-      "status": "alias",
+      "status": "excluded",
       "priority": "P1",
-      "canonicalRouteId": "hostEventsScreen",
-      "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
+      "reason": "Renders the organizer's programmes home (HostProgrammesHomeScreen) under the zero-drawing host root; a link without an organizer redirects to Events with its query preserved. The screen takes no registry record or Widgetbook case; its typed layout owner lives in catch.screens.json."
     },
     {
       "routeId": "hostCreateProgramScreen",

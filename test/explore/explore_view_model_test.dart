@@ -14,10 +14,10 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/explore.dart';
@@ -44,16 +44,15 @@ CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
 String get _mumbaiMarketId => _city('mumbai').effectiveMarketId;
 
-OrganizerMembership _membership({
+OrganizerFollow _membership({
   required String organizerId,
   String uid = 'runner-1',
-}) => OrganizerMembership(
-  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+}) => OrganizerFollow(
+  id: organizerFollowId(organizerId: organizerId, uid: uid),
   organizerId: organizerId,
   uid: uid,
-  role: OrganizerMembershipRole.member,
-  status: OrganizerMembershipStatus.active,
-  joinedAt: DateTime(2026),
+  status: OrganizerFollowStatus.active,
+  followedAt: DateTime(2026),
 );
 
 ExploreEventItem _exploreItem({
@@ -1665,9 +1664,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchActiveOrganizerMembershipsForUserProvider(
-              'runner-1',
-            ).overrideWith(
+            watchActiveOrganizerFollowsForUserProvider('runner-1').overrideWith(
               (ref) => Stream.value([
                 _membership(organizerId: 'member-club'),
                 _membership(organizerId: 'followed-club'),
@@ -2013,11 +2010,9 @@ void main() {
             watchOrganizersByLocationProvider(
               _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([organizer])),
-            watchActiveOrganizerMembershipsForUserProvider(
+            watchActiveOrganizerFollowsForUserProvider(
               user.uid,
-            ).overrideWith(
-              (ref) => Stream.value(const <OrganizerMembership>[]),
-            ),
+            ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(
@@ -2112,11 +2107,9 @@ void main() {
             watchOrganizersByLocationProvider(
               _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([organizer])),
-            watchActiveOrganizerMembershipsForUserProvider(
+            watchActiveOrganizerFollowsForUserProvider(
               user.uid,
-            ).overrideWith(
-              (ref) => Stream.value(const <OrganizerMembership>[]),
-            ),
+            ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(

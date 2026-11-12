@@ -14,6 +14,7 @@ import {organizerPolicyForListing} from "./organizerPolicy";
 import {eventDetailCopy} from "../../content/events";
 import {eventDetailPath} from "../events/eventDetailModel";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
+import type {MarketCityStatus} from "../../content/markets/types";
 
 export function buildPublicEventSummaries(
   listings: HostListing[],
@@ -23,7 +24,7 @@ export function buildPublicEventSummaries(
       id: string;
       label: string;
       aliases: readonly string[];
-      status: "live" | "waitlist";
+      status: MarketCityStatus;
     }>;
   }
 ): PublicEventCardModel[] {

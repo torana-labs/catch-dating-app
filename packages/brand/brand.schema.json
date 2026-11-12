@@ -55,10 +55,12 @@
     "stores": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["consumerAppName", "hostAppName"],
+      "required": ["consumerAppName", "hostAppName", "consumer", "host"],
       "properties": {
         "consumerAppName": {"$ref": "#/$defs/label"},
-        "hostAppName": {"$ref": "#/$defs/label"}
+        "hostAppName": {"$ref": "#/$defs/label"},
+        "consumer": {"$ref": "#/$defs/storeLinks", "description": "Public store listings of the Consumer app."},
+        "host": {"$ref": "#/$defs/storeLinks", "description": "Public store listings of the Host app."}
       }
     },
     "adminName": {"$ref": "#/$defs/label"},
@@ -78,6 +80,16 @@
     "hostname": {"type": "string", "pattern": "^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$"},
     "origin": {"type": "string", "pattern": "^https://(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$"},
     "email": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._+-]*@[a-z0-9.-]+\\.[a-z]{2,}$"},
-    "optionalPhone": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"}
+    "optionalPhone": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"},
+    "storeLinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ios", "android"],
+      "description": "Store listing URLs. null while the app is not live on that store: every surface then hides that store's link.",
+      "properties": {
+        "ios": {"type": ["string", "null"], "pattern": "^https://apps\\.apple\\.com/(?:[a-z]{2}/)?app/(?:[a-z0-9-]+/)?id[0-9]+$", "description": "App Store listing: https://apps.apple.com/[country/]app/[slug/]id<digits>."},
+        "android": {"type": ["string", "null"], "pattern": "^https://play\\.google\\.com/store/apps/details\\?id=[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$", "description": "Google Play listing: https://play.google.com/store/apps/details?id=<package>. The package must be the role's production applicationId."}
+      }
+    }
   }
 }

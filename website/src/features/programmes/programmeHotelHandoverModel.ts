@@ -4,7 +4,7 @@ import {programmeDayTime} from "./programmeLinkModel";
 
 export type HotelHandoverView = ProgramHotelHandoverCallableResponse;
 export type HandoverRoom = HotelHandoverView["rooms"][number];
-export type HandoverGuest = HandoverRoom["guests"][number];
+type HandoverGuest = HandoverRoom["guests"][number];
 
 /** One room's ID count: "2 of 2" when every guest's ID is checked. */
 export function roomIdCount(room: HandoverRoom): {accepted: number; total: number; tone: "success" | "warning"} {

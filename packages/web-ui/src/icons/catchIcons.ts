@@ -2,7 +2,7 @@ import {
   catchActivityIconNames,
   catchIconStrokeWidth,
   type CatchActivityKind,
-} from "./catchIconGlyphs";
+} from "./catchIconRoles";
 import {catchIconNodes, type CatchIconNodeName} from "./catchIconNodes";
 
 /** The icon role that draws an event activity kind. */

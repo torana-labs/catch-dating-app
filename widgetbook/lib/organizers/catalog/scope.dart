@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
@@ -32,7 +32,7 @@ class WidgetbookOrganizerOrganizerScreenPreview extends StatelessWidget {
   });
 
   final String? uid;
-  final OrganizerMembership? membership;
+  final OrganizerFollow? membership;
   final AsyncValue<OrganizerDetailViewModel?> viewModel;
   final bool useInitialOrganizer;
 
@@ -48,11 +48,11 @@ class WidgetbookOrganizerOrganizerScreenPreview extends StatelessWidget {
           ),
         ),
         if (effectiveUid != null)
-          watchOrganizerMembershipProvider(
+          watchOrganizerFollowProvider(
             widgetbookOrganizerOrganizer.id,
             effectiveUid,
           ).overrideWith(
-            (ref) => Stream<OrganizerMembership?>.value(membership),
+            (ref) => Stream<OrganizerFollow?>.value(membership),
           ),
         organizerDetailViewModelProvider(
           widgetbookOrganizerOrganizer.id,

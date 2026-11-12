@@ -1,3 +1,4 @@
+import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
 import * as admin from "firebase-admin";
 import {prepareProgramActivityChannel, type ProgramFcmSender} from
   "./programActivityChannel";
@@ -35,7 +36,7 @@ import {readProgramGuestFields, readProgramHouseholdFields} from
   "../workspaces/workspaceFieldAuthority";
 
 /** Claim-time submission evidence for webhook status correlation. */
-export const PROGRAM_WHATSAPP_DISPATCHES = "programWhatsappDispatches";
+export const PROGRAM_WHATSAPP_DISPATCHES = WHATSAPP_DISPATCHES;
 
 export type ProgramDeliveryOutbox = FirestoreDeliveryOutbox<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
@@ -353,7 +354,8 @@ async function dispatchProgramWhatsapp(
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp!.variables]);
         const dispatch = {
-          schemaVersion: 1, attemptId: liveAttempt.attemptId,
+          schemaVersion: 1, source: "program",
+          attemptId: liveAttempt.attemptId,
           messageId: record.messageId, context: intent.context,
           senderId: intent.whatsapp!.connectionId,
           bindingRevision: conn.revision,

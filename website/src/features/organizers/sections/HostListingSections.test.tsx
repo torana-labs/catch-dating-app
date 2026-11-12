@@ -14,7 +14,7 @@ import {HostListingPage} from "../HostListingPage";
 import type {OrganizerPageRecord} from "../organizerPage";
 import type {HostListing} from "../types";
 
-vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn(), getMarketingConsent: () => null,
+vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn(), getMarketingConsent: () => null, openMarketingConsentPreferences: vi.fn(),
   marketingConsentChangedEvent: "catch:marketing-consent-changed"}));
 vi.mock("../analytics", () => ({trackOrganizerAnalytics: vi.fn(), observeOrganizerPageView: vi.fn(() => () => undefined)}));
 vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));
@@ -45,9 +45,9 @@ describe("HostListingSections", () => {
     for (let index = 1; index < order.length; index += 1) expect(follows(order[index - 1], order[index])).toBe(true);
     expect(within(links).getAllByRole("link")[0].textContent).toContain("Lantern Night · Sat 14 Nov");
     expect(screen.getByRole("img", {name: "Verified organiser"})).toBeTruthy();
-    // The board draws the site top bar on every organiser page, claimed or not.
+    // Every organiser page carries the one site header, with the main site's links.
     const primary = screen.getByRole("navigation", {name: "Primary"});
-    expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "For organisers"]);
+    expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "Organisers", "For hosts"]);
     expect(screen.getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
     expect(screen.getByRole("navigation", {name: "Site links"})).toBeTruthy();
     expect(screen.getByText("2,140 followers · 4.8 ★ from 186 reviews · 12 nights", {exact: false})).toBeTruthy();

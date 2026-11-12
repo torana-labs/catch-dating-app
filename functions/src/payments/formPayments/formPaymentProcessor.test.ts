@@ -176,7 +176,7 @@ test("reviewed checkouts do not capture or refund on provider replay",
   async () => {
     const h = await harness();
     await h.processor.ensureOrder(h.paymentId);
-    const key = `organizerFormPayments/${h.paymentId}`;
+    const key = `guestPayments/${h.paymentId}`;
     h.store.records.set(key, {...h.store.records.get(key),
       status: "reviewRequired"});
     assert.equal((await h.processor.reconcile(h.paymentId)).status,

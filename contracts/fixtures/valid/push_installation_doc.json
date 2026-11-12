@@ -1,0 +1,11 @@
+{
+  "token": "fcm-token-1",
+  "appRole": "consumer",
+  "environment": "prod",
+  "platform": "ios",
+  "appVersion": "1.2.0",
+  "buildNumber": "42",
+  "locale": "en-IN",
+  "timeZone": "IST",
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0}
+}

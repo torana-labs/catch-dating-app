@@ -1,530 +1,415 @@
 import {
   CatchAccordion,
-  CatchBadge,
-  CatchBarIndicator,
+  CatchAppCaptureImage,
   CatchButton,
-  CatchCheckboxInput,
-  CatchChip,
-  CatchIcon,
+  CatchDeviceFrame,
+  CatchHeroShowcase,
   CatchIndexRow,
-  CatchMeter,
   CatchMetricTile,
+  CatchRail,
   CatchSection,
   CatchStack,
+  CatchStepList,
   CatchSurface,
-  CatchTable,
   CatchText,
-  type CatchBadgeProps,
+  useCatch,
+  type CatchAppCaptureImageProps,
   type CatchIconName,
-  type CatchMarkerProps,
-  type CatchTableColumn,
   type CatchTextTone,
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
-import {interpolateContent as fill} from "@content/interpolate";
-import {weddingsApplyPath, weddingsCopy as copy} from "@content/weddings";
+import {brand} from "@content/brand";
+import {weddingsApplyPath, weddingsCopy as copy, type WeddingsScreen} from "@content/weddings";
+import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import type {WeddingsLandingController} from "../useWeddingsController";
-import {badgeTone, replyBadge} from "../weddingsModel";
 import {StepOneCard} from "./weddingsApplicationSections";
 
-/** A band's opening: a coloured kicker, the headline and an optional lead. */
-function Heading({id, kicker, title, body, tone = "secondary", size = "page"}: {
-  id: string;
+type Screens = Record<string, CatchAppCaptureImageProps | null>;
+
+/**
+ * Every programme screen the page shows, by capture slot. Each slot is named
+ * literally so tool/marketing/capture_manifest.json's page bindings can be
+ * checked against the page (marketingCaptures.test.tsx).
+ */
+function weddingScreens(captures: CaptureSlots): Screens {
+  return {
+    "wedding-rsvp": captureSlot(captures, "wedding-rsvp"),
+    "wedding-itinerary": captureSlot(captures, "wedding-itinerary"),
+    "wedding-whatsapp": captureSlot(captures, "wedding-whatsapp"),
+    "wedding-ids": captureSlot(captures, "wedding-ids"),
+    "wedding-door": captureSlot(captures, "wedding-door"),
+    "wedding-departures": captureSlot(captures, "wedding-departures"),
+    "wedding-driver": captureSlot(captures, "wedding-driver"),
+    "wedding-message": captureSlot(captures, "wedding-message"),
+    "wedding-family": captureSlot(captures, "wedding-family"),
+    "wedding-guests": captureSlot(captures, "wedding-guests"),
+    "wedding-rooms": captureSlot(captures, "wedding-rooms"),
+    "wedding-live": captureSlot(captures, "wedding-live"),
+    "wedding-reconcile": captureSlot(captures, "wedding-reconcile"),
+    "wedding-hotel": captureSlot(captures, "wedding-hotel"),
+  };
+}
+
+/** A desktop screen in the quiet browser window (W1), with the line under it. */
+function BrowserShot({screens, slot, address, caption, tone = "secondary"}: {
+  screens: Screens;
+  slot: string;
+  address: string;
+  caption?: string;
+  tone?: CatchTextTone;
+}) {
+  const screen = screens[slot];
+  if (!screen) return null;
+  return (
+    <CatchStack gap={16}>
+      <CatchDeviceFrame address={`${brand.web.domain}${address}`} kind="browser"><CatchAppCaptureImage {...screen} caption={undefined} /></CatchDeviceFrame>
+      {caption ? <CatchText tone={tone} variant="body-meta">{caption}</CatchText> : null}
+    </CatchStack>
+  );
+}
+
+/** A phone screen with its caption under it. */
+function PhoneShot({screens, screen: {slot, caption, detail}, size = "sm"}: {screens: Screens; screen: WeddingsScreen; size?: "sm" | "fill"}) {
+  const screen = screens[slot];
+  if (!screen) return null;
+  return (
+    <CatchStack align="center" gap={12}>
+      <CatchAppCaptureImage {...screen} caption={undefined} size={size} />
+      <CatchStack align="center" gap={4}>
+        <CatchText align="center" variant={detail ? "label-action" : "body-meta"}>{caption}</CatchText>
+        {detail ? <CatchText align="center" tone="secondary" variant="body-meta">{detail}</CatchText> : null}
+      </CatchStack>
+    </CatchStack>
+  );
+}
+
+/** A section opening: a coloured kicker over a display headline, across from its lead on a wide page. */
+function HeadingRow({id, kicker, title, body, tone = "secondary", size = "display-xl", as = "h2"}: {
+  id?: string;
   kicker: string;
   title: string;
-  body?: string;
+  body: string;
   tone?: CatchTextTone;
-  /** page: the board's display-xl (display-title on a phone); section: display-section (display-sm). */
-  size?: "page" | "section";
+  size?: "display-xl" | "display-lg";
+  as?: "h2" | "h3";
 }) {
   return (
-    <CatchStack gap={12}>
-      <CatchText tone={tone} variant="label-kicker">{kicker}</CatchText>
-      <CatchText as="h2" id={id} variant={size === "page" ? "page-title" : "section-title"}>{title}</CatchText>
-      {body ? <CatchText tone="secondary" variant="body-lead">{body}</CatchText> : null}
+    <CatchStack align="end" collapseBelow="expanded" direction="row" equal gap={48}>
+      <CatchStack gap={12}>
+        <CatchText tone={tone} variant="label-kicker">{kicker}</CatchText>
+        <CatchText as={as} id={id} variant={size}>{title}</CatchText>
+      </CatchStack>
+      <CatchText tone="secondary" variant="body-lead">{body}</CatchText>
     </CatchStack>
   );
 }
 
-/** Every interface excerpt says who is looking, and on what, above the excerpt itself. */
-function WhoCard({label, night = false, children}: {label: string; night?: boolean; children: ReactNode}) {
-  return (
-    <CatchStack gap={8}>
-      <CatchText tone="secondary" variant="label-kicker">{label}</CatchText>
-      <CatchSurface block={night ? "spotlight" : "floating"} color={night ? "ink" : undefined} padding="md">{children}</CatchSurface>
-    </CatchStack>
-  );
-}
-
-/** Two or three excerpts side by side, stacking on a phone. */
-function CardRow({children}: {children: ReactNode}) {
-  return <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={16}>{children}</CatchStack>;
-}
-
-/** The short icon rows under a chapter's text. */
-function Points({points}: {points: readonly {icon: CatchIconName; title: string; body: string}[]}) {
+function Points({points}: {points: readonly {icon: string; title: string; body: string}[]}) {
   return (
     <CatchSection dividers="none">
-      {points.map((point) => <CatchIndexRow density="compact" icon={point.icon} key={point.title} subtitle={point.body} title={point.title} wrap />)}
+      {points.map((point) => <CatchIndexRow density="regular" icon={point.icon as CatchIconName} key={point.title} subtitle={point.body} title={point.title} wrap />)}
     </CatchSection>
   );
 }
 
-/** One chapter of the wedding: its text and points beside what someone sees. */
-function Chapter({id, kicker, title, body, points, children}: {
-  id: string;
+/** One chapter of the followed wedding: its words beside its screens; they stack below the expanded width. */
+function Chapter({id, kicker, tone, title, body, points, children}: {
+  id?: string;
   kicker: string;
+  tone?: CatchTextTone;
   title: string;
   body: string;
-  points: readonly {icon: CatchIconName; title: string; body: string}[];
+  points: readonly {icon: string; title: string; body: string}[];
   children: ReactNode;
 }) {
   return (
-    <CatchStack align="start" aria-labelledby={id} as="section" collapseBelow="expanded" direction="row" equal gap={48}>
-      <CatchStack gap={12}>
-        <CatchText tone="danger" variant="label-kicker">{kicker}</CatchText>
-        <CatchText as="h3" id={id} variant="section-title">{title}</CatchText>
-        <CatchText tone="secondary" variant="body">{body}</CatchText>
+    <CatchStack align="center" collapseBelow="expanded" direction="row" equal gap={48}>
+      <CatchStack gap={20}>
+        <CatchText tone={tone} variant="label-kicker">{kicker}</CatchText>
+        <CatchText as="h3" id={id} variant="display-lg">{title}</CatchText>
+        <CatchText variant="body-lead">{body}</CatchText>
         <Points points={points} />
       </CatchStack>
-      {children}
+      <CatchStack gap={16}>{children}</CatchStack>
     </CatchStack>
   );
 }
 
-/** A WhatsApp message: the guest's own on the right, the wedding's on the left with its name. */
-function Message({mine = false, author, children}: {mine?: boolean; author?: string; children: ReactNode}) {
+function Hero({screens}: {screens: Screens}) {
+  const {sizeClass} = useCatch();
+  const rsvp = screens[copy.hero.slot];
   return (
-    <CatchStack direction="row" justify={mine ? "end" : "start"}>
-      <CatchSurface block="tile" padding="sm">
-        <CatchStack gap={4}>
-          {author ? <CatchText tone="secondary" variant="label-kicker">{author}</CatchText> : null}
-          {children}
+    <CatchSurface aria-labelledby="wed-hero-title" as="section" block="band">
+      <CatchStack align="center" collapseBelow="expanded" direction="row" equal gap={48}>
+        <CatchStack gap={20}>
+          <CatchText tone="danger" variant="label-kicker">{copy.hero.kicker}</CatchText>
+          {/* One h1: the shorter line on a phone (owner, 9 Nov). */}
+          <CatchText as="h1" id="wed-hero-title" variant="display-hero">{sizeClass === "compact" ? copy.hero.titleShort : copy.hero.title}</CatchText>
+          <CatchText tone="secondary" variant="body-lead">{copy.hero.body}</CatchText>
+          <CatchStack direction="row" gap={8} wrap>
+            <CatchButton href="#apply" label={copy.hero.apply} />
+            <CatchButton href="#follow" label={copy.hero.follow} variant="secondary" />
+          </CatchStack>
+          <CatchText tone="secondary" variant="label-action">{copy.hero.note}</CatchText>
+        </CatchStack>
+        <CatchHeroShowcase device={rsvp ? <CatchAppCaptureImage {...rsvp} caption={undefined} tilt="left" /> : null} ground="yellow" stickers={copy.hero.stickers} />
+      </CatchStack>
+    </CatchSurface>
+  );
+}
+
+function RunningOrder() {
+  const order = copy.order;
+  return (
+    <CatchSurface aria-labelledby="wed-order-title" as="section" block="band" color="tile">
+      <CatchStack align="end" collapseBelow="medium" direction="row" gap={24} justify="between">
+        <CatchStack gap={8}>
+          <CatchText tone="secondary" variant="label-kicker">{order.kicker}</CatchText>
+          <CatchText as="h2" id="wed-order-title" variant="display-lg">{order.title}</CatchText>
+        </CatchStack>
+        <CatchText tone="secondary" variant="body-meta">{order.illustrative}</CatchText>
+      </CatchStack>
+      <CatchSurface block="floating" padding="md">
+        {/* Three months to a row from expanded up, as the board lays them out; one column below. */}
+        <CatchStack gap={8}>
+          {[order.rows.slice(0, 3), order.rows.slice(3)].map((months) => (
+            <CatchStack collapseBelow="expanded" direction="row" equal gap={24} key={months[0].title}>
+              {months.map((row) => (
+                <CatchIndexRow date={{day: row.month, date: row.day}} density="regular" key={row.title} status={row.status} statusTone={row.tone}
+                  subtitle={row.subtitle} title={row.title} wrap />
+              ))}
+            </CatchStack>
+          ))}
         </CatchStack>
       </CatchSurface>
-    </CatchStack>
-  );
-}
-
-/** A file sent in a message: its icon, name and kind. */
-function Attachment({name, kind}: {name: string; kind: string}) {
-  return (
-    <CatchStack align="center" direction="row" gap={12}>
-      <CatchIcon name="document" size={20} />
-      <CatchStack gap={2}>
-        <CatchText variant="label-action">{name}</CatchText>
-        <CatchText tone="secondary" variant="body-meta">{kind}</CatchText>
-      </CatchStack>
-    </CatchStack>
-  );
-}
-
-const follow = copy.follow;
-const chapterKicker = ({number, kicker}: {number: string; kicker: string}) => fill(follow.chapterKicker, {number, kicker});
-
-interface HouseholdRow {
-  key: string;
-  household: {title: string; subtitle: string};
-  f0: CatchBadgeProps;
-  f1: CatchBadgeProps;
-  f2: CatchBadgeProps;
-  f3: CatchBadgeProps;
-  f4: CatchBadgeProps;
-}
-
-const functionKeys = ["f0", "f1", "f2", "f3", "f4"] as const;
-
-function HouseholdTable() {
-  const card = follow.setUp.card;
-  const columns: CatchTableColumn<HouseholdRow>[] = [
-    {key: "household", label: card.household, kind: "title"},
-    ...functionKeys.map((key, index): CatchTableColumn<HouseholdRow> => ({key, label: card.functions[index], kind: "badge", align: "center", width: "64px"})),
-  ];
-  const rows: HouseholdRow[] = card.households.map((household) => {
-    const badges = household.replies.map((reply) => replyBadge(reply, household.size));
-    return {
-      key: household.name,
-      household: {title: household.name, subtitle: fill(card.householdSubtitle, {side: household.side, count: household.size})},
-      f0: badges[0], f1: badges[1], f2: badges[2], f3: badges[3], f4: badges[4],
-    };
-  });
-  return <CatchTable columns={columns} label={card.tableLabel} rows={rows} />;
-}
-
-function SetUp() {
-  const chapter = follow.setUp;
-  return (
-    <Chapter body={chapter.body} id="weddings-set-up" kicker={chapterKicker(chapter)} points={chapter.points} title={chapter.title}>
-      <WhoCard label={chapter.card.label}>
-        <CatchText variant="title-row">{chapter.card.title}</CatchText>
-        <HouseholdTable />
-      </WhoCard>
-    </Chapter>
-  );
-}
-
-function Invite({landing}: {landing: WeddingsLandingController}) {
-  const chapter = follow.invite;
-  const people = chapter.phone.people;
-  const check = (person: string) => (
-    <CatchCheckboxInput key={person} label={person} onChanged={() => landing.toggleComing(person)} value={landing.coming.includes(person)} />
-  );
-  return (
-    <Chapter body={chapter.body} id="weddings-invite" kicker={chapterKicker(chapter)} points={chapter.points} title={chapter.title}>
-      <CardRow>
-        <WhoCard label={chapter.phone.label}>
-          <CatchText variant="title-row">{chapter.phone.title}</CatchText>
-          <CatchText tone="secondary" variant="body-small">{chapter.phone.wear}</CatchText>
-          <CatchStack direction="row" equal gap={8}>{people.slice(0, 2).map(check)}</CatchStack>
-          <CatchStack direction="row" equal gap={8}>{people.slice(2).map(check)}</CatchStack>
-          <CatchButton fill isInteractive={false} label={chapter.phone.send} size="md" />
-        </WhoCard>
-        <WhoCard label={chapter.whatsapp.label}>
-          <Message author={chapter.whatsapp.author}>
-            <CatchText variant="body">{chapter.whatsapp.message}</CatchText>
-          </Message>
-          <CatchButton fill isInteractive={false} label={chapter.whatsapp.reply} size="md" variant="secondary" />
-        </WhoCard>
-      </CardRow>
-    </Chapter>
-  );
-}
-
-function WriteIn() {
-  const chapter = follow.writeIn;
-  const {chat, ids} = chapter;
-  return (
-    <Chapter body={chapter.body} id="weddings-write-in" kicker={chapterKicker(chapter)} points={chapter.points} title={chapter.title}>
-      <CardRow>
-        <WhoCard label={chat.label}>
-          <Message mine><Attachment kind={chat.ticket.kind} name={chat.ticket.name} /></Message>
-          <Message author={chat.author}><CatchText variant="body">{chat.read}</CatchText></Message>
-          <Message mine><CatchText lang="hi" variant="body">{chat.question}</CatchText></Message>
-          <Message author={chat.author}><CatchText lang="hi" variant="body">{chat.answer}</CatchText></Message>
-        </WhoCard>
-        <WhoCard label={ids.label}>
-          <CatchStack direction="row" equal gap={12}>
-            {ids.stats.map((stat) => <CatchMetricTile key={stat.label} label={stat.label} layout="inline" value={stat.value} />)}
-          </CatchStack>
-          <CatchSection>
-            {ids.rows.map((row) => (
-              <CatchIndexRow density="compact" key={row.title} subtitle={row.subtitle} title={row.title}
-                trailing={<CatchBadge label={row.badge.label} tone={badgeTone(row.badge.tone)} />} />
-            ))}
-          </CatchSection>
-        </WhoCard>
-      </CardRow>
-    </Chapter>
-  );
-}
-
-function Travel() {
-  const chapter = follow.travel;
-  const {arrivals, rooms} = chapter;
-  return (
-    <Chapter body={chapter.body} id="weddings-travel" kicker={chapterKicker(chapter)} points={chapter.points} title={chapter.title}>
-      <CardRow>
-        <WhoCard label={arrivals.label}>
-          <CatchBarIndicator bars={arrivals.bars} height={110} label={arrivals.chartLabel} recipe="chart" />
-          <CatchText tone="secondary" variant="body-small">{arrivals.note}</CatchText>
-        </WhoCard>
-        <WhoCard label={rooms.label}>
-          <CatchText variant="title-row">{rooms.hotel}</CatchText>
-          <CatchMeter kind="cap" label={rooms.meter} max={rooms.total} showLabel thickness={6} value={rooms.placed} />
-          <CatchSection>
-            {rooms.rows.map((row) => <CatchIndexRow density="compact" key={row.title} title={row.title} value={row.value} />)}
-          </CatchSection>
-        </WhoCard>
-      </CardRow>
-    </Chapter>
-  );
-}
-
-function Weekend() {
-  const chapter = follow.weekend;
-  const {greeter, desk, door} = chapter;
-  return (
-    <CatchStack aria-labelledby="weddings-weekend" as="section" gap={24}>
-      <CatchStack gap={12}>
-        <CatchText tone="danger" variant="label-kicker">{chapterKicker(chapter)}</CatchText>
-        <CatchText as="h3" id="weddings-weekend" variant="section-title">{chapter.title}</CatchText>
-        <CatchText tone="secondary" variant="body">{chapter.body}</CatchText>
-      </CatchStack>
-      <CardRow>
-        <WhoCard label={greeter.label} night>
-          <CatchText tone="secondary" variant="label-kicker">{greeter.kicker}</CatchText>
-          <CatchText variant="display-sm">{greeter.title}</CatchText>
-          <CatchSection>
-            {greeter.rows.map((row) => (
-              <CatchIndexRow action={{label: row.action, variant: row.primary ? "primary" : "secondary"}} density="compact" key={row.title}
-                subtitle={row.subtitle} title={row.title} />
-            ))}
-          </CatchSection>
-        </WhoCard>
-        <WhoCard label={desk.label} night>
-          <CatchText tone="secondary" variant="label-kicker">{desk.kicker}</CatchText>
-          <CatchText variant="display-sm">{desk.title}</CatchText>
-          <CatchSection>
-            <CatchIndexRow density="compact" status={desk.car.status} statusTone="success" subtitle={desk.car.subtitle} title={desk.car.title} wrap />
-          </CatchSection>
-        </WhoCard>
-        <WhoCard label={door.label} night>
-          <CatchText tone="secondary" variant="label-kicker">{door.kicker}</CatchText>
-          <CatchText numeric variant="display-sm">{door.title}</CatchText>
-          <CatchMeter label={door.meter} max={door.coming} thickness={6} value={door.checkedIn} />
-          <CatchIndexRow density="compact" marker={{tone: "info"}} subtitle={door.late.subtitle} title={door.late.title} wrap />
-        </WhoCard>
-      </CardRow>
-    </CatchStack>
-  );
-}
-
-interface TripRow {
-  key: string;
-  vendor: {title: string; subtitle: string};
-  billed: number;
-  recorded: number;
-  check: CatchBadgeProps;
-}
-
-function After() {
-  const chapter = follow.after;
-  const card = chapter.card;
-  const columns: CatchTableColumn<TripRow>[] = [
-    {key: "vendor", label: card.columns.vendor, kind: "title"},
-    {key: "billed", label: card.columns.billed, kind: "number"},
-    {key: "recorded", label: card.columns.recorded, kind: "number"},
-    {key: "check", label: card.columns.check, kind: "badge", align: "center"},
-  ];
-  const rows: TripRow[] = card.rows.map((row) => ({
-    key: row.key,
-    vendor: {title: row.vendor, subtitle: row.fleet},
-    billed: row.billed,
-    recorded: row.recorded,
-    check: {label: row.check.label, tone: badgeTone(row.check.tone)},
-  }));
-  return (
-    <Chapter body={chapter.body} id="weddings-after" kicker={chapterKicker(chapter)} points={chapter.points} title={chapter.title}>
-      <WhoCard label={card.label}>
-        <CatchText variant="title-row">{card.title}</CatchText>
-        <CatchTable columns={columns} label={card.title} rows={rows} />
-      </WhoCard>
-    </Chapter>
-  );
-}
-
-/** Follow one wedding (#follow): Aditi and Kabir's weekend in six chapters, each with what someone sees. */
-function Follow({landing}: {landing: WeddingsLandingController}) {
-  return (
-    <CatchSurface aria-labelledby="weddings-follow-title" as="section" block="band" id="follow">
-      <Heading body={follow.lead} id="weddings-follow-title" kicker={follow.kicker} title={follow.title} tone="danger" />
-      <SetUp />
-      <Invite landing={landing} />
-      <WriteIn />
-      <Travel />
-      <Weekend />
-      <After />
     </CatchSurface>
   );
 }
 
-/** The hero: the pitch beside the wedding drawn as a running order. */
-function Hero() {
-  const hero = copy.hero;
-  return (
-    <CatchSurface aria-labelledby="weddings-title" as="section" block="band">
-      <CatchStack align="center" collapseBelow="expanded" direction="row" equal gap={64}>
-        <CatchStack gap={20}>
-          <CatchText tone="danger" variant="label-kicker">{hero.kicker}</CatchText>
-          <CatchText as="h1" id="weddings-title" variant="page-title">{hero.title}</CatchText>
-          <CatchText tone="secondary" variant="body-lead">{hero.body}</CatchText>
-          <CatchStack direction="row" gap={8} wrap>
-            <CatchButton href="#apply" label={hero.apply} />
-            <CatchButton href="#follow" label={hero.follow} variant="secondary" />
-          </CatchStack>
-          <CatchText tone="secondary" variant="label-kicker">{hero.note}</CatchText>
-        </CatchStack>
-        <CatchStack gap={12}>
-          <CatchStack direction="row" gap={12} justify="between">
-            <CatchText tone="secondary" variant="label-kicker">{hero.wedding}</CatchText>
-            <CatchText tone="secondary" variant="label-kicker">{hero.countdown}</CatchText>
-          </CatchStack>
-          <CatchSection dividers="all">
-            {hero.order.map((beat) => (
-              <CatchIndexRow date={{day: beat.month, date: beat.day, format: "nightsOut"}} density="compact" key={beat.title} subtitle={beat.subtitle} title={beat.title}
-                trailing={<CatchBadge label={beat.badge.label} tone={badgeTone(beat.badge.tone)} />} wrap />
-            ))}
-          </CatchSection>
-          <CatchText tone="secondary" variant="body-meta">{hero.illustrative}</CatchText>
-        </CatchStack>
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-/** Why planners switch: five pains, each with what changes. */
 function Problem() {
   const problem = copy.problem;
   return (
-    <CatchSurface aria-labelledby="weddings-problem-title" as="section" block="band" color="tile">
-      <Heading id="weddings-problem-title" kicker={problem.kicker} title={problem.title} />
-      <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={24}>
+    <CatchSurface aria-labelledby="wed-problem-title" as="section" block="band" color="ink">
+      <HeadingRow body={problem.body} id="wed-problem-title" kicker={problem.kicker} title={problem.title} tone="warning" />
+      <CatchSection dividers="between">
         {problem.pains.map((pain) => (
-          <CatchStack gap={8} key={pain.number}>
-            <CatchText tone="secondary" variant="label-code">{pain.number}</CatchText>
-            <CatchText as="h3" variant="title-row">{pain.title}</CatchText>
-            <CatchText tone="secondary" variant="body-small">{pain.before}</CatchText>
-            <CatchText variant="body-small">{fill(problem.withCatch, {after: pain.after})}</CatchText>
-          </CatchStack>
+          <CatchSurface block="plain" key={pain.number} padding="sm">
+            <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={24}>
+              <CatchStack align="start" direction="row" gap={24}>
+                <CatchText numeric tone="warning" variant="display-sm">{pain.number}</CatchText>
+                <CatchStack gap={4}>
+                  <CatchText as="h3" variant="title-bar">{pain.title}</CatchText>
+                  <CatchText tone="secondary" variant="body">{pain.before}</CatchText>
+                </CatchStack>
+              </CatchStack>
+              <CatchStack gap={4}>
+                <CatchText tone="success" variant="label-kicker">{problem.withCatch}</CatchText>
+                <CatchText variant="body">{pain.after}</CatchText>
+              </CatchStack>
+            </CatchStack>
+          </CatchSurface>
         ))}
-      </CatchStack>
+      </CatchSection>
     </CatchSurface>
   );
 }
 
-/** Your team (#team, ink band): ten roles, each seeing only its own job. */
-function Team() {
+function Follow({screens}: {screens: Screens}) {
+  const follow = copy.follow;
+  const {setUp, invite, writeIn, travel, weekend, after} = follow;
+  return (
+    <>
+      <CatchSurface aria-labelledby="wed-follow-title" as="section" block="band" id="follow">
+        <HeadingRow body={follow.lead} id="wed-follow-title" kicker={follow.kicker} title={follow.title} tone="info" />
+        <Chapter body={setUp.body} kicker={setUp.kicker} points={setUp.points} title={setUp.title}>
+          <BrowserShot address={setUp.screen.address} caption={setUp.screen.caption} screens={screens} slot={setUp.screen.slot} />
+        </Chapter>
+      </CatchSurface>
+      <CatchSurface aria-labelledby="wed-ch2-title" as="section" block="band" color="dinner">
+        <Chapter body={invite.body} id="wed-ch2-title" kicker={invite.kicker} points={invite.points} title={invite.title}>
+          <CatchStack align="start" direction="row" equal gap={24}>
+            {invite.screens.map((screen) => <PhoneShot key={screen.slot} screen={screen} screens={screens} size="fill" />)}
+          </CatchStack>
+        </Chapter>
+      </CatchSurface>
+      <CatchSurface aria-labelledby="wed-ch3-title" as="section" block="band">
+        <Chapter body={writeIn.body} id="wed-ch3-title" kicker={writeIn.kicker} points={writeIn.points} title={writeIn.title} tone="success">
+          <CatchStack align="start" direction="row" equal gap={24}>
+            {writeIn.screens.map((screen) => <PhoneShot key={screen.slot} screen={screen} screens={screens} size="fill" />)}
+          </CatchStack>
+        </Chapter>
+      </CatchSurface>
+      <CatchSurface aria-labelledby="wed-ch4-title" as="section" block="band" color="tile">
+        <Chapter body={travel.body} id="wed-ch4-title" kicker={travel.kicker} points={travel.points} title={travel.title} tone="info">
+          <BrowserShot address={travel.screen.address} caption={travel.screen.caption} screens={screens} slot={travel.screen.slot} />
+        </Chapter>
+      </CatchSurface>
+      <CatchSurface aria-labelledby="wed-ch5-title" as="section" block="band" color="ink">
+        <HeadingRow as="h3" body={weekend.body} id="wed-ch5-title" kicker={weekend.kicker} title={weekend.title} tone="warning" />
+        <BrowserShot address={weekend.screen.address} screens={screens} slot={weekend.screen.slot} />
+        <CatchRail itemWidth={230} label={weekend.staffLabel}>
+          {weekend.staff.map((screen) => <PhoneShot key={screen.slot} screen={screen} screens={screens} size="fill" />)}
+        </CatchRail>
+      </CatchSurface>
+      <CatchSurface aria-labelledby="wed-ch6-title" as="section" block="band" color="courts">
+        <Chapter body={after.body} id="wed-ch6-title" kicker={after.kicker} points={after.points} title={after.title}>
+          <BrowserShot address={after.screen.address} caption={after.screen.caption} screens={screens} slot={after.screen.slot} tone="inherit" />
+        </Chapter>
+      </CatchSurface>
+    </>
+  );
+}
+
+function Team({screens}: {screens: Screens}) {
   const team = copy.team;
   return (
-    <CatchSurface aria-labelledby="weddings-team-title" as="section" block="band" color="ink" id="team">
-      <CatchStack align="end" collapseBelow="expanded" direction="row" equal gap={48}>
-        <Heading id="weddings-team-title" kicker={team.kicker} title={team.title} tone="warning" />
-        <CatchText tone="secondary" variant="body-lead">{team.body}</CatchText>
-      </CatchStack>
-      {[team.roles.slice(0, 5), team.roles.slice(5)].map((roles) => (
-        <CatchStack align="stretch" collapseBelow="expanded" direction="row" equal gap={12} key={roles[0].title}>
-          {roles.map((role) => (
-            <CatchSurface block="tile" key={role.title}>
-              <CatchIcon name={role.icon} size={24} />
-              <CatchText as="h3" variant="title-row">{role.title}</CatchText>
-              <CatchText tone="secondary" variant="body-small">{role.body}</CatchText>
-              <CatchStack align="start"><CatchBadge label={role.access} tone="neutral" /></CatchStack>
-            </CatchSurface>
-          ))}
-        </CatchStack>
-      ))}
-    </CatchSurface>
-  );
-}
-
-const messageMarkers: Record<"sent" | "next" | "planned", CatchMarkerProps> = {
-  sent: {tone: "ink", size: 12},
-  next: {tone: "format", format: "nightsOut", size: 12, live: true},
-  planned: {kind: "ring", size: 12},
-};
-
-const messageBadges: Record<"sent" | "next" | "planned", CatchBadgeProps["tone"]> = {sent: "success", next: "brand", planned: "neutral"};
-
-/** Messages and The family, side by side. */
-function MessagesAndFamily() {
-  const {messages, family} = copy;
-  return (
-    <CatchSurface aria-labelledby="weddings-messages-title weddings-family-title" as="section" block="band">
+    <CatchSurface aria-labelledby="wed-team-title" as="section" block="band" id="team">
+      <HeadingRow body={team.body} id="wed-team-title" kicker={team.kicker} title={team.title} tone="primary" />
       <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={48}>
-        <CatchStack gap={24}>
-          <Heading body={messages.body} id="weddings-messages-title" kicker={messages.kicker} size="section" title={messages.title} />
-          <WhoCard label={messages.card}>
-            <CatchSection timeline>
-              {messages.rows.map((row) => (
-                <CatchIndexRow density="compact" key={row.title} marker={messageMarkers[row.state]} subtitle={row.when} title={row.title}
-                  trailing={<CatchBadge label={messages.states[row.state]} tone={messageBadges[row.state]} />} />
-              ))}
-            </CatchSection>
-          </WhoCard>
-        </CatchStack>
-        <CatchStack gap={24}>
-          <Heading body={family.body} id="weddings-family-title" kicker={family.kicker} size="section" title={family.title} />
-          <WhoCard label={family.card}>
-            <CatchStack direction="row" equal gap={12}>
-              {family.stats.map((stat) => <CatchMetricTile key={stat.label} label={stat.label} layout="inline" value={stat.value} />)}
-            </CatchStack>
-            <CatchSection>
-              {family.functions.map((item) => (
-                <CatchIndexRow density="compact" key={item.name} progress={{value: item.coming, max: item.invited, label: fill(family.progressLabel, item)}} title={item.name}
-                  value={String(item.coming)} />
-              ))}
-            </CatchSection>
-            <CatchStack direction="row" gap={6} wrap>
-              {family.diets.map((diet) => <CatchChip count={diet.count} key={diet.label} kind="tag" label={diet.label} size="sm" />)}
-            </CatchStack>
-          </WhoCard>
+        <CatchSection dividers="between">
+          {team.roles.map((role) => (
+            <CatchIndexRow density="compact" icon={role.icon} key={role.title} subtitle={role.body} title={role.title} value={role.access} wrap />
+          ))}
+        </CatchSection>
+        <CatchStack gap={8}>
+          <BrowserShot address={team.hotel.address} screens={screens} slot={team.hotel.slot} />
+          <CatchText variant="title-row">{team.hotel.title}</CatchText>
+          <CatchText tone="secondary" variant="body-small">{team.hotel.body}</CatchText>
         </CatchStack>
       </CatchStack>
     </CatchSurface>
   );
 }
 
-/** Pricing (#pricing, games band): per wedding by headcount, four tiers. */
+function MessagesAndFamily({screens}: {screens: Screens}) {
+  const {messages, family} = copy;
+  const message = screens[messages.slot];
+  const familyScreen = screens[family.slot];
+  return (
+    <CatchSurface aria-labelledby="wed-messages-title" as="section" block="band" color="tile">
+      <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={48}>
+        <CatchStack gap={20}>
+          <CatchText tone="info" variant="label-kicker">{messages.kicker}</CatchText>
+          <CatchText as="h2" id="wed-messages-title" variant="display-lg">{messages.title}</CatchText>
+          <CatchText variant="body">{messages.body}</CatchText>
+          <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={24}>
+            {message ? <CatchAppCaptureImage {...message} caption={undefined} size="sm" /> : null}
+            <CatchSection dividers="between" title={messages.listTitle}>
+              {messages.rows.map((row) => (
+                <CatchIndexRow density="compact" key={row.title} status={row.status} statusTone={row.tone} subtitle={row.when} title={row.title} wrap />
+              ))}
+            </CatchSection>
+          </CatchStack>
+        </CatchStack>
+        <CatchStack gap={20}>
+          <CatchText tone="danger" variant="label-kicker">{family.kicker}</CatchText>
+          <CatchText as="h2" variant="display-lg">{family.title}</CatchText>
+          <CatchText variant="body">{family.body}</CatchText>
+          <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={24}>
+            {familyScreen ? <CatchAppCaptureImage {...familyScreen} caption={undefined} size="sm" /> : null}
+            <CatchStack gap={16}>
+              <CatchStack direction="row" equal gap={12}>
+                {family.stats.map((stat) => <CatchMetricTile key={stat.label} label={stat.label} value={stat.value} />)}
+              </CatchStack>
+              <CatchSection dividers="between" title={family.dietsTitle}>
+                {family.diets.map((diet) => <CatchIndexRow density="compact" key={diet.label} title={diet.label} value={diet.count} />)}
+              </CatchSection>
+            </CatchStack>
+          </CatchStack>
+        </CatchStack>
+      </CatchStack>
+    </CatchSurface>
+  );
+}
+
 function Pricing() {
   const pricing = copy.pricing;
   return (
-    <CatchSurface aria-labelledby="weddings-pricing-title" as="section" block="band" color="games" id="pricing">
+    <CatchSurface aria-labelledby="wed-pricing-title" as="section" block="band" color="games" id="pricing">
       <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={48}>
-        <Heading body={pricing.body} id="weddings-pricing-title" kicker={pricing.kicker} title={pricing.title} tone="primary" />
-        <CatchSection dividers="none" title={pricing.includedTitle}>
-          {pricing.included.map((item) => <CatchIndexRow density="compact" icon="check" key={item} title={item} wrap />)}
-        </CatchSection>
+        <CatchStack gap={20}>
+          <CatchText variant="label-kicker">{pricing.kicker}</CatchText>
+          <CatchText as="h2" id="wed-pricing-title" variant="display-xl">{pricing.title}</CatchText>
+          <CatchText variant="body-lead">{pricing.body}</CatchText>
+          <CatchSection dividers="none" title={pricing.includedTitle}>
+            {pricing.included.map((item) => <CatchIndexRow density="compact" icon="check" key={item} title={item} wrap />)}
+          </CatchSection>
+        </CatchStack>
+        <CatchSurface block="floating" padding="lg">
+          <CatchStack align="baseline" direction="row" gap={8} justify="between" wrap>
+            <CatchText as="h3" variant="display-sm">{pricing.tiersTitle}</CatchText>
+            <CatchText tone="secondary" variant="label-action">{pricing.quote}</CatchText>
+          </CatchStack>
+          <CatchSection dividers="between">
+            {pricing.tiers.map((tier) => (
+              <CatchIndexRow density="regular" icon="people" key={tier.title} status={tier.badge || undefined} statusTone="success" subtitle={tier.body} title={tier.title} wrap />
+            ))}
+          </CatchSection>
+          <CatchButton fill href="#apply" label={pricing.action} />
+          <CatchText tone="secondary" variant="body-small">{pricing.atCost}</CatchText>
+        </CatchSurface>
       </CatchStack>
-      <CatchStack align="stretch" collapseBelow="expanded" direction="row" equal gap={12}>
-        {pricing.tiers.map((tier) => (
-          <CatchSurface block="floating" key={tier.title}>
-            {tier.popular ? <CatchStack direction="row"><CatchBadge label={pricing.popular} recipe="solid" /></CatchStack> : null}
-            <CatchText as="h3" variant="display-sm">{tier.title}</CatchText>
-            <CatchText tone="secondary" variant="body-small">{tier.body}</CatchText>
-            <CatchText variant="label-action">{pricing.quote}</CatchText>
-          </CatchSurface>
-        ))}
-      </CatchStack>
-      <CatchText tone="secondary" variant="body-small">{pricing.atCost}</CatchText>
     </CatchSurface>
   );
 }
 
-/** The pilot (#apply, run band): six guided steps beside the step-1 card. */
 function Pilot({landing}: {landing: WeddingsLandingController}) {
   const pilot = copy.pilot;
   return (
-    <CatchSurface aria-labelledby="weddings-pilot-title" as="section" block="band" color="run" id="apply">
+    <CatchSurface aria-labelledby="wed-pilot-title" as="section" block="band" color="indigo" id="apply">
       <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={48}>
-        <CatchStack gap={24}>
-          <Heading body={pilot.body} id="weddings-pilot-title" kicker={pilot.kicker} title={pilot.title} tone="primary" />
-          <CatchSection dividers="all">
-            {pilot.steps.map((step, index) => <CatchIndexRow density="compact" key={step.title} rank={index + 1} subtitle={step.body} title={step.title} wrap />)}
-          </CatchSection>
+        <CatchStack gap={20}>
+          <CatchText variant="label-kicker">{pilot.kicker}</CatchText>
+          <CatchText as="h2" id="wed-pilot-title" variant="display-xl">{pilot.title}</CatchText>
+          <CatchText variant="body-lead">{pilot.body}</CatchText>
+          <CatchStepList steps={pilot.steps} />
         </CatchStack>
-        <StepOneCard continueHref={weddingsApplyPath} idPrefix="weddings-landing-apply" onContinue={landing.continueToApply} stepOne={landing.stepOne} />
+        <CatchStack gap={16}>
+          <StepOneCard continueHref={weddingsApplyPath} idPrefix="weddings-landing" onContinue={landing.continueToApply} stepOne={landing.stepOne} />
+          <CatchSurface block="tile" padding="md">
+            <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
+              <CatchText variant="body-small">{pilot.hosting}</CatchText>
+              <CatchButton href={pilot.hostingHref} label={pilot.hostingAction} size="md" variant="secondary" />
+            </CatchStack>
+          </CatchSurface>
+        </CatchStack>
       </CatchStack>
     </CatchSurface>
   );
 }
 
-/** Questions (#questions): the FAQ beside its heading. */
 function Questions() {
   const faq = copy.faq;
   return (
-    <CatchSurface aria-labelledby="weddings-faq-title" as="section" block="band" id="questions">
+    <CatchSurface aria-labelledby="wed-faq-title" as="section" block="band" id="questions">
       <CatchStack align="start" collapseBelow="expanded" direction="row" equal gap={48}>
-        <Heading id="weddings-faq-title" kicker={faq.kicker} title={faq.title} />
-        <CatchAccordion items={faq.items} name="weddings-faq" size="lg" />
+        <CatchStack gap={12}>
+          <CatchText tone="success" variant="label-kicker">{faq.kicker}</CatchText>
+          <CatchText as="h2" id="wed-faq-title" variant="display-xl">{faq.title}</CatchText>
+          <CatchStack align="start"><CatchButton href="#apply" label={faq.apply} /></CatchStack>
+        </CatchStack>
+        <CatchAccordion exclusive items={faq.items} name="weddings-faq" size="lg" />
       </CatchStack>
     </CatchSurface>
   );
 }
 
 /**
- * The landing's bands in the RbWebWeddings board's order: the running-order
- * hero, why planners switch, one wedding in six chapters (#follow), the team
- * (#team), messages and the family, pricing (#pricing), the pilot with the
- * step-1 card (#apply) and questions (#questions).
+ * The landing's bands, as the RbWebWeddings board: the hero, the running
+ * order, the problem, one wedding followed chapter by chapter in real
+ * programme screens, the team, messages and the family, pricing without
+ * numbers, the guided pilot with step 1, and the questions.
  */
-export function WeddingsBands({landing}: {landing: WeddingsLandingController}) {
+export function WeddingsBands({captures, landing}: {captures: CaptureSlots; landing: WeddingsLandingController}) {
+  const screens = weddingScreens(captures);
   return (
     <>
-      <Hero />
+      <Hero screens={screens} />
+      <RunningOrder />
       <Problem />
-      <Follow landing={landing} />
-      <Team />
-      <MessagesAndFamily />
+      <Follow screens={screens} />
+      <Team screens={screens} />
+      <MessagesAndFamily screens={screens} />
       <Pricing />
       <Pilot landing={landing} />
       <Questions />

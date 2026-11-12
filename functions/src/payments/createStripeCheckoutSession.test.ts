@@ -14,7 +14,8 @@ import {
   StripeCheckoutSessionCreateInput,
 } from "./stripe";
 import {catchNativeEventOrigin} from "../shared/testUtils";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 test("createStripeCheckoutSessionHandler creates trusted destination checkout",
   async () => {
@@ -216,7 +217,7 @@ function buildRequest({
 function buildEventDoc(
   overrides: Partial<EventDocument> = {}
 ): EventDocument {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     organizerId: "organizer-1",
     eventOrigin: catchNativeEventOrigin(),
@@ -273,7 +274,7 @@ function buildEventDoc(
     discoveryMinAge: 0,
     discoveryMaxAge: 99,
     ...overrides,
-  };
+  } as Record<string, unknown>) as unknown as EventDocument;
 }
 
 function buildOrganizerDoc(

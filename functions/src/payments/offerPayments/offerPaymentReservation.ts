@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {offerCancellationPolicy, assertReviewedCancellationPolicy,
   type OfferCancellationPolicy} from "./offerCancellationPolicy";
 import {assertUnpartitionedAdmission} from
@@ -31,7 +32,7 @@ import {assertPaymentRouteSnapshot, type PaymentRoutingSnapshot} from
 import {assertRazorpayCollectionRoutingCurrent} from
   "../razorpayCollectionRouting";
 
-export const OFFER_PAYMENT_COLLECTION = "organizerEventOfferPayments";
+export const OFFER_PAYMENT_COLLECTION = GUEST_PAYMENTS;
 export function offerPaymentId(grantId: string, uid: string,
   requestId: string): string {
   if (!/^[a-f0-9]{64}$/u.test(grantId) ||
@@ -165,7 +166,8 @@ export async function reserveOfferPayment(params: {
         expectedReservationRevision: reservation?.revision ?? 0, nowMillis},
       resolveIdentity: async () => identity.identity});
     const now = Timestamp.fromMillis(nowMillis);
-    const payment: Payment = {organizerId, eventId, responseId, originId,
+    const payment: Payment = {purpose: "offer", organizerId, eventId,
+      responseId, originId,
       contactId, offerId: grant.offerId, grantId, recipientUid: uid, requestId,
       offerGeneration: grant.offerGeneration,
       offerRevision: grant.offerRevision,

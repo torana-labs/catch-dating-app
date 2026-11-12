@@ -41,6 +41,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
@@ -65,6 +66,8 @@ import {
   rosterFromEvent,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {requireEventTimeRange} from "./configuredEvent";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {stripeSecretKey} from "../payments/stripe";
@@ -329,6 +332,7 @@ export async function cancelEventSignUpHandler(
     let promotedParticipationRef:
         FirebaseFirestore.DocumentReference | null = null;
     let promotedParticipationPatch: Record<string, unknown> | null = null;
+    let promotedBefore: Record<string, unknown> | null = null;
     let promotedOfferRef:
         FirebaseFirestore.DocumentReference | null = null;
     let promotedOfferPatch: Record<string, unknown> | null = null;
@@ -421,6 +425,8 @@ export async function cancelEventSignUpHandler(
         wCohort
       );
       promotedParticipationRef = waitlistedParticipation.ref;
+      promotedBefore = waitlistedParticipation.data as
+        unknown as Record<string, unknown>;
       promotedParticipationPatch = eventParticipationPatch({
         exists: true,
         eventId,
@@ -466,7 +472,7 @@ export async function cancelEventSignUpHandler(
       promotedNotification = {
         uid: waitlistUserId,
         token: allowsPushPreference(waitlistUser, "eventStatusUpdates") ?
-          waitlistUser.fcmToken :
+          await readConsumerPushToken(db, waitlistUserId, tx) ?? undefined :
           undefined,
         title: notificationCopy.title,
         body: notificationCopy.body,
@@ -512,6 +518,15 @@ export async function cancelEventSignUpHandler(
           }))}});
     }
 
+    const [cancellerRoster, promotedRoster] = await Promise.all([
+      readCatchBookingRoster({db, tx, eventId, uid: userId,
+        verifiedPhone: () => loadVerifiedRosterPhone(userId,
+          deps.loadCurrentAuthPhone)}),
+      promotedUid ? readCatchBookingRoster({db, tx, eventId,
+        uid: promotedUid, verifiedPhone: () => loadVerifiedRosterPhone(
+          promotedUid!, deps.loadCurrentAuthPhone)}) : null,
+    ]);
+
     // Financial intent and released admission commit together, including a
     // zero-refund policy which can later be upgraded by host cancellation.
     if (refundIntent) {
@@ -534,7 +549,7 @@ export async function cancelEventSignUpHandler(
         bookedCount: nextBookedCount,
       }),
     });
-    tx.set(participationRef, eventParticipationPatch({
+    const cancellation = eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
       organizerId: event.organizerId,
@@ -542,7 +557,12 @@ export async function cancelEventSignUpHandler(
       status: "cancelled",
       genderAtSignup: cancellerGender,
       cohortAtSignup: cancellerCohort,
-    }), {merge: true});
+    });
+    tx.set(participationRef, cancellation, {merge: true});
+    const rosterNow = admin.firestore.Timestamp.now();
+    writeCatchBookingRoster({db, tx, slot: cancellerRoster,
+      booking: participationAfterPatch(participationSnap.data(), cancellation),
+      now: rosterNow, seatReady: seatMode === "ready"});
     releaseUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
@@ -553,6 +573,12 @@ export async function cancelEventSignUpHandler(
       tx.set(promotedParticipationRef, promotedParticipationPatch, {
         merge: true,
       });
+      if (promotedRoster) {
+        writeCatchBookingRoster({db, tx, slot: promotedRoster,
+          booking: participationAfterPatch(promotedBefore ?? undefined,
+            promotedParticipationPatch), now: rosterNow,
+          seatReady: seatMode === "ready"});
+      }
     }
     if (promotedOfferRef && promotedOfferPatch) {
       tx.set(promotedOfferRef, promotedOfferPatch, {merge: true});

@@ -2,6 +2,7 @@ import {eventGuestCancellationQuote} from "./eventCancellationPolicy";
 import type {EventPaymentLedger, EventSeatPaymentState,
   EventPaymentAdmissionReader} from "./eventPaymentState";
 import {Timestamp} from "firebase-admin/firestore";
+import {readCatchBookingRoster} from "../../events/catchBookingRoster";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -152,6 +153,9 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         expectedMigrationRevision: ledger.migrationRevision,
         expectedReservationRevision: reservation.revision, nowMillis},
       resolveIdentity: async () => identity});
+    const rosterSlot = bridgedBooking && input.guest ?
+      await readCatchBookingRoster({db, tx, eventId, uid: recipientUid,
+        attendeeId: receipt.attendeeId}) : null;
     const now = Timestamp.fromMillis(nowMillis);
     if (bridgedBooking && (participation?.eventId !== eventId ||
         participation?.uid !== recipientUid ||
@@ -160,11 +164,12 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
       unavailable();
     }
     const bridgedCounts = bridgedBooking && input.guest ?
-      catchBookingCancellation({tx, participationRef: db
-        .collection("eventParticipations")
-        .doc(eventParticipationId(eventId, recipientUid)),
-      participation: participation!, event: event as EventDocument,
-      eventId, uid: recipientUid}) : {};
+      catchBookingCancellation({db, tx, rosterSlot: rosterSlot!,
+        participationRef: db
+          .collection("eventParticipations")
+          .doc(eventParticipationId(eventId, recipientUid)),
+        participation: participation!, event: event as EventDocument,
+        eventId, uid: recipientUid}) : {};
     if (release) {
       applySeatPlan(seatTx, release);
       tx.update(eventRef, {bookedCount: ledger.occupied - 1,

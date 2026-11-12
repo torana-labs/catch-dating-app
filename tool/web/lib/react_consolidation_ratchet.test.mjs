@@ -7,7 +7,7 @@ import {fileURLToPath} from "node:url";
 import {test} from "node:test";
 import {planAffectedToolChecks} from "../../lib/tool_impact.mjs";
 import {
-  baselinePath, consolidationDifferences, consolidationSnapshot, fixedAllowanceCount,
+  acceptedDebtCeiling, acceptedDifferences, baselinePath, consolidationDifferences, consolidationSnapshot, fixedAllowanceCount,
   mergeBaseCssBudgets, pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
   strandedByRetirementCeiling, strandedDifferences,
 } from "./react_consolidation_ratchet.mjs";
@@ -75,6 +75,35 @@ const probes = [
     const notAllowed = withStranded({[strandedId]: strandedTicket}); notAllowed.gates[single] = [];
     const otherGate = withStranded({}); otherGate.strandedByRetirement = {[library]: {}};
     for (const document of [outside, wrongTicket, notAllowed, otherGate]) assert.throws(() => parseConsolidationBaseline(document));
+  }],
+  ["accepted debt holds only the tool's closed list with its plan, each name an allowance", () => {
+    const gate = "screens.web_adapters";
+    const [[id, plan]] = Object.entries(acceptedDebtCeiling[gate]);
+    const accepted = (record, entries = Object.keys(record)) => {
+      const document = empty(); document.gates[gate] = entries; document.acceptedDebt = {[gate]: record};
+      return document;
+    };
+    assert.ok(parseConsolidationBaseline(accepted({[id]: plan})));
+    for (const document of [accepted({[id]: "#1670 due 2027-01-01"}), accepted({[id]: plan}, []),
+      accepted({"packages/web-ui/src/components/Other.tsx::Other": plan}), {...empty(), acceptedDebt: {[library]: {}}},
+      {...empty(), acceptedDebt: []}]) assert.throws(() => parseConsolidationBaseline(document));
+  }],
+  ["accepted debt is not new debt until its due date, then fails naming its issue unless paid down", () => {
+    const gate = "library.cross_framework_parity";
+    const [[id, plan]] = Object.entries(acceptedDebtCeiling[gate]);
+    const due = /due (\S+)/u.exec(plan)[1];
+    const recorded = {...empty(), acceptedDebt: {[gate]: {[id]: plan}}};
+    recorded.gates[gate] = [id];
+    const finding = `new debt ${gate}: ${id}`;
+    const other = `new debt ${gate}: catch.other`;
+    const measured = recorded;
+    const onDue = new Date(`${due}T23:00:00Z`);
+    const after = new Date(Date.parse(`${due}T00:00:00Z`) + 86_400_000);
+    assert.deepEqual(acceptedDifferences([finding, other], recorded, measured, onDue), [other]);
+    assert.deepEqual(acceptedDifferences([finding], recorded, measured, after),
+      [`accepted debt ${gate}: ${id} was due ${due}; pay it down (#1670)`]);
+    const paid = {...empty()};
+    assert.deepEqual(acceptedDifferences([], recorded, paid, after), []);
   }],
   ["recording a stranded name lets it in once, then the record may only shrink", () => {
     const first = withStranded({[strandedId]: strandedTicket}, ["website/src/shared/ui/a.tsx::Other"]);

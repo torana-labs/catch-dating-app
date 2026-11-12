@@ -327,6 +327,17 @@
       ]
     },
     {
+      "id": "config_brand",
+      "path": "config/brand",
+      "rulesMatch": "/config/brand",
+      "owner": "public read, admin write through tool/firebase/create_config_brand.mjs",
+      "read": "any user, authenticated or not",
+      "write": "server/admin only",
+      "migrationNotes": [
+        "The apps fall back to their generated Brand constants when this document is absent, unreadable or invalid."
+      ]
+    },
+    {
       "id": "config_public_contact",
       "path": "config/publicContact",
       "rulesMatch": "/config/{docId}",
@@ -471,8 +482,7 @@
       "migrationNotes": [
         "Rules, Functions profile updates, and the generated Dart/TypeScript contract no longer allow new sexualOrientation writes.",
         "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
-        "Legacy bio text now migrates into structured profilePrompts; new prompt text is stored in profilePrompts and photo prompt selections live inside profilePhotos.prompt.",
-        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on organizerMemberships/{organizerId_uid}.",
+        "Global notification category preferences live on users/{uid}; per-organizer push opt-in lives on organizerFollows/{organizerId_uid}.",
         "Event-club membership and saved-event state live in edge collections, not profile arrays."
       ]
     },
@@ -904,7 +914,6 @@
         "setEventAttendeeAttendance",
         "setEventSuccessAccountabilityResolution",
         "registerPublicEvent",
-        "onEventParticipationRosterProjected",
         "onOrganizerContactEventEdgeInviteAttributed",
         "resolveEventAssistanceAccountability"
       ],
@@ -2569,25 +2578,6 @@
       ]
     },
     {
-      "id": "userEventScheduleLocks",
-      "path": "userEventScheduleLocks/{lockId}",
-      "rulesMatch": "/userEventScheduleLocks/{lockId}",
-      "owner": "event booking and waitlist callables",
-      "read": "server/admin only",
-      "write": "server only",
-      "exportedFunctions": [
-        "signUpForFreeEvent",
-        "verifyRazorpayPayment",
-        "cancelEventSignUp",
-        "joinEventWaitlist",
-        "leaveEventWaitlist"
-      ],
-      "migrationNotes": [
-        "Server-owned minute-bucket lock documents prevent users from signing up or waitlisting for overlapping events.",
-        "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
-      ]
-    },
-    {
       "id": "savedEvents",
       "path": "savedEvents/{savedEventId}",
       "rulesMatch": "/savedEvents/{savedEventId}",
@@ -3177,6 +3167,19 @@
       ]
     },
     {
+      "id": "eventHostPhotos",
+      "path": "eventHostPhotos/{eventHostPhotoId}",
+      "rulesMatch": "/eventHostPhotos/{eventHostPhotoId}",
+      "typescriptInterface": "EventHostPhotoDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "addEventHostPhoto and deleteEventHostPhoto callables",
+      "read": "checked-in guests of the event and the organizer's owner and managers",
+      "write": "server only",
+      "migrationNotes": [
+        "One photo the host team shared after the event started; the files live in private Storage under events/{eventId}/hostPhotos/{photoId}/ and leave the server only as short-lived signed URLs."
+      ]
+    },
+    {
       "id": "programPhotos",
       "path": "programPhotos/{programPhotoId}",
       "rulesMatch": "/programPhotos/{programPhotoId}",
@@ -3684,15 +3687,6 @@
       "write": "server only"
     },
     {
-      "id": "operationDecisions",
-      "path": "operationDecisions/{decisionId}",
-      "rulesMatch": "/operationDecisions/{decisionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations workers and reviewed admin decisions",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
       "id": "operationLeases",
       "path": "operationLeases/{leaseId}",
       "rulesMatch": "/operationLeases/{leaseId}",
@@ -3738,33 +3732,6 @@
       "exportedFunctions": [
         "onSupplyIntakeRequestCreated"
       ]
-    },
-    {
-      "id": "operationPublicationPlans",
-      "path": "operationPublicationPlans/{publicationPlanId}",
-      "rulesMatch": "/operationPublicationPlans/{publicationPlanId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations publisher boundary",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
-      "id": "operationRuleProposals",
-      "path": "operationRuleProposals/{ruleProposalId}",
-      "rulesMatch": "/operationRuleProposals/{ruleProposalId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations learning workers",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
-      "id": "operationRuleEvaluations",
-      "path": "operationRuleEvaluations/{ruleEvaluationId}",
-      "rulesMatch": "/operationRuleEvaluations/{ruleEvaluationId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations evaluation workers",
-      "read": "server only",
-      "write": "server only"
     },
     {
       "id": "adminActionExecutions",
@@ -4739,6 +4706,42 @@
       "exportedFunctions": [
         "rollupOrganizerInsightsDaily",
         "getOrganizerOwnerView"
+      ]
+    },
+    {
+      "id": "cityInterest",
+      "path": "cityInterest/{cityKey}",
+      "rulesMatch": "/cityInterest/{cityKey}",
+      "typescriptInterface": "CityInterestDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps waitlist city interest counters and markers server-only"
+      ],
+      "owner": "website waitlist city interest (PR markets 5)",
+      "read": "server only; adminGetCityInterest for admins",
+      "write": "server only; joinWaitlist and tool/data/backfill_city_interest.mjs",
+      "exportedFunctions": [
+        "joinWaitlist",
+        "adminGetCityInterest"
+      ]
+    },
+    {
+      "id": "cityInterestMarkers",
+      "path": "cityInterestMarkers/{markerId}",
+      "rulesMatch": "/cityInterestMarkers/{markerId}",
+      "typescriptInterface": "CityInterestMarkerDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps waitlist city interest counters and markers server-only"
+      ],
+      "owner": "website waitlist city interest (PR markets 5)",
+      "read": "server only; adminGetCityInterest for admins",
+      "write": "server only; joinWaitlist and tool/data/backfill_city_interest.mjs",
+      "exportedFunctions": [
+        "joinWaitlist",
+        "adminGetCityInterest"
       ]
     },
     {

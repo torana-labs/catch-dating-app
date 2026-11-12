@@ -28,6 +28,7 @@ class TestReference extends Fake implements Reference {
 
   final String path;
   final putDataCalls = <TestPutDataCall>[];
+  int downloadUrlCalls = 0;
   Object? deleteFailure;
   int deleteCalls = 0;
 
@@ -44,7 +45,10 @@ class TestReference extends Fake implements Reference {
   }
 
   @override
-  Future<String> getDownloadURL() async => 'https://storage.test/$path';
+  Future<String> getDownloadURL() async {
+    downloadUrlCalls++;
+    return 'https://storage.test/$path';
+  }
 }
 
 class TestPutDataCall {
@@ -350,6 +354,35 @@ void main() {
       );
     });
 
+    test(
+      'host photo staging binds the uploader and never asks for a URL',
+      () async {
+        final storage = TestFirebaseStorage();
+        final repository = ImageUploadRepository(storage);
+
+        final path = await repository.stageEventHostPhoto(
+          eventId: 'event-1',
+          photoId: 'hostPhoto0000000001',
+          uploaderUid: 'host-1',
+          image: _xFile(
+            bytes: Uint8List.fromList([1, 2, 3]),
+            name: 'photo.jpg',
+            mimeType: 'image/jpeg',
+          ),
+        );
+
+        expect(
+          path,
+          'events/event-1/hostPhotoUploads/hostPhoto0000000001/original.jpg',
+        );
+        final ref = storage.refs[path]!;
+        expect(ref.putDataCalls.single.metadata?.customMetadata, {
+          'uploaderUid': 'host-1',
+        });
+        expect(ref.downloadUrlCalls, 0);
+      },
+    );
+
     test('reports preparation, byte progress, and attach stages', () async {
       final progress = <ImageUploadProgress>[];
       final repository = ImageUploadRepository(TestFirebaseStorage());
@@ -442,6 +475,18 @@ final _uploadCases = <UploadCase>[
       uid: 'user-1',
       organizerId: 'club-1',
       eventId: 'event-1',
+      image: image,
+    ),
+  ),
+  UploadCase(
+    name: 'stageEventHostPhoto',
+    schemaFileName: 'event_host_photo_uploads.schema.json',
+    expectedPathPrefix:
+        'events/event-1/hostPhotoUploads/hostPhoto0000000001/original',
+    invoke: (repository, image) => repository.stageEventHostPhoto(
+      eventId: 'event-1',
+      photoId: 'hostPhoto0000000001',
+      uploaderUid: 'host-1',
       image: image,
     ),
   ),

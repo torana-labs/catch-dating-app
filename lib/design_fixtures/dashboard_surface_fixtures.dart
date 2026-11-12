@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summar
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
@@ -50,14 +50,13 @@ final class DashboardSurfaceFixtures {
     reviewCount: 36,
   );
 
-  static final memberships = <OrganizerMembership>[
-    OrganizerMembership(
+  static final memberships = <OrganizerFollow>[
+    OrganizerFollow(
       id: 'design-dashboard-club-$viewerUid',
       organizerId: organizer.id,
       uid: viewerUid,
-      role: OrganizerMembershipRole.member,
-      status: OrganizerMembershipStatus.active,
-      joinedAt: now.subtract(const Duration(days: 45)),
+      status: OrganizerFollowStatus.active,
+      followedAt: now.subtract(const Duration(days: 45)),
     ),
   ];
 
@@ -135,8 +134,8 @@ final class DashboardSurfaceFixtures {
       id: 'design-dashboard-match',
       uid: viewerUid,
       type: ActivityNotificationType.match,
-      title: "It's a catch",
-      body: 'You and Riya matched after Sunday socials.',
+      title: 'You picked each other',
+      body: 'You and Riya picked each other after Sunday socials.',
       createdAt: now.subtract(const Duration(hours: 6)),
       readAt: now.subtract(const Duration(hours: 5)),
       matchId: 'design-dashboard-match',

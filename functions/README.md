@@ -202,7 +202,6 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `manageEventApprovalNotifications` | `src/events/approvalNotifications/preferences.ts` | Account-bound optional application-update choices and immutable permission receipts |
 | `onEventApplicationApprovalNotification` / `onEventApprovalNotificationPreference` / `onEventApprovalNotificationMessage` / `onEventApprovalWhatsappReceipt` / `retryEventApprovalNotifications` | `src/events/approvalNotifications/triggers.ts` | Durable approval jobs, shared outbox, correlated WhatsApp failure fallback, independent email and bounded recovery |
 | `publishOrganizerApplicationForm` / `previewOrganizerApplicationImport` / `importOrganizerApplications` / `listOrganizerApplications` / `getOrganizerApplicationDetail` / `reviewOrganizerApplication` | `src/organizers/organizerApplications.ts` | Provider-neutral Host application publishing, mapping, import, exact-grant-aware review queue and optimistic review actions |
-| `getParticipantOrganizerApplicationForm` / `submitParticipantOrganizerApplication` / `revokeParticipantOrganizerDataGrant` | `src/organizers/participantOrganizerApplications.ts` | Phone-authenticated private prefill review, native submission with an exact organizer grant, and participant-owned revocation |
 | `decideOrganizerCommunityMembership` | `src/memberships/communityMembership.ts` | Manager-reviewed, revision-bound native community membership grants and prospective revocation with immutable decision receipts |
 | `listOrganizerRequests` | `src/events/organizerRequests.ts` | Organizer hosts read everyone waiting across coming events: join requests and the waitlist, with each person's name and events attended |
 | `listMyOrganizerJourneys` | `src/organizers/organizerJourney.ts` | How a page got here: one organizer's journey for its hosts, or each page the caller is waiting to claim, without staff-only facts |
@@ -421,7 +420,6 @@ enter previews.
 | `onCrossPathsEventWritten` | `src/crossPaths/` | `events/{eventId}` onWrite — invalidates invitations/holds when an event becomes unavailable |
 | `onCrossPathsParticipationWritten` | `src/crossPaths/` | `eventParticipations/{id}` onWrite — invalidates invitations/holds when participation ends |
 | `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations/holds and closes accepted event plans |
-| `onEventParticipationRosterProjected` | `src/events/eventAttendeeProjection.ts` | `eventParticipations/{id}` onWrite — projects public display identity and booking status into the operational Host roster without disclosing private-profile contact fields |
 | `onEventAttendeeAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Event attendee writes project organizer-scoped contact and attendance history |
 | `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |
 | `onOrganizerContactEventEdgeInviteAttributed` | `src/events/eventInviteAttributionProjection.ts` | Verified invite outcomes update contact advocacy evidence |
@@ -482,7 +480,7 @@ enter previews.
 |----------|------|---------|
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
 | `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
-| `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
+| `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthGuestPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
 | `reconcileOrganizerGrowthDaily` | `src/growth/` | Nightly (03:40 India time): recomputes every organizer's growth steps from organizers, claim requests, booked events and captured checkouts and records any the triggers missed (the triggers are not retried); creates BigQuery `organizer_growth_events` if it is missing and sends only the rows it lacks, including form payments |
 | `adminManageOrganizerBills`, `generateOrganizerCycleBillsDaily` | `src/money/` | Bills per organizer from bookings paid into their own account, per rolling cycle (#1126): `commission.cycleDays` days anchored at trial end, billed in arrears once a day after each cycle closes (`organizerBillingCycles` pointer, at most once per cycle), cap per cycle, tools-only OR ticketing per cycle, commission on each payment's frozen terms, GST only when registered. Calendar-month bills made before the move stay readable and actionable; cycles never count a payment before the organizer's last month bill or 1 Nov 2026 IST. Send (per-financial-year invoice number, due date, Razorpay payment link), remind, mark paid (credits the nominator), write off. A host's first two sent cycle bills are staff-reviewed; later cycle bills are sent automatically by the daily run a day after they are made unless held (`hold`/`releaseHold` per bill, `holdOrganizer`/`releaseOrganizerHold` per organizer). Refunds recorded after a cycle bill was sent or paid are credited on the next cycle bill (`refundCredit`, `billRefundCredits.ts`) |
 | `adminManageMoneySettings` | `src/money/` | Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule) |
@@ -492,6 +490,7 @@ enter previews.
 | `adminGetFinanceMonth` | `src/money/` | One month of Finance from bills, costs and nominator credit paid: ticket sales, what Catch earned (caps, free months, own terms), costs, Razorpay fees and GST that are not Catch's money, six-month series |
 | `adminManagePaymentIssues` | `src/money/` | Money issues: captured website/offer payments not admitted after 15 minutes, refunds pending a day, payments needing review, failed native bookings and refunds, overdue bills; confirm booking re-checks the checkout with Razorpay now; close records it was handled |
 | `adminGetGrowth` | `src/growth/` | Growth for a range from growth facts, bills, nominator credit and ad spend: cohorts by listing month, channels, nominators, best organizers |
+| `adminGetCityInterest` | `src/cityInterest/` | Interest by city from the `cityInterest` counters: people per city in all and over the last 7 and 30 days against the days before |
 | `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
@@ -504,8 +503,11 @@ enter previews.
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `addEventHostPhoto` | `src/events/eventHostPhotos.ts` | Shares a staged host photo with checked-in guests, re-encoded without EXIF or location. |
+| `cleanUpStagedHostPhotosDaily` | `src/events/eventHostPhotoStagingCleanup.ts` | Daily: deletes staged host photo originals (still carrying EXIF) older than 24 hours. |
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
+| `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
@@ -519,6 +521,7 @@ enter previews.
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramWhatsappThread` | `src/programs/programWhatsapp/callables.ts` | One guest WhatsApp thread with its household and retained messages; marks it read. Managers and communications staff. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
 | `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
 | `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |

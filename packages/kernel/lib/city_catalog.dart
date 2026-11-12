@@ -2,6 +2,7 @@
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_kernel/labelled.dart';
+import 'package:catch_kernel/market_catalog.dart';
 
 class CityOption implements Labelled {
   const CityOption({
@@ -21,6 +22,9 @@ class CityOption implements Labelled {
     this.hostCreatable = false,
     this.eventCreatable = false,
     this.exploreVisible = false,
+    this.lifecycle = 'hidden',
+    this.websiteListed = false,
+    this.launchDate,
     this.aliases = const [],
   });
 
@@ -41,6 +45,15 @@ class CityOption implements Labelled {
   final bool hostCreatable;
   final bool eventCreatable;
   final bool exploreVisible;
+
+  /// Launch lifecycle: hidden, waitlist, launching, live or paused.
+  final String lifecycle;
+
+  /// Whether the public website lists this city.
+  final bool websiteListed;
+
+  /// Planned launch day (YYYY-MM-DD) of a launching city.
+  final String? launchDate;
   final List<String> aliases;
 
   String get effectiveMarketId => marketId ?? name;
@@ -64,6 +77,9 @@ class CityOption implements Labelled {
     hostCreatable: hostCreatable,
     eventCreatable: eventCreatable,
     exploreVisible: exploreVisible,
+    lifecycle: lifecycle,
+    websiteListed: websiteListed,
+    launchDate: launchDate,
   );
 
   @override
@@ -80,255 +96,9 @@ class CityOption implements Labelled {
   String toString() => effectiveMarketId;
 }
 
-const defaultCityOptions = [
-  CityOption(
-    name: 'mumbai',
-    cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai',
-    slug: 'mumbai',
-    label: 'Mumbai',
-    latitude: 19.0760,
-    longitude: 72.8777,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-    launchStatus: 'launched',
-    profileSelectable: true,
-    hostCreatable: true,
-    eventCreatable: true,
-    exploreVisible: true,
-    aliases: ['bombay'],
-  ),
-  CityOption(
-    name: 'delhi',
-    cityId: 'in-dl-new-delhi',
-    marketId: 'in-dl-delhi-ncr',
-    slug: 'delhi-ncr',
-    label: 'Delhi NCR',
-    latitude: 28.7041,
-    longitude: 77.1025,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'bangalore',
-    cityId: 'in-ka-bengaluru',
-    marketId: 'in-ka-bengaluru',
-    slug: 'bengaluru',
-    label: 'Bengaluru',
-    latitude: 12.9716,
-    longitude: 77.5946,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-    aliases: ['bangalore'],
-  ),
-  CityOption(
-    name: 'hyderabad',
-    cityId: 'in-tg-hyderabad',
-    marketId: 'in-tg-hyderabad',
-    slug: 'hyderabad',
-    label: 'Hyderabad',
-    latitude: 17.3850,
-    longitude: 78.4867,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'chennai',
-    cityId: 'in-tn-chennai',
-    marketId: 'in-tn-chennai',
-    slug: 'chennai',
-    label: 'Chennai',
-    latitude: 13.0827,
-    longitude: 80.2707,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'kolkata',
-    cityId: 'in-wb-kolkata',
-    marketId: 'in-wb-kolkata',
-    slug: 'kolkata',
-    label: 'Kolkata',
-    latitude: 22.5726,
-    longitude: 88.3639,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'pune',
-    cityId: 'in-mh-pune',
-    marketId: 'in-mh-pune',
-    slug: 'pune',
-    label: 'Pune',
-    latitude: 18.5204,
-    longitude: 73.8567,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'ahmedabad',
-    cityId: 'in-gj-ahmedabad',
-    marketId: 'in-gj-ahmedabad',
-    slug: 'ahmedabad',
-    label: 'Ahmedabad',
-    latitude: 23.0225,
-    longitude: 72.5714,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-  ),
-  CityOption(
-    name: 'goa',
-    cityId: 'in-ga-panaji',
-    marketId: 'in-ga-goa',
-    slug: 'goa',
-    label: 'Goa',
-    latitude: 15.4909,
-    longitude: 73.8278,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-    aliases: ['panaji', 'panjim'],
-  ),
-  CityOption(
-    name: 'indore',
-    cityId: 'in-mp-indore',
-    marketId: 'in-mp-indore',
-    slug: 'indore',
-    label: 'Indore',
-    latitude: 22.7196,
-    longitude: 75.8577,
-    countryIsoCode: 'IN',
-    currencyCode: 'INR',
-    dialCode: '+91',
-    timeZone: 'Asia/Kolkata',
-    launchStatus: 'launched',
-    profileSelectable: true,
-    hostCreatable: true,
-    eventCreatable: true,
-    exploreVisible: true,
-  ),
-  CityOption(
-    name: 'kathmandu',
-    cityId: 'np-p3-kathmandu',
-    marketId: 'np-p3-kathmandu',
-    slug: 'kathmandu',
-    label: 'Kathmandu',
-    latitude: 27.7172,
-    longitude: 85.3240,
-    countryIsoCode: 'NP',
-    currencyCode: 'NPR',
-    dialCode: '+977',
-    timeZone: 'Asia/Kathmandu',
-  ),
-  CityOption(
-    name: 'pokhara',
-    cityId: 'np-p4-pokhara',
-    marketId: 'np-p4-pokhara',
-    slug: 'pokhara',
-    label: 'Pokhara',
-    latitude: 28.2096,
-    longitude: 83.9856,
-    countryIsoCode: 'NP',
-    currencyCode: 'NPR',
-    dialCode: '+977',
-    timeZone: 'Asia/Kathmandu',
-  ),
-  CityOption(
-    name: 'sydney',
-    cityId: 'au-nsw-sydney',
-    marketId: 'au-nsw-sydney',
-    slug: 'sydney',
-    label: 'Sydney',
-    latitude: -33.8688,
-    longitude: 151.2093,
-    countryIsoCode: 'AU',
-    currencyCode: 'AUD',
-    dialCode: '+61',
-    timeZone: 'Australia/Sydney',
-  ),
-  CityOption(
-    name: 'melbourne',
-    cityId: 'au-vic-melbourne',
-    marketId: 'au-vic-melbourne',
-    slug: 'melbourne',
-    label: 'Melbourne',
-    latitude: -37.8136,
-    longitude: 144.9631,
-    countryIsoCode: 'AU',
-    currencyCode: 'AUD',
-    dialCode: '+61',
-    timeZone: 'Australia/Melbourne',
-  ),
-  CityOption(
-    name: 'brisbane',
-    cityId: 'au-qld-brisbane',
-    marketId: 'au-qld-brisbane',
-    slug: 'brisbane',
-    label: 'Brisbane',
-    latitude: -27.4698,
-    longitude: 153.0251,
-    countryIsoCode: 'AU',
-    currencyCode: 'AUD',
-    dialCode: '+61',
-    timeZone: 'Australia/Brisbane',
-  ),
-  CityOption(
-    name: 'new-york',
-    cityId: 'us-ny-new-york',
-    marketId: 'us-ny-new-york',
-    slug: 'new-york',
-    label: 'New York',
-    latitude: 40.7128,
-    longitude: -74.0060,
-    countryIsoCode: 'US',
-    currencyCode: 'USD',
-    dialCode: '+1',
-    timeZone: 'America/New_York',
-  ),
-  CityOption(
-    name: 'san-francisco',
-    cityId: 'us-ca-san-francisco',
-    marketId: 'us-ca-san-francisco',
-    slug: 'san-francisco',
-    label: 'San Francisco',
-    latitude: 37.7749,
-    longitude: -122.4194,
-    countryIsoCode: 'US',
-    currencyCode: 'USD',
-    dialCode: '+1',
-    timeZone: 'America/Los_Angeles',
-  ),
-  CityOption(
-    name: 'los-angeles',
-    cityId: 'us-ca-los-angeles',
-    marketId: 'us-ca-los-angeles',
-    slug: 'los-angeles',
-    label: 'Los Angeles',
-    latitude: 34.0522,
-    longitude: -118.2437,
-    countryIsoCode: 'US',
-    currencyCode: 'USD',
-    dialCode: '+1',
-    timeZone: 'America/Los_Angeles',
-  ),
-];
+/// Every catalog city, in display order. Generated from
+/// contracts/catalogs/markets.json into market_catalog.dart.
+const defaultCityOptions = generatedCityOptions;
 
 final defaultCityData = defaultCityOptions
     .map((city) => city.toCityData())

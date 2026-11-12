@@ -36,6 +36,11 @@ void main() {
       phone,
     ),
     (
+      'host_programme_live_board_desktop',
+      (_) => plannerLiveBoardCapture(),
+      desktop,
+    ),
+    (
       'host_programme_id_tracker_desktop',
       (_) => plannerIdTrackerCapture(),
       desktop,
@@ -71,4 +76,23 @@ void main() {
       if (directory.isEmpty) output.deleteSync(recursive: true);
     });
   }
+
+  testWidgets('the phone inbox shows its title once', (tester) async {
+    final output = Directory.systemTemp.createTempSync('planner-capture-');
+    addTearDown(() => output.deleteSync(recursive: true));
+    await captureCatchWidget(
+      tester,
+      id: 'host_programme_inbox_phone_title',
+      builder: (_) => plannerInboxListCapture(),
+      outputDirectory: output,
+      device: phone,
+      themes: const [CaptureTheme.light],
+      providerOverrides: plannerCaptureOverrides(),
+    );
+    expect(find.text('Guest messages'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-programme-inbox-settings')),
+      findsOneWidget,
+    );
+  });
 }

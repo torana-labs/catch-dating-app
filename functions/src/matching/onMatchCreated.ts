@@ -86,8 +86,8 @@ export async function onMatchCreatedHandler(
       id: activityNotificationId("match", matchId),
       uid: user1Id,
       type: "match",
-      title: "It's a catch",
-      body: `You and ${profile2Name} matched. Say hi!`,
+      title: "You picked each other",
+      body: `You and ${profile2Name} picked each other. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
       eventId: latestEventId,
@@ -99,8 +99,8 @@ export async function onMatchCreatedHandler(
       id: activityNotificationId("match", matchId),
       uid: user2Id,
       type: "match",
-      title: "It's a catch",
-      body: `You and ${profile1Name} matched. Say hi!`,
+      title: "You picked each other",
+      body: `You and ${profile1Name} picked each other. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
       eventId: latestEventId,
@@ -117,21 +117,19 @@ export async function onMatchCreatedHandler(
       user: user1,
       actor: profile2,
       enabled: allowsPushPreference(user1, "matches"),
-      body: `You and ${profile2Name} matched. Say hi!`,
+      body: `You and ${profile2Name} picked each other. Say hi!`,
     },
     {
       uid: user2Id,
       user: user2,
       actor: profile1,
       enabled: allowsPushPreference(user2, "matches"),
-      body: `You and ${profile1Name} matched. Say hi!`,
+      body: `You and ${profile1Name} picked each other. Say hi!`,
     },
   ];
   const pushTargets = (await Promise.all(recipients.map(async (recipient) => {
     if (!recipient.enabled) return [];
-    const tokens = await resolveTokens(
-      db, recipient.uid, "consumer", recipient.user
-    );
+    const tokens = await resolveTokens(db, recipient.uid, "consumer");
     return tokens.map((token) => ({...recipient, token}));
   }))).flat();
 
@@ -158,7 +156,7 @@ export async function onMatchCreatedHandler(
         pushTargets.map((target) =>
           deps.sendNotification({
             token: target.token,
-            title: "It's a catch",
+            title: "You picked each other",
             body: target.body,
             type: "match",
             matchId,
@@ -174,19 +172,14 @@ export async function onMatchCreatedHandler(
   );
 }
 
-type LegacyMatchDocument = MatchDocument & {eventId?: string | null};
-
 /**
- * Returns the newest shared event id for a match, including legacy eventId
- * docs.
+ * Returns the newest shared event id for a match.
  *
  * @param {MatchDocument} match Match document data.
  * @return {string | undefined} Latest event id when one is available.
  */
 function latestMatchEventId(match: MatchDocument): string | undefined {
-  const eventIds = match.eventIds ?? [];
-  const legacyEventId = (match as LegacyMatchDocument).eventId;
-  return eventIds.at(-1) ?? legacyEventId ?? undefined;
+  return match.eventIds.at(-1);
 }
 
 export const onMatchCreated = onDocumentCreated(

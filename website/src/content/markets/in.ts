@@ -1,70 +1,20 @@
+import {generatedWebsiteCities, generatedWebsiteCountries} from "./generated/catalog.ts";
 import type {MarketPack} from "./types";
+
+const india = generatedWebsiteCountries.find((country) => country.isoCode === "IN")!;
 
 export const inMarket = {
   id: "in",
-  countryCode: "IN",
-  dialCode: "+91",
-  appStoreCountryCodes: ["IN"],
-  locale: "en-IN",
-  currencyCode: "INR",
-  currencySymbol: "₹",
-  cities: [
-    {
-      id: "in-mumbai",
-      slug: "mumbai",
-      marketSlug: "mumbai",
-      label: "Mumbai",
-      aliases: [],
-      timezone: "Asia/Kolkata",
-      status: "live",
-    },
-    {
-      id: "in-indore",
-      slug: "indore",
-      marketSlug: "indore",
-      label: "Indore",
-      aliases: [],
-      timezone: "Asia/Kolkata",
-      status: "live",
-    },
-    {
-      id: "in-delhi",
-      slug: "delhi",
-      marketSlug: "delhi-ncr",
-      label: "Delhi",
-      aliases: ["Delhi NCR", "New Delhi"],
-      timezone: "Asia/Kolkata",
-      status: "waitlist",
-    },
-    {
-      id: "in-bangalore",
-      slug: "bangalore",
-      marketSlug: "bengaluru",
-      label: "Bangalore",
-      aliases: ["Bengaluru"],
-      timezone: "Asia/Kolkata",
-      status: "waitlist",
-    },
-    {
-      id: "in-pune",
-      slug: "pune",
-      marketSlug: "pune",
-      label: "Pune",
-      aliases: [],
-      timezone: "Asia/Kolkata",
-      status: "waitlist",
-    },
-    {
-      id: "in-hyderabad",
-      slug: "hyderabad",
-      marketSlug: "hyderabad",
-      label: "Hyderabad",
-      aliases: [],
-      timezone: "Asia/Kolkata",
-      status: "waitlist",
-    },
-  ],
-  featuredCityId: "in-mumbai",
+  countryCode: india.isoCode,
+  dialCode: india.dialCode,
+  appStoreCountryCodes: india.appStoreCountryCodes,
+  locale: india.locale,
+  currencyCode: india.currencyCode,
+  currencySymbol: india.currencySymbol,
+  // Cities and country facts come from contracts/catalogs/markets.json via
+  // the generated catalog; edit the catalog, never this list.
+  cities: generatedWebsiteCities.filter((city) => city.countryIsoCode === india.isoCode),
+  featuredCityId: india.defaultMarketId,
   otherCityOptionLabel: "Other",
   heroEyebrowTemplate: "LIVE IN {cities}",
   heroTicketLabelTemplate: "THIS WEEK IN {city}",
@@ -82,7 +32,7 @@ export const inMarket = {
   exampleEvent: {
     name: "Sunday Table Club",
     venue: "Pali Village Cafe",
-    cityId: "in-mumbai",
+    cityId: india.defaultMarketId,
     timezone: "Asia/Kolkata",
     currencyCode: "INR",
   },

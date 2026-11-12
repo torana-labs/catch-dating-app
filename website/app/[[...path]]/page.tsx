@@ -24,7 +24,7 @@ export default async function Page(props: Props) {
   if (route.page === "organizers") permanentRedirect(organizerDirectoryDestination(query));
   const requestedCity = typeof search.city === "string" ? search.city : undefined;
   // The homepage, Explore and the city pages read cityPlans documents instead of the catalog.
-  const cityCatalog = route.page === "home" || route.page === "visitor_discovery" ?
+  const cityCatalog = route.page === "home" || route.page === "visitor_discovery" || route.page === "cities" ?
     await readHomeCatalog(route.citySlug ?? requestedCity) : undefined;
   // A city that could not be read keeps its message but answers 503, so no cache keeps it.
   if (cityCatalog?.phase === "unavailable") markPublicPageUnavailable();

@@ -80,7 +80,7 @@ test("response payment rejects mismatched records at the frozen draft link",
     assert.equal(await readResponsePayment(h.db, responseId,
       {...response, draftId: "free-draft"}), null);
     // Refunds remain visible without manufacturing a new application outcome.
-    const path = `organizerFormPayments/${paymentId}`;
+    const path = `guestPayments/${paymentId}`;
     h.store.records.set(path, {...h.store.records.get(path),
       status: "refunded", refundedAmountPaise: 10000});
     const refunded = await readResponsePayment(h.db, responseId, response);

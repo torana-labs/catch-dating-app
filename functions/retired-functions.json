@@ -2,6 +2,7 @@
   "adminListListingEventImports",
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
+  "generateOrganizerBillsMonthly",
   "getEventAssistanceAccountability",
   "getEventAssistanceCheckpoint",
   "getEventAssistanceGroupProgress",
@@ -13,9 +14,15 @@
   "getEventSuccessPresenceSummary",
   "getOrganizerEventSetupDefaults",
   "getOrganizerProviderSetup",
+  "getParticipantOrganizerApplicationForm",
   "getPrivateEventSetup",
   "listEventAssistanceCases",
   "listEventAssistanceDeliveries",
   "listEventAssistanceDepartureRosters",
-  "listOrganizerAttentionItems"
+  "listOrganizerAttentionItems",
+  "onEventParticipationRosterProjected",
+  "onOrganizerGrowthOfferPaymentWritten",
+  "onOrganizerGrowthPublicPaymentWritten",
+  "revokeParticipantOrganizerDataGrant",
+  "submitParticipantOrganizerApplication"
 ]

@@ -1,17 +1,32 @@
-export type MarketCityStatus = "live" | "waitlist";
+/**
+ * A city's lifecycle from contracts/catalogs/markets.json. Hidden cities are
+ * never listed on the website, so they never appear here.
+ */
+export type MarketCityStatus = "waitlist" | "launching" | "live" | "paused";
 
 export interface MarketCity {
+  /** Catalog market id, such as in-mh-mumbai. */
   readonly id: string;
+  /** Public path slug: /mumbai/. */
   readonly slug: string;
   /**
-   * The canonical market slug in functions/src/locations/marketConfig.ts,
-   * which names the city's cityPlans read model.
+   * The market slug that names the city's cityPlans read model in Functions.
+   * The catalog makes it the same as slug.
    */
   readonly marketSlug: string;
   readonly label: string;
+  /** Other spellings listings use, such as Bangalore. */
   readonly aliases: readonly string[];
+  /** Retired path slugs that redirect to slug, such as delhi. */
+  readonly legacySlugs: readonly string[];
   readonly timezone: string;
   readonly status: MarketCityStatus;
+  /** Planned launch day (YYYY-MM-DD) of a launching city. */
+  readonly launchDate?: string;
+  readonly countryIsoCode: string;
+  /** The city centre, used only to snap an approximate location to a city. */
+  readonly latitude: number;
+  readonly longitude: number;
 }
 
 export interface MarketPack {

@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Source: design/tokens/catch.icons.json (Lucide 1.61.0).
+// Source: design/tokens/catch.icons.json (Lucide 1.68.0).
 // Regenerate with `node tool/design/generate_icon_catalog.mjs`.
+// Loaded lazily through catchIconGlyphLoader; never import it statically.
 import type {LucideIcon} from "lucide-react";
 import {
   Activity,
@@ -218,6 +219,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import type {CatchIconName} from "./catchIconRoles";
 
 /** Every Catch icon role and the glyph that draws it. */
 export const catchIconGlyphs = {
@@ -452,31 +454,4 @@ export const catchIconGlyphs = {
   playbookGuestFeedback: Star,
   playbookRecap: BookOpenCheck,
   playbookSafetyLayer: ShieldCheck,
-} as const satisfies Record<string, LucideIcon>;
-
-export type CatchIconName = keyof typeof catchIconGlyphs;
-
-/** The stroke width every role is drawn with, matching the Flutter font. */
-export const catchIconStrokeWidth = 2;
-
-/** The role that draws each event activity kind. */
-export const catchActivityIconNames = {
-  socialRun: "activitySocialRun",
-  running: "activityRunning",
-  walking: "activityWalking",
-  pickleball: "activityPickleball",
-  padel: "activityPadel",
-  tennis: "activityTennis",
-  badminton: "activityBadminton",
-  cycling: "activityCycling",
-  spinClass: "activitySpinClass",
-  yoga: "activityYoga",
-  strengthTraining: "activityStrengthTraining",
-  pubQuiz: "activityPubQuiz",
-  barCrawl: "activityBarCrawl",
-  dinner: "activityDinner",
-  singlesMixer: "activitySinglesMixer",
-  openActivity: "activityOpenActivity",
-} as const satisfies Record<string, CatchIconName>;
-
-export type CatchActivityKind = keyof typeof catchActivityIconNames;
+} as const satisfies Record<CatchIconName, LucideIcon>;

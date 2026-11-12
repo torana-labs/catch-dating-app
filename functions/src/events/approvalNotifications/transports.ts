@@ -18,7 +18,7 @@ import {smsSegments} from "../../eventSuccess/operations/smsProtocol";
 import {whatsappStatusCorrelation} from
   "../../eventSuccess/operations/whatsappDeliveryProtocol";
 import type {Snapshot} from "./facts";
-import {eventUrl, type Binding, type Intent} from "./model";
+import {approvalEmailText, eventUrl, type Binding, type Intent} from "./model";
 export type Submission =
   | {kind: "accepted"; providerMessageId: string}
   | {kind: "unknown"}
@@ -90,12 +90,7 @@ export class ApprovalNotificationTransports {
             from: email.from,
             to: endpoint,
             subject: "Your event application is approved",
-            text:
-              "Your application has been approved. Sign in to view your " +
-              "next steps: " +
-              eventUrl(intent.context.eventId) +
-              "\nApproval is not a booking confirmation. You may still need " +
-              "to accept an offer or complete payment.",
+            text: approvalEmailText(intent.context.eventId),
             idempotencyKey: intent.intentId,
             deadlineMillis: deadline,
           });

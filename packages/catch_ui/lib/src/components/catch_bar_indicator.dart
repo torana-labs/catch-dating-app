@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
@@ -119,6 +121,10 @@ class CatchBarIndicator extends StatelessWidget {
     final duration = MediaQuery.maybeOf(context)?.disableAnimations ?? false
         ? Duration.zero
         : GeneratedCatchDurationTokens.slow;
+    // The value label above each bar grows with the text scale, so the band
+    // reserved for it does too; at 1x it is [_chartValueBand].
+    final band = MediaQuery.textScalerOf(context).scale(_chartValueBand);
+    final barRoom = math.max(0, height - band);
     final spoken = [
       for (final bar in bars) '${bar.label} ${bar.value}',
     ].join('; ');
@@ -153,8 +159,7 @@ class CatchBarIndicator extends StatelessWidget {
                             duration: duration,
                             curve: GeneratedCatchEasingTokens.standard,
                             width: double.infinity,
-                            height:
-                                bar.value / top * (height - _chartValueBand),
+                            height: bar.value / top * barRoom,
                             decoration: BoxDecoration(
                               color: bar.partial ? t.track : t.ink,
                               border: bar.partial

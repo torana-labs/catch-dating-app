@@ -123,12 +123,11 @@ Firebase Hosting deploys run
 deploys should also validate
 `--expected-project-id catch-dating-app-64e51` in CI or an equivalent manual
 preflight, so the marketing site cannot ship with missing App Check or Firebase
-config. Production marketing deploys also require an explicit store-link state:
-`VITE_STORE_LINKS_MODE=prelaunch` requires both store URLs to remain empty and
-serves the existing coming-soon/waitlist CTA, while `live` requires official
-HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links. The deploy
-workflow defaults an unset GitHub Environment mode to `prelaunch`; set
-`VITE_STORE_LINKS_MODE=live` in `prod-hosting` only when both listings exist.
+config. Store links are not build configuration: the store badges read
+`stores.consumer` and `stores.host` in `packages/brand/brand.json`, and a store
+without a link shows a "Coming soon" chip that still records the press. Adding
+a link is a reviewed brand edit and a website release (see
+`packages/brand/README.md`).
 
 The production snapshot job reads the canonical organizer collection directly.
 Content publication does not itself enable claim or public-review mutations;
@@ -179,8 +178,11 @@ such as `host.ts`, `site.ts`, and `marketing.ts`, not new generated keys.
 `src/content/metaContract.ts`; both the client metadata adapter and static
 postbuild execute that validator, and tests assert parity with the JSON Schema
 over valid and invalid fixtures. `src/content/markets/in.ts` owns India-specific
-cities, currency, geo labels, and comparison columns; features read it through
-`src/content/markets/index.ts`. Keep route-specific page copy in direct
+copy templates and comparison columns; its cities and country facts come from
+`contracts/catalogs/markets.json` through the generated
+`src/content/markets/generated/catalog.ts` (regenerate with
+`node tool/contracts/generate_market_catalog.mjs`). Features read the pack
+through `src/content/markets/index.ts`. Keep route-specific page copy in direct
 page-specific modules; do not add a new global content barrel that would pull
 unrelated copy into lazy route chunks.
 `src/content/interpolate.ts` is the sole template formatter and rejects both
@@ -189,11 +191,14 @@ compile time. The copy ratchet scans production TypeScript and TSX, including
 visible single-word, accessibility, and interpolated template strings.
 Its baseline/allowlist registries are exact and fail on malformed, duplicate,
 overlapping, or stale entries, forcing the debt count to shrink with migration.
-The market pack uses stable structured city records with `live`/`waitlist`
-status and one explicit featured-city id. Event-live and form options derive
-from those records instead of parallel city lists. `npm run check:market-pack`
-validates semantic references, timezones, ISO currency, and current India
-option order before TypeScript runs. Site-wide app-store labels live in
+The market pack lists the catalog's website-listed cities, with catalog ids
+(`in-mh-mumbai`), public slugs, each city's lifecycle as `status`
+(`waitlist`, `launching`, `live` or `paused`) and retired `legacySlugs`, which
+redirect (`/delhi/` to `/delhi-ncr/`). A live city shows as open with its
+honest count; "soon" is only for cities not yet open. Event-live and form
+options derive from those records instead of parallel city lists.
+`npm run check:market-pack` checks the pack against the catalog, timezones and
+ISO currency before TypeScript runs. Site-wide app-store labels live in
 `src/content/site.ts`; `useAppDownloadCtas.ts` remains the adapter that reads
 environment URLs and combines them with that plain content data.
 

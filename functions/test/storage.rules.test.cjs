@@ -683,4 +683,165 @@ describe("storage.rules", () => {
       );
     });
   });
+
+  describe("event host photos", () => {
+    const photoId = "hostPhoto0000000001";
+    const stagedPath = `events/event-1/hostPhotoUploads/${photoId}/original.jpg`;
+
+    function uploadHostPhoto(uid, objectPath = stagedPath, options = {}) {
+      return uploadImage(authedStorage(uid), objectPath, {
+        ...options,
+        customMetadata: options.customMetadata ?? {uploaderUid: uid},
+      });
+    }
+
+    async function seedStartedEvent() {
+      await seedFirestore(["organizers", "club-1"], {
+        hostUserId: "owner-1",
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "host-1"],
+      });
+      await seedFirestore(["organizerTeamMemberships", "club-1_manager-edge"], {
+        organizerId: "club-1",
+        uid: "manager-edge",
+        role: "manager",
+        status: "active",
+      });
+      await seedFirestore(["organizerTeamMemberships", "club-1_removed-1"], {
+        organizerId: "club-1",
+        uid: "removed-1",
+        role: "manager",
+        status: "removed",
+      });
+      await seedFirestore(["events", "event-1"], {
+        organizerId: "club-1",
+        startTime: Timestamp.fromMillis(Date.now() - 60 * 1000),
+      });
+      await seedFirestore(["eventParticipations", "event-1_guest-1"], {
+        eventId: "event-1",
+        uid: "guest-1",
+        status: "attended",
+      });
+    }
+
+    it("allows the host team to stage JPEG and PNG originals after the event starts", async () => {
+      await seedStartedEvent();
+
+      await assertSucceeds(uploadHostPhoto("owner-1"));
+      await assertSucceeds(uploadHostPhoto(
+        "host-1",
+        "events/event-1/hostPhotoUploads/hostPhoto0000000002/original.png",
+        {contentType: "image/png"},
+      ));
+      await assertSucceeds(uploadHostPhoto(
+        "manager-edge",
+        "events/event-1/hostPhotoUploads/hostPhoto0000000003/original.jpeg",
+      ));
+      await assertSucceeds(uploadHostPhoto(
+        "host-1",
+        "events/event-1/hostPhotoUploads/hostPhoto0000000004/original.jpg",
+        {data: "x".repeat(8 * 1024 * 1024)},
+      ));
+    });
+
+    it("denies staging before the event starts or without a start time", async () => {
+      await seedStartedEvent();
+      await seedFirestore(["events", "event-later"], {
+        organizerId: "club-1",
+        startTime: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
+      });
+      await seedFirestore(["events", "event-unscheduled"], {
+        organizerId: "club-1",
+      });
+
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        `events/event-later/hostPhotoUploads/${photoId}/original.jpg`,
+      ));
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        `events/event-unscheduled/hostPhotoUploads/${photoId}/original.jpg`,
+      ));
+    });
+
+    it("denies guests, strangers, removed managers, signed-out users and missing events", async () => {
+      await seedStartedEvent();
+
+      await assertFails(uploadHostPhoto("guest-1"));
+      await assertFails(uploadHostPhoto("stranger-1"));
+      await assertFails(uploadHostPhoto("removed-1"));
+      await assertFails(uploadImage(unauthenticatedStorage(), stagedPath, {
+        customMetadata: {uploaderUid: "owner-1"},
+      }));
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        `events/missing-event/hostPhotoUploads/${photoId}/original.jpg`,
+      ));
+    });
+
+    it("denies uploads that break the type, size, name or uploader binding", async () => {
+      await seedStartedEvent();
+
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        contentType: "image/gif",
+      }));
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        contentType: "image/heic",
+      }));
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        contentType: "application/pdf",
+      }));
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        data: "x".repeat(8 * 1024 * 1024 + 1),
+      }));
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        customMetadata: {uploaderUid: "host-1"},
+      }));
+      await assertFails(uploadHostPhoto("owner-1", stagedPath, {
+        customMetadata: {},
+      }));
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        `events/event-1/hostPhotoUploads/${photoId}/display.jpg`,
+      ));
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        "events/event-1/hostPhotoUploads/short/original.jpg",
+      ));
+    });
+
+    it("denies reads, overwrites and deletes of staged originals", async () => {
+      await seedStartedEvent();
+      // Its own object: the emulator's clearStorage keeps earlier objects
+      // visible to rules, which would turn this create into an overwrite.
+      const objectPath =
+        "events/event-1/hostPhotoUploads/hostPhoto0000000005/original.jpg";
+      await assertSucceeds(uploadHostPhoto("owner-1", objectPath));
+
+      await assertFails(authedStorage("owner-1").ref(objectPath).getMetadata());
+      await assertFails(authedStorage("guest-1").ref(objectPath).getMetadata());
+      await assertFails(uploadHostPhoto("owner-1", objectPath));
+      await assertFails(authedStorage("owner-1").ref(objectPath).delete());
+    });
+
+    it("keeps re-encoded photos server-only for every reader and writer", async () => {
+      await seedStartedEvent();
+      const displayPath = `events/event-1/hostPhotos/${photoId}/display.jpg`;
+      const thumbnailPath = `events/event-1/hostPhotos/${photoId}/thumbnail.jpg`;
+      await seedStorageFile(displayPath);
+      await seedStorageFile(thumbnailPath);
+
+      for (const uid of ["owner-1", "manager-edge", "guest-1", "stranger-1"]) {
+        await assertFails(authedStorage(uid).ref(displayPath).getMetadata());
+        await assertFails(authedStorage(uid).ref(thumbnailPath).getDownloadURL());
+        await assertFails(authedStorage(uid).ref(displayPath).delete());
+      }
+      await assertFails(unauthenticatedStorage().ref(displayPath).getMetadata());
+      await assertFails(uploadHostPhoto("owner-1", displayPath));
+      await assertFails(uploadHostPhoto(
+        "owner-1",
+        `events/event-1/hostPhotos/hostPhoto0000000009/display.jpg`,
+      ));
+    });
+  });
 });

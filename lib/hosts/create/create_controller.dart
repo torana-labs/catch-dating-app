@@ -11,6 +11,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/create/create_draft_values.dart';
 import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
@@ -18,7 +19,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/even
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
-import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/error_logger.dart';
@@ -53,6 +53,7 @@ class CreateFlowArgs {
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 @riverpod
 class CreateController extends _$CreateController {
   late String _requestId;
@@ -103,7 +104,9 @@ class CreateController extends _$CreateController {
   /// set the refund policy a paid event starts with. They are a convenience:
   /// without the defaults view the flow keeps its own starting values.
   Future<void> _prefillFromDefaults({required bool fresh}) =>
-      Future<ManagerEventSetupDefaultsView>(
+      // Future.sync still turns a synchronous read failure into an error the
+      // handler below ignores, without the timer the Future constructor runs.
+      Future<ManagerEventSetupDefaultsView>.sync(
         () => ref.read(
           managerEventSetupDefaultsViewProvider(args.organizer.id).future,
         ),
@@ -149,15 +152,16 @@ class CreateController extends _$CreateController {
   );
 
   void setDate(DateTime date) =>
-      edit((draft) => draft.copyWith(eventLocalDate: _localDate(date)));
+      edit((draft) => draft.copyWith(eventLocalDate: createLocalDate(date)));
 
   void setStart(int hour, int minute) => edit(
-    (draft) => draft.copyWith(eventLocalStartTime: _localTime(hour, minute)),
+    (draft) =>
+        draft.copyWith(eventLocalStartTime: createLocalTime(hour, minute)),
   );
 
   /// The end as minutes after the start, crossing midnight when earlier.
   void setEnd(int hour, int minute) {
-    final start = _minutesOf(state.draft.eventLocalStartTime);
+    final start = createMinutesOf(state.draft.eventLocalStartTime);
     if (start == null) return;
     var duration = hour * 60 + minute - start;
     if (duration <= 0) duration += 24 * 60;
@@ -185,12 +189,12 @@ class CreateController extends _$CreateController {
     } else {
       steps[index] = step;
     }
-    return draft.copyWith(itinerary: _sequenced(steps));
+    return draft.copyWith(itinerary: createSequenced(steps));
   });
 
   void removeStep(String id) => edit(
     (draft) => draft.copyWith(
-      itinerary: _sequenced(
+      itinerary: createSequenced(
         draft.itinerary.where((item) => item.id != id).toList(),
       ),
     ),
@@ -288,11 +292,15 @@ class CreateController extends _$CreateController {
     try {
       switch (state.step) {
         case CreateStep.basics:
-          if (state.eventId != null) await _saveDetails(_basicsPatch());
+          if (state.eventId != null) {
+            await _saveDetails(createBasicsPatch(state.draft, state.format));
+          }
           _advance(CreateStep.when);
         case CreateStep.when:
           await _saveBasics();
-          await _saveDetails(_basicsPatch(includeWhere: true));
+          await _saveDetails(
+            createBasicsPatch(state.draft, state.format, includeWhere: true),
+          );
           _advance(CreateStep.tickets);
         case CreateStep.tickets:
           await _saveTickets();
@@ -325,7 +333,7 @@ class CreateController extends _$CreateController {
         if (draft.eventLocalStartTime == null) CreateProblem.start,
       },
       CreateStep.tickets => {
-        if (!draft.externalBookingMode && _pricePaise(draft.price) == null)
+        if (!draft.externalBookingMode && createPricePaise(draft.price) == null)
           CreateProblem.price,
       },
       CreateStep.plan || CreateStep.share => const {},
@@ -445,44 +453,6 @@ class CreateController extends _$CreateController {
     );
   }
 
-  PrivateEventDetailsPatch _basicsPatch({bool includeWhere = false}) {
-    final draft = state.draft;
-    final format = state.format;
-    final description = (draft.description ?? '').trim();
-    final distance = double.tryParse(draft.distance ?? '');
-    final lat = draft.startingPointLat;
-    final lng = draft.startingPointLng;
-    return PrivateEventDetailsPatch(
-      eventFormat: format == null
-          ? null
-          : EventSetupValue.set(
-              EventFormatSnapshot.fromActivityKind(format.activityKind),
-            ),
-      description: description.isEmpty ? null : description,
-      distanceKm: format == CreateFormat.run ? distance : null,
-      pace: format == CreateFormat.run ? draft.paceName : null,
-      durationMinutes: includeWhere
-          ? EventSetupValue.set(draft.durationMinutes)
-          : null,
-      meetingLocation:
-          includeWhere &&
-              draft.meetingPoint != null &&
-              lat != null &&
-              lng != null
-          ? EventMeetingLocation(
-              name: draft.meetingPoint!,
-              address: draft.meetingLocationAddress,
-              placeId: draft.meetingLocationPlaceId,
-              latitude: lat,
-              longitude: lng,
-              notes: (draft.locationDetails ?? '').trim().isEmpty
-                  ? null
-                  : draft.locationDetails!.trim(),
-            )
-          : null,
-    );
-  }
-
   Future<void> _saveDetails(PrivateEventDetailsPatch patch) async {
     final eventId = state.eventId;
     if (eventId == null || !patch.isValid) return;
@@ -517,7 +487,7 @@ class CreateController extends _$CreateController {
     final draft = state.draft;
     await _saveExternalBooking(draft);
     if (!draft.externalBookingMode) {
-      final price = _pricePaise(draft.price)!;
+      final price = createPricePaise(draft.price)!;
       await _saveDetails(
         PrivateEventDetailsPatch(
           admissionTerms: PrivateEventAdmissionTerms(
@@ -586,6 +556,7 @@ class CreateController extends _$CreateController {
     final first = DateTime.parse('${basics.localDate}T00:00:00Z');
     final next = first.add(const Duration(days: 7));
     final receipt =
+        // provider-graph: ownership-repository-construction:CreateController._createSeries:construct:PrivateEventSetupRepository planned CAT156 -- The weekly series is one callable the create flow runs once, after its first event saves. PrivateEventSetupRepository has no generated provider yet, so the flow builds the stateless facade over firebaseFunctionsProvider; route it through a generated, overridable repository provider with the CAT156 migration.
         await PrivateEventSetupRepository(
           ref.read(firebaseFunctionsProvider),
         ).createSeries(
@@ -715,7 +686,7 @@ class CreateController extends _$CreateController {
     var draft = state.draft;
     if (event != null && !_hydrated) {
       _hydrated = true;
-      draft = _draftFrom(draft, event);
+      draft = createDraftFromSaved(draft, event);
     }
     state = state.copyWith(
       draft: draft,
@@ -751,42 +722,6 @@ class CreateController extends _$CreateController {
         waitlist: waitlist is bool ? waitlist : null,
       );
     }
-  }
-
-  EventDraft _draftFrom(EventDraft draft, PrivateEventBasicSummary event) {
-    final details = event.eventDetails;
-    final terms = details.admissionTerms;
-    final place = details.meetingLocation;
-    final start = _minutesOf(event.localStartTime);
-    final end = details.endTimeMillis;
-    return draft.copyWith(
-      name: event.name,
-      eventLocalDate: event.localDate,
-      eventLocalStartTime: event.localStartTime,
-      description: details.description ?? draft.description,
-      activityKind:
-          details.eventFormat?.activityKind.name ?? draft.activityKind,
-      interactionModel:
-          details.eventFormat?.interactionModel.name ?? draft.interactionModel,
-      itinerary: details.itinerary.isEmpty
-          ? draft.itinerary
-          : details.itinerary,
-      capacity: terms?.capacityLimit.toString() ?? draft.capacity,
-      price: terms == null
-          ? draft.price
-          : (terms.priceInPaise ~/ 100).toString(),
-      meetingPoint: place?.name ?? draft.meetingPoint,
-      meetingLocationAddress: place?.address ?? draft.meetingLocationAddress,
-      meetingLocationPlaceId: place?.placeId ?? draft.meetingLocationPlaceId,
-      startingPointLat: place?.latitude ?? draft.startingPointLat,
-      startingPointLng: place?.longitude ?? draft.startingPointLng,
-      locationDetails: place?.notes ?? draft.locationDetails,
-      distance: details.distanceKm?.toString() ?? draft.distance,
-      paceName: details.pace ?? draft.paceName,
-      durationMinutes: end != null && start != null
-          ? ((end - event.startTimeMillis) ~/ 60000)
-          : draft.durationMinutes,
-    );
   }
 
   /// The first details state of [eventId] that [ready] accepts.
@@ -843,41 +778,4 @@ class CreateController extends _$CreateController {
     unawaited(done.future.whenComplete(() => subscription?.close()));
     return done.future;
   }
-}
-
-String _localDate(DateTime date) =>
-    '${date.year.toString().padLeft(4, '0')}-'
-    '${date.month.toString().padLeft(2, '0')}-'
-    '${date.day.toString().padLeft(2, '0')}';
-
-String _localTime(int hour, int minute) =>
-    '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-
-int? _minutesOf(String? localTime) {
-  final parts = localTime?.split(':');
-  if (parts == null || parts.length != 2) return null;
-  final hour = int.tryParse(parts[0]);
-  final minute = int.tryParse(parts[1]);
-  if (hour == null || minute == null) return null;
-  return hour * 60 + minute;
-}
-
-/// Whole rupees entered by the host, in paise; null when not a price.
-int? _pricePaise(String? rupees) {
-  final value = int.tryParse((rupees ?? '').trim());
-  if (value == null || value < 0) return null;
-  return value * 100;
-}
-
-/// Plan steps start where the one before ends.
-List<EventItineraryItem> _sequenced(List<EventItineraryItem> steps) {
-  var offset = 0;
-  return [
-    for (final step in steps)
-      () {
-        final placed = step.copyWith(offsetMinutes: offset);
-        offset += step.durationMinutes ?? 0;
-        return placed;
-      }(),
-  ];
 }

@@ -1,6 +1,7 @@
 import type {CatchFormat, CatchBandGround} from "@catch/web-ui";
 import {homeFormats, homePageCopy as copy, otherFormatPoster} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {siteFooterCopy} from "@content/site";
 import type {HomeCity, HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
 
 const week = 7 * 24 * 60 * 60 * 1000;
@@ -14,8 +15,24 @@ export function weekPlans(plans: readonly HomePlan[], readAt: number): HomePlan[
   });
 }
 
+/**
+ * The picker's line under a city. A live city is open however quiet it is:
+ * it shows its honest count, or "New" before its first plan this week.
+ */
 export function cityStatusLabel(city: HomeCity) {
-  return city.status === "live" ? fill(copy.header.liveStatus, {count: city.weekPlanCount}) : copy.header.soonStatus;
+  if (city.status !== "live") return copy.header.soonStatus;
+  if (city.weekPlanCount === 0) return copy.header.newStatus;
+  if (city.weekPlanCount === 1) return copy.header.liveStatusOne;
+  return fill(copy.header.liveStatus, {count: city.weekPlanCount});
+}
+
+/** The footer's note after a city: "2 plans this week", "New" or "soon". */
+export function cityFooterNote(city: HomeCity) {
+  const notes = siteFooterCopy.cityNotes;
+  if (city.status !== "live") return siteFooterCopy.soon;
+  if (city.weekPlanCount === 0) return notes.new;
+  if (city.weekPlanCount === 1) return notes.plan;
+  return fill(notes.plans, {count: city.weekPlanCount});
 }
 
 const formatName = (format: HomeFormat) => homeFormats.find((item) => item.format === format)?.name;
@@ -137,4 +154,50 @@ export function organizerCard(organizer: HomeOrganizer, city: HomeCity): Organiz
     color: firstFormat,
     meta: [organizer.category, next, footnote, ...(page && unclaimed ? [copy.organisers.claim] : [])].join(" · "),
   };
+}
+
+/** The picker searches once there are more cities than this. */
+/** Every city by country, with its waitlist sign-up. */
+export const citiesHref = "/cities/";
+
+export const citySearchThreshold = 8;
+
+/** One country's cities in the picker and on /cities/, in catalog order. */
+export interface CityGroup {
+  isoCode: string;
+  name: string;
+  /** False when no city in the country is open: it shows one "launching soon" line. */
+  anyLive: boolean;
+  cities: HomeCity[];
+}
+
+/** Cities grouped by country, countries in the order their first city appears. */
+export function cityGroups(cities: readonly HomeCity[], countryName: (isoCode: string) => string): CityGroup[] {
+  const groups = new Map<string, CityGroup>();
+  for (const city of cities) {
+    const group = groups.get(city.countryIsoCode) ??
+      {isoCode: city.countryIsoCode, name: countryName(city.countryIsoCode), anyLive: false, cities: []};
+    group.cities.push(city);
+    group.anyLive ||= city.status === "live";
+    groups.set(city.countryIsoCode, group);
+  }
+  return [...groups.values()];
+}
+
+/** The groups with only the cities whose label starts a word matching the query. */
+export function filterCityGroups(groups: readonly CityGroup[], query: string): CityGroup[] {
+  const needle = query.trim().toLocaleLowerCase("en");
+  if (!needle) return [...groups];
+  const matches = (label: string) => label.toLocaleLowerCase("en").split(/[\s-]+/u)
+    .some((word, index, words) => words.slice(index).join(" ").startsWith(needle));
+  return groups.map((group) => ({...group, cities: group.cities.filter((city) => matches(city.label))}))
+    .filter((group) => group.cities.length > 0);
+}
+
+/**
+ * A city's line in the picker. In a country with no city open, its cities
+ * carry no line of their own: the country says "launching soon" once.
+ */
+export function cityPickerSublabel(city: HomeCity, group: CityGroup) {
+  return group.anyLive ? cityStatusLabel(city) : undefined;
 }

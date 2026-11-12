@@ -1,116 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {FieldValue} from "firebase-admin/firestore";
+import {FakeFirestore, type FakeData} from "../shared/testing/fakeFirestore";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {markEventAttendanceHandler} from "./markEventAttendance";
 import type {FcmParams} from "../shared/notifications";
-
-type FakeData = Record<string, unknown>;
-
-class FakeDocRef {
-  constructor(readonly firestore: FakeFirestore, readonly path: string) {}
-
-  async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.firestore.get(this.path));
-  }
-
-  async set(data: FakeData): Promise<void> {
-    this.firestore.merge(this.path, data);
-  }
-}
-
-class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
-
-  get exists(): boolean {
-    return this.value !== undefined;
-  }
-
-  data(): FakeData | undefined {
-    return this.value === undefined ? undefined : {...this.value};
-  }
-}
-
-class FakeCollectionRef {
-  constructor(
-    private readonly firestore: FakeFirestore,
-    private readonly path: string
-  ) {}
-
-  doc(docId: string): FakeDocRef {
-    return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
-  }
-}
-
-class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
-
-  collection(collectionPath: string): FakeCollectionRef {
-    return new FakeCollectionRef(this, collectionPath);
-  }
-
-  batch(): FakeBatch {
-    return new FakeBatch(this);
-  }
-
-  async runTransaction<T>(
-    updateFn: (tx: FakeTransaction) => Promise<T>
-  ): Promise<T> {
-    const tx = new FakeTransaction(this);
-    const result = await updateFn(tx);
-    tx.commit();
-    return result;
-  }
-
-  get(path: string): FakeData | undefined {
-    const data = this.docs[path];
-    return data === undefined ? undefined : {...data};
-  }
-
-  merge(path: string, data: FakeData): void {
-    this.docs[path] = {...(this.docs[path] ?? {}), ...data};
-  }
-}
-
-class FakeBatch {
-  private readonly writes: Array<() => void> = [];
-
-  constructor(private readonly firestore: FakeFirestore) {}
-
-  update(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  set(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  async commit(): Promise<void> {
-    for (const write of this.writes) write();
-  }
-}
-
-class FakeTransaction {
-  private readonly writes: Array<() => void> = [];
-
-  constructor(private readonly firestore: FakeFirestore) {}
-
-  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.firestore.get(ref.path));
-  }
-
-  update(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  set(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  commit(): void {
-    for (const write of this.writes) write();
-  }
-}
 
 test(
   "markEventAttendanceHandler sends companion-ready push after host check-in",
@@ -153,10 +49,8 @@ test(
     "opted out",
   async () => {
     const h = buildHarness({
-      "users/runner-1": {
-        fcmToken: "token-1",
-        prefsRunStatusUpdates: false,
-      },
+      "users/runner-1": {prefsRunStatusUpdates: false},
+      ...guestInstallation("runner-1", "token-1"),
     });
 
     await markEventAttendanceHandler(
@@ -165,6 +59,11 @@ test(
     );
 
     assert.deepEqual(h.notifications, []);
+    // The check-in moves the guest's roster row in the same transaction.
+    const pointer = h.firestore.get("eventAttendeeIndex/event-1_runner-1");
+    const row = h.firestore.get(`eventAttendees/${pointer?.attendeeId}`);
+    assert.equal(row?.status, "checkedIn");
+    assert.equal(row?.linkedUid, "runner-1");
   }
 );
 
@@ -192,10 +91,8 @@ function buildHarness(
       selectedModuleIds: ["qr_check_in"],
       contextualOpenersEnabled: false,
     },
-    "users/runner-1": {
-      fcmToken: "token-1",
-      prefsRunStatusUpdates: true,
-    },
+    "users/runner-1": {prefsRunStatusUpdates: true},
+    ...guestInstallation("runner-1", "token-1"),
     ...overrides,
   });
 
@@ -206,8 +103,7 @@ function buildHarness(
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
       now: () => now,
-      increment: (value: number) =>
-        ({__op: "increment", value}) as unknown as FirebaseFirestore.FieldValue,
+      increment: (value: number) => FieldValue.increment(value),
       checkRateLimit: async () => undefined,
       recordSignalFacts: async () => undefined,
       sendNotification: async (notification: FcmParams) => {

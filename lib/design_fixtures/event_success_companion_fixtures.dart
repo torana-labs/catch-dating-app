@@ -80,7 +80,7 @@ final class EventSuccessCompanionFixtures {
     end: socialStart.add(const Duration(hours: 1, minutes: 30)),
     meetingPoint: 'Bandra Fort gate',
     description:
-        'A live event guide for arrivals, prompts, introductions, and afterglow.',
+        'A live event guide for arrivals, prompts, introductions, and the recap.',
     activityKind: ActivityKind.socialRun,
     distanceKm: 5,
     bookedCount: 18,
@@ -157,6 +157,7 @@ final class EventSuccessCompanionFixtures {
     activeStepIndex: 1,
     revealStatus: EventSuccessRevealStatus.revealed,
     activeRevealRoundIndex: 0,
+    publishedRevealRoundIndex: 0,
   );
 
   static final arrivalMission = EventSuccessArrivalMission(

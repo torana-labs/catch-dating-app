@@ -235,7 +235,7 @@ class _DashboardFullSliverBodyState
           },
         );
     context.pushNamed(
-      Routes.swipeEventScreen.name,
+      Routes.eventRecapScreen.name,
       pathParameters: {'eventId': event.id},
     );
   }

@@ -2,20 +2,25 @@ name: CI
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('CI PR #{0}', github.event.pull_request.number) || 'CI' }}
 
-# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
-# pull requests or pushes; the full run happens once a night on main. A manual
-# dispatch plans the head's own change unless `full` is set; the Website
-# Release train dispatches with `full=true` to validate the head it releases.
+# A manual dispatch plans the head's own change unless `full` is set; the
+# Website Release train dispatches with `full=true` to validate the head it
+# releases when that head ran no website validation of its own.
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  push:
+    branches: [main]
+  merge_group:
   schedule:
-    - cron: '23 2 * * *'
+    - cron: "23 2 * * *"
   workflow_dispatch:
     inputs:
       full:
-        description: Run every lane, as the nightly run does
+        description: Run every validation lane regardless of changed paths.
         required: false
-        default: false
         type: boolean
+        default: false
+
 permissions:
   actions: read
   contents: read
@@ -24,16 +29,16 @@ permissions:
 
 concurrency:
   # Every ready PR validates in parallel; a newer push or draft conversion
-  # cancels that PR's older run. The merge queue validates the exact combined
-  # source before anything reaches main, so a PR result never needs to stay
-  # current with main. Merge-queue groups key on their exact head. Main pushes
-  # share one group, so a newer merge cancels the older main run instead of
-  # competing with the queue for runners. The merge queue already validated
-  # every cancelled commit. Marketing Website reuses the cancelled run's
-  # capture and validation jobs that already succeeded, and otherwise captures
-  # and validates its exact source itself.
+  # cancels that PR's older run. Merge-queue groups key on their exact head.
+  # Main pushes share one group but never cancel a run that has started:
+  # GitHub keeps the running main run and one pending run, and a newer merge
+  # replaces only the pending one (owner decision, 12 Nov 2026). The run that
+  # replaced it plans from the newest earlier main run that ran
+  # (tool/ci/main_push_base.mjs), so every commit on main is validated by a
+  # finished run and none is skipped. The setting in the newer commit's
+  # workflow decides, so turning cancellation off cancels nothing.
   group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.event.merge_group.head_sha || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   plan:
@@ -86,6 +91,7 @@ jobs:
             /tool/nx/select_lanes.mjs
             /tool/nx/shadow_plan.mjs
             /tool/ci/toolchain.env
+            /tool/ci/main_push_base.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
             /tool/harness/lib/git_changes.mjs
@@ -121,6 +127,7 @@ jobs:
         name: Resolve fail-closed impact plan
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
           HEAD_SHA: ${{ github.sha }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -142,8 +149,20 @@ jobs:
               ;;
             push)
               event_mode="main"
-              base_sha="$BEFORE_SHA"
-              window_flag=(--commit-window)
+              # Plan from the newest earlier main run that ran, so the commits
+              # of a replaced pending run are covered; nightly-full when unknown.
+              main_base="$(node tool/ci/main_push_base.mjs --head "$HEAD_SHA" \
+                --before "$BEFORE_SHA" --run-id "$GITHUB_RUN_ID")"
+              base_sha="$(sed -n 's/^base_sha=//p' <<< "$main_base")"
+              if [[ "$(sed -n 's/^full=//p' <<< "$main_base")" == "true" ]]; then
+                # Full selection is the nightly mode's, as for a schedule.
+                event_mode="nightly"
+                base_sha="${HEAD_SHA}^"
+                full_flag=(--full)
+              else
+                window_flag=(--commit-window)
+              fi
+              echo "Main push base: $base_sha ($(sed -n 's/^reason=//p' <<< "$main_base"))" >> "$GITHUB_STEP_SUMMARY"
               ;;
             schedule)
               event_mode="nightly"

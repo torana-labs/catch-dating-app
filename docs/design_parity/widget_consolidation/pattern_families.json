@@ -646,13 +646,6 @@
           "rationale": "Owns the shared circular icon-action renderer, interaction surface, disabled behavior, and floating-action elevation treatment."
         },
         {
-          "symbol": "CatchesPassButton",
-          "disposition": "unify",
-          "target": "CatchIconAction",
-          "preview": "required",
-          "rationale": "Retains pass localization, pending semantics, SwipeKeys.passButton, palette, and 56px geometry while delegating rendering to CatchIconAction."
-        },
-        {
           "symbol": "ProfileReactionButton",
           "disposition": "unify",
           "target": "CatchIconAction",

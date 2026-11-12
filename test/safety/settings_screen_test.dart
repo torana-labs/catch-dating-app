@@ -17,6 +17,7 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/analytics/host_analytics_choice.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -572,6 +573,7 @@ ProviderContainer _settingsContainer({
       ),
       if (externalUrlLauncher != null)
         externalUrlLauncherProvider.overrideWithValue(externalUrlLauncher),
+      liveBrandProvider.overrideWith((ref) async => LiveBrand.generated),
       watchUserProfileProvider.overrideWith(
         (ref) => profileStream ?? Stream.value(user),
       ),

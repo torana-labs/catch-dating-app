@@ -25,6 +25,7 @@
         "choices",
         "optionCards",
         "stepper",
+        "slider",
         "inputActions",
         "add",
         "select"
@@ -6124,6 +6125,57 @@
               ],
               "reason": "Lays out any row widgets (system CatchIndexRow rows, a stat row) under the system section header, owning the lines between them. CatchRowSection takes CatchField rows under the field-section kicker header and rule; CatchContentSection insets one child under that same legacy header."
             }
+          },
+          {
+            "id": "catch.section.baseline_overhang",
+            "symbol": "CatchBaselineOverhangLayout",
+            "file": "packages/catch_ui/lib/src/components/catch_baseline_overhang_layout.dart",
+            "summary": "A child laid out at full size that takes no height in its baseline row: its baseline sits on the neighbouring text's baseline and the rest overhangs the line. The section's quiet action uses it so its 48 px target does not make the title line taller.",
+            "states": [
+              "title-action",
+              "title-action-large-text"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "BaselineOverhang",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Keeps a full-size tap target on a title's baseline without adding height; CatchListSection places it, product code calls CatchSection()."
+            }
+          },
+          {
+            "id": "catch.section.overhang_stack",
+            "symbol": "CatchOverhangStack",
+            "file": "packages/catch_ui/lib/src/components/catch_baseline_overhang_layout.dart",
+            "summary": "A row or column that lays out exactly like Flex but hit-tests its children outside its own bounds, so the part of a CatchBaselineOverhangLayout that hangs past its row or column still receives taps.",
+            "states": [
+              "overhanging-target"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Stack",
+            "naming": {
+              "useCase": "Overhang",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "The rows and columns around a CatchBaselineOverhangLayout; without it the overhanging part of the target would not receive taps."
+            }
           }
         ],
         "accessibility": {
@@ -7142,7 +7194,8 @@
         "file": "packages/web-ui/src/components/CatchText.tsx",
         "api": "styled",
         "additionalSymbols": [
-          "CatchLegacyText"
+          "CatchLegacyText",
+          "CatchWordmark"
         ],
         "storybook": {
           "status": "ready",
@@ -7156,7 +7209,7 @@
             "numeric"
           ]
         },
-        "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7."
+        "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7. CatchWordmark (CatchWordmark.tsx) is the brand typed in the display voice (the 78% width, display weight and tracking ratio) at the site top bar's or footer band's size, with an optional sub-brand; the top bar and the footers render it so their wordmarks cannot drift."
       },
       "design": {
         "figma": {
@@ -23429,6 +23482,7 @@
             "gaps",
             "equal",
             "wrap",
+            "rail",
             "collapse"
           ]
         },

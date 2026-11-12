@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/schedule_locks.schema.json",
+  "title": "ScheduleLockDocument",
+  "description": "Server-owned time-slot claim stored at scheduleLocks/{ownerType_ownerId_slot}. An organizer lock (ownerType organizer, id organizer_{organizerId}_{slot}) stops one organizer running two events at once; a user lock (ownerType user, id user_{uid}_{slot}, with uid) stops one person booking two overlapping events.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "scheduleLocks",
+  "x-firestore-path": "scheduleLocks/{lockId}",
+  "x-document-id-field": "lockId",
+  "x-owner": "event publication, schedule edit, signup and waitlist callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "ownerType",
+    "ownerId",
+    "slot",
+    "eventId",
+    "organizerId",
+    "startTimeMillis",
+    "endTimeMillis"
+  ],
+  "properties": {
+    "ownerType": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "user"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "slot": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "startTimeMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "endTimeMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
+  }
+}

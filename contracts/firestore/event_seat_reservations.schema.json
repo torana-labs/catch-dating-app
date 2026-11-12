@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_reservations.schema.json",
+  "title": "EventSeatReservationDocument",
+  "description": "One canonical guest's seat on a private event. Active while the seat is held; may carry a checkout hold (payment attempt) or a temporary hold (Cross Paths pair) that expires. The id is sha256(eventId, canonicalKey).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatReservations",
+  "x-firestore-path": "eventSeatReservations/{reservationId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "required": [
+    "eventId",
+    "canonicalKey",
+    "identityRevision",
+    "active",
+    "revision",
+    "reservedAtMillis",
+    "releasedAtMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "canonicalKey": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "active": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "reservedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "releasedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "checkoutHold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "expiresAtMillis"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "temporaryHold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownerKind",
+        "ownerId",
+        "expiresAtMillis"
+      ],
+      "properties": {
+        "ownerKind": {
+          "type": "string",
+          "enum": [
+            "crossPathsPair"
+          ]
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

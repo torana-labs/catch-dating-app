@@ -1,5 +1,5 @@
 import {cache} from "react";
-import {activeMarket} from "../content/markets";
+import {websiteCities} from "../content/markets";
 import type {MarketCity} from "../content/markets/types";
 import {cityPlansFromListings} from "../features/home/cityPlansFromListings";
 import {homeCatalogFromPlans} from "../features/home/homeCatalog";
@@ -39,7 +39,7 @@ async function readCityPlans(
  */
 export async function assembleHomeCatalog(
   db: PublicReader | null, requestedCity: string | undefined, readAt: number,
-  cities: readonly MarketCity[] = activeMarket.cities,
+  cities: readonly MarketCity[] = websiteCities,
 ): Promise<HomeCatalog> {
   const nothing = cities.map(() => null);
   const read = db ? await withinReadDeadline(readCityPlans(db, cities, readAt)).catch(() => nothing) : nothing;

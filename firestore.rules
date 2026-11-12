@@ -51,12 +51,14 @@ service cloud.firestore {
         || data[field] in values;
     }
 
+    // BEGIN GENERATED launch markets (tool/contracts/generate_market_catalog.mjs)
     function isDefaultCity(city) {
       return city in [
         'in-mh-mumbai',
         'in-mp-indore'
       ];
     }
+    // END GENERATED launch markets
 
     function isConfiguredCity(city) {
       return exists(/databases/$(database)/documents/config/cities)
@@ -658,6 +660,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The published brand record (packages/brand/brand.json), written only by
+    // tool/firebase/create_config_brand.mjs with admin credentials.
+    match /config/brand {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /config/{docId} {
       allow read, write: if false;
     }
@@ -1247,6 +1256,14 @@ service cloud.firestore {
     // Owner view (#1109): daily page activity and the monthly follower-message
     // allowance are written and read only by Functions.
     match /organizerInsights/{insightId} {
+      allow read, write: if false;
+    }
+    // Waitlist interest by city: counters and per-person markers are written
+    // by joinWaitlist and read by adminGetCityInterest only.
+    match /cityInterest/{cityKey} {
+      allow read, write: if false;
+    }
+    match /cityInterestMarkers/{markerId} {
       allow read, write: if false;
     }
     match /organizerFollowerMessageQuotas/{quotaId} {
@@ -2897,6 +2914,24 @@ service cloud.firestore {
         && data.answerIds.size() <= 8
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
+    }
+
+    // Photos the event's host team shared after the event started. The
+    // files stay in private Storage and leave the server only as short-lived
+    // signed URLs from listEventHostPhotos; this document is readable by the
+    // guests who checked in and by the organizer's owner and managers.
+    // addEventHostPhoto and deleteEventHostPhoto own every write.
+    match /eventHostPhotos/{eventHostPhotoId} {
+      allow get, list: if isAuthed()
+        && resource.data.eventId is string
+        && (
+          isOrganizerHostForEvent(resource.data.eventId)
+          || hasCheckedInEventSuccessAccess(
+            resource.data.eventId,
+            request.auth.uid
+          )
+        );
+      allow create, update, delete: if false;
     }
 
     match /eventSuccessPlans/{eventId} {

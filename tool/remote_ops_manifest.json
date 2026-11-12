@@ -198,7 +198,7 @@
         },
         {
           "kind": "tool-id",
-          "ref": "data:repair-club-member-counts"
+          "ref": "data:repair-organizer-follower-counts"
         },
         {
           "kind": "tool-id",

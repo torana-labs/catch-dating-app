@@ -2,7 +2,7 @@ import 'package:catch_dating_app/chats/presentation/chat_conversation_context.da
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
-const chatContextFallbackStamp = 'MATCHED THROUGH CATCH';
+const chatContextFallbackStamp = 'MET THROUGH CATCH';
 
 String chatContextStampFor(
   Event? event, {
@@ -31,9 +31,9 @@ String chatContextStampForActivity(ActivityKind kind) {
     ActivityKind.strengthTraining => 'MET THROUGH STRENGTH',
     ActivityKind.pubQuiz => 'MET AT PUB QUIZ',
     ActivityKind.barCrawl => 'MET ON BAR CRAWL',
-    ActivityKind.dinner => 'MATCHED AFTER DINNER',
-    ActivityKind.singlesMixer => 'MATCHED AFTER MIXER',
-    ActivityKind.openActivity => 'MATCHED AFTER EVENT',
+    ActivityKind.dinner => 'MET AT DINNER',
+    ActivityKind.singlesMixer => 'MET AT A MIXER',
+    ActivityKind.openActivity => 'MET AT AN EVENT',
   };
 }
 

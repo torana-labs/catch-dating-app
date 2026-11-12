@@ -7,7 +7,8 @@
       "meta:tool-manifest",
       "meta:brand-literals",
       "meta:repository-root-hygiene",
-      "operations:boundaries"
+      "operations:boundaries",
+      "contracts:market-lists"
     ],
     "additionalFullPaths": [
       "functions/package.json",
@@ -2888,20 +2889,40 @@
       }
     },
     {
-      "id": "data:repair-club-member-counts",
+      "id": "data:repair-organizer-follower-counts",
       "category": "data",
-      "path": "tool/data/recompute_organizer_member_counts.mjs",
-      "command": "node tool/data/recompute_organizer_member_counts.mjs",
+      "path": "tool/data/recompute_organizer_follower_counts.mjs",
+      "command": "node tool/data/recompute_organizer_follower_counts.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
-      "description": "Repairs club memberCount projections.",
+      "description": "Repairs organizer followerCount projections from active organizerFollows.",
       "checks": [
-        "node --check tool/data/recompute_organizer_member_counts.mjs",
-        "node --test tool/data/recompute_organizer_member_counts.test.mjs"
+        "node --check tool/data/recompute_organizer_follower_counts.mjs",
+        "node --test tool/data/recompute_organizer_follower_counts.test.mjs"
       ],
       "impactPaths": [
-        "tool/data/recompute_organizer_member_counts.test.mjs",
+        "tool/data/recompute_organizer_follower_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:migrate-firestore-consolidation",
+      "category": "data",
+      "path": "tool/data/migrate_firestore_consolidation.mjs",
+      "command": "node tool/data/migrate_firestore_consolidation.mjs --migration <name|all>",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites.",
+      "checks": [
+        "node --check tool/data/migrate_firestore_consolidation.mjs",
+        "npm --prefix functions run build && node --test tool/data/migrate_firestore_consolidation.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_firestore_consolidation.test.mjs",
+        "tool/data/lib/firestore_consolidation_migrations.mjs",
+        "tool/data/lib/copy_forward.mjs",
+        "functions/src/events/eventPolicy.ts"
       ],
       "role": "generator"
     },
@@ -2920,6 +2941,20 @@
       "impactPaths": [
         "tool/data/recompute_event_aggregate_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:backfill-city-interest",
+      "category": "data",
+      "path": "tool/data/backfill_city_interest.mjs",
+      "command": "node tool/data/backfill_city_interest.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Maps existing launch-notice cities to market catalog ids where one city matches, counts each person once per city in cityInterest, and reports the rest.",
+      "checks": [
+        "node --check tool/data/backfill_city_interest.mjs",
+        "node --test tool/data/backfill_city_interest.test.mjs"
       ],
       "role": "generator"
     },
@@ -3402,6 +3437,19 @@
       "description": "Writes config/cities with dry-run and prod guards.",
       "checks": [
         "node --check tool/firebase/create_config_cities.mjs"
+      ]
+    },
+    {
+      "id": "firebase:create-config-brand",
+      "category": "firebase",
+      "path": "tool/firebase/create_config_brand.mjs",
+      "command": "node tool/firebase/create_config_brand.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Publishes packages/brand/brand.json to config/brand with dry-run and prod guards; --verify compares the live document read-only.",
+      "checks": [
+        "node --check tool/firebase/create_config_brand.mjs",
+        "node --test tool/firebase/create_config_brand.test.mjs"
       ]
     },
     {
@@ -5509,7 +5557,9 @@
       "role": "finder",
       "impactPaths": [
         "tool/design/check_reference_screens.test.mjs",
-        "tool/design/check_reference_screens.mjs"
+        "tool/design/check_reference_screens.mjs",
+        "design/reference_screens/**",
+        "design/source_packs/**"
       ]
     },
     {
@@ -5632,6 +5682,61 @@
           ],
           "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only."
         }
+      ]
+    },
+    {
+      "id": "contracts:market-catalog",
+      "category": "contracts",
+      "path": "tool/contracts/generate_market_catalog.mjs",
+      "command": "node tool/contracts/generate_market_catalog.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "functions-npm"
+        ]
+      },
+      "impactPaths": [
+        "contracts/catalogs/markets.json",
+        "contracts/shared/market_catalog.schema.json",
+        "tool/contracts/market_list_allowlist.json",
+        "tool/contracts/generate_market_catalog.test.mjs",
+        "tool/lib/market_catalog.mjs",
+        "tool/lib/location_markets.mjs",
+        "functions/src/shared/generated/marketCatalog.ts",
+        "packages/kernel/lib/market_catalog.dart",
+        "admin/src/shared/config/generated/marketCatalog.ts",
+        "firestore.rules",
+        "tool/contracts/generate_market_catalog.mjs",
+        "website/src/app/routeRegistry.ts"
+      ],
+      "role": "gate",
+      "description": "Keeps contracts/catalogs/markets.json the one source of countries and cities: validates it against contracts/shared/market_catalog.schema.json and its cross-record lifecycle rules, fails when a generated copy (Functions, kernel Dart, admin launch markets, the Firestore rules launch-market block) is stale, and fails when tracked source names three or more catalog cities outside the shrink-only market_list_allowlist.json.",
+      "checks": [
+        "node --check tool/contracts/generate_market_catalog.mjs",
+        "node --test tool/contracts/generate_market_catalog.test.mjs",
+        "node tool/contracts/generate_market_catalog.mjs --check"
+      ]
+    },
+    {
+      "id": "contracts:market-lists",
+      "category": "contracts",
+      "path": "tool/contracts/generate_market_catalog.mjs",
+      "command": "node tool/contracts/generate_market_catalog.mjs --check --without-schema",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "gate",
+      "description": "Runs on every change: fails when a generated market-catalog copy is stale, when the catalog breaks a cross-record lifecycle rule, or when tracked source names three or more catalog cities outside the shrink-only tool/contracts/market_list_allowlist.json. Needs no installed packages; contracts:market-catalog adds JSON Schema validation whenever the catalog changes.",
+      "checks": [
+        "node tool/contracts/generate_market_catalog.mjs --check --without-schema"
       ]
     },
     {
@@ -6860,12 +6965,51 @@
         ".github/workflows/react-surface-validation.yml",
         ".github/workflows/capture-freshness-ci.yml",
         "tool/ci/wait_main_marketing_validation.mjs",
-        "tool/ci/wait_main_marketing_validation.test.mjs"
+        "tool/ci/wait_main_marketing_validation.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
       ],
       "description": "Reuses exact-main Marketing and capture execution only with matching workflow, repository, source and attempt identity; offline fixtures reject missing, failed or cancelled evidence.",
       "checks": [
         "node --check tool/ci/wait_main_marketing_validation.mjs",
         "node --test tool/ci/wait_main_marketing_validation.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:main-push-base",
+      "category": "ci",
+      "path": "tool/ci/main_push_base.mjs",
+      "command": "node tool/ci/main_push_base.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/main_push_base.mjs",
+        "tool/ci/main_push_base.test.mjs"
+      ],
+      "description": "Chooses the base a main push CI run plans from: the newest earlier main push run that ran, so the commits of a pending run a newer merge replaced are still validated; validates everything when that run is unknown or off main's history.",
+      "checks": [
+        "node --check tool/ci/main_push_base.mjs",
+        "node --test tool/ci/main_push_base.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:required-ci-floor",
+      "category": "ci",
+      "path": "tool/ci/required_ci_floor.mjs",
+      "command": "node --test tool/ci/required_ci_floor.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/required_ci_floor.mjs",
+        "tool/ci/required_ci_floor.test.mjs"
+      ],
+      "description": "Decides when a source CI run passes the website release gate: the whole run succeeded, or (sprint floor, owner decision 11 Nov 2026) its Required CI job succeeded and only the reporting-only lanes failed. Pins the reporting lanes to ci.yml's Required CI.",
+      "checks": [
+        "node --check tool/ci/required_ci_floor.mjs",
+        "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
     },

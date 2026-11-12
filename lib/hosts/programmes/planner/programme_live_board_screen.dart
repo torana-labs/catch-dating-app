@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart'
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_alert_actions.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -53,7 +54,9 @@ class _HostProgrammeLiveBoardScreenState
     final l10n = context.l10n;
     final programId = widget.programId;
     final programme = ref.watch(hostProgrammeControllerProvider(programId));
-    final board = ref.watch(programLiveBoardViewProvider(programId));
+    final board = catchAsyncStateFromAsyncValue(
+      ref.watch(programLiveBoardViewProvider(programId)),
+    );
     final loaded = board.value?.value;
     return CatchRoot(
       theme: CatchThemeMode.night,
@@ -78,11 +81,7 @@ class _HostProgrammeLiveBoardScreenState
           ],
         ),
         body: HostProgrammeLiveBoardBody(
-          status: board.hasError
-              ? HostProgrammeStatus.error
-              : loaded == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          status: hostProgrammeStatusOf(board),
           board: loaded,
           busyAlertId: _busy,
           onAction: (alert, action) => unawaited(_act(alert, action)),

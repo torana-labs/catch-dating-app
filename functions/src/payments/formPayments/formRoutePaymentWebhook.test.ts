@@ -26,7 +26,7 @@ async function fixture() {
       merchantAccountId: "acc_platform", destinationAccountId: "acc_host",
       checkoutKey: "rzp_test_platform", configurationVersion: version,
     }};
-  h.store.records.set(`organizerFormPayments/${reserved.paymentId}`,
+  h.store.records.set(`guestPayments/${reserved.paymentId}`,
     {...payment});
   let reconciled = 0;
   const deps = {db: h.db, configurationVersion: version, now: () => 1000,
@@ -84,7 +84,7 @@ test("foreign ledger or profile cannot cause a Route mutation", async () => {
     {providerOrderId: "order_other"}]) {
     const h = await fixture();
     const id = await recordFormRoutePaymentWebhook(h.input, h.deps);
-    h.store.records.set(`organizerFormPayments/${h.paymentId}`,
+    h.store.records.set(`guestPayments/${h.paymentId}`,
       {...h.payment, ...patch});
     await assert.rejects(processFormRoutePaymentWebhook(id, h.deps));
     assert.equal(h.reconciled(), 0);

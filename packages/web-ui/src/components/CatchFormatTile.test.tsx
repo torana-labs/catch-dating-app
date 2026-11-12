@@ -19,11 +19,24 @@ describe("CatchFormatTile", () => {
     expect(press).toHaveBeenCalledOnce();
   });
 
-  it("navigates as a link, its accent alone when there is no photo", () => {
+  it("navigates as a link, with the format's artwork at its foot when there is no photo", () => {
     const {container} = render(<CatchFormatTile {...tile} format="games" href="/explore/?format=games" />);
     const link = screen.getByRole("link", {name: /Run clubs/});
     expect(link.getAttribute("href")).toBe("/explore/?format=games");
     expect(link.getAttribute("aria-pressed")).toBeNull();
     expect(container.querySelector("img")).toBeNull();
+    // The games format draws the quiz artwork, decorative only.
+    const art = container.querySelector("[data-format-art] [data-activity-kind]");
+    expect(art?.getAttribute("data-activity-kind")).toBe("pubQuiz");
+    expect(art?.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("holds a plan's photo at its foot instead, and falls back to the artwork when the photo fails", () => {
+    const {container} = render(<CatchFormatTile {...tile} href="/explore/" photoUrl="https://example.test/run.jpg" />);
+    const photo = container.querySelector("img")!;
+    expect(container.querySelector("[data-format-art]")).toBeNull();
+    fireEvent.error(photo);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[data-format-art] [data-activity-kind]")?.getAttribute("data-activity-kind")).toBe("socialRun");
   });
 });

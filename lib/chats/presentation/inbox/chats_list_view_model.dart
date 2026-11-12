@@ -237,7 +237,7 @@ ChatThreadPreview chatThreadPreviewForMatch(
         ? 'Ask the host'
         : match.isCrossPathsEventPlan
         ? StructuredDomainCopy.chatCrossPathsEventPlanReady
-        : 'You matched!';
+        : 'You picked each other';
   } else if (match.lastMessageSenderId == uid) {
     previewText = 'You: ${match.lastMessagePreview}';
   } else {

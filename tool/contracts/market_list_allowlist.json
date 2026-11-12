@@ -1,0 +1,67 @@
+{
+  "description": "Files that name three or more catalog cities in string literals. A pending entry is a hand-maintained list still to migrate onto contracts/catalogs/markets.json; a fixture entry is synthetic or demo data where a city is an attribute, not the list of served cities; a reference entry selects catalog cities by slug, and its validatedBy test checks every reference against the catalog. Counts may only shrink: run node tool/contracts/generate_market_catalog.mjs --prune after a migration. Never add an entry for a new product city list; read the catalog or a generated copy instead.",
+  "allowlisted": {
+    "admin/src/features/marketplace/api/marketplaceRepository.ts": {
+      "cities": 3,
+      "kind": "fixture",
+      "reason": "Sample marketplace metrics for the admin preview data source."
+    },
+    "admin/src/features/sales/api/salesRepository.ts": {
+      "cities": 9,
+      "kind": "fixture",
+      "reason": "Sample organizer rows for the admin preview data source."
+    },
+    "functions/src/demoOps/generated/suvbotDemoWorlds.ts": {
+      "cities": 6,
+      "kind": "fixture",
+      "reason": "Generated demo worlds; synthetic organizers per city."
+    },
+    "operations/src/workflows/supply-intake/config/search_matrix.json": {
+      "cities": 7,
+      "kind": "reference",
+      "reason": "Supply-intake search matrix keyed by catalog slug; validatedBy checks each slug is a catalog crawl target.",
+      "validatedBy": "operations/test/supply-intake-market-catalog.test.mjs"
+    },
+    "operations/src/workflows/supply-intake/config/target_categories.json": {
+      "cities": 8,
+      "kind": "reference",
+      "reason": "Supply-intake crawl targets and weights keyed by catalog slug; validatedBy checks each slug, name and country against the catalog.",
+      "validatedBy": "operations/test/supply-intake-market-catalog.test.mjs"
+    },
+    "tool/demo/demo_ops_core.mjs": {
+      "cities": 9,
+      "kind": "fixture",
+      "reason": "Demo operations scenarios keyed by city; resolves markets through location_markets.mjs."
+    },
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json": {
+      "cities": 6,
+      "kind": "fixture",
+      "reason": "Synthetic demo personas; city is a persona attribute, not the served-city list."
+    },
+    "tool/demo/rsvp_escape/build_fixture.cjs": {
+      "cities": 4,
+      "kind": "fixture",
+      "reason": "Synthetic RSVP fixture rows."
+    },
+    "tool/demo/rsvp_escape/form_definition.mjs": {
+      "cities": 4,
+      "kind": "fixture",
+      "reason": "Synthetic RSVP form options for a demo fixture."
+    },
+    "tool/demo/seed_demo_data.mjs": {
+      "cities": 10,
+      "kind": "fixture",
+      "reason": "Demo seed scenarios keyed by city (neighbourhoods, languages); resolves markets through location_markets.mjs."
+    },
+    "website/src/generated/hostListings.demo.json": {
+      "cities": 3,
+      "kind": "fixture",
+      "reason": "Generated demo host listings."
+    },
+    "widgetbook/lib/profiles/catalog/forms.dart": {
+      "cities": 3,
+      "kind": "fixture",
+      "reason": "Widgetbook form examples."
+    }
+  }
+}

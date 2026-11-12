@@ -24,7 +24,7 @@ const {interactionContracts} = JSON.parse(
 
 test("builds the live inventory from the package-owned status enum", () => {
   const inventory = buildFromRepo();
-  assert.equal(inventory.summary.facadeCount, 15);
+  assert.equal(inventory.summary.facadeCount, 16);
   assert.equal(inventory.summary.saveStateCount, 3);
   assert.equal(inventory.source.catchFieldStatus, statusPath);
   assert.match(inventory.source.catchFieldStatusApiSha256, /^[a-f0-9]{64}$/u);
@@ -71,6 +71,7 @@ test("extracts every current facade and semantic slot", () => {
       "choices",
       "optionCards",
       "stepper",
+      "slider",
       "inputActions",
       "add",
       "select",
@@ -137,7 +138,7 @@ test("known-bad deleted facade changes generated inventory", () => {
   );
   const modes = extractCatchFieldFacades(deleted).map((entry) => entry.mode);
   assert.ok(!modes.includes("add"));
-  assert.equal(modes.length, 14);
+  assert.equal(modes.length, 15);
 });
 
 test("known-bad added slot parameter changes generated inventory", () => {

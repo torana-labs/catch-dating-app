@@ -1316,18 +1316,17 @@ test("every selective main consumer reads the exact committed validation window"
     /--commit-window "\$COMMIT_WINDOW"/u);
 });
 
-test("every ready PR validates in parallel and the merge queue guards main", () => {
+test("every ready PR validates in parallel and main runs are never cancelled once started", () => {
   const ci = workflow("ci.yml");
-  // CI is off for the redesign sprint (owner, 8 Nov 2026): it runs once a
-  // night on main and by dispatch, never on pull requests, pushes or the merge
-  // queue. When the sprint ends, assert the merge_group trigger again.
-  const triggers = ci.split(/^on:\n/mu)[1].split(/^\S/mu)[0];
-  assert.doesNotMatch(triggers, /^ {2}(merge_group|pull_request|push):/mu);
-  assert.match(triggers, /^ {2}schedule:\n/mu);
-  assert.match(triggers, /^ {2}workflow_dispatch:\n/mu);
+  assert.match(ci, /^  merge_group:$/mu);
   assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/u);
   assert.match(ci, /github\.event_name == 'push' && github\.ref/u);
-  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| github\.event_name == 'push' \}\}$/mu);
+  // A newer merge never cancels a main run that has started; it replaces only
+  // the pending one, whose commits the replacing run plans from.
+  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}$/mu);
+  assert.match(ci, /^            \/tool\/ci\/main_push_base\.mjs$/mu);
+  assert.match(ci, /main_base="\$\(node tool\/ci\/main_push_base\.mjs --head "\$HEAD_SHA" \\\n\s+--before "\$BEFORE_SHA" --run-id "\$GITHUB_RUN_ID"\)"/u);
+  assert.doesNotMatch(ci, /base_sha="\$BEFORE_SHA"/u);
   assert.doesNotMatch(ci, /admission|admitted|queue: max|Ignored PR metadata/iu);
   assert.match(ci, /plan:\n    # .*\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| !github\.event\.pull_request\.draft\) \}\}\n    name: Plan affected targets/u);
   assert.match(ci, /required:\n    name: Required CI\n/u);
@@ -1357,11 +1356,8 @@ test("CI run names preserve main delivery identity and name every PR run", () =>
   for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
     assert.equal(runName("pull_request", action), "CI PR #42", action);
   }
-  // CI is off for the redesign sprint (owner, 8 Nov 2026): no pull_request
-  // trigger, so no label can start a run. When the sprint ends, assert its
-  // types are exactly opened, synchronize, reopened, ready_for_review and
-  // converted_to_draft again.
-  assert.doesNotMatch(workflow("ci.yml"), /^    types: \[/mu,
+  const types = workflow("ci.yml").match(/^    types: \[(.*)\]$/mu)?.[1].split(", ");
+  assert.deepEqual(types, ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"],
     "label metadata must never start or replace PR validation");
 });
 

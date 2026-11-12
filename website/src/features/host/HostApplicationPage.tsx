@@ -2,15 +2,20 @@ import {CatchButton, CatchRoot, CatchStack, CatchSurface, CatchText} from "@catc
 import {hostPageCopy} from "@content/host";
 import {hostLandingCopy} from "@content/hostLanding";
 import {hostProductCopy} from "@content/hostProduct";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {HostApplicationFlow} from "./application/HostApplicationFlow";
+
+// The landing's in-page anchors, from the application page.
+const hostLandingPath = (anchor: string) => `/host/${anchor}`;
 
 /** The host application (/host/apply/): the landing's header and footer around the application flow on the white ground. */
 export function HostApplicationPage() {
   const copy = hostProductCopy.application;
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader title={hostLandingCopy.header.title} />
+      {/* The host top bar, as on the landing: its sections (on /host/) and Start free trial. */}
+      <PublicSiteHeader actions={<CatchButton href={hostLandingPath("#start")} label={hostLandingCopy.header.start} size="sm" />}
+        links={hostLandingCopy.header.nav.map((link) => ({...link, href: hostLandingPath(link.href)}))} title={hostLandingCopy.header.title} />
       <WebsitePageMain id="top">
         <CatchSurface aria-labelledby="host-apply-title" as="section" block="band" id="founding-hosts">
           <CatchStack gap={12}>
@@ -23,7 +28,7 @@ export function HostApplicationPage() {
           <HostApplicationFlow />
         </CatchSurface>
       </WebsitePageMain>
-      <SiteFooterBand label={hostLandingCopy.header.title} tagline={hostLandingCopy.footer.tagline} wordmark={hostLandingCopy.footer.wordmark} />
+      <PublicSiteFooter tagline={hostLandingCopy.footer.tagline} />
     </CatchRoot>
   );
 }

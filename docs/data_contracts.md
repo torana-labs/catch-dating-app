@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.189.0
-updated: 2026-11-11
+version: 1.195.0
+updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -45,9 +45,59 @@ Read this before changing:
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
 | Human operation map | `docs/backend_operation_catalog.md` |
 | Rules a tool enforces | `tool/tools_manifest.json` |
+| Countries and cities Catch serves, with each city's lifecycle and surface flags | `contracts/catalogs/markets.json` (see [Market Catalog](#market-catalog)) |
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Market Catalog
+
+`contracts/catalogs/markets.json` is the one source of truth for the
+countries and cities Catch serves. `contracts/shared/market_catalog.schema.json`
+owns its shape. Each country carries its ISO code, name, currency, dial code,
+locale, time zone, App Store countries and default city. Each city carries the
+existing `marketId`/`cityId` scheme (`in-mh-mumbai`), its public slug, aliases,
+coordinates, a lifecycle and per-surface flags.
+
+| Lifecycle | Meaning | `launchStatus` apps read |
+|---|---|---|
+| `hidden` | Not public anywhere. | `planned` |
+| `waitlist` | Public; collecting interest. | `planned` |
+| `launching` | Public; launch planned, with an optional `launchDate`. | `planned` |
+| `live` | Open. | `launched` |
+| `paused` | Was live; temporarily closed. | `paused` |
+
+The app flags (`profileSelectable`, `hostCreatable`, `eventCreatable`,
+`exploreVisible`) may be on only for a `live` city, and `websiteListed` may not
+be on for a `hidden` city. Aliases, slugs, ids and `legacyIds` are unique
+across the catalog.
+
+Never edit a copy. Edit the catalog, then run
+`node tool/contracts/generate_market_catalog.mjs`, which writes:
+
+| Copy | Consumer |
+|---|---|
+| `functions/src/shared/generated/marketCatalog.ts` | `functions/src/locations/marketConfig.ts` |
+| `packages/kernel/lib/market_catalog.dart` | `city_catalog.dart` and `country_markets.dart`, the apps' offline fallback |
+| `admin/src/shared/config/generated/marketCatalog.ts` | Admin launch markets (live cities), every city with its lifecycle, and the countries; `marketCityFor` and `marketLabel` in `launchMarkets.ts` resolve any market key |
+| The launch-market block in `firestore.rules` | `isDefaultCity` |
+
+Tools read the catalog directly through `tool/lib/market_catalog.mjs`;
+`tool/firebase/create_config_cities.mjs` writes `config/cities` from it.
+From `config/cities` version 3, every city and market entry also carries
+`lifecycle`, `websiteListed` and, for a launching city, `launchDate`, and the
+document carries a `countries` array. The fields are optional in the schema
+because older documents lack them: the app's `CityData.effectiveLifecycle`
+infers a lifecycle from `launchStatus` when it is absent.
+The registered check `contracts:market-lists` runs on every change: it fails
+when a copy is stale, a cross-record rule breaks, or tracked source names three
+or more catalog cities outside `tool/contracts/market_list_allowlist.json`,
+which may only shrink. Files that select catalog cities by slug, such as the
+supply-intake crawl targets, are `reference` entries: each names a
+`validatedBy` test that reads the catalog and checks every slug, name and
+country (`operations/test/supply-intake-market-catalog.test.mjs`).
+`contracts:market-catalog` adds JSON Schema validation whenever the catalog
+changes.
 
 ### Profile information by capability
 
@@ -3114,7 +3164,32 @@ when an `organizerEventOffers` document changes; `--model response-offers` in
 Responses screen reads its Offered list and per-filter counts from these fields.
 
 `launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
-website submission needs an email or a phone. A weddings pilot application
+website submission needs an email or a phone.
+
+### Waitlist City Attribution
+
+The website launch notice names its city by catalog id. `joinWaitlist` accepts
+`cityId` (a market catalog id, or null for a city the catalog does not have),
+`countryIsoCode`, `citySource` (`picked`, `network_guess`, `precise` or
+`typed`) and `cityOther` (the typed city when `cityId` is null), alongside the
+old free-text `city`, which stays required and readable. Functions reject a
+`cityId` the catalog does not have or that is `hidden`, take the country from
+the catalog, and reject a different `countryIsoCode`; a null `cityId` needs
+`cityOther`. The fields are stored on the `launchWaitlist` row. A submission
+without `cityId` (older clients, Host and weddings forms) is unchanged.
+
+Each WhatsApp launch notice with a city counts its person once per city:
+`cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same
+transaction as `cityInterest/{cityKey}` gains `total` and `daily[YYYY-MM-DD]`
+(UTC) increments. `cityKey` is the catalog id, or `other-<country>` for cities
+the catalog does not have. Both collections are server-only
+(`city_interest.schema.json`, `city_interest_markers.schema.json`);
+`adminGetCityInterest` reads them for Admin's Interest by city view, with 7-
+and 30-day windows against the days before.
+`tool/data/backfill_city_interest.mjs` gives existing member rows the catalog
+id their free-text city names when exactly one catalog city matches by id,
+label, alias or legacy id, counts them through the same markers (a rerun counts
+nothing twice), and reports the rest without printing contacts. A weddings pilot application
 carries `programme: "weddings"` and `programmeApplication`; older intents carry
 neither and read as an events Host enquiry.
 
@@ -4404,6 +4479,42 @@ unknown sender's thread cannot be answered until the number is added to a
 household. The retention sweep deletes all six collections with the
 archived programme.
 
+### Event Host Photos
+
+`eventHostPhotos/{eventId}_{photoId}` holds one photo the event's host team
+shared with guests after the event started. Organizer owners and managers
+(the organizer's host fields or an active owner/manager team edge) stage one
+original with the Firebase Storage SDK at
+`events/{eventId}/hostPhotoUploads/{photoId}/original.{jpg|jpeg|png}`. Storage
+rules allow only that create, once `events/{eventId}.startTime` has passed,
+for `image/jpeg` or `image/png` up to 8 MB, with `uploaderUid` metadata naming
+the uploader; reads, overwrites and deletes are denied. `addEventHostPhoto`
+checks the staged object's binding, decodes it with sharp (40 megapixel input
+cap), bakes in the EXIF orientation and writes a display JPEG (2048 px long
+edge) and a thumbnail JPEG (480 px) to `events/{eventId}/hostPhotos/{photoId}/`.
+sharp copies no EXIF, GPS, XMP, IPTC or ICC metadata, so location never leaves
+the upload. It deletes the staged original, records the photo and replays an
+existing one; an event holds at most 100 photos. Every direct read of the
+re-encoded files is denied. `listEventHostPhotos` signs fifteen-minute read
+URLs, without download tokens, for the host team and for guests who checked
+in: an `attended` booking, or a ready runtime participant whose linked roster
+row is `checkedIn`, matching `hasCheckedInEventSuccessAccess` in
+`firestore.rules`. Anyone else receives `access: none` and an empty list.
+Firestore rules give the same people read access to the documents; every
+client write is denied. `deleteEventHostPhoto` lets the host team remove a
+photo and its files.
+
+Product defaults pending owner review: guests cannot download photos (the
+apps show no download action), and photos are kept for as long as the
+event's chat history is kept. There is no retention sweep yet, so photos last
+until the host team removes them. A staged original whose add never runs
+(the app was killed mid-upload) still carries its EXIF and GPS data, so
+`cleanUpStagedHostPhotosDaily` deletes every object under
+`events/*/hostPhotoUploads/` created more than 24 hours earlier. The bucket is
+not managed by `infra/`, so this scheduled sweep stands in for a Storage
+lifecycle rule; a run handles at most 20 pages of 500 objects and the next run
+continues any backlog.
+
 ### Programme Guest IDs, Hampers, Photos And Vendor Bills
 
 Four server-only collections hold programme records that clients reach only
@@ -5363,8 +5474,9 @@ organisers in the city and whether the city is `live` or `launchingSoon`
 - Every launched and planned market in `functions/src/locations/marketConfig.ts`
   has a document. A launched city is built only from its
   `organizerPublicPage` documents, so it adds no publication rule of its own.
-- A launched city reads as `launchingSoon` until it has four plans in the
-  window, so a thin city never renders a sparse page.
+- A launched city is `live` however few plans it has; the website shows the
+  honest count ("2 plans this week", or "new" before the first). Only a city
+  that has not launched reads as `launchingSoon`.
 - A planned city has no plans. It lists the published organisers joining it,
   projected under the organiser page rules with that city treated as live.
   They carry no page link, because their pages stay withheld until the city

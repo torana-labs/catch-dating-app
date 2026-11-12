@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {Timestamp, FieldValue} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerFormPaymentDocument as Payment,
@@ -339,6 +340,6 @@ export class FormPaymentProcessor {
   }
 
   private ref(paymentId: string): FirebaseFirestore.DocumentReference {
-    return this.deps.db.collection("organizerFormPayments").doc(paymentId);
+    return this.deps.db.collection(GUEST_PAYMENTS).doc(paymentId);
   }
 }

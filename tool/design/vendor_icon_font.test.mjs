@@ -109,20 +109,22 @@ test("vendoring writes the font and codepoints and pins the version and hash in 
 
 test("the catalog is rewritten in place: three values change and every other byte stays", () => {
   const original = fs.readFileSync(fromRepo(catalogRelative), "utf8");
+  // The real catalog's current pins, so a vendored bump does not break this test.
+  const current = JSON.parse(original);
   const updated = updateCatalogText(original, {
-    previousVersion: "1.61.0",
-    version: "1.62.0",
-    previousFontSha256: "0b98954b05aba6a770306609847f2d2194395ab225288346c7841a4a50ce2300",
+    previousVersion: current.family.version,
+    version: "9.0.0",
+    previousFontSha256: current.family.flutter.fontSha256,
     fontSha256: "f".repeat(64),
-    previousUpdated: JSON.parse(original).updated,
+    previousUpdated: current.updated,
     today: "2026-11-04",
   });
   const parsed = JSON.parse(updated);
-  assert.equal(parsed.family.version, "1.62.0");
+  assert.equal(parsed.family.version, "9.0.0");
   assert.equal(parsed.family.flutter.fontSha256, "f".repeat(64));
   assert.equal(parsed.updated, "2026-11-04");
   assert.equal(parsed.version, 1);
-  assert.equal(updated.length, original.length + ("1.62.0".length - "1.61.0".length) +
+  assert.equal(updated.length, original.length + ("9.0.0".length - current.family.version.length) +
     (("f".repeat(64)).length - 64) + ("2026-11-04".length - JSON.parse(original).updated.length));
   assert.equal(updated.split("\n").length, original.split("\n").length);
   assert.throws(

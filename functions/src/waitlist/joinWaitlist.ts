@@ -15,6 +15,8 @@ import {
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
+import {readCityAttribution, type CityAttribution} from "./cityAttribution";
+import {prepareCityInterest} from "../cityInterest/cityInterest";
 import {hostConsentKey} from "../acquisition/consentPolicy";
 import {prepareHostAttribution} from "../acquisition/attribution";
 import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
@@ -336,6 +338,8 @@ export function normalizeProgrammeApplication(
   if (!isRecord(value)) return null;
   const date = normalizeText(value.weddingDate);
   const application: Record<string, unknown> = {
+    applicantRole: normalizeOptionalMarketingText(value.applicantRole, 80),
+    programmeKind: normalizeOptionalMarketingText(value.programmeKind, 80),
     planningCompany: normalizeOptionalMarketingText(value.planningCompany, 140),
     city: normalizeOptionalMarketingText(value.city, 80),
     weddingDate: /^\d{4}-\d{2}-\d{2}$/u.test(date) ? date : null,
@@ -545,13 +549,14 @@ async function joinByWhatsapp(
   body: Record<string, unknown>,
   context: {
     city: string;
+    cityAttribution: CityAttribution | null;
     submittedRole: string;
     marketingAnalytics: ReturnType<typeof normalizeMarketingAnalytics>;
     marketingAttribution: ReturnType<typeof normalizeMarketingAttribution>;
   },
 ): Promise<void> {
-  const {city, submittedRole, marketingAnalytics, marketingAttribution} =
-    context;
+  const {city, cityAttribution, submittedRole, marketingAnalytics,
+    marketingAttribution} = context;
   const whatsapp = isRecord(body.whatsapp) ? body.whatsapp : {};
   const phone = normalizeText(whatsapp.phone).replace(/[\s-]/g, "");
   if (!/^\+[1-9][0-9]{7,14}$/.test(phone)) {
@@ -592,12 +597,21 @@ async function joinByWhatsapp(
     marketing: decision("marketing", whatsapp.marketing === true),
   };
   let alreadyJoined = false;
+  let firstForCity = false;
+  const now = new Date();
   await firestore.runTransaction(async (transaction) => {
     const existing = await transaction.get(noticeRef);
+    // Every read precedes the writes: count the person once per city.
+    const countInterest = cityAttribution ?
+      await prepareCityInterest(transaction, firestore, {personKey: phone,
+        cityId: cityAttribution.cityId,
+        countryIsoCode: cityAttribution.countryIsoCode, now}) : null;
+    firstForCity = countInterest?.() ?? false;
     const data = {
       channel: "whatsapp",
       phone,
       city,
+      ...(cityAttribution ?? {}),
       role: "member",
       fullName: null,
       email: null,
@@ -645,7 +659,8 @@ async function joinByWhatsapp(
     });
   });
   // The number stays out of logs.
-  logger.info("WhatsApp launch notice stored", {city, alreadyJoined});
+  logger.info("WhatsApp launch notice stored", {city,
+    cityId: cityAttribution?.cityId ?? null, alreadyJoined, firstForCity});
   sendWaitlistJson(response, 200, {ok: true, alreadyJoined});
 }
 
@@ -704,9 +719,18 @@ export function createJoinWaitlistHandler(options: {
       return;
     }
 
+    const attribution = readCityAttribution(body);
+    if (attribution.kind === "invalid") {
+      sendWaitlistJson(response, 400, {error: attribution.error});
+      return;
+    }
+    const cityAttribution = attribution.kind === "attributed" ?
+      attribution.value : null;
+
     if (body.whatsapp !== undefined) {
       await joinByWhatsapp(request, response, body, {
-        city, submittedRole, marketingAnalytics, marketingAttribution,
+        city, cityAttribution, submittedRole, marketingAnalytics,
+        marketingAttribution,
       });
       return;
     }
@@ -812,12 +836,6 @@ export function createJoinWaitlistHandler(options: {
         const priorIntent = intentRef ? await transaction.get(intentRef) : null;
         const priorLead = existing.data()?.hostLead as
           {eventId: string; isNew: boolean} | undefined;
-        // Legacy Host enquiries predate receipts. Do not turn them into new
-        // acquisitions, even if a later member submission changed their role.
-        const legacyHost = intent && existing.exists && !priorLead ?
-          await transaction.get(admin.firestore()
-            .collection("salesInboundIntents")
-            .where("waitlistId", "==", waitlistRef.id).limit(1)) : null;
         const permission = consentId ? await transaction.get(admin.firestore()
           .collection(HOST_CONSENT_COLLECTION).doc(consentId)) : null;
         if (intent && intentRef) {
@@ -829,7 +847,7 @@ export function createJoinWaitlistHandler(options: {
           }
           hostLead = {
             eventId: priorLead?.eventId ?? proposedHostEventId,
-            isNew: !priorLead && !legacyHost?.size &&
+            isNew: !priorLead &&
               !["host", "both"].includes(existing.data()?.role),
           };
           const delivery = measurement && consentId ?
@@ -867,6 +885,7 @@ export function createJoinWaitlistHandler(options: {
           ...(phone ? {phone} : {}),
           ...(programme ? {programme, programmeApplication} : {}),
           city,
+          ...(cityAttribution ?? {}),
           role,
           instagram,
           source: "catchdates.com",

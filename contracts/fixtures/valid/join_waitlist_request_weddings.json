@@ -6,6 +6,8 @@
   "website": "",
   "programme": "weddings",
   "programmeApplication": {
+    "applicantRole": "A wedding planner",
+    "programmeKind": "A wedding",
     "planningCompany": "Meher Shah Weddings",
     "city": "Udaipur",
     "weddingDate": "2026-12-12",

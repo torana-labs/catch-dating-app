@@ -1,5 +1,7 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
+import {EVENT_ATTENDEE_INDEX, eventAttendeeIndexId} from
+  "../events/eventAttendeeProjection";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventParticipationDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -110,6 +112,9 @@ export async function deleteAccountEventParticipations(params: {
       const linked = await tx.get(db.collection("eventAttendees")
         .where("eventId", "==", eventId)
         .where("linkedUid", "==", uid).limit(3));
+      const indexRef = db.collection(EVENT_ATTENDEE_INDEX)
+        .doc(eventAttendeeIndexId(eventId, uid));
+      const indexSnap = await tx.get(indexRef);
       if (linked.docs.length > 2) {
         unavailable("Linked attendee sources need reconciliation.");
       }
@@ -179,8 +184,9 @@ export async function deleteAccountEventParticipations(params: {
         }
         for (const row of linked.docs) {
           tx.update(row.ref, {linkedUid: null, linkedAt: null,
-            updatedAt: now});
+            ...deletedBookingFields(row.data(), now), updatedAt: now});
         }
+        if (indexSnap.exists) tx.delete(indexRef);
         if (current && status !== "deleted") {
           tx.set(found!.ref, {status: "deleted", updatedAt: now,
             deletedAt: now}, {merge: true});
@@ -326,8 +332,10 @@ export async function deleteAccountEventParticipations(params: {
       for (const row of linked.docs) {
         tx.update(row.ref, {linkedUid: null, linkedAt: null,
           ...(catchRows.some((guest) => guest.id === row.id) ?
-            {status: "cancelled"} : {}), updatedAt: now});
+            {status: "cancelled"} : {}),
+          ...deletedBookingFields(row.data(), now), updatedAt: now});
       }
+      if (indexSnap.exists) tx.delete(indexRef);
       if (Object.keys(patch).length > 0) tx.update(eventRef, patch);
       if (current && status !== "deleted") {
         tx.set(found!.ref, {status: "deleted", updatedAt: now,
@@ -335,4 +343,21 @@ export async function deleteAccountEventParticipations(params: {
       }
     });
   }
+}
+
+/**
+ * A Catch booking row of a deleted account: cancelled, with the deletion on
+ * its booking facts. Host-supplied rows only lose the link.
+ * @param {FirebaseFirestore.DocumentData} row Linked roster row.
+ * @param {unknown} now Deletion time.
+ * @return {Record<string, unknown>} Extra update fields.
+ */
+function deletedBookingFields(
+  row: FirebaseFirestore.DocumentData,
+  now: unknown
+): Record<string, unknown> {
+  if (row.source !== "catchBooking") return {};
+  return {status: "cancelled", cancelledAt: row.cancelledAt ?? now,
+    preCheckInStatus: null,
+    ...(row.booking ? {"booking.deletedAt": now} : {})};
 }

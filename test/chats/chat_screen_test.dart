@@ -111,7 +111,7 @@ class FakeSuvbotRepository implements SuvbotRepository {
     ),
     SuvbotActionItem(
       id: 'matchTesterByPhone',
-      label: 'Match tester',
+      label: 'Mutual pick tester',
       description: 'Create a tester match.',
       icon: 'personAdd',
       requiresText: true,

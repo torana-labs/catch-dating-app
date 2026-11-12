@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import type {Firestore} from "firebase-admin/firestore";
@@ -140,7 +141,7 @@ function recipientOf(db: FakeFirestore) {
 
 function recordOf(db: FakeFirestore): CampaignDeliveryMessageDocument {
   const entries = [...db.docs.entries()]
-    .filter(([path]) => path.startsWith("campaignDeliveryMessages/"));
+    .filter(([path]) => path.startsWith(DELIVERY_MESSAGES + "/"));
   assert.equal(entries.length, 1);
   return entries[0][1] as unknown as CampaignDeliveryMessageDocument;
 }

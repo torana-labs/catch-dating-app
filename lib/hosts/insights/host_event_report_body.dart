@@ -9,8 +9,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The event report in board order: when it was and how it went, the four
-/// stats, the pairs who want to stay in touch, what guests said, the
-/// spotlight that brings the guests back to the next event, and the
+/// stats, the pairs who want to stay in touch, what guests said, the photos
+/// for guests, the spotlight that brings the guests back to the next event, and the
 /// downloads.
 class HostEventReportBody extends StatelessWidget {
   const HostEventReportBody({
@@ -20,6 +20,7 @@ class HostEventReportBody extends StatelessWidget {
     required this.onInviteAll,
     required this.onChoose,
     required this.onDownload,
+    this.photos,
   });
 
   final HostEventReportState state;
@@ -27,6 +28,10 @@ class HostEventReportBody extends StatelessWidget {
   final VoidCallback onInviteAll;
   final VoidCallback onChoose;
   final ValueChanged<HostEventReportDownload> onDownload;
+
+  /// The photos the host team shares with checked-in guests, after what
+  /// guests said; null leaves them out.
+  final Widget? photos;
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +138,7 @@ class HostEventReportBody extends StatelessWidget {
                 ),
             ],
           ),
+          ?photos,
           if (next != null && came != null && came > 0)
             CatchSurface(
               key: const ValueKey<String>('host-event-report-bring-back'),

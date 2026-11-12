@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -131,26 +130,6 @@ Widget profileSurfaceFactsSkeletonStates(BuildContext context) {
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: ProfileSurfaceFactsSkeleton(),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Review skeleton states',
-  type: CatchesProfileBodySkeleton,
-  path: '[P1 product surfaces]/Catches/Sections',
-)
-Widget catchesProfileReviewSkeletonStates(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'CatchesProfileBodySkeleton',
-    contractId: 'screen.catches.event.review_skeleton',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'loading deck',
-        child: WidgetbookCatchesDeviceFrame(
-          child: CatchesProfileBodySkeleton(),
         ),
       ),
     ],

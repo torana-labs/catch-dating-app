@@ -17,7 +17,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
@@ -139,14 +139,15 @@ void main() {
       },
     );
 
-    test('OrganizerMembership decodes club_membership_doc.json', () {
+    test('OrganizerFollow decodes organizer_follow_doc.json', () {
       final json = _loadFixture(
-        'organizer_membership_doc.json',
+        'organizer_follow_doc.json',
         injectIdField: 'id',
       );
-      final membership = OrganizerMembership.fromJson(json);
-      expect(membership.organizerId, isNotEmpty);
-      expect(membership.uid, isNotEmpty);
+      final follow = OrganizerFollow.fromJson(json);
+      expect(follow.organizerId, isNotEmpty);
+      expect(follow.uid, isNotEmpty);
+      expect(follow.status, OrganizerFollowStatus.active);
     });
 
     test('Match decodes match_doc.json', () {

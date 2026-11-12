@@ -9,7 +9,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {brand, brandConsistencyErrors} from "./index.mjs";
-import {leaves, rewriteSurface, surfacePaths} from "./managed.mjs";
+import {rewriteSurface, surfacePaths} from "./managed.mjs";
+import {LAUNCH_GATE_MODE, launchGateGaps, launchGateMessage, loadMarketCities} from "./launch_gate.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -23,11 +24,25 @@ const header = [
 
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\/]/gu, "\\$&");
 
+// Store links are null until an app is live on that store, so the generated
+// TypeScript types them as string | null rather than as the literal null.
+function renderTypedRecord(exportName, record) {
+  return `const record = ${JSON.stringify(record, null, 2)} as const;
+
+/** A store listing URL, or null while the app is not live on that store. */
+export type StoreLink = string | null;
+export type StoreLinks = {readonly ios: StoreLink; readonly android: StoreLink};
+type StoreRecord = Omit<typeof record.stores, "consumer" | "host"> &
+  {readonly consumer: StoreLinks; readonly host: StoreLinks};
+
+export const ${exportName}: Omit<typeof record, "stores"> & {readonly stores: StoreRecord} = record;`;
+}
+
 export function renderFunctionsModule(record = brand) {
   return `${header}
 /* eslint-disable max-len */
 
-export const BRAND = ${JSON.stringify(record, null, 2)} as const;
+${renderTypedRecord("BRAND", record)}
 
 /** An absolute URL on the public website. \`path\` starts with "/". */
 export function brandWebUrl(path: \`/\${string}\` = "/"): string {
@@ -44,7 +59,7 @@ export function renderWebsiteModule(record = brand) {
 // Website code imports the brand from here, never from @catch/brand: the
 // release smoke runs website modules where no package is installed.
 
-export const brand = ${JSON.stringify(record, null, 2)} as const;
+${renderTypedRecord("brand", record)}
 
 const tokenPattern = /\\{\\{\\s*brand\\.([A-Za-z0-9_.]+)\\s*\\}\\}/gu;
 
@@ -86,13 +101,20 @@ function nullableLeaves(record, prefix = "") {
   });
 }
 
+const storeLinkPath = /^stores\.(?:consumer|host)\.(?:ios|android)$/u;
+
 export function renderDartModule(record = brand) {
   // Matches dart format: a declaration over 80 columns breaks after "=".
   const fields = nullableLeaves(record).map(([keyPath, value]) => {
-    const declaration = value === null ? `  static const String? ${camel(keyPath)} =` : `  static const ${camel(keyPath)} =`;
+    // Store links keep String? when set, so null checks stay valid either way.
+    const nullable = value === null || storeLinkPath.test(keyPath);
+    const declaration = nullable ? `  static const String? ${camel(keyPath)} =` : `  static const ${camel(keyPath)} =`;
     const initializer = value === null ? "null" : dartString(value);
     const line = `${declaration} ${initializer};`;
-    return line.length <= 80 ? line : `${declaration}\n      ${initializer};`;
+    const rendered = line.length <= 80 ? line : `${declaration}\n      ${initializer};`;
+    // A set store link keeps String? on purpose (see above).
+    return nullable && value !== null ?
+      `  // ignore: unnecessary_nullable_for_final_variable_declarations\n${rendered}` : rendered;
   });
   return `${header}
 final class Brand {
@@ -114,9 +136,12 @@ export function outputs(record = brand) {
   ];
 }
 
-function main() {
+async function main() {
   const check = process.argv.includes("--check");
   const errors = brandConsistencyErrors();
+  const gate = launchGateMessage(launchGateGaps(brand, await loadMarketCities(repoRoot)));
+  if (gate && LAUNCH_GATE_MODE === "error") errors.push(gate);
+  else if (gate) console.warn(`warning: ${gate}`);
   if (errors.length > 0) {
     console.error(errors.join("\n"));
     process.exit(1);
@@ -131,7 +156,9 @@ function main() {
   }
   const applied = JSON.parse(fs.readFileSync(appliedPath, "utf8"));
   const current = Object.fromEntries(Object.entries(brand));
-  const unapplied = JSON.stringify(leaves(applied)) !== JSON.stringify(leaves(current));
+  // Compare whole records: a null slot (a store link) has no leaf but must
+  // still reach applied.json.
+  const unapplied = JSON.stringify(applied) !== JSON.stringify(current);
   if (unapplied && check) stale.push("packages/brand/applied.json (managed surfaces still carry the previous brand)");
   if (unapplied && !check) {
     const {surfaces} = JSON.parse(fs.readFileSync(managedPath, "utf8"));
@@ -156,4 +183,4 @@ function main() {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

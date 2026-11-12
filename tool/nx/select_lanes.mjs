@@ -3,6 +3,11 @@
 // stage 2). The planner still reads the change for everything else: the check
 // ids, generators and unowned-file refusal in its plan. If Nx cannot answer,
 // its selection stands and the run says so, because running more is safe.
+//
+// Until the shadow comparison is clean (#1554), Nx may only add lanes: a lane
+// the planner selected still runs when Nx misses it. On 12 Nov 2026, 15 of 30
+// shadow runs disagreed, and in two Nx skipped lanes the planner selected
+// (run 43244338235 dropped nine), so those PRs never ran them.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -32,7 +37,17 @@ export function nxLanes({base, head, mode, controlPlane = true}) {
   return compare({plannerLanes: [], nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, mode, changedFiles}).nxLanes;
 }
 
-/** A plan that runs the lanes Nx selected. App builds keep only the platforms still selected. */
+/**
+ * The lanes a run executes: every lane Nx selected, plus every lane the
+ * planner selected that Nx missed. Nx can widen the planner, never narrow it.
+ */
+export function unionLanes(plan, lanes) {
+  const planner = (plan.operations.ciTargets ?? []).filter((lane) => comparedLanes.includes(lane));
+  const selected = [...new Set([...lanes.filter((lane) => comparedLanes.includes(lane)), ...planner])].sort();
+  return {selected, restored: planner.filter((lane) => !lanes.includes(lane)).sort()};
+}
+
+/** A plan that runs the given lanes. App builds keep only the platforms still selected. */
 export function applyLanes(plan, lanes) {
   const selected = lanes.filter((lane) => comparedLanes.includes(lane)).sort();
   const built = Object.entries(buildPlatforms).filter(([lane]) => selected.includes(lane)).map(([, suffix]) => suffix);
@@ -51,12 +66,16 @@ function main(argv) {
   for (let index = 0; index < argv.length; index += 2) args[argv[index].slice(2)] = argv[index + 1];
   const plan = JSON.parse(fs.readFileSync(args.plan, "utf8"));
   if (!nxChooses(plan)) return;
-  let lanes;
+  let nxSelected;
   try {
-    lanes = nxLanes({base: args.base, head: args.head, mode: plan.mode});
+    nxSelected = nxLanes({base: args.base, head: args.head, mode: plan.mode});
   } catch (error) {
     console.log(`::warning::Nx could not choose lanes, so the planner's selection stands: ${error.message}`);
     return;
+  }
+  const {selected: lanes, restored} = unionLanes(plan, nxSelected);
+  if (restored.length > 0) {
+    console.log(`::warning::Nx missed lanes the planner selected, so they still run: ${restored.join(", ")}`);
   }
   const next = applyLanes(plan, lanes);
   fs.writeFileSync(args.plan, `${JSON.stringify(next, null, 2)}\n`);
@@ -69,7 +88,7 @@ function main(argv) {
     `build_targets=${JSON.stringify(next.operations.buildTargets)}`,
   ];
   fs.appendFileSync(args["github-output"], `${outputs.join("\n")}\n`);
-  console.log(`Nx lanes: ${lanes.join(", ") || "none"} (planner: ${plan.operations.ciTargets.join(", ") || "none"})`);
+  console.log(`Lanes: ${lanes.join(", ") || "none"} (Nx: ${nxSelected.join(", ") || "none"}; planner: ${plan.operations.ciTargets.join(", ") || "none"})`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

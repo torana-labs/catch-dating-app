@@ -35,7 +35,7 @@ const storySupportInbox: SupportInboxController = {
       displayName: "Rhea Kapoor", audience: "guest", subject: "I paid but have no ticket", status: "open", ownerUid: null,
       waitingSinceMillis: Date.parse("2026-11-01T10:00:00Z"), lastMessageAtMillis: Date.parse("2026-11-01T10:00:00Z"),
       lastMessagePreview: "I paid but have no ticket", linkCount: 1, contactAddress: "+919800001234", uid: "user_204",
-      organizerId: null, links: [{kind: "payment", path: "publicEventPayments/sample-pay-rhea", label: "₹1,500 captured, no booking"}]},
+      organizerId: null, links: [{kind: "payment", path: "guestPayments/sample-pay-rhea", label: "₹1,500 captured, no booking"}]},
     messages: [{messageId: "m1", direction: "inbound", text: "Hi, I paid ₹1,500 for Takeoff on Saturday but I have no ticket.",
       authorUid: null, atMillis: Date.parse("2026-11-01T10:00:00Z"), deliveryState: "received"}],
   },

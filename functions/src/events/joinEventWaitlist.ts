@@ -36,6 +36,8 @@ import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent, requireEventTimeRange} from
   "./configuredEvent";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {
   cohortIdForUser,
   eventPolicyFromEvent,
@@ -129,7 +131,7 @@ export async function joinEventWaitlistHandler(
     }
     await assertAccountMayBook(tx, db, userId,
       eventSnap.data()?.organizerId ?? null, Date.now());
-    await readSeatMigrationWriterFence({db, tx, eventId});
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const user = userSnap.data() as UserProfileDocument;
@@ -196,6 +198,9 @@ export async function joinEventWaitlistHandler(
       }),
     });
     const cohortAtSignup = cohortIdForUser(user);
+    // Every read precedes the schedule claim, which writes immediately.
+    const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
+      uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
@@ -211,7 +216,7 @@ export async function joinEventWaitlistHandler(
         cohortAtSignup
       ),
     });
-    tx.set(participationRef, {
+    const waitlisting = {
       ...eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
@@ -222,14 +227,15 @@ export async function joinEventWaitlistHandler(
         cohortAtSignup,
       }),
       ...inviteAttributionWriteFields(inviteAttribution),
-    }, {merge: true});
+    };
+    tx.set(participationRef, waitlisting, {merge: true});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,
       attribution: inviteAttribution,
       field: "requestCount",
     });
-    tx.set(participationRef, {
+    const requestState = {
       waitlistOfferStatus: admin.firestore.FieldValue.delete(),
       waitlistOfferedAt: admin.firestore.FieldValue.delete(),
       waitlistOfferExpiresAt: admin.firestore.FieldValue.delete(),
@@ -244,7 +250,12 @@ export async function joinEventWaitlistHandler(
         hostApprovalDecidedAt: admin.firestore.FieldValue.delete(),
         hostApprovalDecidedBy: admin.firestore.FieldValue.delete(),
       }),
-    }, {merge: true});
+    };
+    tx.set(participationRef, requestState, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationAfterPatch(
+        participationSnap.data(), waitlisting), requestState),
+      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
   });
 
   return {waitlisted: true};
@@ -301,7 +312,7 @@ export async function leaveEventWaitlistHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    await readSeatMigrationWriterFence({db, tx, eventId});
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const existingParticipation = participationSnap.exists ?
@@ -319,6 +330,8 @@ export async function leaveEventWaitlistHandler(
         ?.cohortAtSignup;
     const currentWaitlistedCount =
       event.waitlistedCount ?? 1;
+    const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
+      uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
     tx.update(eventRef, {
       waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
       ...(cohortAtSignup ?
@@ -336,13 +349,17 @@ export async function leaveEventWaitlistHandler(
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: scheduledEvent.endTime.toMillis(),
     });
-    tx.set(participationRef, eventParticipationPatch({
+    const leaving = eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
       organizerId: event.organizerId,
       uid: userId,
       status: "cancelled",
-    }), {merge: true});
+    });
+    tx.set(participationRef, leaving, {merge: true});
+    writeCatchBookingRoster({db, tx, slot: rosterSlot,
+      booking: participationAfterPatch(participationSnap.data(), leaving),
+      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
     const offerStatus = offerSnap.data()?.status;
     if (offerStatus === "active" || offerStatus === "accepted") {
       tx.set(offerRef, {

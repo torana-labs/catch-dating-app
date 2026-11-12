@@ -89,11 +89,12 @@ void main() {
             image.dispose();
           }
         });
-        expect(
-          pixels!.buffer.asUint8List(0, 4),
-          [0, 255, 0, 255],
-          reason: 'Image treatment must not tint the surrounding page.',
-        );
+        expect(pixels!.buffer.asUint8List(0, 4), [
+          0,
+          255,
+          0,
+          255,
+        ], reason: 'Image treatment must not tint the surrounding page.');
         expect(tester.takeException(), isNull);
       });
     }

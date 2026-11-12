@@ -50,15 +50,15 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostEventsScreen` | `lib/hosts/events/presentation/host_events_screen.dart` | Actions: retry_host_home. |
-| `HostEventsRouteScaffold` | `lib/hosts/events/presentation/host_events_screen.dart` | Actions: create_organizer, manage_event. |
-| `runHostEventEntryFlow` | `lib/hosts/events/presentation/host_event_entry_flow.dart` | Actions: create_event, repeat_event. |
-| `HostEventsOrganizerCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Actions: retry_host_events, open_program. |
+| `HostEventsTabScreen` | `lib/hosts/events/events_screen.dart` | Actions: retry_host_home, create_organizer, create_event (New and saved drafts), manage_event. |
+| `HostEventsBody` | `lib/hosts/events/events_body.dart` | Upcoming, drafts and past tabs. Actions: retry_host_events, open_program. |
+| `HostEventWorkspaceScreen` | `lib/hosts/events/event_workspace_screen.dart` | Actions: repeat_event. |
+| `hostEventsController` | `lib/hosts/events/events_controller.dart` | Events, drafts, history and programmes for one organizer. Actions: retry_host_events (retryHostEventsReads). |
 | `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Actions: load_more_schedule, load_more_history, retry_event_history. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 | `HostProgrammeCreateScreen` | `lib/hosts/programmes/planner/programme_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
 | `ProgramEventsController` | `lib/programs/presentation/program_events_controller.dart` | Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences. |
-| `ProgramEventsRow` | `lib/programs/presentation/program_events_row.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
+| `HostEventsProgrammeTile` | `lib/contexts/programmes/parts/host_events_programme_tile.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
 
 ## Shared dependencies
 
@@ -78,7 +78,8 @@ Typed handoffs:
 
 ## Focused tests
 
-- `test/hosts/host_events_screen_state_test.dart`
+- `test/hosts/events/events_bodies_test.dart`
+- `test/hosts/events/events_controllers_test.dart`
 - `test/hosts/host_events_timeline_controller_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 - `test/programs/program_create_controller_test.dart`

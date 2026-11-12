@@ -196,9 +196,6 @@ export {
   submitEventRehearsalGuestAction,
   updateEventRehearsalSetup,
 } from "./eventRehearsal/handlers";
-export {
-  onEventParticipationRosterProjected,
-} from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
 export {createEventVenueSession} from "./events/venueSessions";
 export {
@@ -339,11 +336,6 @@ export {
   retryOrganizerAutomations,
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
-export {
-  getParticipantOrganizerApplicationForm,
-  revokeParticipantOrganizerDataGrant,
-  submitParticipantOrganizerApplication,
-} from "./organizers/participantOrganizerApplications";
 export {
   mergeOrganizerContacts,
   unmergeOrganizerContacts,
@@ -863,6 +855,14 @@ export {
 } from "./programs/hampers";
 export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
 export {
+  addEventHostPhoto,
+  deleteEventHostPhoto,
+  listEventHostPhotos,
+} from "./events/eventHostPhotos";
+export {
+  cleanUpStagedHostPhotosDaily,
+} from "./events/eventHostPhotoStagingCleanup";
+export {
   getProgramAssistantSettings,
   getProgramWhatsappThread,
   listProgramWhatsappCannedReplies,
@@ -1158,8 +1158,7 @@ export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,
-  onOrganizerGrowthPublicPaymentWritten,
-  onOrganizerGrowthOfferPaymentWritten,
+  onOrganizerGrowthGuestPaymentWritten,
   onOrganizerGrowthNativePaymentWritten,
 } from "./growth/organizerGrowthTriggers";
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
@@ -1184,3 +1183,4 @@ export {adminGetFinanceMonth} from "./money/financeMonth";
 export {adminManagePaymentIssues} from "./money/paymentIssues";
 export {adminGetGrowth} from "./growth/adminGetGrowth";
 export {adminGetMarketplace} from "./marketplace/adminGetMarketplace";
+export {adminGetCityInterest} from "./cityInterest/adminGetCityInterest";

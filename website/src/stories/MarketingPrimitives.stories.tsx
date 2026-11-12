@@ -46,11 +46,14 @@ export const MarketingConsentBannerShellStory: Story = {
   },
   render: () => (
     <MarketingConsentBannerShell
+      summary="Choose essential only, site analytics, or analytics and marketing measurement for Catch."
+      detailsLabel="Details"
       body="Catch uses essential cookies and privacy-safe analytics to understand which public routes are useful."
       actions={(
         <>
-          <Button size="small" type="button">Accept</Button>
           <Button size="small" type="button" variant="ghost">Essential only</Button>
+          <Button size="small" type="button" variant="ghost">Allow analytics</Button>
+          <Button size="small" type="button" variant="ghost">Allow analytics and marketing</Button>
         </>
       )}
     />

@@ -16,6 +16,7 @@ import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/dialogs/confirm_danger_dialog.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
@@ -150,7 +151,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     unawaited(
       _launchExternalLink(
         _SettingsExternalLinkAction.hostApp,
-        () => ref.read(externalLinkControllerProvider).openHostApp(),
+        () async => ref
+            .read(externalLinkControllerProvider)
+            .openHostApp(brand: await ref.read(liveBrandProvider.future)),
       ),
     );
   }

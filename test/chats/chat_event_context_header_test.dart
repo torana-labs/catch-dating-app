@@ -20,7 +20,7 @@ void main() {
       ),
     );
 
-    expect(find.text('MATCHED AFTER DINNER'), findsOneWidget);
+    expect(find.text('MET AT DINNER'), findsOneWidget);
     expect(find.text('Friday Evening Dinner · Fri 29 May'), findsOneWidget);
     final contextTitle = tester.widget<Text>(
       find.text('Friday Evening Dinner · Fri 29 May'),
@@ -40,7 +40,7 @@ void main() {
       ),
     );
 
-    expect(find.text('MATCHED THROUGH CATCH'), findsOneWidget);
+    expect(find.text('MET THROUGH CATCH'), findsOneWidget);
     expect(find.text('the same event'), findsOneWidget);
   });
 
@@ -60,7 +60,7 @@ void main() {
     );
 
     expect(find.text('EVENT QUESTION'), findsOneWidget);
-    expect(find.text('MATCHED AFTER DINNER'), findsNothing);
+    expect(find.text('MET AT DINNER'), findsNothing);
   });
 
   test(

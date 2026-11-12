@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {FieldPath, Timestamp} from "firebase-admin/firestore";
@@ -49,7 +50,8 @@ export async function listOrganizerFormPaymentsHandler(
     data.organizerId, data.formId, [...data.statuses].sort(),
   ])).digest("hex");
   const cursor = decodeCursor(data.cursor, scope);
-  let query: FirebaseFirestore.Query = db.collection("organizerFormPayments")
+  let query: FirebaseFirestore.Query = db.collection(GUEST_PAYMENTS)
+    .where("purpose", "==", "form")
     .where("organizerId", "==", data.organizerId)
     .where("formId", "==", data.formId)
     .orderBy("createdAt", "desc")
@@ -95,7 +97,7 @@ export async function readResponsePayment(db: FirebaseFirestore.Firestore,
   responseId: string, response: Response):
   Promise<Result["items"][number] | null> {
   const id = formPaymentId(response.draftId);
-  const snap = await db.collection("organizerFormPayments").doc(id).get();
+  const snap = await db.collection(GUEST_PAYMENTS).doc(id).get();
   if (!snap.exists) return null;
   const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
   if (payment.organizerId !== response.organizerId ||

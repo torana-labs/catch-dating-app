@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.3.0
-updated: 2026-11-08
+version: 3.3.1
+updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -326,10 +326,19 @@ Main pushes plan from the push's `before` commit. Harness, Tools
 preflight/execution and Flutter test selection use the union of every path
 touched in that committed history, including reversions, merge-parent changes
 and transient removed files. Current unowned paths still fail; unowned
-transient history broadens validation to the existing nightly/full mode. A
-cancelled older main run leaves no gap to cover: the merge queue already
-validated each of its commits. Pull requests and nightly runs retain their
-existing validation flow.
+transient history broadens validation to the existing nightly/full mode.
+
+A newer merge never cancels a main push run that has started (owner decision,
+12 Nov 2026). Main runs share one concurrency group without
+`cancel-in-progress`, so GitHub keeps the running run and one pending run, and
+a newer merge replaces only the pending one. A replaced run never starts, so
+the run that replaced it plans from the commit of the newest earlier main push
+run that ran, not from its own `before` commit
+(`tool/ci/main_push_base.mjs`). Every commit on main is then in some finished
+run's committed window. When that earlier run cannot be found, or its commit
+is not an ancestor of the head, the run validates everything in the nightly
+full mode. Pull requests and nightly runs retain their existing validation
+flow.
 
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
@@ -1317,7 +1326,9 @@ How a run works:
   `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
   A run whose commit doesn't contain the recorded one deploys nothing, so a
   re-run of an older commit never replaces a newer one. A failed run leaves the
-  record unchanged.
+  record unchanged. GitHub marks a record `inactive` seconds after its
+  `success` status, so a record counts as delivered when any of its statuses
+  is `success`. The record's payload holds each codebase's content hash.
 - A run deploys its own exact commit. The job builds Functions, materializes
   non-secret parameters from the environment's GitHub variables, and packages
   Functions as Firebase codebases with
@@ -1353,21 +1364,46 @@ How a run works:
   so only the failed Functions rebuild.
 - Firebase predeploy test hooks are skipped because required CI already ran
   them on that commit.
+- Before any change, the run summary lists the codebases this deploy changes
+  against the recorded hashes, with the number of Functions in each. Nothing
+  is refused for size.
+
+What a deploy costs (measured 13 Nov 2026):
+
+- Google builds once per changed codebase: the first Function of a codebase
+  runs a Cloud Build and the rest reuse its image. The full redeploy of 7 Nov
+  2026 (about 800 Functions per environment) ran 18 builds in prod and 22 in
+  dev. Before 2 Nov 2026 every Function had its own build, which is what made
+  October's frequent deploys expensive.
+- Updating a Function (a new Cloud Run revision) costs nothing. A build is
+  about a build-minute. So a deploy costs at most one build per codebase in
+  `functions/deploy-codebases.json`, about a dozen, whatever it updates.
+- More, smaller codebases would update fewer Functions per change but run more
+  builds. Replaying 30 Oct–12 Nov 2026 against the current packaging, a daily
+  deploy ran a median of 11 builds; 80 grouped codebases would have run 36, and
+  one codebase per Function module 95. Keep the codebase count low.
 
 When it runs:
 
-- **Dev:** every merge to `main` that touches backend inputs deploys to dev
-  automatically.
-- **Prod:** deploys the same commit automatically once dev succeeds.
+- **Daily, dev then prod:** at 03:00 IST the workflow deploys the newest `main`
+  commit whose CI run succeeded (not `main`'s head, which may still be under
+  test) to dev, then to prod once dev succeeds. It skips when prod already has
+  that commit. It also skips until prod's last delivered deploy recorded
+  codebase hashes: records written before 14 Nov 2026 have none, so the first
+  deploy after that must be a manual `full` run, dev then prod.
+- **A merge deploys nothing by itself.** It ships in the next daily run, or
+  sooner by a manual run.
 - **Staging:** deploys only when someone runs the workflow for it. Nothing uses it
   day to day, and it is missing secrets (#1423).
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Skipping intermediate commits loses nothing,
   because the CLI compares against what is live.
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
-  or `staging`. Tick `full` to redeploy every Function even when unchanged, for
-  example after a manual deploy you are unsure about. It names every codebase,
-  which turns off the CLI's skip.
+  or `staging`. A manual run deploys only the environment it names, from the
+  commit it starts on; run dev first, then prod. Tick `full` to redeploy every
+  Function even when unchanged, for example after a manual deploy you are
+  unsure about or when the record has no codebase hashes. It names every
+  codebase, which turns off the CLI's skip.
 - **Configuration changes:** a changed GitHub variable reaches the codebases
   that read it on the next run. To apply it now without deploying the rest of
   the commit, run the workflow with `functions` set to the comma-separated
@@ -1916,14 +1952,12 @@ fails if the site would fall back to dev Firebase config, sample admin mode, or
 missing App Check. The packaged Firebase config contains one production target,
 binds the known production Firebase project and surface-specific Hosting site,
 points at the packaged site bytes, and has no `predeploy` or `postdeploy`
-lifecycle hook. Marketing
-production builds also require an
-explicit store-link contract. `VITE_STORE_LINKS_MODE=prelaunch` requires both
-store URLs to remain empty and preserves the honest coming-soon/waitlist CTA;
-`live` requires validated HTTPS `VITE_APP_STORE_URL` and
-`VITE_PLAY_STORE_URL` product links on `apps.apple.com` and `play.google.com`.
-The automatic workflow defaults an unset mode to `prelaunch`, so the website
-can deploy before the mobile listings exist without publishing fake links.
+lifecycle hook. Store links are not build configuration: the website reads
+them from `packages/brand/brand.json`, whose schema validates the App Store and
+Google Play URL shapes, and a store without a link shows a "Coming soon" chip.
+The brand launch gate (`packages/brand/launch_gate.mjs`) reports a live market
+city without both Consumer links. The former `VITE_STORE_LINKS_MODE` and
+`VITE_*_STORE_URL` GitHub variables are retired and no workflow reads them.
 
 All three Hosting workflows use the approval-free `prod-hosting` GitHub
 Environment and deploy automatically after their validation job succeeds on a
@@ -1973,10 +2007,9 @@ any of these console or DNS gates.
 marketing, Host, and admin workflows own their production Hosting builds and the
 `prod-hosting` environment described above. `VITE_GTM_ID` remains optional
 until the production GTM container exists; paid-acquisition readiness still
-requires setting it and validating consent-aware tags. For marketing Hosting,
-an absent environment-level `VITE_STORE_LINKS_MODE` defaults to `prelaunch`;
-cut over by setting it to `live` only after setting both official product URLs
-in the same GitHub Environment.
+requires setting it and validating consent-aware tags. Marketing store links
+go live through a `brand.json` edit and a normal website release, not a GitHub
+Environment variable.
 
 Hosting retry is resume, not generic rollback. An empty manual dispatch remains
 validation-only. Exact recovery requires the failed producing run id/attempt,
@@ -2021,6 +2054,15 @@ on main and not older than the live release (`deployed/prod-website`). Both
 recheck this right before they sign in, and promotion rechecks it before
 every production step. A train's commit that a newer release has overtaken is
 refused, so live only moves forward.
+
+**Sprint floor (owner decision, 11 Nov 2026).** While Required CI leaves the
+tools, operations, docs-policy and app-builds lanes out of its needs, a failure
+in one of those lanes fails the whole CI run even though Required CI passed.
+The source's CI therefore counts as successful when the run succeeded, or when
+its `Required CI` job succeeded and every job that did not succeed belongs to
+one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
+validation, exact-source captures, the main lineage and the live-release order
+are checked exactly as before. Revisit this when the floor ends.
 
 Recovery:
 
@@ -2951,7 +2993,7 @@ emulator-backed or gated behind an explicit device/live-service test target.
 | --- | --- | --- | --- |
 | App Check | Backend errors map App Check failures; app bootstrap activates App Check in `main.dart`. | Prove enforced App Check accepts the app's token and rejects missing/invalid tokens for Auth, Firestore, Storage, and callable Functions. | Firebase dev/staging project with App Check enforcement enabled plus registered debug token or release attestation. |
 | Real phone auth | App-shell integration covers phone entry, OTP continuation, and repository calls with a fake auth repository. | Complete a real OTP send and sign-in against Firebase Auth. | Physical iOS/Android device or Firebase Auth emulator; use a Firebase test phone number for repeatability. |
-| Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}.fcmToken`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
+| Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}/pushInstallations/{installationId}`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
 | Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
 | Real map rendering | Create-event integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. TestFlight iOS Maps behavior is verified through App Store Connect/Xcode Cloud TestFlight proof as of 2026-05-21. | Repeat real map tile/marker proof when Maps key injection, bundle IDs, or store distribution settings change; verify Android separately before Play release. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
 | Razorpay checkout UI | App-shell integration covers paid booking handoff and confirmation with a fake payment repository; payment repository tests cover typed Razorpay success/error callbacks and callable verification contract. | Open the native Razorpay checkout sheet, complete/cancel a test payment, and verify post-payment booking state. | iOS/Android device or simulator supported by `razorpay_flutter`, with Razorpay test keys and callable Functions. |

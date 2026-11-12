@@ -26,8 +26,7 @@ type Db = FirebaseFirestore.Firestore;
 
 // Collections whose rows are one WhatsApp message each, by createdAt millis.
 const whatsappDispatchCollections = ["eventAssistanceWhatsappDispatches",
-  "automationWhatsappDispatches", "campaignWhatsappDispatches",
-  "programWhatsappDispatches"];
+  "whatsappDispatches"];
 
 /**
  * WhatsApp in one month: messages dispatched, and the cost reserved for the

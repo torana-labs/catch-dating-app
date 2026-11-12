@@ -72,6 +72,55 @@ void main() {
     }
     output.deleteSync();
 
+    // Unframed devices pass the native screen through, pixel for pixel.
+    for (final (device, width, height) in [
+      ('generic-tablet', 2388, 1668),
+      ('desktop-browser', 2880, 1800),
+    ]) {
+      final screen = img.Image(width: width, height: height, numChannels: 4);
+      screen.setPixelRgba(0, 0, 255, 0, 0, 255);
+      screen.setPixelRgba(width - 1, height - 1, 0, 0, 255, 255);
+      input.writeAsBytesSync(img.encodePng(screen));
+      frame.main([
+        '--input',
+        input.path,
+        '--output',
+        output.path,
+        '--device',
+        device,
+      ]);
+      if (exitCode != 0 || !output.existsSync()) {
+        throw StateError('$device: a native screen must pass through.');
+      }
+      final passed = img.decodePng(output.readAsBytesSync())!;
+      if (passed.width != width || passed.height != height) {
+        throw StateError('$device: an unframed screen must keep its size.');
+      }
+      final first = passed.getPixel(0, 0);
+      final last = passed.getPixel(width - 1, height - 1);
+      if (first.r != 255 || first.b != 0 || last.r != 0 || last.b != 255) {
+        throw StateError('$device: unframed pixels changed.');
+      }
+      output.deleteSync();
+
+      // A phone-sized screen is not a tablet or desktop screen.
+      input.writeAsBytesSync(
+        img.encodePng(img.Image(width: 804, height: 1748)),
+      );
+      frame.main([
+        '--input',
+        input.path,
+        '--output',
+        output.path,
+        '--device',
+        device,
+      ]);
+      if (exitCode != 65 || output.existsSync()) {
+        throw StateError('$device: a wrongly sized screen must fail.');
+      }
+      exitCode = 0;
+    }
+
     input.writeAsBytesSync(img.encodePng(img.Image(width: 402, height: 874)));
     frame.main(['--input', input.path, '--output', output.path]);
     if (exitCode != 65 || output.existsSync()) {
@@ -79,8 +128,8 @@ void main() {
     }
     exitCode = 0;
     stdout.writeln(
-      'Native framing dimensions, pixel preservation, generic bezel and '
-      'rejection passed.',
+      'Native framing dimensions, pixel preservation, generic bezel, unframed '
+      'pass-through and rejection passed.',
     );
   } finally {
     directory.deleteSync(recursive: true);

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
@@ -16,7 +17,8 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
 
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup, withStoredEventPolicy} from
+  "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -286,7 +288,7 @@ function organizer(overrides: FakeData = {}): FakeData {
 }
 
 function event(overrides: FakeData = {}): FakeData {
-  return {
+  return withStoredEventPolicy({
     ...publishedEventSetup(),
     eventCityId: "in-mh-mumbai",
     eventMarketId: "in-mh-mumbai",
@@ -320,7 +322,7 @@ function event(overrides: FakeData = {}): FakeData {
     cohortCounts: {},
     waitlistedCohortCounts: {},
     ...overrides,
-  };
+  });
 }
 
 function uploadedEventPhoto(id: string, position: number): FakeData {
@@ -1098,9 +1100,12 @@ test("createEventHandler notifies active club members about a new event",
         uid: "runner-3",
         status: "left",
       },
-      "users/runner-1": {fcmToken: "token-1", prefsOrganizerUpdates: true},
-      "users/runner-2": {fcmToken: "token-2", prefsOrganizerUpdates: true},
-      "users/runner-3": {fcmToken: "token-3", prefsOrganizerUpdates: true},
+      "users/runner-1": {prefsOrganizerUpdates: true},
+      ...guestInstallation("runner-1", "token-1"),
+      "users/runner-2": {prefsOrganizerUpdates: true},
+      ...guestInstallation("runner-2", "token-2"),
+      "users/runner-3": {prefsOrganizerUpdates: true},
+      ...guestInstallation("runner-3", "token-3"),
     });
 
     await createEventHandler(request("host-1", payload()), h.deps);
@@ -1363,7 +1368,8 @@ test("full form saves can change copy with guests when schedule is unchanged",
       "events/event-1": original,
       "eventParticipations/event-1_runner-1": {eventId: "event-1",
         organizerId: "club-1", uid: "runner-1", status: "signedUp"},
-      "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true}});
+      "users/runner-1": {prefsRunStatusUpdates: true},
+      ...guestInstallation("runner-1", "token-1")});
     await updateEventHandler(request("host-1", {eventId: "event-1",
       expectedSetupRevision: 4, fields: {description: "Bring water.",
         name: original.name,
@@ -1516,9 +1522,12 @@ test("updateEventHandler notifies participants for location changes",
         uid: "runner-3",
         status: "cancelled",
       },
-      "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true},
-      "users/runner-2": {fcmToken: "token-2", prefsRunStatusUpdates: false},
-      "users/runner-3": {fcmToken: "token-3", prefsRunStatusUpdates: true},
+      "users/runner-1": {prefsRunStatusUpdates: true},
+      ...guestInstallation("runner-1", "token-1"),
+      "users/runner-2": {prefsRunStatusUpdates: false},
+      ...guestInstallation("runner-2", "token-2"),
+      "users/runner-3": {prefsRunStatusUpdates: true},
+      ...guestInstallation("runner-3", "token-3"),
     });
 
     await updateEventHandler(
@@ -1619,7 +1628,8 @@ test("updateEventHandler skips participant notifications for copy-only edits",
         uid: "runner-1",
         status: "signedUp",
       },
-      "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true},
+      "users/runner-1": {prefsRunStatusUpdates: true},
+      ...guestInstallation("runner-1", "token-1"),
     });
 
     await updateEventHandler(
@@ -1684,8 +1694,10 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
         uid: "runner-2",
         status: "waitlisted",
       },
-      "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true},
-      "users/runner-2": {fcmToken: "token-2", prefsRunStatusUpdates: false},
+      "users/runner-1": {prefsRunStatusUpdates: true},
+      ...guestInstallation("runner-1", "token-1"),
+      "users/runner-2": {prefsRunStatusUpdates: false},
+      ...guestInstallation("runner-2", "token-2"),
     });
 
     const result = await cancelEventHandler(

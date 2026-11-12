@@ -1,4 +1,4 @@
-import {activeMarket} from "@content/markets";
+import {websiteCities} from "@content/markets";
 import {cityPlansFromListings} from "../features/home/cityPlansFromListings";
 import {homeCatalogFromPlans, requestedHomeCity} from "../features/home/homeCatalog";
 import {organizerDirectoryDestination, retiredMarketingDestination} from "./retiredMarketingRoutes";
@@ -42,11 +42,12 @@ import {eventPageFromListing} from "../features/events/eventPageFromListing";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
-import {PageShell, SiteAccountActionProvider} from "../shared/site";
-import {SiteAccountAction} from "../features/account/SignInSheet";
+import {PageShell} from "../shared/site";
+import {SiteAccountProvider} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
+import {marketingCaptures} from "./marketingCaptures";
 import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
 
 // Distinct compiled entries let a deliberate, bounded retry bypass a browser's
@@ -103,6 +104,9 @@ const ClaimPage = route(async () => ({
 const ExplorePage = route(async () => ({
   default: (await import("../features/home/ExplorePage")).ExplorePage,
 }), "../features/home/ExplorePage", "ExplorePage");
+const CitiesPage = route(async () => ({
+  default: (await import("../features/home/CitiesPage")).CitiesPage,
+}), "../features/home/CitiesPage", "CitiesPage");
 const HomePage = route(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
 }), "../features/home/HomePage", "HomePage");
@@ -190,9 +194,9 @@ function App() {
       <PendingRequestProvider>
         <CustomFormDomainGate>
           <PublicEventListingsProvider>
-            <SiteAccountActionProvider value={<SiteAccountAction />}>
+            <SiteAccountProvider>
               <MarketingRouteShell />
-            </SiteAccountActionProvider>
+            </SiteAccountProvider>
           </PublicEventListingsProvider>
         </CustomFormDomainGate>
       </PendingRequestProvider>
@@ -228,8 +232,8 @@ function CanonicalMarketingRouteShell() {
   // The static build has no server, so the homepage builds its cities from the live catalog.
   const homeCatalog = useMemo(() => {
     const now = Date.now();
-    return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((city) =>
-      cityPlansFromListings(listings, city, activeMarket.cities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
+    return homeCatalogFromPlans(websiteCities, websiteCities.map((city) =>
+      cityPlansFromListings(listings, city, websiteCities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
   }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" || page === "programme_link" ? page :
@@ -258,24 +262,25 @@ function CanonicalMarketingRouteShell() {
         <Routes>
           <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
           <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
-          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage />} />
+          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage captures={marketingCaptures} />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
             element={<ExplorePage catalog={homeCatalog} />} />
+          <Route path={marketingRoutePaths.cities} element={<CitiesPage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage catalog={homeCatalog} />}
+            element={<HomePage captures={marketingCaptures} catalog={homeCatalog} />}
           />
           <Route
             path={marketingRoutePaths.host}
-            element={<HostPage />}
+            element={<HostPage captures={marketingCaptures} />}
           />
           <Route
             path={marketingRoutePaths.organizer_search}
             element={<Navigate replace to={organizerDirectoryDestination(new URLSearchParams(location.search))} />}
           />
-          {activeMarket.cities.map((city) => (
+          {websiteCities.map((city) => (
             <Route key={city.slug} path={`/${city.slug}/`} element={<ExplorePage catalog={homeCatalog} />} />
           ))}
           <Route

@@ -461,18 +461,6 @@ abstract final class CatchOpacity {
   /// Event Success warning/issue border.
   static const double eventSuccessWarningBorder = 0.28;
 
-  /// Event recap hero kicker on fixed dark surfaces.
-  static const double eventRecapHeroKicker = 0.68;
-
-  /// Event recap hero metadata on fixed dark surfaces.
-  static const double eventRecapHeroMeta = 0.76;
-
-  /// Event recap hero stat label on fixed dark surfaces.
-  static const double eventRecapHeroStatLabel = 0.56;
-
-  /// Event recap roster-tile name scrim.
-  static const double eventRecapTileScrim = 0.74;
-
   /// Flagship profile hero scrim stops (design-system ProfileHero, at
   /// 0/45/78/100% → 0.14 / 0 / 0.34 / 0.74). Legible name/meta without crushing
   /// the portrait.

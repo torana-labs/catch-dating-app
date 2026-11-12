@@ -191,22 +191,6 @@
       ],
       "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
     },
-    "screen.catches.event": {
-      "owners": [
-        {
-          "routes": [
-            "swipeEventScreen"
-          ],
-          "file": "lib/swipes/presentation/swipe_screen.dart",
-          "symbol": "_SwipeScreenState",
-          "family": "immersive",
-          "expression": "CatchScaffold.workspace",
-          "bodyGeometry": "full-bleed",
-          "topEdge": "body-owned"
-        }
-      ],
-      "reason": "The event deck is an intentional full-bleed immersive route."
-    },
     "screen.matches.list": {
       "owners": [
         {
@@ -846,12 +830,12 @@
           "file": "lib/swipes/presentation/event_recap_screen.dart",
           "symbol": "_EventRecapScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         }
       ],
-      "reason": "Event Recap is a pushed route with canonical route chrome."
+      "reason": "The after-event screen is a pushed route that draws its own moment top bar in CatchScreen."
     },
     "screen.host.club.create": {
       "owners": [
@@ -1701,6 +1685,22 @@
       ],
       "reason": "System destination under a zero-drawing host root: the screen takes no registry record or Widgetbook case; its typed layout owner lives here."
     },
+    "hostProgramsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramsScreen"
+          ],
+          "file": "lib/hosts/programmes/planner/programmes_home_screen.dart",
+          "symbol": "HostProgrammesHomeScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The organizer's programmes home, pushed from Events; a link without an organizer still redirects to Events. Its typed layout owner lives here."
+    },
     "hostWorkAttentionScreen": {
       "owners": [
         {
@@ -1708,7 +1708,7 @@
             "hostWorkAttentionScreen"
           ],
           "file": "lib/hosts/programmes/staff/staff_alerts_screen.dart",
-          "symbol": "StaffAlertsScreen",
+          "symbol": "_StaffAlertsScreenState",
           "family": "pushed-route",
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
@@ -1795,6 +1795,19 @@
         }
       ],
       "reason": "The root-navigator match celebration delegates to the canonical standalone celebration surface."
+    },
+    "EventHostPhotoViewerScreen": {
+      "owners": [
+        {
+          "file": "lib/swipes/presentation/event_host_photo_viewer_screen.dart",
+          "symbol": "_EventHostPhotoViewerScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The after-event screen pushes the host's photos full screen on night; the viewer is a CatchScreen with a tool top bar and a non-scrolling paged body."
     },
     "EventJoinedCelebrationScreen": {
       "owners": [
@@ -1939,6 +1952,19 @@
       ],
       "reason": "The court board pushes its setup as a system pushed screen."
     },
+    "HostFormatsCrawlScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_crawl_screen.dart",
+          "symbol": "_HostFormatsCrawlScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the crawl board as a system pushed screen."
+    },
     "HostFormatsMixScreen": {
       "owners": [
         {
@@ -1951,6 +1977,19 @@
         }
       ],
       "reason": "The live console pushes the mix board as a system pushed screen."
+    },
+    "HostFormatsPodsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_pods_screen.dart",
+          "symbol": "_HostFormatsPodsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The live console pushes the pods board as a system pushed screen."
     },
     "HostFormatsRulesScreen": {
       "owners": [
@@ -3074,8 +3113,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           },
           {
             "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
@@ -3971,8 +4010,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           }
         ],
         "notes": "ExploreScreen reads separate club, event-feed, and optional consent-safe Cross Paths provider seams, then maps route provider waves through ExploreDiscoveryScreenState before composing browse chrome, filter state, mixed event/person/organizer feed composition, empty/error states, map-pill copy, and mutation listening. Cross Paths failure stays non-blocking and renders no people."
@@ -6595,717 +6634,6 @@
           "id": "DS-EVENT-SUCCESS-COMPANION-005",
           "status": "open",
           "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
-        }
-      ]
-    },
-    {
-      "id": "screen.catches.event",
-      "shell": {
-        "owner": "consumer",
-        "nestedScaffoldAllowed": false,
-        "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
-      },
-      "topBar": {
-        "role": "shell",
-        "expression": "shell-owned",
-        "owner": "AdaptiveTabScaffold",
-        "reason": "The route body relies on shell chrome or a registered nested composition owner."
-      },
-      "statePolicy": {
-        "requiredStates": [
-          "data",
-          "empty",
-          "error",
-          "loading",
-          "mutation",
-          "offline",
-          "permission"
-        ],
-        "owner": "registered screen state controller and Catch state surfaces"
-      },
-      "name": "Catches Event Deck",
-      "owner": "swipes",
-      "priority": "P1",
-      "status": "in_progress",
-      "routes": [
-        {
-          "id": "swipeEventScreen",
-          "path": "/catches/:eventId",
-          "role": "primary"
-        }
-      ],
-      "source": {
-        "file": "lib/swipes/presentation/swipe_screen.dart",
-        "symbol": "SwipeScreen"
-      },
-      "stateController": {
-        "primary": "swipeQueueProvider",
-        "files": [
-          {
-            "file": "lib/swipes/presentation/swipe_screen.dart",
-            "symbol": "SwipeScreen"
-          },
-          {
-            "file": "lib/swipes/presentation/catches_event_screen_state.dart",
-            "symbol": "CatchesEventScreenState"
-          },
-          {
-            "file": "lib/swipes/presentation/swipe_queue_controller.dart",
-            "symbol": "SwipeQueueNotifier"
-          },
-          {
-            "file": "lib/contexts/connections/data/swipe_candidate_repository.dart",
-            "symbol": "SwipeCandidateRepository"
-          },
-          {
-            "file": "lib/contexts/connections/data/swipe_repository.dart",
-            "symbol": "SwipeRepository"
-          },
-          {
-            "file": "lib/swipes/presentation/swipe_empty_content.dart",
-            "symbol": "buildSwipeEmptyContent"
-          }
-        ],
-        "mutationOwners": [
-          {
-            "file": "lib/swipes/presentation/swipe_queue_controller.dart",
-            "symbol": "SwipeQueueNotifier"
-          },
-          {
-            "file": "lib/contexts/connections/data/swipe_repository.dart",
-            "symbol": "SwipeRepository"
-          }
-        ],
-        "notes": "SwipeQueueNotifier owns candidate loading and swipe writes. SwipeScreen watches queue/event/profile/participation providers at the route edge, translates async branches to CatchAsyncState, and builds CatchesEventScreenState before composing provider-free deck and empty/access sections."
-      },
-      "designRefs": [
-        {
-          "id": "repo.catches-captures",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
-          "notes": "post_run_catch_window captures the event-specific Catches deck with deterministic profile candidates."
-        },
-        {
-          "id": "claude.catches-event",
-          "kind": "claude",
-          "status": "available",
-          "notes": "First active-profile Catches Event Deck reference is registered under design/reference_screens/screen.catches.event. Pending/disabled mutation and comment-sheet states are source-backed in Widgetbook/tests; keyboard-open, empty/offline, text-scale, reduced-motion, theme, and optional mutation visual references remain open.",
-          "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/catch-website/assets/app/post-run-catch-window.png"
-        }
-      ],
-      "captures": [
-        {
-          "id": "post_run_catch_window",
-          "status": "captured",
-          "notes": "Post-event candidate deck fixture with event, viewer, participation, and queue overrides."
-        },
-        {
-          "id": "swipe_event_queue_loading",
-          "status": "captured",
-          "notes": "Catches event deck queue loading state."
-        },
-        {
-          "id": "swipe_event_queue_error",
-          "status": "captured",
-          "notes": "Catches event deck queue error state."
-        },
-        {
-          "id": "swipe_event_offline",
-          "status": "captured",
-          "notes": "Catches event deck offline queue error state."
-        },
-        {
-          "id": "swipe_event_cached_offline",
-          "status": "captured",
-          "notes": "Catches event deck cached-profile state while connectivity is offline; no visible offline banner is shown."
-        },
-        {
-          "id": "swipe_event_empty_queue",
-          "status": "captured",
-          "notes": "Catches event deck empty queue state while catch window is open."
-        },
-        {
-          "id": "swipe_event_missing",
-          "status": "captured",
-          "notes": "Catches event deck missing event state."
-        },
-        {
-          "id": "swipe_event_sign_in_required",
-          "status": "captured",
-          "notes": "Catches event deck sign-in required state."
-        },
-        {
-          "id": "swipe_event_in_progress",
-          "status": "captured",
-          "notes": "Catches event deck event-in-progress lock state."
-        },
-        {
-          "id": "swipe_event_did_not_attend",
-          "status": "captured",
-          "notes": "Catches event deck attended-only access state."
-        },
-        {
-          "id": "swipe_event_window_closed",
-          "status": "captured",
-          "notes": "Catches event deck closed catch-window state."
-        },
-        {
-          "id": "swipe_event_pass_pending",
-          "status": "captured",
-          "notes": "Catches event deck pass-write pending state with mutation controls disabled and the pass button loading."
-        },
-        {
-          "id": "swipe_event_reaction_pending",
-          "status": "captured",
-          "notes": "Catches event deck reaction-write pending state with profile reactions disabled and pending."
-        },
-        {
-          "id": "swipe_event_write_failure_snackbar",
-          "status": "captured",
-          "notes": "Catches event deck write failure keeps the active profile visible and surfaces branded retry snackbar feedback."
-        },
-        {
-          "id": "swipe_event_text_scale_2",
-          "status": "captured",
-          "notes": "Catches event deck text scale 2.0 review state."
-        },
-        {
-          "id": "swipe_event_reduced_motion",
-          "status": "captured",
-          "notes": "Catches event deck reduced-motion review state."
-        },
-        {
-          "id": "swipe_event_comment_sheet_empty",
-          "status": "captured",
-          "notes": "Catches event reaction comment sheet with an empty draft."
-        },
-        {
-          "id": "swipe_event_comment_sheet_filled",
-          "status": "captured",
-          "notes": "Catches event reaction comment sheet with a filled draft."
-        }
-      ],
-      "states": [
-        {
-          "id": "queue_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "swipeQueueProvider AsyncLoading renders CatchesProfileBodySkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
-          "tests": [
-            "test/swipes/swipe_screen_test.dart"
-          ],
-          "nextAction": "Use this capture as the deck queue-loading baseline.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_queue_loading"
-          ]
-        },
-        {
-          "id": "queue_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "swipeQueueProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.swipes and retry invalidation; timeout path is tested in SwipeQueueNotifier.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart"
-          ],
-          "nextAction": "Keep queue retry placement aligned with branded swipe error copy.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_queue_error"
-          ]
-        },
-        {
-          "id": "active_profile",
-          "kind": "populated",
-          "status": "captured",
-          "source": "CatchesEventScreenState maps a non-empty queue to CatchesEventReady, then SwipeScreen renders CatchesProfileBody with ProfileSurface, top overlay, bottom scrim, reaction controls, pass action, and route-owned CatchesProfileReviewActionState for write-pending display.",
-          "captureIds": [
-            "post_run_catch_window"
-          ],
-          "nextAction": "First active-profile reference is manifest-registered and compared against post_run_catch_window. CatchesEventScreenState and CatchesProfileReviewActionState now extract provider-wave and mutation display derivation; add keyboard-open, empty, offline, text-scale, reduced-motion, theme, and optional mutation visual references before visual refactors.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "CatchesProfileBody/Deck composition",
-            "ProfileSurface/Catches profile states",
-            "CatchesTopOverlay/Top overlay states",
-            "CatchesScrimOverlay/Bottom scrim states",
-            "CatchesPassButton/Pass button states",
-            "ProfileReactionAction/Reaction control states"
-          ]
-        },
-        {
-          "id": "pass_mutation",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "CatchesPassButton calls SwipeQueueNotifier.swipe(SwipeDirection.pass), renders pending/disabled states from CatchesProfileReviewActionState, and advances only after recordSwipe succeeds.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart",
-            "test/swipes/swipe_action_buttons_test.dart",
-            "test/swipes/swipe_screen_test.dart"
-          ],
-          "nextAction": "swipe_event_pass_pending captures the pass-write pending baseline; export a dedicated mutation visual reference only if design needs one.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "CatchesPassButton/Pass button states"
-          ],
-          "captureIds": [
-            "swipe_event_pass_pending"
-          ]
-        },
-        {
-          "id": "reaction_mutation",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "ProfileReactionAction pass section target and optional comment into SwipeQueueNotifier.swipe(SwipeDirection.like), while ProfileSurface can disable/mark reaction controls pending from route-owned action state.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart",
-            "test/swipes/profile_card_widget_test.dart"
-          ],
-          "nextAction": "Reaction-pending deck plus comment-sheet empty/filled regions are captured; add keyboard-open capture when the capture harness supports sheet interactions.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "ProfileReactionAction/Reaction control states",
-            "ProfileReactionCommentSheet/Reaction comment sheet states"
-          ],
-          "captureIds": [
-            "swipe_event_reaction_pending",
-            "swipe_event_comment_sheet_empty",
-            "swipe_event_comment_sheet_filled"
-          ]
-        },
-        {
-          "id": "duplicate_pending",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "SwipeQueueNotifier ignores duplicate swipe attempts while _recordingSwipe is true, and SwipeScreen also blocks repeated deck actions while CatchesProfileReviewActionState is pending.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart",
-            "test/swipes/swipe_screen_test.dart"
-          ],
-          "nextAction": "Duplicate-write protection is visually represented by the disabled pending deck states captured by swipe_event_pass_pending and swipe_event_reaction_pending.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_pass_pending",
-            "swipe_event_reaction_pending"
-          ]
-        },
-        {
-          "id": "write_failure",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "_recordSwipe catches repository failures and shows showCatchErrorSnackBar with AppErrorContext.swipes while keeping the current profile.",
-          "tests": [
-            "test/swipes/swipe_screen_test.dart"
-          ],
-          "nextAction": "Captured by swipe_event_write_failure_snackbar; remaining work is dedicated mutation references if design requires pixel comparison.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_write_failure_snackbar"
-          ]
-        },
-        {
-          "id": "empty_queue",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Empty candidate queue renders SwipeEmptyState using defaultSwipeEmptyContent when the event is valid and the window is open.",
-          "tests": [
-            "test/swipes/swipe_empty_content_test.dart"
-          ],
-          "nextAction": "Use this capture as the open-window empty queue baseline.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "SwipeEmptyState/Deck empty states"
-          ],
-          "captureIds": [
-            "swipe_event_empty_queue"
-          ]
-        },
-        {
-          "id": "event_missing",
-          "kind": "empty",
-          "status": "captured",
-          "source": "buildSwipeEmptyContent(event: null) returns Catch unavailable copy.",
-          "tests": [
-            "test/swipes/swipe_empty_content_test.dart"
-          ],
-          "nextAction": "Keep missing event copy provider-free when extracting deck route state.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_missing"
-          ]
-        },
-        {
-          "id": "sign_in_required",
-          "kind": "permission",
-          "status": "captured",
-          "source": "buildSwipeEmptyContent(currentUser: null) returns Sign in required copy.",
-          "nextAction": "Keep sign-in required copy distinct from did-not-attend access copy.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "SwipeEmptyState/Deck empty states"
-          ],
-          "captureIds": [
-            "swipe_event_sign_in_required"
-          ]
-        },
-        {
-          "id": "event_in_progress",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Upcoming/in-progress event returns Catches unlock after event copy.",
-          "tests": [
-            "test/swipes/swipe_empty_content_test.dart"
-          ],
-          "nextAction": "Use injected clock seam to keep this locked-state capture deterministic.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "SwipeEmptyState/Deck empty states"
-          ],
-          "captureIds": [
-            "swipe_event_in_progress"
-          ]
-        },
-        {
-          "id": "did_not_attend",
-          "kind": "permission",
-          "status": "captured",
-          "source": "Non-attended participation returns You can only catch attendees from events you attended.",
-          "tests": [
-            "test/swipes/swipe_empty_content_test.dart"
-          ],
-          "nextAction": "Keep attended-only access state explicit in the deck adapter.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "SwipeEmptyState/Deck empty states"
-          ],
-          "captureIds": [
-            "swipe_event_did_not_attend"
-          ]
-        },
-        {
-          "id": "window_closed",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Closed catch window returns Catch window closed copy.",
-          "tests": [
-            "test/swipes/swipe_empty_content_test.dart"
-          ],
-          "nextAction": "Use injected clock seam to keep closed-window capture deterministic.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "SwipeEmptyState/Deck empty states"
-          ],
-          "captureIds": [
-            "swipe_event_window_closed"
-          ]
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "When connectivity is obviously offline and no cached profiles exist, SwipeQueueNotifier surfaces a retryable NetworkException.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart"
-          ],
-          "nextAction": "Compare offline queue copy against future explicit offline design references.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_offline"
-          ]
-        },
-        {
-          "id": "cached_offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "When the queue already has profiles, offline connectivity preserves cached queue data instead of replacing the deck with an error.",
-          "tests": [
-            "test/swipes/swipe_queue_notifier_test.dart"
-          ],
-          "nextAction": "Decision captured: cached-offline preservation keeps the active deck visible and does not add a banner in the current contract.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_cached_offline"
-          ]
-        },
-        {
-          "id": "filters_action",
-          "kind": "populated",
-          "status": "captured",
-          "source": "_CatchesTopOverlay exposes a Filters action that pushes filtersScreen.",
-          "nextAction": "Baseline deck capture includes filters action placement; add interaction capture only if the filter route changes.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states",
-            "CatchesTopOverlay/Top overlay states"
-          ],
-          "captureIds": [
-            "post_run_catch_window"
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "swipe_event_text_scale_2 captures the event-specific Catches deck at TextScaler 2.0.",
-          "nextAction": "Review large-text deck capture for profile surface and action overlay overlap.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_text_scale_2"
-          ]
-        },
-        {
-          "id": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "swipe_event_reduced_motion captures the event-specific Catches deck with MediaQuery.disableAnimations enabled.",
-          "nextAction": "Keep reduced-motion deck capture registered while adding motion-specific masks.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "swipe_event_reduced_motion"
-          ]
-        },
-        {
-          "id": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "source": "post_run_catch_window emits paired light/dark artifacts through the capture harness for the baseline event deck.",
-          "nextAction": "Use paired baseline captures for light/dark deck review.",
-          "previewIds": [
-            "SwipeScreen/Event deck route states"
-          ],
-          "captureIds": [
-            "post_run_catch_window"
-          ]
-        }
-      ],
-      "composition": {
-        "currentLayout": "SwipeScreen watches the queue, event, current user, and participation providers at the route edge, translates async branches to CatchAsyncState, resolves CatchesEventScreenState once, and branches into loading/error/empty/profile deck UI with route-owned navigation and mutation callbacks.",
-        "targetLayout": "SwipeScreen should keep provider watches, route pushes, and swipe mutations at the edge while CatchesEventScreenState feeds public provider-free deck review, profile surface, overlay, pass/reaction controls, and empty/access sections with immutable display data plus typed callbacks.",
-        "sections": [
-          {
-            "id": "section.catches.event_review_deck",
-            "name": "Catches profile review deck",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "CatchesProfileDeck",
-              "CatchesDeckChrome"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/swipe_screen.dart",
-              "symbol": "CatchesProfileBody"
-            },
-            "currentOwner": "SwipeScreen",
-            "targetOwner": "provider-free Catches event deck section",
-            "dependencies": [
-              "catch.icon_button",
-              "catch.surface"
-            ],
-            "states": [
-              "active_profile",
-              "one_left",
-              "many_left",
-              "write_pending",
-              "write_failed"
-            ],
-            "migration": "CatchesProfileBody is now a public provider-free deck composition. Widgetbook covers active deck composition and the bottom scrim separately while the route still owns queue/provider handling.",
-            "previewIds": [
-              "CatchesProfileBody/Deck composition",
-              "CatchesScrimOverlay/Bottom scrim states"
-            ]
-          },
-          {
-            "id": "section.catches.event_profile_surface",
-            "name": "Catches profile surface",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "ProfileSurface",
-              "ProfilePromptCards"
-            ],
-            "flutter": {
-              "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-              "symbol": "ProfileSurface"
-            },
-            "currentOwner": "shared swipes/profile surface",
-            "targetOwner": "registered profile surface compound shared by Catches, profile preview, and public profile",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "catches_mode",
-              "preview_mode",
-              "public_profile_mode",
-              "long_profile",
-              "missing_shared_event"
-            ],
-            "migration": "ProfileSurface now has a Catches-mode Widgetbook entry fed by deterministic Catches fixtures, keeping the shared profile compound reviewable separately from the deck chrome.",
-            "previewIds": [
-              "ProfileSurface/Catches profile states"
-            ]
-          },
-          {
-            "id": "section.catches.event_top_overlay",
-            "name": "Catches deck top overlay",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesDeckTopBar",
-              "CandidateCountPill"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/swipe_screen.dart",
-              "symbol": "CatchesTopOverlay"
-            },
-            "currentOwner": "SwipeScreen",
-            "targetOwner": "provider-free deck overlay section",
-            "dependencies": [
-              "catch.icon_button",
-              "catch.surface"
-            ],
-            "states": [
-              "default",
-              "one_left",
-              "long_count_text",
-              "text_scale_2"
-            ],
-            "migration": "CatchesTopOverlay is now a public provider-free overlay section with typed back/filter callbacks and Widgetbook coverage for the default candidate-count pill.",
-            "previewIds": [
-              "CatchesTopOverlay/Top overlay states"
-            ]
-          },
-          {
-            "id": "section.catches.event_reaction_controls",
-            "name": "Profile reaction controls",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "ReactionControls",
-              "CommentSheet"
-            ],
-            "flutter": {
-              "file": "lib/swipes/shared/profile_surface/profile_reaction_action.dart",
-              "symbol": "ProfileReactionAction"
-            },
-            "currentOwner": "ProfileSurface/ProfileBody",
-            "targetOwner": "registered reaction-control compound with comment-sheet states",
-            "dependencies": [
-              "catch.button",
-              "catch.surface",
-              "catch.field"
-            ],
-            "states": [
-              "like",
-              "comment_sheet_empty",
-              "comment_sheet_filled",
-              "pending",
-              "failed"
-            ],
-            "migration": "ProfileReactionAction has Catches-specific Widgetbook coverage for surface, overlay, vertical, disabled, and pending layouts plus empty/filled comment-sheet states; failure feedback remains route-owned snackbar behavior.",
-            "previewIds": [
-              "ProfileReactionAction/Reaction control states",
-              "ProfileReactionCommentSheet/Reaction comment sheet states"
-            ]
-          },
-          {
-            "id": "section.catches.event_pass_button",
-            "name": "Floating pass control",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "PassAction"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/widgets/catches_pass_button.dart",
-              "symbol": "CatchesPassButton"
-            },
-            "currentOwner": "SwipeScreen",
-            "targetOwner": "registered floating action compound if reused by future deck surfaces",
-            "dependencies": [
-              "catch.icon_button"
-            ],
-            "states": [
-              "default",
-              "pending",
-              "disabled",
-              "error_feedback"
-            ],
-            "migration": "CatchesPassButton has Widgetbook coverage for default, pending, and disabled floating pass states; write failures remain route-owned branded snackbar behavior.",
-            "previewIds": [
-              "CatchesPassButton/Pass button states"
-            ]
-          },
-          {
-            "id": "section.catches.event_empty",
-            "name": "Catches deck empty/access state",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesDeckEmptyState",
-              "AccessState"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/widgets/swipe_empty_state.dart",
-              "symbol": "SwipeEmptyState"
-            },
-            "currentOwner": "SwipeScreen",
-            "targetOwner": "provider-free deck empty/access section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "empty_queue",
-              "event_missing",
-              "sign_in_required",
-              "event_in_progress",
-              "did_not_attend",
-              "window_closed"
-            ],
-            "migration": "SwipeEmptyState now has Widgetbook coverage for default empty queue, sign-in required, event in progress, did-not-attend, and closed-window copy generated by buildSwipeEmptyContent.",
-            "previewIds": [
-              "SwipeEmptyState/Deck empty states"
-            ]
-          }
-        ]
-      },
-      "openGaps": [
-        {
-          "id": "DS-CATCHES-EVENT-001",
-          "status": "closed",
-          "nextAction": "Closed by SwipeScreen/Event deck route states first-pass Widgetbook coverage for queue loading/error/offline, active deck, vibe-prioritized deck, empty/access states, mutation-failure interaction, text scale, reduced motion, and addon-driven light/dark review."
-        },
-        {
-          "id": "DS-CATCHES-EVENT-002",
-          "status": "blocked",
-          "nextAction": "Blocked: remaining deck capture work needs keyboard-open capture automation and design-reference pixel comparison input. Queue loading/error/offline, cached-offline preservation, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, comment-sheet empty/filled, paired light/dark captures, and write-pending/failure interaction tests are already registered."
-        },
-        {
-          "id": "DS-CATCHES-EVENT-003",
-          "status": "closed",
-          "nextAction": "Closed by CatchesEventScreenState plus CatchAsyncState route-edge translation; queue/event/user/participation provider waves are resolved once before visual deck and empty/access sections receive display data plus typed callbacks."
-        },
-        {
-          "id": "DS-CATCHES-EVENT-004",
-          "status": "blocked",
-          "nextAction": "Blocked: first active-profile Catches deck reference and masks are registered, but remaining keyboard/comment sheet, empty, offline, text-scale, reduced-motion, theme, and optional mutation references require external design exports before masks can be refined."
         }
       ]
     },
@@ -12484,8 +11812,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           },
           {
             "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
@@ -21191,9 +20519,9 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchLegacyTopBar",
-        "owner": "CatchLegacyTopBar",
-        "reason": "The source owns canonical compact route chrome."
+        "expression": "CatchTopBar",
+        "owner": "EventRecapScreen",
+        "reason": "A moment screen with a Close action over the after-event sections (RbAppAfter)."
       },
       "statePolicy": {
         "requiredStates": [
@@ -21204,7 +20532,7 @@
         ],
         "owner": "registered screen state controller and Catch state surfaces"
       },
-      "name": "Event Recap",
+      "name": "After the event",
       "owner": "swipes",
       "priority": "P2",
       "status": "in_progress",
@@ -21220,7 +20548,7 @@
         "symbol": "EventRecapScreen"
       },
       "stateController": {
-        "primary": "EventRecapScreen + eventRecapViewModelProvider + publicProfilesByIdsProvider",
+        "primary": "EventRecapScreen + eventRecapViewModelProvider + publicProfilesByIdsProvider + EventRecapController",
         "files": [
           {
             "file": "lib/swipes/presentation/event_recap_screen.dart",
@@ -21249,10 +20577,23 @@
           {
             "file": "lib/contexts/profiles/data/public_profiles_lookup.dart",
             "symbol": "publicProfilesByIds"
+          },
+          {
+            "file": "lib/swipes/presentation/event_recap_controller.dart",
+            "symbol": "EventRecapController"
           }
         ],
-        "mutationOwners": [],
-        "notes": "EventRecapScreen watches EventRecapViewModel for event, uid, and participation state, then fetches public profiles in one batched lookup for the vibe grid. EventRecapScreenState owns loading/error/missing-event branches, attendee rows, profile fallbacks, selected ids, hero/window copy, retry intents, and open-deck intent construction while the route retains provider invalidation, local selection mutation, and GoRouter execution."
+        "mutationOwners": [
+          {
+            "file": "lib/swipes/presentation/event_recap_controller.dart",
+            "symbol": "EventRecapController"
+          },
+          {
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
+          }
+        ],
+        "notes": "EventRecapScreen watches the event, the guest's profile, participation, private feedback, team or table assignment, the event chat's access, the organizer and their coming events and follows. EventRecapScreenState builds the kicker, private rating, group chat row, Stay in touch rows (team first), pick window, next event and follow state; the route keeps provider invalidation, the pick and rating mutations and GoRouter navigation."
       },
       "designRefs": [
         {
@@ -21260,20 +20601,25 @@
           "kind": "repo",
           "status": "available",
           "path": "test/swipes/event_recap_screen_test.dart",
-          "notes": "Event recap tests cover roster derivation from participation edges, checked-in attendee rendering, selected-vibe navigation extras, and EventRecapScreenState loading/error/missing/ready branches."
+          "notes": "After-event tests cover the sections, the no-dating-language scan, picks recording a like once, the private rating saving Event Success feedback, follow state, the profile prompt, and EventRecapScreenState branches."
         },
         {
           "id": "claude.event-recap",
           "kind": "claude",
-          "status": "blocked",
-          "notes": "Blocked on canonical Event Recap screen source/export. The local Claude bundle has Catches/Event Deck and post-run catch-window references, but no standalone Event Recap attendee-selection screen template."
+          "status": "available",
+          "notes": "Design canvas \"Catch directions\", page \"Consumer app · rebuilt\": RbAppAfter, RbAppDinnerAfter and RbAppGroupChat. Photos from the host are not built yet: no guest-facing host photo source exists."
         }
       ],
       "captures": [
         {
           "id": "event_recap_attendees",
           "status": "captured",
-          "notes": "Attended event recap fixture with remembered attendee tiles."
+          "notes": "After-event screen with the group chat, team-first Stay in touch rows and the next event."
+        },
+        {
+          "id": "event_recap_rated_following",
+          "status": "captured",
+          "notes": "Real route with a saved rating and the organizer already followed."
         },
         {
           "id": "event_recap_loading",
@@ -21309,11 +20655,6 @@
           "id": "event_recap_profile_lookup_error",
           "status": "captured",
           "notes": "Resolved recap with attendee-profile enrichment failure and exact-query retry."
-        },
-        {
-          "id": "event_recap_selected_tiles",
-          "status": "captured",
-          "notes": "Real route seeded with selected vibe ids to show selected and unselected attendee tiles."
         },
         {
           "id": "event_recap_text_scale_2",
@@ -21384,7 +20725,7 @@
           "id": "populated_attendees",
           "kind": "populated",
           "status": "captured",
-          "source": "event_recap_attendees renders the recap hero, checked-in count, batched attendee profile grid, local selection, and Open catches deck CTA.",
+          "source": "event_recap_attendees renders the private rating, group chat, Stay in touch rows with Pick actions (team first), and the organizer's next event.",
           "captureIds": [
             "event_recap_attendees",
             "event_recap_light_dark"
@@ -21392,7 +20733,7 @@
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Compare hero/grid hierarchy against exported design references.",
+          "nextAction": "Compare against RbAppAfter once host photos exist.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -21464,31 +20805,31 @@
           ]
         },
         {
-          "id": "vibe_selection",
+          "id": "picked_and_rated",
           "kind": "populated",
           "status": "captured",
-          "source": "Tapping vibe tiles toggles local selected ids, semantic selected state, selection border, and check badge.",
+          "source": "A saved rating fills the stars; picks turn Pick into Picked and cannot be undone; Follow hides once the organizer is followed.",
           "captureIds": [
-            "event_recap_selected_tiles"
+            "event_recap_rated_following"
           ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart",
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Compare selected/unselected tile treatment against the canonical recap source once available.",
+          "nextAction": "Keep picks one-way unless the backend gains an undo.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
         },
         {
-          "id": "open_catches_deck",
-          "kind": "populated",
+          "id": "needs_profile",
+          "kind": "empty",
           "status": "tested",
-          "source": "The primary CTA routes to swipeEventScreen with selected vibe ids as route extra.",
+          "source": "A guest without a social-ready profile sees the rating, chat and next event; Stay in touch asks them to finish their profile.",
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Selected ids are visible in event_recap_selected_tiles; route-extra behavior remains covered by widget tests."
+          "nextAction": "Add a capture for the profile prompt."
         },
         {
           "id": "text_scale_2",
@@ -21518,8 +20859,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EventRecapScreen keeps provider invalidation, public-profile watching, local selection mutation, and GoRouter execution at the route edge while EventRecapScreenState owns async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data.",
-        "targetLayout": "Event Recap should keep provider and router side effects at the route edge while provider-free hero, grid, tile, and CTA sections render only EventRecapScreenState data.",
+        "currentLayout": "EventRecapScreen keeps provider watching, the pick, rating and follow mutations and GoRouter execution at the route edge; EventRecapReadyBody renders EventRecapScreenState.",
+        "targetLayout": "The after-event screen (RbAppAfter): kicker and title, private rating, group chat, Stay in touch, photos from the host, the next event.",
         "sections": [
           {
             "id": "section.event_recap.adapter",
@@ -21544,104 +20885,99 @@
               "event_not_found",
               "populated_attendees"
             ],
-            "migration": "EventRecapScreenState now owns loading/error/missing-event branches, attendee/profile rows, selected ids, retry intents, hero/window copy, and open-deck intent data; EventRecapScreen still executes provider invalidation, local selection mutation, and GoRouter navigation at the route edge."
+            "migration": "EventRecapScreenState owns the async branches and every section's display data; EventRecapScreen runs the mutations and navigation."
           },
           {
-            "id": "section.event_recap.hero",
-            "name": "Event recap hero",
+            "id": "section.event_recap.rating",
+            "name": "Private rating",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "EventRecapHero"
+              "RbAppAfter"
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "RecapHeader"
+              "symbol": "EventRecapReadyBody"
             },
-            "currentOwner": "EventRecapScreen",
-            "targetOwner": "provider-free recap hero section",
+            "currentOwner": "EventRecapReadyBody",
+            "targetOwner": "EventRecapReadyBody",
             "dependencies": [
               "catch.surface"
             ],
             "states": [
               "populated_attendees",
-              "text_scale_2"
+              "picked_and_rated"
             ],
-            "migration": "RecapHeader now renders EventRecapHeaderState display data for event title, distance, checked-in count, and catch-window copy; Widgetbook covers closed and open catch-window preview states."
+            "migration": "Stars save Event Success feedback that only reaches the organizer inside the event summary."
           },
           {
-            "id": "section.event_recap.vibe_grid",
-            "name": "Event recap vibe grid",
+            "id": "section.event_recap.group_chat",
+            "name": "Group chat",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "EventRecapVibeGrid"
+              "RbAppAfter"
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "EventRecapScreen"
+              "symbol": "EventRecapReadyBody"
             },
-            "currentOwner": "EventRecapScreen",
-            "targetOwner": "provider-free vibe grid section",
+            "currentOwner": "EventRecapReadyBody",
+            "targetOwner": "EventRecapReadyBody",
+            "dependencies": [
+              "catch.surface"
+            ],
+            "states": [
+              "populated_attendees"
+            ],
+            "migration": "Opens the event chat; shows the host's closing date when one is set."
+          },
+          {
+            "id": "section.event_recap.stay_in_touch",
+            "name": "Stay in touch",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "RbAppAfter"
+            ],
+            "flutter": {
+              "file": "lib/swipes/presentation/event_recap_screen.dart",
+              "symbol": "EventRecapReadyBody"
+            },
+            "currentOwner": "EventRecapReadyBody",
+            "targetOwner": "EventRecapReadyBody",
             "dependencies": [
               "catch.surface"
             ],
             "states": [
               "populated_attendees",
               "empty_roster",
-              "profile_lookup_loading",
-              "profile_lookup_error",
-              "profile_lookup_fallback",
-              "vibe_selection"
+              "needs_profile"
             ],
-            "migration": "VibeGrid now renders EventRecapAttendeeRow models with profile fallback, selected state, and typed toggle callbacks; Widgetbook covers full roster, empty roster, partial profile fallback, selected tile, text-scale, reduced-motion, and dark-theme states."
+            "migration": "Pick people you'd like to see again; a mutual pick opens a direct chat."
           },
           {
-            "id": "section.event_recap.vibe_tile",
-            "name": "Event recap vibe tile",
+            "id": "section.event_recap.next_event",
+            "name": "Next event and follow",
             "status": "implemented_local",
-            "layer": "compound",
+            "layer": "section",
             "claudeComponents": [
-              "EventRecapVibeTile"
+              "RbAppAfter"
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "VibeTile"
+              "symbol": "EventRecapReadyBody"
             },
-            "currentOwner": "EventRecapScreen",
-            "targetOwner": "shared recap attendee tile candidate",
+            "currentOwner": "EventRecapReadyBody",
+            "targetOwner": "EventRecapReadyBody",
             "dependencies": [
               "catch.surface"
             ],
             "states": [
               "populated_attendees",
-              "profile_lookup_fallback",
-              "vibe_selection"
+              "picked_and_rated"
             ],
-            "migration": "Promote only if Catches/Event Success afterglow reuse proves the same attendee tile contract."
-          },
-          {
-            "id": "section.event_recap.action",
-            "name": "Event recap primary action",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "EventRecapAction"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "EventRecapScreen"
-            },
-            "currentOwner": "EventRecapScreen",
-            "targetOwner": "provider-free open-deck action section",
-            "dependencies": [
-              "catch.button"
-            ],
-            "states": [
-              "open_catches_deck",
-              "vibe_selection"
-            ],
-            "migration": "EventRecapOpenDeckIntent now owns selected-id extra construction and destination event id while EventRecapScreen executes the GoRouter call."
+            "migration": "The organizer's next event and Follow {organizer}."
           }
         ]
       },

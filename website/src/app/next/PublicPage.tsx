@@ -15,11 +15,13 @@ import {useEventPage} from "../../features/events/eventPageContext";
 import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
+import {marketingCaptures} from "../marketingCaptures";
 import {claimRouteStateForLocation, claimUrlStateForListing} from "../../features/claims/claimRouting";
 import {brand} from "@catch/brand";
 
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
 const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
+const Cities = dynamic(() => import("../../features/home/CitiesPage").then(m => m.CitiesPage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
 const Apply = dynamic(() => import("../../features/host/HostApplicationPage").then(m => m.HostApplicationPage));
 const Weddings = dynamic(() => import("../../features/weddings/WeddingsPage").then(m => m.WeddingsPage));
@@ -44,12 +46,13 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   useMarketingAnalytics(page, location.pathname);
   let content;
   let structured: unknown = null;
-  if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
+  if (page === "home") content = home ? <Home captures={marketingCaptures} catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
+  else if (page === "cities") content = home ? <Cities catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
-    ? <Apply /> : <Host />;
+    ? <Apply /> : <Host captures={marketingCaptures} />;
   else if (page === "weddings") content = location.pathname.replace(/\/$/, "") === "/weddings/apply"
-    ? <WeddingsApply /> : <Weddings />;
+    ? <WeddingsApply /> : <Weddings captures={marketingCaptures} />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",

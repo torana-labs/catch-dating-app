@@ -1,39 +1,69 @@
 import {
   CatchAccordion,
-  CatchRoot,
-  CatchAvatar,
-  CatchBadge,
+  CatchAppCaptureImage,
   CatchButton,
-  CatchChip,
-  CatchField,
-  CatchIcon,
+  CatchDeviceFrame,
+  CatchFormatMatrix,
+  CatchFormatTile,
   CatchIndexRow,
+  CatchLayerMap,
   CatchMeter,
   CatchMetricTile,
+  CatchNightScene,
   CatchPageTabBar,
+  CatchPipelineBoard,
   CatchRangeInput,
+  CatchRoot,
+  CatchScroller,
   CatchSection,
   CatchStack,
+  CatchStepList,
+  CatchStoreButton,
   CatchSurface,
-  CatchTable,
   CatchText,
-  type CatchTableColumn,
-  type CatchTextTone,
+  type CatchAppCaptureImageProps,
 } from "@catch/web-ui";
-import type {ReactNode} from "react";
-import {hostLandingCopy as copy} from "@content/hostLanding";
+import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {interpolateContent as fill} from "@content/interpolate";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../shared/site";
-import {salesRange, useHostLandingController, type HostLandingController} from "./useHostLandingController";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
+import {captureSlot} from "../../shared/media/captureSlot";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
+import {feeCap, salesRange, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
 type Host = HostLandingController;
 
-/** A section opening: an optional coloured kicker over a display headline. */
-function Heading({id, kicker, title, tone = "secondary", align}: {id: string; kicker?: string; title: string; tone?: CatchTextTone; align?: "center"}) {
+/**
+ * Every capture the night scene can show, by slot id. Each slot is named
+ * literally so tool/marketing/capture_manifest.json's page bindings can be
+ * checked against the page (marketingCaptures.test.tsx).
+ */
+function nightScreens(captures: CaptureSlots): Record<string, CatchAppCaptureImageProps | null> {
+  return {
+    "host-formats-pods": captureSlot(captures, "host-formats-pods"),
+    "host-door-in": captureSlot(captures, "host-door-in"),
+    "host-door-arriving": captureSlot(captures, "host-door-arriving"),
+    "host-formats-mix": captureSlot(captures, "host-formats-mix"),
+    "host-live-console": captureSlot(captures, "host-live-console"),
+    "host-live-needs": captureSlot(captures, "host-live-needs"),
+    "host-live-scores": captureSlot(captures, "host-live-scores"),
+    "host-post-event-report": captureSlot(captures, "host-post-event-report"),
+    "host-formats-rules": captureSlot(captures, "host-formats-rules"),
+    "host-formats-courts-setup": captureSlot(captures, "host-formats-courts-setup"),
+    "host-formats-courts": captureSlot(captures, "host-formats-courts"),
+    "host-formats-crawl": captureSlot(captures, "host-formats-crawl"),
+    "host-formats-crawl-move": captureSlot(captures, "host-formats-crawl-move"),
+  };
+}
+
+/** Catch Host's official store badges for one placement. */
+function HostStoreBadges({placement}: {placement: string}) {
+  const stores = useAppDownloadCtas({placement, app: "host"});
   return (
-    <CatchStack align={align} gap={12}>
-      {kicker ? <CatchText tone={tone} variant="label-kicker">{kicker}</CatchText> : null}
-      <CatchText align={align} as="h2" id={id} variant="display-xl">{title}</CatchText>
+    <CatchStack align="center" direction="row" gap={12} wrap>
+      {stores.map((store) => (
+        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} store={store.store} />
+      ))}
     </CatchStack>
   );
 }
@@ -43,207 +73,178 @@ function HeadingRow({id, title, body, anchor}: {id: string; title: string; body:
   return (
     <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={48} id={anchor}>
       <CatchText as="h2" id={id} variant="display-xl">{title}</CatchText>
-      <CatchText tone="secondary" variant="body">{body}</CatchText>
+      <CatchText tone="secondary" variant="body-lead">{body}</CatchText>
     </CatchStack>
   );
 }
 
-/** A phone-shaped ink spotlight, centred in its column. */
-function PhoneMock({children}: {children: ReactNode}) {
+function Hero({captures}: {captures: CaptureSlots}) {
+  const today = captureSlot(captures, "host-today", "eager");
   return (
-    <CatchStack direction="row" justify="center">
-      <CatchSurface aspect={0.52} block="spotlight" color="ink" padding="md">{children}</CatchSurface>
-    </CatchStack>
-  );
-}
-
-function Hero() {
-  const mock = copy.hero.mock;
-  return (
-    <CatchSurface aria-labelledby="host-title" as="section" block="band" color="run">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={20}>
-          <CatchText as="h1" id="host-title" variant="display-hero">{copy.hero.title}</CatchText>
+    <CatchSurface aria-labelledby="host-hero-title" as="section" block="band" color="run">
+      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={32}>
+        <CatchStack gap={28}>
+          <CatchText as="h1" id="host-hero-title" variant="display-hero">{copy.hero.title}</CatchText>
           <CatchText variant="body-lead">{copy.hero.body}</CatchText>
-          <CatchStack direction="row" gap={8} wrap>
-            <CatchButton href="#apply" label={copy.hero.apply} />
-            <CatchButton href="#night" label={copy.hero.seeNight} variant="ghost" />
+          <CatchStack direction="row" gap={12} wrap>
+            <CatchButton href="#start" label={copy.hero.start} />
+            <CatchButton href="#night" label={copy.hero.seeNight} variant="light" />
           </CatchStack>
-          <CatchText variant="body-small">{copy.hero.note}</CatchText>
+          <HostStoreBadges placement="host_hero" />
+          <CatchText variant="label-action">{copy.hero.terms}</CatchText>
         </CatchStack>
-        <PhoneMock>
-          <CatchText tone="secondary" variant="label-kicker">{mock.kicker}</CatchText>
-          <CatchText variant="display-sm">{mock.round}</CatchText>
-          <CatchText numeric variant="display-xl">{mock.clock}</CatchText>
-          <CatchMeter label={mock.meter} thickness={6} value={40} />
-        </PhoneMock>
+        {today ? <CatchAppCaptureImage {...today} bleed size="md" tilt="right" /> : null}
       </CatchStack>
     </CatchSurface>
   );
 }
 
-function Kinds() {
+function Kinds({host}: {host: Host}) {
   return (
     <CatchSurface aria-labelledby="host-kinds-title" as="section" block="band" id="features">
       <HeadingRow anchor="use-cases" body={copy.kinds.body} id="host-kinds-title" title={copy.kinds.title} />
-      <CatchStack align="stretch" collapseBelow="medium" direction="row" equal gap={12}>
-        {copy.kinds.items.map((item) => (
-          <CatchSurface block="spotlight" color={item.format} key={item.format} padding="md">
-            <CatchText as="h3" variant="display-sm">{item.title}</CatchText>
-            <CatchText variant="body-small">{item.body}</CatchText>
-            <CatchStack align="start"><CatchButton href="#night" label={copy.kinds.action} size="sm" variant="quiet" /></CatchStack>
-          </CatchSurface>
+      <CatchScroller gap="related" itemWidth="m" label={copy.kinds.label}>
+        {hostNightFormats.map((item, index) => (
+          <CatchFormatTile body={item.tile} format={item.format} key={item.format} kicker={copy.kinds.kicker} onPressed={() => host.pickFormat(index, true)}
+            photoUrl={item.photo ?? null} pressed={index === host.format} title={item.title} />
         ))}
-      </CatchStack>
+      </CatchScroller>
+      <CatchFormatMatrix
+        formats={hostNightFormats.map((item) => ({format: item.format, title: item.title}))}
+        heading={copy.matrix.heading}
+        note={copy.matrix.note}
+        onSelect={(index, source) => host.pickFormat(index, source === "table")}
+        properties={copy.matrix.properties}
+        selected={host.format}
+        values={Object.fromEntries(hostNightFormats.map((item) => [item.format, item.properties]))}
+      />
     </CatchSurface>
   );
 }
 
-function Night({host}: {host: Host}) {
-  const night = copy.night;
+function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
+  const night = host.night;
+  const screens = nightScreens(captures);
   return (
     <CatchSurface aria-labelledby="host-night-title" as="section" block="band" color="ink" id="night">
       <CatchStack gap={16} id="how-it-works">
-        <Heading id="host-night-title" kicker={night.kicker} title={night.title} tone="warning" />
-        <CatchText tone="secondary" variant="body-lead">{night.lead}</CatchText>
-        <CatchStack align="center" direction="row" gap={8} wrap>
-          <CatchText variant="body">{night.showMe}</CatchText>
-          <CatchChip colourWhenSelected dot="games" kind="tag" label={night.kind} selected />
-          <CatchText variant="body">{night.evening}</CatchText>
-        </CatchStack>
+        <CatchText tone="warning" variant="label-kicker">{copy.night.kicker}</CatchText>
+        <CatchText as="h2" id="host-night-title" variant="display-xl">{copy.night.title}</CatchText>
+        <CatchText tone="secondary" variant="body-lead">{copy.night.lead}</CatchText>
       </CatchStack>
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={64}>
-        <CatchStack gap={16}>
-          <CatchStack gap={2}>
-            <CatchText as="h3" variant="title-bar">{night.event}</CatchText>
-            <CatchText tone="secondary" variant="body-small">{night.place}</CatchText>
-          </CatchStack>
-          <CatchSection dividers="none" timeline>
-            {night.chapters.map((item, index) => (
-              <CatchIndexRow body={item.body} density="regular" key={item.title} onTap={() => host.chooseChapter(index)} selected={index === host.chapter} time={item.time}
-                marker={index < host.chapter ? {tone: "muted", size: 12} : index === host.chapter ? {tone: "format", format: "games", live: true, size: 12} : {kind: "ring", size: 12}}
-                title={item.title} wrap />
-            ))}
-          </CatchSection>
-        </CatchStack>
-        <PhoneMock>
-          <CatchText aria-live="polite" tone="secondary" variant="label-kicker">{host.nowKicker}</CatchText>
-          <CatchText variant="display-lg">{host.nowTitle}</CatchText>
-          <CatchSection>
-            {night.tasks.map((task) => <CatchIndexRow density="compact" key={task.title} marker={{tone: task.tone}} title={task.title} />)}
-          </CatchSection>
-        </PhoneMock>
-      </CatchStack>
+      <CatchNightScene
+        formats={hostNightFormats.map((item) => ({format: item.format, title: item.title}))}
+        frame="none"
+        journey={{
+          accent: night.accent,
+          event: night.event,
+          where: night.where,
+          lead: night.lead,
+          moments: night.moments.map((moment) => {
+            const screen = screens[moment.slot];
+            return {
+              time: moment.time,
+              title: moment.title,
+              body: moment.body,
+              badge: night.badges[moment.property],
+              screen: screen ? <CatchAppCaptureImage {...screen} caption={undefined} /> : null,
+            };
+          }),
+        }}
+        label={host.storyLabel}
+        onSelect={(index) => host.pickFormat(index, false)}
+        pickerLabel={copy.night.pickerLabel}
+        pickerLead={copy.night.pickerLead}
+        position={(index, total) => fill(copy.night.position, {index, total})}
+        selected={host.format}
+        timelineLabel={copy.night.timelineLabel}
+      />
     </CatchSurface>
   );
 }
 
-function Ipad() {
-  const ipad = copy.ipad;
+function Tablet({captures}: {captures: CaptureSlots}) {
+  const tablet = captureSlot(captures, "host-live-tablet");
   return (
-    <CatchSurface aria-labelledby="host-ipad-title" as="section" block="band">
-      <CatchStack align="center" gap={12}>
-        <Heading align="center" id="host-ipad-title" kicker={ipad.kicker} title={ipad.title} tone="info" />
-        <CatchText align="center" tone="secondary" variant="body-lead">{ipad.body}</CatchText>
+    <CatchSurface aria-labelledby="host-tablet-title" as="section" block="band" color="tile">
+      <CatchStack align="center" gap={20}>
+        <CatchText align="center" tone="info" variant="label-kicker">{copy.tablet.kicker}</CatchText>
+        <CatchText align="center" as="h2" id="host-tablet-title" variant="display-xl">{copy.tablet.title}</CatchText>
+        <CatchText align="center" tone="secondary" variant="body-lead">{copy.tablet.body}</CatchText>
       </CatchStack>
-      <CatchSurface aspect={2.2} block="spotlight" color="ink">
-        <CatchStack collapseBelow="medium" direction="row" equal gap={32}>
-          <CatchStack gap={12}>
-            <CatchText tone="secondary" variant="label-kicker">{ipad.runOfShow}</CatchText>
-            {ipad.steps.map((step) => <CatchText key={step} variant="title-row">{step}</CatchText>)}
-          </CatchStack>
-          <CatchStack gap={12}>
-            <CatchText tone="secondary" variant="label-kicker">{ipad.room}</CatchText>
-            <CatchStack direction="row" equal gap={8}>
-              {Array.from({length: ipad.tables}, (_, index) => (
-                <CatchSurface aspect={1.4} key={index} padding="sm"><CatchText variant="label-action">{fill(ipad.table, {number: index + 1})}</CatchText></CatchSurface>
-              ))}
-            </CatchStack>
-          </CatchStack>
-        </CatchStack>
-      </CatchSurface>
+      {tablet ? <CatchDeviceFrame bleed kind="tablet"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : null}
     </CatchSurface>
   );
 }
 
-function Pipeline({host}: {host: Host}) {
+function Pipeline() {
   const pipeline = copy.pipeline;
   return (
     <CatchSurface aria-labelledby="host-pipeline-title" as="section" block="band">
       <HeadingRow body={pipeline.body} id="host-pipeline-title" title={pipeline.title} />
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={24}>
-        {pipeline.stages.map((stage, index) => (
-          <CatchSection count={host.columns[index].length} dividers="none" empty={pipeline.empty} key={stage} title={fill(pipeline.stageTitle, {number: index + 1, stage})}>
-            {host.columns[index].map((name) => (
-              <CatchSurface key={name} padding="sm">
-                <CatchStack align="center" direction="row" gap={12}>
-                  <CatchAvatar name={name} size={28} />
-                  <CatchText variant="title-row">{name}</CatchText>
-                </CatchStack>
-              </CatchSurface>
-            ))}
-          </CatchSection>
-        ))}
-      </CatchStack>
-      <CatchStack align="center" collapseBelow="medium" direction="row" gap={16} justify="between">
-        <CatchText tone="secondary" variant="body-small">{pipeline.note}</CatchText>
-        <CatchButton label={pipeline.replay} leadingIcon="restart" onPressed={host.replay} size="sm" variant="secondary" />
-      </CatchStack>
+      <CatchPipelineBoard boardLabel={pipeline.boardLabel} guests={pipeline.guests} label={pipeline.label} replayLabel={pipeline.replay} steps={pipeline.steps} />
     </CatchSurface>
   );
 }
 
-function Guests() {
+function Guests({captures}: {captures: CaptureSlots}) {
   const guests = copy.guests;
+  const explore = captureSlot(captures, "guest-explore");
   return (
     <CatchSurface aria-labelledby="host-guests-title" as="section" block="band" color="dinner">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={64}>
-        <CatchStack gap={24}>
-          <Heading id="host-guests-title" kicker={guests.kicker} title={guests.title} tone="primary" />
-          <CatchSection>
+      <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={64}>
+        {explore ? <CatchAppCaptureImage {...explore} bleed size="sm" tilt="left" /> : null}
+        <CatchStack gap={20}>
+          <CatchText tone="primary" variant="label-kicker">{guests.kicker}</CatchText>
+          <CatchText as="h2" id="host-guests-title" variant="display-xl">{guests.title}</CatchText>
+          <CatchText variant="body-lead">{guests.body}</CatchText>
+          <CatchSection dividers="none">
             {guests.items.map((item) => <CatchIndexRow density="regular" icon={item.icon} key={item.title} subtitle={item.body} title={item.title} wrap />)}
           </CatchSection>
-        </CatchStack>
-        <PhoneMock>
-          <CatchText tone="secondary" variant="label-kicker">{guests.mock.kicker}</CatchText>
-          <CatchSurface block="spotlight" color="run" padding="md">
-            <CatchText variant="label-kicker">{guests.mock.group}</CatchText>
-            <CatchText variant="display-lg">{guests.mock.title}</CatchText>
-            <CatchText variant="body">{guests.mock.body}</CatchText>
+          <CatchSurface block="spotlight" color="ink" padding="md">
+            <CatchStack align="end" direction="row" gap={16} justify="between" wrap>
+              <CatchStack gap={4}>
+                <CatchText tone="secondary" variant="label-kicker">{guests.sees.kicker}</CatchText>
+                <CatchText variant="display-lg">{guests.sees.title}</CatchText>
+              </CatchStack>
+              <CatchText tone="secondary" variant="body-small">{guests.sees.body}</CatchText>
+            </CatchStack>
           </CatchSurface>
-        </PhoneMock>
+        </CatchStack>
       </CatchStack>
     </CatchSurface>
   );
 }
 
-function Growth() {
+function Growth({host}: {host: Host}) {
   const growth = copy.growth;
+  const stats = host.linkStats;
   return (
     <CatchSurface aria-labelledby="host-growth-title" as="section" block="band">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={24}>
-          <CatchText as="h2" id="host-growth-title" variant="display-xl">{growth.title}</CatchText>
-          <CatchText tone="secondary" variant="body-lead">{growth.body}</CatchText>
+      <HeadingRow body={growth.body} id="host-growth-title" title={growth.title} />
+      <CatchStack align="stretch" collapseBelow="medium" direction="row" equal gap={24}>
+        <CatchStack gap={12}>
           <CatchSection dividers="none" title={growth.pickLink}>
-            {growth.links.map((link, index) => <CatchIndexRow density="regular" icon="link" key={link.title} selected={index === 0} subtitle={link.body} title={link.title} />)}
+            {growth.links.map((item, index) => (
+              <CatchIndexRow density="regular" icon="link" key={item.slug} onTap={() => host.setLink(index)} selected={index === host.link} subtitle={item.description} title={item.name} />
+            ))}
           </CatchSection>
-          <CatchSection>
-            {growth.steps.map((step, index) => <CatchIndexRow density="compact" key={step} rank={index + 1} title={step} wrap />)}
-          </CatchSection>
+          <CatchStepList steps={growth.steps} />
         </CatchStack>
-        <CatchSurface block="floating">
-          <CatchText variant="label-code">{growth.link}</CatchText>
-          <CatchMeter label={growth.visits.label} max={growth.visits.value} showLabel thickness={8} value={growth.visits.value} />
-          <CatchMeter label={growth.bookings.label} max={growth.visits.value} showLabel thickness={8} value={growth.bookings.value} />
-          <CatchStack direction="row" equal gap={16}>
-            {growth.stats.map((stat) => <CatchMetricTile key={stat.label} label={stat.label} layout="inline" value={stat.value} />)}
+        <CatchSurface block="spotlight" color="ink" padding="lg">
+          <CatchText variant="label-code">{host.linkUrl}</CatchText>
+          <CatchMeter label={stats.visitsLabel} max={host.maxVisits} showLabel thickness={8} value={stats.visits} />
+          <CatchMeter fill="format" format={stats.format} label={stats.bookingsLabel} max={host.maxVisits} showLabel thickness={8} value={stats.bookings} />
+          <CatchStack direction="row" equal gap={12}>
+            <CatchMetricTile label={growth.rate} layout="inline" value={stats.rate} />
+            <CatchMetricTile label={growth.revenue} layout="inline" value={stats.revenue} />
+            <CatchMetricTile label={growth.perVisit} layout="inline" value={stats.perVisit} />
           </CatchStack>
           <CatchText tone="secondary" variant="body-small">{growth.insight}</CatchText>
         </CatchSurface>
       </CatchStack>
-      <CatchStack gap={6}>
-        <CatchText as="h3" variant="display-sm">{growth.regularsTitle}</CatchText>
+      <CatchStack gap={8}>
+        <CatchText variant="title-row">{growth.regularsTitle}</CatchText>
         <CatchText tone="secondary" variant="body">{growth.regularsBody}</CatchText>
         <CatchText tone="secondary" variant="body-meta">{growth.disclaimer}</CatchText>
       </CatchStack>
@@ -251,35 +252,31 @@ function Growth() {
   );
 }
 
-interface LayerRow {
-  key: string;
-  job: {title: string; subtitle: string};
-  catch: {label: string; tone: "success"; icon: ReactNode} | string;
-  own: string;
-}
-
 function Layers({host}: {host: Host}) {
   const layers = copy.layers;
-  const columns: CatchTableColumn<LayerRow>[] = [
-    {key: "job", label: layers.columns.job, kind: "title"},
-    {key: "catch", label: layers.columns.catch, kind: "badge", render: (row) => typeof row.catch === "string" ? row.catch : <CatchBadge {...row.catch} />},
-    {key: "own", label: layers.columns.own},
-  ];
-  const rows: LayerRow[] = layers.rows.map((row) => ({
-    key: row.job,
-    job: {title: row.job, subtitle: row.from},
-    catch: row.layer <= Number(host.layer) ? {label: layers.runs, tone: "success", icon: <CatchIcon name="check" size={16} />} : layers.none,
-    own: row.own ?? layers.none,
-  }));
   return (
-    <CatchSurface aria-labelledby="host-layers-title" as="section" block="band" color="courts" id="layers">
-      <HeadingRow anchor="existing-tools" body={layers.body} id="host-layers-title" title={layers.title} />
-      <CatchPageTabBar label={layers.label} onChanged={host.setLayer} options={layers.options} selected={host.layer} />
-      <CatchSurface block="floating">
-        <CatchTable columns={columns} label={layers.tableLabel} rows={rows} />
-      </CatchSurface>
-      <CatchStack align="center" collapseBelow="medium" direction="row" gap={16} justify="between">
-        <CatchText tone="secondary" variant="body">{layers.note}</CatchText>
+    <CatchSurface aria-labelledby="host-layers-title" as="section" block="band" color="indigo" id="ways">
+      <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={48} id="existing-tools">
+        <CatchText as="h2" id="host-layers-title" variant="display-xl">{layers.title}</CatchText>
+        <CatchText variant="body-lead">{layers.body}</CatchText>
+      </CatchStack>
+      <CatchPageTabBar fill label={layers.label} onChanged={host.setLayer} options={layers.options} selected={host.layer} />
+      <CatchStack gap={0} id="layers">
+        <CatchLayerMap
+          labels={{
+            on: layers.map.on,
+            off: layers.map.off,
+            everyLayer: layers.map.everyLayer,
+            fromLayer: (layer) => fill(layers.map.fromLayer, {layer}),
+            newHere: layers.map.newHere,
+            youKeep: (yours) => fill(layers.map.youKeep, {yours}),
+          }}
+          layer={host.layerIndex}
+          nodes={layers.nodes}
+        />
+      </CatchStack>
+      <CatchStack align="center" collapseBelow="medium" direction="row" gap={24} justify="between">
+        <CatchText variant="title-bar">{host.layerBody}</CatchText>
         <CatchButton href="#pricing" label={layers.pricing} />
       </CatchStack>
     </CatchSurface>
@@ -289,24 +286,31 @@ function Layers({host}: {host: Host}) {
 function Pricing({host}: {host: Host}) {
   const pricing = copy.pricing;
   return (
-    <CatchSurface aria-labelledby="host-pricing-title" as="section" block="band" color="games" id="pricing">
+    <CatchSurface aria-labelledby="host-pricing-title" as="section" block="band" color="courts" id="pricing">
       <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={12}>
+        <CatchStack gap={16}>
           <CatchText variant="label-kicker">{pricing.kicker}</CatchText>
-          <CatchText as="h2" id="host-pricing-title" numeric variant="display-hero">{pricing.rate}</CatchText>
-          <CatchText variant="display-sm">{pricing.title}</CatchText>
-          <CatchText variant="body">{pricing.body}</CatchText>
+          <CatchText as="h2" id="host-pricing-title" numeric variant="display-giant">{pricing.rate}</CatchText>
+          <CatchText variant="display-title">{pricing.title}</CatchText>
+          <CatchText variant="body-lead">{pricing.body}</CatchText>
+          <CatchStack align="start"><CatchButton href="#start" label={pricing.start} /></CatchStack>
         </CatchStack>
-        <CatchSurface block="floating">
-          <CatchText variant="label-action">{pricing.sales}</CatchText>
+        <CatchSurface block="floating" padding="lg">
+          <CatchText tone="secondary" variant="label-action">{pricing.sales}</CatchText>
           <CatchText aria-live="polite" numeric variant="display-lg">{host.salesText}</CatchText>
           <CatchRangeInput label={pricing.sales} max={salesRange.max} min={salesRange.min} onChange={(value) => host.setSales(Array.isArray(value) ? value[1] : (value as number))}
             step={salesRange.step} value={host.sales} />
+          <CatchStack direction="row" justify="between">
+            <CatchText tone="secondary" variant="body-meta">{pricing.min}</CatchText>
+            <CatchText tone="secondary" variant="body-meta">{pricing.max}</CatchText>
+          </CatchStack>
           <CatchStack direction="row" equal gap={12}>
             <CatchMetricTile label={pricing.fee} note={pricing.feeNote} value={host.feeText} />
             <CatchMetricTile label={pricing.effective} note={pricing.effectiveNote} value={host.rateText} />
           </CatchStack>
-          <CatchText tone="secondary" variant="body-small">{host.capNote}</CatchText>
+          <CatchMeter kind="cap" label={pricing.capLabel} max={feeCap} thickness={8} value={host.fee} />
+          <CatchText tone={host.capped ? "success" : "secondary"} variant="label-action">{host.capped ? pricing.capped : pricing.uncapped}</CatchText>
+          <CatchText variant="body-small">{pricing.trial}</CatchText>
           <CatchText tone="secondary" variant="body-meta">{pricing.gateway}</CatchText>
         </CatchSurface>
       </CatchStack>
@@ -316,96 +320,79 @@ function Pricing({host}: {host: Host}) {
 
 function Faq() {
   return (
-    <CatchSurface aria-labelledby="host-faq-title" as="section" block="band">
+    <CatchSurface aria-labelledby="host-faq-title" as="section" block="band" id="faq">
       <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48}>
-        <Heading id="host-faq-title" kicker={copy.faq.kicker} title={copy.faq.title} />
-        <CatchAccordion items={copy.faq.items} name="host-faq" size="lg" />
+        <CatchText as="h2" id="host-faq-title" variant="display-xl">{copy.faq.title}</CatchText>
+        <CatchAccordion exclusive items={copy.faq.items} name="host-faq" size="lg" />
       </CatchStack>
     </CatchSurface>
   );
 }
 
-function Apply({host}: {host: Host}) {
-  const apply = copy.apply;
-  const card = apply.card;
+function Start() {
+  const start = copy.start;
   return (
-    <CatchSurface aria-labelledby="host-apply-title" as="section" block="band" color="games" id="apply">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={20}>
-          <CatchText as="h2" id="host-apply-title" variant="display-xl">{apply.title}</CatchText>
-          <CatchText variant="body-lead">{apply.body}</CatchText>
-          <CatchSection>
-            {apply.steps.map((step, index) => <CatchIndexRow density="regular" key={step.title} rank={index + 1} subtitle={step.body} title={step.title} wrap />)}
-          </CatchSection>
+    <CatchSurface aria-labelledby="host-start-title" as="section" block="band" color="games" id="start">
+      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48} id="apply">
+        <CatchStack gap={24}>
+          <CatchText variant="label-kicker">{start.kicker}</CatchText>
+          <CatchText as="h2" id="host-start-title" variant="display-xl">{start.title}</CatchText>
+          <CatchText variant="body-lead">{start.body}</CatchText>
         </CatchStack>
-        <CatchSurface block="floating">
-          <CatchStack align="center" direction="row" justify="between">
-            <CatchText as="h3" variant="display-sm">{card.title}</CatchText>
-            <CatchText tone="secondary" variant="label-kicker">{card.step}</CatchText>
+        <CatchStack gap={24}>
+          <CatchStepList steps={start.steps} />
+          <HostStoreBadges placement="host_start" />
+          <CatchStack align="center" direction="row" gap={8} wrap>
+            <CatchText variant="body-small">{start.weddingsLead}</CatchText>
+            <CatchButton href={start.weddingsHref} label={start.weddings} size="sm" trailingIcon="forward" variant="quiet" />
           </CatchStack>
-          <CatchMeter kind="segments" label={card.step} max={3} thickness={4} value={1} />
-          <CatchStack gap={12}>
-            <CatchText id="host-apply-kind" variant="label-action">{card.kindQuestion}</CatchText>
-            <CatchStack aria-labelledby="host-apply-kind" direction="row" gap={8} role="radiogroup" wrap>
-                {card.kinds.map((item) => (
-                  <CatchChip colourWhenSelected dot={item.value === "other" ? undefined : item.value} key={item.value} kind="choice" label={item.label}
-                    onPressed={() => host.setKind(item.value)} selected={host.kind === item.value} />
-                ))}
-              </CatchStack>
-          </CatchStack>
-          <CatchField autoComplete="address-level2" inputHint={card.cityPlaceholder} recipe="input" title={card.city} />
-          <CatchStack gap={12}>
-            <CatchText id="host-apply-size" variant="label-action">{card.sizeQuestion}</CatchText>
-            <CatchStack aria-labelledby="host-apply-size" direction="row" gap={8} role="radiogroup" wrap>
-                {card.sizes.map((size, index) => <CatchChip key={size} kind="choice" label={size} onPressed={() => host.setGuests(index)} selected={host.guests === index} />)}
-              </CatchStack>
-          </CatchStack>
-          <CatchButton fill href="/host/apply/" label={card.continue} />
-        </CatchSurface>
+        </CatchStack>
       </CatchStack>
     </CatchSurface>
   );
 }
 
 /**
- * The host landing, band for band as the RbWebHostV2 board: the hero, the
- * kinds of night, a night on Catch, the iPad, the applicant board, guests,
- * growth links, the layers, pricing, the FAQ and the application card. The legacy route anchors
- * (#features, #use-cases, #how-it-works, #existing-tools) sit on the bands
- * that now carry that content, so the retired host routes still land there.
+ * The host landing, band for band as the RbWebHostV2 board: the hero, every
+ * kind of night with the format matrix, the night scene, the tablet, the
+ * booking board, guests, growth links, the ways to use Catch, pricing, the
+ * FAQ and the free-trial start. The legacy route anchors (#features,
+ * #use-cases, #how-it-works, #existing-tools, #layers, #apply) sit on the
+ * bands that now carry that content, so retired links still land.
  */
-function HostLandingBands({host}: {host: Host}) {
+function HostLandingBands({captures, host}: {captures: CaptureSlots; host: Host}) {
   return (
     <>
-      <Hero />
-      <Kinds />
-      <Night host={host} />
-      <Ipad />
-      <Pipeline host={host} />
-      <Guests />
-      <Growth />
+      <Hero captures={captures} />
+      <Kinds host={host} />
+      <Night captures={captures} host={host} />
+      <Tablet captures={captures} />
+      <Pipeline />
+      <Guests captures={captures} />
+      <Growth host={host} />
       <Layers host={host} />
       <Pricing host={host} />
       <Faq />
-      <Apply host={host} />
+      <Start />
     </>
   );
 }
 
 /**
  * The host landing (the RbWebHostV2 board) on the white ground: the site
- * header naming the product and its sections, the board's bands, and the
- * short footer.
+ * header naming the product and its sections with Start free trial, the
+ * board's bands, and the short footer. `captures` are the marketing capture
+ * slots (src/app/marketingCaptures.ts).
  */
-export function HostPage() {
+export function HostPage({captures}: {captures: CaptureSlots}) {
   const host = useHostLandingController();
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader actions={<CatchButton href="#apply" label={copy.header.apply} size="sm" />} links={copy.header.nav} title={copy.header.title} />
+      <PublicSiteHeader actions={<CatchButton href="#start" label={copy.header.start} size="sm" />} links={copy.header.nav} title={copy.header.title} />
       <WebsitePageMain id="top">
-        <HostLandingBands host={host} />
+        <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
-      <SiteFooterBand label={copy.header.title} tagline={copy.footer.tagline} wordmark={copy.footer.wordmark} />
+      <PublicSiteFooter tagline={copy.footer.tagline} />
     </CatchRoot>
   );
 }

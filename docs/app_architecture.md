@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.104.0
-updated: 2026-11-03
+version: 1.104.1
+updated: 2026-11-12
 owner: app_architecture
 status: active
 ---
@@ -195,7 +195,7 @@ to end: Dart types, providers, files, folders, route names and localization
 keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
 `Routes.hostOrganizersScreen`), and on the wire the contracts, Firestore fields
 and collections, rules, indexes, callables, Functions and web code
-(`organizerId`, `organizerMemberships`, `OrganizerCover`), and the BigQuery
+(`organizerId`, `organizerFollows`, `OrganizerCover`), and the BigQuery
 warehouse (`organizer_id`, `organizers_raw_latest`, `bq-host-organizers`). A
 record carries one organizer id; there is no club alias beside it. Club stays
 only as the `club` subtype (`OrganizerType.club`, run clubs), in copy and URLs
@@ -1448,10 +1448,16 @@ A role records a `note` where the family has no good match.
 `node tool/design/generate_icon_catalog.mjs` writes both icon layers from the
 catalog. Flutter gets `CatchIcons` in
 `packages/catch_ui/lib/src/foundations/catch_icons.g.dart`, exported by the
-stable `catch_icons.dart` facade. `@catch/web-ui` gets `catchIconGlyphs` (role
-to `lucide-react` component) in `packages/web-ui/src/icons/`, plus SVG node
-data for the activity and Playbook roles so server-rendered artwork can draw
-them (`catchIconSvgMarkup`, `activityIconName`).
+stable `catch_icons.dart` facade. `@catch/web-ui` gets, in
+`packages/web-ui/src/icons/`, the role names, stroke width and activity map
+(`catchIconRoles.ts`) and `catchIconGlyphs` (role to `lucide-react` component),
+plus SVG node data for the activity and Playbook roles so server-rendered
+artwork can draw them (`catchIconSvgMarkup`, `activityIconName`). The glyph
+map is about 50 KB, so it is a lazy chunk that only `catchIconGlyphLoader`
+imports. The first `CatchIcon` to mount starts the download, and each icon is
+an empty box of its final size until the chunk arrives. Never import
+`catchIconGlyphs` statically outside tests: one static import puts it back in
+every app's initial JavaScript and over the Admin bundle budget.
 Each role is a getter returning const `IconData` in the Lucide font vendored
 under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
 glyphs in use. The generator's `--check` mode fails when:
@@ -3184,7 +3190,7 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
   Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition, Root,
-  Stack, AppShell, Screen, Identity.
+  Stack, AppShell, Screen, Identity, Marker, Meter, Calendar.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a

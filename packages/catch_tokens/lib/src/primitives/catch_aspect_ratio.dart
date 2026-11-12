@@ -14,5 +14,4 @@ abstract final class CatchAspectRatio {
   static const double portrait3x4 = 3 / 4;
   static const double poster = portrait3x4;
   static const double profileSlotFeedback = 112 / 150;
-  static const double eventRecapVibeTile = 0.74;
 }

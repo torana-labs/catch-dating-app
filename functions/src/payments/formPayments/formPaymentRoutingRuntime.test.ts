@@ -151,7 +151,7 @@ test("existing payment resumes its profile after defaults and owner change",
     assert.equal(h.loaded.at(-1), version);
     await assert.rejects(execution.processor.read(`fp_${"a".repeat(32)}`),
       /runtime mismatch/u);
-    h.store.records.set(`organizerFormPayments/${paymentId}`, {...payment,
+    h.store.records.set(`guestPayments/${paymentId}`, {...payment,
       routing: {...payment.routing!, destinationAccountId: "acc_other"}});
     await assert.rejects(execution.processor.read(paymentId),
       /routing changed/u);

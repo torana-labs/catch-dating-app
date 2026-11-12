@@ -14,6 +14,7 @@ import {
   type CatchMetricData,
   type CatchTableColumn,
 } from "@catch/web-ui";
+import {marketLabel} from "../../../shared/config/launchMarkets";
 import type {Marketplace, MarketplaceRange} from "../api/marketplaceRepository";
 import type {MarketplaceController} from "../controllers/useMarketplaceController";
 
@@ -25,14 +26,12 @@ const ranges: Array<{value: string; label: string}> = [
   {value: "90", label: "90 days"},
 ];
 
-// Cities Catch runs in; the views list grows with launches.
-const cityNames: Record<string, string> = {mumbai: "Mumbai", indore: "Indore", pune: "Pune"};
 const india = "Asia/Kolkata";
 const monthLong = new Intl.DateTimeFormat("en-IN", {month: "long", timeZone: india});
 const dayMonth = new Intl.DateTimeFormat("en-GB", {day: "numeric", month: "short", timeZone: india});
 
 function cityName(marketId: string): string {
-  return cityNames[marketId] ?? marketId.charAt(0).toUpperCase() + marketId.slice(1);
+  return marketLabel(marketId);
 }
 
 function percent(value: number | null): string {

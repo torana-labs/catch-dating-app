@@ -165,11 +165,20 @@
 
 /*
  * site: the website header (the system's .c-topbar[data-variant="site"]): the
- * wordmark in display-xs, quiet page links 16px apart that fold away on
- * phones, actions on the right, and a hairline under the bar.
+ * wordmark (catch.wordmark), quiet page links 16px apart that fold away on
+ * phones and the account entry on the left; only the page's actions (a
+ * setting such as the city, then the primary action) sit on the right; and a
+ * hairline under the bar.
+ */
+/*
+ * The site bar takes its gutter from the window, on the size classes'
+ * breakpoints, not from the nearest root: a page outside a sized root (a
+ * legal page, a city page) would otherwise inset the wordmark less than the
+ * homepage does at the same width.
  */
 .bar[data-variant="site"] {
-  padding-inline: max(var(--catch-gutter, var(--catch-layout-gutter-compact)), calc((100% - var(--catch-website-content-max)) / 2));
+  --catch-site-gutter: var(--catch-layout-gutter-compact);
+  padding-inline: max(var(--catch-site-gutter), calc((100% - var(--catch-website-content-max)) / 2));
   background: var(--catch-theme-ground);
   box-shadow: 0 var(--catch-stroke-hairline) 0 var(--catch-theme-line);
 }
@@ -184,23 +193,22 @@
 
 .site { display: flex; align-items: center; gap: var(--catch-space-s6); min-width: 0; }
 
-.brand {
-  color: var(--catch-theme-ink);
-  font-family: var(--catch-typography-role-display-xs-family);
-  font-size: 24px;
-  font-weight: var(--catch-typography-role-display-xs-weight);
-  line-height: var(--catch-typography-role-display-xs-line-height);
-  letter-spacing: var(--catch-typography-role-display-xs-tracking);
-  text-decoration: none;
-}
-
-.brand:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); }
+.account { display: inline-flex; flex: none; align-items: center; }
 
 .links { display: flex; align-items: center; gap: var(--catch-space-s4); }
 
 .siteMenu { display: none; }
 
+@media (min-width: 600px) {
+  .bar[data-variant="site"] { --catch-site-gutter: var(--catch-layout-gutter-medium); }
+}
+
+@media (min-width: 840px) {
+  .bar[data-variant="site"] { --catch-site-gutter: var(--catch-layout-gutter-expanded); }
+}
+
 @media (max-width: 599px) {
-  .links { display: none; }
+  .links,
+  .account { display: none; }
   .siteMenu { display: inline-flex; }
 }

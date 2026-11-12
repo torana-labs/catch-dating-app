@@ -48,6 +48,7 @@ class EventService {
       ),
       roster: EventRosterSnapshot(
         bookedCountsByCohort: event.effectiveCohortCounts,
+        bookedTotal: event.bookedCount,
         crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
       ),
     );

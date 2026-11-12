@@ -17,61 +17,12 @@ const validMarketingEnv = {
   VITE_FIREBASE_APP_ID: "app-id",
   VITE_FIREBASE_MEASUREMENT_ID: "measurement-id",
   VITE_WEBSITE_APPCHECK_SITE_KEY: "site-key",
-  VITE_STORE_LINKS_MODE: "live",
-  VITE_APP_STORE_URL: "https://apps.apple.com/in/app/catch/id1234567890",
-  VITE_PLAY_STORE_URL:
-    "https://play.google.com/store/apps/details?id=com.catchdating.catch",
 };
 
-test("live marketing deploy validation requires both store product URLs", () => {
-  const missing = runMarketing({
-    VITE_APP_STORE_URL: "",
-    VITE_PLAY_STORE_URL: "",
-  });
-  assert.equal(missing.status, 1);
-  assert.match(missing.stderr, /VITE_APP_STORE_URL is required when .* live/u);
-  assert.match(missing.stderr, /VITE_PLAY_STORE_URL is required when .* live/u);
-
-  const invalid = runMarketing({
-    VITE_APP_STORE_URL: "https://example.com/app",
-    VITE_PLAY_STORE_URL: "https://play.google.com/store/apps/details",
-  });
-  assert.equal(invalid.status, 1);
-  assert.match(invalid.stderr, /VITE_APP_STORE_URL must be an HTTPS apps\.apple\.com/u);
-  assert.match(invalid.stderr, /VITE_PLAY_STORE_URL must be an HTTPS play\.google\.com/u);
-
-  const valid = runMarketing();
-  assert.equal(valid.status, 0, valid.stderr);
-  assert.match(valid.stdout, /marketing hosting environment validation passed/u);
-});
-
-test("prelaunch marketing deploy requires both store URLs to remain empty", () => {
-  const valid = runMarketing({
-    VITE_STORE_LINKS_MODE: "prelaunch",
-    VITE_APP_STORE_URL: "",
-    VITE_PLAY_STORE_URL: "",
-  });
-  assert.equal(valid.status, 0, valid.stderr);
-
-  const misleading = runMarketing({
-    VITE_STORE_LINKS_MODE: "prelaunch",
-    VITE_APP_STORE_URL: "https://apps.apple.com/in/app/catch/id0000000000",
-    VITE_PLAY_STORE_URL:
-      "https://play.google.com/store/apps/details?id=com.catchdating.catch",
-  });
-  assert.equal(misleading.status, 1);
-  assert.match(misleading.stderr, /VITE_APP_STORE_URL must be empty/u);
-  assert.match(misleading.stderr, /VITE_PLAY_STORE_URL must be empty/u);
-});
-
-test("marketing deploy requires an explicit supported store-link mode", () => {
-  const missing = runMarketing({VITE_STORE_LINKS_MODE: ""});
-  assert.equal(missing.status, 1);
-  assert.match(missing.stderr, /VITE_STORE_LINKS_MODE is required/u);
-
-  const invalid = runMarketing({VITE_STORE_LINKS_MODE: "placeholder"});
-  assert.equal(invalid.status, 1);
-  assert.match(invalid.stderr, /must be prelaunch or live/u);
+test("store links are not build configuration: brand.json owns them", () => {
+  assert.equal(runMarketing({}).status, 0, "no store-link variable is required");
+  const retired = runMarketing({VITE_STORE_LINKS_MODE: "placeholder", VITE_APP_STORE_URL: "https://example.com/app"});
+  assert.equal(retired.status, 0, "retired store-link variables are ignored");
 });
 
 test("marketing deploy requires a valid GTM container id", () => {

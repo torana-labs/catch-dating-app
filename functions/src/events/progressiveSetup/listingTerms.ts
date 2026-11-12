@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {randomUUID} from "crypto";
 import {SeatLedger} from "../seatAuthority/seatAuthority";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
@@ -6,7 +7,8 @@ import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {UpdatePrivateEventDetailsCallablePayload} from
   "../../shared/generated/updatePrivateEventDetailsCallablePayload";
-import {eventPolicyFromEvent, normalizePolicy} from "../eventPolicy";
+import {eventPolicyFromEvent, initialPolicyFromTerms, normalizePolicy} from
+  "../eventPolicy";
 import {prepareEventMutationLedger} from "../eventPolicyMutation";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {canonicalJson} from "../eventSetupPreferences/resolve";
@@ -28,7 +30,8 @@ export function eventListingTermsPatch(event: EventDocument,
   }
   const configured = {...event, capacityLimit: terms.capacityLimit,
     priceInPaise: terms.priceInPaise};
-  const previous = eventPolicyFromEvent(configured);
+  const previous = configured.eventPolicy ?
+    eventPolicyFromEvent(configured) : initialPolicyFromTerms(configured);
   const policy = normalizePolicy({...previous,
     admission: {...previous.admission, capacityLimit: terms.capacityLimit},
     pricing: {...previous.pricing, basePriceInPaise: terms.priceInPaise},
@@ -91,8 +94,8 @@ export async function preparePrivateListingTerms(params: {
       "Reconcile existing guests before changing admission terms.");
   }
   for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", "publicEventPayments", "payments",
-    "organizerEventOfferPayments", "organizerContactOrigins",
+    "eventWaitlistOffers", GUEST_PAYMENTS, "payments",
+    "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
     "eventAttendeeImports", "razorpayPendingOrders"]) {
     const witness = await tx.get(db.collection(collection)

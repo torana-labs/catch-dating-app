@@ -1,17 +1,25 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {brand} from "@catch/brand";
 import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import {HomePage} from "./HomePage";
 
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent}));
 
+// The home page's capture slots, as the website manifest records them (their page bindings are
+// checked against capture_manifest.json in marketingCaptures.test.tsx).
+const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "guest-after-event", "host-live-tablet"].map((id) => [id, {
+  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: ["/"],
+}]));
+
 afterEach(() => {cleanup(); trackMarketingEvent.mockReset();});
 
 // Each test renders the whole page, which a loaded CI runner can take seconds over.
 describe("homepage", {timeout: 20_000}, () => {
   it("shows a live city's week of plans, eight at a time, each linking to its event page", () => {
-    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const main = within(screen.getByRole("main"));
     expect(main.getByRole("heading", {level: 1}).textContent).toBe("Find something worth showing up for.");
     expect(main.getByText("In Mumbai this week")).toBeTruthy();
@@ -30,21 +38,21 @@ describe("homepage", {timeout: 20_000}, () => {
   });
 
   it("filters the week by format from the tiles and the chips, and says when a format has none", () => {
-    render(<HomePage catalog={mumbaiLiveCatalog} />);
-    const games = screen.getByRole("link", {name: /3 this week.*Games and quizzes/});
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const games = screen.getByRole("button", {name: /3 this week.*Games and quizzes/});
     fireEvent.click(games);
-    expect(games.hasAttribute("data-selected")).toBe(true);
+    expect(games.getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("radio", {name: "Games and quizzes"}).getAttribute("aria-checked")).toBe("true");
     expect(screen.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeTruthy();
     expect(within(screen.getByRole("region", {name: "This week in Mumbai"})).queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
     fireEvent.click(games);
     expect(screen.getByText("8 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("link", {name: /2 this week.*Pickleball/}));
+    fireEvent.click(screen.getByRole("button", {name: /2 this week.*Pickleball/}));
     expect(within(screen.getByRole("region", {name: "This week in Mumbai"})).getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
   });
 
   it("shows a city that has not launched as launching soon, with who is joining and the busiest live city", () => {
-    render(<HomePage catalog={puneLaunchingSoonCatalog} />);
+    render(<HomePage captures={captures} catalog={puneLaunchingSoonCatalog} />);
     const main = within(screen.getByRole("main"));
     expect(main.getByText("Launching soon in Pune")).toBeTruthy();
     expect(main.getByRole("heading", {name: "Catch is coming to Pune."})).toBeTruthy();
@@ -63,20 +71,21 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(main.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
   });
 
-  it("reads a launched city too thin to fill a page as launching soon", () => {
-    render(<HomePage catalog={homeCatalogFixture("indore")} />);
-    expect(screen.getByRole("heading", {name: "Catch is coming to Indore."})).toBeTruthy();
+  it("keeps a quiet launched city open instead of calling it launching soon", () => {
+    render(<HomePage captures={captures} catalog={homeCatalogFixture("indore")} />);
+    expect(screen.getByRole("heading", {name: "This week in Indore"})).toBeTruthy();
+    expect(screen.queryByText(/Catch is coming to Indore/)).toBeNull();
   });
 
   it("says plans could not load instead of calling a live city launching soon", () => {
-    render(<HomePage catalog={{...mumbaiLiveCatalog, phase: "unavailable", plans: {...mumbaiLiveCatalog.plans, plans: [], organizers: []}}} />);
+    render(<HomePage captures={captures} catalog={{...mumbaiLiveCatalog, phase: "unavailable", plans: {...mumbaiLiveCatalog.plans, plans: [], organizers: []}}} />);
     expect(screen.getByRole("heading", {name: "This week in Mumbai"})).toBeTruthy();
     expect(screen.getByText("We couldn’t load this week’s plans. Please try again in a moment.")).toBeTruthy();
     expect(screen.queryByText(/Catch is coming to Mumbai/)).toBeNull();
   });
 
   it("links organisers to their pages, and an unclaimed listing to its claim", () => {
-    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
     const runners = organisers.getByRole("link", {name: /Carter Road Runners/});
     expect(runners.getAttribute("href")).toBe("/organizers/carter-road-runners/");
@@ -89,31 +98,60 @@ describe("homepage", {timeout: 20_000}, () => {
 
   it("moves to another city from the picker", () => {
     const navigate = vi.fn();
-    render(<HomePage catalog={mumbaiLiveCatalog} navigate={navigate} />);
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} navigate={navigate} />);
     fireEvent.click(screen.getByRole("button", {name: "Mumbai"}));
-    fireEvent.click(screen.getByRole("option", {name: /Pune/}));
+    fireEvent.click(screen.getByRole("menuitemradio", {name: /Pune/}));
     expect(navigate).toHaveBeenCalledWith("/?city=pune");
   });
 
-  it("states the host price without a take-home figure and keeps dating words off the page", () => {
-    const {container} = render(<HomePage catalog={mumbaiLiveCatalog} />);
-    expect(screen.getByText("5% of ticket sales, capped at ₹10,000 a month")).toBeTruthy();
+  it("states the host trial and price without a take-home figure and keeps dating words off the page", () => {
+    const {container} = render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    expect(screen.getByText("Free for 30 days. Then 5% of ticket sales, capped at ₹10,000 a month.")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Start your free trial"}).getAttribute("href")).toBe("/host/#start");
     expect(screen.getByText(/Payment gateway fees are charged separately/)).toBeTruthy();
     expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/i);
   });
 
-  it("records a store that is not live yet instead of following it", () => {
-    render(<HomePage catalog={mumbaiLiveCatalog} />);
-    const [appStore] = screen.getAllByRole("button", {name: "Download on the App Store"});
-    fireEvent.click(appStore);
-    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
+  it("shows each Catch app store as brand.json has it: a badge link, or a coming-soon chip that records the press", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const {ios, android} = brand.stores.consumer;
+    if (ios) {
+      expect(screen.getAllByRole("link", {name: "Download on the App Store"})[0].getAttribute("href")).toBe(ios);
+    } else {
+      const [chip] = screen.getAllByRole("button", {name: "Coming soon on the App Store"});
+      fireEvent.click(chip);
+      expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
+      expect(screen.queryByRole("img", {name: "Download on the App Store"})).toBeNull();
+    }
+    if (android) {
+      expect(screen.getAllByRole("link", {name: "Get it on Google Play"})[0].getAttribute("href")).toBe(android);
+    } else {
+      expect(screen.getAllByRole("button", {name: "Coming soon on Google Play"}).length).toBeGreaterThan(0);
+    }
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 
-  it("lists every city in the footer, the ones not open marked soon", () => {
-    render(<HomePage catalog={mumbaiLiveCatalog} />);
+  it("lists the open cities in the footer with their plans this week, then More cities", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));
-    expect(footer.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/mumbai/");
-    expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
+    const mumbai = mumbaiLiveCatalog.cities.find((city) => city.slug === "mumbai")!;
+    const mumbaiName = mumbai.weekPlanCount === 0 ? "Mumbai · New" :
+      mumbai.weekPlanCount === 1 ? "Mumbai · 1 plan this week" : `Mumbai · ${mumbai.weekPlanCount} plans this week`;
+    expect(footer.getByRole("link", {name: mumbaiName}).getAttribute("href")).toBe("/mumbai/");
+    expect(footer.queryByRole("link", {name: /^Pune/u})).toBeNull();
+    expect(footer.getByRole("link", {name: "More cities →"}).getAttribute("href")).toBe("/cities/");
+  });
+
+  it("shows the app in a tilted phone with plan stickers", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    expect(screen.getAllByRole("img", {name: "Screen guest-explore"}).length).toBeGreaterThan(0);
+  });
+
+  it("moves the guest story on to the step the reader picks, with that step's screen", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const story = within(screen.getByRole("region", {name: "Come on your own. Leave knowing a few more people."}));
+    fireEvent.click(story.getByRole("button", {name: /Stay in touch/}));
+    expect(story.getByRole("img", {name: "Screen guest-after-event"})).toBeTruthy();
+    expect(story.queryByRole("img", {name: "Screen guest-checked-in"})).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {inMarket} from "../src/content/markets/in.ts";
 
@@ -14,7 +15,7 @@ test("India market pack has stable, internally consistent city contracts", () =>
   assert.equal(citySlugs.size, inMarket.cities.length, "city slugs must be unique");
 
   for (const city of inMarket.cities) {
-    assert.match(city.id, /^in-[a-z0-9-]+$/u);
+    assert.match(city.id, /^in-[a-z0-9]{1,3}-[a-z0-9-]+$/u);
     assert.match(city.slug, /^[a-z0-9-]+$/u);
     assert.doesNotThrow(() =>
       new Intl.DateTimeFormat(inMarket.locale, {timeZone: city.timezone})
@@ -35,22 +36,22 @@ test("India market pack has stable, internally consistent city contracts", () =>
     }).format(1200)
   );
 
-  assert.deepEqual(inMarket.cities.filter((city) => city.status === "live").map(
-    (city) => city.label
-  ), [
-    "Mumbai",
-    "Indore",
-  ]);
-  assert.deepEqual(inMarket.cities.filter((city) => city.status === "waitlist").map(
-    (city) => city.label
-  ), [
-    "Delhi",
-    "Bangalore",
-    "Pune",
-    "Hyderabad",
-  ]);
+  // The pack lists exactly the catalog's website-listed Indian cities, in
+  // catalog order, with each city's lifecycle as its status.
+  const catalog = JSON.parse(fs.readFileSync(new URL("../../contracts/catalogs/markets.json", import.meta.url), "utf8"));
+  const listed = catalog.cities.filter((city) => city.countryIsoCode === "IN" && city.surfaces.websiteListed);
+  assert.deepEqual(inMarket.cities.map((city) => [city.id, city.slug, city.label, city.status]),
+    listed.map((city) => [city.marketId, city.slug, city.label, city.lifecycle]));
+  assert.equal(inMarket.cities.every((city) => city.slug === city.marketSlug), true);
   assert.deepEqual(
-    [...inMarket.cities.map((city) => city.label), inMarket.otherCityOptionLabel],
-    ["Mumbai", "Indore", "Delhi", "Bangalore", "Pune", "Hyderabad", "Other"]
+    [...inMarket.cities.map((city) => city.label), inMarket.otherCityOptionLabel].at(-1),
+    "Other"
   );
+});
+
+test("retired website city slugs stay reachable through legacySlugs", () => {
+  const legacy = Object.fromEntries(inMarket.cities.flatMap((city) => city.legacySlugs.map((slug) => [slug, city.slug])));
+  assert.deepEqual(legacy, {delhi: "delhi-ncr", bangalore: "bengaluru"});
+  const slugs = new Set(inMarket.cities.map((city) => city.slug));
+  for (const slug of Object.keys(legacy)) assert.equal(slugs.has(slug), false, `${slug} must not also be a live slug`);
 });

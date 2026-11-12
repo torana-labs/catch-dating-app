@@ -1,20 +1,17 @@
 .consumer-home { --consumer-gutter: clamp(24px, 5vw, 80px); background: var(--website-bg); color: var(--website-text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-.consumer-home h1,.consumer-home h2,.consumer-home h3 { font-family: var(--catch-font-voice), sans-serif; font-variation-settings: "wdth" 78; font-stretch: 78%; font-weight: 760; letter-spacing: -.035em; margin: 0; }
+.consumer-home h1,.consumer-home h2,.consumer-home h3 { font-family: var(--catch-font-voice), sans-serif; font-variation-settings: "wdth" 78; font-stretch: 78%; font-weight: 760; letter-spacing: -.035em; word-spacing: var(--catch-font-word-spacing-voice); margin: 0; }
 .consumer-home h2 { font-size: clamp(29px, 3vw, 44px); line-height: 1.07; }
 .consumer-home p { line-height: 1.5; margin: var(--catch-space-micro14) 0; }
 .consumer-home .brand__logo { width: 90px; height: 42px; object-fit: contain; }
 .consumer-home .button { border-radius: var(--catch-radius-xs); background: var(--website-accent); color: var(--catch-color-light-primary-ink); min-height: 48px; gap: var(--catch-space-s4); padding: 0 22px; font-family: inherit; font-size: 15px; box-shadow: none; }
 .consumer-home .button:hover { background: color-mix(in srgb, var(--website-accent) 86%, var(--website-surface)); }
 .consumer-home :focus-visible { outline: 3px solid var(--catch-focus-ring-color); outline-offset: 4px; }
-.consumer-home .site-footer { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; border-top: 1px solid var(--website-line-strong); margin: 0 var(--consumer-gutter); padding: var(--catch-space-s7) 0; background: transparent; color: var(--website-text); }
-.consumer-home .site-footer>p { font-size: 11px; max-width: 300px; order: 3; margin-left: auto; color: var(--website-text-muted); }
-.consumer-home .site-footer nav { display: flex; gap: 25px; flex-wrap: wrap; margin: 0; font-size: 12px; }
 @media (min-width: 1600px) { .consumer-home { --consumer-gutter: max(80px, calc((100vw - 1440px)/2)); } }
 @media (max-width: 700px) {
   .consumer-home { --consumer-gutter: 20px; }
   .consumer-home .brand__logo { width: 75px; height: 36px; }
   .consumer-home h2 { font-size: 31px; }
-  .consumer-home .site-footer { gap: 22px; padding: 25px 0; }.consumer-home .site-footer nav { flex: 1; justify-content: flex-start; gap: 15px; font-size: 11px; }.consumer-home .site-footer>p { max-width: none; margin: 0; width: 100%; }
+  
 }
 @media (prefers-reduced-motion: reduce) { .consumer-home * { transition: none !important; } }
 

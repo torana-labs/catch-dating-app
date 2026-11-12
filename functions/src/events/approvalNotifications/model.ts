@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../../delivery/deliveryMessages";
 import {operationContentHash as hash} from "../../operations/durableActions";
 import {
   evaluateDelivery,
@@ -16,9 +17,10 @@ import {validateEventApprovalNotificationAttempt as validAttempt} from
 import {validateEventApprovalNotificationMessageDocument as validMessage} from
   "../../shared/generated/validators/eventApprovalNotificationMessageDocument";
 import {brandWebUrl} from "../../shared/generated/brand";
+import {storeLinkLines} from "../../shared/storeLinks";
 export type {Intent, Attempt, Message};
 export type Binding = Attempt["binding"];
-export const messages = "eventApprovalNotificationMessages";
+export const messages = DELIVERY_MESSAGES;
 export const preferenceId = (eventId: string, uid: string) =>
   "eap_" + hash([eventId, uid]);
 export const eventUrl = (eventId: string) =>
@@ -91,6 +93,7 @@ export function newMessage(intent: Intent, now: number): Message {
   if (now >= intent.expiresAt) throw invalid();
   return parseMessage({
     schemaVersion: 1,
+    source: "approvalNotification",
     messageId: messageId(intent),
     revision: 0,
     intent,
@@ -154,3 +157,21 @@ export const timestampMillis = (value: {
   _seconds: number;
   _nanoseconds: number;
 }) => value._seconds * 1000 + value._nanoseconds / 1_000_000;
+
+/**
+ * The approval email's body. The Catch app's store links follow once the
+ * brand record has them; until then the email names none.
+ * @param {string} eventId The approved event.
+ * @param {string[]} appLinks Store link lines (packages/brand/brand.json).
+ * @return {string} Plain-text body.
+ */
+export function approvalEmailText(eventId: string,
+  appLinks: string[] = storeLinkLines("consumer")): string {
+  return [
+    "Your application has been approved. Sign in to view your next steps: " +
+      eventUrl(eventId),
+    "Approval is not a booking confirmation. You may still need to accept " +
+      "an offer or complete payment.",
+    ...(appLinks.length > 0 ? ["", "Get the app:", ...appLinks] : []),
+  ].join("\n");
+}

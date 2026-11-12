@@ -20,7 +20,9 @@ import {manageEventApprovalNotificationsHandler as preferences} from
   "./preferences";
 import {enqueueApproval, ApprovalNotificationWork} from "./work";
 import {ApprovalNotificationWorker} from "./worker";
-import {messages, preferenceId, parseMessage, terms} from "./model";
+import {
+  approvalEmailText, eventUrl, messages, preferenceId, parseMessage, terms,
+} from "./model";
 import type {Identity} from "./source";
 import type {Submission} from "./transports";
 import {prepareBudget} from "./budget";
@@ -471,7 +473,7 @@ test("signed WhatsApp failure unlocks one SMS fallback",
     const proof = h.db
       .entries()
       .find(([path]) =>
-        path.startsWith("eventApprovalNotificationDispatches/"),
+        path.startsWith("whatsappDispatches/"),
       )![1];
     const at = h.clock();
     const stamp = (value: number) => ({
@@ -650,3 +652,13 @@ test("a fresh explicit event choice can supersede an earlier withdrawal",
     await h.worker.dispatch(id);
     assert.deepEqual(h.sent, ["approvalWhatsapp"]);
   });
+
+test("the approval email names store links only once the app has them", () => {
+  const plain = approvalEmailText("event-1", []);
+  assert.equal(plain, "Your application has been approved. Sign in to view " +
+    `your next steps: ${eventUrl("event-1")}\nApproval is not a booking ` +
+    "confirmation. You may still need to accept an offer or complete payment.");
+  const ios = "Catch on the App Store: https://apps.apple.com/app/catch/id1";
+  assert.equal(approvalEmailText("event-1", [ios]),
+    `${plain}\n\nGet the app:\n${ios}`);
+});

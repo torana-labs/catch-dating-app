@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_share_card.dart';
@@ -53,10 +53,10 @@ class OrganizerDetailScreen extends ConsumerWidget {
     );
     final currentUserProfile = currentUserProfileState.value;
 
-    OrganizerMembership? currentMembership;
+    OrganizerFollow? currentMembership;
     if (currentUid != null) {
       final membershipAsync = ref.watch(
-        watchOrganizerMembershipProvider(organizerId, currentUid),
+        watchOrganizerFollowProvider(organizerId, currentUid),
       );
       final membershipState = catchAsyncStateFromAsyncValue(membershipAsync);
       currentMembership = membershipState.value;
@@ -81,12 +81,10 @@ class OrganizerDetailScreen extends ConsumerWidget {
           );
     }
 
-    final joinMutation = ref.watch(OrganizerMembershipController.joinMutation);
-    final leaveMutation = ref.watch(
-      OrganizerMembershipController.leaveMutation,
-    );
+    final joinMutation = ref.watch(OrganizerFollowController.joinMutation);
+    final leaveMutation = ref.watch(OrganizerFollowController.leaveMutation);
     final pushMutation = ref.watch(
-      OrganizerMembershipController.pushNotificationsMutation,
+      OrganizerFollowController.pushNotificationsMutation,
     );
     final messageHostMutation = ref.watch(
       OrganizerHostContactController.startConversationMutation,
@@ -152,9 +150,9 @@ class OrganizerDetailScreen extends ConsumerWidget {
         context,
         ref,
         mutations: [
-          OrganizerMembershipController.joinMutation,
-          OrganizerMembershipController.leaveMutation,
-          OrganizerMembershipController.pushNotificationsMutation,
+          OrganizerFollowController.joinMutation,
+          OrganizerFollowController.leaveMutation,
+          OrganizerFollowController.pushNotificationsMutation,
           OrganizerHostContactController.startConversationMutation,
         ],
       );

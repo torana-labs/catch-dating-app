@@ -44,6 +44,7 @@ class StarRatingPicker extends StatelessWidget {
     this.size = 40,
     this.keyBuilder,
     this.enabled = true,
+    this.alignment = MainAxisAlignment.center,
   });
 
   final int rating;
@@ -52,13 +53,17 @@ class StarRatingPicker extends StatelessWidget {
   final Key Function(int rating)? keyBuilder;
   final bool enabled;
 
+  /// Centred in the review sheet; the after-event screen starts it at the
+  /// leading edge, under its title.
+  final MainAxisAlignment alignment;
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final clampedRating = rating.clamp(0, 5);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: alignment,
       children: List.generate(5, (i) {
         final value = i + 1;
         return Tooltip(

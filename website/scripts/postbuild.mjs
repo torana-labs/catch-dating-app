@@ -44,6 +44,7 @@ writeRoute("/events/", {
 });
 writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 writeRoute("/explore/", staticRouteMeta(websiteMeta, "visitor_discovery", baseUrl));
+writeRoute("/cities/", staticRouteMeta(websiteMeta, "cities", baseUrl));
 
 // Remove retired output even when postbuild reuses a previously built directory.
 for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim", "preview"]) {
