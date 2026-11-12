@@ -9,6 +9,11 @@
 //   projects, such as contracts and design tokens, each with command targets
 //   (`{command, inputs?, cache?}`); `implicitDependencies` maps each project to the
 //   sources its committed generated code comes from.
+// - `npmProjectTargets` adds command targets, in the same shape, to an
+//   independently locked npm package, keyed by its root: a check that reads a
+//   file the package's own targets ignore, such as functions/README.md.
+// - Markdown is not an input of a Dart or npm project's own targets. Where a
+//   check reads a document, that check's target names it.
 //
 // Pub workspace membership is modelled as an input (members read the shared
 // root pubspec.lock), not an edge: the root package already depends on its
@@ -41,6 +46,7 @@ function dartNamedInputs(root, pubspec) {
   const own = root === "."
     ? ROOT_DART_FILES.map((file) => `{projectRoot}/${file}`)
     : ["{projectRoot}/**/*", ...PLATFORM_DIRECTORIES.map((dir) => `!{projectRoot}/${dir}/**/*`)];
+  own.push("!{projectRoot}/**/*.md");
   const lock = pubspec.resolution === "workspace" ? "{workspaceRoot}/pubspec.lock" : "{projectRoot}/pubspec.lock";
   return {
     default: [...own, lock],
@@ -73,11 +79,21 @@ function dartProject(workspaceRoot, file) {
   };
 }
 
-function npmPackageProject(workspaceRoot, root) {
+function commandTargets(targets = {}) {
+  return Object.fromEntries(Object.entries(targets).map(([target, {command, inputs, cache}]) => [target, {
+    executor: "nx:run-commands",
+    options: {command, cwd: "."},
+    ...(inputs ? {inputs} : {}),
+    ...(cache === undefined ? {} : {cache}),
+  }]));
+}
+
+function npmPackageProject(workspaceRoot, root, extraTargets) {
   const packageJson = JSON.parse(fs.readFileSync(path.join(workspaceRoot, root, "package.json"), "utf8"));
   const targets = Object.keys(packageJson.scripts ?? {})
     .map((script) => [script, {executor: "nx:run-script", options: {script}}]);
-  return {name: packageJson.name, root, tags: ["lang:js"], targets: Object.fromEntries(targets)};
+  return {name: packageJson.name, root, tags: ["lang:js"],
+    targets: {...Object.fromEntries(targets), ...commandTargets(extraTargets)}};
 }
 
 export const createNodesV2 = [
@@ -91,12 +107,7 @@ export const createNodesV2 = [
         tags: ["type:source"],
         // A target that reads code outside the source root (a conformance scan
         // over consumers, say) names those files in its own inputs.
-        targets: Object.fromEntries(Object.entries(targets).map(([target, {command, inputs, cache}]) => [target, {
-          executor: "nx:run-commands",
-          options: {command, cwd: "."},
-          ...(inputs ? {inputs} : {}),
-          ...(cache === undefined ? {} : {cache}),
-        }])),
+        targets: commandTargets(targets),
       }]);
       return [file, {projects: Object.fromEntries(projects)}];
     }
@@ -105,7 +116,7 @@ export const createNodesV2 = [
     }
     // The root lockfile belongs to the npm workspaces Nx already infers.
     if (root === ".") return [file, {}];
-    return [file, {projects: {[root]: npmPackageProject(context.workspaceRoot, root)}}];
+    return [file, {projects: {[root]: npmPackageProject(context.workspaceRoot, root, options?.npmProjectTargets?.[root])}}];
   }),
 ];
 

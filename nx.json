@@ -7,6 +7,7 @@
     "sharedGlobals": [],
     "default": [
       "{projectRoot}/**/*",
+      "!{projectRoot}/**/*.md",
       "sharedGlobals"
     ],
     "production": [
@@ -36,6 +37,13 @@
       ]
     },
     "test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
+    },
+    "typecheck": {
       "cache": true,
       "inputs": [
         "default",
@@ -77,7 +85,10 @@
                   "{workspaceRoot}/lib/**/*",
                   "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/packages/platform/lib/**/*",
-                  "{workspaceRoot}/contracts/**/*"
+                  "{workspaceRoot}/contracts/**/*",
+                  "!{workspaceRoot}/functions/src/**/*.md",
+                  "!{workspaceRoot}/lib/**/*.md",
+                  "!{workspaceRoot}/packages/**/*.md"
                 ]
               },
               "conformance": {
@@ -90,7 +101,10 @@
                   "{workspaceRoot}/lib/**/*",
                   "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/packages/platform/lib/**/*",
-                  "{workspaceRoot}/firestore.rules"
+                  "{workspaceRoot}/firestore.rules",
+                  "!{workspaceRoot}/functions/src/**/*.md",
+                  "!{workspaceRoot}/lib/**/*.md",
+                  "!{workspaceRoot}/packages/**/*.md"
                 ]
               }
             }
@@ -176,7 +190,8 @@
                   "{workspaceRoot}/.github/workflows/_backend-deploy.yml",
                   "^production",
                   "{workspaceRoot}/functions/src/**/*",
-                  "{workspaceRoot}/functions/test/**/*"
+                  "{workspaceRoot}/functions/test/**/*",
+                  "!{workspaceRoot}/**/*.md"
                 ]
               }
             }
@@ -252,7 +267,16 @@
                   "{workspaceRoot}/operations/**/*",
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/contracts/**/*",
-                  "{workspaceRoot}/widgetbook/**/*"
+                  "{workspaceRoot}/widgetbook/**/*",
+                  "!{workspaceRoot}/tool/**/*.md",
+                  "!{workspaceRoot}/analytics/**/*.md",
+                  "!{workspaceRoot}/infra/**/*.md",
+                  "!{workspaceRoot}/fastlane/**/*.md",
+                  "!{workspaceRoot}/apps/**/*.md",
+                  "!{workspaceRoot}/firebase/**/*.md",
+                  "!{workspaceRoot}/packages/**/*.md",
+                  "!{workspaceRoot}/functions/**/*.md",
+                  "!{workspaceRoot}/contracts/**/*.md"
                 ]
               }
             }
@@ -285,7 +309,8 @@
                   "{workspaceRoot}/tool/use_firebase_environment.sh",
                   "{workspaceRoot}/tool/validate_firebase_environment.sh",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
-                  "^production"
+                  "^production",
+                  "!{workspaceRoot}/**/*.md"
                 ]
               }
             }
@@ -322,7 +347,8 @@
                   "{workspaceRoot}/tool/use_firebase_environment.sh",
                   "{workspaceRoot}/tool/validate_firebase_environment.sh",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
-                  "^production"
+                  "^production",
+                  "!{workspaceRoot}/**/*.md"
                 ]
               }
             }
@@ -353,7 +379,8 @@
                   "{workspaceRoot}/tool/use_firebase_environment.sh",
                   "{workspaceRoot}/tool/validate_firebase_environment.sh",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
-                  "^production"
+                  "^production",
+                  "!{workspaceRoot}/**/*.md"
                 ]
               }
             }
@@ -372,7 +399,8 @@
                   "{workspaceRoot}/copy/structured_domain_copy_en.json",
                   "{workspaceRoot}/packages/l10n/lib/app_en.arb",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
-                  "^production"
+                  "^production",
+                  "!{workspaceRoot}/**/*.md"
                 ]
               }
             }
@@ -477,6 +505,19 @@
             }
           }
         ],
+        "npmProjectTargets": {
+          "functions": {
+            "check": {
+              "command": "node tool/audit/check_fn_readme_inventory.mjs",
+              "inputs": [
+                "{projectRoot}/README.md",
+                "{projectRoot}/src/index.ts",
+                "{workspaceRoot}/tool/audit/check_fn_readme_inventory.mjs",
+                "{workspaceRoot}/tool/audit/fn_readme_inventory_baseline.json"
+              ]
+            }
+          }
+        },
         "implicitDependencies": {
           "catch_dating_app": [
             "contracts",
