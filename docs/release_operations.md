@@ -326,10 +326,19 @@ Main pushes plan from the push's `before` commit. Harness, Tools
 preflight/execution and Flutter test selection use the union of every path
 touched in that committed history, including reversions, merge-parent changes
 and transient removed files. Current unowned paths still fail; unowned
-transient history broadens validation to the existing nightly/full mode. A
-cancelled older main run leaves no gap to cover: the merge queue already
-validated each of its commits. Pull requests and nightly runs retain their
-existing validation flow.
+transient history broadens validation to the existing nightly/full mode.
+
+A newer merge never cancels a main push run that has started (owner decision,
+12 Nov 2026). Main runs share one concurrency group without
+`cancel-in-progress`, so GitHub keeps the running run and one pending run, and
+a newer merge replaces only the pending one. A replaced run never starts, so
+the run that replaced it plans from the commit of the newest earlier main push
+run that ran, not from its own `before` commit
+(`tool/ci/main_push_base.mjs`). Every commit on main is then in some finished
+run's committed window. When that earlier run cannot be found, or its commit
+is not an ancestor of the head, the run validates everything in the nightly
+full mode. Pull requests and nightly runs retain their existing validation
+flow.
 
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
