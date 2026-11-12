@@ -113,16 +113,16 @@ test("checkout payments yield one paid booking and refund deltas", () => {
   const captured = {organizerId: "org", eventId: "ev", currency: "INR",
     amountPaise: 50_000, capturedAt: at(10_000), refundedAmountPaise: 0,
     providerFees: {feePaise: 1_180, taxPaise: 180}, updatedAt: at(10_000)};
-  const facts = checkoutPaymentFacts("publicEventPayments", "pp_1",
+  const facts = checkoutPaymentFacts("publicEvent", "pp_1",
     {capturedAt: null, refundedAmountPaise: 0}, captured);
   assert.equal(facts.length, 1);
   assert.deepEqual({...facts[0], occurredAt: facts[0].occurredAt.getTime()}, {
-    source: "publicEventPayments", paymentId: "pp_1", eventId: "ev",
+    source: "publicEvent", paymentId: "pp_1", eventId: "ev",
     currency: "INR", feeMinor: 1_180, taxMinor: 180, kind: "paid_booking",
     occurredAt: 10_000, amountMinor: 50_000});
-  assert.deepEqual(checkoutPaymentFacts("publicEventPayments", "pp_1",
+  assert.deepEqual(checkoutPaymentFacts("publicEvent", "pp_1",
     captured, captured), []);
-  const refund = checkoutPaymentFacts("publicEventPayments", "pp_1", captured,
+  const refund = checkoutPaymentFacts("publicEvent", "pp_1", captured,
     {...captured, refundedAmountPaise: 20_000, updatedAt: at(12_000)});
   assert.equal(refund.length, 1);
   assert.equal(refund[0].kind, "refund");
@@ -133,14 +133,14 @@ test("two equal partial refunds on one payment stay two rows", () => {
   const paid = {organizerId: "org", eventId: "ev", currency: "INR",
     amountPaise: 50_000, capturedAt: at(10_000), refundedAmountPaise: 10_000,
     updatedAt: at(11_000)};
-  const [second] = checkoutPaymentFacts("publicEventPayments", "pp_1", paid,
+  const [second] = checkoutPaymentFacts("publicEvent", "pp_1", paid,
     {...paid, refundedAmountPaise: 20_000, updatedAt: at(12_000)});
-  const [first] = checkoutPaymentFacts("publicEventPayments", "pp_1",
+  const [first] = checkoutPaymentFacts("publicEvent", "pp_1",
     {...paid, refundedAmountPaise: 0}, paid);
   assert.equal(first.amountMinor, second.amountMinor);
   assert.notEqual(paymentEventId(first), paymentEventId(second));
   assert.equal(paymentEventId(second),
-    "publicEventPayments:pp_1:refund:20000");
+    "publicEvent:pp_1:refund:20000");
 });
 
 test("native payments yield a paid booking when completed", () => {
@@ -221,7 +221,7 @@ test("a paid booking sets the first paid booking and streams the sale",
     const bq = fakeBigQuery();
     const deps = {db: fakeDb(rows), bigQuery: bq.client,
       now: () => new Date(9_000)};
-    await recordOrganizerPayment(deps, "org", {source: "publicEventPayments",
+    await recordOrganizerPayment(deps, "org", {source: "publicEvent",
       paymentId: "pp_1", eventId: "ev", kind: "paid_booking",
       occurredAt: new Date(4_000), currency: "INR", amountMinor: 50_000,
       feeMinor: 1_180, taxMinor: 180});
@@ -230,7 +230,7 @@ test("a paid booking sets the first paid booking and streams the sale",
     assert.equal(facts.channel, "imported");
     assert.equal(facts.milestones.firstPaidBookingAt.toMillis(), 4_000);
     assert.deepEqual(bq.inserted.map((row) => row.insertId),
-      ["org:first_paid_booking", "publicEventPayments:pp_1:captured"]);
+      ["org:first_paid_booking", "publicEvent:pp_1:captured"]);
     assert.equal(bq.inserted[1].json.provider_fee_minor, 1_180);
     assert.equal(bq.inserted[1].json.amount_minor, 50_000);
   });

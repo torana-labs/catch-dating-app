@@ -1,3 +1,5 @@
+import {GUEST_PAYMENTS, type GuestPaymentPurpose} from
+  "../payments/guestPayments";
 import type {HostAnalyticsCallableResponse as Response}
   from "../shared/generated/hostAnalyticsCallableResponse";
 
@@ -56,6 +58,13 @@ const routeFields = [
   "destinationAccountId",
   "configurationVersion",
 ];
+// Guest payments share one ledger; each export reads its own flow.
+const guestPaymentPurposeOf: Record<string, GuestPaymentPurpose> = {
+  formPayments: "form",
+  publicPayments: "publicEvent",
+  offerPayments: "offer",
+};
+
 const sources = [
   [
     "versions",
@@ -86,7 +95,7 @@ const sources = [
   ],
   [
     "formPayments",
-    "organizerFormPayments",
+    GUEST_PAYMENTS,
     [
       "organizerId",
       "formId",
@@ -102,7 +111,7 @@ const sources = [
   ],
   [
     "publicPayments",
-    "publicEventPayments",
+    GUEST_PAYMENTS,
     [
       "organizerId",
       "eventId",
@@ -185,7 +194,7 @@ const sources = [
   ],
   [
     "offerPayments",
-    "organizerEventOfferPayments",
+    GUEST_PAYMENTS,
     [
       "organizerId",
       "eventId",
@@ -247,6 +256,8 @@ export async function loadHostRegistrationAnalytics(
             let query = db
               .collection(collection)
               .where("organizerId", "==", organizerId);
+            const purpose = guestPaymentPurposeOf[key];
+            if (purpose) query = query.where("purpose", "==", purpose);
             if (
               eventId &&
               [

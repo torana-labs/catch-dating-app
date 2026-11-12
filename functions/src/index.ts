@@ -1158,8 +1158,7 @@ export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,
-  onOrganizerGrowthPublicPaymentWritten,
-  onOrganizerGrowthOfferPaymentWritten,
+  onOrganizerGrowthGuestPaymentWritten,
   onOrganizerGrowthNativePaymentWritten,
 } from "./growth/organizerGrowthTriggers";
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";

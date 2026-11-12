@@ -68,8 +68,8 @@ export const issueKindLabels: Record<MoneyIssue["kind"], string> = {
 };
 
 export const issueSourceLabels: Record<MoneyIssue["source"], string> = {
-  publicEventPayments: "Website checkout",
-  organizerEventOfferPayments: "Offer checkout",
+  publicEvent: "Website checkout",
+  offer: "Offer checkout",
   payments: "App booking",
   organizerBills: "Catch bill",
 };

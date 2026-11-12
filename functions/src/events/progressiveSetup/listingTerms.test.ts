@@ -70,8 +70,8 @@ test("fresh initialization fences markers and history", async () => {
     await assert.rejects(h.run(), unavailable);
   }
   for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", "publicEventPayments", "payments",
-    "organizerEventOfferPayments", "organizerContactOrigins",
+    "eventWaitlistOffers", "guestPayments", "payments",
+    "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
     "eventAttendeeImports", "razorpayPendingOrders",
     "eventSeatMigrationRuns"]) {
