@@ -55,6 +55,10 @@ export const siteFooterCopy = {
   soon: "soon",
   /** An open city's note: "Mumbai · 2 plans this week", or "new" before its first plan. */
   cityNotes: {plans: "{count} plans this week", plan: "1 plan this week", new: "new"},
+  /** The Cities column's last link, to /cities/. */
+  moreCities: "More cities →",
+  /** A country with no city open, once in the Cities column. */
+  countrySoon: "Launching soon in {country}",
 } as const;
 
 /**

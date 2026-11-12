@@ -5,7 +5,7 @@ import type {HomeCity} from "./homeTypes";
 
 const city = (status: HomeCity["status"], weekPlanCount: number): HomeCity => ({
   slug: activeFeaturedCity.slug, marketSlug: activeFeaturedCity.marketSlug, label: activeFeaturedCity.label,
-  status, weekPlanCount, timezone: activeFeaturedCity.timezone,
+  status, weekPlanCount, timezone: activeFeaturedCity.timezone, countryIsoCode: activeFeaturedCity.countryIsoCode,
 });
 
 describe("city status lines", () => {

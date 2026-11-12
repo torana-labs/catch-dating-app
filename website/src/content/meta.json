@@ -179,6 +179,12 @@
       "description": "Find runs, dinners, games and nights out in your city over the next two weeks, and the hosts who run them.",
       "canonicalPath": "/explore/",
       "twitterDescription": "Find your next plan: runs, dinners, games and social events on Catch."
+    },
+    "cities": {
+      "title": "Cities | Catch",
+      "description": "Every city on Catch: where it’s open now with plans this week, and where it opens next.",
+      "canonicalPath": "/cities/",
+      "twitterDescription": "See where Catch is open, and get notified when your city opens."
     }
   },
   "listing": {

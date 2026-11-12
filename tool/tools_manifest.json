@@ -5682,7 +5682,8 @@
         "packages/kernel/lib/market_catalog.dart",
         "admin/src/shared/config/generated/marketCatalog.ts",
         "firestore.rules",
-        "tool/contracts/generate_market_catalog.mjs"
+        "tool/contracts/generate_market_catalog.mjs",
+        "website/src/app/routeRegistry.ts"
       ],
       "role": "gate",
       "description": "Keeps contracts/catalogs/markets.json the one source of countries and cities: validates it against contracts/shared/market_catalog.schema.json and its cross-record lifecycle rules, fails when a generated copy (Functions, kernel Dart, admin launch markets, the Firestore rules launch-market block) is stale, and fails when tracked source names three or more catalog cities outside the shrink-only market_list_allowlist.json.",

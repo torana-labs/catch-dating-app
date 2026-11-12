@@ -307,6 +307,27 @@ export function outputs(catalog, root = repoRoot) {
   ];
 }
 
+// --------------------------------------------------------- reserved slugs
+
+// City pages live at /{slug}/, so no city slug, alias or legacy id may take a
+// path the website already routes (/cities/, /explore/, /host/...).
+const routeRegistryPath = "website/src/app/routeRegistry.ts";
+const systemPrefixes = ["api", "og", "maps", "assets", "fonts", "_next", "_legacy", "private-shell"];
+
+export function reservedWebsiteSlugs(root = repoRoot) {
+  const registry = fs.readFileSync(path.join(root, routeRegistryPath), "utf8");
+  const routed = [...registry.matchAll(/path: "\/([a-z0-9_-]+)/gu)].map((match) => match[1]);
+  return new Set([...routed, ...systemPrefixes]);
+}
+
+export function reservedSlugErrors(catalog, reserved = reservedWebsiteSlugs()) {
+  return catalog.cities.flatMap((city) =>
+    [city.slug, ...city.aliases, ...(city.legacyIds ?? [])]
+      .filter((key) => reserved.has(key))
+      .map((key) => `${city.marketId}: "${key}" is a website path (${routeRegistryPath}).`)
+  );
+}
+
 // ------------------------------------------------------ catalog references
 
 // A "reference" allowlist entry selects catalog cities by slug (crawl targets,
@@ -447,6 +468,7 @@ function main() {
   const errors = [
     ...(withoutSchema ? [] : schemaErrors(catalog)),
     ...marketCatalogErrors(catalog),
+    ...reservedSlugErrors(catalog),
   ];
   if (errors.length > 0) {
     console.error(errors.join("\n"));
