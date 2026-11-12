@@ -1,0 +1,68 @@
+name: Publish brand config
+
+# Keeps the public config/brand document in each Firebase environment equal to
+# packages/brand/brand.json, so nobody runs tool/firebase/create_config_brand.mjs
+# by hand. A merge to main that changes the brand record (or what writes it)
+# publishes to dev, then to prod once dev succeeds, in the same order and with
+# the same environment protection as the backend deploy. Dispatch it to
+# publish on demand: dev then prod, or one environment, staging included.
+# It never runs for a pull request. A change to these workflow files alone does
+# not publish; dispatch once after such a change.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - packages/brand/brand.json
+      - packages/brand/brand.schema.json
+      - packages/brand/index.mjs
+      - tool/firebase/create_config_brand.mjs
+      - contracts/firestore/config_brand.schema.json
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to publish config/brand
+        type: choice
+        options: [dev-then-prod, dev, staging, prod]
+        default: dev-then-prod
+
+permissions:
+  contents: read
+
+# Only the publishing jobs mint an OIDC token for Workload Identity.
+jobs:
+  dev:
+    if: >-
+      ${{ github.ref == 'refs/heads/main' && (
+        github.event_name == 'push' ||
+        inputs.environment == 'dev-then-prod' || inputs.environment == 'dev') }}
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/_brand-config-publish.yml
+    with:
+      environment: dev
+
+  prod:
+    needs: dev
+    if: >-
+      ${{ !cancelled() && github.ref == 'refs/heads/main' && (
+        (github.event_name == 'push' || inputs.environment == 'dev-then-prod') && needs.dev.result == 'success' ||
+        github.event_name == 'workflow_dispatch' && inputs.environment == 'prod') }}
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/_brand-config-publish.yml
+    with:
+      environment: prod
+
+  staging:
+    if: >-
+      ${{ github.ref == 'refs/heads/main' &&
+        github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/_brand-config-publish.yml
+    with:
+      environment: staging
