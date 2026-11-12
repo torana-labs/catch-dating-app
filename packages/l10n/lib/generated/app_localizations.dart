@@ -46979,6 +46979,51 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish your profile'**
   String get afterEventNeedsProfileAction;
+
+  /// After-event section title over the photos the host shared with guests who checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos from {organizer}'**
+  String afterEventPhotosTitle({required String organizer});
+
+  /// After-event section title over the host's photos when the organizer's name is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos from the host'**
+  String get afterEventPhotosTitleNoOrganizer;
+
+  /// After-event photos section note: who else sees the host's photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with everyone who came.'**
+  String get afterEventPhotosNote;
+
+  /// Screen-reader label for a host photo thumbnail on the after-event screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {index} of {count}. Opens full screen.'**
+  String afterEventPhotoLabel({required int index, required int count});
+
+  /// Tooltip and screen-reader label for closing the full-screen photo viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Close photos'**
+  String get afterEventPhotoViewerClose;
+
+  /// Full-screen photo viewer title: which photo is showing.
+  ///
+  /// In en, this message translates to:
+  /// **'{index} of {count}'**
+  String afterEventPhotoViewerCount({required int index, required int count});
+
+  /// Screen-reader label for the photo in the full-screen viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {index} of {count}'**
+  String afterEventPhotoViewerPhotoLabel({
+    required int index,
+    required int count,
+  });
 }
 
 class _AppLocalizationsDelegate

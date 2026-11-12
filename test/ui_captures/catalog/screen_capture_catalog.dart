@@ -235,6 +235,7 @@ import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
@@ -6772,6 +6773,9 @@ List<Object> _marketingAfterEventOverrides() {
   ];
   return <Object>[
     uidProvider.overrideWith((ref) => Stream.value(uid)),
+    eventHostPhotoAlbumProvider(
+      event.id,
+    ).overrideWith((ref) async => EventHostPhotoAlbum.empty(event.id)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream<UserProfile?>.value(_marketingAfterEventViewer),
     ),
@@ -7954,8 +7958,10 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
 final _eventRecapNextEvent = _captureFixtures.captureEvent(
   id: 'event-recap-next-capture',
   organizer: _dashboardJoinedOrganizer,
-  startTime: DateTime.now().add(const Duration(days: 6, hours: 14)),
-  endTime: DateTime.now().add(const Duration(days: 6, hours: 15)),
+  // Two days out, so its weekday-based title never matches the event just
+  // attended (11 hours ago) on the same screen.
+  startTime: DateTime.now().add(const Duration(days: 2)),
+  endTime: DateTime.now().add(const Duration(days: 2, hours: 1)),
   meetingPoint: 'Carter Road Amphitheatre',
   bookedCount: 9,
   capacityLimit: 18,
@@ -7968,6 +7974,7 @@ List<Object> _eventRecapProviderOverrides({
   AsyncValue<EventRecapViewModel?>? recapValue,
   Map<String, PublicProfile>? rosterProfiles,
   AsyncValue<Map<String, PublicProfile>>? rosterProfilesValue,
+  List<EventHostPhoto> hostPhotos = const <EventHostPhoto>[],
 }) {
   final resolvedRecapValue =
       recapValue ?? AsyncData<EventRecapViewModel?>(_eventRecapViewModel());
@@ -8050,7 +8057,49 @@ List<Object> _eventRecapProviderOverrides({
       rosterProfilesValue ??
           AsyncData(rosterProfiles ?? _eventRecapRosterProfiles()),
     ),
+    eventHostPhotoAlbumProvider(eventId).overrideWith(
+      (ref) async => _eventRecapHostPhotoAlbum(eventId, hostPhotos),
+    ),
   ];
+}
+
+/// The host's photos as a checked-in guest sees them; an empty list is what
+/// every guest sees before the host shares any.
+EventHostPhotoAlbum _eventRecapHostPhotoAlbum(
+  String eventId,
+  List<EventHostPhoto> photos,
+) => EventHostPhotoAlbum(
+  eventId: eventId,
+  organizerName: _dashboardJoinedOrganizer.name,
+  access: EventHostPhotoAccess.guest,
+  maxPhotos: 100,
+  photos: photos,
+  urlsExpireAt: DateTime(2030),
+);
+
+/// Four event scenes the host shared after the run.
+final _eventRecapHostPhotos = <EventHostPhoto>[
+  for (final (index, path) in _eventScenePhotoAssetPaths.indexed)
+    EventHostPhoto(
+      photoId: 'capture-guest-photo-$index',
+      thumbnailUrl: path,
+      displayUrl: path,
+      width: _eventScenePhotoSizes[index].$1,
+      height: _eventScenePhotoSizes[index].$2,
+      uploadedByUid: 'capture-host',
+      createdAt: DateTime(2026, 5, 30, 8, index),
+    ),
+];
+
+Future<void> _driveEventRecapToHostPhotos(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const ValueKey('after-event-host-photos')),
+    320,
+    scrollable: findVerticalScrollable(
+      within: find.byKey(const ValueKey('after-event-screen')),
+    ),
+  );
+  await pumpFeatureUi(tester);
 }
 
 final _activityScreenNotifications = UtilitySurfaceFixtures.notifications;
@@ -14505,6 +14554,34 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     providerOverrides: _eventRecapProviderOverrides(),
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_host_photos',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    precache: _eventScenePhotoAssetImages,
+    providerOverrides: _eventRecapProviderOverrides(
+      hostPhotos: _eventRecapHostPhotos,
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+    drive: _driveEventRecapToHostPhotos,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_host_photos_none',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_host_photo_viewer',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    precache: _eventScenePhotoAssetImages,
+    builder: (context) => EventHostPhotoViewerScreen(
+      photos: _eventRecapHostPhotos,
+      initialIndex: 1,
+    ),
   ),
   ScreenCaptureEntry(
     id: 'event_recap_loading',

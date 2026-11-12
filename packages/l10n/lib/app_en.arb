@@ -32550,5 +32550,19 @@
   "afterEventNeedsProfileBody": "People you met see your photo and a few details when you pick them. You can still rate the event and use the group chat.",
   "@afterEventNeedsProfileBody": {"description": "Stay in touch, when picks need a profile: body.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
   "afterEventNeedsProfileAction": "Finish your profile",
-  "@afterEventNeedsProfileAction": {"description": "Stay in touch, when picks need a profile: action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"}
+  "@afterEventNeedsProfileAction": {"description": "Stay in touch, when picks need a profile: action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotosTitle": "Photos from {organizer}",
+  "@afterEventPhotosTitle": {"description": "After-event section title over the photos the host shared with guests who checked in.", "placeholders": {"organizer": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotosTitleNoOrganizer": "Photos from the host",
+  "@afterEventPhotosTitleNoOrganizer": {"description": "After-event section title over the host's photos when the organizer's name is unknown.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotosNote": "Shared with everyone who came.",
+  "@afterEventPhotosNote": {"description": "After-event photos section note: who else sees the host's photos.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotoLabel": "Photo {index} of {count}. Opens full screen.",
+  "@afterEventPhotoLabel": {"description": "Screen-reader label for a host photo thumbnail on the after-event screen.", "placeholders": {"index": {"type": "int"}, "count": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotoViewerClose": "Close photos",
+  "@afterEventPhotoViewerClose": {"description": "Tooltip and screen-reader label for closing the full-screen photo viewer.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotoViewerCount": "{index} of {count}",
+  "@afterEventPhotoViewerCount": {"description": "Full-screen photo viewer title: which photo is showing.", "placeholders": {"index": {"type": "int"}, "count": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPhotoViewerPhotoLabel": "Photo {index} of {count}",
+  "@afterEventPhotoViewerPhotoLabel": {"description": "Screen-reader label for the photo in the full-screen viewer.", "placeholders": {"index": {"type": "int"}, "count": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"}
 }

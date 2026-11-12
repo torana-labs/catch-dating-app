@@ -29282,4 +29282,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get afterEventNeedsProfileAction => 'Finish your profile';
+
+  @override
+  String afterEventPhotosTitle({required String organizer}) {
+    return 'Photos from $organizer';
+  }
+
+  @override
+  String get afterEventPhotosTitleNoOrganizer => 'Photos from the host';
+
+  @override
+  String get afterEventPhotosNote => 'Shared with everyone who came.';
+
+  @override
+  String afterEventPhotoLabel({required int index, required int count}) {
+    return 'Photo $index of $count. Opens full screen.';
+  }
+
+  @override
+  String get afterEventPhotoViewerClose => 'Close photos';
+
+  @override
+  String afterEventPhotoViewerCount({required int index, required int count}) {
+    return '$index of $count';
+  }
+
+  @override
+  String afterEventPhotoViewerPhotoLabel({
+    required int index,
+    required int count,
+  }) {
+    return 'Photo $index of $count';
+  }
 }
