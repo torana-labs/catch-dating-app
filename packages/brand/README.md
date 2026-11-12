@@ -79,7 +79,7 @@ record itself, `contracts/firestore/config_brand.schema.json` is
 `brand.schema.json` in draft-07 form, and the writer's tests fail when either
 drifts.
 
-The Flutter apps read `config/brand` when they need a store link
+The Flutter apps read the store links from `config/brand` when they need one
 (`liveBrandProvider` in `catch_platform`), once per session and without
 blocking startup. A missing, slow or invalid document, or a slot that is not
 a store URL, falls back to the generated `Brand` constants. Functions and the
@@ -100,8 +100,10 @@ The support email, phone and WhatsApp, the domain and the operator are plain
    then `--all --verify` to confirm.
 4. Re-register what code cannot switch (the rebrand checklist above).
 
-The website and Functions pick the change up with their next release; the
-apps pick up live values from `config/brand` without one.
+The website and Functions pick the change up with their next release. The
+apps read only the store links live today; other values in `config/brand`
+are published for them but reach the apps through their generated `Brand`
+constants, so a contact change in the apps ships with an app release.
 
 ## CI
 
