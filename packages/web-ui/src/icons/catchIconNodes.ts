@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Source: design/tokens/catch.icons.json (Lucide 1.61.0).
+// Source: design/tokens/catch.icons.json (Lucide 1.68.0).
 // Regenerate with `node tool/design/generate_icon_catalog.mjs`.
 // SVG node data (24 x 24 box) for the activity and playbook roles, for
 // artwork drawn outside React, such as link-preview cards.
