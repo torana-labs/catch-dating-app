@@ -8,6 +8,7 @@ import {applyBrand, applyBrandText, brand, brandConsistencyErrors, webUrl} from 
 import {compare, rules, scanText} from "./check_brand_literals.mjs";
 import {outputs, renderDartModule, renderFunctionsModule, renderWebsiteModule} from "./generate.mjs";
 import {rewriteSurface, surfacePaths} from "./managed.mjs";
+import {launchGateGaps, launchGateMessage, loadMarketCities} from "./launch_gate.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -168,4 +169,19 @@ test("store links reach every runtime copy, null or set", () => {
     assert.ok(render(set).includes(`"ios": "${ios}"`));
     assert.match(render(set), /export type StoreLink = string \| null;/u);
   }
+});
+
+test("the launch gate names the Consumer store slots a live market lacks", async () => {
+  const cities = [{id: "a", label: "Mumbai", status: "live"}, {id: "b", label: "Delhi", status: "waitlist"}];
+  const none = withStores({ios: null, android: null});
+  assert.deepEqual(launchGateGaps(none, cities), {live: ["Mumbai"], missing: ["stores.consumer.ios", "stores.consumer.android"]});
+  assert.match(launchGateMessage(launchGateGaps(none, cities)), /Mumbai is live but stores\.consumer\.ios and stores\.consumer\.android are null/u);
+  const iosOnly = withStores({ios: "https://apps.apple.com/app/id1", android: null});
+  assert.deepEqual(launchGateGaps(iosOnly, cities).missing, ["stores.consumer.android"]);
+  const both = withStores({ios: "https://apps.apple.com/app/id1",
+    android: "https://play.google.com/store/apps/details?id=com.catchdates.app"});
+  assert.equal(launchGateMessage(launchGateGaps(both, cities)), null);
+  assert.equal(launchGateMessage(launchGateGaps(none, [{id: "b", status: "waitlist"}])), null, "no live city, no gate");
+  const marketCities = await loadMarketCities(repoRoot);
+  assert.ok(marketCities.length > 0 && marketCities.every((city) => typeof city.status === "string"));
 });

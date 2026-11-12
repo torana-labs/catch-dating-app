@@ -10,6 +10,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {brand, brandConsistencyErrors} from "./index.mjs";
 import {rewriteSurface, surfacePaths} from "./managed.mjs";
+import {LAUNCH_GATE_MODE, launchGateGaps, launchGateMessage, loadMarketCities} from "./launch_gate.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -135,9 +136,12 @@ export function outputs(record = brand) {
   ];
 }
 
-function main() {
+async function main() {
   const check = process.argv.includes("--check");
   const errors = brandConsistencyErrors();
+  const gate = launchGateMessage(launchGateGaps(brand, await loadMarketCities(repoRoot)));
+  if (gate && LAUNCH_GATE_MODE === "error") errors.push(gate);
+  else if (gate) console.warn(`warning: ${gate}`);
   if (errors.length > 0) {
     console.error(errors.join("\n"));
     process.exit(1);
@@ -179,4 +183,4 @@ function main() {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();
