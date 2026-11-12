@@ -2,8 +2,8 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -33,12 +33,15 @@ void main() {
 
   test('a missing or unreadable document keeps the fallback', () {
     expect(LiveBrand.fromConfig(null, fallback: fallback), fallback);
-    expect(LiveBrand.fromConfig({'stores': 3}, fallback: fallback), fallback);
+    expect(
+      LiveBrand.fromConfig(const {'stores': 3}, fallback: fallback),
+      fallback,
+    );
   });
 
   test('a set slot in config/brand replaces the generated value', () {
     const newIos = 'https://apps.apple.com/app/catch/id1000000001';
-    final live = LiveBrand.fromConfig({
+    final live = LiveBrand.fromConfig(const {
       'stores': {
         'consumer': {'ios': newIos, 'android': catchAndroid},
         'host': {'ios': hostIos, 'android': null},
@@ -49,7 +52,7 @@ void main() {
   });
 
   test('a null slot in config/brand takes the link down', () {
-    final live = LiveBrand.fromConfig({
+    final live = LiveBrand.fromConfig(const {
       'stores': {
         'consumer': {'ios': null, 'android': null},
         'host': {'ios': null, 'android': null},
@@ -59,7 +62,7 @@ void main() {
   });
 
   test('a missing, mistyped or off-store slot keeps the fallback', () {
-    final live = LiveBrand.fromConfig({
+    final live = LiveBrand.fromConfig(const {
       'stores': {
         'consumer': {'ios': 42, 'android': 'https://evil.example/app'},
         'host': {'android': 'https://apps.apple.com/app/id1'},
