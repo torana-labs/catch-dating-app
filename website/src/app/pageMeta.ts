@@ -55,11 +55,6 @@ export function isLegalPageKey(page: PageKey): page is PublishedLegalPageKey {
 export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
   websiteMeta.routes;
 
-export function pageMetaForHostPath(pathname: string): PageMeta | null {
-  const path = pathname.replace(/\/+$/, "") + "/";
-  return path === "/host/apply/" ? websiteMeta.routes.host_apply : null;
-}
-
 /** Catch for weddings' application page shares the landing's page key, with its own metadata. */
 export function pageMetaForWeddingsPath(pathname: string): PageMeta | null {
   const path = pathname.replace(/\/+$/, "") + "/";
@@ -133,7 +128,7 @@ export function getPageKey(
   if (pathname.startsWith("/rsvp/")) return "household_rsvp";
   if (isProgrammeLinkPath(pathname)) return "programme_link";
   if (pathname.startsWith("/f/")) return "public_form";
-  if (["/host", "/host/", "/host/apply", "/host/apply/"].includes(pathname)) return "host";
+  if (["/host", "/host/"].includes(pathname)) return "host";
   if (["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"].includes(pathname)) return "weddings";
   if (pathname.startsWith("/organizers")) return "organizers";
   if (pathname === "/explore" || pathname === "/explore/" || cityForPath(pathname)) return "visitor_discovery";

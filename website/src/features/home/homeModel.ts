@@ -99,7 +99,8 @@ export function formatTiles(plans: HomeCityPlans, city: HomeCity, readAt: number
     const inFormat = thisWeek.filter((plan) => plan.format === format);
     return {
       format, title: name, body: line, count: inFormat.length,
-      kicker: city.status === "live" ? fill(copy.formats.liveCount, {count: inFormat.length}) : fill(copy.formats.soonKicker, {city: city.label}),
+      kicker: city.status !== "live" ? fill(copy.formats.soonKicker, {city: city.label}) :
+        inFormat.length ? fill(copy.formats.liveCount, {count: inFormat.length}) : fill(copy.formats.liveQuiet, {city: city.label}),
       photoUrl: inFormat.find((plan) => plan.photoUrl)?.photoUrl ?? plans.plans.find((plan) => plan.format === format && plan.photoUrl)?.photoUrl ?? null,
     };
   });

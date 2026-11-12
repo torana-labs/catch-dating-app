@@ -49,7 +49,6 @@ writeRoute("/explore/", staticRouteMeta(websiteMeta, "visitor_discovery", baseUr
 for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim", "preview"]) {
   fs.rmSync(path.join(distRoot, "host", slug), {recursive: true, force: true});
 }
-writeRoute("/host/apply/", staticRouteMeta(websiteMeta, "host_apply", baseUrl));
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
 writeRoute("/weddings/apply/", staticRouteMeta(websiteMeta, "weddings_apply", baseUrl));
 writeRoute("/weddings/", staticRouteMeta(websiteMeta, "weddings", baseUrl));

@@ -111,7 +111,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "The host landing, band for band as the RbWebHostV2 board on the system: hero, kinds of night, a night on Catch (chapters), the iPad, the applicant board (replay), guests, growth links, layers, pricing (slider), FAQ and the step-1 application card, whose Continue opens /host/apply/. The retired-route anchors sit on the bands that carry their content. The site header names the product and its sections.",
+      "notes": "The host landing, band for band as the RbWebHostV2 board on the system: hero, kinds of night, a night on Catch (chapters), the iPad, the applicant board (replay), guests, growth links, layers, pricing (slider), FAQ and the free-trial start band, whose store badges begin the trial in the app. The retired-route anchors sit on the bands that carry their content. The site header names the product and its sections.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -1215,44 +1215,6 @@
             "active",
             "completed",
             "unavailable"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_apply",
-      "kind": "static",
-      "path": "/host/apply/",
-      "pageKey": "host",
-      "source": "website/src/features/host/HostApplicationPage.tsx",
-      "metaKey": "host_apply",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Single event-qualified Host pilot application. Submission uses the existing reviewed intake; no automatic account, booking or entitlement grant.",
-      "review": {
-        "priority": "p1",
-        "status": "ready",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "initial",
-          "interactive-steps",
-          "review",
-          "submitted",
-          "error"
-        ],
-        "stateCoverage": {
-          "storybook": [
-            "initial"
-          ],
-          "manual": [
-            "interactive-steps",
-            "review",
-            "submitted",
-            "error"
           ]
         }
       }

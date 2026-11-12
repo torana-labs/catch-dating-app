@@ -9,7 +9,7 @@
     },
     "host": {
       "title": "Catch Host | Run great events. Build a business around them.",
-      "description": "Bring event bookings, guest relationships, and the experience itself together. Explore Catch for independent hosts, clubs, communities, and event teams. Apply for a selected pilot.",
+      "description": "Bring event bookings, guest relationships, and the experience itself together. Explore Catch for independent hosts, clubs, communities, and event teams. Start your free trial.",
       "canonicalPath": "/host/",
       "twitterDescription": "Simpler hosting. More opportunities to participate. Explore Catch Host for your next event."
     },
@@ -165,13 +165,6 @@
       "description": "Apply with a real wedding: dates, destination, guest count and the team you will bring. Catch replies on WhatsApp within two working days.",
       "canonicalPath": "/weddings/apply/",
       "twitterDescription": "Apply for the Catch for weddings pilot.",
-      "robots": "noindex, follow"
-    },
-    "host_apply": {
-      "title": "Apply for a pilot | Catch Host",
-      "description": "Apply with your next event, guest-list size and current tools. Catch reviews each pilot application before agreeing access and setup.",
-      "canonicalPath": "/host/apply/",
-      "twitterDescription": "Apply for a supported Catch Host pilot.",
       "robots": "noindex, follow"
     },
     "visitor_discovery": {

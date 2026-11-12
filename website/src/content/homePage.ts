@@ -26,6 +26,8 @@ export const homePageCopy = {
     lead: "Tap a format to see what’s on. Every plan has a host who’s there on the night.",
     label: "Formats",
     liveCount: "{count} this week",
+    /** An open city with nothing in this format this week: open, not a zero. */
+    liveQuiet: "In {city}",
     soonKicker: "Coming to {city}",
   },
   week: {
@@ -37,6 +39,8 @@ export const homePageCopy = {
     filters: "Filter by format",
     everything: "Everything",
     note: "{shown} of {total} plans shown. Hosts set their own prices.",
+    /** An open city with nothing this week: not "0 of 0 plans shown". */
+    emptyWeek: "Nothing on in {city} this week yet. New plans go up as hosts add them.",
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
     unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",
