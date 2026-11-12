@@ -51,17 +51,6 @@
   border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
 }
 
-.legal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--catch-space-s4);
-}
-
-.legal > p {
-  margin: 0;
-}
-
 @container catch-page (width < 840px) {
   .groups {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -77,9 +77,10 @@ test("the banner leads with one line and keeps the whole statement under Details
   expect(details?.open).toBe(false);
   expect(details?.querySelector("summary")?.textContent).toBe("Details");
   expect(details?.textContent).toContain(marketingConsentPreferencesCopy.body);
-  // One primary; the other two choices carry equal, quieter weight.
+  // Three equal choices, least to most data: none is styled over another.
   const choices = screen.getAllByRole("button").filter((button) => banner.contains(button));
-  expect(choices.map((button) => button.textContent)).toEqual(["Allow analytics and marketing", "Allow analytics", "Essential only"]);
+  expect(choices.map((button) => button.textContent)).toEqual(["Essential only", "Allow analytics", "Allow analytics and marketing"]);
+  expect(new Set(choices.map((button) => button.className)).size).toBe(1);
 });
 
 test("once chosen nothing floats over the page, and Privacy choices reopens the banner with focus", () => {

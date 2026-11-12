@@ -63,9 +63,9 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
         {title: copy.footer.groups.cities, links: cities.map((item) => ({href: cityPagePath(item.slug), label: item.label,
           note: item.status === "live" ? undefined : copy.footer.soon}))},
         {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
-        {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label}))},
+        {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label})),
+          trailing: <PrivacyChoicesButton tone="link" />},
       ]}
-      legal={<PrivacyChoicesButton />}
       navLabel={copy.footer.nav}
       tagline={copy.footer.tagline}
     />

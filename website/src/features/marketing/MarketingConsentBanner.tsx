@@ -74,11 +74,12 @@ export function MarketingConsentBanner({serverRendered = false}: {serverRendered
       summary={copy.summary}
       actions={
         <>
-          <Button size="small" type="button" onClick={() => choose("accepted")}>{copy.allowMarketing}</Button>
-          <Button size="small" type="button" variant="ghost" onClick={() => choose("analytics")}>{copy.allowAnalytics}</Button>
+          {/* Equal weight, least to most data: no choice is promoted over another (owner decision). */}
           <Button size="small" type="button" variant="ghost" onClick={() => choose("essential")}>
             {websiteCopy["marketingconsentbanner_0330"]}
           </Button>
+          <Button size="small" type="button" variant="ghost" onClick={() => choose("analytics")}>{copy.allowAnalytics}</Button>
+          <Button size="small" type="button" variant="ghost" onClick={() => choose("accepted")}>{copy.allowMarketing}</Button>
         </>
       }
     />
