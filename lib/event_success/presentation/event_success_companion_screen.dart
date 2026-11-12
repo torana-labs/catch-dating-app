@@ -74,7 +74,7 @@ part 'companion_parts/event_success_companion_questionnaire_section.dart';
 part 'companion_parts/event_success_companion_reveal_overlay.dart';
 part 'companion_parts/event_success_companion_rotation_slot_row.dart';
 part 'companion_parts/event_success_companion_shared.dart';
-part 'companion_parts/event_success_companion_stage_cards.dart';
+part 'companion_parts/event_success_companion_stage_card.dart';
 part 'companion_parts/event_success_companion_stage_viewport.dart';
 part 'companion_parts/event_success_companion_wingman_section.dart';
 part 'event_success_companion_body_screen.dart';
