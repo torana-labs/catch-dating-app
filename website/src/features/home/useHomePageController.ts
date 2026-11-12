@@ -2,6 +2,7 @@ import {useMemo, useState} from "react";
 import {homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {formatTiles, organizerCard, planCard, weekPlans, comingFormats} from "./homeModel";
+import type {CitySource} from "./cityChoice";
 import type {HomeCatalog, HomeFormat} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
 
@@ -9,7 +10,8 @@ export type HomeFilter = HomeFormat | "all";
 const gridSize = 8;
 
 /** Owns the format filter and binds the city's read model to the page's sections. */
-export function useHomePageController(catalog: HomeCatalog, navigate: (href: string) => void = (href) => window.location.assign(href)) {
+export function useHomePageController(catalog: HomeCatalog, navigate: (href: string) => void = (href) => window.location.assign(href),
+  citySource?: CitySource) {
   const {plans, readAt, selected: city} = catalog;
   const [filter, setFilter] = useState<HomeFilter>("all");
   const live = plans.status === "live";
@@ -23,6 +25,8 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
       fill(copy.week.emptyFormat, {format: filterName.toLocaleLowerCase("en-IN")});
   return {
     city,
+    /** How the page reached its city, when known: the launch notice records it. */
+    citySource,
     cities: catalog.cities,
     liveCity: catalog.liveCity,
     live,

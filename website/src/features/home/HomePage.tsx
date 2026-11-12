@@ -22,6 +22,6 @@ export function HomePage({captures, catalog, downloadUrl, loadCatalog, navigate}
   navigate?: (href: string) => void;
 }) {
   const city = useHomeCity(catalog, loadCatalog);
-  const home = useHomePageController(city.catalog, navigate);
+  const home = useHomePageController(city.catalog, navigate, city.source);
   return <CatchRoot theme="day"><HomePageSections captures={captures} downloadUrl={downloadUrl} home={home} /></CatchRoot>;
 }

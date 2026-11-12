@@ -3,56 +3,77 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {APPROVAL_ENVIRONMENT, CI_VALIDATION_INPUTS, CI_WORKFLOW, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewOutcome, previewRunTitle, selectDispatchedRun,
+import {APPROVAL_ENVIRONMENT, CI_WORKFLOW, ciValidationInputs, PREVIEW_WORKFLOW, planDecision, previewDispatch, releaseCandidates, previewOutcome, previewRunTitle, selectDispatchedRun,
   websiteChangedBetween} from "./releaseTrain.mjs";
 
 const mainSha = "a".repeat(40);
 const liveSha = "b".repeat(40);
-const base = {event: "workflow_run", eventSha: mainSha, eventConclusion: "success", mainSha,
-  validation: {validated: true, captureBinding: {sourceSha: mainSha}}, lineage: {liveSha, alreadyLive: false}};
+const olderSha = "c".repeat(40);
+const validated = (sha) => ({sha, validation: {validated: true, captureBinding: {sourceSha: sha}}});
+const base = {event: "workflow_run", eventConclusion: "success", mainSha, candidate: validated(mainSha),
+  lineage: {liveSha, alreadyLive: false}};
 
 test("the train releases main's validated head when it is newer than live", () => {
   assert.deepEqual(planDecision(base), {release: true, validate: false, sourceSha: mainSha, liveSha, reason: "release"});
-  assert.equal(planDecision({...base, event: "schedule", eventSha: "", eventConclusion: ""}).release, true);
+  assert.equal(planDecision({...base, event: "schedule", eventConclusion: ""}).release, true);
+});
+
+// 12 Nov 2026: merges all afternoon meant main's head never had finished CI,
+// so the train released nothing although older commits had passed.
+test("the train releases the newest validated commit when main's head has not finished CI", () => {
+  for (const eventConclusion of ["success", "failure", "cancelled"]) {
+    assert.deepEqual(planDecision({...base, eventConclusion, candidate: validated(olderSha)}),
+      {release: true, validate: false, sourceSha: olderSha, liveSha, reason: "release_newest_validated"}, eventConclusion);
+  }
+  assert.throws(() => planDecision({...base, candidate: validated("main")}), /exact commit/u);
 });
 
 test("the train skips what it should not release", () => {
   for (const [label, change, reason] of [
-    ["unsuccessful CI", {eventConclusion: "failure"}, "ci_unsuccessful"],
-    ["timed-out CI", {eventConclusion: "timed_out"}, "ci_unsuccessful"],
-    ["no website validation, website as live has it", {validation: null, websiteChanged: false}, "website_unchanged_since_live"],
+    ["unsuccessful CI, nothing validated", {eventConclusion: "failure", candidate: null}, "ci_unsuccessful"],
+    ["timed-out CI, nothing validated", {eventConclusion: "timed_out", candidate: null}, "ci_unsuccessful"],
+    ["no website validation, website as live has it", {candidate: null, websiteChanged: false}, "website_unchanged_since_live"],
     ["validation without captures, website as live has it",
-      {validation: {validated: true, captureBinding: null}, websiteChanged: false}, "website_unchanged_since_live"],
+      {candidate: {sha: mainSha, validation: {validated: true, captureBinding: null}}, websiteChanged: false},
+      "website_unchanged_since_live"],
     ["already live", {lineage: {liveSha: mainSha, alreadyLive: true}}, "already_live"],
-    ["already live, unvalidated", {validation: null, lineage: {liveSha: mainSha, alreadyLive: true}}, "already_live"],
+    ["already live, unvalidated", {candidate: null, lineage: {liveSha: mainSha, alreadyLive: true}}, "already_live"],
   ]) {
     assert.deepEqual([planDecision({...base, ...change}).release, planDecision({...base, ...change}).reason],
       [false, reason], label);
   }
 });
 
-test("a newer merge cancelling main's push run leaves the decision to the merge queue evidence", () => {
+test("a pending main run a newer merge replaced leaves the decision to the evidence", () => {
   assert.equal(planDecision({...base, eventConclusion: "cancelled"}).release, true);
-  assert.equal(planDecision({...base, eventConclusion: "cancelled", validation: null, websiteChanged: false}).reason,
+  assert.equal(planDecision({...base, eventConclusion: "cancelled", candidate: null, websiteChanged: false}).reason,
     "website_unchanged_since_live");
 });
 
-test("completion of an older commit's CI releases main's validated head", () => {
-  const decision = planDecision({...base, eventSha: "c".repeat(40), eventConclusion: "cancelled"});
-  assert.deepEqual([decision.release, decision.sourceSha], [true, mainSha]);
-  assert.equal(planDecision({...base, eventSha: "c".repeat(40), validation: null, websiteChanged: false}).reason,
-    "website_unchanged_since_live");
+test("candidates are commits newer than live that a completed main run tested, newest first", () => {
+  const sha = (digit) => digit.repeat(40);
+  const commits = ["1", "2", "3", "4", "5", "b", "6"].map((digit) => ({sha: sha(digit)}));
+  const run = (digit, overrides = {}) => ({head_sha: sha(digit), status: "completed", conclusion: "success",
+    event: "push", head_branch: "main", ...overrides});
+  const runs = [run("1", {status: "in_progress", conclusion: null}), run("2", {conclusion: "failure"}),
+    run("3", {conclusion: "cancelled"}), run("4", {event: "workflow_dispatch"}), run("5"),
+    run("6"), run("4", {head_branch: "feature"})];
+  assert.deepEqual(releaseCandidates({commits, liveSha, runs}), [sha("2"), sha("4"), sha("5")],
+    "running, replaced and pre-live commits never count");
+  assert.deepEqual(releaseCandidates({commits, liveSha, runs, limit: 1}), [sha("2")]);
+  assert.deepEqual(releaseCandidates({commits: [{sha: liveSha}], liveSha, runs}), []);
 });
 
 // 29-30 Oct 2026: #1018, #1019 and #1028 changed the website, then docs and
 // tooling merges became main's head. Their CI ran no Marketing validation, so
 // every train skipped and the website changes never reached approval.
 test("a docs or tooling head on top of unreleased website changes is validated, then released", () => {
-  for (const validation of [null, {validated: false, captureProduced: false}, {validated: false, captureProduced: true}]) {
+  for (const candidate of [null, {sha: mainSha, validation: {validated: false, captureProduced: false}},
+    {sha: mainSha, validation: {validated: false, captureProduced: true}}]) {
     for (const event of ["workflow_run", "schedule", "workflow_dispatch"]) {
-      assert.deepEqual(planDecision({...base, event, validation, websiteChanged: true}),
+      assert.deepEqual(planDecision({...base, event, candidate, websiteChanged: true}),
         {release: true, validate: true, sourceSha: mainSha, liveSha, reason: "validate_and_release"},
-        `${event} ${JSON.stringify(validation)}`);
+        `${event} ${JSON.stringify(candidate)}`);
     }
   }
   // Once the dispatched full run validated the head, the next plan releases it outright.
@@ -60,7 +81,7 @@ test("a docs or tooling head on top of unreleased website changes is validated, 
 });
 
 test("the train dispatches one validation per head, and a failed one stops it", () => {
-  const unvalidated = {...base, validation: null, websiteChanged: true};
+  const unvalidated = {...base, candidate: null, websiteChanged: true};
   for (const status of ["queued", "in_progress", "waiting"]) {
     assert.equal(planDecision({...unvalidated, validationRuns: [{status}]}).reason, "website_validation_running", status);
   }
@@ -73,7 +94,7 @@ test("the train dispatches one validation per head, and a failed one stops it", 
 });
 
 test("an unvalidated head never releases without knowing whether the website changed", () => {
-  assert.throws(() => planDecision({...base, validation: null}), /must be known/u);
+  assert.throws(() => planDecision({...base, candidate: null}), /must be known/u);
 });
 
 test("the website changed only when Nx selects its lane, and an unanswerable question counts as changed", () => {
@@ -138,12 +159,18 @@ test("the CI workflow declares every input the train's validation dispatch sends
   const dispatch = on.split(/^ {2}workflow_dispatch:\n/mu)[1]?.split(/^ {2}\S/mu)[0];
   assert.ok(dispatch !== undefined, "ci.yml can be dispatched");
   const declared = new Map([...dispatch.matchAll(/^ {6}([a-z_]+):\n((?: {8}.+\n)*)/gmu)].map(([, name, body]) => [name, body]));
-  assert.ok(Object.keys(CI_VALIDATION_INPUTS).length > 0);
-  for (const [name, value] of Object.entries(CI_VALIDATION_INPUTS)) {
+  const inputs = ciValidationInputs("b".repeat(40));
+  assert.deepEqual(inputs, {base_sha: "b".repeat(40)});
+  for (const name of Object.keys(inputs)) {
     assert.ok(declared.has(name), `ci.yml declares the ${name} input the train sends`);
-    if (value === "true" || value === "false") assert.match(declared.get(name), /^ {8}type: boolean$/mu, `${name} is a boolean`);
   }
-  // A full dispatch must still run the full plan, not the head's own change.
+  assert.match(declared.get("base_sha"), /^ {8}type: string$/mu);
+  for (const invalid of [undefined, "", "main", "b".repeat(39)]) {
+    assert.throws(() => ciValidationInputs(invalid), /exact live commit/u, String(invalid));
+  }
+  // A base dispatch plans live..head as a main push does; a full dispatch still runs everything.
+  assert.match(workflow, /DISPATCH_BASE_SHA: \$\{\{ inputs\.base_sha \}\}/u);
+  assert.match(workflow, /event_mode="main"\n\s+base_sha="\$DISPATCH_BASE_SHA"\n\s+window_flag=\(--commit-window\)/u);
   assert.match(workflow, /REQUEST_FULL: \$\{\{ github\.event_name == 'schedule' \|\| inputs\.full \}\}/u);
   // PRs, main pushes and the merge queue run CI; the train follows main's runs.
   for (const event of ["pull_request", "push", "merge_group"]) assert.match(on, new RegExp(`^ {2}${event}:`, "mu"));
