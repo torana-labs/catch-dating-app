@@ -64,12 +64,23 @@ export function laneForTask(taskId, tags = []) {
   return tags.includes("lang:dart") ? "flutter" : null;
 }
 
+/**
+ * Compare the planner's lanes with the lanes Nx tasks stand in for.
+ *
+ * `affectedProjects` names the projects the change affects. The task graph
+ * also holds their build dependencies (`^build`), which are not affected:
+ * a website-only change must not run Admin because the website builds
+ * @catch/web-ui. A project the change does affect brings its own task, and
+ * its dependents already bring theirs. Omit it to count every task.
+ */
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
-  changedFiles = []}) {
+  changedFiles = [], affectedProjects}) {
   const nxLanes = new Set(changedFiles.some(isControlPlane) ? comparedLanes : []);
+  const affected = affectedProjects ? new Set(affectedProjects) : null;
   const unmappedTasks = [];
   for (const task of nxTasks) {
     const project = task.slice(0, task.lastIndexOf(":"));
+    if (affected && !affected.has(project)) continue;
     const lane = laneForTask(task, tagsByProject[project]);
     if (lane) nxLanes.add(lane); else unmappedTasks.push(task);
   }
@@ -112,6 +123,17 @@ function run(command, args) {
   return execFileSync(command, args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "inherit"]});
 }
 
+/** The tasks `nx affected` runs between two commits, their projects' tags and the affected projects. */
+export function nxAffected({base, head}) {
+  const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-affected-")), "graph.json");
+  run("npx", ["nx", "affected", "-t", ...targets, "--base", base, "--head", head, `--graph=${graphFile}`]);
+  const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
+  const affectedProjects = JSON.parse(run("npx", ["nx", "show", "projects", "--affected", "--base", base, "--head", head,
+    "--json"]));
+  const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
+  return {nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, affectedProjects};
+}
+
 function main(argv) {
   const args = {mode: "pr"};
   for (let index = 0; index < argv.length; index += 2) {
@@ -124,13 +146,9 @@ function main(argv) {
   if (!args.base || !args.head) throw new Error("--base and --head are required");
   const plan = JSON.parse(run(process.execPath, ["tool/harness.mjs", "plan", "--base", args.base, "--head", args.head,
     "--mode", args.mode, "--json"]));
-  const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-shadow-")), "graph.json");
-  run("npx", ["nx", "affected", "-t", ...targets, "--base", args.base, "--head", args.head, `--graph=${graphFile}`]);
-  const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
-  const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
   const result = compare({plannerLanes: plan.operations.ciTargets, plannerFull: plan.full === true,
-    nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, mode: args.mode, changedFiles});
+    ...nxAffected(args), mode: args.mode, changedFiles});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
   if (args.out) fs.writeFileSync(args.out, `${JSON.stringify(report, null, 2)}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(result, args));

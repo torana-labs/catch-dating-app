@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.1
+version: 3.3.2
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -286,7 +286,12 @@ commit, `main` runs every selected lane.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-Changes to the shared Harness control plane intentionally run every declared
+For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
+`nx affected` selects, and never drops a lane the planner selected until the
+`nx-shadow` comparison holds parity (#1554). Only projects the change affects
+select a lane: the build dependencies in Nx's task graph do not, so a
+website-only change does not run Admin because the website builds
+`@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling

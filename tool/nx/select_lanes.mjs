@@ -10,11 +10,10 @@
 // (run 43244338235 dropped nine), so those PRs never ran them.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
-import {compare, comparedLanes, targets} from "./shadow_plan.mjs";
+import {compare, comparedLanes, nxAffected} from "./shadow_plan.mjs";
 
 const buildPlatforms = {
   flutter_build_android: "-android",
@@ -29,12 +28,8 @@ function run(command, args) {
 
 /** The lanes Nx selects between two commits. */
 export function nxLanes({base, head, mode, controlPlane = true}) {
-  const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-lanes-")), "graph.json");
-  run("npx", ["nx", "affected", "-t", ...targets, "--base", base, "--head", head, `--graph=${graphFile}`]);
-  const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
-  const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
   const changedFiles = controlPlane ? run("git", ["diff", "--name-only", base, head]).trim().split("\n") : [];
-  return compare({plannerLanes: [], nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, mode, changedFiles}).nxLanes;
+  return compare({plannerLanes: [], ...nxAffected({base, head}), mode, changedFiles}).nxLanes;
 }
 
 /**

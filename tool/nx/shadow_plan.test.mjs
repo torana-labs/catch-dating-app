@@ -48,3 +48,18 @@ test("a lane only Nx selects is flagged as a planner gap", () => {
   assert.deepEqual(result.unmappedTasks, ["widget_dedupe:test"]);
   assert.match(summary(result, {base: "a".repeat(40), head: "b".repeat(40), mode: "pr"}), /Nx selects a lane the planner skips/u);
 });
+
+// A website-only change (2a2f26d1, 12 Nov 2026) affects only the marketing
+// site, but its task graph also builds @catch/web-ui, which the marketing
+// build depends on. Mapping that build dependency ran Admin on every website PR.
+test("only affected projects select lanes, not the builds they depend on", () => {
+  const nxTasks = ["@catch/web-ui:build", "catch-marketing:build", "catch-marketing:typecheck", "lane-capture-freshness:lane"];
+  const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks,
+    affectedProjects: ["catch-marketing", "lane-capture-freshness"]});
+  assert.deepEqual(result.nxLanes, ["capture_freshness", "marketing"]);
+  assert.equal(result.agree, true);
+  assert.deepEqual(compare({plannerLanes: [], nxTasks, affectedProjects: ["@catch/web-ui", "catch-marketing"]}).nxLanes,
+    ["admin", "marketing"], "a change to web-ui itself still runs Admin");
+  assert.deepEqual(compare({plannerLanes: [], nxTasks}).nxLanes, ["admin", "capture_freshness", "marketing"],
+    "without the affected projects every task counts");
+});
