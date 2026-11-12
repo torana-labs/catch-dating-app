@@ -144,3 +144,18 @@ test("payment disclosures match the organiser-account OAuth rail", () => {
   assert.match(privacy, /Razorpay account ID and keep their access credentials encrypted in a separate secrets store/u);
   assert.match(privacy, /Payment records are kept as long as needed for refunds, disputes/u);
 });
+
+test("published legal copy uses the apps' words and no dating language", () => {
+  const {pages} = publishedLegalContent;
+  const copy = Object.values(pages).map((page) => [page.title, page.summary, pageCopy(page)].join("\n")).join("\n");
+  // Catch is a social-events platform (owner decision, 12 Nov 2026): picks and Stay in touch, never dates or matches.
+  assert.doesNotMatch(copy, /\bdating\b|\ba match\b|\bmatch(?:es|ed|ing)\b|\bcatches\b|\bswip(?:e|es|ing)\b|\bcompatible\b|\bromantic\b|\ba relationship\b/iu);
+  const privacy = pageCopy(pages.privacy);
+  // Every disclosure stays: picks, mutual picks and their messages, the retired deck's history, and Cross Paths' filter.
+  assert.match(privacy, /people you pick to stay in touch with/u);
+  assert.match(privacy, /if you pick each other, you can message each other/u);
+  assert.match(privacy, /likes and passes you made there until your account is deleted/u);
+  assert.match(privacy, /stated gender and age preferences match yours both ways/u);
+  assert.match(privacy, /do not knowingly offer \{\{brand\.name\}\} to children|do not knowingly offer Catch to children/u);
+  assert.match(pageCopy(pages.account_deletion), /any likes and passes from the earlier profile deck/u);
+});
