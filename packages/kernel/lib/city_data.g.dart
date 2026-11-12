@@ -23,6 +23,9 @@ _CityData _$CityDataFromJson(Map<String, dynamic> json) => _CityData(
   hostCreatable: json['hostCreatable'] as bool? ?? false,
   eventCreatable: json['eventCreatable'] as bool? ?? false,
   exploreVisible: json['exploreVisible'] as bool? ?? false,
+  lifecycle: json['lifecycle'] as String? ?? '',
+  websiteListed: json['websiteListed'] as bool? ?? false,
+  launchDate: json['launchDate'] as String?,
 );
 
 Map<String, dynamic> _$CityDataToJson(_CityData instance) => <String, dynamic>{
@@ -42,4 +45,7 @@ Map<String, dynamic> _$CityDataToJson(_CityData instance) => <String, dynamic>{
   'hostCreatable': instance.hostCreatable,
   'eventCreatable': instance.eventCreatable,
   'exploreVisible': instance.exploreVisible,
+  'lifecycle': instance.lifecycle,
+  'websiteListed': instance.websiteListed,
+  'launchDate': instance.launchDate,
 };

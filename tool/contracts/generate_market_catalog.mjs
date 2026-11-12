@@ -23,6 +23,7 @@ import {fileURLToPath} from "node:url";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {
   canonicalMarketsFromCatalog,
+  countryRecordsFromCatalog,
   marketCatalogErrors,
   marketCatalogPath,
   marketCatalogSchemaPath,
@@ -90,10 +91,28 @@ export function renderAdminModule(catalog) {
       countryName: countries.get(city.countryIsoCode).name,
       publicPageCitySlug: city.slug,
     }));
+  const cities = catalog.cities.map((city) => ({
+    marketId: city.marketId,
+    cityId: city.cityId,
+    slug: city.slug,
+    label: city.label,
+    regionName: city.regionName,
+    countryIsoCode: city.countryIsoCode,
+    lifecycle: city.lifecycle,
+    websiteListed: city.surfaces.websiteListed,
+    aliases: city.aliases,
+    legacyIds: city.legacyIds ?? [],
+  }));
   return `${tsHeader}
 
 /** Live cities: the markets admin may publish organizers and events into. */
 export const generatedLaunchMarkets = ${JSON.stringify(launchMarkets, null, 2)} as const;
+
+/** Every catalog city in display order, with its lifecycle. */
+export const generatedMarketCities = ${JSON.stringify(cities, null, 2)} as const;
+
+/** Countries Catch serves. */
+export const generatedMarketCountries = ${JSON.stringify(countryRecordsFromCatalog(catalog), null, 2)} as const;
 `;
 }
 
@@ -137,12 +156,18 @@ export function renderDartModule(catalog) {
       dartArgument("currencyCode", dartString(record.currencyCode), "    "),
       dartArgument("dialCode", dartString(record.dialCode), "    "),
       dartArgument("timeZone", dartString(record.timeZone), "    "),
-      // CityOption defaults: launchStatus 'planned', flags false, no aliases.
+      // CityOption defaults: launchStatus 'planned', lifecycle 'hidden', flags
+      // false, no launch date, no aliases.
       ...(record.launchStatus === "planned" ? [] :
         [dartArgument("launchStatus", dartString(record.launchStatus), "    ")]),
       ...["profileSelectable", "hostCreatable", "eventCreatable",
         "exploreVisible"].filter((flag) => record[flag])
         .map((flag) => dartArgument(flag, "true", "    ")),
+      ...(record.lifecycle === "hidden" ? [] :
+        [dartArgument("lifecycle", dartString(record.lifecycle), "    ")]),
+      ...(record.websiteListed ? [dartArgument("websiteListed", "true", "    ")] : []),
+      ...(record.launchDate === undefined ? [] :
+        [dartArgument("launchDate", dartString(record.launchDate), "    ")]),
       ...(record.aliases.length === 0 ? [] :
         [dartListArgument("aliases", record.aliases, "    ")]),
     ];
@@ -236,6 +261,28 @@ export function outputs(catalog, root = repoRoot) {
   ];
 }
 
+// ------------------------------------------------------ catalog references
+
+// A "reference" allowlist entry selects catalog cities by slug (crawl targets,
+// search matrices) instead of copying the catalog. Its validatedBy names the
+// test, owned beside the file, that checks every reference against
+// contracts/catalogs/markets.json; that test must read the catalog.
+export function referenceEntryErrors(file, entry, root = repoRoot) {
+  const test = entry.validatedBy;
+  if (typeof test !== "string" || !/\.test\.m?js$/u.test(test)) {
+    return [`${file}: a reference entry needs validatedBy, the test that checks it.`];
+  }
+  const absolute = path.join(root, test);
+  if (!fs.existsSync(absolute)) {
+    return [`${file}: validatedBy ${test} does not exist.`];
+  }
+  const text = fs.readFileSync(absolute, "utf8");
+  if (!text.includes("contracts/catalogs/markets.json")) {
+    return [`${file}: validatedBy ${test} does not read ${marketCatalogPath}.`];
+  }
+  return [];
+}
+
 // ------------------------------------------------- hand-maintained list scan
 
 export const handListThreshold = 3;
@@ -307,17 +354,19 @@ export function scanHandLists(catalog, root = repoRoot,
   return found;
 }
 
-export function compareHandLists(found, allowlist) {
+export function compareHandLists(found, allowlist, root = repoRoot) {
   const errors = [];
   const stale = [];
   for (const [file, entry] of Object.entries(allowlist)) {
-    if (!["pending", "fixture"].includes(entry.kind) ||
+    if (!["pending", "fixture", "reference"].includes(entry.kind) ||
       typeof entry.reason !== "string" || entry.reason.length < 12 ||
       !Number.isInteger(entry.cities)) {
       errors.push(
-        `${file}: allowlist entries need cities, kind (pending or fixture) ` +
-        "and a reason."
+        `${file}: allowlist entries need cities, kind (pending, fixture or ` +
+        "reference) and a reason."
       );
+    } else if (entry.kind === "reference") {
+      errors.push(...referenceEntryErrors(file, entry, root));
     }
   }
   for (const [file, count] of Object.entries(found)) {

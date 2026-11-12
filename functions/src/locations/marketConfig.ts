@@ -3,6 +3,10 @@ import {canonicalMarketRecords} from "../shared/generated/marketCatalog";
 export type LaunchMarketStatus = "launched" | "planned" | "paused" |
   "retired";
 
+/** Launch lifecycle from contracts/catalogs/markets.json. */
+export type MarketLifecycle = "hidden" | "waitlist" | "launching" | "live" |
+  "paused";
+
 export interface CanonicalMarket {
   marketId: string;
   cityId: string;
@@ -24,6 +28,9 @@ export interface CanonicalMarket {
   hostCreatable: boolean;
   eventCreatable: boolean;
   exploreVisible: boolean;
+  lifecycle: MarketLifecycle;
+  websiteListed: boolean;
+  launchDate?: string;
 }
 
 // Generated from contracts/catalogs/markets.json. Edit the catalog, then run
