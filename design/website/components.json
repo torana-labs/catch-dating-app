@@ -4318,7 +4318,13 @@
           "dense"
         ]
       },
-      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover."
+      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.graded_image",
+        "catch.network_image"
+      ],
+      "comparisonReason": "Draws generated activity artwork (a duotone ground and line pattern) where there is no photo, for event media and the format tiles; it loads no image, grades no photo and lays out no detail media, so it is the activity backdrop member of catch.event_card rather than any image contract."
     },
     {
       "id": "shared_event_thumbnail",

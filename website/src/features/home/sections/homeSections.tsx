@@ -128,7 +128,8 @@ function HomeFormats({home}: {home: Home}) {
       <HeadingRow aside={<CatchText tone="secondary" variant="body">{copy.formats.lead}</CatchText>}>
         <Heading id="home-formats-title" kicker={copy.formats.eyebrow} title={copy.formats.title} tone="success" />
       </HeadingRow>
-      <CatchScroller gap="related" itemWidth="m" label={copy.formats.label}>
+      {/* The band already pads to the content edge, so the rail's first tile lines up with the heading. */}
+      <CatchScroller edge="none" gap="related" itemWidth="m" label={copy.formats.label}>
         {home.tiles.map((tile) => home.live ? (
           <CatchFormatTile body={tile.body} format={tile.format} key={tile.format} kicker={tile.kicker} onPressed={() => {
             home.chooseTile(tile.format);
