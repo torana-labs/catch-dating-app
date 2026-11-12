@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_request_receipts.schema.json",
+  "title": "EventSeatRequestReceiptDocument",
+  "description": "Create-only replay receipt for one seat command, so a retried request returns the same result. The id is sha256(eventId, requestId).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatRequestReceipts",
+  "x-firestore-path": "eventSeatRequestReceipts/{receiptId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "required": [
+    "eventId",
+    "requestId",
+    "requestHash",
+    "operation",
+    "canonicalKey",
+    "appliedLedgerRevision",
+    "appliedReservationRevision"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "requestHash": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "reserve",
+        "release",
+        "checkoutHold",
+        "confirmCheckoutHold",
+        "releaseCheckoutHold",
+        "temporaryHold",
+        "confirmTemporaryHold",
+        "releaseTemporaryHold"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "canonicalKey": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "appliedLedgerRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "appliedReservationRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
