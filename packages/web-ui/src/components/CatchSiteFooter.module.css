@@ -23,8 +23,7 @@
   list-style: none;
 }
 
-.link,
-.brand {
+.link {
   color: var(--catch-theme-ink);
   text-decoration: none;
 }
@@ -33,8 +32,7 @@
   text-decoration: underline;
 }
 
-.link:focus-visible,
-.brand:focus-visible {
+.link:focus-visible {
   border-radius: var(--catch-radius-xs);
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
   outline-offset: var(--catch-space-micro2);

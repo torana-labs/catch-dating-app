@@ -5,8 +5,7 @@ import {WebsiteQueryProvider} from "../../shared/query/queryClient";
 import {PendingRequestProvider} from "../../shared/pendingRequest";
 import {publicEventListingsContext} from "../../features/organizers/usePublicEventListingsController";
 import {eventPageContext} from "../../features/events/eventPageContext";
-import {SiteAccountAction} from "../../features/account/SignInSheet";
-import {SiteAccountActionProvider} from "../../shared/site";
+import {SiteAccountProvider} from "../../features/account/SignInSheet";
 import type {PublicCatalog} from "./publicCatalogTypes";
 import {PUBLIC_PAGE_CACHE_SECONDS} from "./publicPageCache";
 
@@ -83,7 +82,7 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
       <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt,
         organizerPage: current?.organizerPage ?? null}}>
         <eventPageContext.Provider value={current?.eventPage ? {page: current.eventPage, mapImageUrl: current.eventMap} : null}>
-          <SiteAccountActionProvider value={<SiteAccountAction />}>{children}</SiteAccountActionProvider>
+          <SiteAccountProvider>{children}</SiteAccountProvider>
         </eventPageContext.Provider>
       </publicEventListingsContext.Provider>
     </PendingRequestProvider></WebsiteQueryProvider>

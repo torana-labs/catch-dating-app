@@ -1,4 +1,4 @@
-import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar} from "@catch/web-ui";
+import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar, CatchWordmark} from "@catch/web-ui";
 import {createContext, useContext, type ReactNode} from "react";
 import {openMarketingConsentPreferences} from "../../analytics";
 import {publicPageChromeCopy, publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
@@ -11,32 +11,55 @@ import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
  * it from the account feature, so shared chrome never imports a feature; a
  * story or test without the provider draws the header without it.
  */
-const SiteAccountActionContext = createContext<ReactNode>(null);
+export interface SiteAccountEntry {
+  /** The top bar's button, the last item of its left group on wide pages. */
+  bar: ReactNode;
+  /** The same entry in the phone menu, where the bar has no room for it. */
+  menu: {label: string; href?: string; onPressed?: () => void};
+}
+const SiteAccountActionContext = createContext<SiteAccountEntry | null>(null);
 export const SiteAccountActionProvider = SiteAccountActionContext.Provider;
 
+/** "Catch for hosts" → the brand and its product line, so the wordmark sets both in one voice. */
+function wordmarkParts(title: string): {brand: string; subBrand?: string} {
+  const brand = publicSiteCopy.wordmark;
+  return title.startsWith(`${brand} `) ? {brand, subBrand: title.slice(brand.length + 1)} : {brand: title};
+}
+
 /**
- * The one public header, the system's site top bar: the wordmark, page links
- * (a menu on phones) and actions. Every public route renders it with the
- * global destinations; a product page may name itself and its own sections,
- * as the host landing does ("Catch for hosts", its sections and Apply).
+ * The one public header, the system's site top bar, on every public route:
+ * the wordmark (catch.wordmark), the page links and the visitor's account
+ * entry on the left; on the right only the page's actions, a setting such as
+ * the city and then the one primary action. General pages carry the main
+ * site's links and "Get the app"; a product page names itself and passes its
+ * own sections and action, as the host landing does ("Catch for hosts", its
+ * sections and Start free trial).
  */
-export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publicSiteCopy.nav, actions}: {
+export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publicSiteCopy.nav, actions = <GetTheAppButton />}: {
   title?: string;
   links?: readonly SiteNavItem[];
   actions?: ReactNode;
 }) {
   const account = useContext(SiteAccountActionContext);
+  const {brand, subBrand} = wordmarkParts(title);
   return (
     <CatchTopBar
-      actions={account ? <CatchStack align="center" direction="row" gap={8}>{account}{actions}</CatchStack> : actions}
+      account={account?.bar}
+      actions={actions}
       homeHref="/"
       links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}
       linksLabel={publicSiteCopy.menu.navLabel}
+      menuExtras={account ? [account.menu] : undefined}
       menuLabel={publicSiteCopy.menu.openLabel}
-      title={title}
+      subBrand={subBrand}
+      title={brand}
       variant="site"
     />
   );
+}
+
+function GetTheAppButton() {
+  return <CatchButton href={publicSiteCopy.getApp.href} label={publicSiteCopy.getApp.label} size="sm" />;
 }
 
 // The footer's own type and colour. Beside a tagline it is underlined so it
@@ -58,9 +81,9 @@ export function PrivacyChoicesButton({tone = "inline"}: {tone?: keyof typeof pri
   );
 }
 
-/** The rebuilt public pages' site top bar: the wordmark, Explore and For organisers, and Get the app. */
+/** The organiser and event pages' top bar: the same header as every general page. */
 export function PublicPageHeader() {
-  return <PublicSiteHeader actions={<CatchButton href={publicPageChromeCopy.getAppHref} label={publicPageChromeCopy.getApp} size="sm" />} links={publicPageChromeCopy.links} />;
+  return <PublicSiteHeader />;
 }
 
 /**
@@ -79,7 +102,7 @@ export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, link
   return (
     <CatchStack as="footer" gap={12}>
       <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-        <CatchText variant="display-xs">{publicPageChromeCopy.wordmark}</CatchText>
+        <CatchWordmark>{publicPageChromeCopy.wordmark}</CatchWordmark>
         <CatchStack aria-label={label} as="nav" direction="row" gap={4} wrap>
           {links.map((link) => (
             <CatchButton href={link.href} key={`${link.label}-${link.href}`} label={link.label}
@@ -146,7 +169,7 @@ export function SiteFooterBand({columns, label, tagline, wordmark}: {
           </CatchStack>
         ) : null}
         <CatchStack align="end" direction="row" gap={16} justify="between" wrap>
-          <CatchText variant="display-xl">{wordmark}</CatchText>
+          <CatchWordmark size="band" subBrand={wordmarkParts(wordmark).subBrand}>{wordmarkParts(wordmark).brand}</CatchWordmark>
           {columns ? <CatchText tone="secondary" variant="body-small">{tagline}</CatchText> : (
             <CatchStack align="center" direction="row" gap={16} wrap>
               <CatchText tone="secondary" variant="body-small">{tagline}</CatchText>
