@@ -20,6 +20,10 @@ export function loadEdgePolicy(file = POLICY_PATH) {
   if (policy.version !== 1 || typeof policy.zone !== "string" || typeof policy.managedPrefix !== "string") {
     throw new Error("edge_policy.json is not a version 1 policy.");
   }
+  // Declared settings record dashboard state; they must be on/off flags, and the plan never touches them.
+  for (const [name, value] of Object.entries(policy.declared?.managedTransforms ?? {})) {
+    if (typeof value !== "boolean") throw new Error(`declared.managedTransforms.${name} must be true or false.`);
+  }
   for (const [phase, rules] of Object.entries(policy.rulesets ?? {})) {
     for (const rule of rules) {
       if (!rule.description?.startsWith(policy.managedPrefix)) {
