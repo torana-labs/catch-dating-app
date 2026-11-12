@@ -1796,6 +1796,19 @@
       ],
       "reason": "The root-navigator match celebration delegates to the canonical standalone celebration surface."
     },
+    "EventHostPhotoViewerScreen": {
+      "owners": [
+        {
+          "file": "lib/swipes/presentation/event_host_photo_viewer_screen.dart",
+          "symbol": "_EventHostPhotoViewerScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The after-event screen pushes the host's photos full screen on night; the viewer is a CatchScreen with a tool top bar and a non-scrolling paged body."
+    },
     "EventJoinedCelebrationScreen": {
       "owners": [
         {
