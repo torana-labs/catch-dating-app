@@ -34,7 +34,8 @@ let paymentCount = 0;
 function payment(atMillis: number, amountPaise: number,
   refundedAmountPaise = 0): [string, FakeData] {
   paymentCount++;
-  return [`publicEventPayments/p${paymentCount}`, {organizerId: "org",
+  return [`guestPayments/p${paymentCount}`, {
+    purpose: "publicEvent", organizerId: "org",
     eventId: "ev1", capturedAt: Timestamp.fromMillis(atMillis), amountPaise,
     refundedAmountPaise, routing: {selection: {route: "razorpayOAuth"}}}];
 }

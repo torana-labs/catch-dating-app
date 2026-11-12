@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {assertUnpartitionedAdmission} from
   "../organizerFormAdmission/admissionEligibility";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -24,7 +25,6 @@ import {assertCurrentPublicGuest, readPublicEventSource} from
 import {assertPublicRegistrationPolicy, publicRegistrationMode} from
   "./publicRegistration/policy";
 import {projectPublicPayment} from "./publicRegistration/projection";
-import {PUBLIC_PAYMENT_COLLECTION} from "./publicRegistration/paymentLedger";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {readCommunityMembership} from
   "../memberships/communityMembershipAuthority";
@@ -76,7 +76,8 @@ export async function readGuestEventViewerState(params: {
       offerPayments] = await Promise.all([
       tx.get(db.collection("eventAttendees").where("eventId", "==", eventId)
         .where("linkedUid", "==", uid).limit(2)),
-      tx.get(db.collection(PUBLIC_PAYMENT_COLLECTION)
+      tx.get(db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "publicEvent")
         .where("eventId", "==", eventId).where("recipientUid", "==", uid)
         .orderBy("createdAt", "desc").limit(1)),
       tx.get(db.collection("organizerApplications")
@@ -91,7 +92,8 @@ export async function readGuestEventViewerState(params: {
         .where("status", "==", "published").limit(2)),
       tx.get(db.collection("eventParticipations")
         .doc(eventParticipationId(eventId, uid))),
-      tx.get(db.collection("organizerEventOfferPayments")
+      tx.get(db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "offer")
         .where("eventId", "==", eventId).where("recipientUid", "==", uid)
         .orderBy("createdAt", "desc").limit(1)),
     ]);

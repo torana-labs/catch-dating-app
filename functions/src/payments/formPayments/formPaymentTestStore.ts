@@ -199,7 +199,7 @@ export function createFormPaymentFixture() {
   } as unknown as CallableRequest<unknown>;
   const reserve = () => reserveFormPayment({db, request, data, now});
   const capture = (paymentId: string) => {
-    const ref = `organizerFormPayments/${paymentId}`;
+    const ref = `guestPayments/${paymentId}`;
     store.records.set(ref, {...store.records.get(ref), status: "captured",
       providerOrderId: "order_1", providerPaymentId: "pay_1", capturedAt: now});
   };

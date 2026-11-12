@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget}
   from "../../organizers/organizerFormTarget";
 import {createHash} from "node:crypto";
@@ -38,7 +39,7 @@ export async function reserveFormPayment(params: {
     throw new HttpsError("unauthenticated", "Verify your phone before paying.");
   }
   const paymentId = formPaymentId(data.draftId);
-  const paymentRef = db.collection("organizerFormPayments").doc(paymentId);
+  const paymentRef = db.collection(GUEST_PAYMENTS).doc(paymentId);
   const draftRef = db.collection("organizerFormResponseDrafts")
     .doc(data.draftId);
   return db.runTransaction(async (tx) => {
@@ -145,7 +146,7 @@ export async function reserveFormPayment(params: {
       throw new HttpsError("failed-precondition",
         "Verify your phone number.");
     }
-    const payment: Payment = {
+    const payment: Payment = {purpose: "form",
       organizerId: draft.organizerId, formId: draft.formId,
       versionId: draft.versionId, draftId: data.draftId, respondentUid: uid,
       connectionId: platform ? null : fee.connectionId,
@@ -190,7 +191,7 @@ export async function finalizeCapturedFormPayment(params: {
 }): Promise<Payment["status"]> {
   const {db, paymentId, now} = params;
   return db.runTransaction(async (tx) => {
-    const ref = db.collection("organizerFormPayments").doc(paymentId);
+    const ref = db.collection(GUEST_PAYMENTS).doc(paymentId);
     const payment = requireDoc<Payment>(await tx.get(ref),
       "OrganizerFormPaymentDocument");
     if (payment.responseId || payment.status !== "captured") {
@@ -267,7 +268,7 @@ export async function expireFormPaymentReservation(params: {
 }): Promise<void> {
   const {db, paymentId, now} = params;
   await db.runTransaction(async (tx) => {
-    const ref = db.collection("organizerFormPayments").doc(paymentId);
+    const ref = db.collection(GUEST_PAYMENTS).doc(paymentId);
     const payment = requireDoc<Payment>(await tx.get(ref),
       "OrganizerFormPaymentDocument");
     if (payment.responseId || payment.reservationReleased ||

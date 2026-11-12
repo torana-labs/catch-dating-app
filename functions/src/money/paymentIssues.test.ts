@@ -16,31 +16,31 @@ test("a capture the sweep has not admitted in 15 minutes is an issue", () => {
     eventName: "Takeoff: Run + Rave", displayName: "Rhea Kapoor",
     amountPaise: 150_000, capturedAt: at(now - 20 * 60_000),
     admissionReceiptId: null, providerPaymentId: "pay_1", lastErrorCode: null};
-  const issue = checkoutIssue("publicEventPayments", "pp_1", paid, now);
+  const issue = checkoutIssue("publicEvent", "pp_1", paid, now);
   assert.equal(issue?.kind, "payment");
   assert.equal(issue?.title, "₹1,500 paid, booking not confirmed");
   assert.equal(issue?.subtitle, "Rhea Kapoor · Takeoff: Run + Rave");
   assert.equal(issue?.canConfirmBooking, true);
-  assert.equal(issue?.issueId, "publicEventPayments:pp_1");
-  assert.equal(checkoutIssue("publicEventPayments", "pp_1",
+  assert.equal(issue?.issueId, "publicEvent:pp_1");
+  assert.equal(checkoutIssue("publicEvent", "pp_1",
     {...paid, capturedAt: at(now - 60_000)}, now), null);
-  assert.equal(checkoutIssue("publicEventPayments", "pp_1",
+  assert.equal(checkoutIssue("publicEvent", "pp_1",
     {...paid, admissionReceiptId: "r"}, now), null);
 });
 
 test("stale refunds and review records are issues; admitted ones are not",
   () => {
-    const refund = checkoutIssue("organizerEventOfferPayments", "op", {
+    const refund = checkoutIssue("offer", "op", {
       status: "refundPending", amountPaise: 50_000,
       updatedAt: at(now - 2 * 86_400_000)}, now);
     assert.equal(refund?.kind, "refund");
     assert.equal(refund?.canConfirmBooking, false);
-    assert.equal(checkoutIssue("organizerEventOfferPayments", "op", {
+    assert.equal(checkoutIssue("offer", "op", {
       status: "refundPending", updatedAt: at(now - 60_000)}, now), null);
-    assert.equal(checkoutIssue("publicEventPayments", "p", {
+    assert.equal(checkoutIssue("publicEvent", "p", {
       status: "reviewRequired", amountPaise: 100, updatedAt: at(1)}, now)?.kind,
     "review");
-    assert.equal(checkoutIssue("publicEventPayments", "p", {
+    assert.equal(checkoutIssue("publicEvent", "p", {
       status: "admitted"}, now), null);
   });
 
@@ -56,5 +56,5 @@ test("native and bill issues", () => {
   const issue = billIssue(bill as never, now);
   assert.equal(issue?.subtitle, "2026-10 · ₹6,400 · 2026-27/031");
   assert.equal(billIssue({...bill, dueAtMillis: now + 1} as never, now), null);
-  assert.match(resolutionId("publicEventPayments:pp_1"), /^[A-Za-z0-9_-]+$/u);
+  assert.match(resolutionId("publicEvent:pp_1"), /^[A-Za-z0-9_-]+$/u);
 });

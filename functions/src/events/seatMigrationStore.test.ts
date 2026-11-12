@@ -301,8 +301,8 @@ test("outstanding holds block before locking writers", async () => {
     ["razorpayPendingOrders", {status: "pending"}],
     ["payments", {status: "pending"}],
     ["payments", {status: "completed", signUpFailed: true}],
-    ["publicEventPayments", {status: "checkoutReady"}],
-    ["organizerEventOfferPayments", {status: "captured"}],
+    ["guestPayments", {purpose: "publicEvent", status: "checkoutReady"}],
+    ["guestPayments", {purpose: "offer", status: "captured"}],
     ["eventSeatReservations", {checkoutHold: {paymentId: "payment1"}}],
     ["eventWaitlistOffers", {status: "unknown"}],
   ] as const) {
@@ -321,10 +321,11 @@ test("settled financial history permits roster migration", async () => {
       requesterBookingStatus: "confirmed"}],
     ["razorpayPendingOrders", {status: "failed"}],
     ["payments", {status: "completed", signUpFailed: false}],
-    ["publicEventPayments", {status: "refunded"}],
-    ["organizerEventOfferPayments", {status: "cancelled"}],
+    ["guestPayments", {purpose: "publicEvent", status: "refunded"}],
+    ["guestPayments", {purpose: "offer", status: "cancelled"}],
   ] as const) {
-    h.store.rows.set(`${collection}/old1`, {eventId: "event1", ...value});
+    h.store.rows.set(`${collection}/old-${Object.values(value).join("-")}`,
+      {eventId: "event1", ...value});
   }
   assert.equal((await h.bootstrap()).occupied, 1);
 });
@@ -334,7 +335,7 @@ test("a new hold during migration prevents activation", async () => {
   h.store.beforeTransaction = () => {
     const run = h.store.rows.get("eventSeatMigrationRuns/event1");
     if (run?.phase === "apply" && run.outputCursor === run.outputCount) {
-      h.store.rows.set("publicEventPayments/late1", {
+      h.store.rows.set("guestPayments/late1", {
         eventId: "event1", status: "checkoutReady"});
     }
   };
