@@ -49,9 +49,9 @@ test("owned renderers require exact source, library, owner, method and return ty
 test("typed factories require their exact real source identities", () => {
   const entries = [
     {
-      file: "lib/programs/presentation/program_events_row.dart",
-      library: "lib/programs/presentation/program_events_row.dart",
-      owner: null, name: "programEventsField", returnType: "CatchField",
+      file: "lib/host_memberships/presentation/host_membership_profile_section.dart",
+      library: "lib/host_memberships/presentation/host_membership_profile_section.dart",
+      owner: null, name: "hostMembershipProfileField", returnType: "CatchField",
     },
     {
       file: "lib/routing/host_inbox_route.dart",

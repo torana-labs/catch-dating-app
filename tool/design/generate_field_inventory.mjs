@@ -25,6 +25,7 @@ export const facadeUseWhen = Object.freeze({
   choices: "Choose terse single- or multi-select labels in a field-owned disclosure control.",
   optionCards: "Choose one explanatory option when each choice needs a title and supporting description.",
   stepper: "Edit a bounded numeric value with the canonical decrement and increment control.",
+  slider: "Edit a numeric value across a range with a field-owned disclosure slider that writes the value in the row.",
   inputActions: "Edit text in a controlled disclosure row with explicit cancel and submit actions.",
   add: "Offer a compact field-shaped action for adding a missing value or item.",
   select: "Choose one value from a conventional select control with field-owned label and support copy.",
