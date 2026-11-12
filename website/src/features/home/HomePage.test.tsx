@@ -135,7 +135,7 @@ describe("homepage", {timeout: 20_000}, () => {
   it("moves the guest story on to the step the reader picks, with that step's screen", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const story = within(screen.getByRole("region", {name: "Come on your own. Leave knowing a few more people."}));
-    fireEvent.click(story.getByRole("button", {name: /Keep in touch/}));
+    fireEvent.click(story.getByRole("button", {name: /Stay in touch/}));
     expect(story.getByRole("img", {name: "Screen guest-after-event"})).toBeTruthy();
     expect(story.queryByRole("img", {name: "Screen guest-checked-in"})).toBeNull();
   });
