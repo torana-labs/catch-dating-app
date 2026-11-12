@@ -11,7 +11,7 @@
     "./eslint": "./lint/eslint.mjs"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "^5.105.0"
+    "@tanstack/react-query": "^5.105.3"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "8.72.1",
