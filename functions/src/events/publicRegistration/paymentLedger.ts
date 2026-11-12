@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {createHash} from "node:crypto";
 import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
@@ -7,7 +8,7 @@ import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
 import {registrationUnavailable} from "./policy";
 
-export const PUBLIC_PAYMENT_COLLECTION = "publicEventPayments";
+export const PUBLIC_PAYMENT_COLLECTION = GUEST_PAYMENTS;
 export const PUBLIC_ADMISSION_COLLECTION = "publicEventAdmissionReceipts";
 export function publicPaymentId(
   eventId: string,

@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_admissions.schema.json",
   "title": "OrganizerFormAdmissionDocument",
+  "x-firestore-collection": "organizerFormAdmissions",
+  "x-firestore-path": "organizerFormAdmissions/{documentId}",
   "description": "Server-owned immutable organizer/event/response admission ownership. Created atomically with the seat and request receipt; new request IDs cannot admit this source again.",
   "type": "object",
   "additionalProperties": false,

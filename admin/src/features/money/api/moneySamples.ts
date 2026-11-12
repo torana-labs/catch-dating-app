@@ -200,8 +200,8 @@ export function sampleManageOrganizerBills(
 }
 
 let issues: Issue[] = [
-  {issueId: "publicEventPayments:sample-p1", kind: "payment",
-    source: "publicEventPayments", targetId: "sample-p1",
+  {issueId: "publicEvent:sample-p1", kind: "payment",
+    source: "publicEvent", targetId: "sample-p1",
     title: "₹1,500 paid, booking not confirmed",
     subtitle: "Rhea Kapoor · Takeoff: Run + Rave",
     organizerId: "sample-afterfly", organizerName: "Afterfly",
@@ -209,8 +209,8 @@ let issues: Issue[] = [
     status: "captured", lastErrorCode: null,
     providerPaymentId: "pay_PZ81kqSample", eventId: "sample-takeoff",
     canConfirmBooking: true, resolution: null},
-  {issueId: "organizerEventOfferPayments:sample-p2", kind: "refund",
-    source: "organizerEventOfferPayments", targetId: "sample-p2",
+  {issueId: "offer:sample-p2", kind: "refund",
+    source: "offer", targetId: "sample-p2",
     title: "Refund asked, not sent", subtitle: "Kabir Shah · Padel mixer",
     organizerId: "sample-padel", organizerName: "Mumbai Padel Social",
     amountMinor: 120_000, waitingSinceMillis: ist("2026-11-17T11:00:00"),

@@ -30,7 +30,10 @@ export function sharedCacheSeconds(cache) {
  * soon copy (up to its live-city name) instead of the live lead. Preview run
  * 41083582506 failed a healthy launching-soon /explore/ on the live lead alone.
  */
-export const exploreLeads = Object.freeze([explorePageCopy.lead, explorePageCopy.soonLead.split("{liveCity}")[0]]);
+// A launching-soon city points to an open city when there is one (soonLead),
+// and otherwise says only that hosts are setting up (soonLeadAlone, #1721).
+export const exploreLeads = Object.freeze([explorePageCopy.lead, explorePageCopy.soonLead.split("{liveCity}")[0],
+  explorePageCopy.soonLeadAlone]);
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
   assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);

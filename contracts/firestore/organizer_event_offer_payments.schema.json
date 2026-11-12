@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_event_offer_payments.schema.json",
   "title": "OrganizerEventOfferPaymentDocument",
+  "x-firestore-collection": "guestPayments",
+  "x-firestore-path": "guestPayments/{paymentId}",
   "description": "Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.",
   "type": "object",
   "additionalProperties": false,
@@ -38,9 +40,16 @@
     "checkoutExpiresAt",
     "capturedAt",
     "admittedAt",
-    "lastErrorCode"
+    "lastErrorCode",
+    "purpose"
   ],
   "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "offer",
+      "description": "An event offer checkout. guestPayments holds every guest checkout; purpose names the flow that owns this document.",
+      "x-catch-ownership": "server-only"
+    },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },

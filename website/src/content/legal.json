@@ -36,6 +36,7 @@
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
             "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
             "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
+            "Your city on the website. The website infers your approximate city from your network location to show plans near you; it uses only the city and does not store it or your network location. If you tap “Use my location”, your browser asks your permission and your device works out the nearest city from it; the location itself is never sent to or stored by {{brand.name}}. A city you choose is remembered in your browser so the site opens on it next time.",
             "Public-source listing information, such as organizer names, descriptions, public links, event dates and locations, source provenance, and freshness details. An unclaimed listing is not an endorsement or proof of a commercial relationship."
           ]
         },
@@ -58,7 +59,7 @@
           "paragraphs": [
             "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
             "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
-            "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, forms, and site operation."
+            "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, the city you chose, forms, and site operation."
           ]
         },
         {

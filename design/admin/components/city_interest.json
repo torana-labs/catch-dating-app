@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "id": "route_city_interest",
+      "kind": "route",
+      "owner": "features/cityInterest",
+      "source": "admin/src/features/cityInterest/ui/CityInterestScreen.tsx",
+      "exportName": "CityInterestScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutesCityInterest.stories.tsx",
+        "exportName": "CityInterestRouteStory",
+        "states": [
+          "by-city",
+          "trends"
+        ]
+      },
+      "notes": "Interest by city: different people who asked to hear when each city opens (the website launch notice), in all and over the last 7 and 30 days against the days before, from adminGetCityInterest (cityInterest counters). Cities the catalog does not have show as their country's Other. CatchWorkspaceHeader, CatchMetricSection and CatchTable on CatchPaneLayout feed. Backed by the sample in admin/src/features/cityInterest/api/cityInterestRepository.ts."
+    },
+    {
+      "id": "route_city_interest_live_controller",
+      "kind": "route",
+      "owner": "features/cityInterest",
+      "source": "admin/src/features/cityInterest/ui/CityInterestRouteScreen.tsx",
+      "exportName": "CityInterestRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Interest by city controller; deterministic prop-driven visual coverage remains on route_city_interest."
+    }
+  ]
+}

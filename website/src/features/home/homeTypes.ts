@@ -76,3 +76,10 @@ export interface HomeCatalog {
   /** Set when the selected city's plans could not be read at all. */
   phase?: "unavailable";
 }
+
+/** What /api/home-catalog answers: a city's homepage read model, and the network guess when one was asked for. */
+export interface HomeCatalogReply {
+  readonly catalog: HomeCatalog | null;
+  /** The guessed city (null for "Other") and country. Never a location. */
+  readonly guess?: {readonly cityId: string | null; readonly slug: string | null; readonly countryIsoCode: string | null};
+}

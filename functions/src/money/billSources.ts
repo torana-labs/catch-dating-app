@@ -1,3 +1,5 @@
+import {GUEST_PAYMENTS, type GuestPaymentPurpose} from
+  "../payments/guestPayments";
 import {Timestamp} from "firebase-admin/firestore";
 import {moneyFlowForRoute, type CommercialTermsSnapshot} from
   "../commercialTerms/terms";
@@ -11,11 +13,9 @@ import type {BillablePayment} from "./billComputation";
 type Raw = Record<string, unknown>;
 const pageSize = 500;
 
-const checkoutSources = [
-  {collection: "publicEventPayments", purpose: "eventAdmission"},
-  {collection: "organizerEventOfferPayments", purpose: "eventAdmission"},
-  {collection: "organizerFormPayments", purpose: "formFee"},
-] as const;
+// Every guest checkout is billable; its purpose decides the bill line.
+const billPurposeOf = {publicEvent: "eventAdmission", offer: "eventAdmission",
+  form: "formFee"} as const;
 
 /**
  * A captured checkout as a billable payment.
@@ -85,13 +85,13 @@ export async function billablePaymentsByOrganizer(
     list.push(entry.payment);
     byOrganizer.set(entry.organizerId, list);
   };
-  for (const source of checkoutSources) {
-    await page(db.collection(source.collection)
-      .where("capturedAt", ">=", Timestamp.fromMillis(startMillis))
-      .where("capturedAt", "<", Timestamp.fromMillis(endMillis))
-      .orderBy("capturedAt"), (data) => add(checkoutBillable(data,
-      source.purpose)));
-  }
+  await page(db.collection(GUEST_PAYMENTS)
+    .where("capturedAt", ">=", Timestamp.fromMillis(startMillis))
+    .where("capturedAt", "<", Timestamp.fromMillis(endMillis))
+    .orderBy("capturedAt"), (data) => {
+    const purpose = billPurposeOf[data.purpose as GuestPaymentPurpose];
+    if (purpose) add(checkoutBillable(data, purpose));
+  });
   await page(db.collection("hostMembershipCharges")
     .where("createdAtMillis", ">=", startMillis)
     .where("createdAtMillis", "<", endMillis)
