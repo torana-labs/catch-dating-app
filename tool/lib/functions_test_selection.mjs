@@ -145,3 +145,25 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
   if (reasons.length > 0) return {mode: "full", tests: [...listed], reasons};
   return {mode: "selected", tests: listed.filter((test) => selected.has(test)), reasons: []};
 }
+
+// Each emulator shard pays about two minutes of setup (dependencies, the
+// Functions build and the emulator boot), and the strict tests average about
+// eight seconds each. A small selection therefore runs fastest in one shard;
+// a full or large selection keeps the three-way split.
+export const emulatorShardCount = 3;
+export const singleShardTestLimit = 15;
+
+/**
+ * The emulator shard indexes CI should start for a selection: none when no
+ * listed test can be affected, one for a small selection, otherwise all three.
+ * A missing selection (merge queue, main, nightly) runs every shard.
+ */
+export function emulatorShards(selection) {
+  const all = Array.from({length: emulatorShardCount}, (_, index) => index + 1);
+  if (!selection || selection.mode === "full") return all;
+  if (selection.mode !== "selected" || !Array.isArray(selection.tests)) {
+    throw new Error("An emulator selection needs mode full or selected and a tests array.");
+  }
+  if (selection.tests.length === 0) return [];
+  return selection.tests.length <= singleShardTestLimit ? [1] : all;
+}
