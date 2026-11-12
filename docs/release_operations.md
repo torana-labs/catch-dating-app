@@ -2033,9 +2033,11 @@ redeploys everything since the last successful deploy.
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
 `website/scripts/next/releaseTrain.mjs`) releases main to `catchdates.com`
-after main CI completes, with an hourly fallback. It plans main's head. When
-that head has no website validation of its own, it first runs full CI on it
-(about an hour). It then previews the planned commit, passes the `prod` gate
+after main CI completes, with an hourly fallback. It plans the newest commit
+of main newer than live whose own CI passed with website validation, not
+main's head (owner decision, 12 Nov 2026): on a busy day the head's CI has
+rarely finished. When no such commit exists but the website changed since
+live, it first runs CI on main's head planned over every commit since live. It then previews the planned commit, passes the `prod` gate
 and promotes that exact preview. Trains queue and never cancel each other.
 `docs/web_surface_architecture.md` ("Release train") describes each step.
 
