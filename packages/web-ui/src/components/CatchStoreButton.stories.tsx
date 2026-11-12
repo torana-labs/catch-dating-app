@@ -24,8 +24,8 @@ const appStore: CatchStoreButtonProps = {badgeSrc: appStoreBadge, href: "#app-st
 const googlePlay: CatchStoreButtonProps = {badgeSrc: googlePlayBadge, href: "#google-play", label: "Get it on Google Play", store: "googlePlay"};
 
 const comingSoon = {
-  appStore: {kicker: "Coming soon on the", store: "App Store", label: "Coming soon on the App Store"},
-  googlePlay: {kicker: "Coming soon on", store: "Google Play", label: "Coming soon on Google Play"},
+  appStore: {kicker: "Coming soon on the", store: "App Store"},
+  googlePlay: {kicker: "Coming soon on", store: "Google Play"},
 };
 
 const pair = (size?: "m" | "l", live = true) => (

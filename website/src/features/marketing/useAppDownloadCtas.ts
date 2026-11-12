@@ -19,7 +19,7 @@ export interface AppDownloadCta {
   /** The store's official badge artwork (website/public/assets/store-badges, with provenance). */
   badgeSrc: string;
   /** Shown in place of the badge while the store has no link: "Coming soon on Google Play". */
-  comingSoon: {kicker: string; store: string; label: string};
+  comingSoon: {kicker: string; store: string};
   /** Empty until the store is live for this app; a pending store is recorded, not followed. */
   href: string;
   onClick: () => void;

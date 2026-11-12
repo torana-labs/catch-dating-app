@@ -73,6 +73,6 @@ describe("useAppDownloadCtas", () => {
 
   it("names the coming-soon chip of each store", () => {
     const {result} = renderHook(() => useAppDownloadCtas({placement: "home_hero", urls: {ios: "", android: ""}}));
-    expect(result.current.map((store) => store.comingSoon.label)).toEqual(["Coming soon on the App Store", "Coming soon on Google Play"]);
+    expect(result.current.map((store) => `${store.comingSoon.kicker} ${store.comingSoon.store}`)).toEqual(["Coming soon on the App Store", "Coming soon on Google Play"]);
   });
 });

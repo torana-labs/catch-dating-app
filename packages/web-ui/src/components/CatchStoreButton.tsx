@@ -6,12 +6,13 @@ export type CatchStoreButtonStore = "appStore" | "googlePlay";
 /** Badge heights: l is 48px, m is 40px (the D20 large and medium heights). */
 export type CatchStoreButtonSize = "m" | "l";
 
-/** The words of a store that has no link yet: "Coming soon on" over "Google Play". */
+/**
+ * The words of a store that has no link yet: "Coming soon on" over "Google
+ * Play". The visible words are the chip's accessible name, read as one phrase.
+ */
 export interface CatchStoreComingSoon {
   kicker: string;
   store: string;
-  /** The chip's accessible name: "Coming soon on Google Play". */
-  label: string;
 }
 
 export interface CatchStoreButtonProps {
@@ -68,10 +69,10 @@ export function CatchStoreButton({badgeSrc, comingSoon, href, label, onClick, si
   const width = Math.round(height * catchStoreBadgeAspect[store]);
   if (!href && comingSoon) {
     return (
-      <button aria-label={comingSoon.label} className={`${styles.button} ${styles.comingSoon}`} data-size={size} data-state="coming-soon"
+      <button className={`${styles.button} ${styles.comingSoon}`} data-size={size} data-state="coming-soon"
         data-store={store} onClick={onClick} style={{width}} type="button">
-        <span aria-hidden="true" className={styles.kicker}>{comingSoon.kicker}</span>
-        <span aria-hidden="true" className={styles.store}>{comingSoon.store}</span>
+        <span className={styles.kicker}>{comingSoon.kicker}</span>{" "}
+        <span className={styles.store}>{comingSoon.store}</span>
       </button>
     );
   }
