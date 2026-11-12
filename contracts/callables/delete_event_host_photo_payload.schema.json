@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/delete_event_host_photo_payload.schema.json",
+  "title": "DeleteEventHostPhotoCallablePayload",
+  "description": "Removes one shared host photo and its files. Organizer owners and managers of the event's organizer. Deleting a photo that is already gone succeeds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "photoId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "photoId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,64}$"
+    }
+  }
+}

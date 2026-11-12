@@ -7,6 +7,7 @@ export 'data/public_profile_callable_response.dart';
 export 'data/public_profile_repository.dart';
 export 'domain/form_profile.dart';
 export 'domain/form_profile_photo_preview.dart';
+export 'domain/image_upload_job.dart';
 export 'domain/profile_photo.dart';
 export 'domain/profile_prompts.dart';
 export 'domain/profile_readiness.dart';

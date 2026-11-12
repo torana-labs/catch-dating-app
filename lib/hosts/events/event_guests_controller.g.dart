@@ -180,7 +180,7 @@ final class HostEventGuestsControllerProvider
 }
 
 String _$hostEventGuestsControllerHash() =>
-    r'c2da1bd1820ac16044fd3747f1801b01014f52d1';
+    r'0be334c3f99b3577bf3d4b33be2ba98575974859';
 
 /// The guest lists, composed from the event, its attendees, its
 /// participations (for the guests who asked) and the roster insight view,

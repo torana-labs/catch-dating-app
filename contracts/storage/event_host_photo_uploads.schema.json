@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/event_host_photo_uploads.schema.json",
+  "title": "EventHostPhotoUploadsStoragePath",
+  "description": "Private staging object for a photo the event's host team is sharing with checked-in guests, at events/{eventId}/hostPhotoUploads/{photoId}/{fileName}. addEventHostPhoto re-encodes it without EXIF or location metadata into events/{eventId}/hostPhotos/{photoId}/ and deletes it.",
+  "type": "object",
+  "x-storage-rules-match": "match /events/{eventId}/hostPhotoUploads/{photoId}/{fileName}",
+  "x-storage-read": "denied; the server reads the staged object",
+  "x-storage-write": "event organizer owner or manager may create one JPEG or PNG original with uploaderUid metadata naming themselves once the event has started; reads, updates and deletes denied",
+  "x-storage-content-type-pattern": "image/(jpeg|png)",
+  "x-storage-file-name-pattern": "original\\.(jpg|jpeg|png)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "eventHostPhotos",
+  "x-storage-known-consumers": [
+    "functions/src/events/eventHostPhotos.ts"
+  ],
+  "properties": {
+    "eventId": {"type": "string", "description": "Event document id; path segment."},
+    "photoId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,64}$", "description": "Client-generated random photo id."},
+    "fileName": {"type": "string", "enum": ["original.jpg", "original.jpeg", "original.png"]}
+  }
+}

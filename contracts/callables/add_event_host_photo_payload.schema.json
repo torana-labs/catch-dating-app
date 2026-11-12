@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/add_event_host_photo_payload.schema.json",
+  "title": "AddEventHostPhotoCallablePayload",
+  "description": "Shares one photo the caller staged at events/{eventId}/hostPhotoUploads/{photoId}/original.{jpg|jpeg|png} with the event's checked-in guests. Organizer owners and managers, once the event has started. Replays for a photo already shared return it unchanged.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "photoId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "photoId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,64}$"
+    }
+  }
+}

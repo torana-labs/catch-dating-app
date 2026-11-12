@@ -244,6 +244,26 @@ service firebase.storage {
         );
     }
 
+    function hasEventStarted(eventId) {
+      return firestore.get(
+          /databases/(default)/documents/events/$(eventId)
+        ).data.startTime is timestamp
+        && firestore.get(
+          /databases/(default)/documents/events/$(eventId)
+        ).data.startTime <= request.time;
+    }
+
+    function isHostPhotoUpload() {
+      return resource == null
+        && request.resource != null
+        && request.resource.contentType.matches('image/(jpeg|png)')
+        && request.resource.size > 0
+        && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.metadata.keys().hasAll(['uploaderUid'])
+        && request.resource.metadata.uploaderUid is string
+        && request.resource.metadata.uploaderUid == request.auth.uid;
+    }
+
     match /users/{uid}/photos/{fileName} {
       allow read: if isSignedIn();
       allow write: if isSignedIn()
@@ -333,6 +353,25 @@ service firebase.storage {
         && isStableMediaId(mediaId)
         && isOriginalMediaFileName(fileName)
         && (isNewImageUpload() || isStoredImageDelete());
+    }
+
+    // Host photos for checked-in guests. The host team stages one original
+    // per photo once the event has started; addEventHostPhoto re-encodes it
+    // without EXIF or location metadata into hostPhotos/ and deletes the
+    // staged object. Guests read the re-encoded files only through
+    // short-lived signed URLs, so every direct read stays denied.
+    match /events/{eventId}/hostPhotoUploads/{photoId}/{fileName} {
+      allow read: if false;
+      allow create: if canWriteEventMedia(eventId)
+        && hasEventStarted(eventId)
+        && isStableMediaId(photoId)
+        && isOriginalMediaFileName(fileName)
+        && isHostPhotoUpload();
+      allow update, delete: if false;
+    }
+
+    match /events/{eventId}/hostPhotos/{photoId}/{fileName} {
+      allow read, write: if false;
     }
 
     match /matches/{matchId}/images/{fileName} {

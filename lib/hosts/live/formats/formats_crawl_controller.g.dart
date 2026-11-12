@@ -8,16 +8,18 @@ part of 'formats_crawl_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The crawl board, composed from the event's route and the guest list
-/// listener: who is with the crawl (checked in), the arrival groups and
-/// who has not joined yet. Nothing polls.
+/// The crawl board, composed from the event's route, the plan listener
+/// (stops changed on the night) and the guest list listener: who is with
+/// the crawl (checked in), the arrival groups and who has not joined yet.
+/// Nothing polls.
 
 @ProviderFor(hostFormatsCrawlController)
 final hostFormatsCrawlControllerProvider = HostFormatsCrawlControllerFamily._();
 
-/// The crawl board, composed from the event's route and the guest list
-/// listener: who is with the crawl (checked in), the arrival groups and
-/// who has not joined yet. Nothing polls.
+/// The crawl board, composed from the event's route, the plan listener
+/// (stops changed on the night) and the guest list listener: who is with
+/// the crawl (checked in), the arrival groups and who has not joined yet.
+/// Nothing polls.
 
 final class HostFormatsCrawlControllerProvider
     extends
@@ -27,9 +29,10 @@ final class HostFormatsCrawlControllerProvider
           HostFormatsCrawlState
         >
     with $Provider<HostFormatsCrawlState> {
-  /// The crawl board, composed from the event's route and the guest list
-  /// listener: who is with the crawl (checked in), the arrival groups and
-  /// who has not joined yet. Nothing polls.
+  /// The crawl board, composed from the event's route, the plan listener
+  /// (stops changed on the night) and the guest list listener: who is with
+  /// the crawl (checked in), the arrival groups and who has not joined yet.
+  /// Nothing polls.
   HostFormatsCrawlControllerProvider._({
     required HostFormatsCrawlControllerFamily super.from,
     required (Organizer, Event) super.argument,
@@ -84,11 +87,12 @@ final class HostFormatsCrawlControllerProvider
 }
 
 String _$hostFormatsCrawlControllerHash() =>
-    r'a02da745ffcc802aadc70cc9f44edfbf23806a05';
+    r'9ceb2eb8a5b85502e699f8a660f9f22ae600ad03';
 
-/// The crawl board, composed from the event's route and the guest list
-/// listener: who is with the crawl (checked in), the arrival groups and
-/// who has not joined yet. Nothing polls.
+/// The crawl board, composed from the event's route, the plan listener
+/// (stops changed on the night) and the guest list listener: who is with
+/// the crawl (checked in), the arrival groups and who has not joined yet.
+/// Nothing polls.
 
 final class HostFormatsCrawlControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostFormatsCrawlState, (Organizer, Event)> {
@@ -101,9 +105,10 @@ final class HostFormatsCrawlControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The crawl board, composed from the event's route and the guest list
-  /// listener: who is with the crawl (checked in), the arrival groups and
-  /// who has not joined yet. Nothing polls.
+  /// The crawl board, composed from the event's route, the plan listener
+  /// (stops changed on the night) and the guest list listener: who is with
+  /// the crawl (checked in), the arrival groups and who has not joined yet.
+  /// Nothing polls.
 
   HostFormatsCrawlControllerProvider call(Organizer organizer, Event event) =>
       HostFormatsCrawlControllerProvider._(

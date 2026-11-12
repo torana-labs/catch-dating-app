@@ -78,7 +78,7 @@ final class HostEventPlanControllerProvider
 }
 
 String _$hostEventPlanControllerHash() =>
-    r'10089ae2ef7e5ba638df5b6be49dd43022af0c38';
+    r'bcbb05e7b7bf9446051e483b883deab78957c73f';
 
 /// The plan screen, composed from the event and its plan listeners.
 

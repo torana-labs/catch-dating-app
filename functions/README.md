@@ -502,8 +502,10 @@ enter previews.
 
 | Function | File | Purpose |
 |----------|------|---------|
+| `addEventHostPhoto` | `src/events/eventHostPhotos.ts` | Shares a staged host photo with checked-in guests, re-encoded without EXIF or location. |
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
+| `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
@@ -517,6 +519,7 @@ enter previews.
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramWhatsappThread` | `src/programs/programWhatsapp/callables.ts` | One guest WhatsApp thread with its household and retained messages; marks it read. Managers and communications staff. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
+| `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
 | `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
 | `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |
