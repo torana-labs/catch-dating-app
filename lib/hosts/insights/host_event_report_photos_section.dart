@@ -34,10 +34,17 @@ class HostEventReportPhotosSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     final controller = ref.read(provider.notifier);
-    final removing = <String>{
-      for (final photo in state?.photos ?? const <EventHostPhoto>[])
-        if (ref.watch(_removeMutation(photo.photoId)).isPending) photo.photoId,
-    };
+    final removing = <String>{};
+    for (final photo in state?.photos ?? const <EventHostPhoto>[]) {
+      final removeMutation = _removeMutation(photo.photoId);
+      listenToCatchMutationErrors(
+        context,
+        ref,
+        mutations: [removeMutation],
+        errorContext: AppErrorContext.event,
+      );
+      if (ref.watch(removeMutation).isPending) removing.add(photo.photoId);
+    }
     return HostEventPhotosSection(
       state: state,
       removing: removing,
@@ -91,14 +98,8 @@ class HostEventReportPhotosSection extends ConsumerWidget {
             .get(hostEventPhotosControllerProvider(eventId).notifier)
             .remove(photo.photoId),
       );
-    } on Object catch (error) {
-      if (context.mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.event,
-        );
-      }
+    } on Object {
+      // listenToCatchMutationErrors in build shows the failure.
     }
   }
 }
