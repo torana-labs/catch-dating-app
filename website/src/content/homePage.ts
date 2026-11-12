@@ -8,7 +8,12 @@ export const homePageCopy = {
   header: {nav: "Main", explore: "Explore", organisers: "Organisers", hosts: "For hosts", app: "Get the app",
     cityMenu: "Choose your city", liveStatus: "{count} plans this week", liveStatusOne: "1 plan this week",
     /** A live city with no plans this week yet. */
-    newStatus: "New", soonStatus: "Launching soon"},
+    newStatus: "New", soonStatus: "Launching soon",
+    /** A country with no city open yet, shown once instead of every city's "soon". */
+    countrySoon: "Launching soon in {country}",
+    /** The picker's search, shown once there are more than eight cities. */
+    citySearch: {label: "Search cities", placeholder: "Search cities", clear: "Clear “{query}”", close: "Close search",
+      none: "No city matches “{query}”."}},
   hero: {
     liveEyebrow: "In {city} this week",
     soonEyebrow: "Launching soon in {city}",

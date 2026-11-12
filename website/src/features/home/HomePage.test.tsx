@@ -71,9 +71,10 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(main.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
   });
 
-  it("reads a launched city too thin to fill a page as launching soon", () => {
+  it("keeps a quiet launched city open instead of calling it launching soon", () => {
     render(<HomePage captures={captures} catalog={homeCatalogFixture("indore")} />);
-    expect(screen.getByRole("heading", {name: "Catch is coming to Indore."})).toBeTruthy();
+    expect(screen.getByRole("heading", {name: "This week in Indore"})).toBeTruthy();
+    expect(screen.queryByText(/Catch is coming to Indore/)).toBeNull();
   });
 
   it("says plans could not load instead of calling a live city launching soon", () => {
@@ -130,14 +131,15 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 
-  it("lists every city in the footer: open ones with their plans this week, the rest soon", () => {
+  it("lists the open cities in the footer with their plans this week, then More cities", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));
     const mumbai = mumbaiLiveCatalog.cities.find((city) => city.slug === "mumbai")!;
     const mumbaiName = mumbai.weekPlanCount === 0 ? "Mumbai · new" :
       mumbai.weekPlanCount === 1 ? "Mumbai · 1 plan this week" : `Mumbai · ${mumbai.weekPlanCount} plans this week`;
     expect(footer.getByRole("link", {name: mumbaiName}).getAttribute("href")).toBe("/mumbai/");
-    expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
+    expect(footer.queryByRole("link", {name: /^Pune/u})).toBeNull();
+    expect(footer.getByRole("link", {name: "More cities →"}).getAttribute("href")).toBe("/cities/");
   });
 
   it("shows the app in a tilted phone with plan stickers", () => {

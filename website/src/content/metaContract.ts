@@ -4,6 +4,7 @@ export const staticMetaKeys = [
   "sales_demo",
   "home",
   "visitor_discovery",
+  "cities",
   "host",
   "host_apply",
   "weddings",

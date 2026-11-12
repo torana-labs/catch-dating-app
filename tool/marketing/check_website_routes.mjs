@@ -287,6 +287,7 @@ function validatePageKey(route) {
   const allowedPageKeys = new Set([
     "home",
     "visitor_discovery",
+    "cities",
     "host",
     "weddings",
     "organizers",

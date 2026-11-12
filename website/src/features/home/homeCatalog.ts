@@ -18,6 +18,7 @@ export function homeCatalogFromPlans(
     status: plans[index].status,
     weekPlanCount: weekPlans(plans[index].plans, readAt).length,
     timezone: city.timezone,
+    countryIsoCode: city.countryIsoCode,
   }));
   const chosen = summaries.findIndex((city) => city.slug === requestedCity);
   const featured = summaries.findIndex((city) => city.slug === activeFeaturedCity.slug);

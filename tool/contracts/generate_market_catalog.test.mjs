@@ -16,6 +16,8 @@ import {
   outputs,
   renderDartModule,
   renderRules,
+  reservedSlugErrors,
+  reservedWebsiteSlugs,
   schemaErrors,
 } from "./generate_market_catalog.mjs";
 import {configCitiesDocument} from "../lib/location_markets.mjs";
@@ -171,4 +173,13 @@ test("a reference allowlist entry needs a test that reads the catalog", () => {
     /does not exist/);
   assert.match(errorsFor("tool/run.test.mjs"), /does not read contracts\/catalogs\/markets.json/);
   assert.equal(errorsFor("operations/test/supply-intake-market-catalog.test.mjs"), "");
+});
+
+test("no city slug or alias takes a website path", () => {
+  const reserved = reservedWebsiteSlugs();
+  for (const slug of ["cities", "explore", "host", "organizers", "api"]) assert.ok(reserved.has(slug), slug);
+  assert.deepEqual(reservedSlugErrors(catalog, reserved), []);
+  const value = clone();
+  city(value, "in-mh-pune").aliases.push("cities");
+  assert.match(reservedSlugErrors(value, reserved).join("\n"), /in-mh-pune: "cities" is a website path/);
 });

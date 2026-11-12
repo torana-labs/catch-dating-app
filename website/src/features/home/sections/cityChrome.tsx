@@ -1,8 +1,12 @@
-import {CatchButton, CatchMenu} from "@catch/web-ui";
+import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
+import {interpolateContent as fill} from "@content/interpolate";
+import {countryName} from "@content/markets";
+import {siteFooterCopy} from "@content/site";
 import type {ReactNode} from "react";
-import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
-import {cityFooterNote, cityStatusLabel} from "../homeModel";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity} from "../../../shared/site";
+import {cityFooterNote, cityGroups} from "../homeModel";
+import {CityPicker} from "./CityPicker";
 import type {HomeCity} from "../homeTypes";
 
 // A link button's press only navigates.
@@ -11,6 +15,22 @@ const follow = () => undefined;
 /** Where a city's pages live: its city page for Explore and the footer, the homepage for the picker. */
 export const cityPagePath = (slug: string) => ["", encodeURIComponent(slug), ""].join("/");
 export const organisersHref = "/explore/?show=organisers";
+export const citiesHref = "/cities/";
+
+/**
+ * The footer's Cities column: open cities with their honest note, one
+ * "launching soon" line for each country with no city open, then More cities.
+ */
+export function footerCities(cities: readonly HomeCity[]): SiteFooterCity[] {
+  const groups = cityGroups(cities, countryName);
+  return [
+    ...cities.filter((item) => item.status === "live")
+      .map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: false, note: cityFooterNote(item)})),
+    ...groups.filter((group) => !group.anyLive)
+      .map((group) => ({href: citiesHref, label: fill(siteFooterCopy.countrySoon, {country: group.name}), soon: false})),
+    {href: citiesHref, label: siteFooterCopy.moreCities, soon: false},
+  ];
+}
 
 /**
  * The header and footer around a city's page (Explore and the city pages).
@@ -30,18 +50,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
   return <>
     <PublicSiteHeader
       actions={<>
-        <CatchMenu
-          align="end"
-          builder={(menu) => (
-            <CatchButton {...menu.triggerProps} label={city.label} onPressed={menu.toggle} size="sm" trailingIcon="expand" variant="secondary" />
-          )}
-          items={cities.map((item) => ({value: item.slug, label: item.label, sublabel: cityStatusLabel(item),
-            selected: item.slug === city.slug, variant: "choice" as const}))}
-          label={copy.header.cityMenu}
-          onSelected={onChooseCity}
-          recipe="anchored"
-          width={300}
-        />
+        <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
         <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
       </>}
       links={[
@@ -52,7 +61,6 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
-      cities={cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live",
-        note: cityFooterNote(item)}))} />
+      cities={footerCities(cities)} />
   </>;
 }

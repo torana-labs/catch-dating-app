@@ -155,3 +155,46 @@ export function organizerCard(organizer: HomeOrganizer, city: HomeCity): Organiz
     meta: [organizer.category, next, footnote, ...(page && unclaimed ? [copy.organisers.claim] : [])].join(" · "),
   };
 }
+
+/** The picker searches once there are more cities than this. */
+export const citySearchThreshold = 8;
+
+/** One country's cities in the picker and on /cities/, in catalog order. */
+export interface CityGroup {
+  isoCode: string;
+  name: string;
+  /** False when no city in the country is open: it shows one "launching soon" line. */
+  anyLive: boolean;
+  cities: HomeCity[];
+}
+
+/** Cities grouped by country, countries in the order their first city appears. */
+export function cityGroups(cities: readonly HomeCity[], countryName: (isoCode: string) => string): CityGroup[] {
+  const groups = new Map<string, CityGroup>();
+  for (const city of cities) {
+    const group = groups.get(city.countryIsoCode) ??
+      {isoCode: city.countryIsoCode, name: countryName(city.countryIsoCode), anyLive: false, cities: []};
+    group.cities.push(city);
+    group.anyLive ||= city.status === "live";
+    groups.set(city.countryIsoCode, group);
+  }
+  return [...groups.values()];
+}
+
+/** The groups with only the cities whose label starts a word matching the query. */
+export function filterCityGroups(groups: readonly CityGroup[], query: string): CityGroup[] {
+  const needle = query.trim().toLocaleLowerCase("en");
+  if (!needle) return [...groups];
+  const matches = (label: string) => label.toLocaleLowerCase("en").split(/[\s-]+/u)
+    .some((word, index, words) => words.slice(index).join(" ").startsWith(needle));
+  return groups.map((group) => ({...group, cities: group.cities.filter((city) => matches(city.label))}))
+    .filter((group) => group.cities.length > 0);
+}
+
+/**
+ * A city's line in the picker. In a country with no city open, its cities
+ * carry no line of their own: the country says "launching soon" once.
+ */
+export function cityPickerSublabel(city: HomeCity, group: CityGroup) {
+  return group.anyLive ? cityStatusLabel(city) : undefined;
+}
