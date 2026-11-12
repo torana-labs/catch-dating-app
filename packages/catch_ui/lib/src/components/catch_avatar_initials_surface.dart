@@ -72,7 +72,7 @@ class CatchAvatarInitialsSurface extends StatelessWidget {
             color: Color.lerp(
               t.primarySoft,
               t.ink2,
-              tone * CatchOpacity.calloutFill,
+              (tone + 1) * CatchOpacity.calloutFill,
             )!,
           ),
         if (activity) CustomPaint(painter: _ActivityAvatarTexturePainter()),

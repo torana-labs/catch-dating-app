@@ -212,7 +212,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | Callable | Website and Flutter consumer organizer surfaces | `organizerFollows/{organizerId_uid}` and `organizers/{organizerId}.followerCount` plus legacy shadows | Canonical consumer relationship; never stored in entity/user arrays. |
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | Callable | Flutter Hosts team workspace | `organizerTeamMemberships`, organizer ownership/host projections, legacy shadows | Owner-controlled team membership and audited ownership transfer. |
 | `followOrganizerByPhone` | Callable | Website organiser page (signed-out visitors, after the phone-code sign-in) | `organizerFollows/{organizerId_uid}`, `organizers/{organizerId}.followerCount`, and, only with the explicit WhatsApp tick, `organizerCommunicationPreferences.whatsappPurposes.followerUpdates` plus an immutable `organizerCommunicationPermissionReceipts` row (source `organizerFollowByPhone`, terms `follower-whatsapp-v1`) | Follow with just a verified phone (token `phone_number`); no profile gate. The WhatsApp grant is bound to that phone and keyed by the request id, so a replay never duplicates it. |
-| `createOrganizerPost` | Callable | Flutter organizer posts repository | `organizers/{organizerId}/posts/{postId}`, `organizerPostDeliveryOperations/{postId}`, organizer Activity, preference-gated FCM, legacy shadows | Manager-authored, moderated, bounded follower update. A required client-generated request id deterministically owns the post and atomically creates a retry operation, so a lost callable response cannot duplicate the post or consume quota twice. Immediate delivery processes one bounded follower page; deterministic de-identified recipient receipts make cursor replay safe. Optional `channels: ["app", "whatsapp"]` (default app) needs the organiser's active sender and approved `organizer_follower_update` template; it creates an approved follower campaign (`organizerCampaigns`, `recipientSource.kind = organizerFollowers`), freezes consented followers into `organizerCampaignRecipients` in each page's receipt transaction, schedules the campaign after the last page and mirrors its counts onto the operation's `whatsapp` leg. The campaign engine sends on route `organizerFollowerWhatsapp`; receipts route through `campaignWhatsappDispatches`. |
+| `createOrganizerPost` | Callable | Flutter organizer posts repository | `organizers/{organizerId}/posts/{postId}`, `organizerPostDeliveryOperations/{postId}`, organizer Activity, preference-gated FCM, legacy shadows | Manager-authored, moderated, bounded follower update. A required client-generated request id deterministically owns the post and atomically creates a retry operation, so a lost callable response cannot duplicate the post or consume quota twice. Immediate delivery processes one bounded follower page; deterministic de-identified recipient receipts make cursor replay safe. Optional `channels: ["app", "whatsapp"]` (default app) needs the organiser's active sender and approved `organizer_follower_update` template; it creates an approved follower campaign (`organizerCampaigns`, `recipientSource.kind = organizerFollowers`), freezes consented followers into `organizerCampaignRecipients` in each page's receipt transaction, schedules the campaign after the last page and mirrors its counts onto the operation's `whatsapp` leg. The campaign engine sends on route `organizerFollowerWhatsapp`; receipts route through `whatsappDispatches` (`source: campaign`). |
 | `dispatchPendingOrganizerFollowerUpdates` | Scheduled every 5 minutes | Backend | `organizerPostDeliveryOperations`, `organizerPostDeliveryRecipients`, organizer Activity, preference-gated FCM | Resumes pending or expired-lease follower-update delivery. Activity creation is deterministic and durable; push remains best-effort and is never repeated when a prior attempt's outcome is unknowable. Deleted accounts, the author, and blocked relationships are excluded. |
 | `createOrganizerForm` / `duplicateOrganizerForm` | Callable | Host Forms library and template gallery | `organizerForms/{formId}`, `organizerFormDrafts/{formId}` | App-Check-protected, rate-limited manager boundary. A request-scoped deterministic form id makes retries idempotent. Template creation copies versioned source data into organizer-owned state; duplication remaps every section, question, option, rule, and public identity. |
 | `updateOrganizerFormDraft` / `validateOrganizerFormDraft` / `getOrganizerFormEditor` | Callable | Host Forms builder and preview | Mutable `organizerFormDrafts/{formId}` and safe manager projections | Draft replacement is revision-guarded and archived forms fail closed. Save may preserve an invalid work-in-progress; the shared semantic validator reports publish blockers, including duplicate identities, type-invalid rules, backward routing, purpose requirements, and inconsistent validation ranges. |
@@ -643,16 +643,14 @@ server-owned; clients write nothing.
 
 ### Shared delivery collections
 
-`deliveryMessages/{messageId}` is the outbox for automation, programme and
-approval-notification sends, and `whatsappDispatches/{attemptId}` holds their
-WhatsApp dispatch evidence. Every document carries a `source`
-(`automation`, `program` or `approvalNotification`); ids are content hashes
-over the source's own context, so sources never collide. Each source keeps its
-own contract and parser, and the WhatsApp receipt router picks the owning
-store by `source`. Campaign sends still use `campaignDeliveryMessages` and
-`campaignWhatsappDispatches` until the parked CAT-106 claim on their tests is
-resolved; event-day assistance keeps its per-channel collections by owner
-decision (12 Nov 2026).
+`deliveryMessages/{messageId}` is the outbox for automation, programme,
+campaign and approval-notification sends, and `whatsappDispatches/{attemptId}`
+holds their WhatsApp dispatch evidence. Every document carries a `source`
+(`automation`, `program`, `campaign` or `approvalNotification`); ids are
+content hashes over the source's own context, so sources never collide. Each
+source keeps its own contract and parser, and the WhatsApp receipt router
+picks the owning store by `source`. Event-day assistance keeps its per-channel
+collections by owner decision (12 Nov 2026).
 
 
 ## Backend-Owned Collections And Fields
