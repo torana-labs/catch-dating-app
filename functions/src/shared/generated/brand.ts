@@ -36,7 +36,7 @@ const record = {
       "android": null
     },
     "host": {
-      "ios": null,
+      "ios": "https://apps.apple.com/app/catch-host/id6778927317",
       "android": null
     }
   },

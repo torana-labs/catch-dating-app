@@ -25,7 +25,8 @@ final class Brand {
   static const storesHostAppName = 'Catch Host';
   static const String? storesConsumerIos = null;
   static const String? storesConsumerAndroid = null;
-  static const String? storesHostIos = null;
+  static const String? storesHostIos =
+      'https://apps.apple.com/app/catch-host/id6778927317';
   static const String? storesHostAndroid = null;
   static const adminName = 'Catch Admin';
   static const sendersEmailDomain = 'notify.catchdates.com';

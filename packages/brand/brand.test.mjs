@@ -117,6 +117,9 @@ test("store links are a validated URL or null", () => {
     {ios: "https://apps.apple.com/in/app/catch-run-clubs/id6739000001",
       android: "https://play.google.com/store/apps/details?id=com.catchdates.app"},
     {ios: "https://apps.apple.com/app/id6739000002", android: null});
+  assert.deepEqual(schemaErrors(schema, schema, withStores({ios: null, android: null},
+    {ios: "https://apps.apple.com/app/catch-host/id6778927317", android: null}), "brand"), [],
+  "the storefront-neutral form (slug, no country) is accepted");
   assert.deepEqual(schemaErrors(schema, schema, valid, "brand"), []);
   for (const [platform, url] of [
     ["ios", "https://apps.apple.com/in/app/catch"],
