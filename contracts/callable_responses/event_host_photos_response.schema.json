@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_host_photos_response.schema.json",
+  "title": "EventHostPhotosCallableResponse",
+  "description": "The photos the event's host team shared, newest first (100 at most), with the organizer's display name for the guest section heading. access is host for organizer owners and managers (who may add and remove photos), guest for guests who checked in, and none for everyone else, whose list is always empty. Image URLs are signed for a few minutes and expire at urlsExpireAtMillis; they carry no download token.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerName",
+    "access",
+    "maxPhotos",
+    "photos",
+    "urlsExpireAtMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "access": {
+      "type": "string",
+      "enum": [
+        "host",
+        "guest",
+        "none"
+      ]
+    },
+    "maxPhotos": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "photos": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "photoId",
+          "thumbnailUrl",
+          "displayUrl",
+          "width",
+          "height",
+          "uploadedByUid",
+          "createdAtMillis"
+        ],
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{16,64}$"
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "displayUrl": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096
+          },
+          "uploadedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "urlsExpireAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}
