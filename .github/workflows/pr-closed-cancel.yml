@@ -1,0 +1,55 @@
+name: Cancel closed PR runs
+run-name: Cancel runs for closed PR #${{ github.event.pull_request.number }}
+
+# Closing or merging a pull request does not stop the validation runs it
+# started, so a merged PR's CI keeps holding runners. GitHub concurrency
+# groups are shared across a repository's workflows, and a job that joins a
+# group with cancel-in-progress cancels whatever run or job holds that group.
+# Each job here joins one PR-scoped group of a pull-request workflow, exactly as
+# that workflow spells it, and does nothing else. It reads no repository
+# content, needs no permissions and never touches merge-queue or main groups:
+#
+# - ci.yml:          ci-<event>-<PR number> (the pull_request branch of its key)
+# - nx-shadow.yml:   nx-shadow-<PR number>
+# - infra-plan.yml:  infra-plan-<PR number>
+#
+# If one of those keys changes, change the matching group here.
+on:
+  pull_request:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  ci:
+    name: Cancel CI for the closed PR
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    concurrency:
+      group: ci-pull_request-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Release the PR's CI group
+        run: echo "Any in-progress CI run for this PR was cancelled."
+
+  nx-shadow:
+    name: Cancel Nx shadow for the closed PR
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    concurrency:
+      group: nx-shadow-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Release the PR's Nx shadow group
+        run: echo "Any in-progress Nx shadow run for this PR was cancelled."
+
+  infra-plan:
+    name: Cancel infra plan for the closed PR
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    concurrency:
+      group: infra-plan-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Release the PR's infra plan group
+        run: echo "Any in-progress infra plan run for this PR was cancelled."
