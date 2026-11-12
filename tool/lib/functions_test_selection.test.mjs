@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {selectEmulatorTests, sourceForListedTest} from "./functions_test_selection.mjs";
+import {emulatorShards, selectEmulatorTests, singleShardTestLimit, sourceForListedTest} from "./functions_test_selection.mjs";
 
 const dependency = (resolved) => ({module: `./${resolved}`, resolved, coreModule: false, couldNotResolve: false});
 const listed = [
@@ -71,4 +71,16 @@ test("shared inputs and unexplained functions files run every listed test", () =
 test("docs and unrelated folders select nothing unless a test names them", () => {
   assert.deepEqual(select(["functions/README.md", "website/src/page.tsx"]),
     {mode: "selected", tests: [], reasons: []});
+});
+
+test("emulator shards: none for an empty selection, one for a small one, three otherwise", () => {
+  const tests = (count) => Array.from({length: count}, (_, index) => `test/t${index}.test.cjs`);
+  assert.deepEqual(emulatorShards(undefined), [1, 2, 3]);
+  assert.deepEqual(emulatorShards({mode: "full", tests: tests(100)}), [1, 2, 3]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: []}), []);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(1)}), [1]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(singleShardTestLimit)}), [1]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(singleShardTestLimit + 1)}), [1, 2, 3]);
+  assert.throws(() => emulatorShards({mode: "partial", tests: []}), /mode full or selected/u);
+  assert.throws(() => emulatorShards({mode: "selected"}), /tests array/u);
 });
