@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.1
+version: 3.3.2
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -915,6 +915,8 @@ catchdates.com's DNS already lives on Cloudflare (`byron`/`carioca.ns.cloudflare
 Verified search engines and link-preview fetchers pass. robots.txt stays ours (`website/app/robots.ts`), not Cloudflare's managed one.
 
 `tool/cloudflare/edge_policy.json` is the desired state, and `tool/cloudflare/apply_edge_policy.mjs` applies it. A run without `--apply` only reads and prints the plan. Rules whose description lacks the `catch-edge: ` prefix are kept exactly as they are.
+
+The policy's `declared` block records zone settings the owner sets in the dashboard rather than through this tool: today the "Add visitor location headers" managed transform (Rules → Settings → Managed Transforms), which the website's city guess reads. The tool checks their shape but never plans or writes them, so the token needs no extra permission. If the dashboard changes, update the block to match.
 
 Token, created by the zone owner in the Cloudflare dashboard:
 - **Scope:** zone `catchdates.com` only.
