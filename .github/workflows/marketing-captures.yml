@@ -25,17 +25,43 @@ permissions:
   contents: read
 
 jobs:
+  native_probe:
+    name: Probe the macOS native font and runner image
+    # Only the nightly asks. It renders everything only when the native font
+    # or runner image differs from what the reusable renders were made with.
+    if: ${{ github.event_name == 'schedule' && inputs.automatic_source_sha != '' }}
+    runs-on: macos-26
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      font_sha256: ${{ steps.probe.outputs.font_sha256 }}
+      runner_image: ${{ steps.probe.outputs.runner_image }}
+    steps:
+      - id: probe
+        name: Hash the native font and read the runner image
+        shell: bash
+        run: |
+          set -euo pipefail
+          font="$(shasum -a 256 /System/Library/Fonts/SFNS.ttf | cut -d ' ' -f 1)"
+          [[ "$font" =~ ^[0-9a-f]{64}$ ]]
+          [[ "${ImageVersion:-}" =~ ^[0-9A-Za-z._-]+$ ]]
+          echo "font_sha256=$font" >> "$GITHUB_OUTPUT"
+          echo "runner_image=$ImageVersion" >> "$GITHUB_OUTPUT"
+
   plan:
     name: Plan canonical iPhone captures
+    needs: native_probe
     if: >-
-      inputs.automatic_source_sha != '' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.event.action == 'labeled' &&
-       github.event.label.name == 'capture:requested' &&
-       github.event.pull_request.state == 'open' &&
-       github.event.pull_request.base.ref == 'main' &&
-       github.event.pull_request.base.repo.full_name == github.repository &&
-       github.event.pull_request.head.repo.full_name == github.repository)
+      !cancelled() &&
+      (needs.native_probe.result == 'success' || needs.native_probe.result == 'skipped') &&
+      (inputs.automatic_source_sha != '' ||
+       github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'pull_request' && github.event.action == 'labeled' &&
+        github.event.label.name == 'capture:requested' &&
+        github.event.pull_request.state == 'open' &&
+        github.event.pull_request.base.ref == 'main' &&
+        github.event.pull_request.base.repo.full_name == github.repository &&
+        github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -92,9 +118,11 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - id: plan
-        name: Plan reuse from earlier main-line capture bundles
+        name: Plan reuse from earlier capture bundles
         env:
           GH_TOKEN: ${{ github.token }}
+          CAPTURE_NATIVE_FONT_SHA256: ${{ needs.native_probe.outputs.font_sha256 }}
+          CAPTURE_NATIVE_RUNNER_IMAGE: ${{ needs.native_probe.outputs.runner_image }}
         run: node tool/marketing/export_hosted_captures.mjs --plan
       - name: Hand the seeds to the producing job
         if: ${{ steps.plan.outputs.seeded == 'true' }}

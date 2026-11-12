@@ -1,0 +1,111 @@
+name: Weekly capture drift check
+
+# Compare-only (owner decision, 12 Nov 2026). Renders every app capture that
+# main would reuse afresh on macOS and compares the image bytes. It never
+# republishes; any difference fails the run and names the captures.
+on:
+  schedule:
+    - cron: "41 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketing-captures-drift
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Find the renders main would reuse
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      seeded: ${{ steps.seeds.outputs.seeded }}
+    env:
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/generate-contracts
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Collect reusable renders
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CAPTURE_SEED_DIR="$RUNNER_TEMP/capture-seeds"
+          mkdir -p "$CAPTURE_SEED_DIR"
+          node tool/marketing/compare_capture_drift.mjs --plan
+          echo "CAPTURE_SEED_DIR=$CAPTURE_SEED_DIR" >> "$GITHUB_ENV"
+      - id: seeds
+        name: Record whether anything is comparable
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find "$CAPTURE_SEED_DIR" -name '*.png' | grep -q .; then
+            echo "seeded=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "seeded=false" >> "$GITHUB_OUTPUT"
+            echo "No reusable app capture renders on main; nothing to compare." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Hand the reusable renders to macOS
+        if: ${{ steps.seeds.outputs.seeded == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: capture-drift-seeds-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_SEED_DIR }}/
+          if-no-files-found: error
+          retention-days: 1
+
+  compare:
+    name: Render afresh and compare image bytes
+    needs: plan
+    if: ${{ needs.plan.outputs.seeded == 'true' }}
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/generate-contracts
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ./.github/actions/setup-flutter
+      - name: Resolve exact Flutter dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Initialize drift directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CAPTURE_SEED_DIR=$RUNNER_TEMP/capture-seeds" >> "$GITHUB_ENV"
+          echo "CAPTURE_DRIFT_DIR=$RUNNER_TEMP/capture-drift" >> "$GITHUB_ENV"
+      - name: Receive the reusable renders
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: capture-drift-seeds-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_SEED_DIR }}
+      - name: Render afresh and compare
+        run: node tool/marketing/compare_capture_drift.mjs --compare
+      - name: Keep both images of any drift for review
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: capture-drift-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_DRIFT_DIR }}/
+          if-no-files-found: ignore
+          retention-days: 14
