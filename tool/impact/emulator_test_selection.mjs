@@ -5,19 +5,41 @@ import path from "node:path";
 import {parseArgs} from "node:util";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {cruiseModules, loadDependencyCruiser} from "../lib/dependency_cruiser.mjs";
-import {selectEmulatorTests} from "../lib/functions_test_selection.mjs";
+import {emulatorShards, selectEmulatorTests} from "../lib/functions_test_selection.mjs";
 import {changedPathsSince} from "../harness/lib/git_changes.mjs";
 
 // Prints the strict emulator tests a pull request can affect, for
 // `CATCH_TEST_SELECTION` in functions/scripts/run-tests.cjs. CI uses it only on
-// pull requests; the merge queue, main and nightly run every listed test.
+// pull requests; the merge queue, main and nightly run every listed test
+// (--full). --github-output also writes the emulator shards CI should start.
 const {values} = parseArgs({options: {
   base: {type: "string"}, head: {type: "string", default: "HEAD"},
   paths: {type: "string"}, "paths-file": {type: "string"}, output: {type: "string"},
+  full: {type: "boolean", default: false}, "github-output": {type: "string"},
 }});
-if (!values.base && !values.paths && !values["paths-file"]) {
-  console.error("Usage: emulator_test_selection.mjs (--base <ref> [--head <ref>] | --paths a,b | --paths-file file) [--output file]");
+if (!values.full && !values.base && !values.paths && !values["paths-file"]) {
+  console.error("Usage: emulator_test_selection.mjs (--full | --base <ref> [--head <ref>] | --paths a,b | --paths-file file) [--output file] [--github-output file]");
   process.exit(64);
+}
+const functionsRoot = path.join(repoRoot, "functions");
+// The Functions test runner owns the strict list and its file format.
+const {listedStrictTests} = createRequire(import.meta.url)(path.join(functionsRoot, "scripts/run-tests.cjs"));
+const listed = listedStrictTests(functionsRoot);
+
+function emit(report) {
+  const text = `${JSON.stringify(report, null, 2)}\n`;
+  if (values.output) fs.writeFileSync(values.output, text);
+  else process.stdout.write(text);
+  if (values["github-output"]) {
+    const shards = emulatorShards(report);
+    fs.appendFileSync(values["github-output"],
+      `shards=${JSON.stringify(shards)}\nshard_total=${shards.length}\nselected=${report.tests.length}\n`);
+  }
+}
+
+if (values.full) {
+  emit({mode: "full", tests: [...listed], reasons: ["not a pull request: every listed test runs"], listed: listed.length});
+  process.exit(0);
 }
 // A large pull request's path list exceeds the kernel's per-argument limit,
 // so CI passes it as a newline-separated file.
@@ -30,7 +52,6 @@ if (!depcruise) {
   console.error("Emulator test selection needs `npm ci --prefix tool/impact`.");
   process.exit(1);
 }
-const functionsRoot = path.join(repoRoot, "functions");
 const tsConfigFile = path.join(functionsRoot, "tsconfig.json");
 const previous = process.cwd();
 process.chdir(functionsRoot);
@@ -44,13 +65,7 @@ try {
 } finally {
   process.chdir(previous);
 }
-// The Functions test runner owns the strict list and its file format.
-const {listedStrictTests} = createRequire(import.meta.url)(path.join(functionsRoot, "scripts/run-tests.cjs"));
-const listed = listedStrictTests(functionsRoot);
 const selection = selectEmulatorTests({changedPaths, listed, modules, readSource: (file) => {
   try { return fs.readFileSync(path.join(functionsRoot, file), "utf8"); } catch { return ""; }
 }});
-const report = {...selection, listed: listed.length, graph: {tool: "dependency-cruiser", version: depcruise.version}};
-const text = `${JSON.stringify(report, null, 2)}\n`;
-if (values.output) fs.writeFileSync(values.output, text);
-else process.stdout.write(text);
+emit({...selection, listed: listed.length, graph: {tool: "dependency-cruiser", version: depcruise.version}});

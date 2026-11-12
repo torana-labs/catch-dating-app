@@ -2,9 +2,11 @@ name: CI
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('CI PR #{0}', github.event.pull_request.number) || 'CI' }}
 
-# A manual dispatch plans the head's own change unless `full` is set; the
-# Website Release train dispatches with `full=true` to validate the head it
-# releases when that head ran no website validation of its own.
+# A manual dispatch plans the head's own change unless `full` or `base_sha` is
+# set. With `base_sha` it plans every commit from that ancestor to the head,
+# as a main push does: the Website Release train dispatches it from the live
+# commit, to validate the head it releases when no commit newer than live has
+# website validation, without running lanes nothing since live touched.
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
@@ -20,6 +22,11 @@ on:
         required: false
         type: boolean
         default: false
+      base_sha:
+        description: Plan every commit from this ancestor of the head (40-character SHA).
+        required: false
+        type: string
+        default: ""
 
 permissions:
   actions: read
@@ -133,6 +140,7 @@ jobs:
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
+          DISPATCH_BASE_SHA: ${{ inputs.base_sha }}
         run: |
           set -euo pipefail
           event_mode="pr"
@@ -170,10 +178,21 @@ jobs:
               full_flag=(--full)
               ;;
             workflow_dispatch)
-              event_mode="nightly"
-              base_sha="${HEAD_SHA}^"
-              if [[ "$REQUEST_FULL" == "true" ]]; then
-                full_flag=(--full)
+              if [[ -n "${DISPATCH_BASE_SHA:-}" ]]; then
+                # Plan the window from that ancestor, as a main push does.
+                if [[ ! "$DISPATCH_BASE_SHA" =~ ^[0-9a-f]{40}$ || "$REQUEST_FULL" == "true" ]]; then
+                  echo "base_sha must be a full commit SHA and cannot combine with full."
+                  exit 64
+                fi
+                event_mode="main"
+                base_sha="$DISPATCH_BASE_SHA"
+                window_flag=(--commit-window)
+              else
+                event_mode="nightly"
+                base_sha="${HEAD_SHA}^"
+                if [[ "$REQUEST_FULL" == "true" ]]; then
+                  full_flag=(--full)
+                fi
               fi
               ;;
             *)
