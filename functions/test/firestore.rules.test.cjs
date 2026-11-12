@@ -3569,6 +3569,16 @@ describe("firestore.rules", () => {
       await assertSucceeds(getDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "cities")));
       await assertFails(getDoc(doc(authedDb("runner-1"), "config", "private")));
     });
+
+    it("allows public reads of config/brand and denies client writes", async () => {
+      await seed(["config", "brand"], {name: "Lumen", stores: {host: {ios: null, android: null}}});
+
+      await assertSucceeds(getDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "brand")));
+      await assertSucceeds(getDoc(doc(authedDb("runner-1"), "config", "brand")));
+      await assertFails(setDoc(doc(authedDb("runner-1"), "config", "brand"), {name: "Spoof"}));
+      await assertFails(updateDoc(doc(authedDb("runner-1"), "config", "brand"), {name: "Spoof"}));
+      await assertFails(setDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "brand"), {name: "Spoof"}));
+    });
   });
 
   describe("users", () => {

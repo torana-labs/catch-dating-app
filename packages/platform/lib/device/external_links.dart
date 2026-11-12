@@ -1,6 +1,8 @@
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,7 +37,25 @@ class ExternalLinkController {
     );
   }
 
-  Future<bool> openHostApp() => openExternal(AppConfig.hostAppUrl);
+  /// Opens Catch Host's store listing for this device, or its web page
+  /// while the app is not on this device's store (and on the web).
+  Future<bool> openHostApp({LiveBrand? brand, TargetPlatform? platform}) =>
+      openExternal(
+        (brand ?? LiveBrand.generated).host.forPlatform(
+              platform ?? defaultTargetPlatform,
+            ) ??
+            AppConfig.hostAppUrl,
+      );
+
+  /// Opens the Catch app's store listing for this device, or the website's
+  /// download page while the app is not on this device's store.
+  Future<bool> openCatchApp({LiveBrand? brand, TargetPlatform? platform}) =>
+      openExternal(
+        (brand ?? LiveBrand.generated).consumer.forPlatform(
+              platform ?? defaultTargetPlatform,
+            ) ??
+            AppConfig.publicSiteUrl.resolve('/download/'),
+      );
 
   /// Opens a one-person WhatsApp handoff with editable text prefilled.
   ///
