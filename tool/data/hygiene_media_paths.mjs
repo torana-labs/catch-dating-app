@@ -73,24 +73,15 @@ export async function buildMediaHygienePlan({
   bucket,
   env,
 }) {
-  const [organizersSnap, eventsSnap, claimsSnap, legacyFiles] = await Promise.all([
-    firestore.collection("clubs").get(),
+  const [organizersSnap, eventsSnap, legacyFiles] = await Promise.all([
+    firestore.collection("organizers").get(),
     firestore.collection("events").get(),
-    firestore.collection("organizerHostClaims").get(),
     listLegacyOrganizerFiles(bucket),
   ]);
 
   const organizers = new Map(
     organizersSnap.docs.map((doc) => [doc.id, {id: doc.id, ref: doc.ref, data: doc.data()}])
   );
-  const ownerOrganizerIds = new Map();
-  for (const organizer of organizers.values()) {
-    const ownerUid = ownerUidForOrganizer(organizer.data);
-    if (!ownerUid) continue;
-    const organizerIds = ownerOrganizerIds.get(ownerUid) ?? [];
-    organizerIds.push(organizer.id);
-    ownerOrganizerIds.set(ownerUid, organizerIds);
-  }
 
   const references = [];
   for (const organizer of organizers.values()) {
@@ -98,7 +89,7 @@ export async function buildMediaHygienePlan({
       const value = organizer.data[field];
       if (typeof value !== "string" || value.length === 0) continue;
       references.push(referenceForUrl({
-        collection: "clubs",
+        collection: "organizers",
         docId: organizer.id,
         docPath: organizer.ref.path,
         field,
@@ -146,61 +137,19 @@ export async function buildMediaHygienePlan({
       null,
   }));
 
-  const claims = new Map(claimsSnap.docs.map((doc) => [doc.id, doc.data()]));
-  const claimRepairs = [];
-  const claimWarnings = [];
-  for (const [ownerUid, organizerIds] of ownerOrganizerIds) {
-    if (organizerIds.length !== 1) {
-      const current = claims.get(ownerUid);
-      claimWarnings.push({
-        uid: ownerUid,
-        currentClaimOrganizerId: current?.organizerId ?? null,
-        organizers: organizerIds.map((organizerId) => organizerSummary(organizers.get(organizerId))),
-        message: "Owner has multiple clubs; not auto-repairing singleton claim.",
-      });
-      continue;
-    }
-    const organizerId = organizerIds[0];
-    const current = claims.get(ownerUid);
-    if (!current || current.uid !== ownerUid || current.organizerId !== organizerId) {
-      claimRepairs.push({
-        uid: ownerUid,
-        expectedOrganizerId: organizerId,
-        currentOrganizerId: current?.organizerId ?? null,
-        action: current ? "update" : "create",
-      });
-    }
-  }
-  const staleClaims = claimsSnap.docs
-    .filter((doc) => {
-      const data = doc.data();
-      return typeof data.organizerId === "string" && !organizers.has(data.organizerId);
-    })
-    .map((doc) => ({
-      uid: doc.id,
-      organizerId: doc.data().organizerId,
-      action: "delete",
-    }));
-
   return {
     env,
     mediaRepairs,
     unreferencedLegacyObjects,
-    claimRepairs,
-    staleClaims,
     summary: {
       env: env.name,
       projectId: env.projectId,
       storageBucket: bucket.name,
       organizersScanned: organizersSnap.size,
       eventsScanned: eventsSnap.size,
-      organizerHostClaimsScanned: claimsSnap.size,
       mediaReferences: summarizeReferences(references),
       legacyMediaReferences: mediaRepairs,
       unreferencedLegacyObjects,
-      claimRepairs,
-      staleClaims,
-      claimWarnings,
     },
   };
 }
@@ -215,8 +164,6 @@ export async function applyMediaHygienePlan({
   let updatedDocuments = 0;
   let nulledMissingReferences = 0;
   let deletedLegacyObjects = 0;
-  let claimWrites = 0;
-  let staleClaimsDeleted = 0;
 
   for (const repair of plan.mediaRepairs) {
     const ref = firestore.doc(repair.docPath);
@@ -255,40 +202,11 @@ export async function applyMediaHygienePlan({
     deletedLegacyObjects += 1;
   }
 
-  for (let i = 0; i < plan.claimRepairs.length; i += 450) {
-    const batch = firestore.batch();
-    for (const repair of plan.claimRepairs.slice(i, i + 450)) {
-      const data = {
-        uid: repair.uid,
-        organizerId: repair.expectedOrganizerId,
-      };
-      if (repair.action === "create") {
-        data.createdAt = admin.firestore.FieldValue.serverTimestamp();
-      }
-      batch.set(firestore.collection("organizerHostClaims").doc(repair.uid), data, {
-        merge: true,
-      });
-      claimWrites += 1;
-    }
-    await batch.commit();
-  }
-
-  for (let i = 0; i < plan.staleClaims.length; i += 450) {
-    const batch = firestore.batch();
-    for (const claim of plan.staleClaims.slice(i, i + 450)) {
-      batch.delete(firestore.collection("organizerHostClaims").doc(claim.uid));
-      staleClaimsDeleted += 1;
-    }
-    await batch.commit();
-  }
-
   return {
     copiedObjects,
     updatedDocuments,
     nulledMissingReferences,
     deletedLegacyObjects,
-    claimWrites,
-    staleClaimsDeleted,
   };
 }
 
@@ -404,22 +322,6 @@ function ownerUidForOrganizer(organizer) {
   return null;
 }
 
-function organizerSummary(organizer) {
-  return {
-    id: organizer?.id ?? null,
-    name: typeof organizer?.data?.name === "string" ? organizer.data.name : null,
-    status: typeof organizer?.data?.status === "string" ? organizer.data.status : null,
-    archived: organizer?.data?.archived === true,
-    ownerUserId: ownerUidForOrganizer(organizer?.data ?? {}),
-    hostUserId: typeof organizer?.data?.hostUserId === "string" ?
-      organizer.data.hostUserId :
-      null,
-    hostUserIds: Array.isArray(organizer?.data?.hostUserIds) ?
-      organizer.data.hostUserIds.filter((uid) => typeof uid === "string") :
-      [],
-  };
-}
-
 function safeToken(value) {
   const token = String(value).replaceAll(/[^A-Za-z0-9_-]+/g, "_");
   return token.length > 0 ? token : "media";
@@ -522,8 +424,6 @@ function printResults(results, {applied}) {
       `${result.mediaReferences.external} external`
     );
     console.log(`Legacy Storage objects: ${result.unreferencedLegacyObjects.length}`);
-    console.log(`Claim repairs: ${result.claimRepairs.length}`);
-    console.log(`Stale claims: ${result.staleClaims.length}`);
     if (applied) {
       console.log(`Applied: ${JSON.stringify(result.applyResult)}`);
     }

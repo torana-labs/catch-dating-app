@@ -1,7 +1,5 @@
 import * as admin from "firebase-admin";
 
-export type OrganizerMembershipRole = "owner" | "host" | "member";
-export type OrganizerMembershipStatus = "active" | "left" | "deleted";
 export type EventParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
 
@@ -15,17 +13,6 @@ export interface EventParticipationSnapshot {
     genderAtSignup?: string;
     cohortAtSignup?: string;
   };
-}
-
-/**
- * Builds the deterministic club membership document id.
- * @param {string} organizerId Club id.
- * @param {string} uid User id.
- * @return {string} Membership document id.
- */
-export function organizerMembershipId(organizerId: string,
-  uid: string): string {
-  return `${organizerId}_${uid}`;
 }
 
 /**
@@ -186,42 +173,6 @@ export function participantUids(
       .map((participation) => participation.data.uid)
       .filter((uid) => uid && uid !== exceptUid)
   )];
-}
-
-/**
- * Creates the patch used when a membership is active.
- * @param {object} params Membership fields.
- * @param {string} params.organizerId Club id.
- * @param {string} params.uid User id.
- * @param {OrganizerMembershipRole} params.role Membership role.
- * @return {Record<string, unknown>} Firestore patch.
- */
-export function activeOrganizerMembershipPatch(params: {
-  organizerId: string;
-  uid: string;
-  role: OrganizerMembershipRole;
-}) {
-  return {
-    organizerId: params.organizerId,
-    uid: params.uid,
-    role: params.role,
-    status: "active" as const,
-    pushNotificationsEnabled: false,
-    joinedAt: admin.firestore.FieldValue.serverTimestamp(),
-    leftAt: admin.firestore.FieldValue.delete(),
-    deletedAt: admin.firestore.FieldValue.delete(),
-  };
-}
-
-/**
- * Creates the patch used when a membership is left.
- * @return {Record<string, unknown>} Firestore patch.
- */
-export function leftOrganizerMembershipPatch() {
-  return {
-    status: "left" as const,
-    leftAt: admin.firestore.FieldValue.serverTimestamp(),
-  };
 }
 
 /**

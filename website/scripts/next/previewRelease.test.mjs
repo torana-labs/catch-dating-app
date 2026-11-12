@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {assertPreviewInvocation, assertReleaseLineage, assertSuccessfulSource, assertSuccessfulSourceRun, currentReleaseLineage,
-  LIVE_RELEASE_TAG, liveReleaseSha, previewSourceSha, safeArchiveMembers, assertRuntimePolicy, preview} from "./previewRelease.mjs";
+  sourceCiJobs, LIVE_RELEASE_TAG, liveReleaseSha, previewSourceSha, safeArchiveMembers, assertRuntimePolicy, preview} from "./previewRelease.mjs";
 const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
 const invocation = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository,
   GITHUB_REPOSITORY_ID: "1170579691",
@@ -50,6 +50,25 @@ test("preview requires current-main successful push CI from this repository", ()
     assert.doesNotThrow(() => assertSuccessfulSource({...input, run: {...run, event}}), event);
     assert.throws(() => assertSuccessfulSource({...input, run: {...run, event, head_branch: "feature"}}), /main's own CI/u);
   }
+});
+test("a source run failed only by reporting lanes, with Required CI green, passes (sprint floor, owner 11 Nov 2026)", () => {
+  const run = {id: 9, run_attempt: 1, head_sha: sourceSha, head_branch: "main", event: "workflow_dispatch",
+    path: ".github/workflows/ci.yml", repository: {full_name: repository}, head_repository: {full_name: repository},
+    status: "completed", conclusion: "failure"};
+  const job = (name, conclusion = "success") => ({name, conclusion, status: "completed", run_id: 9, run_attempt: 1});
+  const jobs = [job("marketing / Validate marketing website"), job("Required CI"), job("tools / Tool checks (marketing-design)", "failure")];
+  assert.doesNotThrow(() => assertSuccessfulSourceRun({run, sourceSha, repository, jobs}));
+  assert.throws(() => assertSuccessfulSourceRun({run, sourceSha, repository}), /Required CI result/u);
+  assert.throws(() => assertSuccessfulSourceRun({run, sourceSha, repository,
+    jobs: jobs.map((entry) => entry.name === "Required CI" ? {...entry, conclusion: "failure"} : entry)}), /Required CI must pass/u);
+  assert.throws(() => assertSuccessfulSourceRun({run, sourceSha, repository, jobs: [...jobs, job("functions / Lint & test Functions", "failure")]}),
+    /Required CI must pass/u);
+  assert.throws(() => assertSuccessfulSourceRun({run: {...run, conclusion: "cancelled"}, sourceSha, repository, jobs}), /Required CI must pass/u);
+  // The jobs come from the run's own attempt, and are read only for a run that did not succeed outright.
+  const endpoints = [];
+  assert.deepEqual(sourceCiJobs(run, (endpoint) => { endpoints.push(endpoint); return [{jobs: jobs.slice(0, 2)}, {jobs: jobs.slice(2)}]; }), jobs);
+  assert.deepEqual(endpoints, [`repos/${repository}/actions/runs/9/attempts/1/jobs?per_page=100`]);
+  assert.equal(sourceCiJobs({...run, conclusion: "success"}, () => assert.fail("no read for a successful run")), undefined);
 });
 test("a release may trail main but never be off main or older than live", () => {
   const run = {head_sha: sourceSha, head_branch: "main", event: "push", path: ".github/workflows/ci.yml", repository: {full_name: repository},

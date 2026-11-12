@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// The host's after-the-night choices as `eventCloseOuts/{eventId}` holds
 /// them. A night not closed out yet reads as [EventCloseOut.none]: every

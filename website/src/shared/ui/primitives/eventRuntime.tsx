@@ -1,6 +1,5 @@
 import {LottieAnimationControl} from "@catch/web-ui";
 import type {CSSProperties, ReactNode} from "react";
-import {CheckboxField} from "./forms";
 import {PlainLink} from "./actions";
 import {classNames} from "./foundation";
 
@@ -58,28 +57,6 @@ export function EventRuntimePanel({
       </div>
       {children}
     </main>
-  );
-}
-
-export function EventRuntimeFieldset({children}: {children: ReactNode}) {
-  return <fieldset className="event-runtime__fieldset">{children}</fieldset>;
-}
-
-export function EventRuntimeConsent({
-  children,
-  required = false,
-  ...props
-}: Parameters<typeof CheckboxField>[0] & {required?: boolean}) {
-  return (
-    <CheckboxField
-      {...props}
-      className={classNames(
-        "event-runtime__consent",
-        required && "event-runtime__consent--required"
-      )}
-    >
-      {children}
-    </CheckboxField>
   );
 }
 
@@ -267,10 +244,6 @@ export function EventRuntimeModule({
   );
 }
 
-export function EventRuntimeAssignments({children}: {children: ReactNode}) {
-  return <div className="event-runtime__assignments">{children}</div>;
-}
-
 export interface EventRuntimeRoomMapUnit {
   id: string;
   label: string;
@@ -355,10 +328,6 @@ export function EventRuntimeRoomMap({
   );
 }
 
-export function EventRuntimeMission({children}: {children: ReactNode}) {
-  return <div className="event-runtime__mission">{children}</div>;
-}
-
 export function EventRuntimeRouteMap({
   ariaLabel,
   help,
@@ -402,6 +371,3 @@ export function EventRuntimeRouteMap({
   );
 }
 
-export function EventRuntimePrivacy({children}: {children: ReactNode}) {
-  return <aside className="event-runtime__privacy">{children}</aside>;
-}

@@ -553,7 +553,9 @@ test("required CI consumes every bounded Harness v2 target", () => {
     assert.match(ci, new RegExp(`steps\\.plan\\.outputs\\.${target}`));
   }
   assert.match(ci, /docs-policy:/);
-  assert.match(ci, /- docs-policy/);
+  // Sprint floor (owner, 8 Nov 2026): docs-policy runs and reports but does
+  // not gate Required CI. When the sprint ends, assert `- docs-policy` again.
+  assert.doesNotMatch(ci.slice(ci.indexOf("\n  required:\n")), /^      - docs-policy$/mu);
   assert.match(ci, /docs_checkout: \$\{\{ steps\.plan\.outputs\.docs_checkout \}\}/);
   assert.match(ci, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/);
   assert.match(ci, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/);
@@ -925,7 +927,9 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
   assert.match(react, /skip_deployable_build:[\s\S]*?default: false/u);
   const aggregate = ci.slice(ci.indexOf("\n  required:"));
-  assert.match(aggregate, /- tools\n/u);
+  // Sprint floor (owner, 8 Nov 2026): Tools runs and reports but does not gate
+  // Required CI. When the sprint ends, assert `- tools` again.
+  assert.doesNotMatch(aggregate, /- tools\n/u);
   assert.match(aggregate, /- marketing\n/u);
   assert.match(aggregate, /select\(\.value.result != "success" and \.value.result != "skipped"\)/u);
   assert.doesNotMatch(marketingJob, /continue-on-error/u);
@@ -1631,7 +1635,11 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
   assert.match(block, /setup-flutter/u);
   assert.match(block, /flutter pub get --enforce-lockfile/u);
   assert.match(block, /verify_local.mjs/u);
-  assert.doesNotMatch(block, /--allow-deferred|continue-on-error/u);
+  assert.doesNotMatch(block, /--allow-deferred/u);
+  // Sprint floor (owner, 8 Nov 2026): the preflight step reports and does not
+  // block. When the sprint ends, assert no continue-on-error here again.
+  assert.equal(block.match(/continue-on-error/gu)?.length ?? 0, 1);
+  assert.match(block, /# Sprint floor: structural and freshness findings report, they do not block\.\n {8}continue-on-error: true\n/u);
   const after = ci.slice(ci.indexOf("  tools:\n"));
   assert.doesNotMatch(after, /^    needs: plan$/mu);
   for (const id of ["required"]) {

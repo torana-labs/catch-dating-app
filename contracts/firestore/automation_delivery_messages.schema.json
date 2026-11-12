@@ -5,8 +5,8 @@
   "description": "Private durable form-automation delivery outbox. The immutable intent and bounded attempt history survive dispatch interruption and delayed provider callbacks. The companion organizerMomentRuns row remains the organizer-visible journal; this record is the execution authority. Recipient endpoints are references; transport credentials stay in their own private stores.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "automationDeliveryMessages",
-  "x-firestore-path": "automationDeliveryMessages/{messageId}",
+  "x-firestore-collection": "deliveryMessages",
+  "x-firestore-path": "deliveryMessages/{messageId}",
   "x-document-id-field": "messageId",
   "x-owner": "trusted automation delivery workers",
   "required": [
@@ -18,9 +18,15 @@
     "attempts",
     "deliveryConflict",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "source"
   ],
   "properties": {
+    "source": {
+      "type": "string",
+      "const": "automation",
+      "description": "Which delivery source wrote this document; the collection holds several."
+    },
     "schemaVersion": {
       "type": "integer",
       "const": 1,

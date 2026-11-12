@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {type CallableRequest} from "firebase-functions/v2/https";
+import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {
   createRazorpayHostPaymentAccountHandler,
   refreshRazorpayHostPaymentAccountHandler,
@@ -9,7 +9,9 @@ import {
 test("creates a Razorpay Route linked account without persisting KYC data",
   async () => {
     const firestore = new FakeFirestore({
-      "organizerHostClaims/host-1": {organizerIds: ["club-1"]},
+      "organizerTeamMemberships/club-1_host-1": {
+        organizerId: "club-1", uid: "host-1", role: "owner", status: "active",
+      },
     });
     const accountInputs: Record<string, unknown>[] = [];
     const stakeholderInputs: Record<string, unknown>[] = [];
@@ -104,7 +106,9 @@ test("creates a Razorpay Route linked account without persisting KYC data",
 test("retries continue the checkpointed Route account and product",
   async () => {
     const firestore = new FakeFirestore({
-      "organizerHostClaims/host-1": {organizerIds: ["club-1"]},
+      "organizerTeamMemberships/club-1_host-1": {
+        organizerId: "club-1", uid: "host-1", role: "owner", status: "active",
+      },
     });
     let accountCreates = 0;
     let productRequests = 0;
@@ -246,6 +250,31 @@ test(
   }
 );
 
+test("refuses payout setup without an active owner seat", async () => {
+  const firestore = new FakeFirestore({
+    "organizerTeamMemberships/club-1_host-1": {
+      organizerId: "club-1", uid: "host-1", role: "manager", status: "active",
+    },
+    "organizerTeamMemberships/club-2_host-1": {
+      organizerId: "club-2", uid: "host-1", role: "owner", status: "removed",
+    },
+  });
+  await assert.rejects(
+    createRazorpayHostPaymentAccountHandler(request(validPayload()), {
+      firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+      razorpay: () => {
+        throw new Error("Razorpay must not be called.");
+      },
+      serverTimestamp: () => "server-now",
+      checkRateLimit: async () => undefined,
+    }),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "permission-denied"
+  );
+  assert.equal(firestore.data["hostPaymentAccounts/host-1_razorpay"],
+    undefined);
+});
+
 function validPayload(): Record<string, unknown> {
   return {
     legalBusinessName: " Catch Events Pvt Ltd ",
@@ -294,6 +323,38 @@ class FakeCollectionRef {
 
   doc(id: string) {
     return new FakeDocumentRef(this.firestore, `${this.path}/${id}`);
+  }
+
+  where(field: string, _op: "==", value: unknown) {
+    return new FakeQuery(this.firestore, this.path, [{field, value}]);
+  }
+}
+
+class FakeQuery {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly filters: Array<{field: string; value: unknown}>,
+    private readonly limitCount?: number
+  ) {}
+
+  where(field: string, _op: "==", value: unknown) {
+    return new FakeQuery(this.firestore, this.path,
+      [...this.filters, {field, value}], this.limitCount);
+  }
+
+  limit(limitCount: number) {
+    return new FakeQuery(this.firestore, this.path, this.filters, limitCount);
+  }
+
+  async get() {
+    const prefix = `${this.path}/`;
+    let docs = Object.entries(this.firestore.data)
+      .filter(([path, data]) => path.startsWith(prefix) &&
+        !path.slice(prefix.length).includes("/") && isRecord(data) &&
+        this.filters.every((f) => data[f.field] === f.value));
+    if (this.limitCount !== undefined) docs = docs.slice(0, this.limitCount);
+    return {empty: docs.length === 0, size: docs.length};
   }
 }
 

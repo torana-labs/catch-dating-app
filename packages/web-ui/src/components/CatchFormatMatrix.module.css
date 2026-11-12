@@ -13,11 +13,11 @@
   font-family: var(--catch-font-stack-sans);
 }
 
-[data-format="run"] { --catch-matrix-accent: var(--catch-format-run-accent); }
-[data-format="dinner"] { --catch-matrix-accent: var(--catch-format-dinner-accent); }
-[data-format="games"] { --catch-matrix-accent: var(--catch-format-games-accent); }
-[data-format="courts"] { --catch-matrix-accent: var(--catch-format-courts-accent); }
-[data-format="nightsOut"] { --catch-matrix-accent: var(--catch-format-nights-out-accent); }
+.matrix [data-format="run"] { --catch-matrix-accent: var(--catch-format-run-accent); }
+.matrix [data-format="dinner"] { --catch-matrix-accent: var(--catch-format-dinner-accent); }
+.matrix [data-format="games"] { --catch-matrix-accent: var(--catch-format-games-accent); }
+.matrix [data-format="courts"] { --catch-matrix-accent: var(--catch-format-courts-accent); }
+.matrix [data-format="nightsOut"] { --catch-matrix-accent: var(--catch-format-nights-out-accent); }
 
 .head {
   display: flex;

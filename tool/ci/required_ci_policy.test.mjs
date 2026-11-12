@@ -20,11 +20,19 @@ function command(name) {
 const selectedLanes = ["tools", "contracts", "functions", "firestore-rules", "flutter",
   "visual-integration", "admin", "marketing", "capture-freshness", "operations", "docs-policy", "app-builds",
   "workflow-lint"];
+// Sprint floor (owner, 8 Nov 2026): these lanes still run and report but do
+// not gate Required CI. When the sprint ends, empty this list: every selected
+// lane is a dependency again and each one's failure fails Required CI.
+const reportingLanes = ["tools", "operations", "docs-policy", "app-builds"];
+const gatingLanes = selectedLanes.filter((lane) => !reportingLanes.includes(lane));
+// Plan targets whose owning lane is a reporting lane.
+const reportingTargets = ["docs", "policy_docs", "operations", "tools", "flutter_build_android",
+  "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"];
 const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match) => match[1]);
 const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
 const successfulNeeds = () => {
   const needs = Object.fromEntries(dependencies.map((job) =>
-    [job, {result: ["plan", "source-preflight", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
+    [job, {result: ["plan", "source-preflight", ...gatingLanes].includes(job) ? "success" : "skipped"}]));
   needs.plan.outputs = Object.fromEntries(graph.targets.map(target => [target, "false"]));
   return needs;
 };
@@ -44,15 +52,29 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["plan", "source-preflight", ...selectedLanes]);
+  assert.deepEqual(dependencies, ["plan", "source-preflight", ...gatingLanes]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
-  for (const lane of selectedLanes) needs[lane].result = "skipped";
+  for (const lane of gatingLanes) needs[lane].result = "skipped";
   passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs)}));
 });
 
-for (const lane of selectedLanes) {
+test("Sprint floor: a selected reporting lane never gates, but its selection output still must exist", () => {
+  for (const lane of reportingLanes) assert.ok(!dependencies.includes(lane), lane);
+  assert.match(required, /Sprint floor[\s\S]*\["app-builds", "docs-policy", "operations", "tools"\] as \$reporting/u);
+  // A full nightly run selects every lane; it passes once the gating lanes pass.
+  const full = successfulNeeds();
+  for (const target of graph.targets) full.plan.outputs[target] = "true";
+  passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(full), EVENT_NAME: "schedule"}));
+  for (const target of reportingTargets) {
+    const missing = structuredClone(full);
+    delete missing.plan.outputs[target];
+    failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(missing), EVENT_NAME: "schedule"}));
+  }
+});
+
+for (const lane of gatingLanes) {
   for (const result of ["failure", "cancelled"]) {
     test(`Required CI rejects ${lane}=${result}`, () => {
       const needs = successfulNeeds();
@@ -112,8 +134,13 @@ test("Required CI on main needs no delivery artifacts or release authority", () 
 for (const target of graph.targets) {
   test(`Required CI rejects selected but skipped ${target} on PR and nightly`, () => {
     const needs = successfulNeeds();
-    for (const lane of selectedLanes) needs[lane].result = "skipped";
+    for (const lane of gatingLanes) needs[lane].result = "skipped";
     needs.plan.outputs[target] = "true";
+    if (reportingTargets.includes(target)) {
+      // Sprint floor: a reporting lane's target does not gate.
+      passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), EVENT_NAME: "schedule"}));
+      return;
+    }
     for (const EVENT_NAME of ["pull_request", "schedule"]) {
       const output = run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), EVENT_NAME});
       failed(output);
@@ -142,7 +169,7 @@ test("Required CI accepts merge-queue-proven lanes only when this source's queue
   // A successful queue run of the exact source proves every lane and the
   // source preflight, so main re-runs none of them.
   const needs = successfulNeeds();
-  for (const lane of ["source-preflight", ...selectedLanes]) needs[lane].result = "skipped";
+  for (const lane of ["source-preflight", ...gatingLanes]) needs[lane].result = "skipped";
   for (const target of graph.targets) needs.plan.outputs[target] = "true";
   passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: "39822205436"}));
   failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: ""}));

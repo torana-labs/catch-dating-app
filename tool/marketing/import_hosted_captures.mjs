@@ -6,6 +6,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {sourceCiPasses} from "../ci/required_ci_floor.mjs";
 import {canonicalInventory, readProvenance} from "./export_hosted_captures.mjs";
 import {validateCaptureBytes} from "./lib/capture_provenance.mjs";
 import {buildReplacedListings} from "./lib/web_capture_inputs.mjs";
@@ -65,7 +66,7 @@ export function selectCaptureProducerJob({jobs, binding, artifact}) {
   return matches[0];
 }
 
-export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow, producerJob = null}) {
+export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow, producerJob = null, runJobs = null}) {
   validateBinding(binding);
   assert.ok(Number.isSafeInteger(repositoryId) && repositoryId > 0, "Invalid repository id.");
   assert.equal(artifact?.id, Number(binding.artifactId), "Wrong capture artifact id.");
@@ -85,7 +86,16 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
   assert.ok(Number.isSafeInteger(workflow?.id) && workflow.id > 0, "Missing canonical capture workflow.");
   assert.equal(workflow.path, workflowPath, "Wrong canonical capture workflow path.");
   assert.equal(run.workflow_id, workflow.id, "Wrong capture workflow generation.");
-  assert.ok(!["failure", "timed_out", "action_required"].includes(run.conclusion), "Capture run failed.");
+  assert.ok(!["timed_out", "action_required"].includes(run.conclusion), "Capture run failed.");
+  if (run.conclusion === "failure") {
+    // Sprint floor (owner decision, 11 Nov 2026): a CI run failed only by its
+    // reporting lanes, with Required CI green, still vouches for captures its
+    // own producer job made. tool/ci/required_ci_floor.mjs; revisit when the
+    // floor ends.
+    assert.ok(Array.isArray(runJobs) && sourceCiPasses({run, jobs: runJobs}), "Capture run failed.");
+    assert.ok(producerJob, "Capture run failed; its successful capture job is required evidence.");
+    assert.equal(selectCaptureProducerJob({jobs: [producerJob], binding, artifact}), producerJob);
+  }
   if (run.conclusion === "cancelled") {
     assert.ok(producerJob, "Capture run was cancelled; its successful capture job is required evidence.");
     assert.equal(selectCaptureProducerJob({jobs: [producerJob], binding, artifact}), producerJob);
@@ -284,23 +294,24 @@ export async function downloadCaptureArtifact({binding, request = githubRequest}
   const artifact = await request(`${base}/actions/artifacts/${binding.artifactId}`);
   const workflowFile = binding.workflowRef.split("/.github/workflows/")[1].split("@")[0];
   const workflow = await request(`${base}/actions/workflows/${workflowFile}`);
-  let producerJob = null;
+  let producerJob = null, runJobs = null;
   const producerFor = async (candidate) => {
-    if (candidate?.conclusion !== "cancelled") return null;
+    if (!["cancelled", "failure"].includes(candidate?.conclusion)) return null;
     if (!producerJob) {
       const page = await request(`${base}/actions/runs/${binding.runId}/attempts/${binding.runAttempt}/jobs?per_page=100`);
       assert.ok(Array.isArray(page?.jobs) && page.total_count === page.jobs.length, "Incomplete capture run job listing.");
+      runJobs = page.jobs;
       producerJob = selectCaptureProducerJob({jobs: page.jobs, binding, artifact});
     }
     return producerJob;
   };
   const run = await request(`${base}/actions/runs/${binding.runId}`);
-  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow, producerJob: await producerFor(run)});
+  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow, producerJob: await producerFor(run), runJobs});
   const bytes = await request(`${base}/actions/artifacts/${binding.artifactId}/zip`, {binary: true});
   assert.equal(digest(bytes), binding.artifactDigest, "Downloaded capture ZIP digest differs.");
   const current = await request(`${base}/actions/runs/${binding.runId}`);
   verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run: current, workflow,
-    producerJob: await producerFor(current)});
+    producerJob: await producerFor(current), runJobs});
   return bytes;
 }
 

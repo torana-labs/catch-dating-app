@@ -113,11 +113,12 @@
   position: absolute;
   top: calc(64px + var(--catch-pipeline-row) * 44px);
   left: calc(var(--catch-pipeline-column) * 100% / var(--catch-pipeline-columns) + var(--catch-space-s2));
+  /* Inset by s2 on both sides of its column: the far edge sits s2 before the next one. */
+  right: calc((var(--catch-pipeline-columns) - var(--catch-pipeline-column) - 1) * 100% / var(--catch-pipeline-columns) + var(--catch-space-s2));
   display: flex;
   align-items: center;
   gap: var(--catch-space-s2);
   box-sizing: border-box;
-  width: calc(100% / var(--catch-pipeline-columns) - var(--catch-space-s4));
   height: 38px;
   padding: 0 var(--catch-space-micro10) 0 var(--catch-space-micro3);
   border-radius: var(--catch-radius-pill);

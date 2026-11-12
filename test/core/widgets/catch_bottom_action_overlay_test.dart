@@ -48,16 +48,12 @@ void main() {
         }
       });
       final offset = (point.dy.floor() * 320 + point.dx.floor()) * 4;
-      expect(
-        pixels!.buffer.asUint8List(offset, 4),
-        [
-          (background.r * 255).round(),
-          (background.g * 255).round(),
-          (background.b * 255).round(),
-          255,
-        ],
-        reason: 'Scrolling content must never paint through a quiet action.',
-      );
+      expect(pixels!.buffer.asUint8List(offset, 4), [
+        (background.r * 255).round(),
+        (background.g * 255).round(),
+        (background.b * 255).round(),
+        255,
+      ], reason: 'Scrolling content must never paint through a quiet action.');
     });
   }
 

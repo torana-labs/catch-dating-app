@@ -19,6 +19,7 @@ import {
   NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {hasBlockingRelationship} from "../safety/blocking";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import type {CreateOrganizerPostCallableResponse} from
@@ -38,9 +39,7 @@ const pageSize = 100;
 const leaseDurationMs = 5 * 60 * 1000;
 const receiptRetentionMs = 90 * 24 * 60 * 60 * 1000;
 
-interface OrganizerFollowerUser extends NotificationPreferenceDocument {
-  fcmToken?: string;
-}
+type OrganizerFollowerUser = NotificationPreferenceDocument;
 
 export interface OrganizerFollowerDelivery {
   activity: Omit<ActivityNotificationParams, "createdAt">;
@@ -151,6 +150,7 @@ export function buildOrganizerFollowerDelivery(params: {
   uid: string;
   followPushNotificationsEnabled?: boolean;
   user: OrganizerFollowerUser;
+  pushToken: string | null;
   organizerId: string;
   authorUid: string;
   organizerName: string;
@@ -171,7 +171,7 @@ export function buildOrganizerFollowerDelivery(params: {
     actorUid: params.authorUid,
     actorName: params.organizerName,
   };
-  const token = params.user.fcmToken;
+  const token = params.pushToken;
   const canPush = params.followPushNotificationsEnabled === true &&
     typeof token === "string" && token.length > 0 &&
     allowsPushPreference(params.user, "organizerUpdates");
@@ -414,8 +414,9 @@ async function deliverRecipient(params: {
     });
     return;
   }
-  const [userSnap, blocked] = await Promise.all([
+  const [userSnap, pushToken, blocked] = await Promise.all([
     params.db.collection("users").doc(params.follow.uid).get(),
+    readConsumerPushToken(params.db, params.follow.uid),
     params.deps.hasBlockingRelationship(
       params.db,
       params.operation.authorUid,
@@ -436,6 +437,7 @@ async function deliverRecipient(params: {
     uid: params.follow.uid,
     followPushNotificationsEnabled: params.follow.pushNotificationsEnabled,
     user: userSnap.data() as OrganizerFollowerUser,
+    pushToken,
     organizerId: params.operation.organizerId,
     authorUid: params.operation.authorUid,
     organizerName: params.organizer.name,

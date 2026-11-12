@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.15.0
-updated: 2026-11-09
+version: 1.16.0
+updated: 2026-11-11
 owner: marketing_website
 status: active
 ---
@@ -80,14 +80,26 @@ and is part of that renderer's recipe.
 - feature code names an `/assets/app-screenshots/` path;
 - a recorded size differs from the PNG.
 
-No page renders an app capture today: the redesigned `/host/` and home pages
-draw their phone illustrations from the system parts. The Flutter captures
-were retired from `capture_manifest.json` in P4 cleanup 2, and the manifest
-keeps the one web capture (`guest-join-phone`) so the hosted capture pipeline,
-which needs at least one canonical capture, still has an inventory. The OG
+The host landing (`/host/`) renders capture slots: its hero, tablet, guest
+band and the night scene's screens. Most of its slots are `pending-fixture`:
+a pending capture may name the pages that show it, and those pages render its
+placeholder until the macOS capture lane renders the real screen and the slot
+flips to `active`. A paused capture cannot name pages. Placeholders are drawn,
+not hand-made: `node tool/marketing/sync_website_media.mjs --placeholders`
+draws each pending capture's placeholder (a generic device with a neutral,
+loading-style screen at the device's framed size, so pages reserve the right
+space) and writes the website manifest, leaving active records alone; `--check`
+fails when a placeholder is not a PNG of its device's framed size. The OG
 cards for `/host/` and `/host/apply/` still read two retired captures'
 website PNGs directly (`host-live-console`, `host-create-basics`), and web-ui's
 device-frame stories read seven; those files stay until their readers move.
+
+`generic-tablet` (1194×834) and `desktop-browser` (1440×900) are unframed
+devices: the PNG is the screen alone, and the website draws the frame in CSS
+(`CatchDeviceFrame` kind `tablet`, or kind `browser`). The Flutter render uses
+`CaptureDevice.genericTablet` and `CaptureDevice.desktopBrowser` (the same
+screens and safe areas; neither draws the phone status bar), and
+`frame_device_capture.dart` passes their native 2x screens through unframed.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is

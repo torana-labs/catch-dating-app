@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import type {AutomationDeliveryMessageDocument as MessageRecord} from
   "../shared/generated/automationDeliveryMessageDocument";
 import type {AutomationDeliveryMessageIntent as MessageIntent} from
@@ -106,7 +107,7 @@ export function newAutomationDeliveryRecord(
   if (!Number.isSafeInteger(now) || now >= intent.expiresAt) {
     throw new Error("Automation delivery intent expired or clock invalid");
   }
-  return parseAutomationDeliveryRecord({schemaVersion: 1,
+  return parseAutomationDeliveryRecord({schemaVersion: 1, source: "automation",
     messageId: automationDeliveryMessageId(intent), revision: 0, intent,
     lifecycle: "active", attempts: [], deliveryConflict: false,
     createdAt: now, updatedAt: now});
@@ -130,7 +131,7 @@ export const automationDeliveryAdapter: DeliverySourceAdapter<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
   MessageRecord
 > = {
-  collection: "automationDeliveryMessages",
+  collection: DELIVERY_MESSAGES,
   messageId: (intent) => automationDeliveryMessageId(intent),
   parseIntent: (value) => parseAutomationDeliveryIntent(value),
   parseAttempt: (value) => parseAutomationDeliveryAttempt(value),

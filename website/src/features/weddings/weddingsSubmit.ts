@@ -29,7 +29,9 @@ export function weddingsApplicationRequest(
     website: "",
     programme: "weddings",
     programmeApplication: {
-      planningCompany: application.company.trim(),
+      applicantRole: application.who,
+      programmeKind: application.what,
+      ...(application.company.trim() ? {planningCompany: application.company.trim()} : {}),
       city: destination,
       weddingDate: application.date,
       headcount: application.guests,

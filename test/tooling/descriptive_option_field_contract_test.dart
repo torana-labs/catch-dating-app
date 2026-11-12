@@ -55,8 +55,11 @@ void main() {
       RegExp(
         r'CatchField<[^>]+>\.optionCards',
       ).allMatches(productionSource).length,
-      greaterThanOrEqualTo(10),
-      reason: 'The approved migration covers ten production selectors.',
+      // Ten selectors were migrated; the EventAdmissionPreset and
+      // EventCancellationPolicyId ones left with the legacy host screens in
+      // #1598 (the type checks above still forbid their choices form).
+      greaterThanOrEqualTo(9),
+      reason: 'The approved migration covers nine live production selectors.',
     );
   });
 }

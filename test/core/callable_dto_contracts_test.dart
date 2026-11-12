@@ -28,7 +28,6 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
     show
         BlockUserCallableRequest,
         CancelEventCallableRequest,
-        OrganizerMembershipCallableRequest,
         CreateOrganizerCallableRequest,
         CreateEventReviewCallableRequest,
         DeleteOrganizerCallableRequest,
@@ -170,12 +169,6 @@ void main() {
           'name': 'Cubbon Morning Runners',
           'tags': ['social', 'beginner'],
         }).toCallableJson(organizerId: 'club-1'),
-      );
-      _expectValid(
-        'OrganizerMembershipCallablePayload',
-        const OrganizerMembershipCallableRequest(
-          organizerId: 'club-1',
-        ).toJson(),
       );
       _expectValid(
         'DeleteOrganizerCallablePayload',

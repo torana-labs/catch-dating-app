@@ -402,7 +402,7 @@ void main() {
     expect(publicProfileJson.containsKey('longitude'), isFalse);
   });
 
-  test('legacy bio JSON is migrated into the perfect-event prompt', () {
+  test('a retired bio field is not read into prompts', () {
     final user = UserProfile.fromJson({
       'uid': 'user-1',
       'name': 'Runner',
@@ -413,9 +413,7 @@ void main() {
       'bio': '  Easy miles and coffee.  ',
     });
 
-    expect(user.profilePrompts, hasLength(1));
-    expect(user.profilePrompts.single.promptId, profilePromptPerfectEventId);
-    expect(user.profilePrompts.single.answer, 'Easy miles and coffee.');
+    expect(user.profilePrompts, isEmpty);
     expect(user.toJson().containsKey('bio'), isFalse);
   });
 

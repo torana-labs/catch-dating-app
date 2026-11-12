@@ -28,9 +28,7 @@
       "extensionInstances": {
         "bq-event-success-feedback": "3449a4d7af6dbc195c053969e5945839f99131ceb7bf4e209fe975017119347f",
         "bq-event-success-scorecards": "5928b7b8e29e23eb3578e1264781c79cc1eaffd3fe7484c0aa5e3e6536f4f426",
-        "bq-participant-marketplace-metrics": "fff22ccbd1479d49fcc74183e1dcea8b8bcfd596d8af2f16108e44ecee06189d",
         "bq-participant-metric-counters": "886d0e31bcaa7e80ebd4db112736d73d847584e6ae523ec47bf06cdbe3b45c3d",
-        "bq-participant-momentum": "96c8491b736b1b7c090d0762796980431e2e6312bf4ef00566155d95e137183e",
         "bq-participant-signal-facts": "0a40b847c4a451e894b5eb2496c6073884a329dcd7cb4a6b55e164af0cb8d38f"
       }
     },
@@ -38,9 +36,7 @@
       "extensionInstances": {
         "bq-event-success-feedback": "5746ed6e04373f500f3ac0272b1bd49755ea5e19b721ffa5f5502633d13ddab2",
         "bq-event-success-scorecards": "1f2e69aa6759404831a9faf1d7a7af5a399a43de5b953d19aefadaf60a6c654d",
-        "bq-participant-marketplace-metrics": "6991b68a47a7e430821a4efc48e3da8403929734311156d23f0cea2466596936",
         "bq-participant-metric-counters": "e33b0e15757c45b5bca0280629d24ea329763039692095e4587707c79fc2c2cd",
-        "bq-participant-momentum": "ddd6378d4bf639e8c94a3008bef4b970497983b69ec3aff16fea59b01b7ca5c5",
         "bq-participant-signal-facts": "18a4e929b9512a6705902854441e11396aaa74a1aee8ebbeca23e687d92ca8fb"
       }
     },
@@ -48,9 +44,7 @@
       "extensionInstances": {
         "bq-event-success-feedback": "6a1a5b8719d08d72b140b6d868183e670cdc141371966fa413f12c7f32eb2a5e",
         "bq-event-success-scorecards": "a2de1ab10047b6ee7129d8e42e334b5b04e9f528f08edab6ba4b8c87f0ac62d6",
-        "bq-participant-marketplace-metrics": "6cbe0218f9497c0b43221dc3ac8cfae31252c902424a3976842e810bb0f2815b",
         "bq-participant-metric-counters": "3d93c62e2f0348d0e65af193ebbd7c70e71be7f2572a5902ba055e673f06cbbc",
-        "bq-participant-momentum": "f5ee78ba9f5df3252288e569330930b0ef9b05d591f4a063fdf848117d9aeb24",
         "bq-participant-signal-facts": "26e8bc72c02040914f3c19040e464105d8c2be0c0011da4a63467ba8a0a09667"
       }
     }

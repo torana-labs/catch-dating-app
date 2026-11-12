@@ -5,8 +5,8 @@
   "description": "Private immutable approval WhatsApp dispatch correlation, created atomically with its shared outbox claim.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "eventApprovalNotificationDispatches",
-  "x-firestore-path": "eventApprovalNotificationDispatches/{attemptId}",
+  "x-firestore-collection": "whatsappDispatches",
+  "x-firestore-path": "whatsappDispatches/{attemptId}",
   "x-document-id-field": "attemptId",
   "x-owner": "trusted approval notification delivery worker",
   "required": [
@@ -24,9 +24,15 @@
     "templateDocumentId",
     "templateHash",
     "payloadHash",
-    "createdAt"
+    "createdAt",
+    "source"
   ],
   "properties": {
+    "source": {
+      "type": "string",
+      "const": "approvalNotification",
+      "description": "Which delivery source wrote this document; the collection holds several."
+    },
     "schemaVersion": {
       "type": "integer",
       "const": 1

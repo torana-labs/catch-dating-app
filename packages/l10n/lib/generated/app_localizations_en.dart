@@ -28840,7 +28840,13 @@ class AppLocalizationsEn extends AppLocalizations {
     required int delivered,
     required int skipped,
   }) {
-    return 'WhatsApp: $sent sent, $delivered delivered, $skipped not on WhatsApp';
+    String _temp0 = intl.Intl.pluralLogic(
+      skipped,
+      locale: localeName,
+      other: '$skipped not on WhatsApp',
+      one: '1 not on WhatsApp',
+    );
+    return 'WhatsApp: $sent sent, $delivered delivered, $_temp0';
   }
 
   @override
@@ -28919,9 +28925,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostProgrammeInboxUnknownName => 'Unknown number';
-
-  @override
-  String get hostProgrammeInboxGuest => 'Guest';
 
   @override
   String get hostProgrammeInboxAttachment =>

@@ -46,7 +46,7 @@ async function fixture() {
     facts: {...activityRequest.facts,
       scope: {...activityRequest.facts.scope, organizerId}},
     recipient: {recipientKey: `uid:${uid}`,
-      endpoint: {kind: "uid" as const, uid, fcmToken: "synthetic-token"},
+      endpoint: {kind: "uid" as const, uid},
       householdId: null}};
   const clock = {now: ACTIVITY_NOW};
   const controls: {failJournal: boolean;
@@ -98,7 +98,9 @@ async function fixture() {
     createdBy: "mgr", revision: 1, expiresAt: Timestamp.fromMillis(until),
     duties: [{duty: "airportGreeter", pickupPointIds: ["airport"],
       hotelIds: [], expiresAtMillis: until}]});
-  batch.set(user, {fcmToken: "synthetic-token"});
+  batch.set(user, {});
+  batch.set(user.collection("pushInstallations").doc("host-device"),
+    {token: "synthetic-token", appRole: "host"});
   await batch.commit();
   const messages: Message[] = [];
   const send = async (message: Message) => {
@@ -110,7 +112,7 @@ async function fixture() {
     pushCopyFor: async () => request.copy});
   const messageId = programDeliveryMessageId(programActivityIntent(request));
   const record = async () => parseProgramDeliveryRecord(
-    (await raw.doc(`programDeliveryMessages/${messageId}`).get()).data());
+    (await raw.doc(`deliveryMessages/${messageId}`).get()).data());
   return {db, raw, request, clock, controls, program, moment, run, grant,
     user, journal, item, messages, send, deps, messageId, record,
     deliver: () => deliverProgramActivity({...request, db,
@@ -119,7 +121,7 @@ async function fixture() {
     close: async () => {
       // Every query is scoped to this fixture's UUID; no shared reset/clear.
       const rows = await Promise.all([
-        raw.collection("programDeliveryMessages")
+        raw.collection("deliveryMessages")
           .where("intent.programId", "==", programId).get(),
         raw.collection("organizerMomentRuns")
           .where("momentId", "==", momentId).get(),
@@ -160,7 +162,7 @@ test("Firestore concurrent travel events deliver once per stable occurrence",
       await ingestTravelLegEvent(h.deps, {...event, eventId: "new-event",
         observedAtMillis: h.clock.now});
       assert.equal(h.messages.length, 2);
-      const receipts = await h.raw.collection("programDeliveryMessages")
+      const receipts = await h.raw.collection("deliveryMessages")
         .where("intent.programId", "==", event.programId).get();
       assert.equal(receipts.size, 2);
       for (const receipt of receipts.docs) {

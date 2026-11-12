@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
@@ -17,8 +17,8 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/create/
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -30,23 +30,22 @@ import 'organizers_test_helpers.dart';
 
 part 'organizers_controller_media_reliability_tests.dart';
 
-OrganizerMembership _membership({
+OrganizerFollow _membership({
   String organizerId = 'club-1',
   String uid = 'runner-1',
-  OrganizerMembershipStatus status = OrganizerMembershipStatus.active,
-}) => OrganizerMembership(
-  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+  OrganizerFollowStatus status = OrganizerFollowStatus.active,
+}) => OrganizerFollow(
+  id: organizerFollowId(organizerId: organizerId, uid: uid),
   organizerId: organizerId,
   uid: uid,
-  role: OrganizerMembershipRole.member,
   status: status,
-  joinedAt: DateTime(2026),
+  followedAt: DateTime(2026),
 );
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  group('OrganizerMembershipController', () {
+  group('OrganizerFollowController', () {
     test('join requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeOrganizersRepository();
       final container = ProviderContainer(
@@ -64,7 +63,7 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
       await container
-          .read(organizerMembershipControllerProvider.notifier)
+          .read(organizerFollowControllerProvider.notifier)
           .join('club-7');
 
       expect(fakeRepository.joinedOrganizerId, 'club-7');
@@ -85,7 +84,7 @@ void main() {
 
       expect(
         () => container
-            .read(organizerMembershipControllerProvider.notifier)
+            .read(organizerFollowControllerProvider.notifier)
             .join('club-123'),
         throwsA(isA<SignInRequiredException>()),
       );
@@ -108,7 +107,7 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
       await container
-          .read(organizerMembershipControllerProvider.notifier)
+          .read(organizerFollowControllerProvider.notifier)
           .leave('club-9');
 
       expect(fakeRepository.leftOrganizerId, 'club-9');
@@ -131,7 +130,7 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
       await container
-          .read(organizerMembershipControllerProvider.notifier)
+          .read(organizerFollowControllerProvider.notifier)
           .setPushNotifications(organizerId: 'club-10', enabled: true);
 
       expect(fakeRepository.notificationsOrganizerId, 'club-10');

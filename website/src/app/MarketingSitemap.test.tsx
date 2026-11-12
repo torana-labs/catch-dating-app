@@ -4,6 +4,7 @@ import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
 import {HostApplicationPage} from "../features/host/HostApplicationPage";
 import {hostLandingCopy} from "@content/hostLanding";
+import {marketingCaptures} from "./marketingCaptures";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {getPageKey, pageMeta, pageMetaForHostPath, pageMetaForWeddingsPath} from "./pageMeta";
 import {brand} from "@catch/brand";
@@ -18,14 +19,13 @@ afterEach(cleanup);
 const renderPage = (page: React.ReactNode) => render(<QueryClientProvider client={new QueryClient()}>{page}</QueryClientProvider>);
 
 describe("consolidated public sitemap", () => {
-  it("provides every replacement section and sends the application card to the single form", () => {
-    const {container} = renderPage(<HostPage />);
-    for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
+  it("provides every replacement section and sends hosts to the self-serve start band", () => {
+    const {container} = renderPage(<HostPage captures={marketingCaptures} />);
+    for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing", "apply", "start"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
     expect(container.querySelector("form")).toBeNull();
-    const actions = screen.getAllByRole("link").filter((link) => /apply/i.test(link.textContent ?? ""));
-    expect(actions.length).toBeGreaterThan(0);
-    for (const link of actions) expect(link.getAttribute("href")).toBe("#apply");
-    expect(screen.getByRole("link", {name: hostLandingCopy.apply.card.continue}).getAttribute("href")).toBe("/host/apply/");
+    const starts = screen.getAllByRole("link", {name: hostLandingCopy.header.start});
+    expect(starts.length).toBeGreaterThan(0);
+    for (const link of starts) expect(link.getAttribute("href")).toBe("#start");
   });
   it("mounts the existing application at the canonical apply page", () => {
     const {container} = renderPage(<HostApplicationPage />);

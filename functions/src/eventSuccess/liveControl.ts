@@ -683,17 +683,12 @@ export async function requireEventManager(
 }
 
 function livePlanState(plan: LivePlanDocument): LivePlanState {
-  const legacyPublishedReveal = plan.revealStatus === "revealed" ?
-    nonNegativeInt(plan.activeRevealRoundIndex) : -1;
   return {
     activeStepIndex: nonNegativeInt(plan.activeStepIndex),
     liveControlRevision: nonNegativeInt(plan.liveControlRevision),
     publishedRotationRoundIndex:
       integerOr(plan.publishedRotationRoundIndex, -1),
-    publishedRevealRoundIndex: Math.max(
-      integerOr(plan.publishedRevealRoundIndex, -1),
-      legacyPublishedReveal
-    ),
+    publishedRevealRoundIndex: integerOr(plan.publishedRevealRoundIndex, -1),
     status: plan.status ?? "setup",
     revealStatus: plan.revealStatus ?? "idle",
     activeRevealRoundIndex: nonNegativeInt(plan.activeRevealRoundIndex),

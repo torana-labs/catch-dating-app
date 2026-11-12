@@ -49,6 +49,7 @@ export function CatchChoiceInput<T>(props: CatchChoiceInputProps<T>) {
   const latest = useRef(props);
   latest.current = props;
   const [error, setError] = useState<string | null>(null);
+  const [railOverflows, setRailOverflows] = useState(false);
   const selectedIndex = props.recipe === "segmented"
     ? props.options.findIndex((option) => Object.is(option.value, props.selected)) : -1;
   useEffect(() => {
@@ -79,6 +80,20 @@ export function CatchChoiceInput<T>(props: CatchChoiceInputProps<T>) {
     return () => observer?.disconnect();
   }, [selectedIndex, props.recipe === "segmented" ? props.variant : undefined]);
 
+  // A scrolling rail must stay reachable by keyboard (axe
+  // scrollable-region-focusable). Its options are the tab stops while any is
+  // enabled; when none is, the rail itself takes focus so the hidden options
+  // can still be scrolled into view and read.
+  useEffect(() => {
+    const container = rail.current;
+    if (!container) return;
+    const measure = () => setRailOverflows(container.scrollWidth > container.clientWidth);
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(measure);
+    observer?.observe(container);
+    return () => observer?.disconnect();
+  }, [props.recipe, props.recipe === "segmented" ? props.options.length : 0]);
+
   function navigate(event: KeyboardEvent<HTMLDivElement>) {
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
     const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button[role="radio"]:enabled'));
@@ -101,9 +116,11 @@ export function CatchChoiceInput<T>(props: CatchChoiceInputProps<T>) {
     if (accent !== undefined && !/^(social-run|running|walking|pickleball|padel|tennis|badminton|cycling|spin-class|yoga|strength-training|dinner|pub-quiz|bar-crawl|singles-mixer|open-activity)$/.test(accent)) {
       throw new TypeError("Choice accent must name an activity token");
     }
+    const noneEnabled = props.onChanged == null || props.options.every((option) => option.enabled === false);
     return <div className={styles.segmented} data-variant={variant} data-divider={props.showDivider !== false || undefined}
       style={accent ? {"--catch-choice-accent": `var(--catch-activity-${accent}-accent)`} as CSSProperties : undefined}>
-      <div className={styles.rail} ref={rail} data-scrollable={props.scrollable || undefined}>
+      <div className={styles.rail} ref={rail} data-scrollable={props.scrollable || undefined}
+        tabIndex={noneEnabled && railOverflows ? 0 : undefined}>
         {props.options.map((option, index) => <button key={index} type="button" className={styles.option}
           aria-pressed={Object.is(option.value, props.selected)} aria-label={option.semanticLabel}
           disabled={props.onChanged == null || option.enabled === false} title={option.enabled === false ? option.disabledReason : undefined}

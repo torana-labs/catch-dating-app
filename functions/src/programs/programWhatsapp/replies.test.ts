@@ -77,7 +77,7 @@ test("a planner reply is reserved, sent with a correlation and recorded",
       JSON.stringify(validateOperation.errors));
     assert.equal(operation.state, "completed");
     const dispatch = [...ctx.db.docs.entries()].find(([path]) =>
-      path.startsWith("programWhatsappDispatches/"))![1];
+      path.startsWith("whatsappDispatches/"))![1];
     assert.equal(validateDispatch(dispatch), true,
       JSON.stringify(validateDispatch.errors));
     assert.equal(dispatch.kind, "service");
@@ -143,7 +143,7 @@ test("a delivery status moves the service reply forward", async () => {
   const ctx = await setup();
   const result = await sendProgramWhatsappText(ctx.deps, plannerReply());
   const dispatch = [...ctx.db.docs.entries()].find(([path]) =>
-    path.startsWith("programWhatsappDispatches/"))![1] as unknown as
+    path.startsWith("whatsappDispatches/"))![1] as unknown as
     ProgramWhatsappDispatchDocument;
   const at = now.toMillis() + 120_000;
   const providerEventId = `status:wamid.out1:delivered:${at}`;

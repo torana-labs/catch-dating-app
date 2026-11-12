@@ -119,7 +119,7 @@ function listBills(scope: {month: string} | {organizerId: string},
     days: 30, startsAtMillis: Date.UTC(2026, 6, 2, 18, 30),
     endsAtMillis: Date.UTC(2026, 7, 1, 18, 30), daysLeft: null} : null,
   billingPlan: null,
-  // The sample organizers have had two cycles reviewed, so bills now go out automatically.
+  // These organisers have had two cycles reviewed, so bills now go out automatically.
   billReview: "organizerId" in scope ? {reviewedCycles: 2, reviewRequiredCycles: 2,
     hold: heldOrganizers.get(scope.organizerId) ?? null, canHold: true} : null,
   heldOrganizerIds: [...heldOrganizers.keys()].filter((organizerId) =>

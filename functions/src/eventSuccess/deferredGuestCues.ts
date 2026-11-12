@@ -6,6 +6,7 @@ import {
   NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 
 /**
  * A guest cue the event's phone rule held back, sent at the next moment the
@@ -112,17 +113,17 @@ export async function releaseDeferredGuestCues(
     if (cue.kind !== "companionReady" || typeof cue.uid !== "string") {
       continue;
     }
-    const userSnap = await db.collection("users").doc(cue.uid).get();
-    const user = userSnap.data() as (
-      NotificationPreferenceDocument & {fcmToken?: string}
-    ) | undefined;
-    if (!user?.fcmToken ||
-        !allowsPushPreference(user, "eventStatusUpdates")) {
+    const [userSnap, token] = await Promise.all([
+      db.collection("users").doc(cue.uid).get(),
+      readConsumerPushToken(db, cue.uid),
+    ]);
+    const user = userSnap.data() as NotificationPreferenceDocument | undefined;
+    if (!token || !allowsPushPreference(user, "eventStatusUpdates")) {
       continue;
     }
     const copy = eventCompanionReadyNotificationCopy(params.event);
     await send({
-      token: user.fcmToken,
+      token,
       title: copy.title,
       body: copy.body,
       type: "eventCompanionReady",

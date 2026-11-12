@@ -1,3 +1,4 @@
+import {DELIVERY_MESSAGES} from "../delivery/deliveryMessages";
 import {FieldPath, type Firestore, type Transaction} from
   "firebase-admin/firestore";
 import {operationContentHash} from "../operations/durableActions";
@@ -175,7 +176,7 @@ export async function recoverProgramActivityJournals(db: Firestore,
   dayKey: (programId: string, at: number) => string | Promise<string>):
   Promise<number> {
   if (!isTravelOccurrence(run.runId) || !run.travelOccurrence) return 0;
-  const base = db.collection("programDeliveryMessages")
+  const base = db.collection(DELIVERY_MESSAGES)
     .where("intent.workflow.runId", "==", run.runId)
     .orderBy(FieldPath.documentId()).limit(100);
   let query = base;
@@ -259,7 +260,7 @@ export async function recoverProgramActivityJournals(db: Firestore,
 export async function canCloseProgramActivityRun(tx: Transaction, db: Firestore,
   run: RunRecord, now: number): Promise<boolean> {
   if (!isTravelOccurrence(run.runId) || !run.travelOccurrence) return true;
-  const base = db.collection("programDeliveryMessages")
+  const base = db.collection(DELIVERY_MESSAGES)
     .where("intent.workflow.runId", "==", run.runId)
     .orderBy(FieldPath.documentId()).limit(100);
   let query = base;
@@ -308,7 +309,7 @@ export async function canRetryProgramActivityJournal(db: Firestore,
   if (typeof messageId !== "string" ||
       !/^outbox:[a-f0-9]{64}$/.test(messageId) ||
       !run.expiresAtMillis || now >= run.expiresAtMillis) return false;
-  const snapshot = await db.collection("programDeliveryMessages")
+  const snapshot = await db.collection(DELIVERY_MESSAGES)
     .doc(messageId).get();
   if (!snapshot.exists) return false;
   const record = parseProgramDeliveryRecord(snapshot.data());

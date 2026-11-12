@@ -1,4 +1,5 @@
 import type {EventDocument} from "../generated/firestoreAdminTypes";
+import {initialPolicyFromTerms} from "../../events/eventPolicy";
 
 export type EventSetupFields = Pick<EventDocument, "publicationState" |
   "setupRevision" | "name" | "eventCityId" | "eventMarketId" |
@@ -30,5 +31,26 @@ export function publishedEventSetup(): EventSetupFields {
       organizerDefaultsRevision: null,
       organizerDefaultsHash: "0".repeat(64),
     },
+  };
+}
+
+/**
+ * Adds the stored eventPolicy that a configured event carries, derived the
+ * way an event gets its first policy, unless the test already set one or the
+ * event has no capacity and price terms yet.
+ * @param {T} event Test event document.
+ * @return {T} The event with eventPolicy.
+ */
+export function withStoredEventPolicy<T extends Record<string, unknown>>(
+  event: T
+): T {
+  if (event.eventPolicy !== undefined ||
+      typeof event.capacityLimit !== "number" ||
+      typeof event.priceInPaise !== "number") {
+    return event;
+  }
+  return {
+    ...event,
+    eventPolicy: initialPolicyFromTerms(event as unknown as EventDocument),
   };
 }

@@ -62,6 +62,12 @@ export const Contract: Story = {
               {["Run", "Dinner", "Games", "Courts", "Nights out", "Quizzes", "Padel", "Pickleball"].map((label) => <Tile key={label}>{label}</Tile>)}
             </CatchStack>
           </State>
+          <State label="rail (E1)">
+            <CatchStack gap={12}>
+              <CatchStack direction="row" gap={24} railWidth="narrow"><Tile>The page takes the rest</Tile><Tile>A 380px booking rail</Tile></CatchStack>
+              <CatchStack direction="row" gap={24} railSide="start" railWidth="wide"><Tile>A 420px organiser rail</Tile><Tile>The page takes the rest</Tile></CatchStack>
+            </CatchStack>
+          </State>
           <State label="collapse">
             <CatchStack gap={16}>
               <Collapsing />

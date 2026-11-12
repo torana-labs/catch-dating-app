@@ -116,12 +116,15 @@ export interface EventRosterSnapshot {
 export function eventPolicyFromEvent(
   event: EventDocument
 ): EventPolicyBundleDocument {
-  const configured = requireEventPolicyTerms(event);
+  requireEventPolicyTerms(event);
   const policy = (event as EventDocument & {
     eventPolicy?: EventPolicyBundleDocument | null;
   }).eventPolicy;
-  if (policy) return normalizePolicy(policy);
-  return legacyPolicyFromEvent(configured);
+  if (!policy) {
+    throw new HttpsError("failed-precondition",
+      "This event needs its admission and pricing policy.");
+  }
+  return normalizePolicy(policy);
 }
 
 export function normalizePolicy(policy: EventPolicyBundleDocument):
@@ -178,14 +181,20 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
   };
 }
 
-export function legacyPolicyFromEvent(
+/**
+ * The starting policy for an event that is getting capacity and price terms
+ * for the first time: open admission, or fixed cohort caps when the event's
+ * constraints cap men or women. The event-policy migration used the same
+ * derivation for older events that had terms but no stored policy.
+ */
+export function initialPolicyFromTerms(
   event: EventDocument
 ): EventPolicyBundleDocument {
   const configured = requireEventPolicyTerms(event);
   const maxMen = configured.constraints?.maxMen;
   const maxWomen = configured.constraints?.maxWomen;
   const hasCaps = maxMen != null || maxWomen != null;
-  return {
+  return normalizePolicy({
     version: 1,
     admission: {
       format: hasCaps ? "fixedCohortCaps" : "open",
@@ -224,7 +233,7 @@ export function legacyPolicyFromEvent(
       policyId: configured.priceInPaise === 0 ? "notApplicable" : "standard",
     },
     settlement: {hostPayoutTiming: "afterEventCompletion"},
-  };
+  });
 }
 
 export function cohortIdForUser(user: UserProfileDocument): EventCohortId {
@@ -248,10 +257,7 @@ export function rosterFromEvent(event: EventDocument): EventRosterSnapshot {
   const storedCohortCounts = (event as EventDocument & {
     cohortCounts?: Record<string, number> | null;
   }).cohortCounts;
-  const bookedCountsByCohort = storedCohortCounts &&
-    Object.keys(storedCohortCounts).length > 0 ?
-    sanitizeCountMap(storedCohortCounts) :
-    legacyCohortCounts(event);
+  const bookedCountsByCohort = sanitizeCountMap(storedCohortCounts);
   const waitlistedCountsByCohort = sanitizeCountMap(
     (event as EventDocument & {
       waitlistedCohortCounts?: Record<string, number> | null;
@@ -640,23 +646,6 @@ export function decrementCount(
   key: string
 ): Record<string, number> {
   return {...counts, [key]: Math.max(0, (counts[key] ?? 0) - 1)};
-}
-
-function legacyCohortCounts(event: EventDocument): Record<string, number> {
-  const genderCounts = event.genderCounts ?? {};
-  const nonBinaryOrOther =
-    (genderCounts.nonBinary ?? 0) + (genderCounts.other ?? 0);
-  return {
-    ...(genderCounts.man ? {
-      [cohortIds.menInterestedInWomen]: genderCounts.man,
-    } : {}),
-    ...(genderCounts.woman ? {
-      [cohortIds.womenInterestedInMen]: genderCounts.woman,
-    } : {}),
-    ...(nonBinaryOrOther ? {
-      [cohortIds.nonBinaryOrOther]: nonBinaryOrOther,
-    } : {}),
-  };
 }
 
 function sanitizeCountMap(value?: Record<string, number> | null):

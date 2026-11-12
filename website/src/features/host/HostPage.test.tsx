@@ -1,50 +1,76 @@
-import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it, vi} from "vitest";
-import {hostLandingCopy as copy} from "@content/hostLanding";
+import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import {afterEach, describe, expect, it} from "vitest";
+import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
-import {catchFee, effectiveRate, pipelineStages} from "./useHostLandingController";
+import {catchFee, effectiveRate} from "./useHostLandingController";
 
-afterEach(() => {
-  cleanup();
-  vi.useRealTimers();
-});
+afterEach(cleanup);
+
+// The page's capture slots, as the website manifest records them (the real
+// bindings are checked against capture_manifest.json in marketingCaptures.test.tsx).
+const slotIds = ["host-today", "host-live-tablet", "guest-explore", ...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))];
+const marketingCaptures: CaptureSlots = Object.fromEntries(slotIds.map((id) => [id, {
+  id, audience: "host", surface: id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 980, height: 1924,
+  alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Run the night", pages: ["/host/"],
+}]));
+
+const renderPage = () => render(<HostPage captures={marketingCaptures} />);
 
 describe("host landing", {timeout: 20_000}, () => {
-  it("renders the board's bands in order, with the header naming the product and its sections", () => {
-    render(<HostPage />);
+  it("renders the board's bands in order, with the header naming the product, its sections and the free trial", () => {
+    renderPage();
     const banner = within(screen.getByRole("banner"));
     expect(banner.getByRole("link", {name: copy.header.title}).getAttribute("href")).toBe("/");
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["#night", "#layers", "#pricing"]);
-    expect(banner.getAllByRole("link", {name: copy.header.apply})[0].getAttribute("href")).toBe("#apply");
-    const bands: string[] = [copy.kinds.title, copy.night.title, copy.ipad.title, copy.pipeline.title, copy.guests.title, copy.growth.title,
-      copy.layers.title, copy.pricing.rate, copy.faq.title, copy.apply.title];
+    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["#night", "#ways", "#pricing"]);
+    expect(banner.getAllByRole("link", {name: copy.header.start})[0].getAttribute("href")).toBe("#start");
+    const bands: string[] = [copy.kinds.title, copy.night.title, copy.tablet.title, copy.pipeline.title, copy.guests.title, copy.growth.title,
+      copy.layers.title, copy.pricing.rate, copy.faq.title, copy.start.title];
     const headings = screen.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent ?? "");
     expect(headings.filter((heading) => bands.includes(heading))).toEqual(bands);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe(copy.hero.title);
     expect(screen.getByText(copy.footer.tagline)).toBeTruthy();
   });
 
+  it("states the trial terms in the hero and offers Catch Host's official badges, pending until its store links are set", () => {
+    renderPage();
+    expect(screen.getByText(copy.hero.terms)).toBeTruthy();
+    const apple = screen.getAllByRole("button", {name: "Download on the App Store"});
+    const google = screen.getAllByRole("button", {name: "Get it on Google Play"});
+    expect([apple.length, google.length]).toEqual([2, 2]);
+    expect(within(apple[0]).getByRole("img").getAttribute("src")).toBe("/assets/store-badges/app-store-download-on-the.svg");
+  });
+
   it("keeps the retired host routes' anchors on the bands that carry their content", () => {
-    const {container} = render(<HostPage />);
-    for (const id of ["features", "use-cases", "how-it-works", "night", "layers", "existing-tools", "pricing", "apply"]) {
+    const {container} = renderPage();
+    for (const id of ["features", "use-cases", "how-it-works", "night", "ways", "layers", "existing-tools", "pricing", "faq", "start", "apply"]) {
       expect(container.querySelector(`#${id}`), id).toBeTruthy();
     }
   });
 
-  it("follows the night chapter by chapter, joined as a timeline", () => {
-    render(<HostPage />);
-    expect(screen.getByText("01 / 05 · 6:00 PM")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", {name: /The reveal/}));
-    expect(screen.getByText("04 / 05 · 8:24 PM")).toBeTruthy();
-    expect(screen.getByRole("button", {name: /The reveal/}).getAttribute("aria-current")).toBe("true");
-    expect(screen.getByRole("button", {name: /Round two/}).querySelector('[data-tone="muted"]')).not.toBeNull();
+  it("shares the picked format between the tiles, the matrix and the night scene", () => {
+    renderPage();
+    const scene = within(screen.getByRole("group", {name: `${hostNightFormats[0].event}, moment by moment`}));
+    expect(scene.getByRole("button", {name: new RegExp(hostNightFormats[0].moments[0].title)}).getAttribute("aria-current")).toBe("step");
+    fireEvent.click(within(screen.getByRole("table", {name: copy.matrix.heading})).getByRole("button", {name: "Pickleball"}));
+    const courts = within(screen.getByRole("group", {name: "Pickleball Social, moment by moment"}));
+    expect(courts.getByRole("button", {name: /Levels in, courts balanced/}).getAttribute("aria-current")).toBe("step");
+    expect(courts.getAllByText("Doubles on three courts").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", {name: /Pickleball.*Courts and partners/}).getAttribute("aria-pressed")).toBe("true");
   });
 
-  it("prices the month on the slider: 5%, capped at ₹10,000", () => {
-    render(<HostPage />);
+  it("shows each moment's screen from the capture pipeline", () => {
+    renderPage();
+    const scene = within(screen.getByRole("group", {name: `${hostNightFormats[0].event}, moment by moment`}));
+    expect(scene.getByRole("img", {name: marketingCaptures["host-formats-pods"].alt})).toBeTruthy();
+  });
+
+  it("prices the month on the slider: 5% after the trial, capped at ₹10,000", () => {
+    renderPage();
     const pricing = within(screen.getByRole("region", {name: copy.pricing.rate}));
     expect(pricing.getAllByText("₹6,000").length).toBeGreaterThan(0);
+    expect(pricing.getByText(copy.pricing.trial)).toBeTruthy();
     fireEvent.change(pricing.getByRole("slider", {name: copy.pricing.sales}), {target: {value: "300000"}});
     expect(pricing.getByText("₹10,000")).toBeTruthy();
     expect(pricing.getByText(copy.pricing.capped)).toBeTruthy();
@@ -54,38 +80,44 @@ describe("host landing", {timeout: 20_000}, () => {
   });
 
   it("shows what Catch runs at each layer", () => {
-    render(<HostPage />);
-    const table = within(screen.getByRole("table", {name: copy.layers.tableLabel}));
-    // The column header carries the same words as each badge.
-    expect(table.getAllByText(copy.layers.runs)).toHaveLength(1 + 6);
-    fireEvent.click(screen.getByRole("tab", {name: copy.layers.options[0].label}));
-    expect(table.getAllByText(copy.layers.runs)).toHaveLength(1 + 3);
+    renderPage();
+    const ways = within(screen.getByRole("region", {name: copy.layers.title}));
+    expect(ways.getAllByText(copy.layers.map.on)).toHaveLength(1 + 3);
+    fireEvent.click(ways.getByRole("tab", {name: copy.layers.options[2].label}));
+    // Every job runs on Catch now; Get found is new at this layer.
+    expect(ways.getAllByText(copy.layers.map.on)).toHaveLength(1 + 5);
+    expect(ways.getByText(`${copy.layers.map.on} · ${copy.layers.map.newHere}`)).toBeTruthy();
+    expect(ways.getByText(copy.layers.options[2].body)).toBeTruthy();
   });
 
-  it("replays ten applications through the board", () => {
-    vi.useFakeTimers();
-    render(<HostPage />);
-    const board = within(screen.getByRole("region", {name: copy.pipeline.title}));
-    expect(board.getByRole("heading", {name: /1 · They apply/}).textContent).toContain("10");
-    fireEvent.click(board.getByRole("button", {name: copy.pipeline.replay}));
-    for (let step = 0; step < 20; step++) act(() => {vi.advanceTimersByTime(450);});
-    expect(board.getByRole("heading", {name: /4 · They show up/}).textContent).toContain("10");
-    expect(pipelineStages(3, 10, 4).slice(0, 4)).toEqual([1, 1, 0, 0]);
+  it("follows a growth link from visits to bookings", () => {
+    renderPage();
+    const growth = within(screen.getByRole("region", {name: copy.growth.title}));
+    fireEvent.click(growth.getByRole("button", {name: /Instagram bio/}));
+    expect(growth.getByText(`${copy.growth.linkBase}instagram`)).toBeTruthy();
+    expect(growth.getByText("5%")).toBeTruthy();
   });
 
-  it("draws the first application step and sends Continue to the application, unchanged", () => {
-    render(<HostPage />);
-    const apply = within(screen.getByRole("region", {name: copy.apply.title}));
-    fireEvent.click(apply.getByRole("radio", {name: "Pub crawl"}));
-    expect(apply.getByRole("radio", {name: "Pub crawl"}).getAttribute("aria-checked")).toBe("true");
-    expect(apply.getByRole("textbox", {name: copy.apply.card.city})).toBeTruthy();
-    expect(apply.getByRole("progressbar", {name: copy.apply.card.step})).toBeTruthy();
-    expect(apply.getByRole("link", {name: copy.apply.card.continue}).getAttribute("href")).toBe("/host/apply/");
+  it("closes with three steps, Catch Host's badges and no QR code, and a link to Catch for weddings", () => {
+    renderPage();
+    const start = within(screen.getByRole("region", {name: copy.start.title}));
+    expect(start.getAllByRole("listitem")).toHaveLength(3);
+    expect(start.getByRole("button", {name: "Download on the App Store"})).toBeTruthy();
+    expect(start.queryByRole("img", {name: /QR/i})).toBeNull();
+    expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
   });
 
-  it("answers the FAQ in place", () => {
-    const {container} = render(<HostPage />);
+  it("answers the FAQ in place, one item open at a time, trial questions included", () => {
+    const {container} = renderPage();
     expect(screen.getByText(copy.faq.items[1].title).closest("details")?.open).toBe(false);
     expect(container.querySelectorAll('details[name="host-faq"]')).toHaveLength(copy.faq.items.length);
+    for (const title of ["What does the free trial include?", "What happens when the trial ends?", "Do I need to talk to anyone to start?"]) {
+      expect(screen.getByText(title)).toBeTruthy();
+    }
+  });
+
+  it("uses no dating language", () => {
+    const {container} = renderPage();
+    expect(container.textContent).not.toMatch(/\b(dating|singles?|matches|matching|romance)\b/iu);
   });
 });

@@ -1,3 +1,4 @@
+import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../operations/durableActions";
@@ -50,7 +51,7 @@ import {
 import {momentFromDocument} from "../moments/momentDocuments";
 
 /** Claim-time submission evidence for webhook status correlation. */
-export const AUTOMATION_WHATSAPP_DISPATCHES = "automationWhatsappDispatches";
+export const AUTOMATION_WHATSAPP_DISPATCHES = WHATSAPP_DISPATCHES;
 
 export type AutomationDeliveryOutbox = FirestoreDeliveryOutbox<
   MessageIntent["context"], ProviderBinding, MessageIntent, DeliveryAttempt,
@@ -455,7 +456,8 @@ async function dispatchAutomationWhatsapp(
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp.variables]);
         const dispatch = {
-          schemaVersion: 1, attemptId: liveAttempt.attemptId,
+          schemaVersion: 1, source: "automation",
+          attemptId: liveAttempt.attemptId,
           messageId: liveRecord.messageId, context: intent.context,
           senderId: intent.whatsapp.connectionId,
           bindingRevision: conn.revision,

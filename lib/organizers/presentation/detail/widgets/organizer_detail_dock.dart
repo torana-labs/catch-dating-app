@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_action_keys.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
@@ -312,24 +312,24 @@ class OrganizerMembershipDock extends ConsumerWidget {
           queryParameters: {'from': '/organizers/${organizer.id}'},
         ).toString(),
       ),
-      onJoin: () => OrganizerMembershipController.joinMutation.run(
+      onJoin: () => OrganizerFollowController.joinMutation.run(
         ref,
         (tx) async => tx
-            .get(organizerMembershipControllerProvider.notifier)
+            .get(organizerFollowControllerProvider.notifier)
             .join(organizer.id),
       ),
-      onManage: () => OrganizerMembershipController.leaveMutation.run(
+      onManage: () => OrganizerFollowController.leaveMutation.run(
         ref,
         (tx) async => tx
-            .get(organizerMembershipControllerProvider.notifier)
+            .get(organizerFollowControllerProvider.notifier)
             .leave(organizer.id),
       ),
       onBell: isMutating
           ? null
-          : () => OrganizerMembershipController.pushNotificationsMutation.run(
+          : () => OrganizerFollowController.pushNotificationsMutation.run(
               ref,
               (tx) async => tx
-                  .get(organizerMembershipControllerProvider.notifier)
+                  .get(organizerFollowControllerProvider.notifier)
                   .setPushNotifications(
                     organizerId: organizer.id,
                     enabled: !pushNotificationsEnabled,

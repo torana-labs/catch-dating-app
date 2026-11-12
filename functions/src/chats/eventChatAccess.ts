@@ -193,11 +193,9 @@ export async function updateEventChatAccessHandler(
   });
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(hash([uid, data.requestId]));
-  const legacyPayload = [data.eventId, data.action,
-    data.expectedRevision, data.termsVersion];
-  const payloadHash = hash(["join", "leave", "open", "close"].includes(
-    data.action) ? legacyPayload : [...legacyPayload,
-      data.opensAtMillis ?? null, data.closesAtMillis ?? null]);
+  const payloadHash = hash([data.eventId, data.action, data.expectedRevision,
+    data.termsVersion, data.opensAtMillis ?? null,
+    data.closesAtMillis ?? null]);
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);

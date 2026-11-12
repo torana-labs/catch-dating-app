@@ -39,7 +39,7 @@ function store() {
       }]}},
     "organizerFormResponses/r1": {organizerId: "org-1", formId: "form-1",
       versionId: "v1", status: "submitted", respondentUid: null,
-      answers: {drink: ["tea", "coffee"], member: false}},
+      answers: {drink: ["tea", "coffee"], member: false}, answerSnapshots: []},
     "organizerContactOrigins/origin-1": {organizerId: "org-1",
       sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
       sourceEntityId: "r1", currentContactId: "survivor",
@@ -109,10 +109,6 @@ test("application status uses approved source evidence and follows " +
     organizerId: "org-1", formId: "form-1", formVersionId: "v1",
     latestResponseId: "r1", reviewStatus: "approved", contactId: "alias",
     linkedUid: null, source,
-  };
-  db.docs["organizerApplicationResponses/r1"] = {
-    organizerId: "org-1", applicationId, formId: "form-1", formVersionId: "v1",
-    linkedUid: null, source, answers: [],
   };
   const predicate: Predicate = {kind: "applicationStatus", formId: "form-1",
     reviewStatus: "approved"};
@@ -234,10 +230,6 @@ test("application predicates reuse query rows but retain real source " +
       latestResponseId: responseId, reviewStatus: responseId === "r1" ?
         "submitted" : "approved", contactId: "alias", linkedUid: null, source,
     };
-    db.docs[`organizerApplicationResponses/${responseId}`] = {
-      organizerId: "org-1", applicationId, formId: "form-1",
-      formVersionId: "v1", linkedUid: null, source, answers: [],
-    };
   }
   const approved: Predicate = {kind: "applicationStatus", formId: "form-1",
     reviewStatus: "approved"};
@@ -320,34 +312,18 @@ test("source reuse preserves exact 5000 cap and fresh retry after failure",
     await assert.rejects(run(), {code: "resource-exhausted"});
   });
 
-test("a reused application query never caches participant grant authority",
+test("a native application outside Generic Forms has no source access",
   async () => {
     const db = store();
     const applicationId = "participant-application";
-    const responseId = "participant-response";
-    const source = {kind: "native"};
     db.docs[`organizerApplications/${applicationId}`] = {
       organizerId: "org-1", formId: "form-1", formVersionId: "v1",
-      latestResponseId: responseId, reviewStatus: "approved",
-      contactId: "participant", linkedUid: "uid", source,
+      latestResponseId: "participant-response", reviewStatus: "approved",
+      contactId: "participant", linkedUid: "uid", source: {kind: "native"},
     };
-    db.docs[`organizerApplicationResponses/${responseId}`] = {
-      organizerId: "org-1", applicationId, formId: "form-1",
-      formVersionId: "v1", linkedUid: "uid", source, answers: [],
-      grantId: `${applicationId}_grant`,
-    };
-    const grant = {applicationId, responseId, organizerId: "org-1",
-      participantUid: "uid", purpose: "organizerApplicationReview",
-      revokedAt: null as Timestamp | null, grantedQuestionIds: [],
-      grantedCanonicalFieldIds: []};
-    db.docs[`participantOrganizerDataGrants/${applicationId}_grant`] = grant;
     const approved: Predicate = {kind: "applicationStatus", formId: "form-1",
       reviewStatus: "approved"};
-    const submitted: Predicate = {...approved, reviewStatus: "submitted"};
     const run = () => savedAudienceSourceMatches(db.asFirestore(), "org-1",
-      definition(approved, submitted));
-    assert.deepEqual([...((await run()).get(JSON.stringify(approved))!)],
-      ["participant"]);
-    grant.revokedAt = Timestamp.now();
+      definition(approved));
     assert.equal((await run()).get(JSON.stringify(approved))!.size, 0);
   });

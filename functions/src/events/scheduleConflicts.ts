@@ -8,11 +8,15 @@ import {
 } from "../shared/businessRules";
 
 const MINUTE_MS = 60 * 1000;
-const ORGANIZER_LOCK_COLLECTION = "organizerScheduleLocks";
-const USER_LOCK_COLLECTION = "userEventScheduleLocks";
+/**
+ * One collection holds every schedule slot lock. Ids are prefixed with the
+ * owner type (`organizer_{organizerId}_{slot}`, `user_{uid}_{slot}`) so an
+ * organizer id and a uid can never claim the same document.
+ */
+const LOCK_COLLECTION = "scheduleLocks";
 const USER_SCHEDULE_STATUSES = ["signedUp", "waitlisted", "attended"];
 
-type LockOwner = "club" | "organizer" | "user";
+type LockOwner = "organizer" | "user";
 
 interface ScheduleWindow {
   startTimeMillis: number;
@@ -307,8 +311,7 @@ function organizerLockRefs(
 ) {
   return scheduleSlots(params).map((slot) => ({
     slot,
-    ref: db.collection(ORGANIZER_LOCK_COLLECTION)
-      .doc(`${organizerId}_${slot}`),
+    ref: db.collection(LOCK_COLLECTION).doc(`organizer_${organizerId}_${slot}`),
   }));
 }
 
@@ -319,8 +322,7 @@ function userLockRefs(
 ) {
   return scheduleSlots(params).map((slot) => ({
     slot,
-    ref: db.collection(USER_LOCK_COLLECTION)
-      .doc(`${uid}_${slot}`),
+    ref: db.collection(LOCK_COLLECTION).doc(`user_${uid}_${slot}`),
   }));
 }
 

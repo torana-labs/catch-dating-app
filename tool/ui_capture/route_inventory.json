@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 23,
-    "imperativePageTargetCount": 19
+    "imperativePageRouteCount": 25,
+    "imperativePageTargetCount": 21
   },
   "routes": [
     {
@@ -2008,6 +2008,24 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostLiveRoomScreen(organizer:organizer,event:event,onOpenGuests:onOpenGuests,now:now)",
       "presentationTarget": "HostLiveRoomScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:24f3e77a60314a944f6c6b5e0d5f797056b9ca641b41162a19a7abfb012afe25:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostFormatsCrawlScreen(organizer:organizer,event:event,now:now))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsCrawlScreen(organizer:organizer,event:event,now:now)",
+      "presentationTarget": "HostFormatsCrawlScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_screen.dart:25f583451d80366ddabf0e014f6be4e1d89888d31dc67f2958b84158954693ad:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostLiveSubscreenRouteName),builder:(_)=>HostFormatsPodsScreen(event:event))",
+      "sourcePath": "lib/hosts/live/live_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostFormatsPodsScreen(event:event)",
+      "presentationTarget": "HostFormatsPodsScreen",
       "fullscreenDialogExpression": null
     },
     {

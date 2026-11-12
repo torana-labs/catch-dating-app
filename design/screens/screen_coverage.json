@@ -573,10 +573,9 @@
     },
     {
       "routeId": "hostProgramsScreen",
-      "status": "alias",
+      "status": "excluded",
       "priority": "P1",
-      "canonicalRouteId": "hostEventsScreen",
-      "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
+      "reason": "Renders the organizer's programmes home (HostProgrammesHomeScreen) under the zero-drawing host root; a link without an organizer redirects to Events with its query preserved. The screen takes no registry record or Widgetbook case; its typed layout owner lives in catch.screens.json."
     },
     {
       "routeId": "hostCreateProgramScreen",

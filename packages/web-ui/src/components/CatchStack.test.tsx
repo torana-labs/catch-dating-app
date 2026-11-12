@@ -54,4 +54,28 @@ describe("CatchStack", () => {
     render(<CatchRoot size="compact"><CatchStack align="stretch" collapseBelow="expanded" data-testid="stack" /></CatchRoot>);
     expect(screen.getByTestId("stack").dataset).toMatchObject({direction: "column", align: "stretch"});
   });
+
+  it("keeps a fixed rail beside the rest of a row (E1), on the end by default", () => {
+    render(
+      <CatchRoot size="expanded">
+        <CatchStack collapseBelow="expanded" data-testid="booking" direction="row" railWidth="narrow" stickyRail><main /><aside /></CatchStack>
+        <CatchStack data-testid="organiser" direction="row" railSide="start" railWidth="wide"><aside /><main /></CatchStack>
+      </CatchRoot>,
+    );
+    expect(screen.getByTestId("booking").dataset).toMatchObject({rail: "narrow", railSide: "end", stickyRail: ""});
+    expect(screen.getByTestId("organiser").dataset).toMatchObject({rail: "wide", railSide: "start"});
+    expect(screen.getByTestId("organiser").hasAttribute("data-sticky-rail")).toBe(false);
+  });
+
+  it("drops the rail when the row stacks, and on a column", () => {
+    render(
+      <CatchRoot size="medium">
+        <CatchStack collapseBelow="expanded" data-testid="stacked" direction="row" railWidth="narrow" stickyRail />
+        <CatchStack data-testid="column" railWidth="narrow" />
+      </CatchRoot>,
+    );
+    for (const id of ["stacked", "column"]) {
+      for (const attribute of ["data-rail", "data-rail-side", "data-sticky-rail"]) expect(screen.getByTestId(id).hasAttribute(attribute)).toBe(false);
+    }
+  });
 });

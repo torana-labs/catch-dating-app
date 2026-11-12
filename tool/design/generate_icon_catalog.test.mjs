@@ -124,12 +124,15 @@ test("names convert the way Lucide and the catalog spell them", () => {
   assert.equal(activityRoleName("strengthTraining"), "activityStrengthTraining");
 });
 
-test("React gets every role's glyph, the activity map and node data for artwork roles", () => {
+test("React gets eager role names and activity map, a lazy glyph map, and node data for artwork roles", () => {
   const {errors, outputs} = build();
   assert.deepEqual(errors, []);
   assert.match(outputs.glyphs, /import \{\n {2}ArrowLeft,\n {2}SportShoe,\n\} from "lucide-react";/u);
   assert.match(outputs.glyphs, /back: ArrowLeft,\n {2}activityRunning: SportShoe,/u);
-  assert.match(outputs.glyphs, /running: "activityRunning",/u);
+  assert.match(outputs.glyphs, /\} as const satisfies Record<CatchIconName, LucideIcon>;/u);
+  assert.match(outputs.roles, /export type CatchIconName =\n {2}\| "back"\n {2}\| "activityRunning";/u);
+  assert.match(outputs.roles, /running: "activityRunning",/u);
+  assert.doesNotMatch(outputs.roles, /lucide-react/u);
   assert.match(outputs.nodes, /activityRunning: \[\n {4}\["path", \{"d":"M2 20h20"\}\],\n {2}\],/u);
   assert.doesNotMatch(outputs.nodes, /"key"/u);
   assert.doesNotMatch(outputs.nodes, /back:/u);
