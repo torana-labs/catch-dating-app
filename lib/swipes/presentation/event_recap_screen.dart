@@ -358,6 +358,69 @@ class EventRecapReadyBody extends StatelessWidget {
     final people = state.people;
     final next = state.next;
     final organizerName = state.organizerName;
+    final peopleEmpty = people.empty;
+    final Widget peopleList = people.needsProfile
+        ? CatchEmptyState(
+            key: SwipeKeys.afterEventFinishProfile,
+            icon: CatchIcons.person,
+            title: l10n.afterEventNeedsProfileTitle,
+            message: l10n.afterEventNeedsProfileBody,
+            actions: [
+              CatchButton(
+                label: l10n.afterEventNeedsProfileAction,
+                variant: CatchButtonVariant.secondary,
+                onPressed: onFinishProfile,
+              ),
+            ],
+          )
+        : peopleEmpty != null
+        ? CatchEmptyState(
+            icon: peopleEmpty.icon,
+            title: peopleEmpty.title,
+            message: peopleEmpty.message,
+          )
+        : switch (people.status) {
+            EventRecapProfileLookupStatus.loading =>
+              const CatchLoadingIndicator(),
+            EventRecapProfileLookupStatus.error => CatchLocalizedErrorState(
+              people.error!,
+              context: AppErrorContext.profile,
+              onRetry: onRetryPeople,
+              mode: CatchErrorStateMode.inline,
+            ),
+            EventRecapProfileLookupStatus.ready => CatchSection.divided(
+              first: true,
+              children: [
+                for (final row in people.rows)
+                  CatchIndexRow(
+                    key: SwipeKeys.afterEventPerson(row.attendeeId),
+                    leading: CatchAvatar.system(
+                      size: CatchAvatarSize.sm,
+                      name: row.name,
+                      imageUrl: row.photoUrl,
+                    ),
+                    title: row.name,
+                    subtitle: row.subtitle,
+                    body: row.body,
+                    onTap: null,
+                    action: CatchIndexRowAction(
+                      label: row.picked
+                          ? l10n.afterEventPicked
+                          : l10n.afterEventPick,
+                      variant: row.picked
+                          ? CatchIndexRowActionVariant.primary
+                          : CatchIndexRowActionVariant.secondary,
+                      onPressed:
+                          row.picked ||
+                              !people.canPick ||
+                              pendingPicks.contains(row.attendeeId)
+                          ? null
+                          : () => onPick(row.attendeeId),
+                    ),
+                  ),
+              ],
+            ),
+          };
     return CatchPageBody.screen(
       children: [
         CatchStack(
@@ -438,13 +501,7 @@ class EventRecapReadyBody extends StatelessWidget {
             ),
           ],
         ),
-        _PeopleList(
-          people: people,
-          pendingPicks: pendingPicks,
-          onPick: onPick,
-          onRetry: onRetryPeople,
-          onFinishProfile: onFinishProfile,
-        ),
+        peopleList,
         if (next != null)
           CatchSurface(
             key: SwipeKeys.afterEventNext,
@@ -480,89 +537,6 @@ class EventRecapReadyBody extends StatelessWidget {
           ),
       ],
     );
-  }
-}
-
-class _PeopleList extends StatelessWidget {
-  const _PeopleList({
-    required this.people,
-    required this.pendingPicks,
-    required this.onPick,
-    required this.onRetry,
-    required this.onFinishProfile,
-  });
-
-  final EventRecapPeopleState people;
-  final Set<String> pendingPicks;
-  final ValueChanged<String> onPick;
-  final VoidCallback onRetry;
-  final VoidCallback onFinishProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    if (people.needsProfile) {
-      return CatchEmptyState(
-        key: SwipeKeys.afterEventFinishProfile,
-        icon: CatchIcons.person,
-        title: l10n.afterEventNeedsProfileTitle,
-        message: l10n.afterEventNeedsProfileBody,
-        actions: [
-          CatchButton(
-            label: l10n.afterEventNeedsProfileAction,
-            variant: CatchButtonVariant.secondary,
-            onPressed: onFinishProfile,
-          ),
-        ],
-      );
-    }
-    final empty = people.empty;
-    if (empty != null) {
-      return CatchEmptyState(
-        icon: empty.icon,
-        title: empty.title,
-        message: empty.message,
-      );
-    }
-    return switch (people.status) {
-      EventRecapProfileLookupStatus.loading => const CatchLoadingIndicator(),
-      EventRecapProfileLookupStatus.error => CatchLocalizedErrorState(
-        people.error!,
-        context: AppErrorContext.profile,
-        onRetry: onRetry,
-        mode: CatchErrorStateMode.inline,
-      ),
-      EventRecapProfileLookupStatus.ready => CatchSection.divided(
-        first: true,
-        children: [
-          for (final row in people.rows)
-            CatchIndexRow(
-              key: SwipeKeys.afterEventPerson(row.attendeeId),
-              leading: CatchAvatar.system(
-                size: CatchAvatarSize.sm,
-                name: row.name,
-                imageUrl: row.photoUrl,
-              ),
-              title: row.name,
-              subtitle: row.subtitle,
-              body: row.body,
-              onTap: null,
-              action: CatchIndexRowAction(
-                label: row.picked ? l10n.afterEventPicked : l10n.afterEventPick,
-                variant: row.picked
-                    ? CatchIndexRowActionVariant.primary
-                    : CatchIndexRowActionVariant.secondary,
-                onPressed:
-                    row.picked ||
-                        !people.canPick ||
-                        pendingPicks.contains(row.attendeeId)
-                    ? null
-                    : () => onPick(row.attendeeId),
-              ),
-            ),
-        ],
-      ),
-    };
   }
 }
 
