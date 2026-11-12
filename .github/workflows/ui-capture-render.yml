@@ -7,6 +7,12 @@ run-name: UI captures for ${{ inputs.ref }} (${{ inputs.ids }})
 # on the same macOS runner image as the goldens lane and uploads the PNGs as an
 # artifact for a person to review. It never pushes, opens a pull request or
 # changes anything in the repository.
+#
+# The ref is untrusted: a dispatch runs in the default branch's cache scope,
+# so nothing here may write a cache that main's jobs restore. The ref is
+# checked out into its own directory, no local action is executed from it,
+# the toolchain pins are parsed (not sourced) from it, and every setup step
+# runs with caching off.
 on:
   workflow_dispatch:
     inputs:
@@ -57,15 +63,51 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ inputs.ref }}
+          path: target
           persist-credentials: false
 
-      - uses: ./.github/actions/generate-contracts
+      - name: Read the toolchain pins without executing the checkout
+        id: toolchain
+        run: |
+          set -euo pipefail
+          pin() {
+            local value
+            value="$(grep -E "^$1=" target/tool/ci/toolchain.env | tail -n 1 | cut -d= -f2-)"
+            if [[ ! "$value" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+              echo "::error::$1 in tool/ci/toolchain.env must be a version number."
+              exit 1
+            fi
+            printf '%s' "$value"
+          }
+          {
+            echo "flutter-version=$(pin FLUTTER_VERSION)"
+            echo "node-version=$(pin NODE_VERSION)"
+          } >> "$GITHUB_OUTPUT"
 
-      - uses: ./.github/actions/setup-flutter
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          package-manager-cache: false
 
-      - run: flutter pub get
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ steps.toolchain.outputs.flutter-version }}
+          channel: stable
+          cache: false
+
+      - name: Generate the schema contract outputs
+        working-directory: target
+        run: |
+          set -euo pipefail
+          npm --prefix functions ci --ignore-scripts --no-audit --no-fund
+          node tool/contracts/generate_schema_contracts.mjs
+
+      - name: Resolve Flutter dependencies
+        working-directory: target
+        run: flutter pub get
 
       - name: Render the selected captures
+        working-directory: target
         env:
           IDS: ${{ inputs.ids }}
           TEXT_SCALE: ${{ inputs.text_scale }}
@@ -76,6 +118,7 @@ jobs:
           node tool/ui_capture/run_captures.mjs "${args[@]}"
 
       - name: Summarise the rendered captures
+        working-directory: target
         run: |
           set -euo pipefail
           (cd build/ui-captures && find . -name '*.png' | sed 's#^\./##' | sort) > build/ui-captures.txt
@@ -99,6 +142,6 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ui-captures-${{ github.run_id }}-${{ github.run_attempt }}
-          path: build/ui-captures
+          path: target/build/ui-captures
           if-no-files-found: error
           retention-days: 14
