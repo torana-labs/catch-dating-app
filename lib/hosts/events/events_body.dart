@@ -99,24 +99,30 @@ class HostEventsBody extends StatelessWidget {
                     ),
                   ],
                 ),
+              // The programme cards carry no row padding, so they get an
+              // event row's bottom inset and the gap to the next section
+              // matches the gap after a row.
               if (state.programmes.isNotEmpty)
-                CatchSection(
-                  title: l10n.hostEventsProgrammesTitle,
-                  action: CatchSectionAction(
-                    label: l10n.hostEventsNewProgramme,
-                    onPressed: onNewProgramme,
-                  ),
-                  dividers: CatchSectionPlacement.none,
-                  children: [
-                    for (final programme in state.programmes)
-                      HostEventsProgrammeTile(
-                        key: ValueKey<String>(
-                          'host-events-programme-${programme.programId}',
+                Padding(
+                  padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                  child: CatchSection(
+                    title: l10n.hostEventsProgrammesTitle,
+                    action: CatchSectionAction(
+                      label: l10n.hostEventsNewProgramme,
+                      onPressed: onNewProgramme,
+                    ),
+                    dividers: CatchSectionPlacement.none,
+                    children: [
+                      for (final programme in state.programmes)
+                        HostEventsProgrammeTile(
+                          key: ValueKey<String>(
+                            'host-events-programme-${programme.programId}',
+                          ),
+                          programme: programme,
+                          onTap: () => onOpenProgramme(programme),
                         ),
-                        programme: programme,
-                        onTap: () => onOpenProgramme(programme),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               CatchSection(
                 title: l10n.hostEventsThisWeekTitle,

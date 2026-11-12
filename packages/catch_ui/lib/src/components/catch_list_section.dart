@@ -6,6 +6,7 @@ import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /// Where the lines of a system section go: between its rows, also under the
 /// last row, or nowhere (a row of stats, a map).
@@ -90,7 +91,8 @@ class CatchListSection extends StatelessWidget {
         : const CatchDivider.section();
     final rows = timeline ? _joined(context) : children;
     final perColumn = split ? (rows.length / columns).ceil() : rows.length;
-    return Column(
+    return _OverhangFlex(
+      direction: Axis.vertical,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: CatchSpacing.s2,
@@ -150,13 +152,22 @@ class CatchListSection extends StatelessWidget {
       header: true,
       child: CatchText(title, variant: CatchTextVariant.sectionTitle),
     );
-    final Widget? trailing = action != null
-        ? CatchButton(
+    final button = action == null
+        ? null
+        : CatchButton(
             label: action.label,
             onPressed: action.onPressed,
             variant: CatchButtonVariant.quiet,
             size: CatchButtonSize.sm,
-          )
+          );
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final Widget? trailing = button != null
+        // The quiet action's label sits on the title's baseline. Its 48 px
+        // target overhangs the title line instead of making it taller, so a
+        // section with an action starts where any other section does.
+        ? largeText
+              ? _FlushStart(child: button)
+              : _BaselineOverhang(child: button)
         : note != null
         ? CatchText(
             note,
@@ -165,7 +176,6 @@ class CatchListSection extends StatelessWidget {
             maxLines: 1,
           )
         : null;
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     final Widget titleLine = trailing == null
         ? heading
         : largeText && action != null
@@ -175,7 +185,8 @@ class CatchListSection extends StatelessWidget {
             spacing: CatchSpacing.s1,
             children: [heading, trailing],
           )
-        : Row(
+        : _OverhangFlex(
+            direction: Axis.horizontal,
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             spacing: CatchSpacing.s3,
@@ -185,7 +196,8 @@ class CatchListSection extends StatelessWidget {
             ],
           );
     if (kicker == null) return titleLine;
-    return Column(
+    return _OverhangFlex(
+      direction: Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       spacing: CatchSpacing.s1,
@@ -233,6 +245,119 @@ class CatchListSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(CatchStroke.hairline),
         ),
       ),
+    );
+  }
+}
+
+/// A [Flex] that hit-tests its children even outside its own bounds, so a
+/// section action's target that overhangs the title line still receives its
+/// taps.
+class _OverhangFlex extends Flex {
+  const _OverhangFlex({
+    required super.direction,
+    required super.children,
+    super.crossAxisAlignment,
+    super.mainAxisSize,
+    super.textBaseline,
+    super.spacing,
+  });
+
+  @override
+  RenderFlex createRenderObject(BuildContext context) => _RenderOverhangFlex(
+    direction: direction,
+    mainAxisAlignment: mainAxisAlignment,
+    mainAxisSize: mainAxisSize,
+    crossAxisAlignment: crossAxisAlignment,
+    textDirection: getEffectiveTextDirection(context),
+    verticalDirection: verticalDirection,
+    textBaseline: textBaseline,
+    clipBehavior: clipBehavior,
+    spacing: spacing,
+  );
+}
+
+class _RenderOverhangFlex extends RenderFlex {
+  _RenderOverhangFlex({
+    super.direction,
+    super.mainAxisAlignment,
+    super.mainAxisSize,
+    super.crossAxisAlignment,
+    super.textDirection,
+    super.verticalDirection,
+    super.textBaseline,
+    super.clipBehavior,
+    super.spacing,
+  });
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (!hitTestChildren(result, position: position)) return false;
+    result.add(BoxHitTestEntry(this, position));
+    return true;
+  }
+}
+
+/// A child laid out at its full size but taking no height in its row: its
+/// baseline is this box's top, so in a baseline row it hangs on the
+/// neighbouring text's baseline without making the row taller.
+class _BaselineOverhang extends SingleChildRenderObjectWidget {
+  const _BaselineOverhang({required super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderBaselineOverhang();
+}
+
+class _RenderBaselineOverhang extends RenderShiftedBox {
+  _RenderBaselineOverhang() : super(null);
+
+  @override
+  void performLayout() {
+    final child = this.child;
+    if (child == null) {
+      size = constraints.smallest;
+      return;
+    }
+    child.layout(
+      BoxConstraints(maxWidth: constraints.maxWidth),
+      parentUsesSize: true,
+    );
+    final baseline =
+        child.getDistanceToBaseline(TextBaseline.alphabetic) ??
+        child.size.height;
+    (child.parentData! as BoxParentData).offset = Offset(0, -baseline);
+    size = constraints.constrain(Size(child.size.width, 0));
+  }
+
+  @override
+  double? computeDistanceToActualBaseline(TextBaseline baseline) => 0;
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (!hitTestChildren(result, position: position)) return false;
+    result.add(BoxHitTestEntry(this, position));
+    return true;
+  }
+}
+
+/// A quiet button moved back by its own leading padding, so its label lines
+/// up with the text above it; its target extends outward instead.
+class _FlushStart extends StatelessWidget {
+  const _FlushStart({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    return Transform.translate(
+      offset: Offset(
+        rtl
+            ? CatchButtonTokens.smallPaddingX
+            : -CatchButtonTokens.smallPaddingX,
+        0,
+      ),
+      child: child,
     );
   }
 }
