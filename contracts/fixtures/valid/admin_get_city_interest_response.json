@@ -1,0 +1,11 @@
+{
+  "generatedAtMillis": 1794500000000,
+  "today": "2026-11-12",
+  "totals": {"total": 31, "last7": 9, "previous7": 4, "last30": 20, "previous30": 8},
+  "cities": [
+    {"cityKey": "in-mh-pune", "cityId": "in-mh-pune", "label": "Pune", "countryIsoCode": "IN", "lifecycle": "waitlist",
+      "interest": {"total": 24, "last7": 7, "previous7": 3, "last30": 15, "previous30": 6}},
+    {"cityKey": "other-in", "cityId": null, "label": "Other (India)", "countryIsoCode": "IN", "lifecycle": null,
+      "interest": {"total": 7, "last7": 2, "previous7": 1, "last30": 5, "previous30": 2}}
+  ]
+}

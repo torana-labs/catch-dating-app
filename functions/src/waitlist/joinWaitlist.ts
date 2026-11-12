@@ -15,6 +15,8 @@ import {
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
+import {readCityAttribution, type CityAttribution} from "./cityAttribution";
+import {prepareCityInterest} from "../cityInterest/cityInterest";
 import {hostConsentKey} from "../acquisition/consentPolicy";
 import {prepareHostAttribution} from "../acquisition/attribution";
 import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
@@ -547,13 +549,14 @@ async function joinByWhatsapp(
   body: Record<string, unknown>,
   context: {
     city: string;
+    cityAttribution: CityAttribution | null;
     submittedRole: string;
     marketingAnalytics: ReturnType<typeof normalizeMarketingAnalytics>;
     marketingAttribution: ReturnType<typeof normalizeMarketingAttribution>;
   },
 ): Promise<void> {
-  const {city, submittedRole, marketingAnalytics, marketingAttribution} =
-    context;
+  const {city, cityAttribution, submittedRole, marketingAnalytics,
+    marketingAttribution} = context;
   const whatsapp = isRecord(body.whatsapp) ? body.whatsapp : {};
   const phone = normalizeText(whatsapp.phone).replace(/[\s-]/g, "");
   if (!/^\+[1-9][0-9]{7,14}$/.test(phone)) {
@@ -594,12 +597,21 @@ async function joinByWhatsapp(
     marketing: decision("marketing", whatsapp.marketing === true),
   };
   let alreadyJoined = false;
+  let firstForCity = false;
+  const now = new Date();
   await firestore.runTransaction(async (transaction) => {
     const existing = await transaction.get(noticeRef);
+    // Every read precedes the writes: count the person once per city.
+    const countInterest = cityAttribution ?
+      await prepareCityInterest(transaction, firestore, {personKey: phone,
+        cityId: cityAttribution.cityId,
+        countryIsoCode: cityAttribution.countryIsoCode, now}) : null;
+    firstForCity = countInterest?.() ?? false;
     const data = {
       channel: "whatsapp",
       phone,
       city,
+      ...(cityAttribution ?? {}),
       role: "member",
       fullName: null,
       email: null,
@@ -647,7 +659,8 @@ async function joinByWhatsapp(
     });
   });
   // The number stays out of logs.
-  logger.info("WhatsApp launch notice stored", {city, alreadyJoined});
+  logger.info("WhatsApp launch notice stored", {city,
+    cityId: cityAttribution?.cityId ?? null, alreadyJoined, firstForCity});
   sendWaitlistJson(response, 200, {ok: true, alreadyJoined});
 }
 
@@ -706,9 +719,18 @@ export function createJoinWaitlistHandler(options: {
       return;
     }
 
+    const attribution = readCityAttribution(body);
+    if (attribution.kind === "invalid") {
+      sendWaitlistJson(response, 400, {error: attribution.error});
+      return;
+    }
+    const cityAttribution = attribution.kind === "attributed" ?
+      attribution.value : null;
+
     if (body.whatsapp !== undefined) {
       await joinByWhatsapp(request, response, body, {
-        city, submittedRole, marketingAnalytics, marketingAttribution,
+        city, cityAttribution, submittedRole, marketingAnalytics,
+        marketingAttribution,
       });
       return;
     }
@@ -863,6 +885,7 @@ export function createJoinWaitlistHandler(options: {
           ...(phone ? {phone} : {}),
           ...(programme ? {programme, programmeApplication} : {}),
           city,
+          ...(cityAttribution ?? {}),
           role,
           instagram,
           source: "catchdates.com",

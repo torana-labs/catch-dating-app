@@ -6,7 +6,7 @@ describe("footer cities", () => {
   it("lists open cities, then More cities", () => {
     const links = footerCities(twoCityCatalog.cities);
     expect(links.map((link) => link.href)).toEqual(["/mumbai/", "/cities/"]);
-    expect(links[0].note).toMatch(/^(new|1 plan this week|\d+ plans this week)$/u);
+    expect(links[0].note).toMatch(/^(New|1 plan this week|\d+ plans this week)$/u);
   });
 
   it("says launching soon once for each country with no city open", () => {

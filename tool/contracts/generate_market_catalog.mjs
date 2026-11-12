@@ -144,6 +144,8 @@ export function websiteCitiesFromCatalog(catalog) {
         status: city.lifecycle,
         ...(city.launchDate === undefined ? {} : {launchDate: city.launchDate}),
         countryIsoCode: city.countryIsoCode,
+        latitude: city.latitude,
+        longitude: city.longitude,
       };
     });
 }

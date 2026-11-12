@@ -73,7 +73,9 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "live",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 19.076,
+    "longitude": 72.8777
   },
   {
     "id": "in-mp-indore",
@@ -84,7 +86,9 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "live",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 22.7196,
+    "longitude": 75.8577
   },
   {
     "id": "in-dl-delhi-ncr",
@@ -101,7 +105,9 @@ export const generatedWebsiteCities = [
     ],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 28.7041,
+    "longitude": 77.1025
   },
   {
     "id": "in-ka-bengaluru",
@@ -116,7 +122,9 @@ export const generatedWebsiteCities = [
     ],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 12.9716,
+    "longitude": 77.5946
   },
   {
     "id": "in-tg-hyderabad",
@@ -127,7 +135,9 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 17.385,
+    "longitude": 78.4867
   },
   {
     "id": "in-mh-pune",
@@ -138,6 +148,8 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
-    "countryIsoCode": "IN"
+    "countryIsoCode": "IN",
+    "latitude": 18.5204,
+    "longitude": 73.8567
   }
 ] as const;

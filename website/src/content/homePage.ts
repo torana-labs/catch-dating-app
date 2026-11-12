@@ -13,7 +13,12 @@ export const homePageCopy = {
     countrySoon: "Launching soon in {country}",
     /** The picker's search, shown once there are more than eight cities. */
     citySearch: {label: "Search cities", placeholder: "Search cities", clear: "Clear “{query}”", close: "Close search",
-      none: "No city matches “{query}”."}},
+      none: "No cities found for “{query}”."},
+    /** "Use my location": the browser asks for location only when this is tapped. */
+    locate: {action: "Use my location", finding: "Finding your city…", region: "Your city", close: "Close",
+      otherTitle: "We’re not in your area yet", otherBody: "See every city and get notified when yours opens.", otherAction: "See all cities",
+      deniedTitle: "Location is off for this site", deniedBody: "Choose your city from the list instead.",
+      unavailableTitle: "We couldn’t find your location", unavailableBody: "Choose your city from the list instead."}},
   hero: {
     liveEyebrow: "In {city} this week",
     soonEyebrow: "Launching soon in {city}",

@@ -87,7 +87,7 @@ export const PickerTwentyFiveCities: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getAllByRole("button", {name: twentyFiveCityCatalog.selected.label})[0]);
-    const sheet = within(canvasElement.ownerDocument.body);
+    const sheet = within(within(canvasElement.ownerDocument.body).getByRole("dialog"));
     await expect(sheet.getByRole("searchbox")).toBeInTheDocument();
     await expect(sheet.getByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
   },

@@ -104,7 +104,7 @@ const zones: Record<string, string> = {IN: "Asia/Kolkata", NP: "Asia/Kathmandu",
 const city = (countryIsoCode: string, label: string, status: MarketCity["status"] = "waitlist"): MarketCity => {
   const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return {id: `${countryIsoCode.toLowerCase()}-xx-${slug}`, slug, marketSlug: slug, label, aliases: [], legacySlugs: [],
-    timezone: zones[countryIsoCode], status, countryIsoCode};
+    timezone: zones[countryIsoCode], status, countryIsoCode, latitude: 0, longitude: 0};
 };
 const catalogOf = (cities: readonly MarketCity[], selected: string): HomeCatalog =>
   homeCatalogFromPlans(cities, cities.map((market) => byCity[market.marketSlug] ??

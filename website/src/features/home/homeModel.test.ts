@@ -13,7 +13,7 @@ describe("city status lines", () => {
     expect(cityStatusLabel(city("live", 0))).toBe("New");
     expect(cityStatusLabel(city("live", 1))).toBe("1 plan this week");
     expect(cityStatusLabel(city("live", 2))).toBe("2 plans this week");
-    expect(cityFooterNote(city("live", 0))).toBe("new");
+    expect(cityFooterNote(city("live", 0))).toBe("New");
     expect(cityFooterNote(city("live", 1))).toBe("1 plan this week");
     expect(cityFooterNote(city("live", 7))).toBe("7 plans this week");
   });

@@ -1,0 +1,28 @@
+{
+  "workflow": {
+    "workflowId": "cityInterest",
+    "label": "Interest by city",
+    "guiPath": "/city-interest"
+  },
+  "actions": [
+    {
+      "actionId": "cityInterest.get",
+      "callable": "adminGetCityInterest",
+      "workflowIds": [
+        "cityInterest"
+      ],
+      "guiPath": "/city-interest",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_city_interest_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_city_interest_response.schema.json",
+      "summary": "Read waitlist interest by city: different people who asked to hear when each city opens, in all and over the last 7 and 30 days.",
+      "example": {},
+      "controlPlane": true
+    }
+  ]
+}
