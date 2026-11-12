@@ -6976,6 +6976,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:main-push-base",
+      "category": "ci",
+      "path": "tool/ci/main_push_base.mjs",
+      "command": "node tool/ci/main_push_base.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/main_push_base.mjs",
+        "tool/ci/main_push_base.test.mjs"
+      ],
+      "description": "Chooses the base a main push CI run plans from: the newest earlier main push run that ran, so the commits of a pending run a newer merge replaced are still validated; validates everything when that run is unknown or off main's history.",
+      "checks": [
+        "node --check tool/ci/main_push_base.mjs",
+        "node --test tool/ci/main_push_base.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",

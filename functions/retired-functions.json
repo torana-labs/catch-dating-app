@@ -2,6 +2,7 @@
   "adminListListingEventImports",
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
+  "generateOrganizerBillsMonthly",
   "getEventAssistanceAccountability",
   "getEventAssistanceCheckpoint",
   "getEventAssistanceGroupProgress",

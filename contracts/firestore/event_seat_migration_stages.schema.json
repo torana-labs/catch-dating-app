@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_migration_stages.schema.json",
+  "title": "EventSeatMigrationStageDocument",
+  "description": "One source row copied during a seat-ledger bootstrap scan (a participation, roster attendee or contact origin), staged so the plan reads a frozen snapshot. Deleted at cleanup or discard.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatMigrationStages",
+  "x-firestore-path": "eventSeatMigrationStages/{stageId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+  "required": [
+    "eventId",
+    "migrationRevision",
+    "kind",
+    "sourceId",
+    "value"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "eventParticipations",
+        "eventAttendees",
+        "organizerContactOrigins"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "value": {
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

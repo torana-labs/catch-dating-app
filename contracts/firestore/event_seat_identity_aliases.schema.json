@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_seat_identity_aliases.schema.json",
+  "title": "EventSeatIdentityAliasDocument",
+  "description": "Maps one hashed identity value (uid, phone, roster attendee, external id, CRM contact or contact origin) for an event to the canonical seat key, so the same person never holds two seats.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSeatIdentityAliases",
+  "x-firestore-path": "eventSeatIdentityAliases/{aliasId}",
+  "x-document-id-field": "id",
+  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "required": [
+    "eventId",
+    "organizerId",
+    "kind",
+    "valueHash",
+    "canonicalKey",
+    "identityRevision",
+    "migrationRevision",
+    "state"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "uid",
+        "phone",
+        "attendee",
+        "external",
+        "contactOrigin",
+        "contact"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "valueHash": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "canonicalKey": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "identityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "migrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "ambiguous",
+        "retired"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

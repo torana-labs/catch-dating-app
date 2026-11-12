@@ -1,10 +1,12 @@
-// Counts the Functions a backend deploy would create or update, before it
-// touches the environment, and refuses one above the limit unless the run
-// allows a large deploy. The Firebase CLI updates every Function of a codebase
-// whose content hash changed, so this compares each codebase's hash
-// (functions/scripts/build-deploy-codebases.cjs) with the hashes recorded on
-// the environment's last successful deploy. With no usable record every
-// codebase counts as changed: unknown scope is refused, never guessed small.
+// Reports, before a backend deploy touches the environment, which Functions
+// codebases it changes: each one is one Cloud Build (the Functions of a
+// codebase share its build) and an update of every Function it holds. The
+// Firebase CLI skips a codebase whose content hash is unchanged, so this
+// compares each codebase's hash (functions/scripts/build-deploy-codebases.cjs)
+// with the hashes recorded on the environment's last delivered deploy. With no
+// usable record every codebase counts as changed. It refuses nothing: a build
+// costs about a build-minute and updating a Function costs nothing, so the
+// size of a deploy is reported, not limited.
 // Secret version changes are not files and are not counted.
 // Docs: docs/release_operations.md, "Deploy backend".
 "use strict";
@@ -29,12 +31,8 @@ function recordedHashes(text) {
   return hashes;
 }
 
-/**
- * Which codebases a deploy changes and why, how many Functions that updates,
- * and whether the limit refuses it.
- */
-function deployPlan({current, previous, limit, full = false, allowLarge = false}) {
-  if (!Number.isInteger(limit) || limit < 0) throw new Error(`The limit must be a whole number, not ${limit}.`);
+/** Which codebases a deploy changes and why, and how many builds and Function updates that is. */
+function deployPlan({current, previous, full = false}) {
   const changed = [];
   const unchanged = [];
   for (const [codebase, {hash, functions}] of Object.entries(current.codebases)) {
@@ -45,12 +43,12 @@ function deployPlan({current, previous, limit, full = false, allowLarge = false}
     (reason ? changed : unchanged).push({codebase, functions: functions.length, ...(reason && {reason})});
   }
   const total = changed.reduce((sum, {functions}) => sum + functions, 0);
-  return {changed, unchanged, total, limit, blocked: total > limit && !full && !allowLarge};
+  return {changed, unchanged, builds: changed.length, total};
 }
 
 function planMarkdown(plan, environment) {
   const rows = plan.changed.map(({codebase, functions, reason}) => `| ${codebase} | ${functions} | ${reason} |`);
-  return [`### Functions this ${environment} deploy changes: ${plan.total} (limit ${plan.limit})`, "",
+  return [`### This ${environment} deploy: ${plan.builds} codebase build(s), ${plan.total} Function update(s)`, "",
     ...(rows.length ? ["| Codebase | Functions | Why |", "|---|---:|---|", ...rows] : ["No codebase changed."]), "",
     plan.unchanged.length ? `Unchanged: ${plan.unchanged.map(({codebase}) => codebase).join(", ")}.` : "", ""]
     .join("\n");
@@ -60,30 +58,21 @@ module.exports = {deployPlan, planMarkdown, recordedHashes};
 
 function main() {
   const {values} = parseArgs({options: {
-    current: {type: "string"}, previous: {type: "string"}, limit: {type: "string"},
+    current: {type: "string"}, previous: {type: "string"},
     environment: {type: "string", default: "this environment"},
-    full: {type: "string", default: "false"}, "allow-large": {type: "string", default: "false"},
-    summary: {type: "string"},
+    full: {type: "string", default: "false"}, summary: {type: "string"},
   }});
-  if (!values.current || !values.limit) {
-    throw new Error("Usage: deploy-size.cjs --current <codebases.json> [--previous <record>] --limit <n> " +
-      "[--environment <name>] [--full true|false] [--allow-large true|false] [--summary <file>]");
+  if (!values.current) {
+    throw new Error("Usage: deploy-size.cjs --current <codebases.json> [--previous <record>] " +
+      "[--environment <name>] [--full true|false] [--summary <file>]");
   }
   const current = JSON.parse(fs.readFileSync(values.current, "utf8"));
   const previousText = values.previous && fs.existsSync(values.previous) ?
     fs.readFileSync(values.previous, "utf8") : "";
-  const plan = deployPlan({current, previous: recordedHashes(previousText), limit: Number(values.limit),
-    full: values.full === "true", allowLarge: values["allow-large"] === "true"});
+  const plan = deployPlan({current, previous: recordedHashes(previousText), full: values.full === "true"});
   const markdown = planMarkdown(plan, values.environment);
   process.stdout.write(markdown);
   if (values.summary) fs.appendFileSync(values.summary, markdown);
-  if (plan.blocked) {
-    process.stderr.write(`::error::This deploy would update ${plan.total} Functions in ` +
-      `${values.environment}, over the limit of ${plan.limit}. Nothing was changed. To deploy them ` +
-      "together, run Deploy backend for this environment with allow_large; later merges then deploy " +
-      "normally.\n");
-    process.exitCode = 3;
-  }
 }
 
 if (require.main === module) {

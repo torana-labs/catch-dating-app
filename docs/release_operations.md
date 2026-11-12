@@ -326,10 +326,19 @@ Main pushes plan from the push's `before` commit. Harness, Tools
 preflight/execution and Flutter test selection use the union of every path
 touched in that committed history, including reversions, merge-parent changes
 and transient removed files. Current unowned paths still fail; unowned
-transient history broadens validation to the existing nightly/full mode. A
-cancelled older main run leaves no gap to cover: the merge queue already
-validated each of its commits. Pull requests and nightly runs retain their
-existing validation flow.
+transient history broadens validation to the existing nightly/full mode.
+
+A newer merge never cancels a main push run that has started (owner decision,
+12 Nov 2026). Main runs share one concurrency group without
+`cancel-in-progress`, so GitHub keeps the running run and one pending run, and
+a newer merge replaces only the pending one. A replaced run never starts, so
+the run that replaced it plans from the commit of the newest earlier main push
+run that ran, not from its own `before` commit
+(`tool/ci/main_push_base.mjs`). Every commit on main is then in some finished
+run's committed window. When that earlier run cannot be found, or its commit
+is not an ancestor of the head, the run validates everything in the nightly
+full mode. Pull requests and nightly runs retain their existing validation
+flow.
 
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
@@ -1317,7 +1326,9 @@ How a run works:
   `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
   A run whose commit doesn't contain the recorded one deploys nothing, so a
   re-run of an older commit never replaces a newer one. A failed run leaves the
-  record unchanged.
+  record unchanged. GitHub marks a record `inactive` seconds after its
+  `success` status, so a record counts as delivered when any of its statuses
+  is `success`. The record's payload holds each codebase's content hash.
 - A run deploys its own exact commit. The job builds Functions, materializes
   non-secret parameters from the environment's GitHub variables, and packages
   Functions as Firebase codebases with
@@ -1353,21 +1364,46 @@ How a run works:
   so only the failed Functions rebuild.
 - Firebase predeploy test hooks are skipped because required CI already ran
   them on that commit.
+- Before any change, the run summary lists the codebases this deploy changes
+  against the recorded hashes, with the number of Functions in each. Nothing
+  is refused for size.
+
+What a deploy costs (measured 13 Nov 2026):
+
+- Google builds once per changed codebase: the first Function of a codebase
+  runs a Cloud Build and the rest reuse its image. The full redeploy of 7 Nov
+  2026 (about 800 Functions per environment) ran 18 builds in prod and 22 in
+  dev. Before 2 Nov 2026 every Function had its own build, which is what made
+  October's frequent deploys expensive.
+- Updating a Function (a new Cloud Run revision) costs nothing. A build is
+  about a build-minute. So a deploy costs at most one build per codebase in
+  `functions/deploy-codebases.json`, about a dozen, whatever it updates.
+- More, smaller codebases would update fewer Functions per change but run more
+  builds. Replaying 30 Oct–12 Nov 2026 against the current packaging, a daily
+  deploy ran a median of 11 builds; 80 grouped codebases would have run 36, and
+  one codebase per Function module 95. Keep the codebase count low.
 
 When it runs:
 
-- **Dev:** every merge to `main` that touches backend inputs deploys to dev
-  automatically.
-- **Prod:** deploys the same commit automatically once dev succeeds.
+- **Daily, dev then prod:** at 03:00 IST the workflow deploys the newest `main`
+  commit whose CI run succeeded (not `main`'s head, which may still be under
+  test) to dev, then to prod once dev succeeds. It skips when prod already has
+  that commit. It also skips until prod's last delivered deploy recorded
+  codebase hashes: records written before 14 Nov 2026 have none, so the first
+  deploy after that must be a manual `full` run, dev then prod.
+- **A merge deploys nothing by itself.** It ships in the next daily run, or
+  sooner by a manual run.
 - **Staging:** deploys only when someone runs the workflow for it. Nothing uses it
   day to day, and it is missing secrets (#1423).
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Skipping intermediate commits loses nothing,
   because the CLI compares against what is live.
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
-  or `staging`. Tick `full` to redeploy every Function even when unchanged, for
-  example after a manual deploy you are unsure about. It names every codebase,
-  which turns off the CLI's skip.
+  or `staging`. A manual run deploys only the environment it names, from the
+  commit it starts on; run dev first, then prod. Tick `full` to redeploy every
+  Function even when unchanged, for example after a manual deploy you are
+  unsure about or when the record has no codebase hashes. It names every
+  codebase, which turns off the CLI's skip.
 - **Configuration changes:** a changed GitHub variable reaches the codebases
   that read it on the next run. To apply it now without deploying the rest of
   the commit, run the workflow with `functions` set to the comma-separated
