@@ -25,7 +25,15 @@
   },
   "stores": {
     "consumerAppName": "Catch",
-    "hostAppName": "Catch Host"
+    "hostAppName": "Catch Host",
+    "consumer": {
+      "ios": null,
+      "android": null
+    },
+    "host": {
+      "ios": null,
+      "android": null
+    }
   },
   "adminName": "Catch Admin",
   "senders": {

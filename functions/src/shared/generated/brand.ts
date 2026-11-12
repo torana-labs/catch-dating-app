@@ -3,7 +3,7 @@
 // DO NOT EDIT DIRECTLY.
 /* eslint-disable max-len */
 
-export const BRAND = {
+const record = {
   "name": "Catch",
   "shortName": "Catch",
   "web": {
@@ -30,7 +30,15 @@ export const BRAND = {
   },
   "stores": {
     "consumerAppName": "Catch",
-    "hostAppName": "Catch Host"
+    "hostAppName": "Catch Host",
+    "consumer": {
+      "ios": null,
+      "android": null
+    },
+    "host": {
+      "ios": null,
+      "android": null
+    }
   },
   "adminName": "Catch Admin",
   "senders": {
@@ -39,6 +47,14 @@ export const BRAND = {
     "whatsappDisplayName": "Catch"
   }
 } as const;
+
+/** A store listing URL, or null while the app is not live on that store. */
+export type StoreLink = string | null;
+export type StoreLinks = {readonly ios: StoreLink; readonly android: StoreLink};
+type StoreRecord = Omit<typeof record.stores, "consumer" | "host"> &
+  {readonly consumer: StoreLinks; readonly host: StoreLinks};
+
+export const BRAND: Omit<typeof record, "stores"> & {readonly stores: StoreRecord} = record;
 
 /** An absolute URL on the public website. `path` starts with "/". */
 export function brandWebUrl(path: `/${string}` = "/"): string {

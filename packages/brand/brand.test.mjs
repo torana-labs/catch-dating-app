@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 import record from "./brand.json" with {type: "json"};
 import {applyBrand, applyBrandText, brand, brandConsistencyErrors, webUrl} from "./index.mjs";
 import {compare, rules, scanText} from "./check_brand_literals.mjs";
-import {outputs} from "./generate.mjs";
+import {outputs, renderDartModule, renderFunctionsModule, renderWebsiteModule} from "./generate.mjs";
 import {rewriteSurface, surfacePaths} from "./managed.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
@@ -106,4 +106,60 @@ test("a rebrand rewrites every managed surface and leaves the noun exceptions al
 test("the applied record matches brand.json", () => {
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(packageDir, "applied.json"), "utf8")),
     JSON.parse(JSON.stringify(brand)));
+});
+
+const withStores = (consumer, host = {ios: null, android: null}) =>
+  ({...record, stores: {...record.stores, consumer, host}});
+
+test("store links are a validated URL or null", () => {
+  const schema = JSON.parse(fs.readFileSync(path.join(packageDir, "brand.schema.json"), "utf8"));
+  const valid = withStores(
+    {ios: "https://apps.apple.com/in/app/catch-run-clubs/id6739000001",
+      android: "https://play.google.com/store/apps/details?id=com.catchdates.app"},
+    {ios: "https://apps.apple.com/app/id6739000002", android: null});
+  assert.deepEqual(schemaErrors(schema, schema, valid, "brand"), []);
+  for (const [platform, url] of [
+    ["ios", "https://apps.apple.com/in/app/catch"],
+    ["ios", "http://apps.apple.com/app/id1"],
+    ["ios", "https://apps.apple.com.evil.example/app/id1"],
+    ["ios", "https://play.google.com/store/apps/details?id=com.catchdates.app"],
+    ["android", "https://play.google.com/store/apps/details?id=Catch"],
+    ["android", "https://play.google.com/store/apps/details?id=com.catchdates.app&hl=en"],
+    ["android", "https://apps.apple.com/app/id1"],
+    ["android", ""],
+  ]) {
+    const candidate = withStores({ios: null, android: null, [platform]: url});
+    assert.match(schemaErrors(schema, schema, candidate, "brand").join(),
+      new RegExp(`stores\\.consumer\\.${platform}`, "u"), url);
+  }
+  assert.match(schemaErrors(schema, schema, withStores({ios: null}), "brand").join(), /android is required/u);
+});
+
+test("a Google Play link names the role's production package", () => {
+  const targets = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/app_targets.json"), "utf8"));
+  const productionIds = JSON.stringify(targets).match(/"applicationId":\s*"com\.catchdates\.(?:app|host)"/gu) ?? [];
+  assert.equal(productionIds.length, 2, "tool/app_targets.json lists both production applicationIds");
+  for (const role of ["consumer", "host"]) {
+    const link = brand.stores[role].android;
+    if (link === null) continue;
+    const expected = role === "consumer" ? "com.catchdates.app" : "com.catchdates.host";
+    assert.equal(new URL(link).searchParams.get("id"), expected, `stores.${role}.android`);
+  }
+});
+
+test("store links reach every runtime copy, null or set", () => {
+  const empty = withStores({ios: null, android: null});
+  const dartEmpty = renderDartModule(empty);
+  assert.match(dartEmpty, /static const String\? storesConsumerIos = null;/u);
+  assert.match(dartEmpty, /static const String\? storesHostAndroid = null;/u);
+  const ios = "https://apps.apple.com/app/id6739000001";
+  const set = withStores({ios, android: null});
+  const dartSet = renderDartModule(set);
+  assert.ok(dartSet.includes(`static const String? storesConsumerIos =\n      '${ios}';`) ||
+    dartSet.includes(`static const String? storesConsumerIos = '${ios}';`), dartSet);
+  for (const render of [renderFunctionsModule, renderWebsiteModule]) {
+    assert.match(render(empty), /"consumer": \{\n\s+"ios": null,/u);
+    assert.ok(render(set).includes(`"ios": "${ios}"`));
+    assert.match(render(set), /export type StoreLink = string \| null;/u);
+  }
 });

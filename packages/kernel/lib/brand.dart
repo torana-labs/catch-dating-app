@@ -23,6 +23,10 @@ final class Brand {
   static const socialInstagramHandle = 'catch_dates';
   static const storesConsumerAppName = 'Catch';
   static const storesHostAppName = 'Catch Host';
+  static const String? storesConsumerIos = null;
+  static const String? storesConsumerAndroid = null;
+  static const String? storesHostIos = null;
+  static const String? storesHostAndroid = null;
   static const adminName = 'Catch Admin';
   static const sendersEmailDomain = 'notify.catchdates.com';
   static const sendersEmailDisplayName = 'Catch';
