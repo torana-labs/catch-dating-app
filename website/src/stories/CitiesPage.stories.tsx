@@ -89,6 +89,6 @@ export const PickerTwentyFiveCities: Story = {
     await userEvent.click(canvas.getAllByRole("button", {name: twentyFiveCityCatalog.selected.label})[0]);
     const sheet = within(canvasElement.ownerDocument.body);
     await expect(sheet.getByRole("searchbox")).toBeInTheDocument();
-    await expect(sheet.getByRole("heading", {name: "Australia"})).toBeInTheDocument();
+    await expect(sheet.getByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
   },
 };
