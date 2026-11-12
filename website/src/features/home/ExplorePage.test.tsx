@@ -73,6 +73,14 @@ describe("Explore", {timeout: 20_000}, () => {
     expect(screen.getByRole("button", {name: "Clear filters"})).toBeTruthy();
   });
 
+  it("tells an open city with nothing in the next two weeks that plans are coming, not that filters missed", () => {
+    const quiet: HomeCatalog = {...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, plans: [], planCount: 0}};
+    show(quiet, "/mumbai/");
+    expect(screen.getByText("Nothing on in Mumbai in the next two weeks.")).toBeTruthy();
+    expect(screen.queryByText("0 plans")).toBeNull();
+    expect(screen.queryByText("No plans match these filters.")).toBeNull();
+  });
+
   it("says when plans could not load", () => {
     show({...homeCatalogFixture("mumbai"), phase: "unavailable"});
     expect(screen.getByText("We couldn’t load plans right now.")).toBeTruthy();

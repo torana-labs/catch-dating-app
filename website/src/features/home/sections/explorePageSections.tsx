@@ -89,13 +89,13 @@ function ExploreFilterBar({explore}: {explore: Explore}) {
 }
 
 /**
- * A city not yet open, with nothing to show and no filter set: it is waiting
- * for its first hosts, not missing a filter, so it gets its own empty state
- * and no "0 plans" count.
+ * Nothing to show with no filter set: the city is waiting for plans (or, not
+ * yet open, for its first hosts), not missing a filter, so it gets its own
+ * empty state and no "0 plans" count.
  */
 function waitingForFirstPlans(explore: Explore) {
   const shown = explore.filters.view === "organisers" ? explore.organizers.length : explore.plans.length;
-  return !explore.live && !explore.unavailable && !explore.filtered && shown === 0;
+  return !explore.unavailable && !explore.filtered && shown === 0;
 }
 
 function ExploreResults({explore}: {explore: Explore}) {
@@ -106,8 +106,9 @@ function ExploreResults({explore}: {explore: Explore}) {
   );
   if (explore.unavailable) return empty(copy.unavailable, copy.unavailableBody);
   if (waitingForFirstPlans(explore)) {
-    return explore.filters.view === "organisers"
-      ? empty(fill(copy.soonNoOrganisers, {city}), copy.soonNoOrganisersBody)
+    if (explore.filters.view === "organisers") return empty(fill(copy.soonNoOrganisers, {city}), copy.soonNoOrganisersBody);
+    return explore.live
+      ? empty(fill(copy.liveNoPlans, {city}), copy.liveNoPlansBody)
       : empty(fill(copy.soonNoPlans, {city}), copy.soonNoPlansBody);
   }
   if (explore.filters.view === "organisers") {

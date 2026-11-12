@@ -15,6 +15,9 @@ export const explorePageCopy = {
   soonNoPlansBody: "Hosts here are setting up their first plans. Check back soon.",
   soonNoOrganisers: "No organisers in {city} yet.",
   soonNoOrganisersBody: "The first hosts here will show up as soon as they join.",
+  /** An open city with nothing in the next two weeks and no filter set. */
+  liveNoPlans: "Nothing on in {city} in the next two weeks.",
+  liveNoPlansBody: "New plans go up as hosts add them. See who hosts here, or check back soon.",
   search: {label: "Search plans and organisers", placeholder: "A plan, an organiser or a place", clear: "Clear {query}", close: "Close search"},
   view: {label: "Show", plans: "Plans", organisers: "Organisers"},
   when: {label: "When", any: "Next two weeks", today: "Today", weekend: "This weekend", week: "Next 7 days"},
