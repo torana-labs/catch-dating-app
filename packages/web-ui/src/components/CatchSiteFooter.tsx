@@ -1,6 +1,7 @@
 import type {ReactNode} from "react";
 import {CatchBand} from "./CatchBand";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchWordmark} from "./CatchWordmark";
 import styles from "./CatchSiteFooter.module.css";
 
 export interface CatchSiteFooterLink {
@@ -59,9 +60,7 @@ export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, taglin
         ))}
       </nav>
       <div className={styles.base}>
-        <a className={styles.brand} href={brandHref}>
-          <CatchLegacyText as="span" color="inherit" variant="displayL">{brandLabel}</CatchLegacyText>
-        </a>
+        <CatchWordmark href={brandHref} size="band">{brandLabel}</CatchWordmark>
         <CatchLegacyText as="p" color="ink2" variant="supporting">{tagline}</CatchLegacyText>
       </div>
     </CatchBand>

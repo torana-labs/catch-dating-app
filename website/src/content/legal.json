@@ -15,7 +15,7 @@
       "eyebrow": "Legal",
       "title": "Privacy policy",
       "summary": "How {{brand.name}} collects, uses, shares, protects, and responds to requests about personal data.",
-      "effectiveDate": "26 October 2026",
+      "effectiveDate": "12 November 2026",
       "sections": [
         {
           "heading": "Who operates {{brand.name}}",
@@ -30,7 +30,7 @@
           ],
           "bullets": [
             "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
-            "Event and interaction information, including registrations, waitlists, attendance, check-in, private catches, mutual matches, blocks, reports, host actions, saved organizers, and aggregate event outcomes.",
+            "Event and interaction information, including registrations, waitlists, attendance, check-in, the people you pick to stay in touch with after an event and the people you have picked each other with, blocks, reports, host actions, saved organizers, and aggregate event outcomes. If you used the earlier profile deck, we also hold the likes and passes you made there until your account is deleted; we no longer collect them.",
             "Payment information for paid bookings, including the amount, currency, payment and refund status, and the order, payment, and refund references from Razorpay. Card, UPI, and bank details are entered in Razorpay's checkout; {{brand.name}} does not see or store them.",
             "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
@@ -42,15 +42,15 @@
         {
           "heading": "How we use data",
           "paragraphs": [
-            "We use data to provide and secure {{brand.name}}; operate accounts, discovery, attendance, matching, messaging, host, claim, review, and safety features; respond to support, privacy, correction, and takedown requests; prevent fraud and abuse; moderate content; measure reliability and consented usage; communicate about the service; comply with law; and establish, exercise, or defend legal claims.",
+            "We use data to provide and secure {{brand.name}}; operate accounts, discovery, attendance, staying in touch after events, messaging, host, claim, review, and safety features; respond to support, privacy, correction, and takedown requests; prevent fraud and abuse; moderate content; measure reliability and consented usage; communicate about the service; comply with law; and establish, exercise, or defend legal claims.",
             "Where consent is required, you may withdraw it through the relevant setting or by contacting us. Withdrawal does not invalidate earlier lawful processing, but it may prevent us from providing a feature that needs the data."
           ]
         },
         {
           "heading": "Public and private information",
           "paragraphs": [
-            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. Private catches are not shown to the other person unless interest becomes mutual. Hosts receive operational and aggregate information; they should not receive private dating choices unless a feature clearly says so.",
-            "Cross Paths is not a public attendee list. If you separately enable Cross Paths for your account and for a selected event you are attending, {{brand.name}} may show your public profile and your intention to attend that event to a limited number of compatible, eligible members and may let them send a limited event invitation. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect members, or comply with law."
+            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. The people you pick are not told unless they pick you too; if you pick each other, you can message each other. Hosts receive operational and aggregate information, such as how many pairs picked each other; they should not receive your individual picks unless a feature clearly says so.",
+            "Cross Paths is not a public attendee list. If you separately enable Cross Paths for your account and for a selected event you are attending, {{brand.name}} may show your public profile and your intention to attend that event to a limited number of other members attending or able to book that event who have also opted in, and whose stated gender and age preferences match yours both ways, and may let them send a limited event invitation. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect members, or comply with law."
           ]
         },
         {
@@ -85,7 +85,7 @@
         {
           "heading": "Age, transfers, and changes",
           "paragraphs": [
-            "{{brand.name}} is for adults aged 18 or older. We do not knowingly offer dating services to children. Contact us if you believe someone under 18 has provided data.",
+            "{{brand.name}} is for adults aged 18 or older. We do not knowingly offer {{brand.name}} to children. Contact us if you believe someone under 18 has provided data.",
             "Providers may process data outside your state or country subject to their contracts and applicable restrictions. We may update this policy as the service or law changes and will post the updated effective date, with additional notice where required."
           ]
         },
@@ -102,7 +102,7 @@
       "eyebrow": "Legal",
       "title": "Terms of use",
       "summary": "The rules for using {{brand.name}}, its organizer directory, event pages, accounts, and related services.",
-      "effectiveDate": "30 October 2026",
+      "effectiveDate": "12 November 2026",
       "sections": [
         {
           "heading": "Agreement and eligibility",
@@ -114,7 +114,7 @@
         {
           "heading": "What {{brand.name}} does",
           "paragraphs": [
-            "{{brand.name}} helps adults discover organizers and events, connect around real-world attendance, express private interest, match after mutual interest, and use related host and safety tools.",
+            "{{brand.name}} helps adults discover organizers and events, connect around real-world attendance, pick people they met to stay in touch with, message each other when they pick each other, and use related host and safety tools.",
             "During the website-first pilot, many event actions lead to an organizer's site or another ticketing provider. {{brand.name}} is not the organizer, venue, ticket seller, employer, agent, or insurer for an external event unless a page expressly says otherwise."
           ]
         },
@@ -184,7 +184,7 @@
         {
           "heading": "Disclaimers and liability",
           "paragraphs": [
-            "{{brand.name}} is provided on an \"as available\" basis to the extent permitted by law. We do not guarantee uninterrupted operation, an event, attendance, a match, a relationship, an organizer outcome, or the accuracy of third-party content.",
+            "{{brand.name}} is provided on an \"as available\" basis to the extent permitted by law. We do not guarantee uninterrupted operation, an event, attendance, that someone you pick will pick you, any particular outcome of meeting people, an organizer outcome, or the accuracy of third-party content.",
             "Nothing here excludes rights or liabilities that cannot lawfully be excluded, including applicable consumer rights. Subject to that rule, {{brand.name}} is not responsible for indirect, incidental, special, or consequential loss, or for conduct, events, content, transactions, or services controlled by another user, organizer, venue, or third party."
           ]
         },
@@ -279,6 +279,7 @@
       "eyebrow": "Account",
       "title": "Delete your account",
       "summary": "Delete your {{brand.name}} or {{brand.stores.hostAppName}} account and associated data in the app, or request deletion by email without installing the app.",
+      "effectiveDate": "12 November 2026",
       "sections": [
         {
           "heading": "One account for {{brand.name}} and {{brand.stores.hostAppName}}",
@@ -318,7 +319,7 @@
             "Your profile: name, date of birth, photos, prompts, personal details, preferences, and city.",
             "Your {{brand.stores.hostAppName}} profile and photo, and your access to organizer teams.",
             "Event registrations and waitlist places, saved events, and notifications; organizer follows are ended.",
-            "Likes and passes, blocks, and your Cross Paths settings, consents, and invitations.",
+            "Your picks, blocks, any likes and passes from the earlier profile deck, and your Cross Paths settings, consents, and invitations.",
             "Messages you posted in event chats, private event form and room choices, and your communication preferences and consents.",
             "Broadcasts you sent as a host, and your device notification token."
           ]
@@ -330,7 +331,7 @@
           ],
           "bullets": [
             "Reviews you wrote stay published under the name Deleted user.",
-            "Your matches are closed and their conversations are hidden from both people; the message records are retained and may be used for safety and abuse review.",
+            "Your connections with the people you have picked each other with end, and those chats are hidden from both people; the message records are retained and may be used for safety and abuse review.",
             "Payment and refund records, for accounting, refunds, disputes, and legal requirements.",
             "Safety reports you made or that involve you, for review.",
             "Organizer pages, events, guest lists, and business records that belong to an organizer stay with that organizer and its remaining hosts, without a link to your account.",

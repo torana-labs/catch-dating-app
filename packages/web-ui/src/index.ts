@@ -318,6 +318,8 @@ export type {
   CatchTabBarProps,
 } from "./components/CatchTabBar";
 export {CatchTopBar} from "./components/CatchTopBar";
+export {CatchWordmark} from "./components/CatchWordmark";
+export type {CatchWordmarkProps, CatchWordmarkSize} from "./components/CatchWordmark";
 export type {CatchTopBarAction, CatchTopBarBack, CatchTopBarProps, CatchTopBarVariant} from "./components/CatchTopBar";
 export {CatchViewport} from "./components/CatchViewport";
 export type {CatchViewportProps} from "./components/CatchViewport";

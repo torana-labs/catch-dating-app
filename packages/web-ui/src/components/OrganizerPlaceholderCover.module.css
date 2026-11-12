@@ -33,6 +33,7 @@
   font-size: var(--catch-typography-brand-display-xs-size);
   font-weight: var(--catch-typography-brand-display-xs-weight);
   font-stretch: 78%;
+  word-spacing: var(--catch-font-word-spacing-voice);
   font-variation-settings: "wdth" 78;
   line-height: var(--catch-typography-brand-display-xs-line-height);
   letter-spacing: var(--catch-typography-brand-display-xs-tracking);

@@ -2,6 +2,7 @@ import type {ReactNode} from "react";
 import {CatchButton} from "./CatchButton";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {CatchMenu} from "./CatchMenu";
+import {CatchWordmark} from "./CatchWordmark";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTopBar.module.css";
 
@@ -46,6 +47,15 @@ export interface CatchTopBarProps {
   linksLabel?: string;
   /** site: the phone menu's button label; under 600px the links move into this menu. */
   menuLabel?: string;
+  /** site: a product line after the wordmark, such as "for hosts". */
+  subBrand?: ReactNode;
+  /**
+   * site: the visitor's account entry ("Sign in" or "Account"), the last item
+   * of the left group after the links. Only the page's actions sit on the right.
+   */
+  account?: ReactNode;
+  /** site: entries the phone menu adds after the links, such as the account entry the bar drops under 600px. */
+  menuExtras?: readonly CatchTopBarAction[];
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
@@ -67,31 +77,33 @@ function TextAction({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu"}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, menuExtras = []}: CatchTopBarProps) {
+  const menuItems = [...(links ?? []), ...menuExtras];
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
     return (
       <header className={styles.bar} data-variant="site">
         <span className={styles.siteRow}>
           <span className={styles.site}>
-            <a className={styles.brand} href={homeHref ?? "/"}>{title ?? "Catch"}</a>
+            <CatchWordmark href={homeHref ?? "/"} subBrand={subBrand}>{title ?? "Catch"}</CatchWordmark>
             {links && links.length > 0 ? (
               <nav aria-label={linksLabel} className={styles.links}>
                 {links.map((link) => <CatchButton href={link.href} key={link.label} label={link.label} onPressed={link.onPressed} size="sm" variant="quiet" />)}
               </nav>
             ) : null}
+            {account ? <span className={styles.account}>{account}</span> : null}
           </span>
           <span className={styles.actions}>
             {actions}
-            {links && links.length > 0 ? (
+            {menuItems.length > 0 ? (
               <span className={styles.siteMenu}>
                 <CatchMenu
                   align="end"
                   builder={(menu) => <CatchButton {...menu.triggerProps} label={menuLabel} onPressed={menu.toggle} size="sm" variant="secondary" />}
-                  items={links.map((link) => ({value: link.label, label: link.label}))}
+                  items={menuItems.map((link) => ({value: link.label, label: link.label}))}
                   label={linksLabel}
                   onSelected={(value) => {
-                    const link = links.find((item) => item.label === value);
+                    const link = menuItems.find((item) => item.label === value);
                     link?.onPressed?.();
                     if (link?.href) window.location.assign(link.href);
                   }}

@@ -35,21 +35,24 @@ describe("public route navigation targets", () => {
 
   it("uses the same city navigation for Explore", () => {
     renderPage(<MemoryRouter initialEntries={["/mumbai/"]}><ExplorePage catalog={mumbaiLiveCatalog} /></MemoryRouter>);
-    const nav = screen.getByRole("navigation", {name: "Main"});
+    // The one public header, as on the homepage: the city's links, then the picker and Get the app on the right.
+    const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
-      .toEqual(["/mumbai/", "/explore/?show=organisers", "/host/", "/#app"]);
+      .toEqual(["/mumbai/", "/explore/?show=organisers", "/host/"]);
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    expect(within(screen.getByRole("banner")).getByRole("button", {name: "Mumbai"})).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1, name: "What’s on in Mumbai"})).toBeTruthy();
   });
 
   it("gives the claim page the same header and footer as every public route", () => {
     renderPage(<ClaimPage routeState={emptyClaimRouteState} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
-    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/organizers/", "/host/"]);
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/explore/?show=organisers", "/host/"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
     const footer = screen.getByRole("navigation", {name: "Footer"});
     expect(within(footer).getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
     expect(within(footer).getByRole("link", {name: "Refunds"}).getAttribute("href")).toBe("/refunds/");
     expect(within(footer).getByRole("link", {name: "Contact"}).getAttribute("href")).toBe("/contact/");
-    expect(within(footer).getByRole("link", {name: "Find events"}).getAttribute("href")).toBe("/explore/");
+    expect(within(footer).getByRole("link", {name: "Explore"}).getAttribute("href")).toBe("/explore/");
   });
 });
