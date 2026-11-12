@@ -33,6 +33,9 @@ export const homePageCopy = {
   week: {
     title: "This week in {city}",
     eyebrow: "{count} plans this week",
+    eyebrowOne: "1 plan this week",
+    /** An open city with nothing this week: new, not "0 plans". */
+    eyebrowNew: "New in {city}",
     lead: "Hosted plans across {areas}.",
     leadNoAreas: "Hosted plans across {city}.",
     action: "See everything in {city}",

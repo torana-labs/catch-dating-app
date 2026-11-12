@@ -150,7 +150,8 @@ function HomeThisWeek({home}: {home: Home}) {
     <CatchSurface aria-labelledby="home-week-title" as="section" block="band" color="tile" id="whats-on">
       <HeadingRow aside={<CatchButton href={home.exploreHref} label={fill(copy.week.action, {city})} />}>
         <CatchStack gap={8}>
-          <CatchText tone="danger" variant="label-kicker">{fill(copy.week.eyebrow, {count: home.weekCount})}</CatchText>
+          <CatchText tone="danger" variant="label-kicker">{home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
+            home.weekCount ? copy.week.eyebrowOne : fill(copy.week.eyebrowNew, {city})}</CatchText>
           <CatchText as="h2" id="home-week-title" variant="display-xl">{fill(copy.week.title, {city})}</CatchText>
           <CatchText tone="secondary" variant="body">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
         </CatchStack>
