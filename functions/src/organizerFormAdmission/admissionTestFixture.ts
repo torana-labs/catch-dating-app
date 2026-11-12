@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {Timestamp} from "firebase-admin/firestore";
+import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {createHash} from "node:crypto";
 
 import {deriveEventSeatPolicy} from
@@ -64,8 +64,10 @@ export class Store {
       pending.push(() => {
         if (kind === "create") assert.equal(this.rows.has(ref.path), false);
         if (kind === "update") assert.equal(this.rows.has(ref.path), true);
+        // Like Firestore, server timestamps resolve when the write commits.
+        const resolved = resolveServerTimestamps(value) as Row;
         this.rows.set(ref.path, kind === "update" || kind === "merge" ?
-          {...this.rows.get(ref.path), ...value} : value);
+          {...this.rows.get(ref.path), ...resolved} : resolved);
         this.writes.push(ref.path);
       });
     };
@@ -245,4 +247,24 @@ export function approvedApplicationFixture() {
     assignedReviewerUid: actorUid, reviewNote: "Accepted", revision: 2,
     submittedAt: ts(1100), updatedAt: ts(1500), reviewedAt: ts(1500)});
   return {...current, applicationId};
+}
+
+const SERVER_TIMESTAMP = FieldValue.serverTimestamp();
+
+/**
+ * Replaces server-timestamp sentinels, at any depth, with a commit time.
+ * @param {unknown} value Written value.
+ * @return {unknown} Value as Firestore stores it.
+ */
+function resolveServerTimestamps(value: unknown): unknown {
+  if (value instanceof FieldValue) {
+    return value.isEqual(SERVER_TIMESTAMP) ? Timestamp.now() : value;
+  }
+  if (Array.isArray(value)) return value.map(resolveServerTimestamps);
+  if (value && typeof value === "object" &&
+      Object.getPrototypeOf(value) === Object.prototype) {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) =>
+      [key, resolveServerTimestamps(item)]));
+  }
+  return value;
 }

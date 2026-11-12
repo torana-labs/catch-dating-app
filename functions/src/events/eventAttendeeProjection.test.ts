@@ -64,7 +64,10 @@ test("booking facts carry payment, cohort, approval and offer state", () => {
   assert.deepEqual(catchBookingFacts(participation({paymentId: "pay_1",
     genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
     hostApprovalStatus: "approved", waitlistOfferId: "offer-1",
-    inviteSource: "Instagram"}), true, now), {paymentId: "pay_1",
+    inviteSource: "Instagram"}), true, now), {status: "signedUp",
+    createdAt: earlier, signedUpAt: earlier, waitlistedAt: null,
+    attendedAt: null, cancelledAt: null, inviteLinkId: null,
+    inviteCapturedAt: null, paymentId: "pay_1",
     genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
     hostApprovalStatus: "approved", hostApprovalDecidedAt: null,
     hostApprovalDecidedBy: null, waitlistOfferStatus: null,
@@ -77,6 +80,8 @@ test("a deleted or missing booking records its deletion time", () => {
   assert.equal(catchBookingFacts(participation({status: "deleted",
     deletedAt: earlier}), true, now).deletedAt, earlier);
   assert.equal(catchBookingFacts(participation(), false, now).deletedAt, now);
+  assert.equal(catchBookingFacts(participation(), false, now).status,
+    "deleted");
 });
 
 test("a Catch booking never adds private contact data to a Host row", () => {
