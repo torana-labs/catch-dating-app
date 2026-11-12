@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/event_host_photos.schema.json",
+  "title": "EventHostPhotosStoragePath",
+  "description": "Re-encoded host photos at events/{eventId}/hostPhotos/{photoId}/{display.jpg|thumbnail.jpg}, written by addEventHostPhoto without EXIF or location metadata. Checked-in guests and the host team read them only through short-lived signed URLs from listEventHostPhotos.",
+  "type": "object",
+  "x-storage-rules-match": "match /events/{eventId}/hostPhotos/{photoId}/{fileName}",
+  "x-storage-read": "server-signed access only; direct client reads denied",
+  "x-storage-write": "server only; direct client writes denied",
+  "x-storage-content-type-pattern": "image/jpeg",
+  "x-storage-file-name-pattern": "(display|thumbnail)\\.jpg",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "eventHostPhotos",
+  "x-storage-known-consumers": [
+    "functions/src/events/eventHostPhotos.ts"
+  ],
+  "properties": {
+    "eventId": {"type": "string"},
+    "photoId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{16,64}$"},
+    "fileName": {"type": "string", "enum": ["display.jpg", "thumbnail.jpg"]}
+  }
+}

@@ -378,7 +378,7 @@ final class HostPeopleControllerProvider
 }
 
 String _$hostPeopleControllerHash() =>
-    r'eacaf2e3e6a14325eda01b16341b3d71d025e1bc';
+    r'3c951f4b0184c7496a20e2c39037ff0025980b23';
 
 /// The People list, composed from the CRM summary (everyone), the segment
 /// counts, the saved group directory and the contact directory.

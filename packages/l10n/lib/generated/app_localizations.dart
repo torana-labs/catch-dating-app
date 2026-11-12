@@ -1607,6 +1607,114 @@ abstract class AppLocalizations {
   /// **'No reviews yet.'**
   String get hostEventReportReviewsEmpty;
 
+  /// Event report section title over the photos the host team shares with guests who checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos for your guests'**
+  String get hostEventPhotosTitle;
+
+  /// Event report photos action: pick photos to share with guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos'**
+  String get hostEventPhotosAdd;
+
+  /// Event report photos section, before the host has added any.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a few moments from the night. Only guests who checked in see them.'**
+  String get hostEventPhotosEmpty;
+
+  /// Event report photos section note under the shared photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Only guests who checked in see these. Location data is removed from every photo.'**
+  String get hostEventPhotosNote;
+
+  /// Event report photos section: photos shared out of the most an event can share.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {max}'**
+  String hostEventPhotosCount({required int count, required int max});
+
+  /// Event report photos section when the event has reached its photo limit.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve shared the most photos an event can have.'**
+  String get hostEventPhotosFull;
+
+  /// Screen-reader label for a shared photo thumbnail the host can tap to remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {index} of {count}. Double-tap to remove.'**
+  String hostEventPhotosPhotoLabel({required int index, required int count});
+
+  /// Event report photos: upload progress for one photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading {percent}%'**
+  String hostEventPhotosUploading({required int percent});
+
+  /// Screen-reader label for the upload progress meter of one photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload progress'**
+  String get hostEventPhotosUploadProgress;
+
+  /// Event report photos: a photo is being prepared before upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing'**
+  String get hostEventPhotosPreparing;
+
+  /// Event report photos: the uploaded photo is being processed before guests see it.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing location data'**
+  String get hostEventPhotosSharing;
+
+  /// Event report photos: a photo failed to upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn’t upload'**
+  String get hostEventPhotosFailed;
+
+  /// Event report photos: retry a failed upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostEventPhotosRetry;
+
+  /// Event report photos: dismiss a failed upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get hostEventPhotosDismiss;
+
+  /// Confirm dialog title before removing a shared photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this photo?'**
+  String get hostEventPhotosRemoveTitle;
+
+  /// Confirm dialog body before removing a shared photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests won’t see it any more.'**
+  String get hostEventPhotosRemoveBody;
+
+  /// Confirm dialog action: remove the shared photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostEventPhotosRemoveConfirm;
+
+  /// Confirm dialog action: keep the shared photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get hostEventPhotosRemoveKeep;
+
   /// Event report review row title for an anonymous review.
   ///
   /// In en, this message translates to:

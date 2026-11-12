@@ -1,5 +1,5 @@
 import type {HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {CatchBadge, EmptyStateControl, classNames} from "@catch/web-ui";
+import {CatchAccordion, CatchBadge, CatchStack, CatchText, EmptyStateControl, classNames} from "@catch/web-ui";
 import type {AppDownloadCtaItem, ProcessStatusAction} from "./actions";
 import {ButtonLink} from "./actionControls";
 import {UiLabel} from "./layout";
@@ -14,7 +14,12 @@ export type EmptyStateVariant =
 export interface MarketingConsentBannerShellProps
   extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   actions: ReactNode;
+  /** The full statement, behind the Details disclosure. */
   body: ReactNode;
+  /** The disclosure's label, such as "Details". */
+  detailsLabel: ReactNode;
+  /** The one line shown before any choice is made. */
+  summary: ReactNode;
 }
 
 export interface ProcessStatusItem {
@@ -91,16 +96,25 @@ export function ProcessStatusPanel({
   );
 }
 
+/**
+ * The consent banner: one summary line, the full statement under a native
+ * Details disclosure so every statement stays reachable without a script,
+ * and the choices. A card at the corner on wide pages; a sheet docked to the
+ * bottom edge on phones, with the page padded so nothing stays covered.
+ */
 export function MarketingConsentBannerShell({
   actions,
   body,
   className,
+  detailsLabel,
+  summary,
   ...props
 }: MarketingConsentBannerShellProps) {
   return (
     <aside {...props} className={classNames("consent-banner", className)}>
-      <p>{body}</p>
-      <div>{actions}</div>
+      <CatchText variant="body-small">{summary}</CatchText>
+      <CatchAccordion items={[{title: detailsLabel, body: <CatchText tone="secondary" variant="body-small">{body}</CatchText>}]} size="md" />
+      <CatchStack direction="row" gap={8} wrap>{actions}</CatchStack>
     </aside>
   );
 }

@@ -117,10 +117,7 @@
   },
   "src/styles/site-footer.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 5
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 2
+      "count": 1
     }
   },
   "src/styles/site-shell.css": {

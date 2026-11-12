@@ -500,12 +500,32 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     ValueChanged<ImageUploadProgress>? onProgress,
     ImageUploadCancellationToken? cancellationToken,
     bool requireJpeg = false,
+    bool resolveDownloadUrl = true,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
     lastUploadedImage = image;
-    return UploadedImage(url: uploadResult, storagePath: '$storagePath.jpg');
+    return UploadedImage(
+      url: resolveDownloadUrl ? uploadResult : '',
+      storagePath: '$storagePath.jpg',
+    );
+  }
+
+  @override
+  Future<String> stageEventHostPhoto({
+    required String eventId,
+    required String photoId,
+    required String uploaderUid,
+    required XFile image,
+    ValueChanged<ImageUploadProgress>? onProgress,
+    ImageUploadCancellationToken? cancellationToken,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadedImage = image;
+    return 'events/$eventId/hostPhotoUploads/$photoId/original.jpg';
   }
 
   @override

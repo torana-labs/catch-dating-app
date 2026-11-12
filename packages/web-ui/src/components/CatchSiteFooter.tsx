@@ -1,3 +1,4 @@
+import type {ReactNode} from "react";
 import {CatchBand} from "./CatchBand";
 import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchSiteFooter.module.css";
@@ -12,6 +13,11 @@ export interface CatchSiteFooterLink {
 export interface CatchSiteFooterGroup {
   title: string;
   links: readonly CatchSiteFooterLink[];
+  /**
+   * A control after the links, drawn in the links' type and colour, such as
+   * the site's "Privacy choices" at the end of Help and legal.
+   */
+  trailing?: ReactNode;
 }
 
 export interface CatchSiteFooterProps {
@@ -43,6 +49,11 @@ export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, taglin
                   </a>
                 </li>
               ))}
+              {group.trailing ? (
+                <li className={styles.link}>
+                  <CatchLegacyText as="span" color="inherit" variant="bodyM">{group.trailing}</CatchLegacyText>
+                </li>
+              ) : null}
             </ul>
           </div>
         ))}

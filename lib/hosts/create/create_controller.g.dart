@@ -12,6 +12,7 @@ part of 'create_controller.dart';
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 
 @ProviderFor(CreateController)
 final createControllerProvider = CreateControllerFamily._();
@@ -20,12 +21,14 @@ final createControllerProvider = CreateControllerFamily._();
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 final class CreateControllerProvider
     extends $NotifierProvider<CreateController, CreateFlowState> {
   /// The create flow: the draft as the form, the create command once the
   /// basics and the date are in, and the details, preferences and publication
   /// commands after it. The event's setup view reaches it through the three
   /// setup controllers, which follow their listeners; nothing here polls.
+  // provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
   CreateControllerProvider._({
     required CreateControllerFamily super.from,
     required CreateFlowArgs super.argument,
@@ -70,12 +73,13 @@ final class CreateControllerProvider
   }
 }
 
-String _$createControllerHash() => r'ad369d4cafc03589feb314fd0c5e3f66db0c2e1e';
+String _$createControllerHash() => r'5931d78e59554438424dbffe84dceff48c5709b5';
 
 /// The create flow: the draft as the form, the create command once the
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 
 final class CreateControllerFamily extends $Family
     with
@@ -99,6 +103,7 @@ final class CreateControllerFamily extends $Family
   /// basics and the date are in, and the details, preferences and publication
   /// commands after it. The event's setup view reaches it through the three
   /// setup controllers, which follow their listeners; nothing here polls.
+  // provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 
   CreateControllerProvider call(CreateFlowArgs args) =>
       CreateControllerProvider._(argument: args, from: this);
@@ -111,6 +116,7 @@ final class CreateControllerFamily extends $Family
 /// basics and the date are in, and the details, preferences and publication
 /// commands after it. The event's setup view reaches it through the three
 /// setup controllers, which follow their listeners; nothing here polls.
+// provider-graph: high-fan-out:createControllerProvider accepted -- The nine dependencies form one create flow: the local draft and the organizer's saved drafts, the setup defaults and their view, the details, preferences and publication step controllers it drives, Firebase Functions for the series callable and the error logger.
 
 abstract class _$CreateController extends $Notifier<CreateFlowState> {
   late final _$args = ref.$arg as CreateFlowArgs;

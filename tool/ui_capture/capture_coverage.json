@@ -1327,6 +1327,7 @@
       "priority": "P1",
       "captureIds": [
         "host_event_report_phone",
+        "host_event_report_photos_phone",
         "host_live_now_phone",
         "host_live_now_tablet",
         "host_live_needs_phone",

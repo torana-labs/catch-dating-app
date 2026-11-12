@@ -84,7 +84,7 @@ final class HostEventPublishControllerProvider
 }
 
 String _$hostEventPublishControllerHash() =>
-    r'f6e129ecb1cf6e6a9cb150b7b78032286c391407';
+    r'ac811ed8ecb42227c0796089f2da2fcb88d12297';
 
 /// The publication screen, read through the event's setup view listener:
 /// its name, whether it is published and listed, whether it can be, its
@@ -155,7 +155,7 @@ final class HostEventPublishCommandsProvider
 }
 
 String _$hostEventPublishCommandsHash() =>
-    r'a08590e0c802d32dc027301bac07fbe1c613b7ea';
+    r'4bff5c5eab27eb751edd6b39a76fd578ac881711';
 
 /// The commands the publication screen commits beyond publishing: who can
 /// find the event, its guest settings, and who can book. None invalidates a
