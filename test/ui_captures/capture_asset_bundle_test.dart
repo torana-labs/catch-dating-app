@@ -16,6 +16,10 @@ void main() {
   for (final key in [
     'assets/fixtures/profile_portrait.jpg',
     'assets/fixtures/club_hero_portrait.jpg',
+    'assets/fixtures/event_social_run.jpg',
+    'assets/fixtures/event_rooftop_social.jpg',
+    'assets/fixtures/event_dinner_table.jpg',
+    'assets/fixtures/event_pickleball.jpg',
   ]) {
     testWidgets('capture fixture decodes actual pixels: $key', (tester) async {
       await tester.runAsync(() async {
