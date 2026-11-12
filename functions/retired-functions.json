@@ -19,6 +19,7 @@
   "listEventAssistanceDeliveries",
   "listEventAssistanceDepartureRosters",
   "listOrganizerAttentionItems",
+  "onEventParticipationRosterProjected",
   "revokeParticipantOrganizerDataGrant",
   "submitParticipantOrganizerApplication"
 ]

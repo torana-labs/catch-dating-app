@@ -1,6 +1,9 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {loadVerifiedRosterPhone, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from
+  "../events/catchBookingRoster";
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
@@ -429,12 +432,15 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       );
     }
 
+    const rosterSlot = participation ? await readCatchBookingRoster({db, tx,
+      eventId: data.eventId, uid: observerUid,
+      verifiedPhone: () => loadVerifiedRosterPhone(observerUid)}) : null;
     const now = deps.serverTimestamp();
     tx.update(eventRef, {
       checkedInCount: admin.firestore.FieldValue.increment(1),
     });
     if (participation) {
-      tx.set(participationRef, eventParticipationPatch({
+      const attendance = eventParticipationPatch({
         exists: participationSnap.exists,
         eventId: data.eventId,
         organizerId: event.organizerId,
@@ -443,7 +449,11 @@ export async function completeEventSuccessFirstHelloMissionHandler(
         genderAtSignup: participation.genderAtSignup ?? undefined,
         cohortAtSignup: participation.cohortAtSignup ?? undefined,
         paymentId: participation.paymentId ?? undefined,
-      }), {merge: true});
+      });
+      tx.set(participationRef, attendance, {merge: true});
+      writeCatchBookingRoster({db, tx, slot: rosterSlot!,
+        booking: participationAfterPatch(participationSnap.data(), attendance),
+        now: admin.firestore.Timestamp.now()});
     } else {
       tx.update(runtimeAttendeeRef!, {
         status: "checkedIn",
