@@ -256,7 +256,7 @@ void main() {
       'PublicProfileDocument',
       'HostProfileDocument',
       'OrganizerDocument',
-      'OrganizerMembershipDocument',
+      'OrganizerFollowDocument',
       'OrganizerClaimRequestDocument',
       'EventDocument',
       'ExternalEventDocument',
@@ -323,7 +323,7 @@ void main() {
       'firestore/public_profiles.schema.json',
       'firestore/host_profiles.schema.json',
       'firestore/organizers.schema.json',
-      'firestore/organizer_memberships.schema.json',
+      'firestore/organizer_follows.schema.json',
       'firestore/organizer_claim_requests.schema.json',
       'firestore/events.schema.json',
       'firestore/external_events.schema.json',
@@ -402,8 +402,8 @@ void main() {
       ),
       _SchemaFixtureCase.valid('OrganizerDocument', 'valid/organizer_doc.json'),
       _SchemaFixtureCase.valid(
-        'OrganizerMembershipDocument',
-        'valid/organizer_membership_doc.json',
+        'OrganizerFollowDocument',
+        'valid/organizer_follow_doc.json',
       ),
       _SchemaFixtureCase.valid('EventDocument', 'valid/event_doc.json'),
       _SchemaFixtureCase.valid(

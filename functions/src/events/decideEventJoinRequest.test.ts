@@ -10,6 +10,10 @@ type FakeData = Record<string, unknown>;
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
 
+  get id(): string {
+    return this.path.split("/").at(-1)!;
+  }
+
   collection(collectionPath: string) {
     return new FakeCollectionRef(
       this.firestore,
@@ -59,6 +63,11 @@ class FakeCollectionRef {
       this.path,
       [...this.filters, {field, operator, value}]
     );
+  }
+
+  limit(count: number) {
+    void count;
+    return this;
   }
 
   async get() {
@@ -174,6 +183,9 @@ test(
         ?.hostApprovalStatus,
       "approved"
     );
+    assert.equal(rosterRow(h, "runner-2")?.booking?.hostApprovalStatus,
+      "approved");
+    assert.equal(rosterRow(h, "runner-2")?.status, "waitlisted");
     assert.equal(
       h.firestore.get(
         "notifications/runner-2/items/" +
@@ -236,7 +248,19 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
       ?.hostApprovalStatus,
     "declined"
   );
+  assert.equal(rosterRow(h, "runner-2")?.status, "cancelled");
+  assert.equal(rosterRow(h, "runner-2")?.booking?.hostApprovalStatus,
+    "declined");
 });
+
+/** The account's roster row, found through its index pointer. */
+function rosterRow(h: {firestore: {get: (path: string) => unknown}},
+  uid: string) {
+  const pointer = h.firestore.get(`eventAttendeeIndex/event-1_${uid}`) as
+    {attendeeId?: string} | undefined;
+  return h.firestore.get(`eventAttendees/${pointer?.attendeeId}`) as
+    {status?: string; booking?: {hostApprovalStatus?: unknown}} | undefined;
+}
 
 test("decideEventJoinRequestHandler rejects non-hosts", async () => {
   const h = harness({

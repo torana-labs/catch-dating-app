@@ -306,3 +306,38 @@ test("either capture producer is the evidence; the plan runs one and skips the o
   await assert.rejects(() => waitMainMarketingValidation(fixture({results: [jobs[0], job(24, plan.name, "failure"),
     job(25, render, "skipped"), job(26, reuse, "skipped")]})), /did not succeed/);
 });
+
+// Sprint floor (owner decision, 11 Nov 2026): a full run whose Required CI
+// succeeded is evidence even though reporting-only lanes failed it.
+const floorRun = {...fullRun, conclusion: "failure"};
+const floorJobs = [...fullJobs, fullJob(52, "Required CI"), fullJob(53, "tools / Tool checks (marketing-design)", "failure"),
+  fullJob(54, "app-builds / iOS host simulator build", "failure")];
+
+test("a full run failed only by reporting lanes, with Required CI green, is the evidence", async () => {
+  const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [floorRun], fullResults: floorJobs}));
+  assert.deepEqual([result.validated, result.sourceCiRunId], [true, fullRun.id]);
+  assert.deepEqual(result.jobIds, [50, 51]);
+  assert.equal(result.captureBinding.artifactId, "42");
+});
+
+test("a full run whose Required CI failed, or that failed a gating lane, is no evidence", async () => {
+  const required = floorJobs.map((entry) => entry.name === "Required CI" ? {...entry, conclusion: "failure"} : entry);
+  const gating = [...floorJobs, fullJob(55, "flutter / Unit & widget tests shard 1/4", "failure")];
+  for (const results of [required, gating, floorJobs.filter((entry) => entry.name !== "Required CI")]) {
+    const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [floorRun], fullResults: results}));
+    assert.deepEqual([result.validated, result.sourceCiRunId], [false, run.id]);
+  }
+});
+
+test("Required CI success never stands in for missing Marketing validation or captures", async () => {
+  const noMarketing = floorJobs.map((entry) => entry.id === 50 ? fullJob(50, "marketing", "skipped") : entry);
+  const noCapture = floorJobs.filter((entry) => entry.id !== 51);
+  for (const results of [noMarketing, noCapture]) {
+    const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [floorRun], fullResults: results}));
+    assert.equal(result.validated, false);
+    assert.notEqual(result.sourceCiRunId === fullRun.id && result.validated, true);
+  }
+  const noArtifact = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [floorRun],
+    fullResults: floorJobs, fullArtifacts: []})).catch((error) => error);
+  assert.ok(noArtifact instanceof Error, "a run without its exact capture artifact cannot authorize a release");
+});

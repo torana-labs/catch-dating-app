@@ -63,6 +63,20 @@ test("a run cancelled by a newer merge keeps captures whose exact producing job 
     {name: "capture-freshness / Render and validate 12 canonical iPhone captures"})}), /cancelled before its capture job succeeded/);
 });
 
+test("a run failed only by reporting lanes keeps captures its producer made (sprint floor, owner 11 Nov 2026)", () => {
+  const values = identities(); values.run.conclusion = "failure"; values.run.status = "completed";
+  const job = (name, conclusion = "success") => ({name, conclusion, status: "completed", run_id: 51, run_attempt: 2});
+  const runJobs = [job("Required CI"), job("tools / Tool checks (marketing-design)", "failure"), producer(values)];
+  assert.doesNotThrow(() => verifyArtifactMetadata({...values, producerJob: producer(values), runJobs}));
+  // Without the run's jobs, with Required CI red, with a gating failure, or without the producer: refused.
+  assert.throws(() => verifyArtifactMetadata({...values, producerJob: producer(values)}), /Capture run failed/);
+  assert.throws(() => verifyArtifactMetadata({...values, producerJob: producer(values),
+    runJobs: [job("Required CI", "failure"), producer(values)]}), /Capture run failed/);
+  assert.throws(() => verifyArtifactMetadata({...values, producerJob: producer(values),
+    runJobs: [...runJobs, job("flutter / Flutter analysis and gates", "failure")]}), /Capture run failed/);
+  assert.throws(() => verifyArtifactMetadata({...values, runJobs}), /successful capture job is required/);
+});
+
 test("artifact download reads the capture job only when the producing run was cancelled", async () => {
   const values = identities();
   for (const jobs of [[producer(values)], [producer(values, {conclusion: "cancelled"})]]) {

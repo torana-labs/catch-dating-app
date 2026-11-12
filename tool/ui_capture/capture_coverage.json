@@ -693,9 +693,15 @@
     },
     {
       "routeId": "hostEventsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The Host Events branch's full-shell list and past captures retired with the legacy events root (#1599); the system Events destination needs its own captures."
+      "captureIds": [
+        "host_home_events_list",
+        "host_events_medium",
+        "host_events_tablet",
+        "host_events_desktop"
+      ],
+      "reason": "The first-class Events branch has deterministic full-shell captures of the Events tab, with tonight, the coming nights, a draft, a past event and a programme, at phone, medium, tablet and desktop widths; host_home_events_list is the canonical capture compared against the pinned Events source reference."
     },
     {
       "routeId": "hostAudienceScreen",

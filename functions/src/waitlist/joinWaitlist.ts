@@ -814,12 +814,6 @@ export function createJoinWaitlistHandler(options: {
         const priorIntent = intentRef ? await transaction.get(intentRef) : null;
         const priorLead = existing.data()?.hostLead as
           {eventId: string; isNew: boolean} | undefined;
-        // Legacy Host enquiries predate receipts. Do not turn them into new
-        // acquisitions, even if a later member submission changed their role.
-        const legacyHost = intent && existing.exists && !priorLead ?
-          await transaction.get(admin.firestore()
-            .collection("salesInboundIntents")
-            .where("waitlistId", "==", waitlistRef.id).limit(1)) : null;
         const permission = consentId ? await transaction.get(admin.firestore()
           .collection(HOST_CONSENT_COLLECTION).doc(consentId)) : null;
         if (intent && intentRef) {
@@ -831,7 +825,7 @@ export function createJoinWaitlistHandler(options: {
           }
           hostLead = {
             eventId: priorLead?.eventId ?? proposedHostEventId,
-            isNew: !priorLead && !legacyHost?.size &&
+            isNew: !priorLead &&
               !["host", "both"].includes(existing.data()?.role),
           };
           const delivery = measurement && consentId ?

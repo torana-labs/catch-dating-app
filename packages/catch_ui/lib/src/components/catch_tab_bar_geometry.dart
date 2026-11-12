@@ -7,12 +7,18 @@ class _CatchTabBarGeometry {
     required this.width,
     required this.textDirection,
     required this.itemRects,
+    required this.itemWidths,
     required this.selectedIndicatorWidth,
   });
 
   final double width;
   final TextDirection textDirection;
   final List<Rect> itemRects;
+
+  /// Each slot's exact width. A [Rect] keeps its edges and recomputes its
+  /// width from them, which can come back an ulp narrower than the slot; a
+  /// label given that width would fade its last letter.
+  final List<double> itemWidths;
   final double selectedIndicatorWidth;
 
   static _CatchTabBarGeometry calculate({
@@ -28,6 +34,7 @@ class _CatchTabBarGeometry {
         width: 0,
         textDirection: textDirection,
         itemRects: const <Rect>[],
+        itemWidths: const <double>[],
         selectedIndicatorWidth: 0,
       );
     }
@@ -48,6 +55,7 @@ class _CatchTabBarGeometry {
               CatchLayout.tabBarExtent,
             ),
         ],
+        itemWidths: List<double>.filled(count, itemWidth),
         selectedIndicatorWidth: math.min(
           itemWidth,
           CatchLayout.tabBarCompactItemExtent,
@@ -65,21 +73,27 @@ class _CatchTabBarGeometry {
       textDirection: textDirection,
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
+    // The label is measured to a whole logical pixel. The slot widths are sums
+    // and differences of fractional widths, so an exact measurement can come
+    // back a hair narrower than the text, and the label's fade overflow would
+    // then fade its last letter ("Events" drew as "Event…" at 390 wide).
     final selectedWidth = CatchLayout.tabBarSelectedExtentFor(
       availableWidth: width,
       itemCount: count,
-      labelWidth: labelPainter.width,
+      labelWidth: labelPainter.width.ceilToDouble(),
     );
     final inactiveWidth = count == 1
         ? 0.0
         : (width - selectedWidth) / (count - 1);
     var start = 0.0;
     final rects = <Rect>[];
+    final widths = <double>[];
     for (var index = 0; index < count; index++) {
       final itemWidth = index == resolvedActiveIndex
           ? selectedWidth
           : inactiveWidth;
       rects.add(Rect.fromLTWH(start, 0, itemWidth, CatchLayout.tabBarExtent));
+      widths.add(itemWidth);
       start += itemWidth;
     }
 
@@ -87,6 +101,7 @@ class _CatchTabBarGeometry {
       width: width,
       textDirection: textDirection,
       itemRects: rects,
+      itemWidths: widths,
       selectedIndicatorWidth: selectedWidth,
     );
   }

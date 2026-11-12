@@ -344,7 +344,8 @@ CandidateDisposition _dispositionFor({
       rule.id == 'direct_firestore_write') {
     return const CandidateDisposition(
       status: CandidateStatus.verified,
-      reason: 'fcmToken write sits inside a normalizeBackendError try/catch',
+      reason:
+          'installation write sits inside a normalizeBackendError try/catch',
     );
   }
 

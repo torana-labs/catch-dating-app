@@ -42,6 +42,7 @@ function harness() {
     submittedAt: stamp(),
     withdrawnAt: null,
     answers: {secret: "private"},
+    answerSnapshots: [],
   } as unknown as OrganizerFormResponseDocument;
   const rule: OrganizerFormAutomationRuleDocument = {
     organizerId: "org",
@@ -525,15 +526,6 @@ test("acceptance requires current reviewed source access", async () => {
     organizerId: "org",
     displayName: "Ada",
   };
-  h.store.docs["organizerApplicationResponses/response"] = {
-    organizerId: "org",
-    applicationId,
-    formId: "form",
-    formVersionId: "version",
-    linkedUid: null,
-    source,
-    answers: [],
-  };
   Object.assign(h.store.docs["organizerFormResponses/response"], {
     versionId: "version",
     respondentUid: null,
@@ -541,6 +533,7 @@ test("acceptance requires current reviewed source access", async () => {
   h.store.docs["organizerFormVersions/version"] = {
     organizerId: "org",
     formId: "form",
+    definition: {sections: []},
   };
   await dispatchOrganizerApplicationAutomations(
     applicationId,

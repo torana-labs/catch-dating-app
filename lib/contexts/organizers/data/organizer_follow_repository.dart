@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/account.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -9,10 +9,10 @@ import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'organizer_membership_repository.g.dart';
+part 'organizer_follow_repository.g.dart';
 
-class OrganizerMembershipRepository {
-  const OrganizerMembershipRepository(this._db);
+class OrganizerFollowRepository {
+  const OrganizerFollowRepository(this._db);
 
   static const _collectionPath = 'organizerFollows';
 
@@ -21,15 +21,15 @@ class OrganizerMembershipRepository {
   CollectionReference<Map<String, dynamic>> get _membershipsRef =>
       _db.collection(_collectionPath);
 
-  Stream<List<OrganizerMembership>> watchActiveMembershipsForUser({
+  Stream<List<OrganizerFollow>> watchActiveFollowsForUser({
     required String uid,
   }) => withBackendErrorStream(
     () => _membershipsRef
         .where('uid', isEqualTo: uid)
-        .where('status', isEqualTo: OrganizerMembershipStatus.active.name)
+        .where('status', isEqualTo: OrganizerFollowStatus.active.name)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
-        .map((snap) => snap.docs.map(_followAsMembership).toList()),
+        .map((snap) => snap.docs.map(_follow).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch user organizer follows',
@@ -37,15 +37,15 @@ class OrganizerMembershipRepository {
     ),
   );
 
-  Stream<List<OrganizerMembership>> watchActiveMembershipsForOrganizer({
+  Stream<List<OrganizerFollow>> watchActiveFollowsForOrganizer({
     required String organizerId,
   }) => withBackendErrorStream(
     () => _membershipsRef
         .where('organizerId', isEqualTo: organizerId)
-        .where('status', isEqualTo: OrganizerMembershipStatus.active.name)
+        .where('status', isEqualTo: OrganizerFollowStatus.active.name)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
-        .map((snap) => snap.docs.map(_followAsMembership).toList()),
+        .map((snap) => snap.docs.map(_follow).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizer follows',
@@ -53,7 +53,7 @@ class OrganizerMembershipRepository {
     ),
   );
 
-  Stream<OrganizerMembership?> watchMembership({
+  Stream<OrganizerFollow?> watchFollow({
     required String organizerId,
     required String uid,
   }) => withBackendErrorStream(
@@ -62,10 +62,7 @@ class OrganizerMembershipRepository {
         .where('uid', isEqualTo: uid)
         .limit(ReadLimitPolicy.lookup)
         .snapshots()
-        .map(
-          (snap) =>
-              snap.docs.isEmpty ? null : _followAsMembership(snap.docs.first),
-        ),
+        .map((snap) => snap.docs.isEmpty ? null : _follow(snap.docs.first)),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizer follow',
@@ -73,60 +70,41 @@ class OrganizerMembershipRepository {
     ),
   );
 
-  static OrganizerMembership _followAsMembership(
+  static OrganizerFollow _follow(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
-    final data = doc.data();
-    final followedAt = data['followedAt'];
-    final unfollowedAt = data['unfollowedAt'];
-    return OrganizerMembership(
-      id: doc.id,
-      organizerId: data['organizerId'] as String,
-      uid: data['uid'] as String,
-      role: OrganizerMembershipRole.member,
-      status: data['status'] == 'active'
-          ? OrganizerMembershipStatus.active
-          : OrganizerMembershipStatus.left,
-      pushNotificationsEnabled:
-          data['pushNotificationsEnabled'] as bool? ?? false,
-      joinedAt: followedAt is Timestamp
-          ? followedAt.toDate()
-          : DateTime.fromMillisecondsSinceEpoch(0),
-      leftAt: unfollowedAt is Timestamp ? unfollowedAt.toDate() : null,
-    );
-  }
+  ) => OrganizerFollow.fromJson({...doc.data(), 'id': doc.id});
 }
 
-// keepalive: membership repository is a shared Firestore facade for club
-// access checks across host and public routes.
+// keepalive: the follow repository is a shared Firestore facade for organiser
+// follow checks across host and public routes.
 @Riverpod(keepAlive: true)
-OrganizerMembershipRepository organizerMembershipRepository(Ref ref) =>
-    OrganizerMembershipRepository(ref.watch(firebaseFirestoreProvider));
+OrganizerFollowRepository organizerFollowRepository(Ref ref) =>
+    OrganizerFollowRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
-Stream<List<OrganizerMembership>> watchActiveOrganizerMembershipsForUser(
+Stream<List<OrganizerFollow>> watchActiveOrganizerFollowsForUser(
   Ref ref,
   String uid,
 ) => ref
-    .watch(organizerMembershipRepositoryProvider)
-    .watchActiveMembershipsForUser(uid: uid);
+    .watch(organizerFollowRepositoryProvider)
+    .watchActiveFollowsForUser(uid: uid);
 
 @riverpod
-Stream<List<OrganizerMembership>> watchActiveOrganizerMembershipsForOrganizer(
+Stream<List<OrganizerFollow>> watchActiveOrganizerFollowsForOrganizer(
   Ref ref,
   String organizerId,
 ) => ref
-    .watch(organizerMembershipRepositoryProvider)
-    .watchActiveMembershipsForOrganizer(organizerId: organizerId);
+    .watch(organizerFollowRepositoryProvider)
+    .watchActiveFollowsForOrganizer(organizerId: organizerId);
 
 @riverpod
-Stream<OrganizerMembership?> watchOrganizerMembership(
+Stream<OrganizerFollow?> watchOrganizerFollow(
   Ref ref,
   String organizerId,
   String uid,
 ) => ref
-    .watch(organizerMembershipRepositoryProvider)
-    .watchMembership(organizerId: organizerId, uid: uid);
+    .watch(organizerFollowRepositoryProvider)
+    .watchFollow(organizerId: organizerId, uid: uid);
 
 @riverpod
 AsyncValue<Set<String>> currentUserFollowedOrganizerIds(Ref ref) {
@@ -143,7 +121,7 @@ AsyncValue<Set<String>> currentUserFollowedOrganizerIds(Ref ref) {
   if (uid == null) return const AsyncData(<String>{});
 
   final membershipsAsync = ref.watch(
-    watchActiveOrganizerMembershipsForUserProvider(uid),
+    watchActiveOrganizerFollowsForUserProvider(uid),
   );
   if (membershipsAsync.isLoading) return const AsyncLoading();
   if (membershipsAsync.hasError) {
@@ -155,7 +133,7 @@ AsyncValue<Set<String>> currentUserFollowedOrganizerIds(Ref ref) {
 
   return AsyncData({
     for (final membership
-        in membershipsAsync.asData?.value ?? const <OrganizerMembership>[])
+        in membershipsAsync.asData?.value ?? const <OrganizerFollow>[])
       membership.organizerId,
   });
 }

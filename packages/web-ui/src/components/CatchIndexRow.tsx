@@ -1,7 +1,7 @@
 "use client";
 
 import type {ReactNode} from "react";
-import type {CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchIconName} from "../icons/catchIconRoles";
 import {CatchButton} from "./CatchButton";
 import type {CatchFormat} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";

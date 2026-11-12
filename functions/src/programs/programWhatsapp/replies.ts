@@ -56,8 +56,8 @@ import {
 // mirrors sendOrganizerWhatsappReply: a durable reservation precedes the
 // Meta call, an uncertain outcome fails closed (state unknown), and a
 // replay of the same key returns the stored message. Each send also writes
-// a programWhatsappDispatches record (kind service) so delivery receipts
-// route back to the message.
+// a whatsappDispatches record (source program, kind service) so delivery
+// receipts route back to the message.
 
 export type ReplyOperation = ProgramWhatsappReplyOperationDocument;
 
@@ -236,7 +236,7 @@ export async function sendProgramWhatsappText(deps: ProgramReplyDeps,
       throw new Error("Invalid programme WhatsApp reply operation");
     }
     const dispatch: ProgramWhatsappDispatchDocument = {
-      schemaVersion: 1, attemptId, messageId,
+      schemaVersion: 1, source: "program", attemptId, messageId,
       context: {mode: "live", programId: input.programId,
         organizerId: program.organizerId},
       senderId: thread.connectionId, bindingRevision: connection.revision,

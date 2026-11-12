@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
@@ -260,7 +260,7 @@ sealed class HostOrganizerDetailScreenState {
     required Organizer? initialOrganizer,
     required String? currentUid,
     required UserProfile? currentUserProfile,
-    required OrganizerMembership? currentMembership,
+    required OrganizerFollow? currentMembership,
     required AppRole appRole,
     bool authResolved = true,
   }) {
@@ -304,7 +304,7 @@ sealed class HostOrganizerDetailScreenState {
         isHost: isAuthenticated && initialOrganizer.isHostedBy(currentUid),
         isMember:
             isAuthenticated &&
-            currentMembership?.status == OrganizerMembershipStatus.active,
+            currentMembership?.status == OrganizerFollowStatus.active,
         isAuthenticated: isAuthenticated,
         isInitialFallback: true,
         publicPreviewMode: appRole.isHost,

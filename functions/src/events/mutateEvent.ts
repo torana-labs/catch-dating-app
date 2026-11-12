@@ -58,6 +58,7 @@ import {
   sendFcmNotification,
   setActivityNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   eventParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
@@ -203,7 +204,6 @@ type EventDiscoveryField =
 type EventDocumentBeforeDiscovery = Omit<EventDocument, EventDiscoveryField>;
 
 type NotificationUserDocument = {
-  fcmToken?: string;
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
   prefsOrganizerUpdates?: boolean;
@@ -2106,13 +2106,12 @@ async function notifyOrganizerMembersForNewEvent(params: {
         eventId: params.eventId,
         organizerId: params.organizerId,
       });
-      if (
-        membership.pushNotificationsEnabled === true &&
-        user.fcmToken &&
-        allowsPushPreference(user, "organizerUpdates")
-      ) {
+      const token = membership.pushNotificationsEnabled === true &&
+        allowsPushPreference(user, "organizerUpdates") ?
+        await readConsumerPushToken(params.db, uid) : null;
+      if (token) {
         await params.deps.sendNotification?.({
-          token: user.fcmToken,
+          token,
           title: copy.title,
           body: copy.body,
           type: "organizerUpdate",
@@ -2188,9 +2187,11 @@ async function notifyEventParticipants(params: {
         eventId: params.eventId,
         organizerId: params.event.organizerId,
       });
-      if (user.fcmToken && allowsPushPreference(user, "eventStatusUpdates")) {
+      const token = allowsPushPreference(user, "eventStatusUpdates") ?
+        await readConsumerPushToken(params.db, uid) : null;
+      if (token) {
         await params.deps.sendNotification?.({
-          token: user.fcmToken,
+          token,
           title: copy.title,
           body: copy.body,
           type: params.type,

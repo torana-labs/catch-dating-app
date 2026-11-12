@@ -4263,6 +4263,13 @@
       "owner": "shared/media",
       "source": "packages/web-ui/src/components/CatchAppCaptureImage.tsx",
       "exportName": "CatchAppCaptureImage",
+      "comparedWith": [
+        "catch.network_image",
+        "catch.text",
+        "catch.detail_media",
+        "catch.graded_image"
+      ],
+      "comparisonReason": "Shows one framed marketing capture from the capture pipeline at its exact framed pixel size, with a device-sized width, tilt and bleed. It is not a general remote image: no fallback, loading hook or decode sizing (catch.network_image), no hero assembly or readability overlay (catch.detail_media), and never graded, because captures must keep their rendered pixels (catch.graded_image). It composes catch.text for its caption rather than implementing text.",
       "css": [
         "packages/web-ui/src/components/CatchAppCaptureImage.module.css"
       ],
@@ -4489,6 +4496,10 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchScroller.tsx",
       "exportName": "CatchScroller",
+      "comparedWith": [
+        "catch.rail"
+      ],
+      "comparisonReason": "A full-bleed band row: its first item lines up with the page content edge while items scroll out to the viewport edge, it never wraps, and its items can grow to share the row (the boards' format tiles). catch.rail is a content-width row that fades the edge hiding more and wraps into a grid on desktops. The two overlap; folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up.",
       "css": [
         "packages/web-ui/src/components/CatchScroller.module.css"
       ],
@@ -5014,6 +5025,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchStoreButton.tsx",
       "exportName": "CatchStoreButton",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "Shows the official App Store or Google Play badge artwork as a link, or a pending button that records the tap. The badge must appear exactly as Apple and Google supply it (no recolour, label or redraw), so it cannot be a catch.button, which draws its own labelled control; it only shares the D20 heights.",
       "css": [
         "packages/web-ui/src/components/CatchStoreButton.module.css"
       ],
@@ -5104,6 +5119,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchDeviceFrame.tsx",
       "exportName": "CatchDeviceFrame",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "Draws a generic phone, tablet or browser-window bezel in CSS around one screen (proposal W1, L9). It lays out no panes: catch.pane_layout arranges workspace screens' list, detail and side panes, while this frame decorates a single picture.",
       "css": [
         "packages/web-ui/src/components/CatchDeviceFrame.module.css"
       ],
@@ -5136,6 +5155,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFormatMatrix.tsx",
       "exportName": "CatchFormatMatrix",
+      "comparedWith": [
+        "catch.chip"
+      ],
+      "comparisonReason": "A website comparison table of event formats against the properties Catch tracks for each, with a format picker. It renders catch.chip for that picker; it does not implement the chip contract.",
       "css": [
         "packages/web-ui/src/components/CatchFormatMatrix.module.css"
       ],
@@ -5161,6 +5184,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchNightScene.tsx",
       "exportName": "CatchNightScene",
+      "comparedWith": [
+        "catch.chip"
+      ],
+      "comparisonReason": "A pinned, scroll-driven timeline of one evening for the host landing (proposal WebNightScene). On a phone it renders catch.chip for the format picker; it does not implement the chip contract.",
       "css": [
         "packages/web-ui/src/components/CatchNightScene.module.css"
       ],
@@ -5186,6 +5213,11 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPipelineBoard.tsx",
       "exportName": "CatchPipelineBoard",
+      "comparedWith": [
+        "catch.person_avatar",
+        "catch.button"
+      ],
+      "comparisonReason": "A website board showing applicants moving from interested to expected. It renders catch.person_avatar for each person and catch.button for the board's demo actions; it implements neither contract.",
       "css": [
         "packages/web-ui/src/components/CatchPipelineBoard.module.css"
       ],
@@ -5210,6 +5242,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchLayerMap.tsx",
       "exportName": "CatchLayerMap",
+      "comparedWith": [
+        "catch.icon"
+      ],
+      "comparisonReason": "A website diagram of how Catch's layers stack for one way of hosting. It renders catch.icon for each layer's glyph; it does not implement the icon contract.",
       "css": [
         "packages/web-ui/src/components/CatchLayerMap.module.css"
       ],
@@ -5235,6 +5271,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchHeroShowcase.tsx",
       "exportName": "CatchHeroShowcase",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A website hero picture: a tilted framed capture on a coloured ground with floating stickers. It composes catch.text for the sticker labels; it does not implement text.",
       "css": [
         "packages/web-ui/src/components/CatchHeroShowcase.module.css"
       ],
@@ -5261,6 +5301,14 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
       "exportName": "CatchFormatTile",
+      "comparedWith": [
+        "catch.surface",
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
+      ],
+      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. Not a block that tells children their ground (catch.surface), not a caller-formatted metric with missing-data states (catch.analytics_metric), not an icon-only tile (catch.icon_tile) and not a checked form choice (catch.option_card). It composes catch.text for its labels.",
       "css": [
         "packages/web-ui/src/components/CatchFormatTile.module.css"
       ],

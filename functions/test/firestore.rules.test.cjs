@@ -424,8 +424,8 @@ function activityNotification(overrides = {}) {
   return {
     uid: "runner-1",
     type: "match",
-    title: "It's a catch",
-    body: "You and Runner Two matched. Say hi!",
+    title: "You picked each other",
+    body: "You and Runner Two picked each other. Say hi!",
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     readAt: null,
     matchId: "match-1",

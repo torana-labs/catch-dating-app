@@ -157,6 +157,7 @@ final class EventSuccessCompanionFixtures {
     activeStepIndex: 1,
     revealStatus: EventSuccessRevealStatus.revealed,
     activeRevealRoundIndex: 0,
+    publishedRevealRoundIndex: 0,
   );
 
   static final arrivalMission = EventSuccessArrivalMission(

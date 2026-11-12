@@ -129,15 +129,9 @@ test("native capture inputs publish exact-source media through the canonical pro
   const ci = fs.readFileSync(path.join(repoRoot, ".github/workflows/ci.yml"), "utf8");
   const capture = fs.readFileSync(path.join(repoRoot, ".github/workflows/marketing-captures.yml"), "utf8");
   const graph = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/harness/component_graph.json"), "utf8"));
-  // CI is off for the redesign sprint (owner, 8 Nov 2026): this workflow runs
-  // once a night from main, which refreshes published media for every capture
-  // input below, instead of on pushes that touch one. When CI returns, assert
-  // again that each input is a `push` path of this workflow.
-  const triggers = workflow.split(/^on:\n/mu)[1].split(/^\S/mu)[0];
-  assert.doesNotMatch(triggers, /^ {2}(push|pull_request):/mu);
-  assert.match(triggers, /^ {2}schedule:\n {4}- cron: '30 22 \* \* \*'/mu);
   for (const input of ["lib/**", "test/**", "pubspec.yaml", "pubspec.lock",
     "packages/*/pubspec.yaml", "packages/*/lib/**", "packages/*/assets/**", "tool/ui_capture/**"]) {
+    assert.ok(workflow.includes(`      - "${input}"`), `Capture input must refresh published media: ${input}`);
     const changedPath = input.replace("packages/*", "packages/catch_ui").replace("**", "example.dart");
     const plan = planAffected({changedPaths: [changedPath], graph, mode: "main"});
     assert.ok(plan.complete, `Uncovered capture input: ${changedPath}`);

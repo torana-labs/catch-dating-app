@@ -105,7 +105,7 @@ async function deliver(db: FakeFirestore) {
 
 function record(db: FakeFirestore): ProgramDeliveryMessageDocument {
   const entries = [...db.docs.entries()]
-    .filter(([path]) => path.startsWith("programDeliveryMessages/"));
+    .filter(([path]) => path.startsWith("deliveryMessages/"));
   assert.equal(entries.length, 1);
   return entries[0][1] as unknown as ProgramDeliveryMessageDocument;
 }

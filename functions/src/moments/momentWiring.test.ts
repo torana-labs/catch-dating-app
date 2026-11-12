@@ -66,7 +66,7 @@ test("loadConsentFacts maps household consent only", async () => {
   const db = new FakeFirestore({
     "programHouseholds/hh1": {messagingConsent: {granted: false}},
     "programHouseholds/hh2": {messagingConsent: {granted: true}},
-    "users/u-no": {fcmToken: "tok", prefsEventReminders: false},
+    "users/u-no": {prefsEventReminders: false},
   });
   const deps = buildMomentRunnerDeps({firestore: () => db as never});
   const pushMoment = {
@@ -80,7 +80,7 @@ test("loadConsentFacts maps household consent only", async () => {
   });
   const uid = (u: string): ResolvedRecipient => ({
     recipientKey: `uid:${u}`,
-    endpoint: {kind: "uid", uid: u, fcmToken: "tok"},
+    endpoint: {kind: "uid", uid: u},
     householdId: null,
   });
   assert.equal(

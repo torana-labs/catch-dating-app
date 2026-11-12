@@ -11,7 +11,6 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../shared/validation";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
-import {participantOrganizerGrantId} from "./participantOrganizerApplications";
 import {genericFormApplicationId, organizerApplicationAccess,
   organizerApplicationContactId} from "./organizerApplicationAccess";
 import {customerApplicationAccountUid, customerApplicationMatches} from
@@ -187,15 +186,13 @@ async function loadApplications(db: FirebaseFirestore.Firestore,
   for (const doc of snapshot.docs) {
     const app = requireDoc<OrganizerApplicationDocument>(doc,
       "OrganizerApplicationDocument");
-    add("organizerApplicationResponses", app.latestResponseId);
     const generic = app.source.kind === "native" &&
       doc.id === genericFormApplicationId(app.latestResponseId);
     if (generic) {
       add("organizerFormResponses", app.latestResponseId);
       add("organizerFormVersions", app.formVersionId);
-    } else if (app.source.kind === "native") {
-      add("participantOrganizerDataGrants",
-        participantOrganizerGrantId(doc.id));
+    } else if (app.source.kind !== "native") {
+      add("organizerApplicationResponses", app.latestResponseId);
     }
     add("organizerContactOrigins", organizerContactOriginId({organizerId,
       sourceKind: "hostForm", sourceEntityKind: generic ?

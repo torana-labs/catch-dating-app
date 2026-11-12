@@ -46,9 +46,6 @@
     "export functions/src/shared/programAuthority.ts allowedFunctionIds",
     "export functions/src/shared/programAuthority.ts allowedPickupPointIds",
     "export functions/src/shared/programAuthority.ts dutyCoversPickupPoint",
-    "export functions/src/shared/relationshipDocuments.ts activeOrganizerMembershipPatch",
-    "export functions/src/shared/relationshipDocuments.ts organizerMembershipId",
-    "export functions/src/shared/relationshipDocuments.ts leftOrganizerMembershipPatch",
     "export functions/src/shared/relationshipDocuments.ts savedEventId",
     "export functions/src/transport/flightProviderConfig.ts defaultAlertBaseUrl",
     "export functions/src/transport/programTravel.ts upsertProgramTravelPartyHandler",
@@ -94,7 +91,6 @@
     "unlisted functions/src/salesAssistant/gateway.test.ts express",
     "unlisted functions/src/salesAssistant/gateway.ts express",
     "unlisted functions/src/waitlist/joinWaitlist.ts express",
-    "unlisted tool/demo/rsvp_escape/vite.config.mjs @vitejs/plugin-react",
     "unlisted tool/demo/rsvp_escape/vite.config.mjs vite"
   ]
 }

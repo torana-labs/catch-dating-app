@@ -279,7 +279,7 @@ void main() {
   );
 
   test(
-    'unregister removes only this installation and matching legacy token',
+    'registration writes only installations; unregister removes this one',
     () async {
       sdk.token = 'this-device';
       await db.collection('users').doc('one').set({});

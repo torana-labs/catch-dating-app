@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
@@ -285,7 +285,7 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   final signedUpAsync = ref.watch(watchSignedUpEventsProvider(user.uid));
   final savedAsync = ref.watch(watchSavedEventDetailsForUserProvider(user.uid));
   final membershipsAsync = ref.watch(
-    watchActiveOrganizerMembershipsForUserProvider(user.uid),
+    watchActiveOrganizerFollowsForUserProvider(user.uid),
   );
   final signedUpState = catchAsyncStateFromAsyncValue(signedUpAsync);
   final savedState = catchAsyncStateFromAsyncValue(savedAsync);

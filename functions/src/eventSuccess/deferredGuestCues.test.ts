@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {
   deferredCuesReleasedBy,
   deferredGuestCueId,
@@ -31,8 +32,10 @@ test("releasing sends each held push once and clears it", async () => {
     [`eventSuccessDeferredCues/${deferredGuestCueId("event-2", "runner-1")}`]:
       {eventId: "event-2", organizerId: "club-1", uid: "runner-1",
         kind: "companionReady"},
-    "users/runner-1": {fcmToken: "token-1", prefsRunStatusUpdates: true},
-    "users/runner-2": {fcmToken: "token-2", prefsRunStatusUpdates: false},
+    "users/runner-1": {prefsRunStatusUpdates: true},
+    "users/runner-2": {prefsRunStatusUpdates: false},
+    ...guestInstallation("runner-1", "token-1"),
+    ...guestInstallation("runner-2", "token-2"),
   });
   const sent: FcmParams[] = [];
   const event = {organizerId: "club-1", title: "Sunday Social Run"};

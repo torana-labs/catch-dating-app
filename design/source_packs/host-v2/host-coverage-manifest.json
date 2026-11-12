@@ -45,8 +45,8 @@
       "routeId": "hostEventsScreen",
       "path": "/host/events",
       "label": "Events",
-      "widget": "HostEventsScreen",
-      "source": "lib/hosts/events/presentation/host_events_screen.dart",
+      "widget": "HostEventsTabScreen",
+      "source": "lib/hosts/events/events_screen.dart",
       "captureId": "host_home_events_list"
     },
     {

@@ -401,6 +401,7 @@ void _registerEventSuccessCompanionProfilesTests() {
       activeStepIndex: 1,
       revealStatus: EventSuccessRevealStatus.revealed,
       activeRevealRoundIndex: 0,
+      publishedRevealRoundIndex: 0,
     );
     final assignment = _rotationAssignment(
       event: event,
@@ -462,6 +463,7 @@ void _registerEventSuccessCompanionProfilesTests() {
       activeStepIndex: 1,
       revealStatus: EventSuccessRevealStatus.revealed,
       activeRevealRoundIndex: 0,
+      publishedRevealRoundIndex: 0,
     );
     final assignment = _rotationAssignment(
       event: event,

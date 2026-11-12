@@ -7,7 +7,8 @@ import {setTimeout as sleep} from "node:timers/promises";
 import {fileURLToPath} from "node:url";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
-import {currentReleaseLineage} from "./previewRelease.mjs";
+import {currentReleaseLineage, sourceCiJobs} from "./previewRelease.mjs";
+import {sourceCiPasses} from "../../../tool/ci/required_ci_floor.mjs";
 import {brand} from "../../../packages/brand/index.mjs";
 import {nxLanes} from "../../../tool/nx/select_lanes.mjs";
 
@@ -163,7 +164,10 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha =
     }
     run = github(`repos/${repository}/actions/runs/${run.id}`);
     if (run.status === "completed") {
-      assert.equal(run.conclusion, "success", `${workflow} run ${run.id} ended ${run.conclusion}`);
+      // The train's own CI validation passes as the preview's source gate
+      // does (sprint floor, owner 11 Nov 2026): tool/ci/required_ci_floor.mjs.
+      const passed = workflow === CI_WORKFLOW ? sourceCiPasses({run, jobs: sourceCiJobs(run)}) : run.conclusion === "success";
+      assert.ok(passed, `${workflow} run ${run.id} ended ${run.conclusion}`);
       return run;
     }
   }

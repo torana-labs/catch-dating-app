@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
@@ -328,8 +329,8 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
   const h = harness({
     "events/event-1": event({bookedCount: 1, waitlistedCount: 1}),
     "users/runner-1": user(),
+    ...guestInstallation("runner-2", "token-2"),
     "users/runner-2": user({
-      fcmToken: "token-2",
       gender: "woman",
       interestedInGenders: ["man"],
     }),
@@ -349,6 +350,13 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
     h.firestore.get("eventParticipations/event-1_runner-2")?.status,
     "signedUp"
   );
+  // Both rosters rows move in the cancellation transaction.
+  const rowFor = (uid: string) => h.firestore.get(`eventAttendees/${
+    h.firestore.get(`eventAttendeeIndex/event-1_${uid}`)?.attendeeId}`) as
+    {status?: string; booking?: {waitlistOfferStatus?: unknown}} | undefined;
+  assert.equal(rowFor("runner-1")?.status, "cancelled");
+  assert.equal(rowFor("runner-2")?.status, "registered");
+  assert.equal(rowFor("runner-2")?.booking?.waitlistOfferStatus, "accepted");
   assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
   assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 0);
   assert.equal(
@@ -501,6 +509,11 @@ test("Catch cancellation retains a separately valid imported guest seat",
     assert.equal(h.firestore.get(seatReservationPath(key))?.active, true);
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
       ?.status, "cancelled");
+    // The Host-owned row keeps its seat; it only gains the pointer.
+    assert.equal(h.firestore.get("eventAttendees/guest-1")?.status,
+      "registered");
+    assert.equal(h.firestore.get("eventAttendeeIndex/event-1_runner-1")
+      ?.attendeeId, "guest-1");
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
       ?.status, "waitlisted");
   });
@@ -554,7 +567,8 @@ test("retried cancellation with committed no-op sends no stale push or refund",
     const sourceEvent = event({bookedCount: 1, waitlistedCount: 1});
     const h = harness({"events/event-1": sourceEvent,
       "users/runner-1": user(),
-      "users/runner-2": user({fcmToken: "push-2", gender: "woman",
+      ...guestInstallation("runner-2", "push-2"),
+      "users/runner-2": user({gender: "woman",
         interestedInGenders: ["man"]}),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
@@ -608,8 +622,8 @@ test(
     const h = harness({
       "events/event-1": event({bookedCount: 1, waitlistedCount: 1}),
       "users/runner-1": user(),
+      ...guestInstallation("runner-2", "token-2"),
       "users/runner-2": user({
-        fcmToken: "token-2",
         gender: "woman",
         interestedInGenders: ["man"],
       }),

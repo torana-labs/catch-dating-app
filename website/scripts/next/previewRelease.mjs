@@ -5,6 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {isMainCiSource, waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
+import {sourceCiPasses} from "../../../tool/ci/required_ci_floor.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 import {brand} from "../../../packages/brand/index.mjs";
 
@@ -25,6 +26,17 @@ function github(endpoint) {
   return JSON.parse(command("gh", ["api", "-H", "Cache-Control: no-cache", endpoint]));
 }
 /**
+ * A source CI run's jobs for its own attempt, read only when the run did not
+ * succeed outright: the sprint floor then needs its Required CI job.
+ */
+export function sourceCiJobs(run, read = (endpoint) => JSON.parse(command("gh",
+  ["api", "-H", "Cache-Control: no-cache", "--paginate", "--slurp", endpoint]))) {
+  if (run?.conclusion === "success") return undefined;
+  const pages = read(`repos/${run.repository.full_name}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`);
+  assert.ok(Array.isArray(pages) && pages.every((page) => Array.isArray(page.jobs)), "Malformed source CI job pages.");
+  return pages.flatMap((page) => page.jobs);
+}
+/**
  * The commit a preview builds and releases. The release train passes a
  * validated commit of main that main may have moved past; the workflow's own
  * checkout of main then only supplies these trusted scripts.
@@ -42,10 +54,10 @@ export function assertPreviewInvocation(env) {
   sha(env.GITHUB_SHA);
 }
 /** Successful same-source main CI that must also still be the head of main. */
-export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
+export function assertSuccessfulSource({run, sourceSha, repository, mainSha, jobs}) {
   sha(sourceSha);
   assert.equal(mainSha, sourceSha, "Preview source is no longer current main");
-  assertSuccessfulSourceRun({run, sourceSha, repository});
+  assertSuccessfulSourceRun({run, sourceSha, repository, jobs});
 }
 
 /**
@@ -54,7 +66,7 @@ export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
  * main received, or a nightly or dispatched full run of main. A later merge
  * cancels the first, never the others.
  */
-export function assertSuccessfulSourceRun({run, sourceSha, repository}) {
+export function assertSuccessfulSourceRun({run, sourceSha, repository, jobs}) {
   sha(sourceSha);
   assert.equal(run.head_sha, sourceSha);
   assert.ok(isMainCiSource(run), "Source CI must be main's own CI or the merge queue run of the same commit");
@@ -62,7 +74,9 @@ export function assertSuccessfulSourceRun({run, sourceSha, repository}) {
   assert.equal(run.repository?.full_name, repository);
   assert.equal(run.head_repository?.full_name, repository);
   assert.equal(run.status, "completed", "Required CI has not finished");
-  assert.equal(run.conclusion, "success", "Required CI must pass before preview deployment");
+  // The run succeeded, or (sprint floor, owner 11 Nov 2026) its Required CI
+  // job did and only reporting lanes failed: tool/ci/required_ci_floor.mjs.
+  assert.ok(sourceCiPasses({run, jobs}), "Required CI must pass before preview deployment");
 }
 // A website release never needs to be the head of main: merges keep landing
 // while a release is previewed, approved and promoted. It needs to be on main,
@@ -112,7 +126,7 @@ async function authorize() {
   assert.ok(result.captureBinding, "Preview requires exact-source captures");
   const run = github(`repos/${repository}/actions/runs/${result.sourceCiRunId}`);
   assert.equal(run.run_attempt, result.sourceCiRunAttempt);
-  assertSuccessfulSourceRun({run, sourceSha, repository});
+  assertSuccessfulSourceRun({run, sourceSha, repository, jobs: sourceCiJobs(run)});
   await currentReleaseLineage(repository, sourceSha);
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT,
     `capture_binding=${JSON.stringify(result.captureBinding)}\n`);

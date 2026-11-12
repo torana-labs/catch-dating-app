@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
@@ -418,7 +418,7 @@ void main() {
               event.id,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
-            watchOrganizerMembershipProvider(
+            watchOrganizerFollowProvider(
               event.organizerId,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
@@ -442,7 +442,7 @@ void main() {
           watchEventParticipationProvider(event.id, user.uid).future,
         );
         await container.read(
-          watchOrganizerMembershipProvider(event.organizerId, user.uid).future,
+          watchOrganizerFollowProvider(event.organizerId, user.uid).future,
         );
         await container.pump();
         await container.pump();
