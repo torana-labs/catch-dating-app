@@ -16,6 +16,7 @@ export function SiteFooter({
   brandHref: string;
   body: string;
   links: SiteNavItem[];
+  /** Controls after the links, in the same row (the site's "Privacy choices"). */
   children?: ReactNode;
 }) {
   return (
@@ -37,8 +38,8 @@ export function SiteFooter({
             {link.label}
           </PlainLink>
         ))}
+        {children}
       </nav>
-      {children}
     </footer>
   );
 }
