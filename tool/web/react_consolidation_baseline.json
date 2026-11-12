@@ -192,7 +192,6 @@
       "website/src/shared/ui/primitives/feedback.tsx::RouteLoadingState",
       "website/src/shared/ui/primitives/forms.tsx::ClaimRequestForm",
       "website/src/shared/ui/primitives/foundation.tsx::OperationalNote",
-      "website/src/shared/ui/primitives/foundation.tsx::ProfileStrength",
       "website/src/shared/ui/primitives/host2.tsx::HostPreviewSection",
       "website/src/shared/ui/primitives/host2.tsx::HostPreviewSectionHead",
       "website/src/shared/ui/primitives/host3.tsx::HostApplicationCompletenessSummary",
