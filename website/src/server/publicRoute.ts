@@ -19,7 +19,7 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const catalog = live ? await readRouteCatalog(pathname) : {listings: [], readAt: 0};
   const listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
   const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
-  const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/host": "host",
+  const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/cities": "cities", "/host": "host",
     "/weddings": "weddings", "/weddings/apply": "weddings", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help",
     "/delete-account": "account_deletion", "/refunds": "refunds", "/contact": "contact", "/claim": "claim"};
   const city = cityForPath(key);

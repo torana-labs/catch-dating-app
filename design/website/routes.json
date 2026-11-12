@@ -102,6 +102,43 @@
       }
     },
     {
+      "id": "cities",
+      "kind": "static",
+      "path": "/cities/",
+      "pageKey": "cities",
+      "source": "website/src/features/home/CitiesPage.tsx",
+      "metaKey": "cities",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Every city the website lists, by country and status, from contracts/catalogs/markets.json and each city's cityPlans read model. An open city links its city page with its honest count; a city not open links the homepage launch notice (/?city=slug#whats-on). A country with no city open says \"Launching soon in {country}\" once. The footer's More cities link and the header picker lead here.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "cities",
+          "two-cities",
+          "twenty-five-cities",
+          "phone",
+          "catalog-unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "cities",
+            "two-cities",
+            "twenty-five-cities",
+            "phone",
+            "catalog-unavailable"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "host",
       "kind": "static",
       "path": "/host/",

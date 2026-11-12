@@ -10,7 +10,7 @@ export async function GET() {
     const {listings, readAt} = await readPublicCatalog();
     const indexable = listings.filter(item => item.indexing === "index, follow" &&
       ["indexReady", "indexed"].includes(item.authority?.indexStatus ?? ""));
-    const paths = ["/", "/explore/", "/host/", "/weddings/", "/organizers/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/",
+    const paths = ["/", "/explore/", "/cities/", "/host/", "/weddings/", "/organizers/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/",
       ...indexable.map(item => item.path), ...buildPublicEventDetailRecords(indexable, readAt).map(event => event.path)];
     return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${
       [...new Set(paths)].map(path => `<url><loc>${xml(`${brand.web.origin}${path}`)}</loc></url>`).join("")}</urlset>`, {headers});

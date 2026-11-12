@@ -21,6 +21,7 @@ import {brand} from "@catch/brand";
 
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
 const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
+const Cities = dynamic(() => import("../../features/home/CitiesPage").then(m => m.CitiesPage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
 const Weddings = dynamic(() => import("../../features/weddings/WeddingsPage").then(m => m.WeddingsPage));
 const WeddingsApply = dynamic(() => import("../../features/weddings/WeddingsApplicationPage").then(m => m.WeddingsApplicationPage));
@@ -46,6 +47,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   let structured: unknown = null;
   if (page === "home") content = home ? <Home captures={marketingCaptures} catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
+  else if (page === "cities") content = home ? <Cities catalog={home} /> : <Missing />;
   else if (page === "host") content = <Host captures={marketingCaptures} />;
   else if (page === "weddings") content = location.pathname.replace(/\/$/, "") === "/weddings/apply"
     ? <WeddingsApply /> : <Weddings captures={marketingCaptures} />;

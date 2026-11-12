@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.24.0
+version: 0.25.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -39,7 +39,7 @@ The Next validator adapter compiles the same generated schemas as repository
 checks, with parity tests, without the CLI dependency-discovery loader.
 
 Firebase Hosting's CDN caches public organiser, event and city-aware discovery
-pages (`/`, `/explore/`, `/organizers/…` and `/events/…`) for up to a minute:
+pages (`/`, `/explore/`, `/cities/`, `/organizers/…` and `/events/…`) for up to a minute:
 they send `Cache-Control: public, s-maxage=60`. The organiser page is meant to
 replace the link in organisers' Instagram bios, so repeat and shared visits
 should not wait for a server render and two catalog reads. Hosting cannot purge
@@ -1190,8 +1190,21 @@ the city's read model to the sections. `/explore/?city=…&format=…#events`
 shows all matching events and retains app availability and the member
 waitlist.
 
-A city that has not launched, or has too few plans to fill a page, shows the
-launching-soon state instead of a sparse page. An unavailable catalogue does
+A launched city is open however few plans it has: it shows its honest count
+("2 plans this week", or "New" before its first plan). A city that has not
+launched shows the launching-soon state.
+
+The header's `CityPicker` (`features/home/sections/CityPicker.tsx`) serves the
+homepage, Explore, the city pages and `/cities/`. One country with up to eight
+cities opens a menu under the trigger; more countries open a sheet grouped by
+country, which searches once there are more than eight cities. A country with
+no city open says "Launching soon in {country}" once instead of marking each
+city. The footer's Cities column lists the open cities with their notes, one
+launching-soon line per country with none open, and "More cities →" to
+`/cities/`, which lists every listed city by country: an open city links its
+page, any other city the homepage launch notice (`/?city=<slug>#whats-on`).
+Story fixtures with 2 and 25 cities (`stories/fixtures/homeCatalogs.ts`) keep
+both layouts in the Storybook visual review. An unavailable catalogue does
 not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback
 photographs are labelled. Catch Experience explains active guest participation;

@@ -74,6 +74,27 @@ describe("CatchMenu anchored", () => {
     expect(screen.queryByRole("listbox")).toBeNull();
   });
 
+  it("keeps a wide anchored panel 16px inside the viewport", () => {
+    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      return this.getAttribute("role") === "listbox"
+        ? {left: -107, right: 193, width: 300, top: 60, bottom: 400, height: 340, x: -107, y: 60, toJSON: () => ({})} as DOMRect
+        : {left: 91, right: 193, width: 102, top: 10, bottom: 50, height: 40, x: 91, y: 10, toJSON: () => ({})} as DOMRect;
+    });
+    render(
+      <CatchMenu
+        align="end"
+        builder={(menu) => <button {...menu.triggerProps} type="button">City</button>}
+        items={[{value: "a", label: "Alpha", variant: "choice"}]}
+        label="Cities"
+        recipe="anchored"
+        width={300}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", {name: "City"}));
+    expect(screen.getByRole("listbox").style.transform).toBe("translate(123px, 0px)");
+    rect.mockRestore();
+  });
+
   it("moves the panel by Flutter's alignmentOffset", () => {
     render(
       <CatchMenu

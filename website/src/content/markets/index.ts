@@ -1,7 +1,20 @@
+import {generatedWebsiteCities, generatedWebsiteCountries} from "./generated/catalog";
 import {inMarket} from "./in";
+import type {MarketCity} from "./types";
 import {interpolateContent} from "../interpolate";
 
 export const activeMarket = inMarket;
+
+/** Every city the website lists, in every country, in catalog order. */
+export const websiteCities: readonly MarketCity[] = generatedWebsiteCities;
+
+/** The countries in the market catalog, in catalog order. */
+export const websiteCountries = generatedWebsiteCountries;
+
+/** A country's name from its ISO code, or the code itself. */
+export function countryName(isoCode: string): string {
+  return websiteCountries.find((country) => country.isoCode === isoCode)?.name ?? isoCode;
+}
 
 export const activeEventLiveCities = activeMarket.cities.filter(
   (city) => city.status === "live"

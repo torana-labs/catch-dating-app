@@ -40,7 +40,8 @@
         "sales_demo",
         "weddings",
         "weddings_apply",
-        "visitor_discovery"
+        "visitor_discovery",
+        "cities"
       ],
       "additionalProperties": false,
       "properties": {
@@ -120,6 +121,9 @@
           "$ref": "#/$defs/staticMeta"
         },
         "visitor_discovery": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "cities": {
           "$ref": "#/$defs/staticMeta"
         }
       }

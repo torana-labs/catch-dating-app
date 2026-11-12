@@ -32,10 +32,10 @@ import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot"
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {cityFooterNote, cityStatusLabel} from "../homeModel";
+import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
-import {cityPagePath} from "./cityChrome";
+import {cityPagePath, footerCities} from "./cityChrome";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
@@ -66,20 +66,6 @@ function StoreButtons({placement, size = "l"}: {placement: string; size?: "m" | 
         <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} size={size} store={store.store} />
       ))}
     </CatchStack>
-  );
-}
-
-function CityPicker({home}: {home: Home}) {
-  return (
-    <CatchMenu
-      align="end"
-      builder={(menu) => <CatchButton {...menu.triggerProps} label={home.city.label} onPressed={menu.toggle} size="sm" trailingIcon="expand" variant="secondary" />}
-      items={home.cities.map((item) => ({value: item.slug, label: item.label, sublabel: cityStatusLabel(item), selected: item.slug === home.city.slug, variant: "choice" as const}))}
-      label={copy.header.cityMenu}
-      onSelected={home.chooseCity}
-      recipe="anchored"
-      width={300}
-    />
   );
 }
 
@@ -379,8 +365,7 @@ function HomeFaq() {
 function HomeFooter({home}: {home: Home}) {
   return (
     <PublicSiteFooter appHref="#app" exploreHref={home.exploreHref}
-      cities={home.cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live",
-        note: cityFooterNote(item)}))} />
+      cities={footerCities(home.cities)} />
   );
 }
 
@@ -395,7 +380,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
   return (
     <>
       <PublicSiteHeader
-        actions={<><CityPicker home={home} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
+        actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
         links={[{href: "#whats-on", label: copy.header.explore}, {href: "#organisers", label: copy.header.organisers}, {href: "/host/", label: copy.header.hosts}]}
       />
       <WebsitePageMain id="top">

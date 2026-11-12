@@ -25,6 +25,6 @@ export const PUBLIC_PAGE_UNAVAILABLE_MARK = "x-catch-public-page-unavailable";
 // Organiser, event and city-aware discovery pages render the same HTML for
 // every viewer. Claim, booking, follow, signed-in and private-shell routes stay
 // uncached: their state loads in the browser or behind a no-store shell.
-const cachedPages: ReadonlySet<PageKey> = new Set(["home", "visitor_discovery", "organizers", "listing", "event_detail"]);
+const cachedPages: ReadonlySet<PageKey> = new Set(["home", "visitor_discovery", "cities", "organizers", "listing", "event_detail"]);
 
 export function isCachedPublicPage(page: PageKey): boolean {return cachedPages.has(page);}

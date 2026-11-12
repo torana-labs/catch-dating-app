@@ -1,4 +1,5 @@
 import {activeMarket} from "@content/markets";
+import type {MarketCity} from "@content/markets/types";
 import {homeCatalogFromPlans} from "../../features/home/homeCatalog";
 import type {HomeCatalog, HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "../../features/home/homeTypes";
 
@@ -73,7 +74,9 @@ export const mumbaiPlansFixture: HomeCityPlans = {
 };
 
 const empty = (citySlug: string, cityLabel: string, marketStatus: HomeCityPlans["marketStatus"]): HomeCityPlans => ({
-  citySlug, cityLabel, marketStatus, status: "launchingSoon", ...window, planCount: 0, formatCounts: counts([]), plans: [], organizers: [],
+  // A launched city is open however few plans it has (functions/src/cityPlans).
+  citySlug, cityLabel, marketStatus, status: marketStatus === "launched" ? "live" : "launchingSoon", ...window,
+  planCount: 0, formatCounts: counts([]), plans: [], organizers: [],
 });
 
 export const punePlansFixture: HomeCityPlans = {
@@ -96,6 +99,32 @@ const byCity: Record<string, HomeCityPlans> = {
 export function homeCatalogFixture(city: string): HomeCatalog {
   return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((market) => byCity[market.marketSlug]), city, homeStoryReadAt);
 }
+
+const zones: Record<string, string> = {IN: "Asia/Kolkata", NP: "Asia/Kathmandu", AU: "Australia/Sydney", US: "America/New_York"};
+const city = (countryIsoCode: string, label: string, status: MarketCity["status"] = "waitlist"): MarketCity => {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return {id: `${countryIsoCode.toLowerCase()}-xx-${slug}`, slug, marketSlug: slug, label, aliases: [], legacySlugs: [],
+    timezone: zones[countryIsoCode], status, countryIsoCode};
+};
+const catalogOf = (cities: readonly MarketCity[], selected: string): HomeCatalog =>
+  homeCatalogFromPlans(cities, cities.map((market) => byCity[market.marketSlug] ??
+    empty(market.marketSlug, market.label, market.status === "live" ? "launched" : "planned")), selected, homeStoryReadAt);
+
+/** The smallest website: one open city and one on the waitlist. */
+export const twoCityCatalog = catalogOf([city("IN", "Mumbai", "live"), city("IN", "Pune")], "mumbai");
+
+/**
+ * A large website for layout checks: 25 cities in four countries. Nepal and
+ * the United States have no city open, so each shows one launching-soon line.
+ */
+export const twentyFiveCityCatalog = catalogOf([
+  city("IN", "Mumbai", "live"), city("IN", "Indore", "live"), city("IN", "Delhi NCR"), city("IN", "Bengaluru"),
+  city("IN", "Hyderabad"), city("IN", "Pune"), city("IN", "Chennai", "launching"), city("IN", "Kolkata"), city("IN", "Ahmedabad"),
+  city("IN", "Goa"), city("IN", "Jaipur"), city("IN", "Kochi"), city("IN", "Chandigarh"), city("IN", "Lucknow"),
+  city("NP", "Kathmandu"), city("NP", "Pokhara"),
+  city("AU", "Sydney", "live"), city("AU", "Melbourne"), city("AU", "Brisbane"), city("AU", "Perth"),
+  city("US", "New York"), city("US", "San Francisco"), city("US", "Los Angeles"), city("US", "Chicago"), city("US", "Austin"),
+], "mumbai");
 
 export const mumbaiLiveCatalog = homeCatalogFixture("mumbai");
 export const puneLaunchingSoonCatalog = homeCatalogFixture("pune");

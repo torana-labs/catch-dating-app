@@ -52,7 +52,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "sales_demo" | "home" | "visitor_discovery" | "host" | "weddings" | "weddings_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "programme_link" | "account" | "host_billing" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "account_deletion" | "refunds" | "contact" | "not_found",
+      "sales_demo" | "home" | "visitor_discovery" | "cities" | "host" | "weddings" | "weddings_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "programme_link" | "account" | "host_billing" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "account_deletion" | "refunds" | "contact" | "not_found",
       StaticPageMetaCopy
     >
   >;

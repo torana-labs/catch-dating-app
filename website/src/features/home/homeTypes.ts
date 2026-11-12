@@ -62,6 +62,8 @@ export interface HomeCity {
   /** Plans in the next seven days. */
   weekPlanCount: number;
   timezone: string;
+  /** ISO country code, for grouping cities by country. */
+  countryIsoCode: string;
 }
 
 export interface HomeCatalog {

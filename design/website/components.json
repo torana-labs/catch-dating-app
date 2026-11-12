@@ -3934,11 +3934,90 @@
       "notes": "Explore's sections, private to one assembly: the heading (or launching soon with the live city), search, the plans or organisers view, format and date choices, and the results or an empty state. Each arranges library parts and binds the controller's view of the city (D18)."
     },
     {
+      "id": "route_cities",
+      "kind": "route",
+      "routeIds": [
+        "cities"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/CitiesPage.tsx",
+      "exportName": "CitiesPage",
+      "css": [
+        "website/src/styles/site-shell.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/CitiesPage.stories.tsx",
+        "exportName": "Cities",
+        "states": [
+          "cities",
+          "two-cities",
+          "twenty-five-cities",
+          "catalog-unavailable"
+        ]
+      },
+      "notes": "/cities/: every listed city by country and status, each with its page or the launch notice."
+    },
+    {
+      "id": "cities_page_sections",
+      "kind": "supporting-component",
+      "routeIds": [
+        "cities"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/citiesPageSections.tsx",
+      "exportName": "CitiesPageSections",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/CitiesPage.stories.tsx",
+        "exportName": "TwentyFiveCities390",
+        "states": [
+          "phone"
+        ]
+      },
+      "notes": "The /cities/ sections, private to one assembly: the heading, then each country with its cities as tiles. A country with no city open shows one launching-soon line (D18)."
+    },
+    {
+      "id": "city_picker",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "cities"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/CityPicker.tsx",
+      "exportName": "CityPicker",
+      "css": [
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchSearchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/CitiesPage.stories.tsx",
+        "exportName": "PickerTwentyFiveCities",
+        "states": [
+          "twenty-five-cities"
+        ]
+      },
+      "notes": "The header's city picker. One country with up to eight cities opens a menu under the trigger; more countries open a sheet grouped by country that searches beyond eight cities. A country with no city open says launching soon once. Each open city shows its honest count."
+    },
+    {
       "id": "city_site_chrome",
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery"
+        "visitor_discovery",
+        "cities"
       ],
       "owner": "features/home",
       "source": "website/src/features/home/sections/cityChrome.tsx",
@@ -3947,7 +4026,9 @@
         "packages/web-ui/src/components/CatchSiteHeader.module.css",
         "packages/web-ui/src/components/CatchMenu.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+        "packages/web-ui/src/components/CatchSiteFooter.module.css",
+        "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchSearchField.module.css"
       ],
       "storybook": {
         "status": "ready",

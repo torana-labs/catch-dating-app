@@ -4,7 +4,7 @@ import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
 import type {PublishedLegalPageKey} from "../content/types";
-import {activeMarket} from "../content/markets";
+import {websiteCities} from "../content/markets";
 import type {MarketCity} from "../content/markets/types";
 import {explorePageCopy} from "../content/explorePage";
 
@@ -12,6 +12,7 @@ export type PageKey =
   | "sales_demo"
   | "home"
   | "visitor_discovery"
+  | "cities"
   | "host"
   | "weddings"
   | "organizers"
@@ -131,6 +132,7 @@ export function getPageKey(
   if (["/host", "/host/"].includes(pathname)) return "host";
   if (["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"].includes(pathname)) return "weddings";
   if (pathname.startsWith("/organizers")) return "organizers";
+  if (pathname === "/cities" || pathname === "/cities/") return "cities";
   if (pathname === "/explore" || pathname === "/explore/" || cityForPath(pathname)) return "visitor_discovery";
   if (pathname === "/" || pathname === "") return "home";
   return "not_found";
@@ -158,7 +160,7 @@ export function pageClassFor(page: PageKey) {
 /** The market city a city page path names, such as /mumbai/. */
 export function cityForPath(pathname: string): MarketCity | null {
   const slug = /^\/([a-z0-9-]+)\/?$/u.exec(pathname)?.[1];
-  return activeMarket.cities.find((city) => city.slug === slug) ?? null;
+  return websiteCities.find((city) => city.slug === slug) ?? null;
 }
 
 /**

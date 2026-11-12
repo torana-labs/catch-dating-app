@@ -1,4 +1,4 @@
-import {activeMarket} from "@content/markets";
+import {websiteCities} from "@content/markets";
 import {cityPlansFromListings} from "../features/home/cityPlansFromListings";
 import {homeCatalogFromPlans, requestedHomeCity} from "../features/home/homeCatalog";
 import {organizerDirectoryDestination, retiredMarketingDestination} from "./retiredMarketingRoutes";
@@ -102,6 +102,9 @@ const ClaimPage = route(async () => ({
 const ExplorePage = route(async () => ({
   default: (await import("../features/home/ExplorePage")).ExplorePage,
 }), "../features/home/ExplorePage", "ExplorePage");
+const CitiesPage = route(async () => ({
+  default: (await import("../features/home/CitiesPage")).CitiesPage,
+}), "../features/home/CitiesPage", "CitiesPage");
 const HomePage = route(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
 }), "../features/home/HomePage", "HomePage");
@@ -224,8 +227,8 @@ function CanonicalMarketingRouteShell() {
   // The static build has no server, so the homepage builds its cities from the live catalog.
   const homeCatalog = useMemo(() => {
     const now = Date.now();
-    return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((city) =>
-      cityPlansFromListings(listings, city, activeMarket.cities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
+    return homeCatalogFromPlans(websiteCities, websiteCities.map((city) =>
+      cityPlansFromListings(listings, city, websiteCities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
   }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" || page === "programme_link" ? page :
@@ -258,6 +261,7 @@ function CanonicalMarketingRouteShell() {
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
             element={<ExplorePage catalog={homeCatalog} />} />
+          <Route path={marketingRoutePaths.cities} element={<CitiesPage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
             element={<HomePage captures={marketingCaptures} catalog={homeCatalog} />}
@@ -270,7 +274,7 @@ function CanonicalMarketingRouteShell() {
             path={marketingRoutePaths.organizer_search}
             element={<Navigate replace to={organizerDirectoryDestination(new URLSearchParams(location.search))} />}
           />
-          {activeMarket.cities.map((city) => (
+          {websiteCities.map((city) => (
             <Route key={city.slug} path={`/${city.slug}/`} element={<ExplorePage catalog={homeCatalog} />} />
           ))}
           <Route

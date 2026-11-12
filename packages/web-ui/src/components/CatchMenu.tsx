@@ -181,7 +181,7 @@ export function CatchMenu<T>(props: CatchMenuProps<T>) {
 
 function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, label, onSelected, width}: CatchMenuAnchoredProps<T> & {id: string}) {
   const [open, setOpen] = useState(false);
-  const [placement, setPlacement] = useState<{place: "below" | "above"; maxHeight?: number}>({place: "below"});
+  const [placement, setPlacement] = useState<{place: "below" | "above"; maxHeight?: number; shiftX?: number}>({place: "below"});
   const anchor = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -202,7 +202,12 @@ function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, 
       const above = rect.top - viewportInset;
       const needed = panel.current?.scrollHeight ?? 0;
       const place = needed > below && above > below ? "above" : "below";
-      setPlacement({maxHeight: Math.max(0, (place === "above" ? above : below) - panelGap), place});
+      // Keep the panel 16px inside the viewport sideways too: a wide panel
+      // aligned to a trigger near one edge would otherwise run off the other.
+      const box = panel.current?.getBoundingClientRect();
+      const shiftX = !box || box.width === 0 ? 0 : box.left < viewportInset ? viewportInset - box.left :
+        box.right > window.innerWidth - viewportInset ? window.innerWidth - viewportInset - box.right : 0;
+      setPlacement({maxHeight: Math.max(0, (place === "above" ? above : below) - panelGap), place, shiftX});
     }
     const rows = focusable(panel.current);
     (rows.find((row) => row.getAttribute("aria-selected") === "true" || row.getAttribute("aria-checked") === "true") ?? rows[0])?.focus();
@@ -210,7 +215,11 @@ function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, 
       if (!anchor.current?.contains(event.target as Node)) close(false);
     };
     document.addEventListener("pointerdown", outside);
-    return () => document.removeEventListener("pointerdown", outside);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      // The next open measures from the panel's unshifted place.
+      setPlacement((current) => ({...current, shiftX: 0}));
+    };
   }, [open, close]);
 
   const controller: CatchMenuController = {
@@ -232,9 +241,9 @@ function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, 
       ref: button,
     },
   };
-  const offset = alignmentOffset && (alignmentOffset.x || alignmentOffset.y)
-    ? {transform: `translate(${alignmentOffset.x}px, ${alignmentOffset.y}px)`}
-    : {};
+  const offsetX = (alignmentOffset?.x ?? 0) + (placement.shiftX ?? 0);
+  const offsetY = alignmentOffset?.y ?? 0;
+  const offset = offsetX || offsetY ? {transform: `translate(${offsetX}px, ${offsetY}px)`} : {};
 
   return (
     <div className={styles.anchor} data-align={align} ref={anchor}>
