@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {compare, comparedLanes, isControlPlane, laneForTask, summary} from "./shadow_plan.mjs";
 
@@ -50,16 +51,13 @@ test("a lane only Nx selects is flagged as a planner gap", () => {
 });
 
 // A website-only change (2a2f26d1, 12 Nov 2026) affects only the marketing
-// site, but its task graph also builds @catch/web-ui, which the marketing
-// build depends on. Mapping that build dependency ran Admin on every website PR.
-test("only affected projects select lanes, not the builds they depend on", () => {
-  const nxTasks = ["@catch/web-ui:build", "catch-marketing:build", "catch-marketing:typecheck", "lane-capture-freshness:lane"];
-  const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks,
-    affectedProjects: ["catch-marketing", "lane-capture-freshness"]});
+// site, but the task graph also held @catch/web-ui:build, which the marketing
+// build depends on. Mapping that dependency ran Admin on every website PR.
+test("the lane plan asks Nx for affected tasks without their dependencies", () => {
+  assert.match(fs.readFileSync(new URL("./shadow_plan.mjs", import.meta.url), "utf8"),
+    /"nx", "affected", "-t", \.\.\.targets, [^\n]*"--excludeTaskDependencies"/u);
+  const nxTasks = ["catch-marketing:build", "catch-marketing:typecheck", "lane-capture-freshness:lane"];
+  const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks});
   assert.deepEqual(result.nxLanes, ["capture_freshness", "marketing"]);
   assert.equal(result.agree, true);
-  assert.deepEqual(compare({plannerLanes: [], nxTasks, affectedProjects: ["@catch/web-ui", "catch-marketing"]}).nxLanes,
-    ["admin", "marketing"], "a change to web-ui itself still runs Admin");
-  assert.deepEqual(compare({plannerLanes: [], nxTasks}).nxLanes, ["admin", "capture_freshness", "marketing"],
-    "without the affected projects every task counts");
 });

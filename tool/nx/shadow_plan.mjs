@@ -67,20 +67,17 @@ export function laneForTask(taskId, tags = []) {
 /**
  * Compare the planner's lanes with the lanes Nx tasks stand in for.
  *
- * `affectedProjects` names the projects the change affects. The task graph
- * also holds their build dependencies (`^build`), which are not affected:
- * a website-only change must not run Admin because the website builds
- * @catch/web-ui. A project the change does affect brings its own task, and
- * its dependents already bring theirs. Omit it to count every task.
+ * `nxTasks` are the tasks the change affects, without the tasks they depend
+ * on (`--excludeTaskDependencies`): a website-only change must not run Admin
+ * because the website build needs @catch/web-ui:build. A change that does
+ * reach web-ui selects its tasks itself.
  */
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
-  changedFiles = [], affectedProjects}) {
+  changedFiles = []}) {
   const nxLanes = new Set(changedFiles.some(isControlPlane) ? comparedLanes : []);
-  const affected = affectedProjects ? new Set(affectedProjects) : null;
   const unmappedTasks = [];
   for (const task of nxTasks) {
     const project = task.slice(0, task.lastIndexOf(":"));
-    if (affected && !affected.has(project)) continue;
     const lane = laneForTask(task, tagsByProject[project]);
     if (lane) nxLanes.add(lane); else unmappedTasks.push(task);
   }
@@ -123,15 +120,14 @@ function run(command, args) {
   return execFileSync(command, args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "inherit"]});
 }
 
-/** The tasks `nx affected` runs between two commits, their projects' tags and the affected projects. */
+/** The tasks a change affects, without the tasks they depend on, and every project's tags. */
 export function nxAffected({base, head}) {
   const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-affected-")), "graph.json");
-  run("npx", ["nx", "affected", "-t", ...targets, "--base", base, "--head", head, `--graph=${graphFile}`]);
+  run("npx", ["nx", "affected", "-t", ...targets, "--base", base, "--head", head, "--excludeTaskDependencies",
+    `--graph=${graphFile}`]);
   const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
-  const affectedProjects = JSON.parse(run("npx", ["nx", "show", "projects", "--affected", "--base", base, "--head", head,
-    "--json"]));
   const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
-  return {nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, affectedProjects};
+  return {nxTasks: Object.keys(graph.tasks.tasks), tagsByProject};
 }
 
 function main(argv) {

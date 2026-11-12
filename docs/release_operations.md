@@ -288,9 +288,9 @@ Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
 `nx affected` selects, and never drops a lane the planner selected until the
-`nx-shadow` comparison holds parity (#1554). Only projects the change affects
-select a lane: the build dependencies in Nx's task graph do not, so a
-website-only change does not run Admin because the website builds
+`nx-shadow` comparison holds parity (#1554). Only tasks the change affects
+select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
+so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
