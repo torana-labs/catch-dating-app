@@ -14,7 +14,7 @@ import {HostListingPage} from "../HostListingPage";
 import type {OrganizerPageRecord} from "../organizerPage";
 import type {HostListing} from "../types";
 
-vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn(), getMarketingConsent: () => null,
+vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn(), getMarketingConsent: () => null, openMarketingConsentPreferences: vi.fn(),
   marketingConsentChangedEvent: "catch:marketing-consent-changed"}));
 vi.mock("../analytics", () => ({trackOrganizerAnalytics: vi.fn(), observeOrganizerPageView: vi.fn(() => () => undefined)}));
 vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));

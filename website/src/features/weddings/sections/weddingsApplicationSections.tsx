@@ -16,7 +16,7 @@ import {
 } from "@catch/web-ui";
 import {interpolateContent as fill} from "@content/interpolate";
 import {weddingsCopy} from "@content/weddings";
-import {WebsitePageMain} from "../../../shared/site";
+import {PrivacyChoicesButton, WebsitePageMain} from "../../../shared/site";
 import type {WeddingsApplicationController, WeddingsStepOne} from "../useWeddingsController";
 import {firstName, sentSummary, stepTwoContact, stepTwoSummary} from "../weddingsModel";
 
@@ -218,7 +218,10 @@ export function WeddingsApplicationView({application}: {application: WeddingsApp
         <CatchSurface block="band" color="ink" padding="md">
           <CatchStack align="end" collapseBelow="medium" direction="row" gap={12} justify="between">
             <CatchText variant="display-lg">{weddingsCopy.foot.title}</CatchText>
-            <CatchText tone="secondary" variant="body-small">{weddingsCopy.foot.applyBody}</CatchText>
+            <CatchStack align="center" direction="row" gap={16} wrap>
+              <CatchText tone="secondary" variant="body-small">{weddingsCopy.foot.applyBody}</CatchText>
+              <CatchText tone="secondary" variant="body-small"><PrivacyChoicesButton /></CatchText>
+            </CatchStack>
           </CatchStack>
         </CatchSurface>
       </CatchStack>

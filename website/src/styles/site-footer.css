@@ -24,14 +24,13 @@
 
 .consent-banner {
   position: fixed;
-  right: var(--website-gutter);
-  bottom: calc(var(--website-gutter) + env(safe-area-inset-bottom, 0px));
-  z-index: 80;
+  inset: auto var(--website-gutter) calc(var(--website-gutter) + env(safe-area-inset-bottom, 0)) auto;
+  z-index: var(--catch-layer-toast);
   display: grid;
-  width: min(420px, calc(100vw - (var(--website-gutter) * 2)));
-  max-height: calc(100dvh - (var(--website-gutter) * 2) - env(safe-area-inset-bottom, 0px));
+  width: min(44ch, calc(100vw - (var(--website-gutter) * 2)));
+  max-height: 70dvh;
   overflow-y: auto;
-  gap: var(--catch-space-micro14);
+  gap: var(--catch-space-s3);
   padding: var(--catch-space-s4);
   border: var(--catch-stroke-hairline) solid var(--website-line);
   border-radius: var(--catch-radius-sm);
@@ -39,14 +38,14 @@
   box-shadow: var(--website-shadow-soft);
 }
 
-.consent-banner p {
-  color: var(--website-copy-muted);
-  font-size: 13px;
-  line-height: 1.45;
-}
+/* Phones: a bottom sheet; the page pads by its measured height so nothing stays covered. */
+@media (width < 600px) {
+  .consent-banner {
+    inset: auto 0 0;
+    width: auto;
+    padding-bottom: calc(var(--catch-space-s4) + env(safe-area-inset-bottom, 0));
+    border-width: var(--catch-stroke-hairline) 0 0;
+  }
 
-.consent-banner div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--catch-space-micro10);
+  html[data-consent-open] body { padding-bottom: var(--consent-banner-height, 0); }
 }

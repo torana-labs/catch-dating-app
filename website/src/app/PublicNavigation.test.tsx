@@ -9,7 +9,7 @@ import {ClaimPage} from "../features/claims/ClaimPage";
 import {mumbaiLiveCatalog} from "../stories/fixtures/homeCatalogs";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 
-vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn()}));
+vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn(), openMarketingConsentPreferences: vi.fn()}));
 vi.mock("../firebaseConfig", () => ({claimFirebaseConfigured: false,
   publicReviewsFirebaseConfigured: false}));
 vi.mock("../firebase", () => ({watchClaimAuthState: (callback: (user: null) => void) => {

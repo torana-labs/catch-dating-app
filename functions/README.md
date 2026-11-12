@@ -503,6 +503,7 @@ enter previews.
 | Function | File | Purpose |
 |----------|------|---------|
 | `addEventHostPhoto` | `src/events/eventHostPhotos.ts` | Shares a staged host photo with checked-in guests, re-encoded without EXIF or location. |
+| `cleanUpStagedHostPhotosDaily` | `src/events/eventHostPhotoStagingCleanup.ts` | Daily: deletes staged host photo originals (still carrying EXIF) older than 24 hours. |
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |

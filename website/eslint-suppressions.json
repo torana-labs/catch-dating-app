@@ -147,7 +147,7 @@
       "count": 9
     },
     "react/forbid-elements": {
-      "count": 17
+      "count": 15
     }
   },
   "src/shared/ui/primitives/forms.tsx": {
