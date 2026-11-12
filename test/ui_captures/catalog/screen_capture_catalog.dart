@@ -7901,8 +7901,10 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
 final _eventRecapNextEvent = _captureFixtures.captureEvent(
   id: 'event-recap-next-capture',
   organizer: _dashboardJoinedOrganizer,
-  startTime: DateTime.now().add(const Duration(days: 6, hours: 14)),
-  endTime: DateTime.now().add(const Duration(days: 6, hours: 15)),
+  // Two days out, so its weekday-based title never matches the event just
+  // attended (11 hours ago) on the same screen.
+  startTime: DateTime.now().add(const Duration(days: 2)),
+  endTime: DateTime.now().add(const Duration(days: 2, hours: 1)),
   meetingPoint: 'Carter Road Amphitheatre',
   bookedCount: 9,
   capacityLimit: 18,
