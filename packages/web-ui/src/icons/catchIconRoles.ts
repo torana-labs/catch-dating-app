@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Source: design/tokens/catch.icons.json (Lucide 1.61.0).
+// Source: design/tokens/catch.icons.json (Lucide 1.68.0).
 // Regenerate with `node tool/design/generate_icon_catalog.mjs`.
 
 /** Every Catch icon role. */
