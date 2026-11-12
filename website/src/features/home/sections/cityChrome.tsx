@@ -1,8 +1,8 @@
-import {CatchButton, CatchMenu, CatchSiteFooter, CatchSiteHeader} from "@catch/web-ui";
+import {CatchButton, CatchMenu, CatchSiteFooter} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {siteFooterLegalLinks} from "@content/site";
 import type {ReactNode} from "react";
-import {PrivacyChoicesButton, WebsitePageMain} from "../../../shared/site";
+import {PrivacyChoicesButton, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {cityStatusLabel} from "../homeModel";
 import type {HomeCity} from "../homeTypes";
 
@@ -14,9 +14,10 @@ export const cityPagePath = (slug: string) => ["", encodeURIComponent(slug), ""]
 export const organisersHref = "/explore/?show=organisers";
 
 /**
- * The Website v2 header and footer around a city's page: the homepage and
- * Explore. The header carries the city picker with each city's status; the
- * footer lists every city, the ones not open marked soon.
+ * The header and footer around a city's page (Explore and the city pages).
+ * The header is the one public header, as on the homepage: the city picker
+ * with each city's status sits left of Get the app. The footer lists every
+ * city, the ones not open marked soon.
  */
 export function CitySiteChrome({appHref = "/#app", children, cities, city, exploreHref, onChooseCity}: {
   /** The get-the-app band: on the homepage itself, its own anchor. */
@@ -29,12 +30,12 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
 }) {
   const links = copy.footer.links;
   return <>
-    <CatchSiteHeader
-      actions={
+    <PublicSiteHeader
+      actions={<>
         <CatchMenu
           align="end"
           builder={(menu) => (
-            <CatchButton {...menu.triggerProps} label={city.label} onPressed={menu.toggle} size="md" variant="secondary" />
+            <CatchButton {...menu.triggerProps} label={city.label} onPressed={menu.toggle} size="sm" trailingIcon="expand" variant="secondary" />
           )}
           items={cities.map((item) => ({value: item.slug, label: item.label, sublabel: cityStatusLabel(item),
             selected: item.slug === city.slug, variant: "choice" as const}))}
@@ -43,16 +44,13 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
           recipe="anchored"
           width={300}
         />
-      }
-      brandHref="/"
-      brandLabel="Catch"
+        <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
+      </>}
       links={[
         {href: exploreHref, label: copy.header.explore},
         {href: organisersHref, label: copy.header.organisers},
-        {href: "/host/", label: copy.header.hosts, compact: true},
+        {href: "/host/", label: copy.header.hosts},
       ]}
-      navLabel={copy.header.nav}
-      wideActions={<CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="md" />}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <CatchSiteFooter

@@ -19,7 +19,10 @@ export const siteFooterLegalLinks = [
 export const publicSiteCopy = {
   wordmark: brand.name,
   menu: {openLabel: "Menu", navLabel: "Primary"},
-  nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
+  /** The main site's links, the same on every general page as on the homepage. */
+  nav: [{href: "/explore/", label: "Explore"}, {href: "/explore/?show=organisers", label: "Organisers"}, {href: "/host/", label: "For hosts"}],
+  /** The general pages' one primary action, the homepage's own. */
+  getApp: {label: "Get the app", href: "/#app"},
   footerOperator: publishedLegalContent.ui.footerBody,
   /** The footer control that reopens the consent banner. */
   privacyChoices: marketingConsentPreferencesCopy.preferences,
@@ -30,7 +33,6 @@ export const publicSiteCopy = {
  * as the RbWebOrgV2 and RbWebEventV2 boards draw them (shared/site/PublicSiteChrome.tsx).
  */
 export const publicPageChromeCopy = {
-  links: [{label: "Explore", href: "/explore/"}, {label: "For organisers", href: "/host/"}],
   getApp: "Get the app",
   getAppHref: "/#app",
   wordmark: brand.name,
