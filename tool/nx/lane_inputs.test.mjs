@@ -79,7 +79,7 @@ test("a contract family change selects only that family's consumers", () => {
     "the shared schema cycle still reaches every consumer");
 });
 
-// ee8b3cb7 (store link slots) ran Operations because @catch/operations was
+// ee8b3cb7 (store link slots) ran Operations because the operations package was
 // declared to depend on @catch/brand. Nothing in operations/ reads it.
 test("a brand change does not run Operations", () => {
   assert.ok(!lanesFor("packages/brand/brand.json").includes("operations"));
