@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_insights.schema.json",
   "title": "OrganizerInsightsDocument",
+  "x-firestore-collection": "organizerInsights",
+  "x-firestore-path": "organizerInsights/{insightId}",
   "description": "One organiser's public-page activity for one UTC day, rolled up nightly by rollupOrganizerInsightsDaily from the host analytics marts (page visits, owner link clicks by link and traffic source, booking clicks) and organizerFollows (new followers). Server-only; the website owner view reads 30 of these through getOrganizerOwnerView. Document id: {organizerId}_{yyyymmdd}. A day with no document had no recorded activity.",
   "type": "object",
   "additionalProperties": false,

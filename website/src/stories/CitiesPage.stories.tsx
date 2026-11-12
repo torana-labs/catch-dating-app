@@ -52,10 +52,9 @@ export const TwentyFiveCities: Story = {
   parameters: {catchComponent: {id: "route_cities", routeIds: ["cities"], states: ["twenty-five-cities"]}},
   render: () => page(twentyFiveCityCatalog),
   play: async ({canvasElement}) => {
-    // The page and the footer each say it once for a country with no city open.
-    const page = within(within(canvasElement).getByRole("main"));
-    await expect(page.getByText("Launching soon in Nepal")).toBeInTheDocument();
-    await expect(page.queryByText("Launching soon in India")).toBeNull();
+    const canvas = within(canvasElement);
+    await expect(within(canvas.getByRole("region", {name: "Nepal"})).getByText("Launching soon in Nepal")).toBeInTheDocument();
+    await expect(canvas.queryByText("Launching soon in India")).toBeNull();
   },
 };
 
@@ -90,6 +89,6 @@ export const PickerTwentyFiveCities: Story = {
     await userEvent.click(canvas.getAllByRole("button", {name: twentyFiveCityCatalog.selected.label})[0]);
     const sheet = within(within(canvasElement.ownerDocument.body).getByRole("dialog"));
     await expect(sheet.getByRole("searchbox")).toBeInTheDocument();
-    await expect(sheet.getByRole("heading", {name: "Australia"})).toBeInTheDocument();
+    await expect(sheet.getByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
   },
 };
