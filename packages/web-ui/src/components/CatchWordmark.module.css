@@ -13,6 +13,7 @@
   font-weight: var(--catch-typography-role-display-xl-weight);
   line-height: 1;
   letter-spacing: var(--catch-typography-role-display-xl-tracking);
+  word-spacing: var(--catch-font-word-spacing-voice);
   text-decoration: none;
   white-space: nowrap;
 }

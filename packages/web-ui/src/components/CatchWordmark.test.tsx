@@ -30,6 +30,9 @@ describe("CatchWordmark", () => {
     // Weight and tracking read the display tokens (an em ratio), never a fixed value.
     expect(wordmark).toContain("font-weight: var(--catch-typography-role-display-xl-weight)");
     expect(wordmark).toContain("letter-spacing: var(--catch-typography-role-display-xl-tracking)");
+    // Word spacing: the one voice token, shared with every display role.
+    expect(wordmark).toContain("word-spacing: var(--catch-font-word-spacing-voice)");
+    expect(display).toContain("word-spacing: var(--catch-font-word-spacing-voice)");
   });
 
   it("is the only wordmark voice in the top bar and the footer: neither types the brand itself", () => {

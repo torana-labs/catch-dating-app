@@ -5030,6 +5030,16 @@
         "$value": "{font.family.function}"
       }
     },
+    "wordSpacing": {
+      "$type": "dimension",
+      "$description": "Word spacing per family. At its one 78% width Archivo's own space nearly closes (\"Catchforhosts\"), so every display role and the wordmark open it by one ratio of the size (owner decision, 12 Nov 2026). Website only until the apps take the same change.",
+      "voice": {
+        "$value": {
+          "value": 0.08,
+          "unit": "em"
+        }
+      }
+    },
     "stack": {
       "$type": "fontFamily",
       "$description": "System font stacks (blueprint D22): the display family and the sans every other role uses.",
