@@ -2,7 +2,7 @@ import {CatchButton, CatchRoot, CatchStack, CatchSurface, CatchText} from "@catc
 import {hostPageCopy} from "@content/host";
 import {hostLandingCopy} from "@content/hostLanding";
 import {hostProductCopy} from "@content/hostProduct";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {HostApplicationFlow} from "./application/HostApplicationFlow";
 
 // The landing's in-page anchors, from the application page.
@@ -28,7 +28,7 @@ export function HostApplicationPage() {
           <HostApplicationFlow />
         </CatchSurface>
       </WebsitePageMain>
-      <SiteFooterBand label={hostLandingCopy.header.title} tagline={hostLandingCopy.footer.tagline} wordmark={hostLandingCopy.footer.wordmark} />
+      <PublicSiteFooter tagline={hostLandingCopy.footer.tagline} />
     </CatchRoot>
   );
 }

@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.23.1
+version: 0.23.2
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -115,7 +115,7 @@ isolated local emulator and packaged server described in `website/README.md`.
 ## Canonical public chrome
 
 `shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`,
-`SiteFooterBand`, `PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
+`PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
 `PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`)
 and the one header on every public route, Explore and the city pages included.
@@ -128,8 +128,17 @@ from `content/site.ts` (Explore, Organisers, For hosts) and Get the app; a
 product page passes its own name, section links and action, as the host landing
 ("Catch for hosts", its sections and Start free trial) and weddings do. The
 account entry comes from `SiteAccountProvider` (`features/account`) through
-`SiteAccountActionProvider`. Home and the host landing end with
-`SiteFooterBand` (the board's ink footer).
+`SiteAccountActionProvider`.
+
+`PublicSiteFooter` is the one site footer, `CatchSiteFooter` on the ink band:
+Explore, Hosts (with Weddings) and Help and legal, each link flush with its
+column title on one row rhythm, Help and legal ending with Privacy choices,
+then the wordmark with the tagline on its baseline and the operator line. The
+homepage and the city pages add their Cities column; a product page (host,
+weddings) may name itself in the wordmark and give its own line, with the same
+columns. Home, Explore and the city pages, the host landing and application,
+weddings, legal, help and 404 all end with it; its links come from
+`siteFooterCopy` in `content/site.ts`.
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
 page (`/events/<id>/`) carry the site top bar as `PublicPageHeader` (Explore,
@@ -140,8 +149,7 @@ main column (the organiser page's list-detail main, the event page's reading
 lane) rather than an ink band. The claim, public form and offer pages render
 the same `PublicPageFooter` below their reading layout with the site and legal
 links and the operator line; only the claim page records footer clicks. Import
-both from `shared/site`. Pages not yet rebuilt keep `PublicSiteFooter`;
-`SiteFooter` is the legacy footer's presentation.
+both from `shared/site`.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -479,8 +487,7 @@ The website is already split out of the old monolithic shell:
   `website/src/features/claims/sections/ClaimPageSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
 - `website/src/shared/site/**` owns neutral site shell/display primitives:
-  the public chrome in `PublicSiteChrome.tsx`, `SiteFooter`, and
-  `SectionHeader`.
+  the public chrome in `PublicSiteChrome.tsx` and `SectionHeader`.
 - The legacy `website/src/components/site.tsx` barrel is retired. New website
   code must import neutral site primitives from `website/src/shared/site/**`,
   governed visual primitives from `website/src/shared/ui/primitives/`, and
@@ -902,7 +909,6 @@ website/src/
     lib/
     site/
       PublicSiteChrome.tsx
-      SiteFooter.tsx
     ui/
       Button.tsx
       Field.tsx
@@ -1014,8 +1020,8 @@ website/src/
 
 4. Keep shared site primitives split.
 
-   The public chrome (`PublicSiteChrome.tsx`), `SiteFooter`, and
-   `SectionHeader` live in `shared/site`.
+   The public chrome (`PublicSiteChrome.tsx`) and `SectionHeader` live in
+   `shared/site`.
    Keep using direct `shared/site` imports for new page code. Do not turn
    one-off host/listing/product sections into shared primitives. Do not recreate
    the retired `website/src/components/site.tsx` barrel; import from the

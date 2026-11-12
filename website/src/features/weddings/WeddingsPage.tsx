@@ -1,25 +1,13 @@
 import {CatchButton, CatchRoot, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {weddingsCopy as copy} from "@content/weddings";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
-import {PrivacyChoicesButton, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {WeddingsBands} from "./sections/weddingsBands";
 import {useWeddingsLandingController} from "./useWeddingsController";
 
-/** The foot band (ink): the product name across from what it is. */
+/** The one site footer, named for weddings, with the product's line. */
 function Foot() {
-  return (
-    <CatchStack as="footer" gap={0}>
-      <CatchSurface block="band" color="ink" padding="md">
-        <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={12}>
-          <CatchText variant="display-xl">{copy.foot.title}</CatchText>
-          <CatchStack gap={8}>
-            <CatchText tone="secondary" variant="body-small">{copy.foot.body}</CatchText>
-            <CatchText tone="secondary" variant="body-small"><PrivacyChoicesButton /></CatchText>
-          </CatchStack>
-        </CatchStack>
-      </CatchSurface>
-    </CatchStack>
-  );
+  return <PublicSiteFooter tagline={copy.foot.body} wordmark={copy.foot.title} />;
 }
 
 /**
