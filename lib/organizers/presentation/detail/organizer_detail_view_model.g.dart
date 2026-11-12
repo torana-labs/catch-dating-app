@@ -103,7 +103,7 @@ final class OrganizerDetailViewModelProvider
 }
 
 String _$organizerDetailViewModelHash() =>
-    r'9f7717cffe5ff8f6dc8b185ffcfcae81761c63e0';
+    r'e50620be7c7c85516e5cf67a3b69c8cbe9006563';
 
 /// **Pattern D: View-model provider**
 ///

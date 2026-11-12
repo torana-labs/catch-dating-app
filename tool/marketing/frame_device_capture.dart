@@ -6,7 +6,7 @@ import 'package:image/image.dart' as img;
 void main(List<String> args) {
   final inputPath = _valueAfter(args, '--input');
   final outputPath = _valueAfter(args, '--output');
-  final deviceId = _valueAfter(args, '--device') ?? 'iphone-17-pro';
+  final deviceId = _valueAfter(args, '--device') ?? 'generic-phone';
 
   if (args.contains('--help') || args.contains('-h')) {
     _printHelp();
@@ -46,7 +46,11 @@ void main(List<String> args) {
     return;
   }
 
-  final framed = _renderDeviceFrame(screenshot, spec);
+  // An unframed device (a tablet or desktop browser screen) is passed through
+  // at its native size: the website draws its frame in CSS.
+  final framed = spec.framed
+      ? _renderDeviceFrame(screenshot, spec)
+      : screenshot;
   final outputFile = File(outputPath)..parent.createSync(recursive: true);
   outputFile.writeAsBytesSync(img.encodePng(framed), flush: true);
   stdout.writeln('Wrote ${outputFile.path}');
@@ -82,6 +86,35 @@ img.Image _renderDeviceFrame(img.Image screenshot, _DeviceFrameSpec spec) {
       radius: spec.outerRadius * scale + grow,
       color: _rgba(0, 0, 0, 18),
     );
+  }
+
+  final island = spec.dynamicIsland;
+  if (island == null) {
+    // Generic body: a dark outer edge, a faint light rim just inside it, then
+    // the near-black body, the website's CatchDeviceFrame in pixels.
+    for (final (inset, color) in [
+      (0, _rgba(0, 0, 0, 140)),
+      (1, _rgba(42, 40, 43)),
+      (2, _rgba(18, 16, 19)),
+    ]) {
+      img.fillRect(
+        canvas,
+        x1: deviceX + inset * scale,
+        y1: deviceY + inset * scale,
+        x2: deviceX + deviceW - inset * scale - 1,
+        y2: deviceY + deviceH - inset * scale - 1,
+        radius: (spec.outerRadius - inset) * scale,
+        color: color,
+      );
+    }
+    _copyRounded(
+      canvas,
+      screenshot,
+      dstX: screenX,
+      dstY: screenY,
+      radius: spec.screenRadius * scale,
+    );
+    return canvas;
   }
 
   img.fillRect(
@@ -120,21 +153,22 @@ img.Image _renderDeviceFrame(img.Image screenshot, _DeviceFrameSpec spec) {
     radius: spec.screenRadius * scale,
   );
 
-  _drawDynamicIsland(canvas, spec, screenX: screenX, screenY: screenY);
+  _drawDynamicIsland(canvas, spec, island, screenX: screenX, screenY: screenY);
   return canvas;
 }
 
 void _drawDynamicIsland(
   img.Image canvas,
-  _DeviceFrameSpec spec, {
+  _DeviceFrameSpec spec,
+  _DynamicIsland island, {
   required int screenX,
   required int screenY,
 }) {
   final scale = spec.outputScale;
-  final islandW = spec.dynamicIslandWidth * scale;
-  final islandH = spec.dynamicIslandHeight * scale;
+  final islandW = island.width * scale;
+  final islandH = island.height * scale;
   final islandX = screenX + (spec.logicalWidth * scale - islandW) ~/ 2;
-  final islandY = screenY + spec.dynamicIslandTop * scale;
+  final islandY = screenY + island.top * scale;
   final radius = islandH ~/ 2;
 
   img.fillRect(
@@ -229,9 +263,13 @@ String? _valueAfter(List<String> args, String flag) {
 
 void _printHelp() {
   stdout.writeln('''
-Usage: dart run tool/marketing/frame_device_capture.dart --input <png> --output <png> [--device iphone-17-pro]
+Usage: dart run tool/marketing/frame_device_capture.dart --input <png> --output <png> [--device generic-phone|iphone-17-pro|generic-tablet|desktop-browser]
 
-Wraps a native 2x Flutter app capture (804x1748 for iPhone 17 Pro) without resizing.
+Wraps a native 2x capture (804x1748 for both phones) without resizing.
+generic-phone (the default) draws a generic bezel with nothing unique to
+Apple hardware; iphone-17-pro keeps the older frame with a Dynamic Island.
+generic-tablet (2388x1668) and desktop-browser (2880x1800) are unframed:
+the native screen is written as it is, and the website draws the frame.
 ''');
 }
 
@@ -245,13 +283,25 @@ class _DeviceFrameSpec {
     required this.frameInset,
     required this.outerRadius,
     required this.screenRadius,
-    required this.dynamicIslandWidth,
-    required this.dynamicIslandHeight,
-    required this.dynamicIslandTop,
+    this.dynamicIsland,
+    this.framed = true,
   });
 
+  /// Sizes in points; tool/marketing/lib/capture_devices.mjs holds the same.
   factory _DeviceFrameSpec.forId(String id) {
     return switch (id) {
+      // Bezel 12/426 = 0.028 and outer radius 70/426 = 0.165 of the frame
+      // width, the website's CatchDeviceFrame kind "phone".
+      'generic-phone' => const _DeviceFrameSpec(
+        id: 'generic-phone',
+        logicalWidth: 402,
+        logicalHeight: 874,
+        outputScale: 2,
+        canvasMargin: 32,
+        frameInset: 12,
+        outerRadius: 70,
+        screenRadius: 58,
+      ),
       'iphone-17-pro' => const _DeviceFrameSpec(
         id: 'iphone-17-pro',
         logicalWidth: 402,
@@ -261,9 +311,31 @@ class _DeviceFrameSpec {
         frameInset: 22,
         outerRadius: 68,
         screenRadius: 52,
-        dynamicIslandWidth: 126,
-        dynamicIslandHeight: 37,
-        dynamicIslandTop: 12,
+        dynamicIsland: _DynamicIsland(width: 126, height: 37, top: 12),
+      ),
+      // Unframed: the PNG is the screen alone (CatchDeviceFrame kind tablet).
+      'generic-tablet' => const _DeviceFrameSpec(
+        id: 'generic-tablet',
+        logicalWidth: 1194,
+        logicalHeight: 834,
+        outputScale: 2,
+        canvasMargin: 0,
+        frameInset: 0,
+        outerRadius: 0,
+        screenRadius: 0,
+        framed: false,
+      ),
+      // Unframed: the PNG is the screen alone (CatchDeviceFrame kind browser).
+      'desktop-browser' => const _DeviceFrameSpec(
+        id: 'desktop-browser',
+        logicalWidth: 1440,
+        logicalHeight: 900,
+        outputScale: 2,
+        canvasMargin: 0,
+        frameInset: 0,
+        outerRadius: 0,
+        screenRadius: 0,
+        framed: false,
       ),
       _ => throw ArgumentError.value(id, 'id', 'Unsupported device frame.'),
     };
@@ -277,7 +349,22 @@ class _DeviceFrameSpec {
   final int frameInset;
   final int outerRadius;
   final int screenRadius;
-  final int dynamicIslandWidth;
-  final int dynamicIslandHeight;
-  final int dynamicIslandTop;
+
+  /// Null for a generic device.
+  final _DynamicIsland? dynamicIsland;
+
+  /// False when the website draws the frame and the screen passes through.
+  final bool framed;
+}
+
+class _DynamicIsland {
+  const _DynamicIsland({
+    required this.width,
+    required this.height,
+    required this.top,
+  });
+
+  final int width;
+  final int height;
+  final int top;
 }

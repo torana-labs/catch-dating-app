@@ -1,12 +1,22 @@
 import {
   CatchBarIndicator,
+  CatchButton,
   CatchGap,
   CatchIndexRow,
   CatchMetaRow,
   CatchSection,
   CatchLegacyText,
 } from "@catch/web-ui";
-import {billingPlanLabel, billPeriodName, billState, moneyNowMillis, monthLabel, rupees, trialLabel} from "../controllers/moneyLabels";
+import {
+  billingPlanLabel,
+  billPeriodName,
+  billReviewLabel,
+  billState,
+  moneyNowMillis,
+  monthLabel,
+  rupees,
+  trialLabel,
+} from "../controllers/moneyLabels";
 import {
   organizerSalesMinor,
   useOrganizerBillsController,
@@ -48,13 +58,29 @@ export function OrganizerBillsWorkspace({
   }
   const trial = trialLabel(controller.trial);
   const plan = billingPlanLabel(controller.billingPlan, nowMillis);
+  const review = billReviewLabel(controller.billReview);
+  const reviewEntries = review ? [{label: "Sending bills", value: review.text, tone: review.tone}] : [];
   const trialRow = (
-    <CatchMetaRow entries={[...(trial ? [{label: "Free trial", value: trial}] : []), {label: "Plan", value: plan}]} />
+    <CatchMetaRow entries={[...(trial ? [{label: "Free trial", value: trial}] : []), {label: "Plan", value: plan},
+      ...reviewEntries]} />
   );
+  const held = Boolean(controller.billReview?.hold);
+  const holdControl = controller.billReview?.canHold ? (
+    <CatchGap size="related">
+      <CatchButton
+        label={held ? "Release the hold on sending" : "Hold bills from sending automatically"}
+        onPressed={controller.isActing ? null : () => void controller.setHold(held ? "releaseOrganizerHold" : "holdOrganizer", null)}
+        size="sm"
+        variant="secondary"
+      />
+      {controller.actionError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{controller.actionError}</CatchLegacyText> : null}
+    </CatchGap>
+  ) : null;
   if (controller.bills.length === 0) {
     return (
       <CatchGap size="majorSection">
         {trialRow}
+        {holdControl}
         <CatchSection dividers="none" empty="No bills yet." title="Bills" />
       </CatchGap>
     );
@@ -68,7 +94,9 @@ export function OrganizerBillsWorkspace({
         {label: "Catch earned, all time", value: rupees(summary.earnedMinor)},
         ...(trial ? [{label: "Free trial", value: trial}] : []),
         {label: "Plan", value: plan},
+        ...reviewEntries,
       ]} />
+      {holdControl}
       {oldestFirst.length > 1 ? (
         <CatchSection dividers="none" title="Ticket sales each month">
           <CatchBarIndicator
@@ -83,7 +111,7 @@ export function OrganizerBillsWorkspace({
       ) : null}
       <CatchSection count={bills.length} title="Bills">
         {bills.map((bill) => {
-          const state = billState(bill, nowMillis);
+          const state = billState(bill, nowMillis, held);
           return (
             <CatchIndexRow
               key={bill.billId}

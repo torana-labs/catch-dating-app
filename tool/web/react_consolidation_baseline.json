@@ -38,6 +38,9 @@
       "catch.icon_button",
       "catch.icon_tile",
       "catch.menu",
+      "catch.notice",
+      "catch.option_card",
+      "catch.person_avatar",
       "catch.screen_body",
       "catch.search_field",
       "catch.section",
@@ -61,6 +64,7 @@
       "admin/src/shared/ui/AdminPrimitives/shell.tsx::AdminEyebrow",
       "admin/src/shared/ui/AdminPrimitives/shell.tsx::AdminSignInPanel",
       "admin/src/shared/ui/AdminPrimitives/workbench.tsx::EmptyState",
+      "packages/web-ui/src/components/CatchChoiceInput.tsx::CatchChoiceInput",
       "website/src/shared/ui/primitives/actionControls.tsx::PlainButton",
       "website/src/shared/ui/primitives/actions.tsx::Button",
       "website/src/shared/ui/primitives/actions.tsx::TextActionButton",
@@ -174,10 +178,13 @@
       "packages/web-ui/src/motion.tsx::LottieAnimationControl",
       "website/src/shared/pendingRequest.tsx::PendingRequestProvider",
       "website/src/shared/query/queryClient.tsx::WebsiteQueryProvider",
+      "website/src/shared/site/EventBookingFrame.tsx::EventBookingFrame",
       "website/src/shared/site/PageShell.tsx::PageShell",
+      "website/src/shared/ui/primitives/actions.tsx::ActionGroup",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeArrivalRing",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeFieldset",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeMission",
+      "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeNoticeStack",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimePrivacy",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeRoomMap",
       "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeStageMarquee",
@@ -212,6 +219,21 @@
   "strandedByRetirement": {
     "screens.web_single_use_shared": {
       "website/src/shared/ui/primitives/forms.tsx::ClaimRequestForm": "CAT-256"
+    }
+  },
+  "acceptedDebt": {
+    "library.cross_framework_parity": {
+      "catch.notice": "#1670 due 2026-11-25",
+      "catch.option_card": "#1670 due 2026-11-25",
+      "catch.person_avatar": "#1670 due 2026-11-25"
+    },
+    "screens.web_adapters": {
+      "packages/web-ui/src/components/CatchChoiceInput.tsx::CatchChoiceInput": "#1670 due 2026-11-25"
+    },
+    "screens.web_single_use_shared": {
+      "website/src/shared/site/EventBookingFrame.tsx::EventBookingFrame": "#1670 due 2026-11-25",
+      "website/src/shared/ui/primitives/actions.tsx::ActionGroup": "#1670 due 2026-11-25",
+      "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeNoticeStack": "#1670 due 2026-11-25"
     }
   }
 }

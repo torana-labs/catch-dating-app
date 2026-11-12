@@ -102,8 +102,8 @@ function demoEvent() {
 
 function harness() {
   const firestore = new FakeFirestore({
-    "users/runner-1": {fcmToken: "token-1"},
-    "users/runner-2": {fcmToken: "token-2"},
+    "users/runner-1": {},
+    "users/runner-2": {},
     "publicProfiles/runner-1": {name: "Runner One"},
     "publicProfiles/runner-2": {name: "Runner Two"},
   });
@@ -124,8 +124,7 @@ function harness() {
         _db: FirebaseFirestore.Firestore, uid: string, role: string
       ) => {
         assert.equal(role, "consumer");
-        const token = firestore.get(`users/${uid}`)?.fcmToken;
-        return typeof token === "string" ? [token] : [];
+        return [`token-${uid.slice(-1)}`];
       },
     },
   };
@@ -143,8 +142,8 @@ test(
       {
         uid: "runner-1",
         type: "match",
-        title: "It's a catch",
-        body: "You and Runner Two matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner Two picked each other. Say hi!",
         createdAt: {kind: "serverTimestamp"},
         matchId: "match-1",
         eventId: "event-1",
@@ -158,8 +157,8 @@ test(
       {
         uid: "runner-2",
         type: "match",
-        title: "It's a catch",
-        body: "You and Runner One matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner One picked each other. Say hi!",
         createdAt: {kind: "serverTimestamp"},
         matchId: "match-1",
         eventId: "event-1",
@@ -171,8 +170,8 @@ test(
     assert.deepEqual(h.notifications, [
       {
         token: "token-1",
-        title: "It's a catch",
-        body: "You and Runner Two matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner Two picked each other. Say hi!",
         type: "match",
         matchId: "match-1",
         notificationId: "match_match-1",
@@ -183,8 +182,8 @@ test(
       },
       {
         token: "token-2",
-        title: "It's a catch",
-        body: "You and Runner One matched. Say hi!",
+        title: "You picked each other",
+        body: "You and Runner One picked each other. Say hi!",
         type: "match",
         matchId: "match-1",
         notificationId: "match_match-1",

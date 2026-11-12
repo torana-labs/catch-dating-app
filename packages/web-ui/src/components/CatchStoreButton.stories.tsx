@@ -1,51 +1,41 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchStoreButton, type CatchStoreButtonProps} from "./CatchStoreButton";
 
+// The official badges the website hosts (website/public/assets/store-badges, with their provenance).
+const appStoreBadge = new URL("../../../../website/public/assets/store-badges/app-store-download-on-the.svg", import.meta.url).href;
+const googlePlayBadge = new URL("../../../../website/public/assets/store-badges/google-play-get-it-on.png", import.meta.url).href;
+
 const meta = {
   title: "Web UI/CatchStoreButton",
   component: CatchStoreButton,
-  args: {href: "#", label: "App Store", store: "appStore"},
+  args: {badgeSrc: appStoreBadge, href: "#", label: "Download on the App Store", store: "appStore"},
 } satisfies Meta<typeof CatchStoreButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // catchComponent names the website registry's T4 entry (design/website/components.json).
-const storyRoutes = ["home", "organizer_listing_canonical", "event_detail_canonical"];
+const storyRoutes = ["home", "host", "organizer_listing_canonical", "event_detail_canonical"];
 
-const appStore: CatchStoreButtonProps = {
-  accessibleLabel: "Download on the App Store",
-  href: "#app-store",
-  kicker: "Download on the",
-  label: "App Store",
-  store: "appStore",
-};
+const appStore: CatchStoreButtonProps = {badgeSrc: appStoreBadge, href: "#app-store", label: "Download on the App Store", store: "appStore"};
+const googlePlay: CatchStoreButtonProps = {badgeSrc: googlePlayBadge, href: "#google-play", label: "Get it on Google Play", store: "googlePlay"};
 
-const googlePlay: CatchStoreButtonProps = {
-  accessibleLabel: "Get it on Google Play",
-  href: "#google-play",
-  kicker: "Get it on",
-  label: "Google Play",
-  store: "googlePlay",
-};
-
-const pair = (size?: "m" | "l", kicker = true) => (
+const pair = (size?: "m" | "l", live = true) => (
   <CatchGap direction="horizontal" size="inline" wrap>
-    <CatchStoreButton {...appStore} kicker={kicker ? appStore.kicker : undefined} size={size} />
-    <CatchStoreButton {...googlePlay} kicker={kicker ? googlePlay.kicker : undefined} size={size} />
+    <CatchStoreButton {...appStore} href={live ? appStore.href : undefined} size={size} />
+    <CatchStoreButton {...googlePlay} href={live ? googlePlay.href : undefined} size={size} />
   </CatchGap>
 );
 
-/** Both stores at L and M, with and without the kicker line. */
+/** Both official badges at L (48px) and M (40px), and a store that is not live yet (a button with the same face). */
 export const Stores: Story = {
-  parameters: {catchComponent: {id: "shared_store_button", routeIds: storyRoutes, states: ["app-store", "google-play", "large", "medium", "with-kicker", "label-only"]}},
+  parameters: {catchComponent: {id: "shared_store_button", routeIds: storyRoutes, states: ["app-store", "google-play", "large", "medium", "pending"]}},
   render: () => (
     <StoryPage>
-      <CatchBand aria-label="Store buttons" pb="compact" pt="compact">
+      <CatchBand aria-label="Store badges" pb="compact" pt="compact">
         <CatchGap size="section">
           {pair("l")}
           {pair("m")}
@@ -56,7 +46,7 @@ export const Stores: Story = {
   ),
 };
 
-/** The fill inverts on the ink ground and stays ink on an accent. */
+/** The badges are never recoloured: the same black artwork on ink and on a format colour. */
 export const OnGrounds: Story = {
   parameters: {catchComponent: {id: "shared_store_button", routeIds: storyRoutes, states: ["on-ink", "on-accent"]}},
   render: () => (
@@ -64,18 +54,5 @@ export const OnGrounds: Story = {
       <CatchBand aria-label="On ink" ground="ink" pb="compact" pt="compact">{pair("l")}</CatchBand>
       <CatchBand aria-label="On pink" ground="pink" pb="compact" pt="compact">{pair("l")}</CatchBand>
     </StoryPage>
-  ),
-};
-
-/** The homepage hero's store buttons. */
-export const Reference: Story = {
-  parameters: {catchComponent: {id: "shared_store_button", routeIds: storyRoutes, states: ["board-reference"]}},
-  render: () => (
-    <ReferenceComparison
-      desktop={{capture: "home/mumbai_live/1280", height: 70, width: 345, x: 62, y: 695}}
-      label="Store buttons"
-      phone={{capture: "home/mumbai_live/390", height: 70, width: 345, x: 14, y: 600}}
-      render={() => pair("l")}
-    />
   ),
 };

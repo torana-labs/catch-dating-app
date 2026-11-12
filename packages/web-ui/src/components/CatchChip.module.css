@@ -151,7 +151,7 @@
 }
 
 .system[data-on="night-tile"] { background: color-mix(in srgb, var(--catch-theme-ink) 8%, transparent); box-shadow: none; }
-.system[data-toggle]:hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
+.system[data-toggle]:not([data-selected]):hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
 .system:active { transform: scale(0.97); }
 .system[data-selected] { background: var(--catch-theme-primary); box-shadow: none; color: var(--catch-theme-on-primary); }
 .system[data-selected][data-format] { background: var(--catch-system-chip-accent); color: var(--catch-theme-on-format); }
@@ -176,8 +176,14 @@
 .system[data-format="nightsOut"], .dot[data-dot="nightsOut"] { --catch-system-chip-accent: var(--catch-format-nights-out-accent); }
 
 .count { font-variant-numeric: tabular-nums; font-weight: 600; opacity: 0.66; }
-.remove { display: inline-flex; margin-right: -6px; border-radius: var(--catch-radius-pill); cursor: pointer; opacity: 0.7; }
+.system[data-kind="input"]:not(button) { cursor: default; }
+.system[data-kind="input"][data-disabled] { opacity: var(--catch-opacity-disabled); }
+.inputLabel, .remove { margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.inputLabel { display: inline-flex; align-items: center; gap: inherit; }
+.remove { display: inline-flex; margin-right: -6px; border-radius: var(--catch-radius-pill); opacity: 0.7; }
 .remove:hover { opacity: 1; }
+.inputLabel:disabled, .remove:disabled { cursor: not-allowed; }
+.inputLabel:focus-visible, .remove:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); }
 
 @media (prefers-reduced-motion: reduce) {
   .system { transition: none; }

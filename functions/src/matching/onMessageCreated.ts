@@ -214,9 +214,7 @@ export async function onMessageCreatedHandler(
     allowsPushPreference(recipientUser, "messages");
   if (!pushEnabled) return;
   const resolveTokens = deps.resolvePushTokens ?? resolveConversationPushTokens;
-  const tokens = await resolveTokens(
-    db, recipientId, pushContext.role, recipientUser
-  );
+  const tokens = await resolveTokens(db, recipientId, pushContext.role);
 
   logger.info("Sending message notification", {matchId, recipientId});
 

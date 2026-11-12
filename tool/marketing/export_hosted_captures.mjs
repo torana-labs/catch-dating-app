@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {isCaptureDevice} from "./lib/capture_devices.mjs";
 
 const manifestPath = "tool/marketing/capture_manifest.json";
 const designPath = "tool/marketing/app_screenshots_design_context.json";
@@ -98,7 +99,7 @@ export function canonicalInventory(manifest) {
     const web = capture.kind === "web-capture";
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(capture.id) || ids.has(capture.id) ||
         (web ? typeof capture.story?.id !== "string" : fixtures.has(capture.fixtureKey)) || capture.status !== "active" ||
-        capture.device !== "iphone-17-pro" ||
+        !isCaptureDevice(capture.device) ||
         capture.sourcePath !== `artifacts/marketing/app-screenshots/${capture.id}.png` ||
         capture.websitePath !== `website/public/assets/app-screenshots/${capture.id}.png`) {
       throw new Error("Invalid, duplicate or unsafe canonical capture inventory.");

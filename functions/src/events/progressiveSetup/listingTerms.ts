@@ -6,7 +6,8 @@ import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {UpdatePrivateEventDetailsCallablePayload} from
   "../../shared/generated/updatePrivateEventDetailsCallablePayload";
-import {eventPolicyFromEvent, normalizePolicy} from "../eventPolicy";
+import {eventPolicyFromEvent, initialPolicyFromTerms, normalizePolicy} from
+  "../eventPolicy";
 import {prepareEventMutationLedger} from "../eventPolicyMutation";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {canonicalJson} from "../eventSetupPreferences/resolve";
@@ -28,7 +29,8 @@ export function eventListingTermsPatch(event: EventDocument,
   }
   const configured = {...event, capacityLimit: terms.capacityLimit,
     priceInPaise: terms.priceInPaise};
-  const previous = eventPolicyFromEvent(configured);
+  const previous = configured.eventPolicy ?
+    eventPolicyFromEvent(configured) : initialPolicyFromTerms(configured);
   const policy = normalizePolicy({...previous,
     admission: {...previous.admission, capacityLimit: terms.capacityLimit},
     pricing: {...previous.pricing, basePriceInPaise: terms.priceInPaise},

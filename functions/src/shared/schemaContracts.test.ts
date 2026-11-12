@@ -164,16 +164,14 @@ const validateReportUserCallablePayload =
 const validateReviewDocument = contractValidator("ReviewDocument");
 const validateResetMatchUnreadCountClientWrite =
   contractValidator("ResetMatchUnreadCountClientWrite");
-const validateOrganizerHostClaimDocument =
-  contractValidator("OrganizerHostClaimDocument");
-const validateOrganizerScheduleLockDocument =
-  contractValidator("OrganizerScheduleLockDocument");
+const validateScheduleLockDocument =
+  contractValidator("ScheduleLockDocument");
 const validateEventIdCallablePayload =
   contractValidator<EventIdCallablePayload>("EventIdCallablePayload");
 const validateOrganizerDocument =
   contractValidator<OrganizerDocument>("OrganizerDocument");
-const validateOrganizerMembershipDocument =
-  contractValidator("OrganizerMembershipDocument");
+const validateOrganizerFollowDocument =
+  contractValidator("OrganizerFollowDocument");
 const validateEventDocument = contractValidator<EventDocument>("EventDocument");
 const validateExternalEventDocument =
   contractValidator<ExternalEventDocument>("ExternalEventDocument");
@@ -205,8 +203,6 @@ const validateSavedEventDocument =
   contractValidator<SavedEventDocument>("SavedEventDocument");
 const validateSeedEventManifestDocument =
   contractValidator("SeedEventManifestDocument");
-const validateOrganizerMembershipCallablePayload =
-  contractValidator("OrganizerMembershipCallablePayload");
 const validateSelfCheckInAttendanceCallablePayload =
   contractValidator<SelfCheckInAttendanceCallablePayload>(
     "SelfCheckInAttendanceCallablePayload"
@@ -232,8 +228,6 @@ const validateUpdateEventReviewCallablePayload =
   );
 const validateUnblockUserCallablePayload =
   contractValidator<UnblockUserCallablePayload>("UnblockUserCallablePayload");
-const validateUserEventScheduleLockDocument =
-  contractValidator("UserEventScheduleLockDocument");
 const validateUserProfileDocument =
   contractValidator<UserProfileDocument>("UserProfileDocument");
 const validateVerifyRazorpayPaymentCallablePayload =
@@ -356,12 +350,8 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/organizer_doc.json")
   );
   assertValid(
-    validateOrganizerMembershipDocument as Validator,
-    readFixture("fixtures/valid/organizer_membership_doc.json")
-  );
-  assertValid(
-    validateOrganizerHostClaimDocument as Validator,
-    readFixture("fixtures/valid/organizer_host_claim_doc.json")
+    validateOrganizerFollowDocument as Validator,
+    readFixture("fixtures/valid/organizer_follow_doc.json")
   );
   assertValid(
     validateEventDocument as Validator,
@@ -414,12 +404,8 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/event_safety_report_doc.json")
   );
   assertValid(
-    validateOrganizerScheduleLockDocument as Validator,
-    readFixture("fixtures/valid/organizer_schedule_lock_doc.json")
-  );
-  assertValid(
-    validateUserEventScheduleLockDocument as Validator,
-    readFixture("fixtures/valid/user_event_schedule_lock_doc.json")
+    validateScheduleLockDocument as Validator,
+    readFixture("fixtures/valid/schedule_lock_doc.json")
   );
   assertValid(
     validateSavedEventDocument as Validator,
@@ -500,10 +486,6 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateDeleteOrganizerCallablePayload as Validator,
     readFixture("fixtures/valid/delete_organizer_payload.json")
-  );
-  assertValid(
-    validateOrganizerMembershipCallablePayload as Validator,
-    readFixture("fixtures/valid/organizer_membership_payload.json")
   );
   assertValid(
     validateSetOrganizerNotificationPreferenceCallablePayload as Validator,
@@ -661,8 +643,8 @@ test("generated schema validators reject invalid contract fixtures", () => {
     readFixture("fixtures/invalid/swipe_doc_invalid_reaction_target.json")
   );
   assertInvalid(
-    validateOrganizerScheduleLockDocument as Validator,
-    readFixture("fixtures/invalid/organizer_schedule_lock_invalid_owner.json")
+    validateScheduleLockDocument as Validator,
+    readFixture("fixtures/invalid/schedule_lock_invalid_owner.json")
   );
   assertInvalid(
     validateUpdateOrganizerCallablePayload as Validator,

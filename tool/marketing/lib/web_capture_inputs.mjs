@@ -14,6 +14,7 @@ import {fromRepo} from "../../lib/repo_paths.mjs";
 const renderer = [
   "tool/marketing/lib/web_capture_render.mjs",
   "tool/marketing/lib/web_capture_screen.mjs",
+  "tool/marketing/lib/capture_devices.mjs",
   "tool/marketing/lib/web_capture_inputs.mjs",
   "tool/marketing/lib/capture_provenance.mjs",
   "tool/marketing/frame_device_capture.dart",

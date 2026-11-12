@@ -20,7 +20,9 @@ describe("CatchIndexRow parity", () => {
     expect(css).toContain("border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line);");
     expect(row).toContain("if (lead != null) ...[lead, if (system) gapW12 else gapW16]");
     expect(css).toContain("margin-inline-end: var(--catch-space-s4);");
-    expect(row).toContain("...[gapW12, trailing!]");
+    // The value, trailing control and chevron share one end lane 12px after the copy.
+    expect(row).toMatch(/if \(ends\.isNotEmpty\) \.\.\.\[\s*gapW12,/u);
+    expect(row).toMatch(/final ends = <Widget>\[[\s\S]*?\?trailing,/u);
     expect(css).toContain("margin-inline-start: var(--catch-space-s3);");
   });
 

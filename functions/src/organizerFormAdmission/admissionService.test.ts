@@ -499,10 +499,10 @@ test("approval changes and crossed application identities prevent all writes",
       await assert.rejects(commit(), denied);
       assert.equal(store.writes.length, 0);
     }
-    for (const collection of ["organizerApplicationResponses",
-      "organizerFormResponses"]) {
+    for (const path of [`organizerFormResponses/${responseId}`,
+      "organizerFormVersions/version1"]) {
       const {store, commit} = approvedApplicationFixture();
-      store.rows.delete(`${collection}/${responseId}`);
+      store.rows.delete(path);
       await assert.rejects(commit(), denied);
       assert.equal(store.writes.length, 0);
     }

@@ -184,6 +184,29 @@
       "minLength": 1,
       "maxLength": 180
     },
+    "booking": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "Catch booking facts for a row linked to a Catch account (source catchBooking): payment, signup cohort, host approval and waitlist offer state. Null or absent for Host-supplied rows.",
+      "x-catch-ownership": "callable-owned",
+      "required": ["paymentId", "genderAtSignup", "deletedAt"],
+      "properties": {
+        "paymentId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+        "genderAtSignup": {"$ref": "../shared/event_common.schema.json#/definitions/genderAtSignup"},
+        "cohortAtSignup": {"type": ["string", "null"], "minLength": 1, "maxLength": 120},
+        "communityMembershipAtSignup": {"type": "object", "additionalProperties": false, "description": "Historical pointer to the active community decision checked by the admission transaction; later revocation does not rewrite this booking evidence.", "required": ["membershipId", "revision", "decisionId"], "properties": {"membershipId": {"type": "string", "pattern": "^ocm_[a-f0-9]{64}$"}, "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740990}, "decisionId": {"type": "string", "pattern": "^ocmd_[a-f0-9]{64}$"}}},
+        "hostApprovalStatus": {"type": ["string", "null"], "enum": ["pending", "approved", "declined", null], "description": "Manual-approval request state for request-to-join events. Null for regular waitlist edges."},
+        "hostApprovalDecidedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+        "hostApprovalDecidedBy": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+        "waitlistOfferStatus": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/eventWaitlistOfferStatus"}, {"type": "null"}], "description": "Mirror of the current waitlist offer state for cheap roster and attendee CTA reads."},
+        "waitlistOfferedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+        "waitlistOfferExpiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+        "waitlistOfferAcceptedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+        "waitlistOfferId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+        "inviteSource": {"type": ["string", "null"], "minLength": 1, "maxLength": 80, "description": "Host-facing source label copied from the invite link for durable reporting."},
+        "deletedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "description": "Set when the guest's account was deleted; the row status is then cancelled."}
+      }
+    },
     "provider": {
       "type": ["string", "null"],
       "enum": ["luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb", null],

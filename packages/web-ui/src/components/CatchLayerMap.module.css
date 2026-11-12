@@ -1,0 +1,133 @@
+/*
+ * Website layer map (proposal WebLayerMap), on the indigo band: white cards
+ * with a lift for the jobs Catch runs, dashed outlines in the band's ink for
+ * the jobs that stay with the host.
+ */
+.map {
+  --catch-layer-ink: var(--catch-palette-indigo-ink);
+  --catch-layer-dash: color-mix(in srgb, var(--catch-palette-indigo-ink) 55%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro18);
+  box-sizing: border-box;
+  width: 100%;
+  color: var(--catch-layer-ink);
+  font-family: var(--catch-font-stack-sans);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s5);
+  font-size: var(--catch-typography-role-body-small-size);
+  font-weight: 700;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-s2);
+}
+
+.keyOn,
+.keyOff {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--catch-radius-xs);
+}
+
+.keyOn {
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-mint-deep);
+}
+
+.keyOff { border: 2px dashed var(--catch-layer-dash); }
+
+.nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--catch-space-micro10);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  min-height: 170px;
+  padding: var(--catch-space-s4);
+  border: 2px dashed var(--catch-layer-dash);
+  border-radius: var(--catch-radius-lg);
+  background: transparent;
+  transition:
+    background var(--catch-duration-standard) var(--catch-motion-standard-curve),
+    border-color var(--catch-duration-standard) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-duration-standard) var(--catch-motion-standard-curve);
+}
+
+.node[data-on] {
+  border: 2px solid var(--catch-palette-white);
+  background: var(--catch-palette-white);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--catch-palette-indigo-ink) 28%, transparent);
+  color: var(--catch-palette-ink);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-micro6);
+}
+
+.from {
+  font-size: var(--catch-typography-role-label-badge-size);
+  font-weight: 700;
+}
+
+.tick,
+.ring {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--catch-radius-pill);
+}
+
+.tick {
+  background: var(--catch-palette-mint);
+  color: var(--catch-palette-mint-ink);
+}
+
+.ring { border: 2px dashed var(--catch-layer-dash); }
+
+.label {
+  font-size: var(--catch-typography-role-title-bar-size);
+  font-weight: 700;
+  line-height: var(--catch-typography-role-title-bar-line-height);
+}
+
+.foot {
+  margin-top: auto;
+  font-size: var(--catch-typography-role-body-meta-size);
+  font-weight: 600;
+}
+
+.node[data-on] .foot {
+  color: var(--catch-palette-mint-deep);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node { transition: none; }
+}

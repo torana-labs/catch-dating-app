@@ -40,4 +40,18 @@ describe("CatchAppCaptureImage", () => {
 
     expect(container.querySelector("figcaption")).toBeNull();
   });
+
+  it("sizes, turns and bleeds the capture when asked, and a bleeding capture drops its caption", () => {
+    render(<CatchAppCaptureImage alt="Host today" bleed caption="Today" height={1924} size="md" src="/today.png" tilt="right" width={980} />);
+    const figure = screen.getByRole("figure");
+    expect(figure.dataset).toMatchObject({size: "md", tilt: "right", bleed: ""});
+    expect(figure.querySelector("figcaption")).toBeNull();
+  });
+
+  it("fills its column upright by default", () => {
+    render(<CatchAppCaptureImage alt="Door" height={1924} src="/door.png" width={980} />);
+    const figure = screen.getByRole("figure");
+    expect(figure.dataset).toMatchObject({size: "fill", tilt: "none"});
+    expect(figure.hasAttribute("data-bleed")).toBe(false);
+  });
 });

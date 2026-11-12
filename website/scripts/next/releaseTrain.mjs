@@ -7,7 +7,8 @@ import {setTimeout as sleep} from "node:timers/promises";
 import {fileURLToPath} from "node:url";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
-import {currentReleaseLineage} from "./previewRelease.mjs";
+import {currentReleaseLineage, sourceCiJobs} from "./previewRelease.mjs";
+import {sourceCiPasses} from "../../../tool/ci/required_ci_floor.mjs";
 import {brand} from "../../../packages/brand/index.mjs";
 import {nxLanes} from "../../../tool/nx/select_lanes.mjs";
 
@@ -26,6 +27,10 @@ export const APPROVAL_ENVIRONMENT = "prod";
 export const PREVIEW_WORKFLOW = "website-next-preview.yml";
 export const PROMOTE_WORKFLOW = "website-next-promote.yml";
 export const CI_WORKFLOW = "ci.yml";
+// The inputs the train's validation dispatch sends. GitHub rejects a dispatch
+// whose inputs the workflow does not declare (HTTP 422, run 42944434174), so
+// ci.yml's workflow_dispatch must declare each of these.
+export const CI_VALIDATION_INPUTS = Object.freeze({full: "true"});
 const BOT = "github-actions[bot]";
 const POLL_MS = 20_000;
 
@@ -159,7 +164,10 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha =
     }
     run = github(`repos/${repository}/actions/runs/${run.id}`);
     if (run.status === "completed") {
-      assert.equal(run.conclusion, "success", `${workflow} run ${run.id} ended ${run.conclusion}`);
+      // The train's own CI validation passes as the preview's source gate
+      // does (sprint floor, owner 11 Nov 2026): tool/ci/required_ci_floor.mjs.
+      const passed = workflow === CI_WORKFLOW ? sourceCiPasses({run, jobs: sourceCiJobs(run)}) : run.conclusion === "success";
+      assert.ok(passed, `${workflow} run ${run.id} ended ${run.conclusion}`);
       return run;
     }
   }
@@ -174,7 +182,7 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha =
 async function runValidation() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
-  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: {full: "true"}, expectedSha: sourceSha,
+  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: CI_VALIDATION_INPUTS, expectedSha: sourceSha,
     timeoutMs: 140 * 60_000});
   const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
   summary(mainSha === sourceSha ? `Full CI validated \`${sourceSha}\`.` :

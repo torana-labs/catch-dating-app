@@ -3,6 +3,7 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_guests_desktop_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -51,7 +52,7 @@ class _HostProgrammeGuestsScreenState
         : box.localToGlobal(Offset.zero) & box.size;
     try {
       final link = await ref
-          .read(programPlannerRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .issueWebLink(
             programId: widget.programId,
             kind: ProgramWebLinkKind.family,

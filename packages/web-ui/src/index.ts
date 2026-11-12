@@ -40,14 +40,22 @@ export type {
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
+export {CatchLayerMap} from "./components/CatchLayerMap";
+export type {CatchLayerMapLabels, CatchLayerMapNode, CatchLayerMapProps} from "./components/CatchLayerMap";
+export {CatchNightScene} from "./components/CatchNightScene";
+export type {CatchNightSceneFormat, CatchNightSceneJourney, CatchNightSceneMoment, CatchNightSceneProps} from "./components/CatchNightScene";
+export {CatchPipelineBoard} from "./components/CatchPipelineBoard";
+export type {CatchPipelineBoardGuest, CatchPipelineBoardProps, CatchPipelineBoardStep} from "./components/CatchPipelineBoard";
 export {CatchSiteHeader} from "./components/CatchSiteHeader";
 export type {CatchSiteHeaderLink, CatchSiteHeaderProps} from "./components/CatchSiteHeader";
 export {CatchSiteFooter} from "./components/CatchSiteFooter";
 export type {CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
 export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
-export type {CatchDeviceFrameKind, CatchDeviceFrameProps, CatchDeviceFrameTilt} from "./components/CatchDeviceFrame";
+export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt, CatchDeviceFrameWindowKind} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
 export type {CatchHeroShowcaseProps, CatchHeroShowcaseSticker} from "./components/CatchHeroShowcase";
+export {CatchFormatMatrix} from "./components/CatchFormatMatrix";
+export type {CatchFormatMatrixFormat, CatchFormatMatrixProperty, CatchFormatMatrixProps, CatchFormatMatrixSource} from "./components/CatchFormatMatrix";
 export {CatchFormatTile} from "./components/CatchFormatTile";
 export type {CatchFormatTileProps} from "./components/CatchFormatTile";
 export {CatchPlanCard} from "./components/CatchPlanCard";
@@ -183,8 +191,10 @@ export type {CatchIconProps} from "./components/CatchIcon";
 /** Legacy: the pre-redesign icon, deleted in P7. */
 export {CatchLegacyIcon, catchIconSizes} from "./components/CatchLegacyIcon";
 export type {CatchIconSizeName, CatchIconTone, CatchLegacyIconProps} from "./components/CatchLegacyIcon";
-export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs";
-export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
+export {catchIconStrokeWidth} from "./icons/catchIconRoles";
+export type {CatchActivityKind, CatchIconName} from "./icons/catchIconRoles";
+export {loadCatchIconGlyphs} from "./icons/catchIconGlyphLoader";
+export type {CatchIconGlyphs} from "./icons/catchIconGlyphLoader";
 export {catchIconNodes} from "./icons/catchIconNodes";
 export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes";
 export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
@@ -264,7 +274,7 @@ export type {
   CatchSplitRatio,
 } from "./components/CatchSplit";
 export {CatchStack} from "./components/CatchStack";
-export type {CatchStackElement, CatchStackProps} from "./components/CatchStack";
+export type {CatchStackElement, CatchStackProps, CatchStackRailWidth} from "./components/CatchStack";
 export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
@@ -289,6 +299,7 @@ export {CatchStickyAside} from "./components/CatchStickyAside";
 export type {CatchStickyAsideProps} from "./components/CatchStickyAside";
 export {CatchStoreButton} from "./components/CatchStoreButton";
 export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
+export {catchStoreBadgeAspect} from "./components/CatchStoreButton";
 export {CatchPaneLayout} from "./components/CatchPaneLayout";
 export type {CatchPaneLayoutMode, CatchPaneLayoutProps} from "./components/CatchPaneLayout";
 export {useCatchPane} from "./components/catchPaneLayoutContext";
@@ -339,8 +350,8 @@ export type {
   CatchTableColumn,
   CatchTableProps,
 } from "./components/CatchTable";
-export {CatchText} from "./components/CatchText";
-export type {CatchTextAs, CatchTextProps} from "./components/CatchText";
+export {CatchText, catchWebTextVariants} from "./components/CatchText";
+export type {CatchTextAs, CatchTextProps, CatchWebTextVariant} from "./components/CatchText";
 /** Legacy: the pre-redesign text, deleted in P7. */
 export {CatchLegacyText} from "./components/CatchLegacyText";
 export type {
@@ -359,7 +370,8 @@ export type {CatchGroundProviderProps} from "./components/CatchGroundProvider";
 export {useCatch} from "./components/catchRootContext";
 export type {CatchContextValue} from "./components/catchRootContext";
 export {CatchSurface} from "./components/CatchSurface";
-export type {CatchSurfaceElement, CatchSurfaceProps} from "./components/CatchSurface";
+export {catchWebBandColors} from "./components/CatchSurface";
+export type {CatchSurfaceElement, CatchSurfaceProps, CatchWebBandColor} from "./components/CatchSurface";
 /** Legacy: the pre-redesign surface, deleted in P7. */
 export {CatchLegacySurface} from "./components/CatchLegacySurface";
 export type {CatchLegacySurfaceProps, CatchSurfaceEmphasis, CatchSurfaceTone} from "./components/CatchLegacySurface";
@@ -441,3 +453,7 @@ export {CatchTicket, catchTicketStatuses} from "./components/CatchTicket";
 export type {CatchTicketFact, CatchTicketProps, CatchTicketStatus} from "./components/CatchTicket";
 export {CatchMetricTile, catchMetricTileLayouts, catchMetricTileTones} from "./components/CatchMetricTile";
 export type {CatchMetricTileLayout, CatchMetricTileProps, CatchMetricTileTone} from "./components/CatchMetricTile";
+export {CatchVideoEmbed} from "./components/CatchVideoEmbed";
+export type {CatchVideoEmbedProps, CatchVideoEmbedStill} from "./components/CatchVideoEmbed";
+export {CatchNoteCard} from "./components/CatchNoteCard";
+export type {CatchNoteCardAction, CatchNoteCardPhoto, CatchNoteCardProps} from "./components/CatchNoteCard";

@@ -19,6 +19,25 @@ function caller(surface) {
   return workflow(`${surface}-website.yml`);
 }
 
+const sprintNotice = "# CI is switched off for the redesign sprint (owner, 8 Nov 2026)";
+
+/**
+ * A caller's push trigger, or null while the redesign sprint has removed it:
+ * the caller then runs once a night from main and by dispatch, so it has no
+ * push paths to check. The push-path assertions return with the trigger.
+ */
+function pushTrigger(surface) {
+  const source = caller(surface);
+  const triggers = source.split(/^on:\n/mu)[1].split(/^\S/mu)[0];
+  if (!/^ {2}push:\n/mu.test(triggers)) {
+    assert.ok(source.includes(sprintNotice), `${surface} lost its push trigger outside the redesign sprint`);
+    assert.doesNotMatch(triggers, /^ {2}pull_request:/mu, surface);
+    assert.match(triggers, /^ {2}schedule:\n {4}- cron: '\d+ 22 \* \* \*' # once a night, main\n/mu, surface);
+    return null;
+  }
+  return triggers.split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
+}
+
 function finalFreshnessGateScript() {
   const promote = workflow("_web-hosting-promote.yml");
   const marker = promote.indexOf(
@@ -148,6 +167,7 @@ test("admin and marketing callers share one exact build and promotion path", () 
       "recovery_source_run_id",
       "recovery_source_sha",
     ]) assert.match(source, new RegExp(`${input}:`));
+    if (pushTrigger(surface) === null) continue;
     for (const pathInput of [
       ".github/workflows/_web-hosting-build.yml",
       ".github/workflows/_web-hosting-promote.yml",
@@ -157,7 +177,7 @@ test("admin and marketing callers share one exact build and promotion path", () 
     ]) assert.ok(source.includes(`- "${pathInput}"`), `${surface} is missing ${pathInput}`);
   }
   const admin = caller("admin");
-  for (const adminDependency of [
+  if (pushTrigger("admin") !== null) for (const adminDependency of [
     // Admin's validators and catalog are generated at build time, so no Admin
     // path changes in a diff when a contract or their generator does.
     "contracts/**/*.json",
@@ -194,10 +214,10 @@ test("standalone Host web uses the same immutable build and promotion authority"
 
 test("caller triggers cover the exact build dependency closure", () => {
   const admin = caller("admin");
-  assert.ok(admin.includes('- "packages/web-config/**"'));
+  if (pushTrigger("admin") !== null) assert.ok(admin.includes('- "packages/web-config/**"'));
 
   const marketing = caller("marketing");
-  for (const dependency of [
+  if (pushTrigger("marketing") !== null) for (const dependency of [
     "functions/package.json",
     "functions/package-lock.json",
     "contracts/**/*.json",
@@ -211,7 +231,7 @@ test("caller triggers cover the exact build dependency closure", () => {
   }
 
   const host = caller("host");
-  for (const dependency of [
+  if (pushTrigger("host") !== null) for (const dependency of [
     "firebase/prod/host/**",
     "tool/app_targets.json",
     "tool/platform/resolve_app_target.mjs",
@@ -1049,7 +1069,8 @@ function pathDependencies(directory) {
 }
 
 test("the Host trigger follows every package its build depends on", () => {
-  const trigger = caller("host").split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
+  const trigger = pushTrigger("host");
+  if (trigger === null) return;
   const patterns = [...trigger.matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
   const triggers = file => patterns.some(pattern => matchesGlob(file, pattern));
 
@@ -1079,9 +1100,9 @@ test("the Host trigger follows every package its build depends on", () => {
 });
 
 test("native capture inputs retain the Marketing main publication trigger", () => {
-  const trigger = caller("marketing").split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
-  const patterns = [...trigger.matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
-  for (const file of ["lib/hosts/programs/screen.dart", "apps/host/lib/main.dart", "test/ui_captures/fixture.dart",
+  const trigger = pushTrigger("marketing");
+  const patterns = [...(trigger ?? "").matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
+  if (trigger !== null) for (const file of ["lib/hosts/programs/screen.dart", "apps/host/lib/main.dart", "test/ui_captures/fixture.dart",
     "packages/catch_ui/lib/button.dart", "packages/catch_ui/assets/fonts/Archivo-Regular.ttf",
     "pubspec.lock", "packages/catch_ui/pubspec.yaml", "tool/lib/repo_paths.mjs", "tool/ui_capture/run_captures.mjs"]) {
     assert.ok(patterns.some(pattern => matchesGlob(file, pattern)), `${file} must publish refreshed website media`);

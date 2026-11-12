@@ -60,10 +60,14 @@ void main() {
             uid: 'runner-42',
             name: 'Asha',
             photoUrls: const ['https://img.example/1.jpg'],
-            profilePrompts: normalizeProfilePromptAnswers(
-              const [],
-              legacyBio: 'Long events, coffee, and easy Sunday plans.',
-            ),
+            profilePrompts: normalizeProfilePromptAnswers([
+              profilePromptAnswerFor(
+                definition: profilePromptDefinition(
+                  profilePromptPerfectEventId,
+                ),
+                answer: 'Long events, coffee, and easy Sunday plans.',
+              ),
+            ]),
           ).copyWith(
             occupation: 'Product Designer',
             company: 'Catch',

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.188.0
-updated: 2026-11-08
+version: 1.189.0
+updated: 2026-11-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -3444,6 +3444,7 @@ to private-profile fields or another organizer's records.
 | Verified account identity | Firebase Auth plus the verified `users/{uid}.phoneNumber` mirror | Firebase Auth is authoritative for phone ownership. The private mirror is not a Host projection. |
 | Private Catch/dating profile | `users/{uid}` | Participant-authored source used to build Catch experiences. Its presence does not authorize Host access. |
 | Public dating projection | `publicProfiles/{uid}` | Server-derived, redacted feed shape only. A person-field mapping describes where a published value would land; it is not publication consent. |
+| Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it; contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
 | Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
 | Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
 | Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |
@@ -5063,6 +5064,24 @@ than 7 days after it is sent. Sending takes the next number of
 year (`2026-27/031`). All are server-only and reached through
 `adminManageOrganizerBills` and `adminManageMoneySettings`.
 
+Staff review the start of every host's billing (owner, 9 Nov 2026). Until staff
+have sent two of an organizer's cycle bills, each new cycle bill is made with
+`autoSendAtMillis: null` and waits in Admin for staff to review and send it.
+The count is of cycle bills actually sent (`periodKind: cycle` with
+`sentAtMillis`), so it counts cycles, never calendar months, and it cannot be
+used up by a bill nobody reviewed: a cycle with nothing to bill (no bill), a
+`free` bill and a bill prepaid by the tools-only purchase are never sent and do
+not count. From the third reviewed cycle, a new cycle bill gets
+`autoSendAtMillis` a day after it is made, and the next daily run recomputes it
+(picking up refunds) and sends it through the same path as staff's send. Staff
+can still send any bill themselves. A hold stops automatic sending:
+`sendHold` on one unsent bill, or on the organizer's
+`organizerBillingCycles/{organizerId}` pointer for all of its bills (only once
+it has been billed for a cycle, since before that its bills wait for staff
+anyway). Holds and releases are recorded with who and why, in the bill's
+history (`held`, `holdReleased`) or the admin audit log. Bills made before
+automatic sending have no `autoSendAtMillis` and wait for staff.
+
 Refunds after a bill is sent are credited on the next bill (owner, 9 Nov
 2026). A sent bill's figures never change. When a cycle bill is made or
 recomputed, every earlier `sent` or `paid` ticketing cycle bill of the
@@ -5118,11 +5137,18 @@ reminder queues one `organizerBillNotices/{billId}_issued` or
 `{billId}_reminder{n}` row: email to the owner's verified Firebase Auth address
 through the credential named in `billingNoticeSettings/platform` (pinned Secret
 Manager version; never the key itself), and a Host app push that says only that
-a bill was issued. Both are server-only.
+a bill was issued. Both are server-only. The email links the Razorpay invoice
+and the host billing website for that organizer
+(`/host/billing/?organizerId={organizerId}`); the push carries no link.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills`, which leaves out unsent
 bills and everything only staff need (reminders, history, terms revisions).
+The host billing website finds the caller's organizers through
+`listMyOwnedOrganizers`: the organizers whose `ownerUserId` is the caller, or
+whose legacy `hostUserId` is when no owner is recorded (the owner rule of every
+billing callable), archived ones included, a page of at most 50 at a time in
+organizer id order, each with its name and trial and plan status. No prices.
 
 The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled

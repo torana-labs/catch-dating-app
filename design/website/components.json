@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 114,
-  "updated": "2026-11-08",
+  "version": 115,
+  "updated": "2026-11-11",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -147,11 +147,12 @@
       },
       "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
+        "catch.stack",
         "catch.step_header",
         "catch.top_bar",
         "catch.workspace_header"
       ],
-      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today."
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row."
     },
     {
       "id": "shared_public_page_header",
@@ -477,15 +478,15 @@
         "exportName": "Host",
         "states": [
           "default",
-          "night-chapter",
+          "night-format",
           "applicant-replay",
-          "layer-one",
+          "layer-two",
           "pricing-cap",
-          "apply-card",
+          "start-band",
           "phone"
         ]
       },
-      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with the phone mock, the five formats, on the night (chapters drive the phone), the host stand, from interested to expected (applicant replay), for your guests, what brings people in, the layer picker, the pricing range (5%, capped at ₹10,000), the FAQ and the apply card that continues to /host/apply/. Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
+      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with Start free trial, Catch Host's official store badges, the trial terms and the today capture bleeding off the band; every kind of night with the format matrix; on the night (CatchNightScene, the format shared with the tiles and matrix); the tablet; from interested to expected (CatchPipelineBoard); for your guests; what brings people in; the ways to use Catch on the indigo band (CatchLayerMap); pricing (5% after a 30-day trial from the first event, capped at ₹10,000 a month); the FAQ; and the #start band with three steps, the badges and a link to Catch for weddings. App screens are capture slots (tool/marketing/capture_manifest.json). Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
     },
     {
       "id": "route_organizer_listing",
@@ -530,7 +531,6 @@
         "website/src/styles/consumer-home.css",
         "packages/web-ui/src/components/CatchRoot.module.css",
         "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
         "packages/web-ui/src/components/CatchBand.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchNoticeRegion.module.css"
@@ -548,7 +548,7 @@
           "mobile-sticky-action"
         ]
       },
-      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, a reading lane beside the booking card (sticky aside from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
+      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, the page beside the booking card's 380px rail at the site content width (CatchStack railWidth, proposal E1; the rail sticks from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
     },
     {
       "id": "event_page_frame",
@@ -1949,85 +1949,6 @@
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
     },
     {
-      "id": "shared_plain_button",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_detail_canonical",
-        "help",
-        "home",
-        "host",
-        "host_apply",
-        "not_found",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "privacy",
-        "terms",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actionControls.tsx",
-      "exportName": "PlainButton",
-      "componentId": "catch.button",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "disabled"
-        ]
-      },
-      "notes": "Unstyled native button that duplicates the role of ButtonControl."
-    },
-    {
-      "id": "shared_text_action_button",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "organizer_search"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actions.tsx",
-      "exportName": "TextActionButton",
-      "componentId": "catch.button",
-      "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/host.css",
-        "website/src/styles/organizers.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "disabled"
-        ]
-      },
-      "notes": "Text-styled action button: a text recipe of catch.button."
-    },
-    {
-      "id": "shared_data_table",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "features/host",
-      "source": "website/src/shared/ui/primitives/actions2.tsx",
-      "exportName": "DataTable",
-      "componentId": "catch.table",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "named-table",
-          "keyboard-scroll-region"
-        ]
-      },
-      "notes": "Website adapter of the @catch/web-ui DataTableControl."
-    },
-    {
       "id": "shared_event_runtime_live_header",
       "kind": "supporting-component",
       "routeIds": [
@@ -2153,34 +2074,6 @@
         ]
       },
       "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
-    },
-    {
-      "id": "shared_checkbox_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_booking",
-        "event_detail_canonical",
-        "event_invite",
-        "event_runtime",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "public_form"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "CheckboxField",
-      "componentId": "catch.toggle",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "unchecked",
-          "checked",
-          "disabled"
-        ]
-      },
-      "notes": "Website adapter of CheckboxControl, the one-boolean input."
     },
     {
       "id": "shared_host_preview_section",
@@ -4206,16 +4099,25 @@
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css"
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchAppCaptureImage.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
+        "story": "website/src/stories/Weddings.stories.tsx",
+        "exportName": "Desktop",
         "states": [
           "default",
           "phone"
         ]
       },
-      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares the route review states but no catchComponent: the landing story fails its axe check (colour-contrast on the row subtitles over the coral ground, 2.7:1), so the record stays planned until that is fixed."
+      "notes": "Catch for weddings from the RbWebWeddings board: a sales-led pilot on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply. Bands: the hero (\"One wedding, one running order.\" on phones, the full headline from medium up) with the RSVP capture, the running order, the problem, one wedding through six chapters in real programme screens (desktop screens in the W1 browser frame, phones in the generic frame; all 14 slots are pending captures showing placeholders), the team, messages and the family, pricing by headcount with no numbers and Apply for a quote, the pilot on the indigo band with the step-1 card and the Catch Host trial tile, questions and the ink foot band. Weddings.stories.tsx Desktop (default) and Phone (phone) pass their axe checks."
     },
     {
       "id": "weddings_bands",
@@ -4250,7 +4152,7 @@
           "phone"
         ]
       },
-      "notes": "The landing's bands in board order: the running-order hero, why planners switch, one wedding through six chapters (illustrative interface excerpts that run nothing), the team, messages and the family, pricing by headcount, the guided pilot with the step-1 card, questions and the foot band."
+      "notes": "The landing's bands in board order (see route_weddings). Screens come from capture slots wedding-* in tool/marketing/capture_manifest.json by literal id; the step-1 card shows what is missing on Continue and links to /weddings/apply/ only once complete."
     },
     {
       "id": "route_weddings_apply",
@@ -4288,7 +4190,7 @@
           "sent"
         ]
       },
-      "notes": "/weddings/apply/ (noindex): step 2 and the sent state of the guided-pilot application, taking step 1 from the landing through sessionStorage in the same tab. No intake front door yet, so Send stays disabled until one is chosen."
+      "notes": "/weddings/apply/ (noindex), from the RbWebWeddingsApply board: step 1 again when the landing did not hand it over (sessionStorage, same tab), then step 2 on the tile band with the summary and next steps beside the form (every answer starts empty; who is flying, what they want and how they heard are required), then the sent state, which can reopen the answers. Send goes through the waitlist route as a programme application with applicantRole and programmeKind."
     },
     {
       "id": "weddings_application_flow",
@@ -4323,7 +4225,7 @@
           "sent"
         ]
       },
-      "notes": "The application drawn from the weddings controller: the stepper, step 2's summary of step 1 and its fields, then the sent state."
+      "notes": "The application drawn from the weddings controller: step 1's card, step 2's summary of step 1 and its required answers, then the sent state."
     },
     {
       "id": "weddings_step_one_card",
@@ -4361,6 +4263,13 @@
       "owner": "shared/media",
       "source": "packages/web-ui/src/components/CatchAppCaptureImage.tsx",
       "exportName": "CatchAppCaptureImage",
+      "comparedWith": [
+        "catch.network_image",
+        "catch.text",
+        "catch.detail_media",
+        "catch.graded_image"
+      ],
+      "comparisonReason": "Shows one framed marketing capture from the capture pipeline at its exact framed pixel size, with a device-sized width, tilt and bleed. It is not a general remote image: no fallback, loading hook or decode sizing (catch.network_image), no hero assembly or readability overlay (catch.detail_media), and never graded, because captures must keep their rendered pixels (catch.graded_image). It composes catch.text for its caption rather than implementing text.",
       "css": [
         "packages/web-ui/src/components/CatchAppCaptureImage.module.css"
       ],
@@ -4373,7 +4282,7 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption, optionally sized (sm 280, md 330, lg 380 or fill), turned (tilt) or bleeding off its band (bleed, proposal L3); website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
     },
     {
       "id": "shared_event_backdrop_image",
@@ -4571,7 +4480,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). Two, three or four equal columns, one or two on a page narrower than 840px, spaced with a CatchGaps role; as ul or ol it wraps each child in a list item. Search aliases: GridLayout, ResponsiveGrid, TileGrid, CardGrid, Columns, MasonryGrid."
+      "notes": "Website T4 under D18 (CAT-248). Two, three or four equal columns, one or two on a page narrower than 840px, spaced with a CatchGaps role; as ul or ol it wraps each child in a list item. Search aliases: GridLayout, ResponsiveGrid, TileGrid, CardGrid, Columns, MasonryGrid.",
+      "comparedWith": [
+        "catch.stack"
+      ],
+      "comparisonReason": "Equal columns whose count follows the page's catch-page container, wrapping into further rows; catch.stack lays children in one column or one row sized by their content. Deprecated: P7 replaces it with CatchStack direction=row equal collapseBelow, after which it is deleted rather than registered as a stack."
     },
     {
       "id": "shared_scroller",
@@ -4583,6 +4496,10 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchScroller.tsx",
       "exportName": "CatchScroller",
+      "comparedWith": [
+        "catch.rail"
+      ],
+      "comparisonReason": "A full-bleed band row: its first item lines up with the page content edge while items scroll out to the viewport edge, it never wraps, and its items can grow to share the row (the boards' format tiles). catch.rail is a content-width row that fades the edge hiding more and wraps into a grid on desktops. The two overlap; folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up.",
       "css": [
         "packages/web-ui/src/components/CatchScroller.module.css"
       ],
@@ -5004,10 +4921,14 @@
       },
       "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
       "comparedWith": [
+        "catch.analytics_metric",
         "catch.detail_media",
+        "catch.icon_tile",
+        "catch.option_card",
+        "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style."
+      "comparisonReason": "A past-moment or hamper photo tile: it draws its photo through CatchHeroImage (catch.detail_media) and its figure, title and caption through CatchLegacyText (catch.text), and both of those still render on their own elsewhere. It adds the fixed tile height, the ground fallback and the figure layout, so it is neither the detail hero nor a text style. Its figure is marketing copy, not a caller-formatted metric with missing-data states (catch.analytics_metric); it shows no icon (catch.icon_tile) and is not a choice target (catch.option_card); its ground is a fixed v2 palette fill for a photo-less tile, not one of the catch.surface roles that tell children what they sit on."
     },
     {
       "id": "shared_preview_card",
@@ -5097,12 +5018,17 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
+        "host",
         "organizer_listing_canonical",
         "event_detail_canonical"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchStoreButton.tsx",
       "exportName": "CatchStoreButton",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "Shows the official App Store or Google Play badge artwork as a link, or a pending button that records the tap. The badge must appear exactly as Apple and Google supply it (no recolour, label or redraw), so it cannot be a catch.button, which draws its own labelled control; it only shares the D20 heights.",
       "css": [
         "packages/web-ui/src/components/CatchStoreButton.module.css"
       ],
@@ -5115,14 +5041,12 @@
           "google-play",
           "large",
           "medium",
-          "with-kicker",
-          "label-only",
+          "pending",
           "on-ink",
-          "on-accent",
-          "board-reference"
+          "on-accent"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A link to the Catch app in the App Store or Google Play, drawn as a D20 primary action (theme primary fill, 4px corners, overlay and press feedback) with a plain store mark and an optional kicker line. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
+      "notes": "Website T4 under D18 (CAT-249), proposal L8. A link to the Catch app in the App Store or Google Play drawn with the store's official badge artwork (Apple's black SVG, Google's cropped PNG; Apple's and Google's guidelines forbid a drawn button), never recoloured, stretched or overlaid, at the D20 large (48px) or medium (40px) height. The site hosts the files (website/public/assets/store-badges, with provenance); a store that is not live yet draws the same badge as a button that records the press. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
     },
     {
       "id": "shared_catch_site_header",
@@ -5189,11 +5113,16 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host"
+        "host",
+        "weddings"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchDeviceFrame.tsx",
       "exportName": "CatchDeviceFrame",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "Draws a generic phone, tablet or browser-window bezel in CSS around one screen (proposal W1, L9). It lays out no panes: catch.pane_layout arranges workspace screens' list, detail and side panes, while this frame decorates a single picture.",
       "css": [
         "packages/web-ui/src/components/CatchDeviceFrame.module.css"
       ],
@@ -5202,15 +5131,136 @@
         "story": "packages/web-ui/src/components/CatchDeviceFrame.stories.tsx",
         "exportName": "Kinds",
         "states": [
-          "iphone",
+          "phone",
           "android",
-          "ipad",
+          "tablet",
+          "tablet-portrait",
           "tilt-left",
           "tilt-right",
-          "on-ink"
+          "on-ink",
+          "small",
+          "browser",
+          "browser-compact",
+          "bleed"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). A device bezel (iPhone, Android or iPad) around an app screen for showing the Catch apps on the website, upright or turned. The frame is decoration; the screen image carries the description. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+      "notes": "Website T4 under D18 (CAT-260). A generic device bezel (phone, Android phone with a punch-hole camera, or tablet held either way; nothing unique to Apple hardware) around an app screen for showing the Catch apps on the website, upright or turned. Geometry is one spec per kind as shares of the frame, so proportions hold at any size. The frame is decoration; the screen image carries the description. A browser kind (proposal W1) puts a quiet window with an optional address around a desktop capture, and bleed (L3) runs a device off its band's bottom edge, which clips it. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: BrowserFrame, BrowserWindow, PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+    },
+    {
+      "id": "shared_format_matrix",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFormatMatrix.tsx",
+      "exportName": "CatchFormatMatrix",
+      "comparedWith": [
+        "catch.chip"
+      ],
+      "comparisonReason": "A website comparison table of event formats against the properties Catch tracks for each, with a format picker. It renders catch.chip for that picker; it does not implement the chip contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchFormatMatrix.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFormatMatrix.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "table",
+          "selected-column",
+          "chips",
+          "pick"
+        ]
+      },
+      "notes": "Website host landing, proposal WebFormatMatrix (\"Built for every kind of night\"). Several event formats' properties side by side: a table on a wide band whose column headings choose a format (its column tinted in the format's colour), and on a phone-width band format chips over the selected format's properties. The selection is shared with the page's night scene. Nearest concept: CatchTable, which lists records rather than comparing formats. Search aliases: WebFormatMatrix, ComparisonTable, FormatComparison, FeatureMatrix."
+    },
+    {
+      "id": "shared_night_scene",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchNightScene.tsx",
+      "exportName": "CatchNightScene",
+      "comparedWith": [
+        "catch.chip"
+      ],
+      "comparisonReason": "A pinned, scroll-driven timeline of one evening for the host landing (proposal WebNightScene). On a phone it renders catch.chip for the format picker; it does not implement the chip contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchNightScene.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchNightScene.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "first-moment",
+          "badge",
+          "format-picker",
+          "compact"
+        ]
+      },
+      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
+    },
+    {
+      "id": "shared_pipeline_board",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPipelineBoard.tsx",
+      "exportName": "CatchPipelineBoard",
+      "comparedWith": [
+        "catch.person_avatar",
+        "catch.button"
+      ],
+      "comparisonReason": "A website board showing applicants moving from interested to expected. It renders catch.person_avatar for each person and catch.button for the board's demo actions; it implements neither contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchPipelineBoard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchPipelineBoard.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "booked",
+          "compact",
+          "chosen-step"
+        ]
+      },
+      "notes": "Website host landing, proposal WebPipelineBoard (\"From interested to expected\"). Numbered step tabs over a board of columns; each guest is a chip that slides into the furthest column it reaches so far. Plays on its own while on screen (not under reduced motion); a chosen tab stops it, replay starts again. Nearest concept: CatchSection columns. Search aliases: WebPipelineBoard, Kanban, BookingFunnel, ApplicantBoard."
+    },
+    {
+      "id": "shared_layer_map",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchLayerMap.tsx",
+      "exportName": "CatchLayerMap",
+      "comparedWith": [
+        "catch.icon"
+      ],
+      "comparisonReason": "A website diagram of how Catch's layers stack for one way of hosting. It renders catch.icon for each layer's glyph; it does not implement the icon contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchLayerMap.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchLayerMap.stories.tsx",
+        "exportName": "Layers",
+        "states": [
+          "layer-1",
+          "layer-2",
+          "layer-3",
+          "compact"
+        ]
+      },
+      "notes": "Website host landing, proposal WebLayerMap, on the indigo band (L2). Which jobs Catch runs at a chosen layer of adoption: solid white cards for the jobs Catch runs (new ones marked), dashed outlines with what the host keeps for the rest. Paired with a CatchPageTabBar. Nearest concept: CatchTable. Search aliases: WebLayerMap, AdoptionLayers, WaysToUse, FeatureLayers."
     },
     {
       "id": "shared_hero_showcase",
@@ -5221,6 +5271,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchHeroShowcase.tsx",
       "exportName": "CatchHeroShowcase",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A website hero picture: a tilted framed capture on a coloured ground with floating stickers. It composes catch.text for the sticker labels; it does not implement text.",
       "css": [
         "packages/web-ui/src/components/CatchHeroShowcase.module.css"
       ],
@@ -5247,6 +5301,14 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
       "exportName": "CatchFormatTile",
+      "comparedWith": [
+        "catch.surface",
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
+      ],
+      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. Not a block that tells children their ground (catch.surface), not a caller-formatted metric with missing-data states (catch.analytics_metric), not an icon-only tile (catch.icon_tile) and not a checked form choice (catch.option_card). It composes catch.text for its labels.",
       "css": [
         "packages/web-ui/src/components/CatchFormatTile.module.css"
       ],

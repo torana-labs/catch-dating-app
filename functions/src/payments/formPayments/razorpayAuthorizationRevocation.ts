@@ -11,7 +11,6 @@ import {organizerOwnerUserId} from "../../shared/organizerHosts";
 import type {
   OrganizerDocument,
   OrganizerPaymentConnectionDocument as Connection,
-  UserProfileDocument,
 } from "../../shared/generated/firestoreAdminTypes";
 import {formPaymentPartnerWebhookConfig} from "./formPaymentRuntime";
 import {FormPaymentProviderError} from "./razorpayPaymentProvider";
@@ -152,10 +151,7 @@ async function pushOwner(db: Db, organizerId: string): Promise<void> {
     .data() as OrganizerDocument | undefined;
   const ownerUid = organizer ? organizerOwnerUserId(organizer) : null;
   if (!ownerUid) return;
-  const user = (await db.collection("users").doc(ownerUid).get()).data() as
-    UserProfileDocument | undefined;
-  const tokens = await resolveConversationPushTokens(db, ownerUid, "host",
-    user);
+  const tokens = await resolveConversationPushTokens(db, ownerUid, "host");
   const copy = notificationCopy("organizerRazorpayRevoked",
     {organizerName: String(organizer?.name ?? "Your organiser")});
   for (const token of tokens.slice(0, 20)) {

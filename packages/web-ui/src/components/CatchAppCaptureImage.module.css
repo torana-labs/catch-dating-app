@@ -7,6 +7,24 @@
   margin: 0;
 }
 
+.capture[data-size="sm"] { width: min(100%, 280px); }
+.capture[data-size="md"] { width: min(100%, 330px); }
+.capture[data-size="lg"] { width: min(100%, 380px); }
+.capture[data-size] { justify-self: center; margin-inline: auto; }
+/* A fixed size keeps its width beside other content in a row instead of shrinking away. */
+.capture:is([data-size="sm"], [data-size="md"], [data-size="lg"]) { flex: none; }
+.capture[data-size="fill"] { width: 100%; }
+
+.capture[data-tilt="left"] .image { transform: rotate(-4deg); }
+.capture[data-tilt="right"] .image { transform: rotate(5deg); }
+
+/* bleed (proposal L3): the device runs off the band's bottom edge; the band clips it. */
+.capture[data-bleed] { margin-bottom: -140px; }
+
+@container catch-page (width < 840px) {
+  .capture[data-bleed] { margin-bottom: -110px; }
+}
+
 .image {
   display: block;
   width: 100%;

@@ -1,7 +1,5 @@
-import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {HttpsError} from "firebase-functions/v2/https";
-import {onSchedule} from "firebase-functions/v2/scheduler";
 import {effectiveCommercialTerms, readCommercialTerms} from
   "../commercialTerms/resolver";
 import type {CommercialTerms} from "../commercialTerms/terms";
@@ -34,7 +32,7 @@ import {
 import {refundCreditSources, refundCreditWindowStart} from
   "./billRefundCredits";
 import {billablePaymentsByOrganizer} from "./billSources";
-import {trialAnchorsFromFacts, trialWindow} from "./hostTrial";
+import {dayMillis, trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {readMoneySettings} from "./moneySettings";
 import {prepareNominatorCredit} from "./nominatorCredits";
 import {billingPlanForCycle, planOfBill, type BillingPlan} from
@@ -42,15 +40,30 @@ import {billingPlanForCycle, planOfBill, type BillingPlan} from
 
 /**
  * Rolling cycle bills (#1126): once a day, every organizer whose free trial
- * has ended gets a bill for each billing cycle that has closed, in arrears,
- * ready for staff to review and send. A cycle with nothing to bill advances
- * the organizer's cycle pointer without a bill.
+ * has ended gets a bill for each billing cycle that has closed, in arrears.
+ * A cycle with nothing to bill advances the organizer's cycle pointer without
+ * a bill.
+ *
+ * Staff review (owner, 9 Nov 2026): until staff have sent two of a host's
+ * cycle bills, every new cycle bill waits for staff to review and send it.
+ * From then on a new cycle bill is sent automatically by the daily run about
+ * a day after it is made, unless staff hold the bill or the organizer. The
+ * count is of cycle bills actually sent, so it counts cycles, never calendar
+ * months, and a free bill (nothing due) or a bill prepaid by the tools-only
+ * purchase, which are never sent, does not use up the review.
  */
 export const organizerBillingCyclesCollection = "organizerBillingCycles";
 export const organizerBillsCollectionName = "organizerBills";
 const organizerBillingPlansCollectionName = "organizerBillingPlans";
 const historyLimit = 60;
 const pageSize = 300;
+
+/** Cycle bills staff send before later ones are sent automatically. */
+export const staffReviewedCycles = 2;
+/** A bill sent automatically goes out this long after it is made. */
+export const autoSendDelayMillis = dayMillis;
+/** Slack for the daily run firing a little earlier than a day after. */
+export const autoSendToleranceMillis = 60 * 60 * 1000;
 
 type Db = FirebaseFirestore.Firestore;
 type Bill = OrganizerBillDocument;
@@ -70,6 +83,8 @@ interface OrganizerWork {
   trialEndsAtMillis: number;
   pointer: Pointer;
   cycles: CycleWindow[];
+  /** Cycle bills of this organizer that staff have sent. */
+  reviewedCycles: number;
   /** The organizer's bills when the run began, to size the payment read. */
   bills: Bill[];
 }
@@ -82,7 +97,37 @@ function checkedBill(bill: Bill): Bill {
   return bill;
 }
 
-function checkedPointer(pointer: Pointer): Pointer {
+/**
+ * Whether a bill counts toward the staff review of a host's first cycles: a
+ * cycle bill that was sent. Calendar-month bills, free bills and bills
+ * prepaid by the tools-only purchase are never sent and do not count.
+ * @param {Bill} bill A bill.
+ * @return {boolean} Whether it was a reviewed cycle.
+ */
+export function isReviewedCycleBill(bill: Pick<Bill, "periodKind" |
+  "sentAtMillis">): boolean {
+  return bill.periodKind === "cycle" && bill.sentAtMillis !== null;
+}
+
+/**
+ * When a new cycle bill is sent automatically, or null when staff must
+ * review and send it.
+ * @param {number} reviewedCycles Cycle bills of the organizer already sent.
+ * @param {number} nowMillis When the bill is made.
+ * @return {number|null} Automatic send time.
+ */
+export function autoSendAtFor(reviewedCycles: number, nowMillis: number):
+  number | null {
+  return reviewedCycles >= staffReviewedCycles ?
+    nowMillis + autoSendDelayMillis : null;
+}
+
+/**
+ * Validates a cycle pointer before it is written.
+ * @param {Pointer} pointer Pointer.
+ * @return {Pointer} The same pointer.
+ */
+export function checkedPointer(pointer: Pointer): Pointer {
   const id = pointer.organizerId;
   if (!validateOrganizerBillingCycleDocument(pointer)) {
     throw new HttpsError("internal",
@@ -170,7 +215,8 @@ async function organizerWork(db: Db, organizerId: string,
   return {organizerId, terms, platformRevision: stored.platform.revision,
     organizerRevision: stored.organizer?.revision ?? 0,
     ownTerms: stored.organizer !== null,
-    trialEndsAtMillis: pointer.trialEndsAtMillis, pointer, cycles, bills};
+    trialEndsAtMillis: pointer.trialEndsAtMillis, pointer, cycles, bills,
+    reviewedCycles: bills.filter(isReviewedCycleBill).length};
 }
 
 /**
@@ -212,6 +258,8 @@ export function cycleBill(input: {
   cycle: CycleWindow; payments: BillablePayment[]; plan: BillingPlan;
   organizerName: string; gstRegistered: boolean; gstRateBasisPoints: number;
   current: Bill | undefined; nowMillis: number; actorUid: string | null;
+  /** For a new bill: when it is sent automatically, or null for staff. */
+  autoSendAtMillis?: number | null;
   /** Refund credit owed from earlier bills, oldest first. */
   credit?: RefundCreditSource[];
 }): Bill | null {
@@ -232,6 +280,12 @@ export function cycleBill(input: {
   if (!current && figures.totalMinor === 0 && !figures.refundCredit?.
     appliedMinor && figures.commission.trialWaivedMinor === 0) return null;
   const id = cycleBillId(work.organizerId, cycle.startMillis);
+  const status = figures.totalMinor > 0 ? "toSend" as const : "free" as const;
+  // A recomputed bill keeps how it is sent; one that was free, and now has
+  // something to bill, waits for staff.
+  const autoSendAtMillis = status !== "toSend" ? null : current ?
+    current.status === "toSend" ? current.autoSendAtMillis ?? null : null :
+    input.autoSendAtMillis ?? null;
   const base: Bill = current ?? {schemaVersion: 1, billId: id,
     organizerId: work.organizerId, organizerName: "",
     month: monthOf(cycle.endMillis - 1), periodStartMillis: cycle.startMillis,
@@ -247,7 +301,7 @@ export function cycleBill(input: {
     periodKind: "cycle", cycleNumber: cycle.cycleNumber,
     countFromMillis: cycle.countFromMillis,
     revision: base.revision + 1,
-    status: figures.totalMinor > 0 ? "toSend" : "free",
+    status, autoSendAtMillis, sendHold: current?.sendHold ?? null,
     terms: {platformRevision: work.platformRevision,
       organizerRevision: work.organizerRevision, ownTerms: work.ownTerms},
     history: [...base.history, {atMillis: nowMillis,
@@ -320,6 +374,7 @@ export async function generateCycleBills(deps: CycleBillDeps,
           organizerName, gstRegistered: settings.gstRegistered,
           gstRateBasisPoints: settings.gstRateBasisPoints, current: undefined,
           nowMillis: now, actorUid,
+          autoSendAtMillis: autoSendAtFor(item.reviewedCycles, now),
           // A prepaid bill is already paid; credit waits for the next one.
           credit: usesPrepaid ? undefined : refundCreditSources({
             billId: billRef.id, periodStartMillis: cycle.startMillis,
@@ -329,7 +384,7 @@ export async function generateCycleBills(deps: CycleBillDeps,
         if (bill && prepaid && usesPrepaid && storedPlan) {
           // The purchase paid for this cycle at the fee it was bought at;
           // GST switched on since is not charged on top.
-          bill = checkedBill({...bill, status: "paid",
+          bill = checkedBill({...bill, status: "paid", autoSendAtMillis: null,
             paidAtMillis: prepaid.paidAtMillis, paidMinor: prepaid.paidMinor,
             paidVia: "planPurchase", history: [...bill.history,
               {atMillis: now, action: "paid" as const, byUid: null,
@@ -362,17 +417,20 @@ export async function generateCycleBills(deps: CycleBillDeps,
  * include refunds made since the cycle closed. Sent and closed bills keep
  * their figures.
  * @param {CycleBillDeps} deps Dependencies.
- * @param {string|null} actorUid Staff member.
+ * @param {string|null} actorUid Staff member, or null for the daily run.
+ * @param {ReadonlySet<string>} onlyBillIds Only these bills, when given.
  * @return {Promise<number>} Bills rewritten.
  */
 export async function regenerateToSendCycleBills(deps: CycleBillDeps,
-  actorUid: string | null): Promise<number> {
+  actorUid: string | null, onlyBillIds?: ReadonlySet<string>):
+  Promise<number> {
   const db = deps.db();
   const now = deps.now();
   const snap = await db.collection(organizerBillsCollectionName)
     .where("status", "in", ["toSend", "free"]).limit(500).get();
   const bills = snap.docs.map((doc) => doc.data() as Bill)
-    .filter((bill) => bill.periodKind === "cycle");
+    .filter((bill) => bill.periodKind === "cycle" &&
+      (!onlyBillIds || onlyBillIds.has(bill.billId)));
   if (bills.length === 0) return 0;
   // Earlier bills that may owe refund credit need their payments too.
   const creditStarts = await Promise.all([...new Set(bills.map((bill) =>
@@ -428,16 +486,3 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
   }
   return written;
 }
-
-/**
- * Once a day, India time, every cycle that closed is billed in arrears and
- * left for staff to review and send.
- */
-export const generateOrganizerCycleBillsDaily = onSchedule({
-  schedule: "15 6 * * *", timeZone: "Asia/Kolkata", timeoutSeconds: 540,
-  maxInstances: 1,
-}, async () => {
-  const written = await generateCycleBills({db: () => admin.firestore(),
-    now: Date.now}, null);
-  logger.info("Organizer cycle bills made.", {written});
-});

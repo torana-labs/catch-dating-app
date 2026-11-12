@@ -246,10 +246,8 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
       p1: {eventId: "demo_past"},
       p2: {eventId: "demo_future"},
     },
-    organizerScheduleLocks: {
-      club_lock: {eventId: "demo_past"},
-    },
-    userEventScheduleLocks: {
+    scheduleLocks: {
+      organizer_lock: {eventId: "demo_past"},
       user_lock: {eventId: "demo_cancelled"},
     },
     savedEvents: {
@@ -301,7 +299,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
 
   assert.deepEqual(plan.staleEventIds, ["demo_cancelled", "demo_past"]);
   assert.deepEqual([...plan.paths].sort(), [
-    "organizerScheduleLocks/club_lock",
+    "scheduleLocks/organizer_lock",
     "eventParticipations/p1",
     "events/demo_cancelled",
     "events/demo_past",
@@ -313,7 +311,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
     "reviews/review",
     "savedEvents/saved",
     "profileDecisions/uid_a/outgoing/uid_b",
-    "userEventScheduleLocks/user_lock",
+    "scheduleLocks/user_lock",
   ].sort());
 });
 

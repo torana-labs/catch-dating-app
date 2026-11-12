@@ -36,6 +36,32 @@ export const strandedByRetirementCeiling = Object.freeze({
   }),
 });
 
+/**
+ * Debt the owner accepted on 11 Nov 2026 so the website could release, each
+ * with the issue that pays it down by its due date. The baseline's
+ * `acceptedDebt` record may hold these and only these, as
+ * "<issue> due <YYYY-MM-DD>". An entry still measured after its due date
+ * fails the check; one that is paid down leaves both the gate and the record.
+ * Delete this list with the record's last entry.
+ */
+const acceptedPlan = "#1670 due 2026-11-25";
+export const acceptedDebtCeiling = Object.freeze({
+  "library.cross_framework_parity": Object.freeze({
+    "catch.notice": acceptedPlan,
+    "catch.option_card": acceptedPlan,
+    "catch.person_avatar": acceptedPlan,
+  }),
+  "screens.web_adapters": Object.freeze({
+    "packages/web-ui/src/components/CatchChoiceInput.tsx::CatchChoiceInput": acceptedPlan,
+  }),
+  "screens.web_single_use_shared": Object.freeze({
+    "website/src/shared/site/EventBookingFrame.tsx::EventBookingFrame": acceptedPlan,
+    "website/src/shared/ui/primitives/actions.tsx::ActionGroup": acceptedPlan,
+    "website/src/shared/ui/primitives/eventRuntime.tsx::EventRuntimeNoticeStack": acceptedPlan,
+  }),
+});
+const acceptedPlanPattern = /^(#\d+) due (\d{4}-\d{2}-\d{2})$/u;
+
 const sortedBudgets = (budgets) =>
   Object.fromEntries(Object.entries(budgets).sort(([left], [right]) => left.localeCompare(right)));
 const newlines = (source) => source.split("\n").length - 1;
@@ -126,7 +152,39 @@ export function parseConsolidationBaseline(document) {
       }
     }
   }
+  if (document.acceptedDebt !== undefined) {
+    if (!object(document.acceptedDebt)) throw new Error("Invalid acceptedDebt record");
+    for (const [gate, record] of Object.entries(document.acceptedDebt)) {
+      const ceiling = acceptedDebtCeiling[gate];
+      if (!ceiling || !object(record)) throw new Error(`Invalid acceptedDebt gate: ${gate}`);
+      for (const [id, plan] of Object.entries(record)) {
+        if (ceiling[id] !== plan) throw new Error(`acceptedDebt ${gate}: ${id} is not in the tool's closed list as ${plan}`);
+        if (!document.gates[gate].includes(id)) throw new Error(`acceptedDebt ${gate}: ${id} is not an allowance`);
+      }
+    }
+  }
   return document;
+}
+
+/**
+ * Accepted entries are not new debt against the merge base until their due
+ * date; one still measured after it is a finding naming its issue.
+ */
+export function acceptedDifferences(findings, recorded, actual, now = new Date()) {
+  const today = now.toISOString().slice(0, 10);
+  const exempt = new Set();
+  const expired = [];
+  for (const [gate, entries] of Object.entries(recorded?.acceptedDebt ?? {})) {
+    for (const [id, plan] of Object.entries(entries)) {
+      const [, issue, due] = acceptedPlanPattern.exec(plan) ?? [];
+      if (!due) throw new Error(`acceptedDebt ${gate}: ${id} has no issue and due date`);
+      exempt.add(`new debt ${gate}: ${id}`);
+      if (today > due && actual.gates[gate]?.includes(id)) {
+        expired.push(`accepted debt ${gate}: ${id} was due ${due}; pay it down (${issue})`);
+      }
+    }
+  }
+  return [...findings.filter((finding) => !exempt.has(finding)), ...expired].sort();
 }
 
 /** The record of stranded allowances that are still measured, or none. */
@@ -135,7 +193,14 @@ function carryStranded(snapshot, recorded) {
   for (const [gate, entries] of Object.entries(recorded?.strandedByRetirement ?? {})) {
     record[gate] = Object.fromEntries(Object.entries(entries).filter(([id]) => snapshot.gates[gate].includes(id)).sort());
   }
-  return Object.keys(record).length ? parseConsolidationBaseline({...snapshot, strandedByRetirement: record}) : snapshot;
+  const accepted = {};
+  for (const [gate, entries] of Object.entries(recorded?.acceptedDebt ?? {})) {
+    const kept = Object.fromEntries(Object.entries(entries).filter(([id]) => snapshot.gates[gate].includes(id)).sort());
+    if (Object.keys(kept).length) accepted[gate] = kept;
+  }
+  return parseConsolidationBaseline({...snapshot,
+    ...(Object.keys(record).length ? {strandedByRetirement: record} : {}),
+    ...(Object.keys(accepted).length ? {acceptedDebt: accepted} : {})});
 }
 
 /**
@@ -198,7 +263,7 @@ export function previousConsolidationBaseline(root, base = mergeBase(root)) {
 }
 
 /** Called only by the existing check; scorecard --json inventory stays read-only. */
-export function checkConsolidationRatchet({root, inventory, update = false}) {
+export function checkConsolidationRatchet({root, inventory, update = false, now = new Date()}) {
   if (inventory.problems.length) throw new Error("Cannot ratchet an invalid React inventory");
   const definition = JSON.parse(fs.readFileSync(path.join(root, "design/components/consolidation_gates.json"), "utf8"));
   // measureAll asks the adoption tool for --json inventory, which does not
@@ -213,10 +278,10 @@ export function checkConsolidationRatchet({root, inventory, update = false}) {
   if (!update && recorded === null) throw new Error(`Missing ${baselinePath}`);
   const proposed = withoutCssGate(update ? carryStranded(actual, recorded) : recorded);
   const ceiling = recorded ? {gates: {...recorded.gates, [cssGate]: mergeBaseCssBudgets(root, base)}} : null;
-  const findings = [...new Set([
+  const findings = acceptedDifferences([...new Set([
     ...(previous ? strandedDifferences(consolidationDifferences(proposed, previous), proposed, previous) : []),
     ...(ceiling ? consolidationDifferences(actual, ceiling) : []),
-  ])];
+  ])], proposed, actual, now);
   if (update && findings.length === 0) fs.writeFileSync(file, `${JSON.stringify(proposed, null, 2)}\n`);
   return {findings, fixedAllowances: recorded && !update ? fixedAllowanceCount(actual, withoutCssGate(recorded)) : 0,
     counts: Object.fromEntries(Object.entries(actual.gates).map(([gate, entries]) =>

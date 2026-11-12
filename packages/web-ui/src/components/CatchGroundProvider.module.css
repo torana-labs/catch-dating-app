@@ -14,28 +14,37 @@
 .ground[data-format="run"] {
   --catch-accent: var(--catch-format-run-accent);
   --catch-accent-ink: var(--catch-format-run-ink);
+  --catch-accent-ink-secondary: var(--catch-format-run-ink-secondary);
 }
 
 .ground[data-format="dinner"] {
   --catch-accent: var(--catch-format-dinner-accent);
   --catch-accent-ink: var(--catch-format-dinner-ink);
+  --catch-accent-ink-secondary: var(--catch-format-dinner-ink-secondary);
 }
 
 .ground[data-format="games"] {
   --catch-accent: var(--catch-format-games-accent);
   --catch-accent-ink: var(--catch-format-games-ink);
+  --catch-accent-ink-secondary: var(--catch-format-games-ink-secondary);
 }
 
 .ground[data-format="courts"] {
   --catch-accent: var(--catch-format-courts-accent);
   --catch-accent-ink: var(--catch-format-courts-ink);
+  --catch-accent-ink-secondary: var(--catch-format-courts-ink-secondary);
 }
 
 .ground[data-format="nightsOut"] {
   --catch-accent: var(--catch-format-nights-out-accent);
   --catch-accent-ink: var(--catch-format-nights-out-ink);
+  --catch-accent-ink-secondary: var(--catch-format-nights-out-ink-secondary);
 }
 
+/* On a colour the theme's inks become the format's, as CatchBand remaps them
+ * for its grounds: secondary copy must read on the colour, not on paper. */
 .ground[data-ground="colour"] {
+  --catch-theme-ink: var(--catch-accent-ink);
+  --catch-theme-ink2: var(--catch-accent-ink-secondary);
   color: var(--catch-accent-ink);
 }

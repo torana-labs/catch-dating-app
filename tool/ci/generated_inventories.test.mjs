@@ -361,6 +361,7 @@ test("actual CLI persists proof only in bound CI and preserves standalone genera
   const files = ["tool/ci/generated_inventories.mjs", "tool/lib/path_glob.mjs", "tool/lib/repo_paths.mjs",
     "tool/lib/dart_call_blocks.mjs",
     "tool/ui_capture/check_route_inventory.mjs", "tool/marketing/export_hosted_captures.mjs",
+    "tool/marketing/lib/capture_devices.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
     "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",
     "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",

@@ -121,11 +121,11 @@
         ],
         "states": [
         "default",
-        "night-chapter",
+        "night-format",
         "applicant-replay",
-        "layer-one",
+        "layer-two",
         "pricing-cap",
-        "apply-card",
+        "start-band",
         "phone"
       ],
         "stateCoverage": {
@@ -133,11 +133,11 @@
           "default"
         ],
           "manual": [
-          "night-chapter",
+          "night-format",
           "applicant-replay",
-          "layer-one",
+          "layer-two",
           "pricing-cap",
-          "apply-card",
+          "start-band",
           "phone"
         ]
         }
@@ -1133,7 +1133,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "The organiser owner's billing on the web (no board; drawn from the system): the free trial, the plan (ticketing or tools-only) with Catch's prices, and bills with their Razorpay invoice to pay. Buying or cancelling tools-only happens only here (manageOrganizerBillingPlan); the native Host app shows status only (App Store 3.1.3(f)). Reads getOrganizerBillingStatus, manageOrganizerBillingPlan and listOrganizerBills for an organiser from listMyOrganizerJourneys. Signed out it offers the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics.",
+      "notes": "The organiser owner's billing on the web (no board; drawn from the system): the free trial, the plan (ticketing or tools-only) with Catch's prices, and bills with their Razorpay invoice to pay. Buying or cancelling tools-only happens only here (manageOrganizerBillingPlan); the native Host app shows status only (App Store 3.1.3(f)). Reads getOrganizerBillingStatus, manageOrganizerBillingPlan and listOrganizerBills for an organiser from listMyOwnedOrganizers (every organiser the signed-in user owns; a bill email's ?organizerId= preselects one). Signed out it offers the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics.",
       "review": {
         "priority": "p1",
         "status": "ready",

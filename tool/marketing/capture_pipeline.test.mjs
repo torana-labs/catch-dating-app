@@ -18,6 +18,7 @@ function fixture(t) {
   };
   for (const name of ['tool/lib/repo_paths.mjs', 'tool/lib/dart_call_blocks.mjs', 'tool/marketing/sync_website_media.mjs',
     'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/lib/capture_provenance.mjs',
+    'tool/marketing/lib/capture_devices.mjs',
     'tool/marketing/lib/web_capture_inputs.mjs', 'tool/ui_capture/run_captures.mjs']) {
     write(name, fs.readFileSync(fromRepo(name)));
   }

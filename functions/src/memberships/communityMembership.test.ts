@@ -173,7 +173,7 @@ const deniedSources: Array<
   [
     "foreign response envelope",
     (h) => {
-      h.store.get(`organizerApplicationResponses/${responseId}`)!.linkedUid =
+      h.store.get(`organizerFormResponses/${responseId}`)!.respondentUid =
         "other";
     },
   ],

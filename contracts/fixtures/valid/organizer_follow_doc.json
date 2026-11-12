@@ -1,0 +1,11 @@
+{
+  "organizerId": "club-1",
+  "uid": "runner-1",
+  "status": "active",
+  "pushNotificationsEnabled": true,
+  "followedAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "unfollowedAt": null
+}

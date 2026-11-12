@@ -53,15 +53,18 @@ function fixture(t, {web = false, catalog = null} = {}) {
     "design/components/catch.components.schema.json",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
     "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/lib/web_capture_render.mjs",
-    "tool/marketing/lib/web_capture_screen.mjs",
-    "tool/ci/wait_main_marketing_validation.mjs",
+    "tool/marketing/lib/web_capture_screen.mjs", "tool/marketing/lib/capture_devices.mjs",
+    "tool/ci/wait_main_marketing_validation.mjs", "tool/ci/required_ci_floor.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));
   }
   const manifest = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
-  // The fixture renders app captures through stubs; web captures join only
-  // where a test asks for them, with a small website of their own.
-  manifest.captures = manifest.captures.filter(capture => capture.kind !== "web-capture");
+  // The fixture renders app captures through stubs that write one phone PNG,
+  // so it keeps twelve generic-phone app captures, whatever the real manifest
+  // grows to; web captures join only where a test asks for them, with a small
+  // website of their own.
+  manifest.captures = manifest.captures
+    .filter(capture => capture.kind !== "web-capture" && capture.device === "generic-phone").slice(0, 12);
   const png = fs.readFileSync(fromRepo(manifest.captures[0].sourcePath));
   if (web) {
     manifest.captures.push({...manifest.captures[0], id: "guest-join-phone", kind: "web-capture", audience: "guest",
@@ -965,7 +968,7 @@ for (const [label, runOverrides, artifactOverrides] of [
 }
 
 test("a capture the earlier bundle lacks, such as a new manifest slot, renders alone", async t => {
-  const added = "match-chat-context";
+  const added = "host-today";
   const h = seedHarness(t, {}, {}, {omit: [added]});
   const plan = await h.plan();
   assert.deepEqual(plan.renderIds, [added]);
@@ -1078,7 +1081,7 @@ test("a web capture renders on macOS from a Linux-built Storybook with WebKit, t
   // The page renders as the iPhone 17 Pro descriptor in India time, then composes at the frame's scale.
   const [page, screen] = fs.readFileSync(contexts, "utf8").trim().split("\n").map(JSON.parse);
   assert.deepEqual([page.deviceScaleFactor, page.isMobile, page.timezoneId, page.locale], [3, true, "Asia/Kolkata", "en-IN"]);
-  assert.deepEqual(page.viewport, {width: 402, height: 820});
+  assert.deepEqual(page.viewport, {width: 402, height: 812});
   assert.deepEqual([screen.deviceScaleFactor, screen.viewport], [2, {width: 402, height: 874}]);
   const seeds = new Map(rendered.captures.map(c => [c.id, fs.readFileSync(path.join(f.options.outputDir, c.sourcePath))]));
   f.git("checkout", "--", ".");

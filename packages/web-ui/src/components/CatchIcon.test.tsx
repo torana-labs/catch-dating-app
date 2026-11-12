@@ -1,9 +1,12 @@
 import {cleanup, render} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
-import {catchIconStrokeWidth} from "../icons/catchIconGlyphs";
+import {afterEach, beforeAll, describe, expect, it} from "vitest";
+import {loadCatchIconGlyphs} from "../icons/catchIconGlyphLoader";
+import {catchIconStrokeWidth} from "../icons/catchIconRoles";
 import {catchIconSizeSteps} from "./catchCoreVocabulary";
 import {CatchIcon, catchMirroredIconNames} from "./CatchIcon";
 
+// The glyph map is a lazy chunk; catchIconGlyphLoader.test covers the wait.
+beforeAll(() => loadCatchIconGlyphs());
 afterEach(cleanup);
 
 const svgOf = (element: React.ReactElement) => render(element).container.querySelector("svg")!;

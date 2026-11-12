@@ -2022,6 +2022,15 @@ recheck this right before they sign in, and promotion rechecks it before
 every production step. A train's commit that a newer release has overtaken is
 refused, so live only moves forward.
 
+**Sprint floor (owner decision, 11 Nov 2026).** While Required CI leaves the
+tools, operations, docs-policy and app-builds lanes out of its needs, a failure
+in one of those lanes fails the whole CI run even though Required CI passed.
+The source's CI therefore counts as successful when the run succeeded, or when
+its `Required CI` job succeeded and every job that did not succeed belongs to
+one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
+validation, exact-source captures, the main lineage and the live-release order
+are checked exactly as before. Revisit this when the floor ends.
+
 Recovery:
 
 - **A train failed in validation.** Later trains skip that head
@@ -2477,6 +2486,13 @@ the evidence in the release ticket.
   IST and that the first cycle bills appear as "To send" under the month their
   cycle ends. Review and send them in Admin → Money; sending issues the invoice
   and the email.
+- [ ] Each host's first two cycle bills that staff send are reviewed by hand
+  ("Waits for staff" on the bill). From the third, a bill reads "Sends
+  automatically {date}" and the next daily run issues and sends it. To stop
+  that, hold the bill (Money → the bill → "Hold from sending automatically")
+  or the organizer (its Money tab → "Hold bills from sending automatically").
+  The deploy binds `RAZORPAY_KEY_SECRET` to `generateOrganizerCycleBillsDaily`,
+  which now issues invoices.
 
 ### 7. Store-safe Host app
 
@@ -2944,7 +2960,7 @@ emulator-backed or gated behind an explicit device/live-service test target.
 | --- | --- | --- | --- |
 | App Check | Backend errors map App Check failures; app bootstrap activates App Check in `main.dart`. | Prove enforced App Check accepts the app's token and rejects missing/invalid tokens for Auth, Firestore, Storage, and callable Functions. | Firebase dev/staging project with App Check enforcement enabled plus registered debug token or release attestation. |
 | Real phone auth | App-shell integration covers phone entry, OTP continuation, and repository calls with a fake auth repository. | Complete a real OTP send and sign-in against Firebase Auth. | Physical iOS/Android device or Firebase Auth emulator; use a Firebase test phone number for repeatability. |
-| Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}.fcmToken`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
+| Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}/pushInstallations/{installationId}`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
 | Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
 | Real map rendering | Create-event integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. TestFlight iOS Maps behavior is verified through App Store Connect/Xcode Cloud TestFlight proof as of 2026-05-21. | Repeat real map tile/marker proof when Maps key injection, bundle IDs, or store distribution settings change; verify Android separately before Play release. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
 | Razorpay checkout UI | App-shell integration covers paid booking handoff and confirmation with a fake payment repository; payment repository tests cover typed Razorpay success/error callbacks and callable verification contract. | Open the native Razorpay checkout sheet, complete/cancel a test payment, and verify post-payment booking state. | iOS/Android device or simulator supported by `razorpay_flutter`, with Razorpay test keys and callable Functions. |

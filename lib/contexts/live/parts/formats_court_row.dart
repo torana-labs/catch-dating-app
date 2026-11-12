@@ -35,14 +35,14 @@ class FormatsCourtRow extends StatelessWidget {
       status: status,
       footer: opponents.isEmpty
           ? FormatsPlayersRow(players: players)
-          : FormatsMatchup(players: players, opponents: opponents),
+          : FormatsMatchupStack(players: players, opponents: opponents),
     );
   }
 }
 
 /// A doubles game: one partnership, "against", the other.
-class FormatsMatchup extends StatelessWidget {
-  const FormatsMatchup({
+class FormatsMatchupStack extends StatelessWidget {
+  const FormatsMatchupStack({
     super.key,
     required this.players,
     required this.opponents,
@@ -111,7 +111,7 @@ class FormatsCourtTile extends StatelessWidget {
               size: GeneratedCatchSizeTokens.avatarMd,
             )
           else
-            FormatsMatchup(
+            FormatsMatchupStack(
               players: players,
               opponents: opponents,
               size: GeneratedCatchSizeTokens.avatarMd,

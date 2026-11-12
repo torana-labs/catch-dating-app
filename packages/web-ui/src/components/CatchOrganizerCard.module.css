@@ -59,6 +59,9 @@
  */
 .system { flex-direction: row; align-items: center; gap: var(--catch-space-s3); }
 
+/* The Follow button keeps its width (proposal L6): a long meta line truncates instead of squeezing the label at phone width. */
+.system button { flex: none; }
+
 .main {
   display: flex;
   flex: 1 1 auto;

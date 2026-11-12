@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
   "title": "OrganizerBillDocument",
-  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. A refund recorded after a cycle bill was sent or paid is credited on the organizer's next cycle bill (refundCredit), never making a bill negative. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. A host's first two billing cycles wait for staff to review and send them; later cycle bills are sent automatically unless held (autoSendAtMillis, sendHold). A refund recorded after a cycle bill was sent or paid is credited on the organizer's next cycle bill (refundCredit), never making a bill negative. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerBills",
@@ -21,13 +21,14 @@
       "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial, or because refund credit from earlier bills covered it.",
       "enum": ["toSend", "sent", "paid", "writtenOff", "free"]
     },
+    "sendHold": {"description": "A staff hold on sending a bill or an organizer's bills automatically, with who placed it and why.", "anyOf": [{"type": "object", "additionalProperties": false, "required": ["atMillis", "byUid", "note"], "properties": {"atMillis": {"$ref": "#/definitions/millis"}, "byUid": {"type": ["string", "null"], "maxLength": 128}, "note": {"type": ["string", "null"], "maxLength": 500}}}, {"type": "null"}]},
     "historyEntry": {
       "type": "object",
       "additionalProperties": false,
       "required": ["atMillis", "action", "byUid", "note"],
       "properties": {
         "atMillis": {"$ref": "#/definitions/millis"},
-        "action": {"enum": ["generated", "regenerated", "sent", "reminded", "paid", "writtenOff"]},
+        "action": {"enum": ["generated", "regenerated", "sent", "reminded", "paid", "writtenOff", "held", "holdReleased"]},
         "byUid": {"type": ["string", "null"], "maxLength": 128},
         "note": {"type": ["string", "null"], "maxLength": 500}
       }
@@ -56,6 +57,8 @@
     },
     "revision": {"type": "integer", "minimum": 1},
     "status": {"$ref": "#/definitions/status"},
+    "autoSendAtMillis": {"$ref": "#/definitions/nullableMillis", "description": "Cycle bills only: when the daily run issues and sends this bill without staff, or null when staff must review and send it. Until staff have sent two of a host's cycle bills (free bills and bills prepaid by a tools-only purchase are never sent and do not count), every cycle bill waits for staff; from then on a new cycle bill is sent automatically about a day after it is made, unless it or its organizer is on hold. Absent (bills made before automatic sending) means null."},
+    "sendHold": {"$ref": "#/definitions/sendHold", "description": "A staff hold on sending this bill automatically; null or absent when not held. Staff can still send a held bill themselves."},
     "sales": {
       "type": "object",
       "additionalProperties": false,

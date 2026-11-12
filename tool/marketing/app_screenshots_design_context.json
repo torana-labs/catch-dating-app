@@ -3,5 +3,1539 @@
   "generatedBy": "tool/marketing/export_app_screenshots.mjs --design-json",
   "coordinateSystem": "px",
   "description": "Figma/AI-friendly design context for marketing captures of the app and of website pages in iPhone Safari.",
-  "captures": []
+  "captures": [
+    {
+      "type": "marketing-web-capture",
+      "id": "guest-join-phone",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Guest check-in in the browser",
+      "story": {
+        "file": "website/src/stories/WebCaptures.stories.tsx",
+        "id": "marketing-website-web-captures--join-phone-check-in"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-web-captures--join-phone-check-in",
+      "routeIds": [
+        "event_runtime"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-join-phone.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-join-phone.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg"
+      },
+      "copy": {
+        "alt": "Saturday Trivia Social check-in page open in Safari at catchdates.com, asking for the mobile number used for the booking",
+        "caption": "Guests check in from their phone's browser with the number they booked with. Nothing to download.",
+        "walkthroughStep": "Check in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-today",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host Today on a Saturday",
+      "fixtureKey": "hostMarketingIndia.host.todayDashboard",
+      "captureId": "host_home_dashboard",
+      "routeIds": [
+        "hostHomeScreen",
+        "hostTodayScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-today.png",
+        "websitePath": "website/public/assets/app-screenshots/host-today.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-today.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a Saturday: a trivia social tonight, two things left before doors",
+        "caption": "Today in Catch Host: tonight's event and what's left before doors.",
+        "walkthroughStep": "Today"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet",
+      "fixtureKey": "hostMarketingIndia.host.liveConsoleTablet",
+      "captureId": "host_live_now_tablet",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet: tonight's run of show beside the room",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-explore",
+      "status": "active",
+      "audience": "guest",
+      "surface": "A guest's Explore screen",
+      "fixtureKey": "salesDemo.member.eventDiscovery",
+      "captureId": "member_event_discovery",
+      "routeIds": [
+        "exploreScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-explore.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-explore.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-explore.png"
+      },
+      "copy": {
+        "alt": "A guest's Explore screen in the Catch app, with tonight's plans nearby",
+        "caption": "Guests find tonight's plans in the Catch app.",
+        "walkthroughStep": "Get found"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-console",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console",
+      "fixtureKey": "hostMarketingIndia.host.liveConsole",
+      "captureId": "host_live_console",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-console.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.png"
+      },
+      "copy": {
+        "alt": "Catch Host's live console during the night, with who's here and what's next",
+        "caption": "The live console: who's here and what's next.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-post-event-report",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host event report",
+      "fixtureKey": "hostMarketingIndia.host.postEventReport",
+      "captureId": "host_post_event_report",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+        "websitePath": "website/public/assets/app-screenshots/host-post-event-report.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.png"
+      },
+      "copy": {
+        "alt": "Catch Host's report after the event: who came, who'd come back and what's next",
+        "caption": "After the night: who came and who'd come back.",
+        "walkthroughStep": "Follow up"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-pods",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host groups by pace",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods",
+      "captureId": "host_formats_pods_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-pods.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods.png"
+      },
+      "copy": {
+        "alt": "Catch Host building groups of six to eight from each guest's pace",
+        "caption": "Groups built before the night, so no group is all strangers.",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-door-in",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host door, checked in",
+      "fixtureKey": "hostMarketingIndia.host.doorCheckedIn",
+      "captureId": "host_door_in",
+      "routeIds": [
+        "hostEventRosterScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-door-in.png",
+        "websitePath": "website/public/assets/app-screenshots/host-door-in.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-in.png"
+      },
+      "copy": {
+        "alt": "Catch Host's door screen with a guest checked in and their group shown",
+        "caption": "Guests check in at the door and see their group once.",
+        "walkthroughStep": "Check in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-door-arriving",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving",
+      "captureId": "host_door_arriving",
+      "routeIds": [
+        "hostEventRosterScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving.png",
+        "websitePath": "website/public/assets/app-screenshots/host-door-arriving.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving.png"
+      },
+      "copy": {
+        "alt": "Catch Host's door screen listing guests arriving tonight",
+        "caption": "The door: who's arriving and who's in.",
+        "walkthroughStep": "Check in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-needs",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live needs",
+      "fixtureKey": "hostMarketingIndia.host.liveNeeds",
+      "captureId": "host_live_needs_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-needs.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-needs.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-needs.png"
+      },
+      "copy": {
+        "alt": "Catch Host's live console showing who needs attention right now",
+        "caption": "What needs you right now, in one list.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-rules",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules",
+      "captureId": "host_formats_rules_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-rules.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules.png"
+      },
+      "copy": {
+        "alt": "Catch Host's rules for a format: table sizes, levels and who to keep apart",
+        "caption": "Set the rules once; Catch plans around them.",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-mix",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host mixing groups",
+      "fixtureKey": "hostMarketingIndia.host.formatsMix",
+      "captureId": "host_formats_mix_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-mix.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-mix.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-mix.png"
+      },
+      "copy": {
+        "alt": "Catch Host moving one person from each group between rounds",
+        "caption": "Mix the room between rounds; only the people moving get a buzz.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-scores",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host scores",
+      "fixtureKey": "hostMarketingIndia.host.liveScores",
+      "captureId": "host_live_scores_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-scores.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores.png"
+      },
+      "copy": {
+        "alt": "Catch Host's scores screen with the leaderboard hidden until the end",
+        "caption": "Scores in, standings hidden until the end.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-courts-setup",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host courts setup",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourtsSetup",
+      "captureId": "host_formats_courts_setup_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-setup.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-courts-setup.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-setup.png"
+      },
+      "copy": {
+        "alt": "Catch Host planning rounds on three courts from each player's level",
+        "caption": "Rounds planned so every match is close.",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-courts",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host courts live",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts",
+      "captureId": "host_formats_courts_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-courts.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts.png"
+      },
+      "copy": {
+        "alt": "Catch Host's courts screen with the next round and each player's court time",
+        "caption": "Court time counted for every player.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-crawl",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host crawl route",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawl",
+      "captureId": "host_formats_crawl_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-crawl.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl.png"
+      },
+      "copy": {
+        "alt": "Catch Host's route for a four-stop crawl with a lead for each group",
+        "caption": "A route with stops, shared with your team.",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-crawl-move",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove",
+      "captureId": "host_formats_crawl_move_phone",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move.png"
+      },
+      "copy": {
+        "alt": "Catch Host's crawl screen confirming who left one stop and arrived at the next",
+        "caption": "Each lead confirms who left and who arrived.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-checked-in",
+      "status": "active",
+      "audience": "guest",
+      "surface": "A guest checked in at the event",
+      "fixtureKey": "hostMarketingIndia.guest.checkedIn",
+      "captureId": "event_success_companion_micro_pod_assignment",
+      "routeIds": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-checked-in.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-checked-in.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-checked-in.png"
+      },
+      "copy": {
+        "alt": "Checked in at Monday Morning Run in the Catch app: the small starter group to meet first, four people by name",
+        "caption": "Checked in: the small group you’ll meet first.",
+        "walkthroughStep": "Show up"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-rsvp",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Household reply link in the browser",
+      "story": {
+        "file": "website/src/stories/HouseholdRsvp.stories.tsx",
+        "id": "marketing-website-household-rsvp--ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-household-rsvp--ready",
+      "routeIds": [
+        "household_rsvp"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-rsvp.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-rsvp.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-rsvp.png"
+      },
+      "copy": {
+        "alt": "A household's reply page open in a phone browser, with each person's answer for every function they are invited to",
+        "caption": "One link per household: everyone's answer for every function, in one reply.",
+        "walkthroughStep": "Invite"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-itinerary",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Guest itinerary link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--itinerary-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--itinerary-ready",
+      "routeIds": [
+        "programme_itinerary"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-itinerary.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-itinerary.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-itinerary.png"
+      },
+      "copy": {
+        "alt": "A family's itinerary for the wedding weekend in a phone browser: functions, times, dress codes and their car",
+        "caption": "Each family's own itinerary, with only the functions they are invited to.",
+        "walkthroughStep": "Invite"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-whatsapp",
+      "status": "active",
+      "audience": "host",
+      "surface": "Planner inbox for the wedding's WhatsApp number",
+      "fixtureKey": "weddingsPilot.planner.inbox",
+      "captureId": "host_programme_inbox_phone",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-whatsapp.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-whatsapp.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-whatsapp.png"
+      },
+      "copy": {
+        "alt": "The planner's inbox on a phone: guest questions the assistant passed to the team",
+        "caption": "Only what the assistant can't answer from the itinerary reaches your team.",
+        "walkthroughStep": "Write in"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-ids",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Guest ID upload link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--guest-ids-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--guest-ids-ready",
+      "routeIds": [
+        "programme_ids"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-ids.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-ids.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-ids.png"
+      },
+      "copy": {
+        "alt": "A household's ID page in a phone browser, with each guest's ID marked received or still to send",
+        "caption": "IDs for the hotels, checked by your team and deleted after checkout.",
+        "walkthroughStep": "Write in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-door",
+      "status": "active",
+      "audience": "host",
+      "surface": "Door check-in for a function",
+      "fixtureKey": "weddingsPilot.staff.door",
+      "captureId": "host_staff_door_phone",
+      "routeIds": [
+        "hostWorkDoorScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-door.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-door.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-door.png"
+      },
+      "copy": {
+        "alt": "Door check-in on a phone for the Sangeet: who is expected, who has arrived",
+        "caption": "The door team checks families in on a phone, even when the hall has no signal.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-departures",
+      "status": "active",
+      "audience": "host",
+      "surface": "Departures for the hotel desk",
+      "fixtureKey": "weddingsPilot.staff.departures",
+      "captureId": "host_staff_departures_phone",
+      "routeIds": [
+        "hostWorkHotelScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-departures.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-departures.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-departures.png"
+      },
+      "copy": {
+        "alt": "Departures on a phone: which families leave the hotel when, and their cars",
+        "caption": "The hotel desk sees who is leaving when, and which car is theirs.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-driver",
+      "status": "active",
+      "audience": "staff",
+      "surface": "Driver trip link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--driver-trip-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--driver-trip-ready",
+      "routeIds": [
+        "programme_trip"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-driver.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-driver.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-driver.png"
+      },
+      "copy": {
+        "alt": "A driver's trip page in a phone browser: pickup, guests and drop at the hotel",
+        "caption": "Drivers get one link per trip. No app to install.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-message",
+      "status": "active",
+      "audience": "host",
+      "surface": "Planned message to guests",
+      "fixtureKey": "weddingsPilot.planner.message",
+      "captureId": "host_programme_message_phone",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-message.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-message.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-message.png"
+      },
+      "copy": {
+        "alt": "A planned message to every household coming to the haldi, with who it reaches",
+        "caption": "Messages go to the households a function concerns, and to no one who opted out.",
+        "walkthroughStep": "Messages"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-family",
+      "status": "active",
+      "audience": "family",
+      "surface": "Family view link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--family-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--family-ready",
+      "routeIds": [
+        "programme_family"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 980,
+            "height": 1924
+          },
+          "canvasMargin": 64,
+          "frameInset": 24,
+          "outerRadius": 140,
+          "screenRadius": 116,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-family.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-family.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-family.png"
+      },
+      "copy": {
+        "alt": "The couple's family view in a phone browser: replies, arrivals and rooms at a glance",
+        "caption": "The family follows replies and arrivals without calling the planner.",
+        "walkthroughStep": "Family"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-guests",
+      "status": "active",
+      "audience": "host",
+      "surface": "Guest list on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.guestsDesktop",
+      "captureId": "host_programme_guests_desktop",
+      "routeIds": [
+        "hostProgramGuestsScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-guests.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-guests.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-guests.png"
+      },
+      "copy": {
+        "alt": "The wedding's guest list on a desktop: households, who is invited to which function, and replies",
+        "caption": "Functions, households and who is invited to what, on one list.",
+        "walkthroughStep": "Set up"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-rooms",
+      "status": "active",
+      "audience": "host",
+      "surface": "Rooms by household on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.roomsDesktop",
+      "captureId": "host_programme_rooms_desktop",
+      "routeIds": [
+        "hostProgramLodgingScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-rooms.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-rooms.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-rooms.png"
+      },
+      "copy": {
+        "alt": "Room allocation on a desktop: each household placed in a room at one of two hotels",
+        "caption": "Rooms by household, across every hotel.",
+        "walkthroughStep": "Travel"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-live",
+      "status": "active",
+      "audience": "host",
+      "surface": "Live board for the weekend on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.liveBoard",
+      "captureId": "host_programme_live_board_desktop",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-live.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-live.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-live.png"
+      },
+      "copy": {
+        "alt": "The weekend's live board on a desktop: arrivals, cars on the road and the next function",
+        "caption": "Everyone on the ground sees one job, live.",
+        "walkthroughStep": "Weekend"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "wedding-reconcile",
+      "status": "active",
+      "audience": "host",
+      "surface": "Vendor reconcile on the planner's desktop",
+      "fixtureKey": "weddingsPilot.planner.reconcileDesktop",
+      "captureId": "host_programme_reconcile_desktop",
+      "routeIds": [
+        "hostProgramWorkspaceScreen"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-reconcile.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-reconcile.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-reconcile.png"
+      },
+      "copy": {
+        "alt": "The car vendor's bill reconciled on a desktop against every recorded trip",
+        "caption": "Every trip recorded as it happened, so the vendor bill checks itself.",
+        "walkthroughStep": "After"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "wedding-hotel",
+      "status": "active",
+      "audience": "hotel",
+      "surface": "Hotel handover link in the browser",
+      "story": {
+        "file": "website/src/stories/Programmes.stories.tsx",
+        "id": "marketing-website-programme-links--hotel-handover-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-programme-links--hotel-handover-ready",
+      "routeIds": [
+        "programme_hotel"
+      ],
+      "device": {
+        "id": "desktop-browser",
+        "logicalSize": {
+          "width": 1440,
+          "height": 900
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2880,
+            "height": 1800
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/wedding-hotel.png",
+        "websitePath": "website/public/assets/app-screenshots/wedding-hotel.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/wedding-hotel.png"
+      },
+      "copy": {
+        "alt": "The hotel's handover page on a desktop: arriving households, their rooms and IDs",
+        "caption": "The hotel sees every car on its way, who is in it, and their rooms.",
+        "walkthroughStep": "Travel"
+      }
+    }
+  ]
 }

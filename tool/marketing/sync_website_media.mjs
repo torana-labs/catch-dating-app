@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {framedSize} from "./lib/capture_devices.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const websitePublicPrefix = "website/public/";
@@ -13,15 +14,13 @@ const websiteScreenshotPrefix = `${websitePublicPrefix}assets/app-screenshots/`;
 const websiteManifestPath = fromRepo(`${websiteScreenshotPrefix}manifest.json`);
 const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
 const allowedKinds = new Set(["app-capture", "web-capture"]);
-// Framed PNG size per device, so pages reserve the image's space before it loads.
-const deviceFrameSizes = {"iphone-17-pro": {width: 1020, height: 1964}};
 const scenarioRoot = "tool/demo/demo_seed/scenarios";
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) runCli();
 
-function runCli() {
+async function runCli() {
 if (command === "--help" || command === "-h" || command === "help") {
   printHelp();
 } else if (command === "--list" || command === "list") {
@@ -30,6 +29,8 @@ if (command === "--help" || command === "-h" || command === "help") {
   updateWebsiteMedia(loadSourceManifest());
 } else if (command === "--check" || command === "check") {
   checkWebsiteMedia(loadSourceManifest());
+} else if (command === "--placeholders" || command === "placeholders") {
+  await writePlaceholders(loadSourceManifest());
 } else {
   console.error(`Unknown command: ${command}`);
   printHelp();
@@ -70,6 +71,30 @@ function updateWebsiteMedia(manifest) {
       websiteManifestPath
     )}.`
   );
+}
+
+/**
+ * Draws each pending capture's placeholder and writes the website manifest,
+ * without touching active images (so it runs without the capture lane).
+ */
+async function writePlaceholders(manifest) {
+  // Imported here: release jobs run this tool without installed packages, and only drawing needs pngjs.
+  const {capturePlaceholderPng} = await import("./lib/capture_placeholder.mjs");
+  const pending = manifest.captures.filter((capture) => capture.status === "pending-fixture");
+  for (const capture of pending) {
+    const target = fromRepo(capture.placeholderPath);
+    fs.mkdirSync(path.dirname(target), {recursive: true});
+    fs.writeFileSync(target, capturePlaceholderPng(capture.device));
+  }
+  const errors = validateSourceManifest(manifest);
+  if (errors.length > 0) fail("Marketing capture manifest is invalid.", errors);
+  // Active records change only with their images (--update), so keep the ones already published.
+  const published = fs.existsSync(websiteManifestPath) ? readJson(websiteManifestPath).captures : [];
+  const activeIds = new Set(manifest.captures.filter((capture) => capture.status === "active").map((capture) => capture.id));
+  const built = buildWebsiteManifest(manifest);
+  built.captures = built.captures.map((record) => (activeIds.has(record.id) && published.find((item) => item.id === record.id)) || record);
+  writeJson(websiteManifestPath, built);
+  console.log(`Drew ${pending.length} placeholder(s) and wrote ${relativeToRepo(websiteManifestPath)}.`);
 }
 
 function checkWebsiteMedia(manifest) {
@@ -182,6 +207,7 @@ export function validateSourceManifest(manifest) {
       requireFile(errors, label, "sourcePath", capture.sourcePath);
     } else if (capture.status === "pending-fixture") {
       requireFile(errors, label, "placeholderPath", capture.placeholderPath);
+      requirePlaceholder(errors, label, capture);
     }
     validatePresentation(errors, label, capture);
   }
@@ -200,8 +226,10 @@ function validatePresentation(errors, label, capture) {
     } else if (new Set(pages).size !== pages.length) {
       errors.push(`${label}: pages must not repeat a path.`);
     }
-    if (pages.length > 0 && capture.status !== "active") {
-      errors.push(`${label}: only an active capture can name pages.`);
+    // A pending capture may name pages: they show its placeholder until the
+    // capture lane renders it. A paused capture is not published at all.
+    if (pages.length > 0 && capture.status === "paused") {
+      errors.push(`${label}: a paused capture cannot name pages.`);
     }
   }
   if (capture.scenario !== undefined) {
@@ -249,7 +277,8 @@ export function buildWebsiteManifest(manifest) {
         surface: capture.surface,
         device: capture.device,
         webPath,
-        ...deviceFrameSizes[capture.device],
+        // The framed PNG's size, so pages reserve the image's space before it loads.
+        ...framedSize(capture.device),
         alt: capture.alt,
         caption: `${manifest.previewDisclosure} ${capture.caption}`,
         walkthroughStep: capture.walkthroughStep,
@@ -262,6 +291,27 @@ export function buildWebsiteManifest(manifest) {
     updated: manifest.updated,
     captures,
   };
+}
+
+// A placeholder is a PNG at its device's framed size, the space pages reserve for the capture.
+function requirePlaceholder(errors, label, capture) {
+  const repoPath = capture.placeholderPath;
+  if (typeof repoPath !== "string" || !fs.existsSync(fromRepo(repoPath))) return;
+  if (!repoPath.startsWith(`${websiteScreenshotPrefix}placeholders/`) || !repoPath.endsWith(".png")) {
+    errors.push(`${label}: placeholderPath must be a PNG under ${websiteScreenshotPrefix}placeholders/.`);
+    return;
+  }
+  let expected;
+  try {
+    expected = framedSize(capture.device);
+  } catch {
+    return;
+  }
+  const header = fs.readFileSync(fromRepo(repoPath));
+  const size = {width: header.readUInt32BE(16), height: header.readUInt32BE(20)};
+  if (size.width !== expected.width || size.height !== expected.height) {
+    errors.push(`${label}: placeholder is ${size.width}x${size.height}, not the ${capture.device} size ${expected.width}x${expected.height}; run node tool/marketing/sync_website_media.mjs --placeholders.`);
+  }
 }
 
 function requireFile(errors, label, key, repoPath) {
@@ -309,6 +359,9 @@ Commands:
   --list     Show capture slots and lifecycle status.
   --update   Copy active app captures into website assets and write manifest.
   --check    Verify active captures and generated website manifest are current.
+  --placeholders
+             Draw pending captures' placeholders and write the website manifest
+             (active images are left alone, so no capture lane is needed).
 
 Capture statuses:
   pending-fixture  Website uses a checked-in placeholder until synthetic data exists.

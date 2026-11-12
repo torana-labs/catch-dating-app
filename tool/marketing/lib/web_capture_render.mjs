@@ -1,19 +1,24 @@
-// Renders website pages as iPhone Safari captures: a built Storybook story in
-// WebKit with Playwright's iPhone 17 Pro descriptor, in Asia/Kolkata time,
-// composed with Safari's status and address bars, then framed by the same
-// bezel as the app captures. export_app_screenshots.mjs --update calls this
-// for manifest entries of kind web-capture and stamps their provenance.
+// Renders website pages as phone Safari captures: a built Storybook story in
+// WebKit with Playwright's iPhone 17 Pro descriptor (the screen the generic
+// phone shares), in Asia/Kolkata time, composed with Safari's status and
+// address bars, then framed by the same bezel as the app captures. An unframed
+// device (desktop-browser, generic-tablet) renders in a plain WebKit window of
+// its own screen size instead: the website draws its window or bezel in CSS,
+// so no Safari bars are composed and the frame tool passes the screen through.
+// export_app_screenshots.mjs --update calls this for manifest entries of kind
+// web-capture and stamps their provenance.
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {fromRepo, repoRoot} from "../../lib/repo_paths.mjs";
+import {captureDevice, isFramedCaptureDevice} from "./capture_devices.mjs";
 import {safariScreen, safariScreenHtml, safariViewport} from "./web_capture_screen.mjs";
 
 const defaultStorybook = "website/storybook-static";
 const rawOutputDir = "artifacts/marketing/app-screenshots/raw/web";
-const device = "iPhone 17 Pro";
+const descriptorName = "iPhone 17 Pro";
 
 /**
  * Renders each capture's story to its sourcePath. `storybook` is a built
@@ -31,9 +36,13 @@ export async function renderWebCaptures(captures, {storybook = defaultStorybook,
     for (const capture of captures) {
       const raw = fromRepo(path.join(rawOutputDir, `${capture.id}.png`));
       fs.mkdirSync(path.dirname(raw), {recursive: true});
-      const page = await renderStory(browser, devices[device], server.origin, capture.story.id);
-      fs.writeFileSync(raw, await composeSafariScreen(browser, page, capture.address));
-      frame(raw, capture.sourcePath);
+      if (isFramedCaptureDevice(capture.device)) {
+        const page = await renderStory(browser, phoneContext(devices[descriptorName], capture), server.origin, capture);
+        fs.writeFileSync(raw, await composeSafariScreen(browser, page, capture));
+      } else {
+        fs.writeFileSync(raw, await renderStory(browser, screenContext(capture), server.origin, capture));
+      }
+      frame(raw, capture);
       console.log(`Rendered ${capture.id} from ${capture.story.id}`);
     }
   } finally {
@@ -65,16 +74,23 @@ async function loadPlaywright(playwrightDir) {
   return import(pathToFileURL(entry).href);
 }
 
-async function renderStory(browser, descriptor, origin, storyId) {
-  if (!descriptor) throw new Error(`Playwright has no ${device} descriptor.`);
-  const context = await browser.newContext({
-    ...descriptor,
-    viewport: safariViewport,
-    timezoneId: "Asia/Kolkata",
-    locale: "en-IN",
-    colorScheme: "light",
-    reducedMotion: "reduce",
-  });
+const settings = Object.freeze({timezoneId: "Asia/Kolkata", locale: "en-IN", colorScheme: "light", reducedMotion: "reduce"});
+
+/** A phone page: the iPhone descriptor with the page area under Safari's status bar. */
+function phoneContext(descriptor, capture) {
+  if (!descriptor) throw new Error(`Playwright has no ${descriptorName} descriptor.`);
+  return {...descriptor, viewport: safariViewport(capture.device), ...settings};
+}
+
+/** An unframed screen: a desktop WebKit window at the device's own size and output scale. */
+export function screenContext(capture) {
+  const {logicalWidth: width, logicalHeight: height, outputScale} = captureDevice(capture.device);
+  return {viewport: {width, height}, deviceScaleFactor: outputScale, isMobile: false, hasTouch: false, ...settings};
+}
+
+async function renderStory(browser, contextOptions, origin, capture) {
+  const storyId = capture.story.id;
+  const context = await browser.newContext(contextOptions);
   try {
     const page = await context.newPage();
     await page.goto(`${origin}/iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story`, {waitUntil: "networkidle"});
@@ -97,12 +113,14 @@ async function renderStory(browser, descriptor, origin, storyId) {
   }
 }
 
-async function composeSafariScreen(browser, pagePng, address) {
-  const context = await browser.newContext({viewport: {width: safariScreen.width, height: safariScreen.height},
-    deviceScaleFactor: safariScreen.scale});
+async function composeSafariScreen(browser, pagePng, capture) {
+  const screen = safariScreen(capture.device);
+  const context = await browser.newContext({viewport: {width: screen.width, height: screen.height},
+    deviceScaleFactor: screen.scale});
   try {
     const page = await context.newPage();
-    await page.setContent(safariScreenHtml({pagePng: pagePng.toString("base64"), address}), {waitUntil: "load"});
+    await page.setContent(safariScreenHtml({pagePng: pagePng.toString("base64"), address: capture.address,
+      device: capture.device}), {waitUntil: "load"});
     await page.waitForSelector("body[data-ready]", {timeout: 10_000});
     await page.evaluate(() => document.fonts.ready);
     return await page.screenshot({fullPage: false});
@@ -111,10 +129,11 @@ async function composeSafariScreen(browser, pagePng, address) {
   }
 }
 
-function frame(input, output) {
+function frame(input, capture) {
+  const output = capture.sourcePath;
   fs.mkdirSync(path.dirname(fromRepo(output)), {recursive: true});
   const result = spawnSync("dart", ["run", "tool/marketing/frame_device_capture.dart", "--input", input,
-    "--output", output, "--device", "iphone-17-pro"], {cwd: repoRoot, stdio: "inherit"});
+    "--output", output, "--device", capture.device], {cwd: repoRoot, stdio: "inherit"});
   if (result.status !== 0) throw new Error(`Framing ${output} failed.`);
 }
 

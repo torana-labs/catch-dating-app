@@ -2,10 +2,10 @@ import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -18,16 +18,15 @@ import 'package:flutter_test/flutter_test.dart';
 import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
-OrganizerMembership _membership({
+OrganizerFollow _membership({
   required String organizerId,
   String uid = 'runner-1',
-}) => OrganizerMembership(
-  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+}) => OrganizerFollow(
+  id: organizerFollowId(organizerId: organizerId, uid: uid),
   organizerId: organizerId,
   uid: uid,
-  role: OrganizerMembershipRole.member,
-  status: OrganizerMembershipStatus.active,
-  joinedAt: DateTime(2026),
+  status: OrganizerFollowStatus.active,
+  followedAt: DateTime(2026),
 );
 
 void main() {
@@ -219,9 +218,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchActiveOrganizerMembershipsForUserProvider(
-              user.uid,
-            ).overrideWith(
+            watchActiveOrganizerFollowsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([_membership(organizerId: 'club-1')]),
             ),
             eventRepositoryProvider.overrideWith((ref) => repository),
@@ -249,7 +246,7 @@ void main() {
 
         await container.read(watchUserProfileProvider.future);
         await container.read(
-          watchActiveOrganizerMembershipsForUserProvider(user.uid).future,
+          watchActiveOrganizerFollowsForUserProvider(user.uid).future,
         );
         await container.read(watchSignedUpEventsProvider(user.uid).future);
         await container.read(

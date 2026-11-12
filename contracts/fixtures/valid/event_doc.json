@@ -107,5 +107,44 @@
   "discoveryMembershipRequired": false,
   "discoveryManualApprovalRequired": false,
   "discoveryMinAge": 21,
-  "discoveryMaxAge": 45
+  "discoveryMaxAge": 45,
+  "eventPolicy": {
+    "version": 2,
+    "admission": {
+      "format": "fixedCohortCaps",
+      "capacityLimit": 12,
+      "waitlistPolicy": {
+        "mode": "rankedOffer",
+        "offerWindowMinutes": 20
+      },
+      "inviteRequired": false,
+      "membershipRequired": false,
+      "manualApprovalRequired": false,
+      "privateAccessPolicy": {
+        "mode": "none",
+        "inviteCodeHint": null,
+        "privateLinkEnabled": false
+      },
+      "cohortCapacityLimits": {
+        "menInterestedInWomen": 8
+      },
+      "balancedRatioPolicy": null,
+      "crossPathsPairInventory": {
+        "enabled": false,
+        "reservedPairCapacity": 0,
+        "holdDurationMinutes": 15
+      }
+    },
+    "pricing": {
+      "basePriceInPaise": 0,
+      "cohortAdjustmentsInPaise": {},
+      "demandPricingRules": []
+    },
+    "cancellation": {
+      "policyId": "notApplicable"
+    },
+    "settlement": {
+      "hostPayoutTiming": "afterEventCompletion"
+    }
+  }
 }

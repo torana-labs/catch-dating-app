@@ -224,19 +224,15 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   }
 
   int revealedThroughRoundIndex(DateTime now) {
-    final activeIndex = math.max(0, activeRevealRoundIndex);
-    final legacyPublishedIndex =
-        revealStatus == EventSuccessRevealStatus.revealed ? activeIndex : -1;
-    final persistedPublishedIndex = math.max(
-      publishedRevealRoundIndex,
-      legacyPublishedIndex,
-    );
     if (revealStatus == EventSuccessRevealStatus.countingDown &&
         !isRevealCountdownRunning(now) &&
         revealEndsAt != null) {
-      return math.max(persistedPublishedIndex, activeIndex);
+      return math.max(
+        publishedRevealRoundIndex,
+        math.max(0, activeRevealRoundIndex),
+      );
     }
-    return persistedPublishedIndex;
+    return publishedRevealRoundIndex;
   }
 
   bool isRoundRevealed(int roundIndex, DateTime now) =>

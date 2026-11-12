@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_billing_cycles.schema.json",
   "title": "OrganizerBillingCycleDocument",
-  "description": "Where one organizer's rolling billing cycles stand (#1126). The daily cycle bill run writes it in the same transaction as each cycle's bill, so a cycle is billed at most once. Cycles chain: the next cycle starts where the last one closed, so a change to commission.cycleDays changes only cycles not yet billed. A cycle with nothing to bill advances the pointer without a bill. Server-only.",
+  "description": "Where one organizer's rolling billing cycles stand (#1126). The daily cycle bill run writes it in the same transaction as each cycle's bill, so a cycle is billed at most once. Cycles chain: the next cycle starts where the last one closed, so a change to commission.cycleDays changes only cycles not yet billed. A cycle with nothing to bill advances the pointer without a bill. It also carries the staff hold on sending the organizer's bills automatically. Server-only.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerBillingCycles",
@@ -23,6 +23,7 @@
     "nextCycleStartMillis": {"$ref": "#/definitions/millis"},
     "lastBillId": {"type": ["string", "null"], "maxLength": 200},
     "createdAtMillis": {"$ref": "#/definitions/millis"},
-    "updatedAtMillis": {"$ref": "#/definitions/millis"}
+    "updatedAtMillis": {"$ref": "#/definitions/millis"},
+    "sendHold": {"description": "A staff hold on sending this organizer's cycle bills automatically, with who placed it and why; null or absent when not held. While held, every cycle bill waits for staff to send it.", "anyOf": [{"type": "object", "additionalProperties": false, "required": ["atMillis", "byUid", "note"], "properties": {"atMillis": {"$ref": "#/definitions/millis"}, "byUid": {"type": ["string", "null"], "maxLength": 128}, "note": {"type": ["string", "null"], "maxLength": 500}}}, {"type": "null"}]}
   }
 }

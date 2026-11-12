@@ -36,6 +36,12 @@ const plan = {organizerId: "lantern", plan: status.plan, revision: 0, paymentUrl
   prices: {toolsOnlyFeeMinor: 500000, commissionRateBasisPoints: 500, commissionCapMinor: 1000000, cycleDays: 30,
     gstRegistered: false, gstRateBasisPoints: 1800}};
 
+const trial = {state: "ended", anchor: "firstEvent", days: 30, startsAtMillis: 1e12, endsAtMillis: 2e12,
+  daysLeft: null};
+function owned(organizerId: string, name: string) {
+  return {organizerId, name, archived: false, trial, plan: status.plan};
+}
+
 function answer(overrides: Record<string, unknown> = {}) {
   api.call.mockImplementation(async (name: string, payload: {action?: string}) => {
     if (name in overrides) {
@@ -43,9 +49,9 @@ function answer(overrides: Record<string, unknown> = {}) {
       if (value instanceof Error) throw value;
       return value;
     }
-    if (name === "listMyOrganizerJourneys") {
-      return {journeys: [{organizerId: "lantern", organizerName: "Lantern Lane", waitingClaim: false},
-        {organizerId: "pending", organizerName: "Pending", waitingClaim: true}]};
+    if (name === "listMyOwnedOrganizers") {
+      return {organizers: [owned("lantern", "Lantern Lane"), owned("harbor", "Harbor Social")],
+        nextAfterOrganizerId: null};
     }
     if (name === "getOrganizerBillingStatus") return status;
     if (name === "listOrganizerBills") return {bills: []};
@@ -71,7 +77,7 @@ it("reads the owned organizer's trial, plan and bills", async () => {
   const {result} = renderHook(() => useHostBillingController(), {wrapper});
   act(() => signIn({uid: "owner"} as User));
   await waitFor(() => expect(result.current.phase).toBe("ready"));
-  expect(result.current.organizers).toEqual([{organizerId: "lantern", organizerName: "Lantern Lane"}]);
+  expect(result.current.organizers.map((item) => item.organizerId)).toEqual(["lantern", "harbor"]);
   expect(result.current.trial?.daysLeft).toBe(12);
   expect(result.current.planView?.prices?.toolsOnlyFeeMinor).toBe(500000);
   expect(api.call).toHaveBeenCalledWith("manageOrganizerBillingPlan",
@@ -97,8 +103,48 @@ it("buying tools-only names the reviewed revision and opens Razorpay's page", as
 });
 
 it("no organizer to bill says so", async () => {
-  answer({listMyOrganizerJourneys: {journeys: []}});
+  answer({listMyOwnedOrganizers: {organizers: [], nextAfterOrganizerId: null}});
   const {result} = renderHook(() => useHostBillingController(), {wrapper});
   act(() => signIn({uid: "guest"} as User));
   await waitFor(() => expect(result.current.phase).toBe("noOrganizers"));
+});
+
+it("lists every organizer the signed-in owner owns, without ?organizerId=", async () => {
+  answer();
+  const {result} = renderHook(() => useHostBillingController(), {wrapper});
+  act(() => signIn({uid: "owner"} as User));
+  await waitFor(() => expect(result.current.phase).toBe("ready"));
+  expect(api.call).toHaveBeenCalledWith("listMyOwnedOrganizers", {afterOrganizerId: null, limit: 50});
+  expect(result.current.organizers).toEqual([{organizerId: "lantern", organizerName: "Lantern Lane"},
+    {organizerId: "harbor", organizerName: "Harbor Social"}]);
+  expect(result.current.organizerId).toBe("lantern");
+  act(() => result.current.selectOrganizer("harbor"));
+  await waitFor(() => expect(api.call).toHaveBeenCalledWith("listOrganizerBills", {organizerId: "harbor"}));
+});
+
+it("reads every page of owned organizers", async () => {
+  api.call.mockReset();
+  answer();
+  const pages = vi.fn(async (_name: string, payload: {afterOrganizerId: string | null}) =>
+    payload.afterOrganizerId === null ?
+      {organizers: [owned("a", "A")], nextAfterOrganizerId: "a"} :
+      {organizers: [owned("b", "B")], nextAfterOrganizerId: null});
+  const base = api.call.getMockImplementation()!;
+  api.call.mockImplementation(async (name: string, payload: never) =>
+    name === "listMyOwnedOrganizers" ? pages(name, payload) : base(name, payload));
+  const {result} = renderHook(() => useHostBillingController(), {wrapper});
+  act(() => signIn({uid: "owner"} as User));
+  await waitFor(() => expect(result.current.phase).toBe("ready"));
+  expect(result.current.organizers.map((item) => item.organizerId)).toEqual(["a", "b"]);
+  expect(pages).toHaveBeenCalledTimes(2);
+});
+
+it("a bill email's ?organizerId= preselects that organizer", async () => {
+  vi.stubGlobal("location", {...window.location, assign, search: "?organizerId=harbor"});
+  answer();
+  const {result} = renderHook(() => useHostBillingController(), {wrapper});
+  act(() => signIn({uid: "owner"} as User));
+  await waitFor(() => expect(result.current.phase).toBe("ready"));
+  expect(result.current.organizerId).toBe("harbor");
+  expect(api.call).toHaveBeenCalledWith("getOrganizerBillingStatus", {organizerId: "harbor"});
 });

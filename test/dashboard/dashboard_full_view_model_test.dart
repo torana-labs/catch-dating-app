@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.d
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -48,13 +48,10 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(
+          watchActiveOrganizerFollowsForUserProvider(
             user.uid,
           ).overrideWithValue(
-            const AsyncError<List<OrganizerMembership>>(
-              'clubs',
-              StackTrace.empty,
-            ),
+            const AsyncError<List<OrganizerFollow>>('clubs', StackTrace.empty),
           ),
           watchSignedUpEventsProvider(
             user.uid,
@@ -83,9 +80,9 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(
+          watchActiveOrganizerFollowsForUserProvider(
             user.uid,
-          ).overrideWithValue(const AsyncLoading<List<OrganizerMembership>>()),
+          ).overrideWithValue(const AsyncLoading<List<OrganizerFollow>>()),
           watchSignedUpEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -113,9 +110,9 @@ void main() {
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(
+          watchActiveOrganizerFollowsForUserProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<OrganizerMembership>>([])),
+          ).overrideWithValue(const AsyncData<List<OrganizerFollow>>([])),
           watchSignedUpEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -162,10 +159,10 @@ void main() {
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(
+          watchActiveOrganizerFollowsForUserProvider(
             user.uid,
           ).overrideWithValue(
-            AsyncData<List<OrganizerMembership>>([
+            AsyncData<List<OrganizerFollow>>([
               membership(organizerId: 'club-a', uid: user.uid),
             ]),
           ),

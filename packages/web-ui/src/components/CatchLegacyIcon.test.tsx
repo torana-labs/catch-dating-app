@@ -1,8 +1,12 @@
 import {render} from "@testing-library/react";
-import {describe, expect, it} from "vitest";
-import {catchIconStrokeWidth} from "../icons/catchIconGlyphs";
+import {beforeAll, describe, expect, it} from "vitest";
+import {loadCatchIconGlyphs} from "../icons/catchIconGlyphLoader";
+import {catchIconStrokeWidth} from "../icons/catchIconRoles";
 import {activityIconName, catchIconSvgMarkup} from "../icons/catchIcons";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
+
+// The glyph map is a lazy chunk; catchIconGlyphLoader.test covers the wait.
+beforeAll(() => loadCatchIconGlyphs());
 
 describe("CatchLegacyIcon", () => {
   it("draws the role's glyph at the token size and the family stroke", () => {

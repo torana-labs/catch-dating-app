@@ -1,4 +1,8 @@
 import {describe, expect, it} from "vitest";
+import type {
+  ListOrganizerBillsCallableResponse,
+  ManageOrganizerBillingPlanCallableResponse,
+} from "./contracts";
 import {
   billPeriod,
   isOverdue,
@@ -84,5 +88,24 @@ describe("host billing model", () => {
     expect(planActions(ending, start + 2 * day).canBuy).toBe(true);
     // Without prices (terms unset) nothing can be bought.
     expect(planActions(parsePlanView({plan: {}, revision: 0, prices: null}), start).canBuy).toBe(false);
+  });
+
+  it("parses a reply typed exactly as the generated contracts", () => {
+    const reply: ListOrganizerBillsCallableResponse = {bills: [{billId: "o_c2026-11-09", month: "2026-12",
+      periodKind: "cycle", periodStartMillis: start, periodEndMillis: start + 30 * day, plan: "toolsOnly",
+      status: "sent", sales: {paymentCount: 3, eventCount: 1, grossMinor: 90_000, refundedMinor: 0,
+        providerFeeMinor: 1_800}, commission: {amountMinor: 0, capMinor: null, capped: false, trialWaivedMinor: 0},
+      gst: {registered: false, amountMinor: 0}, totalMinor: 500_000, invoiceNumber: "2026-27/040",
+      dueAtMillis: start + 45 * day, paymentUrl: "https://rzp.io/i/tools", paidAtMillis: null, paidMinor: null}]};
+    expect(parseBills(reply)).toEqual([{billId: "o_c2026-11-09", month: "2026-12", periodKind: "cycle",
+      periodStartMillis: start, periodEndMillis: start + 30 * day, toolsOnly: true, status: "sent",
+      salesMinor: 90_000, commissionMinor: 0, capped: false, gstMinor: 0, totalMinor: 500_000,
+      refundCreditMinor: 0, refundCreditCarriedMinor: 0, invoiceNumber: "2026-27/040", dueAtMillis: start + 45 * day, paymentUrl: "https://rzp.io/i/tools",
+      paidAtMillis: null}]);
+    const plan: ManageOrganizerBillingPlanCallableResponse = {organizerId: "o", revision: 4, paymentUrl: null,
+      amountDueMinor: null, prices: null,
+      plan: {plan: "toolsOnly", status: "ended", startsAtMillis: start, endsAtMillis: start + day}};
+    const {organizerId: _organizerId, ...view} = plan;
+    expect(parsePlanView(plan)).toEqual(view);
   });
 });
