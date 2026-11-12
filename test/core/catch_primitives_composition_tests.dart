@@ -477,7 +477,7 @@ void _registerCatchPrimitivesCompositionTests() {
           CatchChoiceInput<CityOption>.form(
             copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'Cities',
-            values: defaultCityOptions.take(2).toList(),
+            values: [cityOptionByName('mumbai')!, cityOptionByName('delhi')!],
             selected: {cityOptionByName('mumbai')!},
             onChanged: (_) {},
             mode: CatchChipMode.multiple,
