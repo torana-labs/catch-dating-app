@@ -22,6 +22,12 @@
   "checkedInBy": null,
   "linkedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
   "booking": {
+    "status": "signedUp",
+    "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+    "signedUpAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+    "waitlistedAt": null,
+    "attendedAt": null,
+    "cancelledAt": null,
     "paymentId": "pay_123",
     "genderAtSignup": "woman",
     "cohortAtSignup": "womenInterestedInMen",

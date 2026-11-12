@@ -7325,6 +7325,66 @@
           "mode": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "booking.status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "booking.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "booking.waitlistedAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "booking.hostApprovalStatus",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "linkedUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "booking.status",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

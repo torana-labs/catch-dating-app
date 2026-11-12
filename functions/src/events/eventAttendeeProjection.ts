@@ -40,7 +40,8 @@ export function eventAttendeeIndexDocument(params: {
 }
 
 /**
- * Catch booking facts carried on the roster row.
+ * The Catch booking carried on the roster row: its own lifecycle (which a
+ * Host-owned row's status does not reflect) and its admission facts.
  * @param {EventParticipationDocument} source Booking.
  * @param {boolean} sourceExists Whether the booking document still exists.
  * @param {FirebaseFirestore.Timestamp} now Fallback deletion time.
@@ -53,6 +54,14 @@ export function catchBookingFacts(
 ): NonNullable<EventAttendeeDocument["booking"]> {
   const deleted = !sourceExists || source.status === "deleted";
   return {
+    status: deleted ? "deleted" : source.status,
+    createdAt: source.createdAt,
+    signedUpAt: source.signedUpAt ?? null,
+    waitlistedAt: source.waitlistedAt ?? null,
+    attendedAt: source.attendedAt ?? null,
+    cancelledAt: source.cancelledAt ?? null,
+    inviteLinkId: source.inviteLinkId ?? null,
+    inviteCapturedAt: source.inviteCapturedAt ?? null,
     paymentId: source.paymentId ?? null,
     genderAtSignup: source.genderAtSignup ?? null,
     cohortAtSignup: source.cohortAtSignup ?? null,
