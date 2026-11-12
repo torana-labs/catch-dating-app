@@ -135,19 +135,7 @@ export const homePageCopy = {
       {question: "What if Catch isn’t in my city yet?", answer: "Choose your city and we’ll tell you when it opens. If you know a host who should be on Catch, send them our way."},
     ],
   },
-  footer: {
-    nav: "Footer",
-    tagline: "Meet people in real life, through hosts who bring them together.",
-    soon: "soon",
-    /** Notes after a footer city: "2 plans this week", "new" or "soon". */
-    cityNotes: {plans: "{count} plans this week", plan: "1 plan this week", new: "new"},
-    groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
-    wordmark: "Catch",
-    /** A footer city and its note: "Mumbai · 2 plans this week", "Pune · soon". */
-    cityWithNote: "{city} · {note}",
-    links: {whatsOn: "What’s on", organisers: "Organisers", app: "Get the app", hosts: "Catch for hosts", pricing: "Pricing",
-      claim: "Claim your page", help: "Help", safety: "Safety", privacy: "Privacy", terms: "Terms"},
-  },
+
   stores: {
     appStore: {kicker: "Download on the", label: "App Store", accessibleLabel: "Download on the App Store"},
     googlePlay: {kicker: "Get it on", label: "Google Play", accessibleLabel: "Get it on Google Play"},

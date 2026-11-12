@@ -100,23 +100,26 @@ class HostEventsBody extends StatelessWidget {
                   ],
                 ),
               if (state.programmes.isNotEmpty)
-                CatchSection(
-                  title: l10n.hostEventsProgrammesTitle,
-                  action: CatchSectionAction(
-                    label: l10n.hostEventsNewProgramme,
-                    onPressed: onNewProgramme,
-                  ),
-                  dividers: CatchSectionPlacement.none,
-                  children: [
-                    for (final programme in state.programmes)
-                      HostEventsProgrammeTile(
-                        key: ValueKey<String>(
-                          'host-events-programme-${programme.programId}',
+                Padding(
+                  padding: CatchInsets.hostEventsProgrammesEnd,
+                  child: CatchSection(
+                    title: l10n.hostEventsProgrammesTitle,
+                    action: CatchSectionAction(
+                      label: l10n.hostEventsNewProgramme,
+                      onPressed: onNewProgramme,
+                    ),
+                    dividers: CatchSectionPlacement.none,
+                    children: [
+                      for (final programme in state.programmes)
+                        HostEventsProgrammeTile(
+                          key: ValueKey<String>(
+                            'host-events-programme-${programme.programId}',
+                          ),
+                          programme: programme,
+                          onTap: () => onOpenProgramme(programme),
                         ),
-                        programme: programme,
-                        onTap: () => onOpenProgramme(programme),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               CatchSection(
                 title: l10n.hostEventsThisWeekTitle,

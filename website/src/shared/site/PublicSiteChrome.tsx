@@ -1,9 +1,7 @@
-import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar, CatchWordmark} from "@catch/web-ui";
+import {CatchButton, CatchSiteFooter, CatchStack, CatchText, CatchTopBar, CatchWordmark, type CatchSiteFooterGroup} from "@catch/web-ui";
 import {createContext, useContext, type ReactNode} from "react";
 import {openMarketingConsentPreferences} from "../../analytics";
-import {publicPageChromeCopy, publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
-import {ConsumerHome} from "../ui/primitives/consumerHome";
-import {SiteFooter, type SiteNavItem} from "./SiteFooter";
+import {publicPageChromeCopy, publicSiteCopy, siteFooterCopy, siteFooterLegalLinks} from "../../content/site";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
 
 /**
@@ -17,6 +15,12 @@ export interface SiteAccountEntry {
   /** The same entry in the phone menu, where the bar has no room for it. */
   menu: {label: string; href?: string; onPressed?: () => void};
 }
+/** A page link: where it goes and what it says. */
+export interface SiteNavItem {
+  href: string;
+  label: string;
+}
+
 const SiteAccountActionContext = createContext<SiteAccountEntry | null>(null);
 export const SiteAccountActionProvider = SiteAccountActionContext.Provider;
 
@@ -66,7 +70,7 @@ function GetTheAppButton() {
 // reads as a link; in a link column it matches its siblings.
 const privacyChoicesText = {
   inline: {font: "inherit", textDecoration: "underline", textUnderlineOffset: "0.2em"},
-  link: {font: "inherit", textDecoration: "none"},
+  link: {font: "inherit", lineHeight: "inherit", textDecoration: "none", border: 0},
 } as const;
 
 /**
@@ -116,68 +120,52 @@ export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, link
   );
 }
 
-/** The footer of routes not yet rebuilt on the system. */
-export function PublicSiteFooter() {
-  return (
-    <ConsumerHome>
-      <SiteFooter brandHref="/" body={publicSiteCopy.footerOperator} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]}>
-        <PrivacyChoicesButton tone="link" />
-      </SiteFooter>
-    </ConsumerHome>
-  );
-}
-
-/** One footer column: a kicker over its links. */
-export interface SiteFooterColumn {
-  title: string;
-  links: readonly SiteNavItem[];
+/** A city in the footer's Cities column, as the city pages and the homepage list them. */
+export interface SiteFooterCity {
+  href: string;
+  label: string;
+  /** Not yet open: the column marks it "soon". */
+  soon: boolean;
+  /** The city's own note, such as "2 plans this week"; it replaces "soon". */
+  note?: string;
 }
 
 /**
- * The system pages' footer: an ink band with link columns (left out on a
- * product page that keeps it short), then the wordmark and the tagline.
- * "Privacy choices" closes the last column (Help and legal) as one of its
- * links; a footer without columns carries it beside the tagline.
+ * The one site footer on every public page: the ink band with Explore,
+ * Hosts and Help and legal (and Cities where a page lists them), each link
+ * flush with its column title on one row rhythm, then the wordmark with the
+ * tagline on its baseline and the operator line. Help and legal ends with
+ * Privacy choices. A product page may name itself ("Catch for weddings")
+ * and give its own line; the columns stay the same everywhere.
  */
-export function SiteFooterBand({columns, label, tagline, wordmark}: {
-  columns?: readonly SiteFooterColumn[];
-  label: string;
-  tagline: string;
-  wordmark: string;
+export function PublicSiteFooter({appHref, cities, exploreHref, tagline = siteFooterCopy.tagline, wordmark = publicSiteCopy.wordmark}: {
+  /** Where Get the app goes: the homepage's own band from the homepage. */
+  appHref?: string;
+  cities?: readonly SiteFooterCity[];
+  /** Where What's on goes: a city page links its own plans. */
+  exploreHref?: string;
+  tagline?: string;
+  wordmark?: string;
 }) {
+  const {brand, subBrand} = wordmarkParts(wordmark);
+  const [whatsOn, organisers, app] = siteFooterCopy.explore;
+  const help = siteFooterCopy.helpOrder.map((href) => siteFooterLegalLinks.find((link) => link.href === href)!);
+  const groups: CatchSiteFooterGroup[] = [
+    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, organisers, {...app, href: appHref ?? app.href}]},
+    ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
+    {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
+    {title: siteFooterCopy.groups.help, links: help, trailing: <PrivacyChoicesButton tone="link" />},
+  ];
   return (
-    <CatchStack as="footer" gap={0}>
-      <CatchSurface block="band" color="ink">
-        {columns ? (
-          <CatchStack aria-label={label} as="nav" collapseBelow="medium" direction="row" equal gap={24}>
-            {columns.map((column, index) => (
-              <CatchStack gap={8} key={column.title}>
-                <CatchText tone="secondary" variant="label-kicker">{column.title}</CatchText>
-                {column.links.map((link) => (
-                  <CatchStack align="start" key={`${column.title}-${link.label}`}>
-                    <CatchButton href={link.href} label={link.label} onPressed={() => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
-                      size="sm" variant="quiet" />
-                  </CatchStack>
-                ))}
-                {index === columns.length - 1 ? (
-                  <CatchStack align="start">
-                    <CatchButton label={publicSiteCopy.privacyChoices} onPressed={openMarketingConsentPreferences} size="sm" variant="quiet" />
-                  </CatchStack>
-                ) : null}
-              </CatchStack>
-            ))}
-          </CatchStack>
-        ) : null}
-        <CatchStack align="end" direction="row" gap={16} justify="between" wrap>
-          <CatchWordmark size="band" subBrand={wordmarkParts(wordmark).subBrand}>{wordmarkParts(wordmark).brand}</CatchWordmark>
-          {columns ? <CatchText tone="secondary" variant="body-small">{tagline}</CatchText> : (
-            <CatchStack align="center" direction="row" gap={16} wrap>
-              <CatchText tone="secondary" variant="body-small">{tagline}</CatchText>
-              <CatchText tone="secondary" variant="body-small"><PrivacyChoicesButton /></CatchText>
-            </CatchStack>
-          )}
-        </CatchStack>
-      </CatchSurface>
-    </CatchStack>
+    <CatchSiteFooter
+      brandHref="/"
+      brandLabel={brand}
+      brandSubBrand={subBrand}
+      groups={groups}
+      navLabel={siteFooterCopy.nav}
+      note={publicSiteCopy.footerOperator}
+      onLinkPressed={(link) => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
+      tagline={tagline}
+    />
   );
 }

@@ -1,6 +1,7 @@
 import type {CatchFormat, CatchBandGround} from "@catch/web-ui";
 import {homeFormats, homePageCopy as copy, otherFormatPoster} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {siteFooterCopy} from "@content/site";
 import type {HomeCity, HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
 
 const week = 7 * 24 * 60 * 60 * 1000;
@@ -27,8 +28,8 @@ export function cityStatusLabel(city: HomeCity) {
 
 /** The footer's note after a city: "2 plans this week", "new" or "soon". */
 export function cityFooterNote(city: HomeCity) {
-  const notes = copy.footer.cityNotes;
-  if (city.status !== "live") return copy.footer.soon;
+  const notes = siteFooterCopy.cityNotes;
+  if (city.status !== "live") return siteFooterCopy.soon;
   if (city.weekPlanCount === 0) return notes.new;
   if (city.weekPlanCount === 1) return notes.plan;
   return fill(notes.plans, {count: city.weekPlanCount});

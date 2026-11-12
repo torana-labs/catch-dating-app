@@ -28,22 +28,19 @@ import {useEffect, useState, type ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {siteFooterLegalLinks} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
-import {PublicSiteHeader, SiteFooterBand, WebsitePageMain} from "../../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {cityFooterNote, cityStatusLabel} from "../homeModel";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
-import {cityPagePath, organisersHref} from "./cityChrome";
+import {cityPagePath} from "./cityChrome";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
 const areasOf = (home: Home) => homeCityAreas[home.city.marketSlug];
 const posterOf = (format: string | null) => homeFormats.find((item) => item.format === format)?.poster;
-const helpHref = siteFooterLegalLinks.find((link) => link.href.startsWith("/help"))?.href ?? "/help/";
-const legalHref = (prefix: string) => siteFooterLegalLinks.find((link) => link.href.startsWith(prefix))?.href ?? helpHref;
 
 /** A section opening: a coloured kicker over a display headline. */
 function Heading({id, kicker, title, tone = "secondary", as = "h2"}: {id?: string; kicker: string; title: string; tone?: CatchTextTone; as?: "h1" | "h2"}) {
@@ -376,22 +373,12 @@ function HomeFaq() {
   );
 }
 
+/** The one site footer, with the homepage's cities (each city's status as the picker reads it). */
 function HomeFooter({home}: {home: Home}) {
-  const links = copy.footer.links;
   return (
-    <SiteFooterBand
-      columns={[
-        {title: copy.footer.groups.explore, links: [{href: home.exploreHref, label: links.whatsOn}, {href: organisersHref, label: links.organisers}, {href: "#app", label: links.app}]},
-        {title: copy.footer.groups.cities, links: home.cities.map((item) => ({href: cityPagePath(item.slug),
-          label: fill(copy.footer.cityWithNote, {city: item.label, note: cityFooterNote(item)})}))},
-        {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
-        {title: copy.footer.groups.help, links: [{href: helpHref, label: links.help}, {href: helpHref, label: links.safety},
-          {href: legalHref("/privacy"), label: links.privacy}, {href: legalHref("/terms"), label: links.terms}]},
-      ]}
-      label={copy.footer.nav}
-      tagline={copy.footer.tagline}
-      wordmark={copy.footer.wordmark}
-    />
+    <PublicSiteFooter appHref="#app" exploreHref={home.exploreHref}
+      cities={home.cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live",
+        note: cityFooterNote(item)}))} />
   );
 }
 

@@ -29,6 +29,35 @@ export const publicSiteCopy = {
 } as const;
 
 /**
+ * The one site footer on every public page (shared/site PublicSiteFooter):
+ * Explore, Hosts and Help and legal on every page, with the city pages and
+ * the homepage adding their Cities column. Help and legal ends with Privacy
+ * choices, which reopens the consent banner.
+ */
+export const siteFooterCopy = {
+  nav: "Footer",
+  tagline: "Meet people in real life, through hosts who bring them together.",
+  groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
+  explore: [
+    {href: "/explore/", label: "What’s on"},
+    {href: "/explore/?show=organisers", label: "Organisers"},
+    {href: "/#app", label: "Get the app"},
+  ],
+  hosts: [
+    {href: "/host/", label: `${brand.name} for hosts`},
+    {href: "/host/#pricing", label: "Pricing"},
+    {href: "/weddings/", label: "Weddings"},
+    {href: "/claim/", label: "Claim your page"},
+  ],
+  /** The legal links in reading order: help first, then the policies, then contact. */
+  helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/"],
+  /** A city not yet open: "Pune · soon". */
+  soon: "soon",
+  /** An open city's note: "Mumbai · 2 plans this week", or "new" before its first plan. */
+  cityNotes: {plans: "{count} plans this week", plan: "1 plan this week", new: "new"},
+} as const;
+
+/**
  * The site top bar and the short footer the rebuilt public pages share,
  * as the RbWebOrgV2 and RbWebEventV2 boards draw them (shared/site/PublicSiteChrome.tsx).
  */

@@ -142,15 +142,19 @@ class _HostEventsTabScreenState extends ConsumerState<HostEventsTabScreen> {
           variant: CatchTopBarVariant.tabHome,
           kicker: organizer?.name,
           title: l10n.hostEventsTitle,
+          // The rail and sidebar carry the shell's "New event"; only the
+          // bottom-bar layout needs its own.
           actions: [
-            CatchButton(
-              label: l10n.hostEventsNew,
-              leading: CatchIcon(CatchIcons.add),
-              size: CatchButtonSize.md,
-              onPressed: organizer == null
-                  ? null
-                  : () => unawaited(_create(organizer)),
-            ),
+            if (CatchShellScope.maybeOf(context)?.navigationPlacement
+                case null || CatchTabBarPlacement.bottom)
+              CatchButton(
+                label: l10n.hostEventsNew,
+                leading: CatchIcon(CatchIcons.add),
+                size: CatchButtonSize.md,
+                onPressed: organizer == null
+                    ? null
+                    : () => unawaited(_create(organizer)),
+              ),
           ],
         ),
         bodyScrolls: false,

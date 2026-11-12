@@ -38,15 +38,26 @@
   outline-offset: var(--catch-space-micro2);
 }
 
+/* The tagline sits on the wordmark's baseline; a note follows under it. */
 .base {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--catch-space-s4);
   margin-top: var(--catch-space-s12);
   padding-top: var(--catch-space-s7);
   border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+}
+
+.lines > p {
+  margin: 0;
 }
 
 @container catch-page (width < 840px) {
