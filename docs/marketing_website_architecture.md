@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.26.0
+version: 0.27.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -1248,7 +1248,10 @@ logged or sent. A city picked or found this way is remembered in
 `localStorage` (`catch_city_choice_v1`, the slug and how it was reached:
 `picked` or `precise`), which is essential storage for a choice the visitor
 made, not consented measurement. The source (`CitySource`) is what the
-waitlist contract's `citySource` records. The privacy page says what is
+waitlist contract's `citySource` records: the launching-soon "Tell me when it
+opens" form sends the city's catalog `cityId` and `countryIsoCode`, and
+`citySource` when the page knows how it reached the city, beside the label in
+`city`, so `joinWaitlist` counts interest by city. The privacy page says what is
 inferred. An unavailable catalogue does
 not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback

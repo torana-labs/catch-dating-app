@@ -162,8 +162,9 @@ function HomeThisWeek({home}: {home: Home}) {
 }
 
 /** "Tell me when it opens": one WhatsApp message on opening day, news only if ticked. */
-function HomeLaunchNotice({city}: {city: string}) {
-  const notice = useLaunchNoticeController(city);
+function HomeLaunchNotice({home}: {home: Home}) {
+  const city = home.city.label;
+  const notice = useLaunchNoticeController(city, undefined, {slug: home.city.slug, source: home.citySource});
   return (
     <CatchStack gap={12}>
       <CatchText as="h3" variant="display-sm">{copy.notice.title}</CatchText>
@@ -207,7 +208,7 @@ function HomeLaunchingSoon({home}: {home: Home}) {
           ) : null}
         </CatchSurface>
         <CatchSurface block="floating">
-          <HomeLaunchNotice city={city} />
+          <HomeLaunchNotice home={home} />
           <CatchStack gap={4}>
             <CatchText as="h3" variant="title-row">{fill(copy.soon.knowHost, {city})}</CatchText>
             <CatchStack align="start"><CatchButton href="/host/" label={copy.soon.knowHostAction} size="sm" variant="quiet" /></CatchStack>
