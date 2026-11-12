@@ -753,7 +753,7 @@ test("Deploy backend checks readiness before any mutation", () => {
   const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
     "Choose the Functions to deploy", "Check the platform is serving before touching it",
-    "Count the Functions this deploy changes", "Check this environment is ready", "Deploy Firestore indexes",
+    "Report what this deploy changes", "Check this environment is ready", "Deploy Firestore indexes",
     "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
     "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
@@ -773,7 +773,7 @@ test("Deploy backend checks readiness before any mutation", () => {
       `${name} is skipped for a commit older than the deployed one and while the platform is not serving`);
   }
   // A named run deploys those Functions only and leaves the record alone.
-  for (const name of ["Count the Functions this deploy changes", "Deploy Firestore indexes",
+  for (const name of ["Report what this deploy changes", "Deploy Firestore indexes",
     "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"]) {
     assert.match(block(name),
       /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
@@ -799,7 +799,7 @@ test("Deploy backend preserves every readiness failure before mutation", (t) => 
     `], {
       cwd, encoding: "utf8",
       env: {...process.env, DEPLOY_ENVIRONMENT: "dev", DEPLOY_TARGETS: "functions",
-        GITHUB_SHA: "a".repeat(40), READINESS_EXIT: String(status), READINESS_REPORT: report ? JSON.stringify(report) : ""},
+        DEPLOY_SHA: "a".repeat(40), READINESS_EXIT: String(status), READINESS_REPORT: report ? JSON.stringify(report) : ""},
     });
     assert.equal(result.status, status, `preserve readiness exit ${status}: ${result.stderr}`);
     assert.equal(result.stdout.includes("DEPLOY_REACHED"), status === 0);
@@ -811,7 +811,7 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-guard-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
   const list = (page) => `repos/o/r/deployments?environment=dev&task=deploy:backend&per_page=100&page=${page}`;
-  const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=1`;
+  const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=100`;
   const record = (id) => `repos/o/r/deployments/${id}`;
   const base = "b".repeat(40);
   const success = [[list(1), "7"], [status(7), "success"], [record(7), base]];
@@ -858,7 +858,7 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
           esac
         }
         git() {
-          [[ "$*" == "merge-base --is-ancestor ${base} $GITHUB_SHA" ]] || return 98
+          [[ "$*" == "merge-base --is-ancestor ${base} $DEPLOY_SHA" ]] || return 98
           return "$ANCESTOR"
         }
         ${script}
@@ -866,7 +866,7 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
         cwd, encoding: "utf8", timeout: 5000,
         env: {...process.env, GITHUB_OUTPUT: output, CALLS_LOG: callsLog,
           GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "dev",
-          GITHUB_SHA: scenario.source ?? "a".repeat(40), ANCESTOR: String(scenario.ancestor ?? 0)},
+          DEPLOY_SHA: scenario.source ?? "a".repeat(40), ANCESTOR: String(scenario.ancestor ?? 0)},
       });
       assert.equal(result.error, undefined);
       assert.equal(result.status, scenario.exit ?? 0, result.stderr);
@@ -881,9 +881,15 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
   }
 });
 
-test("Deploy backend counts changed Functions against the recorded hashes before any change", (t) => {
+test("Deploy backend counts a record as delivered when any of its statuses succeeded", () => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Skip a commit older than the deployed one");
+  // GitHub marks a record inactive seconds after its success status.
+  assert.match(script, /statuses\?per_page=100"[\s\\]+-q 'if any\(\.\[\]; \.state == "success"\) then "success"/u);
+});
+
+test("Deploy backend reports the codebases it changes against the recorded hashes and refuses nothing", (t) => {
   const workflow = backendDeployWorkflow();
-  const script = workflowStepShell(workflow, "Count the Functions this deploy changes");
+  const script = workflowStepShell(workflow, "Report what this deploy changes");
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-size-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
   fs.mkdirSync(path.join(cwd, "build"));
@@ -893,7 +899,7 @@ test("Deploy backend counts changed Functions against the recorded hashes before
   const functions = (count) => Array.from({length: count}, (_, index) => `f${index}`);
   fs.writeFileSync(path.join(cwd, "build/functions-codebases.json"), JSON.stringify({version: 1, codebases: {
     admin: {hash: "a2", functions: functions(150)}, events: {hash: "e1", functions: functions(100)}}}));
-  const run = ({deployment = "7", payload = "", allowLarge = "false", full = "false"}) => {
+  const run = ({deployment = "7", payload = "", full = "false"}) => {
     const summary = path.join(cwd, "summary.md");
     fs.writeFileSync(summary, "");
     const result = spawnSync("bash", ["-c", `
@@ -903,21 +909,18 @@ test("Deploy backend counts changed Functions against the recorded hashes before
       }
       ${script}
     `], {cwd, encoding: "utf8", env: {...process.env, GITHUB_REPOSITORY: "o/r", GITHUB_STEP_SUMMARY: summary,
-      DEPLOY_ENVIRONMENT: "dev", DEPLOYED_ID: deployment, PAYLOAD: payload, FULL: full, ALLOW_LARGE: allowLarge,
-      MAX_CHANGED_FUNCTIONS: "200"}});
+      DEPLOY_ENVIRONMENT: "dev", DEPLOYED_ID: deployment, PAYLOAD: payload, FULL: full}});
     return {...result, summary: fs.readFileSync(summary, "utf8")};
   };
   const recorded = JSON.stringify({version: 1, codebases: {admin: {hash: "a1"}, events: {hash: "e1"}}});
   const small = run({payload: recorded});
   assert.equal(small.status, 0, small.stderr);
-  assert.match(small.summary, /changes: 150 \(limit 200\)/u);
-  for (const scenario of [{payload: ""}, {deployment: ""}, {payload: "{}"}]) {
-    const unknown = run(scenario);
-    assert.equal(unknown.status, 3, JSON.stringify(scenario));
-    assert.match(unknown.stderr, /would update 250 Functions in dev, over the limit of 200/u);
+  assert.match(small.summary, /1 codebase build\(s\), 150 Function update\(s\)/u);
+  for (const scenario of [{payload: ""}, {deployment: ""}, {payload: "{}"}, {payload: recorded, full: "true"}]) {
+    const everything = run(scenario);
+    assert.equal(everything.status, 0, JSON.stringify(scenario));
+    assert.match(everything.summary, /2 codebase build\(s\), 250 Function update\(s\)/u);
   }
-  assert.equal(run({payload: "", allowLarge: "true"}).status, 0);
-  assert.equal(run({payload: recorded, full: "true"}).status, 0);
   // The record a successful run writes is what the next run reads back.
   const record = workflow.slice(workflow.indexOf("name: Record the deployed commit"));
   assert.match(record, /--slurpfile codebases build\/functions-codebases\.json/u);
