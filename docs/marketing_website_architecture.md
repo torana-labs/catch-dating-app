@@ -1231,12 +1231,13 @@ is "Other". What reaches Cloud Run:
 
 | Hop | Location headers |
 |---|---|
-| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` only with the "Add visitor location headers" managed transform, which `tool/cloudflare/edge_policy.json` does not enable. Turning it on is an edge-policy change to propose there, not a website change. |
+| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` from the "Add visitor location headers" managed transform, which the owner turned on in the dashboard and `tool/cloudflare/edge_policy.json` records under `declared`. |
 | Firebase Hosting (Fastly) | Adds none. Whether it forwards Cloudflare's `cf-*` request headers to Cloud Run is not yet measured. |
 | Cloud Run | Adds none; Next reads the request headers as forwarded. |
 
-So today the guess is country-level at best: an Indian visitor gets India's
-default city, as before. The endpoint logs, once per server instance for each
+Until the Fastly hop is measured to forward the city and coordinate headers,
+expect the guess to be country-level: an Indian visitor gets India's default
+city, as before. The endpoint logs, once per server instance for each
 distinct set, which location header names arrived and what the guess rested on
 (`website_city_guess_headers`), never their values; that log is the measurement
 for the Fastly hop.
