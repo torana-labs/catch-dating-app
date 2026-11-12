@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.190.0
+version: 1.191.0
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -4433,7 +4433,12 @@ Product defaults pending owner review: guests cannot download photos (the
 apps show no download action), and photos are kept for as long as the
 event's chat history is kept. There is no retention sweep yet, so photos last
 until the host team removes them. A staged original whose add never runs
-stays private and unread.
+(the app was killed mid-upload) still carries its EXIF and GPS data, so
+`cleanUpStagedHostPhotosDaily` deletes every object under
+`events/*/hostPhotoUploads/` created more than 24 hours earlier. The bucket is
+not managed by `infra/`, so this scheduled sweep stands in for a Storage
+lifecycle rule; a run handles at most 20 pages of 500 objects and the next run
+continues any backlog.
 
 ### Programme Guest IDs, Hampers, Photos And Vendor Bills
 

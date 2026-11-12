@@ -956,6 +956,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventReportReviewsEmpty => 'No reviews yet.';
 
   @override
+  String get hostEventPhotosTitle => 'Photos for your guests';
+
+  @override
+  String get hostEventPhotosAdd => 'Add photos';
+
+  @override
+  String get hostEventPhotosEmpty =>
+      'Share a few moments from the night. Only guests who checked in see them.';
+
+  @override
+  String get hostEventPhotosNote =>
+      'Only guests who checked in see these. Location data is removed from every photo.';
+
+  @override
+  String hostEventPhotosCount({required int count, required int max}) {
+    return '$count of $max';
+  }
+
+  @override
+  String get hostEventPhotosFull =>
+      'You’ve shared the most photos an event can have.';
+
+  @override
+  String hostEventPhotosPhotoLabel({required int index, required int count}) {
+    return 'Photo $index of $count. Double-tap to remove.';
+  }
+
+  @override
+  String hostEventPhotosUploading({required int percent}) {
+    return 'Uploading $percent%';
+  }
+
+  @override
+  String get hostEventPhotosUploadProgress => 'Upload progress';
+
+  @override
+  String get hostEventPhotosPreparing => 'Preparing';
+
+  @override
+  String get hostEventPhotosSharing => 'Removing location data';
+
+  @override
+  String get hostEventPhotosFailed => 'Didn’t upload';
+
+  @override
+  String get hostEventPhotosRetry => 'Try again';
+
+  @override
+  String get hostEventPhotosDismiss => 'Dismiss';
+
+  @override
+  String get hostEventPhotosRemoveTitle => 'Remove this photo?';
+
+  @override
+  String get hostEventPhotosRemoveBody => 'Guests won’t see it any more.';
+
+  @override
+  String get hostEventPhotosRemoveConfirm => 'Remove';
+
+  @override
+  String get hostEventPhotosRemoveKeep => 'Keep';
+
+  @override
   String get hostEventReportReviewAnonymous => 'A guest';
 
   @override
