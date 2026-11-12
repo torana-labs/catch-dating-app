@@ -91,13 +91,96 @@ class CatchListSection extends StatelessWidget {
         : const CatchDivider.section();
     final rows = timeline ? _joined(context) : children;
     final perColumn = split ? (rows.length / columns).ceil() : rows.length;
+    // The kicker over the title, with the action or note on the title's
+    // baseline. At large text the action takes its own line under the title,
+    // so the title wraps only between words.
+    Widget? header;
+    if (title != null) {
+      final kicker = this.kicker;
+      final action = this.action;
+      final note = this.note;
+      final heading = Semantics(
+        header: true,
+        child: CatchText(title, variant: CatchTextVariant.sectionTitle),
+      );
+      final button = action == null
+          ? null
+          : CatchButton(
+              label: action.label,
+              onPressed: action.onPressed,
+              variant: CatchButtonVariant.quiet,
+              size: CatchButtonSize.sm,
+            );
+      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+      final Widget? trailing = button != null
+          // The quiet action's label sits on the title's baseline. Its 48 px
+          // target overhangs the title line instead of making it taller, so a
+          // section with an action starts where any other section does.
+          ? largeText
+                // At large text the action drops under the title, moved
+                // back by its own leading padding so its label lines up with
+                // the title; its target extends outward instead.
+                ? Transform.translate(
+                    offset: Offset(
+                      Directionality.of(context) == TextDirection.rtl
+                          ? CatchButtonTokens.smallPaddingX
+                          : -CatchButtonTokens.smallPaddingX,
+                      0,
+                    ),
+                    child: button,
+                  )
+                : _BaselineOverhang(child: button)
+          : note != null
+          ? CatchText(
+              note,
+              variant: CatchTextVariant.labelKicker,
+              tone: CatchTextTone.secondary,
+              maxLines: 1,
+            )
+          : null;
+      final Widget titleLine = trailing == null
+          ? heading
+          : largeText && action != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              spacing: CatchSpacing.s1,
+              children: [heading, trailing],
+            )
+          : _OverhangFlex(
+              direction: Axis.horizontal,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              spacing: CatchSpacing.s3,
+              children: [
+                Expanded(child: heading),
+                trailing,
+              ],
+            );
+      header = kicker == null
+          ? titleLine
+          : _OverhangFlex(
+              direction: Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              spacing: CatchSpacing.s1,
+              children: [
+                CatchText(
+                  kicker,
+                  variant: CatchTextVariant.labelKicker,
+                  tone: CatchTextTone.secondary,
+                ),
+                titleLine,
+              ],
+            );
+    }
     return _OverhangFlex(
       direction: Axis.vertical,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: CatchSpacing.s2,
       children: [
-        if (title != null) _header(context, title),
+        ?header,
         if (children.isEmpty && empty != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
@@ -137,77 +220,6 @@ class CatchListSection extends StatelessWidget {
               if (dividers == CatchSectionPlacement.all) ?line,
             ],
           ),
-      ],
-    );
-  }
-
-  /// The kicker over the title, with the [action] or [note] on the title's
-  /// baseline. At large text the action takes its own line under the title,
-  /// so the title wraps only between words.
-  Widget _header(BuildContext context, String title) {
-    final kicker = this.kicker;
-    final action = this.action;
-    final note = this.note;
-    final heading = Semantics(
-      header: true,
-      child: CatchText(title, variant: CatchTextVariant.sectionTitle),
-    );
-    final button = action == null
-        ? null
-        : CatchButton(
-            label: action.label,
-            onPressed: action.onPressed,
-            variant: CatchButtonVariant.quiet,
-            size: CatchButtonSize.sm,
-          );
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-    final Widget? trailing = button != null
-        // The quiet action's label sits on the title's baseline. Its 48 px
-        // target overhangs the title line instead of making it taller, so a
-        // section with an action starts where any other section does.
-        ? largeText
-              ? _FlushStart(child: button)
-              : _BaselineOverhang(child: button)
-        : note != null
-        ? CatchText(
-            note,
-            variant: CatchTextVariant.labelKicker,
-            tone: CatchTextTone.secondary,
-            maxLines: 1,
-          )
-        : null;
-    final Widget titleLine = trailing == null
-        ? heading
-        : largeText && action != null
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            spacing: CatchSpacing.s1,
-            children: [heading, trailing],
-          )
-        : _OverhangFlex(
-            direction: Axis.horizontal,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            spacing: CatchSpacing.s3,
-            children: [
-              Expanded(child: heading),
-              trailing,
-            ],
-          );
-    if (kicker == null) return titleLine;
-    return _OverhangFlex(
-      direction: Axis.vertical,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      spacing: CatchSpacing.s1,
-      children: [
-        CatchText(
-          kicker,
-          variant: CatchTextVariant.labelKicker,
-          tone: CatchTextTone.secondary,
-        ),
-        titleLine,
       ],
     );
   }
@@ -337,27 +349,5 @@ class _RenderBaselineOverhang extends RenderShiftedBox {
     if (!hitTestChildren(result, position: position)) return false;
     result.add(BoxHitTestEntry(this, position));
     return true;
-  }
-}
-
-/// A quiet button moved back by its own leading padding, so its label lines
-/// up with the text above it; its target extends outward instead.
-class _FlushStart extends StatelessWidget {
-  const _FlushStart({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final rtl = Directionality.of(context) == TextDirection.rtl;
-    return Transform.translate(
-      offset: Offset(
-        rtl
-            ? CatchButtonTokens.smallPaddingX
-            : -CatchButtonTokens.smallPaddingX,
-        0,
-      ),
-      child: child,
-    );
   }
 }

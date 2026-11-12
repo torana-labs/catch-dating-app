@@ -99,12 +99,9 @@ class HostEventsBody extends StatelessWidget {
                     ),
                   ],
                 ),
-              // The programme cards carry no row padding, so they get an
-              // event row's bottom inset and the gap to the next section
-              // matches the gap after a row.
               if (state.programmes.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                  padding: CatchInsets.hostEventsProgrammesEnd,
                   child: CatchSection(
                     title: l10n.hostEventsProgrammesTitle,
                     action: CatchSectionAction(
