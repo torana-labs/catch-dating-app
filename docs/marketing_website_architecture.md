@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.25.0
+version: 0.26.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -57,7 +57,7 @@ pages read their plans in the page, so a city that cannot be read renders its
 own unavailable message and marks the render unavailable; the hook then sends
 it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
 ([unavailable public reads](web_surface_architecture.md#unavailable-public-reads)). Claim, booking, follow,
-signed-in, Host, legal, `/api/public-catalog` and private-shell responses stay
+signed-in, Host, legal, `/api/public-catalog`, `/api/home-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
 ISR fallback. The request gate checks
@@ -1211,7 +1211,45 @@ launching-soon line per country with none open, and "More cities →" to
 `/cities/`, which lists every listed city by country: an open city links its
 page, any other city the homepage launch notice (`/?city=<slug>#whats-on`).
 Story fixtures with 2 and 25 cities (`stories/fixtures/homeCatalogs.ts`) keep
-both layouts in the Storybook visual review. An unavailable catalogue does
+both layouts in the Storybook visual review.
+
+### City guess and "Use my location"
+
+The CDN keeps one homepage for everyone, so the HTML always shows the default
+city. When the address names no city (`?city=`), the browser (`useHomeCity`)
+asks `/api/home-catalog` for the city the visitor chose last (`?city=<slug>`)
+or, with no choice, for a guess (`?guess=1`), and swaps that city's read model
+in. The endpoint answers `private, no-store`. A named city always wins, and a
+guess of "Other" or a city that cannot be read leaves the default in place.
+
+The guess (`server/cityGuess.ts`) uses network location only. It tries the
+nearest listed city to the network's coordinates within
+`citySnapRadiusKm` (80 km, `content/markets/nearestCity.ts`, from the catalog's
+latitude and longitude), then a listed city the network names (label or
+alias), then the country's default city if the website lists it; anything else
+is "Other". What reaches Cloud Run:
+
+| Hop | Location headers |
+|---|---|
+| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` only with the "Add visitor location headers" managed transform, which `tool/cloudflare/edge_policy.json` does not enable. Turning it on is an edge-policy change to propose there, not a website change. |
+| Firebase Hosting (Fastly) | Adds none. Whether it forwards Cloudflare's `cf-*` request headers to Cloud Run is not yet measured. |
+| Cloud Run | Adds none; Next reads the request headers as forwarded. |
+
+So today the guess is country-level at best: an Indian visitor gets India's
+default city, as before. The endpoint logs, once per server instance for each
+distinct set, which location header names arrived and what the guess rested on
+(`website_city_guess_headers`), never their values; that log is the measurement
+for the Fastly hop.
+
+"Use my location" in the picker calls the browser's Geolocation API only when
+tapped, never on load. `features/home/locateCity.ts` snaps the position to the
+nearest listed city in the browser and drops it; coordinates are never stored,
+logged or sent. A city picked or found this way is remembered in
+`localStorage` (`catch_city_choice_v1`, the slug and how it was reached:
+`picked` or `precise`), which is essential storage for a choice the visitor
+made, not consented measurement. The source (`CitySource`) is what the
+waitlist contract's `citySource` records. The privacy page says what is
+inferred. An unavailable catalogue does
 not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback
 photographs are labelled. Catch Experience explains active guest participation;

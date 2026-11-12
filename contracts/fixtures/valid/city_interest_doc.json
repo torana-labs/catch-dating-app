@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "cityKey": "in-mh-pune",
+  "cityId": "in-mh-pune",
+  "countryIsoCode": "IN",
+  "total": 3,
+  "daily": {"2026-11-10": 1, "2026-11-12": 2},
+  "updatedAt": {"_seconds": 1794500000, "_nanoseconds": 0}
+}

@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_event_offer_audits.schema.json",
   "title": "OrganizerEventOfferAuditDocument",
+  "x-firestore-collection": "organizerEventOfferAudits",
+  "x-firestore-path": "organizerEventOfferAudits/{documentId}",
   "type": "object",
   "additionalProperties": false,
   "required": [

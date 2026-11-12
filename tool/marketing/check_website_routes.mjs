@@ -937,6 +937,7 @@ export const OrganizerSearch = {
       [
         "home",
     "visitor_discovery",
+        "cities",
         "host",
         "host_apply",
         "weddings",

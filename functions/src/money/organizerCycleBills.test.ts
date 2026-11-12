@@ -40,7 +40,8 @@ let paymentCount = 0;
 function payment(atMillis: number, amountPaise: number,
   refundedAmountPaise = 0): Record<string, FakeData> {
   paymentCount++;
-  return {[`publicEventPayments/p${paymentCount}`]: {organizerId: "org",
+  return {[`guestPayments/p${paymentCount}`]: {
+    purpose: "publicEvent", organizerId: "org",
     eventId: "ev1", capturedAt: Timestamp.fromMillis(atMillis), amountPaise,
     refundedAmountPaise,
     routing: {selection: {route: "razorpayOAuth"}}}};
@@ -198,9 +199,9 @@ test("a bill not yet sent picks up refunds made after its cycle closed",
   async () => {
     const db = seed(payment(trialEnd + dayMillis, 100_000));
     await generateCycleBills(deps(db, trialEnd + cycle + 1), null);
-    const path = "publicEventPayments/" + [...(db as unknown as {
+    const path = "guestPayments/" + [...(db as unknown as {
       docs: Map<string, FakeData>}).docs.keys()]
-      .find((key) => key.startsWith("publicEventPayments/"))!.split("/")[1];
+      .find((key) => key.startsWith("guestPayments/"))!.split("/")[1];
     db.setDoc(path, {...db.getDoc(path)!, refundedAmountPaise: 40_000});
     assert.equal(await regenerateToSendCycleBills(deps(db,
       trialEnd + cycle + dayMillis), "staff"), 1);

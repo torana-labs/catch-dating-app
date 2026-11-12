@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_metric_counters.schema.json",
+  "title": "ParticipantMetricCounterDocument",
+  "description": "Running totals of one account's participant signals by type, with the last time each was seen.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantMetricCounters",
+  "x-firestore-path": "participantMetricCounters/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "Participant signal recorder",
+  "required": [
+    "uid",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lastSeenByType": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

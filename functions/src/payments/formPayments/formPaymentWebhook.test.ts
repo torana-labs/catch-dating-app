@@ -59,7 +59,7 @@ async function harness() {
     "organizerPaymentConnections/connection");
   h.store.records.set(`organizerPaymentConnections/${connectionId}`,
     {...connection});
-  h.store.records.set(`organizerFormPayments/${paymentId}`,
+  h.store.records.set(`guestPayments/${paymentId}`,
     {...payment, connectionId});
   const calls: string[] = [];
   let fail = false;

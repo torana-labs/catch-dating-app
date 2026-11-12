@@ -9,7 +9,7 @@ export interface CitiesPageRow {
   slug: string;
   label: string;
   live: boolean;
-  /** "2 plans this week", "new", "Launching soon" or "Opens 15 January". */
+  /** "2 plans this week", "New", "Launching soon" or "Opens 15 January". */
   note?: string;
   href: string;
   action: string;

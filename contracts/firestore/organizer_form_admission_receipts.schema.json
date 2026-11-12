@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_admission_receipts.schema.json",
   "title": "OrganizerFormAdmissionReceiptDocument",
+  "x-firestore-collection": "organizerFormAdmissionReceipts",
+  "x-firestore-path": "organizerFormAdmissionReceipts/{documentId}",
   "type": "object",
   "additionalProperties": false,
   "required": [

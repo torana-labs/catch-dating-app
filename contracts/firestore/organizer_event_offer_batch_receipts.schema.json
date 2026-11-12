@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_event_offer_batch_receipts.schema.json",
   "title": "OrganizerEventOfferBatchReceiptDocument",
+  "x-firestore-collection": "organizerEventOfferBatchReceipts",
+  "x-firestore-path": "organizerEventOfferBatchReceipts/{documentId}",
   "type": "object",
   "additionalProperties": false,
   "required": [

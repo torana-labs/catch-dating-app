@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {watchConnectionAuthorization} from
   "./razorpayAuthorizationRevocation";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -92,7 +93,7 @@ function unavailable(): never {
 export function routedFormPaymentProcessor(db: FirebaseFirestore.Firestore) {
   return {reconcile: async (paymentId: string, providerPaymentId?: string) => {
     const payment = requireDoc<Payment>(await db
-      .collection("organizerFormPayments").doc(paymentId).get(),
+      .collection(GUEST_PAYMENTS).doc(paymentId).get(),
     "OrganizerFormPaymentDocument");
     const {processor} = await formPaymentExecutionFor({db, paymentId, payment});
     return processor.reconcile(paymentId, providerPaymentId);

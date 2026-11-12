@@ -165,7 +165,8 @@ test("the paid link activates the plan; other projects and short payments " +
 test("tools-only cycles bill the flat fee, never commission, and the first " +
   "is prepaid", async () => {
   const {db, links, deps, call} = setup({
-    "publicEventPayments/p1": {organizerId: "org", eventId: "ev1",
+    "guestPayments/p1": {
+      purpose: "publicEvent", organizerId: "org", eventId: "ev1",
       capturedAt: Timestamp.fromMillis(trialEnd + dayMillis),
       amountPaise: 30_000_000, refundedAmountPaise: 0,
       routing: {selection: {route: "razorpayOAuth"}}},

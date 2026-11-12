@@ -5,7 +5,7 @@
   "description": "Callable-owned event-scoped invitation stored at crossPathsInvitations/{deterministicEventSenderHash}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "cross_paths_invitations",
+  "x-firestore-collection": "crossPathsInvitations",
   "x-firestore-path": "crossPathsInvitations/{invitationId}",
   "x-document-id-field": "id",
   "x-owner": "Cross Paths invitation callables",

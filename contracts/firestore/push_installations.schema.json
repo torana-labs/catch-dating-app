@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/push_installations.schema.json",
+  "title": "PushInstallationDocument",
+  "description": "One signed-in device's push address for one Catch app, stored at users/{uid}/pushInstallations/{installationId}. The only push token store: senders pick the newest installation of the app they target. Account deletion removes every installation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "pushInstallations",
+  "x-firestore-path": "users/{uid}/pushInstallations/{installationId}",
+  "x-document-id-field": "id",
+  "x-owner": "the signed-in app (FcmService) writes its own installation; push senders read",
+  "required": ["token", "appRole", "environment", "platform", "updatedAt"],
+  "properties": {
+    "token": {"type": "string", "minLength": 1, "x-catch-ownership": "client-runtime-writable"},
+    "appRole": {"type": "string", "enum": ["consumer", "host"], "x-catch-ownership": "client-runtime-writable"},
+    "environment": {"type": "string", "enum": ["dev", "staging", "prod"], "x-catch-ownership": "client-runtime-writable"},
+    "platform": {"type": "string", "enum": ["android", "ios", "web", "macos", "windows", "linux", "fuchsia"], "x-catch-ownership": "client-runtime-writable"},
+    "appVersion": {"type": "string", "x-catch-ownership": "client-runtime-writable"},
+    "buildNumber": {"type": "string", "x-catch-ownership": "client-runtime-writable"},
+    "locale": {"type": "string", "x-catch-ownership": "client-runtime-writable"},
+    "timeZone": {"type": "string", "x-catch-ownership": "client-runtime-writable"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "client-runtime-writable"}
+  }
+}

@@ -3687,15 +3687,6 @@
       "write": "server only"
     },
     {
-      "id": "operationDecisions",
-      "path": "operationDecisions/{decisionId}",
-      "rulesMatch": "/operationDecisions/{decisionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations workers and reviewed admin decisions",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
       "id": "operationLeases",
       "path": "operationLeases/{leaseId}",
       "rulesMatch": "/operationLeases/{leaseId}",
@@ -3741,33 +3732,6 @@
       "exportedFunctions": [
         "onSupplyIntakeRequestCreated"
       ]
-    },
-    {
-      "id": "operationPublicationPlans",
-      "path": "operationPublicationPlans/{publicationPlanId}",
-      "rulesMatch": "/operationPublicationPlans/{publicationPlanId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations publisher boundary",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
-      "id": "operationRuleProposals",
-      "path": "operationRuleProposals/{ruleProposalId}",
-      "rulesMatch": "/operationRuleProposals/{ruleProposalId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations learning workers",
-      "read": "server only",
-      "write": "server only"
-    },
-    {
-      "id": "operationRuleEvaluations",
-      "path": "operationRuleEvaluations/{ruleEvaluationId}",
-      "rulesMatch": "/operationRuleEvaluations/{ruleEvaluationId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "trusted operations evaluation workers",
-      "read": "server only",
-      "write": "server only"
     },
     {
       "id": "adminActionExecutions",
@@ -4742,6 +4706,42 @@
       "exportedFunctions": [
         "rollupOrganizerInsightsDaily",
         "getOrganizerOwnerView"
+      ]
+    },
+    {
+      "id": "cityInterest",
+      "path": "cityInterest/{cityKey}",
+      "rulesMatch": "/cityInterest/{cityKey}",
+      "typescriptInterface": "CityInterestDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps waitlist city interest counters and markers server-only"
+      ],
+      "owner": "website waitlist city interest (PR markets 5)",
+      "read": "server only; adminGetCityInterest for admins",
+      "write": "server only; joinWaitlist and tool/data/backfill_city_interest.mjs",
+      "exportedFunctions": [
+        "joinWaitlist",
+        "adminGetCityInterest"
+      ]
+    },
+    {
+      "id": "cityInterestMarkers",
+      "path": "cityInterestMarkers/{markerId}",
+      "rulesMatch": "/cityInterestMarkers/{markerId}",
+      "typescriptInterface": "CityInterestMarkerDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps waitlist city interest counters and markers server-only"
+      ],
+      "owner": "website waitlist city interest (PR markets 5)",
+      "read": "server only; adminGetCityInterest for admins",
+      "write": "server only; joinWaitlist and tool/data/backfill_city_interest.mjs",
+      "exportedFunctions": [
+        "joinWaitlist",
+        "adminGetCityInterest"
       ]
     },
     {

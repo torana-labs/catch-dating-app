@@ -1,0 +1,364 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_readiness_publications.schema.json",
+  "title": "CatchWhatsappReadinessPublicationDocument",
+  "description": "Create-only private evidence for one approved Catch WhatsApp reply-readiness review: the reviewed approval, the exact archive, the ingress record and the review session, bound to the project and authority fence by digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchWhatsappReadinessPublications",
+  "x-firestore-path": "catchWhatsappReadinessPublications/{reference}",
+  "x-document-id-field": "id",
+  "x-owner": "Catch WhatsApp readiness publication (owner review)",
+  "required": [
+    "approval",
+    "reviewSession",
+    "ingress",
+    "archive",
+    "projectId",
+    "authorityFenceSha256",
+    "publicationSha256"
+  ],
+  "properties": {
+    "approval": {
+      "additionalProperties": false,
+      "description": "Server-only independently authorized review. Provisioning consumes it atomically with readiness and immutable audit; this source provides no approval writer. No TTL, token, endpoint or message body.",
+      "properties": {
+        "approval": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "enum": [
+                "create",
+                "revoke"
+              ],
+              "type": "string"
+            },
+            "approvalId": {
+              "type": "string"
+            },
+            "atomicIngressStartedAtMillis": {
+              "type": "number"
+            },
+            "expectedRecordSha256": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "expiresAtMillis": {
+              "type": "number"
+            },
+            "reviewedAtMillis": {
+              "type": "number"
+            },
+            "reviewerUid": {
+              "type": "string"
+            },
+            "scope": {
+              "additionalProperties": false,
+              "properties": {
+                "endpointHash": {
+                  "type": "string"
+                },
+                "evidenceSha256": {
+                  "type": "string"
+                },
+                "phoneNumberId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "recipientUid": {
+                  "type": "string"
+                },
+                "wabaId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "projectId",
+                "wabaId",
+                "phoneNumberId",
+                "recipientUid",
+                "endpointHash",
+                "evidenceSha256"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "approvalId",
+            "action",
+            "scope",
+            "reviewerUid",
+            "reviewedAtMillis",
+            "expiresAtMillis",
+            "atomicIngressStartedAtMillis",
+            "expectedRecordSha256"
+          ],
+          "type": "object"
+        },
+        "approvalId": {
+          "type": "string"
+        },
+        "consumedAtMillis": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "ingressEvidenceSha256": {
+          "type": "string"
+        },
+        "recordSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schemaVersion": {
+          "const": 1,
+          "type": "number"
+        },
+        "state": {
+          "enum": [
+            "approved",
+            "consumed"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "approvalId",
+        "state",
+        "approval",
+        "ingressEvidenceSha256",
+        "consumedAtMillis",
+        "recordSha256"
+      ],
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "archive": {
+      "additionalProperties": false,
+      "properties": {
+        "archiveBytes": {
+          "description": "Exact archive bytes, stored as Firestore Bytes (Buffer)."
+        },
+        "trustedPin": {
+          "additionalProperties": false,
+          "description": "Trusted server-side input from an independently authorized audit store, NOT request JSON or archive metadata. The audit identified by sourceAuditSha256 must establish source authenticity, complete sender/endpoint history from inception, lossless normalization, retention/export gaps, late deliveries and the exact atomic-ingress cutover. A digest alone establishes none of those. Store access, approval fencing and the audit itself are adapter obligations.",
+          "properties": {
+            "approvalId": {
+              "type": "string"
+            },
+            "atomicIngressStartedAtMillis": {
+              "type": "number"
+            },
+            "coveredThroughMillis": {
+              "type": "number"
+            },
+            "schema": {
+              "const": "catch.whatsapp-history-audit-pin/v1",
+              "type": "string"
+            },
+            "scope": {
+              "additionalProperties": false,
+              "description": "Structural ReadinessScope compatibility, without a runtime dependency.",
+              "properties": {
+                "endpointHash": {
+                  "type": "string"
+                },
+                "evidenceSha256": {
+                  "type": "string"
+                },
+                "phoneNumberId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "recipientUid": {
+                  "type": "string"
+                },
+                "wabaId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "projectId",
+                "wabaId",
+                "phoneNumberId",
+                "recipientUid",
+                "endpointHash",
+                "evidenceSha256"
+              ],
+              "type": "object"
+            },
+            "sourceAuditSha256": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "approvalId",
+            "scope",
+            "sourceAuditSha256",
+            "atomicIngressStartedAtMillis",
+            "coveredThroughMillis"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "archiveBytes",
+        "trustedPin"
+      ],
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "ingress": {
+      "additionalProperties": false,
+      "description": "Actual deployment/atomic-commit audit, not a flag or invented start time.",
+      "properties": {
+        "deployedRevisionSha256": {
+          "description": "Source-verified deployed revision; shape/hash checks cannot prove it.",
+          "type": "string"
+        },
+        "document": {
+          "additionalProperties": false,
+          "description": "Server-only audited atomic-ingress cutover evidence; not an enablement flag. Approval pins evidence digest; transaction checks identity and state. No writer or live ingress attestation is provided.",
+          "properties": {
+            "atomicIngressStartedAtMillis": {
+              "type": "number"
+            },
+            "evidenceSha256": {
+              "type": "string"
+            },
+            "ingressId": {
+              "type": "string"
+            },
+            "phoneNumberId": {
+              "type": "string"
+            },
+            "projectId": {
+              "type": "string"
+            },
+            "schemaVersion": {
+              "const": 1,
+              "type": "number"
+            },
+            "state": {
+              "enum": [
+                "active",
+                "revoked"
+              ],
+              "type": "string"
+            },
+            "verifiedAtMillis": {
+              "type": "number"
+            },
+            "wabaId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "ingressId",
+            "projectId",
+            "wabaId",
+            "phoneNumberId",
+            "state",
+            "atomicIngressStartedAtMillis",
+            "evidenceSha256",
+            "verifiedAtMillis"
+          ],
+          "type": "object"
+        },
+        "sourceAuditSha256": {
+          "description": "Authenticated immutable audit pinned by document evidence.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document",
+        "sourceAuditSha256",
+        "deployedRevisionSha256"
+      ],
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "reviewSession": {
+      "additionalProperties": false,
+      "description": "Historical verified Auth/token observations at the exact review, NOT a sessionCurrent assertion or a lock against subsequent Auth mutations. The protected producer must authenticate the session, check enabled owner authority and revocation, and independently bind this exact decision digest. Never deserialize this interface from a request or accept an audit hash as authentication. No producer, token reader or authority fence is implemented.",
+      "properties": {
+        "authTimeMillis": {
+          "type": "number"
+        },
+        "authenticationAuditSha256": {
+          "type": "string"
+        },
+        "decisionSha256": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "observedAtMillis": {
+          "type": "number"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "reviewerUid": {
+          "type": "string"
+        },
+        "roles": {
+          "description": "Bounded unique canonical role observations, including adminOwner.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tokenExpiresAtMillis": {
+          "description": "Expiry of the authenticated ID token, verified by the protected source.",
+          "type": "number"
+        },
+        "tokensValidAfterMillis": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "projectId",
+        "reviewerUid",
+        "roles",
+        "disabled",
+        "authTimeMillis",
+        "tokensValidAfterMillis",
+        "observedAtMillis",
+        "tokenExpiresAtMillis",
+        "decisionSha256",
+        "authenticationAuditSha256"
+      ],
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "authorityFenceSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "publicationSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
