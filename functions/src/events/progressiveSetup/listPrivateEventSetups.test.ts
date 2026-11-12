@@ -194,12 +194,42 @@ test("permission and cursor scope fail before event scan", async () => {
       error.code === "failed-precondition");
 });
 
-test("malformed matching row rejects instead of disappearing", async () => {
+test("malformed rows are left out without failing the list", async () => {
+  const store = setup();
+  store.rows.set("events/a", event(NOW + 1000));
+  store.rows.set("events/broken", event(NOW + 2000, {name: ""}));
+  store.rows.set("events/legacy", event(NOW + 3000, {legacyHostId: "h1"}));
+  store.rows.set("events/z", event(NOW + 4000));
+  const result = await list(store, {organizerId: "org1"});
+  assert.deepEqual(result.events.map((row) => row.eventId), ["a", "z"]);
+  assert.equal(result.nextCursor, null);
+  assert.equal(validatePrivateEventSetupListCallableResponse(result), true);
+});
+
+test("a malformed row at the page edge neither repeats nor hides rows",
+  async () => {
+    const store = setup();
+    store.rows.set("events/a", event(NOW + 1000));
+    store.rows.set("events/broken", event(NOW + 2000, {name: ""}));
+    store.rows.set("events/c", event(NOW + 3000));
+    const first = await list(store, {organizerId: "org1", limit: 2});
+    assert.deepEqual(first.events.map((row) => row.eventId), ["a"]);
+    assert.notEqual(first.nextCursor, null);
+    const second = await list(store, {organizerId: "org1", limit: 2,
+      cursor: first.nextCursor!}, NOW + 500);
+    assert.deepEqual(second.events.map((row) => row.eventId), ["c"]);
+    assert.equal(second.nextCursor, null);
+  });
+
+test("a page of only malformed rows still returns a cursor", async () => {
   const store = setup();
   store.rows.set("events/broken", event(NOW + 1000, {name: ""}));
-  await assert.rejects(list(store, {organizerId: "org1"}),
-    (error) => error instanceof HttpsError &&
-      error.code === "failed-precondition");
+  store.rows.set("events/b", event(NOW + 2000));
+  const first = await list(store, {organizerId: "org1", limit: 1});
+  assert.deepEqual(first.events, []);
+  const second = await list(store, {organizerId: "org1", limit: 1,
+    cursor: first.nextCursor!}, NOW + 500);
+  assert.deepEqual(second.events.map((row) => row.eventId), ["b"]);
 });
 
 test("list API validates bounded input, rate limits and returns private DTO",

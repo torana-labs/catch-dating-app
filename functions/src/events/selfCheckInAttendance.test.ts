@@ -14,6 +14,29 @@ const now = admin.firestore.Timestamp.fromMillis(1_000_000);
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+  get id() {
+    return this.path.split("/").at(-1)!;
+  }
+}
+
+class FakeQuery {
+  constructor(private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly filters: Array<[string, unknown]> = [],
+    private readonly max = Infinity) {}
+  where(field: string, _op: string, value: unknown) {
+    return new FakeQuery(this.firestore, this.path,
+      [...this.filters, [field, value]], this.max);
+  }
+  limit(max: number) {
+    return new FakeQuery(this.firestore, this.path, this.filters, max);
+  }
+  get() {
+    const docs = this.firestore.children(this.path).filter((data) =>
+      this.filters.every(([field, value]) => data[field] === value))
+      .slice(0, this.max).map((data) => ({data: () => data}));
+    return {docs, size: docs.length, empty: docs.length === 0};
+  }
 }
 
 class FakeSnapshot {
@@ -37,12 +60,19 @@ class FakeCollectionRef {
   doc(id: string) {
     return new FakeDocRef(this.firestore, `${this.path}/${id}`);
   }
+  where(field: string, op: string, value: unknown) {
+    return new FakeQuery(this.firestore, this.path).where(field, op, value);
+  }
+  limit(max: number) {
+    return new FakeQuery(this.firestore, this.path).limit(max);
+  }
 }
 
 class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef) {
+  async get(ref: FakeDocRef | FakeQuery) {
+    if (ref instanceof FakeQuery) return ref.get();
     return new FakeSnapshot(this.firestore, ref.path);
   }
   create(ref: FakeDocRef, data: FakeData) {
@@ -87,6 +117,12 @@ class FakeFirestore {
   }
   set(path: string, data: FakeData) {
     this.docs[path] = {...data};
+  }
+  children(collection: string): FakeData[] {
+    return Object.entries(this.docs).flatMap(([path, data]) =>
+      path.startsWith(`${collection}/`) &&
+        !path.slice(collection.length + 1).includes("/") && data ?
+        [data] : []);
   }
 }
 

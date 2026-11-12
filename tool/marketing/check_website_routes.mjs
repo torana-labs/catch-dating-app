@@ -951,6 +951,7 @@ export const OrganizerSearch = {
     "event_booking",
         "event_invite",
     "household_rsvp",
+        "programme_link",
         "organizers",
         "claim",
         "privacy",

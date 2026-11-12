@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import test from "node:test";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
@@ -239,13 +240,14 @@ test("ready OTP links an imported external-ID guest at full capacity",
       60_000);
     const endTime = admin.firestore.Timestamp.fromMillis(Date.now() +
       3_600_000);
-    const event = {organizerId: "organizer-1", publicationState: "published",
+    const event = withStoredEventPolicy({organizerId: "organizer-1",
+      publicationState: "published",
       status: "active", startTime, endTime, capacityLimit: 1,
       priceInPaise: 0, publicRegistrationEnabled: true,
       eventFormat: {version: 1, activityKind: "running",
         interactionModel: "open"}, meetingPoint: "Park",
       meetingLocation: {name: "Park", latitude: 12, longitude: 77},
-      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}});
     const policy = deriveEventSeatPolicy(event);
     const canonicalKey = "guest_1";
     const alias = (kind: "phone" | "attendee" | "external",
@@ -301,7 +303,8 @@ test("ready OTP links an imported external-ID guest at full capacity",
     assert.equal(firestore.get(`eventAttendees/${eventAttendeeId(
       "event-1", `phone:${phone}`)}`), undefined);
 
-    const expandedEvent = {...event, capacityLimit: 2};
+    const expandedEvent = withStoredEventPolicy({...event,
+      eventPolicy: undefined, capacityLimit: 2});
     const expandedPolicy = deriveEventSeatPolicy(expandedEvent);
     const fresh = new FakeFirestore({...docs,
       "events/event-1": expandedEvent,

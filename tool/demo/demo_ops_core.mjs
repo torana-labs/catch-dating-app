@@ -61,6 +61,71 @@ export function loadPublishedEventBasics() {
 }
 
 /**
+ * A schema-complete organizers/{organizerId} document for a demo host. It
+ * matches contracts/firestore/organizers.schema.json; demo markers are the
+ * contract's internal demo fields.
+ */
+function demoOrganizerDoc({admin, marker, city, user, hostName, hostAvatarUrl,
+  now, name, description, tags, nextEventAt, nextEventLabel}) {
+  const market = marketForIdOrAlias(city);
+  if (!market) throw new Error(`Unknown demo organizer city: ${city}`);
+  return {
+    ...marker,
+    name,
+    description,
+    location: market.marketId,
+    locationCityId: market.cityId,
+    locationMarketId: market.marketId,
+    area: cityLabel(city),
+    hostUserId: user.uid,
+    hostName,
+    hostAvatarUrl,
+    ownerUserId: user.uid,
+    hostUserIds: [user.uid],
+    hostProfiles: [{
+      uid: user.uid,
+      displayName: hostName,
+      avatarUrl: hostAvatarUrl,
+      role: "owner",
+    }],
+    createdAt: timestampFromDate(admin, now),
+    imageUrl: null,
+    profileImageUrl: null,
+    tags,
+    organizerPhotos: [],
+    followerCount: 0,
+    organizerType: "club",
+    rating: 0,
+    reviewCount: 0,
+    nextEventAt: timestampFromDate(admin, nextEventAt),
+    nextEventLabel,
+    instagramHandle: null,
+    phoneNumber: user.phoneNumber,
+    email: user.data.email ?? null,
+    status: "active",
+    archived: false,
+    archivedAt: null,
+    archiveReason: null,
+  };
+}
+
+/** The canonical owner seat for a demo host's organizer. */
+function demoOwnerSeat({admin, marker, organizerId, uid, now}) {
+  return {
+    path: `organizerTeamMemberships/${organizerId}_${uid}`,
+    data: {
+      ...marker,
+      organizerId,
+      uid,
+      role: "owner",
+      status: "active",
+      createdAt: timestampFromDate(admin, now),
+      removedAt: null,
+    },
+  };
+}
+
+/**
  * The setup fields of a demo event created published: its name, the city's
  * market, the market's timezone and the local start, derived like createEvent.
  */
@@ -523,65 +588,17 @@ export async function buildHostAccountPlan({
   });
   const eventStart = wholeMinute(offsetDate(now, {days: 2}));
   const docs = [
+    demoOwnerSeat({admin, marker, organizerId, uid: user.uid, now}),
     {
-      path: `organizerHostClaims/${user.uid}`,
-      data: {
-        ...marker,
-        uid: user.uid,
-        organizerId: organizerId,
-        createdAt: timestampFromDate(admin, now),
-      },
-    },
-    {
-      path: `clubs/${organizerId}`,
-      data: {
-        ...marker,
+      path: `organizers/${organizerId}`,
+      data: demoOrganizerDoc({
+        admin, marker, city, user, hostName, hostAvatarUrl, now,
         name: `${hostName} Club`,
-        description: "Demo host-owned club for investor and beta walkthroughs.",
-        location: city,
-        area: cityLabel(city),
-        hostUserId: user.uid,
-        hostName,
-        hostAvatarUrl,
-        ownerUserId: user.uid,
-        hostUserIds: [user.uid],
-        hostProfiles: [{
-          uid: user.uid,
-          displayName: hostName,
-          avatarUrl: hostAvatarUrl,
-          role: "owner",
-        }],
-        createdAt: timestampFromDate(admin, now),
-        imageUrl: null,
-        profileImageUrl: null,
+        description: "Demo host-owned organizer for investor and beta walkthroughs.",
         tags: ["Demo", "Host tools"],
-        memberCount: 1,
-        rating: 0,
-        reviewCount: 0,
-        nextEventAt: timestampFromDate(admin, offsetDate(now, {days: 2})),
+        nextEventAt: offsetDate(now, {days: 2}),
         nextEventLabel: `${cityLabel(city)} main gate`,
-        instagramHandle: null,
-        phoneNumber: user.phoneNumber,
-        email: user.data.email ?? null,
-        status: "active",
-        archived: false,
-        archivedAt: null,
-        archiveReason: null,
-      },
-    },
-    {
-      path: `organizerMemberships/${organizerId}_${user.uid}`,
-      data: {
-        ...marker,
-        organizerId,
-        uid: user.uid,
-        role: "owner",
-        status: "active",
-        pushNotificationsEnabled: true,
-        joinedAt: timestampFromDate(admin, now),
-        leftAt: null,
-        deletedAt: null,
-      },
+      }),
     },
     {
       path: `events/${eventId}`,
@@ -710,65 +727,17 @@ export async function buildCheckInEventPlan({
     },
   };
   const docs = [
+    demoOwnerSeat({admin, marker, organizerId, uid: user.uid, now}),
     {
-      path: `organizerHostClaims/${user.uid}`,
-      data: {
-        ...marker,
-        uid: user.uid,
-        organizerId: organizerId,
-        createdAt: timestampFromDate(admin, now),
-      },
-    },
-    {
-      path: `clubs/${organizerId}`,
-      data: {
-        ...marker,
+      path: `organizers/${organizerId}`,
+      data: demoOrganizerDoc({
+        admin, marker, city, user, hostName: name, hostAvatarUrl, now,
         name: `${name} Check-In Club`,
-        description: "Demo club for testing location-gated check-in.",
-        location: city,
-        area: cityLabel(city),
-        hostUserId: user.uid,
-        hostName: name,
-        hostAvatarUrl,
-        ownerUserId: user.uid,
-        hostUserIds: [user.uid],
-        hostProfiles: [{
-          uid: user.uid,
-          displayName: name,
-          avatarUrl: hostAvatarUrl,
-          role: "owner",
-        }],
-        createdAt: timestampFromDate(admin, now),
-        imageUrl: null,
-        profileImageUrl: null,
+        description: "Demo organizer for testing location-gated check-in.",
         tags: ["Demo", "Check-in"],
-        memberCount: 1,
-        rating: 0,
-        reviewCount: 0,
-        nextEventAt: timestampFromDate(admin, startTime),
+        nextEventAt: startTime,
         nextEventLabel: meetingPoint,
-        instagramHandle: null,
-        phoneNumber: user.phoneNumber,
-        email: user.data.email ?? null,
-        status: "active",
-        archived: false,
-        archivedAt: null,
-        archiveReason: null,
-      },
-    },
-    {
-      path: `organizerMemberships/${organizerId}_${user.uid}`,
-      data: {
-        ...marker,
-        organizerId,
-        uid: user.uid,
-        role: "owner",
-        status: "active",
-        pushNotificationsEnabled: true,
-        joinedAt: timestampFromDate(admin, now),
-        leftAt: null,
-        deletedAt: null,
-      },
+      }),
     },
     {
       path: event.path,
@@ -1053,16 +1022,13 @@ export async function buildLaunchCleanupPlan({
   const topLevel = [
     "users",
     "publicProfiles",
-    "clubs",
     "organizers",
-    "organizerMemberships",
-    "organizerHostClaims",
+    "organizerTeamMemberships",
     "events",
     "eventParticipations",
     "eventCrossPathsConsents",
     "crossPathsShowcaseEligibility",
-    "organizerScheduleLocks",
-    "userEventScheduleLocks",
+    "scheduleLocks",
     "savedEvents",
     "payments",
     "reviews",
@@ -1166,8 +1132,7 @@ export async function buildStaleEventCleanupPlan({
 
   for (const collectionName of [
     "eventParticipations",
-    "organizerScheduleLocks",
-    "userEventScheduleLocks",
+    "scheduleLocks",
     "savedEvents",
     "payments",
     "reviews",

@@ -7,10 +7,12 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_create_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_message_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -112,7 +114,7 @@ class _HostProgrammeMessageScreenState
     });
     try {
       await ref
-          .read(programPlannerRepositoryProvider)
+          .read(hostProgrammePlannerCommandsProvider.notifier)
           .saveMessage(
             programId: widget.programId,
             senderConnectionId: sender,
@@ -148,8 +150,8 @@ class _HostProgrammeMessageScreenState
     final programme = ref.watch(
       hostProgrammeControllerProvider(widget.programId),
     );
-    final messages = ref.watch(
-      programPlannedMessagesProvider(widget.programId),
+    final messages = catchAsyncStateFromAsyncValue(
+      ref.watch(programPlannedMessagesProvider(widget.programId)),
     );
     final roster = ref.watch(
       programArrivalsRosterProvider(widget.programId, null),
@@ -196,7 +198,7 @@ class _HostProgrammeMessageScreenState
               ),
         body: draft == null
             ? HostProgrammeStateBody(
-                status: messages.hasError
+                status: messages.error != null
                     ? HostProgrammeStatus.error
                     : programme.status,
                 onRetry: () {

@@ -190,17 +190,18 @@ void main() {
     },
   );
 
-  test('Match reads legacy eventId documents into eventIds', () {
+  test('Match reads shared events only from eventIds', () {
     final match = Match.fromJson({
-      'id': 'legacy-match',
+      'id': 'match-1',
       'user1Id': 'runner-1',
       'user2Id': 'runner-2',
-      'eventId': 'legacy-event',
+      'eventIds': ['event-1', 'event-2'],
+      'eventId': 'retired-field',
       'createdAt': Timestamp.fromDate(DateTime(2025, 1, 1, 7)),
     });
 
-    expect(match.eventIds, const ['legacy-event']);
-    expect(match.latestEventId, 'legacy-event');
+    expect(match.eventIds, const ['event-1', 'event-2']);
+    expect(match.latestEventId, 'event-2');
   });
 
   test('collapseMatchesByOtherUser keeps one latest thread per person', () {

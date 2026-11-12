@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {markEventAttendanceHandler} from "./markEventAttendance";
@@ -9,6 +10,10 @@ type FakeData = Record<string, unknown>;
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+
+  get id(): string {
+    return this.path.split("/").at(-1)!;
+  }
 
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.firestore.get(this.path));
@@ -40,6 +45,40 @@ class FakeCollectionRef {
   doc(docId: string): FakeDocRef {
     return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
   }
+
+  limit(count: number) {
+    return this.where("__all__", "==", undefined, count);
+  }
+
+  where(field: string, _op: string, value: unknown, max = Infinity,
+    filters: Array<[string, unknown]> = []): FakeQuery {
+    return new FakeQuery(this.firestore, this.path,
+      field === "__all__" ? filters : [...filters, [field, value]], max);
+  }
+}
+
+class FakeQuery {
+  constructor(private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly filters: Array<[string, unknown]>,
+    private readonly max: number) {}
+
+  where(field: string, _op: string, value: unknown): FakeQuery {
+    return new FakeQuery(this.firestore, this.path,
+      [...this.filters, [field, value]], this.max);
+  }
+
+  limit(count: number): FakeQuery {
+    return new FakeQuery(this.firestore, this.path, this.filters, count);
+  }
+
+  async get() {
+    const docs = this.firestore.children(this.path)
+      .filter((data) => this.filters.every(([field, value]) =>
+        data[field] === value))
+      .slice(0, this.max).map((data) => ({data: () => ({...data})}));
+    return {docs, size: docs.length, empty: docs.length === 0};
+  }
 }
 
 class FakeFirestore {
@@ -70,6 +109,13 @@ class FakeFirestore {
   merge(path: string, data: FakeData): void {
     this.docs[path] = {...(this.docs[path] ?? {}), ...data};
   }
+
+  children(collectionPath: string): FakeData[] {
+    const prefix = `${collectionPath}/`;
+    return Object.entries(this.docs).flatMap(([path, data]) =>
+      path.startsWith(prefix) && !path.slice(prefix.length).includes("/") &&
+        data !== undefined ? [data] : []);
+  }
 }
 
 class FakeBatch {
@@ -95,7 +141,8 @@ class FakeTransaction {
 
   constructor(private readonly firestore: FakeFirestore) {}
 
-  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
+  async get(ref: FakeDocRef | FakeQuery) {
+    if (ref instanceof FakeQuery) return ref.get();
     return new FakeSnapshot(this.firestore.get(ref.path));
   }
 
@@ -153,10 +200,8 @@ test(
     "opted out",
   async () => {
     const h = buildHarness({
-      "users/runner-1": {
-        fcmToken: "token-1",
-        prefsRunStatusUpdates: false,
-      },
+      "users/runner-1": {prefsRunStatusUpdates: false},
+      ...guestInstallation("runner-1", "token-1"),
     });
 
     await markEventAttendanceHandler(
@@ -165,6 +210,11 @@ test(
     );
 
     assert.deepEqual(h.notifications, []);
+    // The check-in moves the guest's roster row in the same transaction.
+    const pointer = h.firestore.get("eventAttendeeIndex/event-1_runner-1");
+    const row = h.firestore.get(`eventAttendees/${pointer?.attendeeId}`);
+    assert.equal(row?.status, "checkedIn");
+    assert.equal(row?.linkedUid, "runner-1");
   }
 );
 
@@ -192,10 +242,8 @@ function buildHarness(
       selectedModuleIds: ["qr_check_in"],
       contextualOpenersEnabled: false,
     },
-    "users/runner-1": {
-      fcmToken: "token-1",
-      prefsRunStatusUpdates: true,
-    },
+    "users/runner-1": {prefsRunStatusUpdates: true},
+    ...guestInstallation("runner-1", "token-1"),
     ...overrides,
   });
 

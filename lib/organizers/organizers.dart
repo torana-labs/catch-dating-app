@@ -10,14 +10,14 @@ library;
 export 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 export 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
 export 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
-export 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
-export 'package:catch_dating_app/contexts/organizers/domain/organizer_membership_extensions.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/organizer_follow_extensions.dart';
 export 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 
 // ── Data ────────────────────────────────────────────────────────────────────
 export 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 export 'package:catch_dating_app/contexts/organizers/data/organizer_draft_repository.dart';
-export 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+export 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 export 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
@@ -27,7 +27,7 @@ export 'package:catch_dating_app/organizers/presentation/detail/organizer_detail
 // ── Presentation — view models & controllers ────────────────────────────────
 export 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart'; // public-api: read-model seam for route composition
 export 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart'; // public-api: command seam for route-owned actions
-export 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart'; // public-api: command seam for route-owned actions
+export 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart'; // public-api: command seam for route-owned actions
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
 export 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart'; // public-api: shared presentation component used outside this feature

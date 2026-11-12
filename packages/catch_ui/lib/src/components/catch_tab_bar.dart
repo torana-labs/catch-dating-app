@@ -536,7 +536,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>>
                           curve: CatchMotion.standardCurve,
                           start: geometry.itemRects[index].left,
                           top: 0,
-                          width: geometry.itemRects[index].width,
+                          width: geometry.itemWidths[index],
                           height: CatchLayout.tabBarExtent,
                           child: CatchNavigationButton<T>.sharedIndicator(
                             key: ValueKey<Object>(
@@ -575,7 +575,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>>
                           curve: CatchMotion.standardCurve,
                           start: geometry.itemRects[visible.length].left,
                           top: 0,
-                          width: geometry.itemRects[visible.length].width,
+                          width: geometry.itemWidths[visible.length],
                           height: CatchLayout.tabBarExtent,
                           child: CatchNavigationButton<String>.sharedIndicator(
                             key: const ValueKey<Object>('catch_tab_bar.more'),

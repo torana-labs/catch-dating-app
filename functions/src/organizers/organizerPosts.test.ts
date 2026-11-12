@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {FcmParams} from "../shared/notifications";
 import {
@@ -80,6 +81,9 @@ class FakeCollection {
   }
   where(field: string, op: string, value: unknown) {
     return new FakeQuery(this.firestore, this.path, [{field, op, value}]);
+  }
+  limit(count: number) {
+    return new FakeQuery(this.firestore, this.path, [], count);
   }
 }
 
@@ -289,14 +293,10 @@ function deliveryHarness(options: {
       status: "active",
       pushNotificationsEnabled: true,
     },
-    "users/user-1": {
-      fcmToken: "token-1",
-      prefsOrganizerUpdates: true,
-    },
-    "users/user-2": {
-      fcmToken: "token-2",
-      prefsOrganizerUpdates: true,
-    },
+    "users/user-1": {prefsOrganizerUpdates: true},
+    "users/user-2": {prefsOrganizerUpdates: true},
+    ...guestInstallation("user-1", "token-1"),
+    ...guestInstallation("user-2", "token-2"),
   };
   const firestore = new FakeFirestore(docs);
   const activities: string[] = [];
@@ -334,7 +334,8 @@ const delivery = (overrides: Partial<Parameters<
 >[0]> = {}) => buildOrganizerFollowerDelivery({
   uid: "follower-1",
   followPushNotificationsEnabled: true,
-  user: {fcmToken: "token-1", prefsOrganizerUpdates: true},
+  user: {prefsOrganizerUpdates: true},
+  pushToken: "token-1",
   organizerId: "organizer-1",
   authorUid: "host-1",
   organizerName: "Sunday Social",
@@ -369,10 +370,10 @@ test("follower push needs both follow-level and user-level permission", () => {
   assert.equal(delivery().push?.token, "token-1");
   assert.equal(delivery({followPushNotificationsEnabled: false}).push, null);
   assert.equal(
-    delivery({user: {fcmToken: "token-1", prefsOrganizerUpdates: false}}).push,
+    delivery({user: {prefsOrganizerUpdates: false}}).push,
     null,
   );
-  assert.equal(delivery({user: {prefsOrganizerUpdates: true}}).push, null);
+  assert.equal(delivery({pushToken: null}).push, null);
 });
 
 test("post and receipt ids are deterministic and content-bound", () => {

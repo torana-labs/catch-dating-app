@@ -8,7 +8,6 @@ import {
   publicAvatarUrl,
   publicProfileFromUserProfileDoc,
 } from "./profileProjection";
-import {profilePromptCatalog} from "./generated/catalogs/profilePromptCatalog";
 
 
 function timestamp(date: Date) {
@@ -160,20 +159,13 @@ test(
   }
 );
 
-test("publicProfileFromUserProfileDoc migrates legacy bio via catalog fallback",
+test("publicProfileFromUserProfileDoc does not read a legacy bio",
   () => {
-    const defaultPrompt = profilePromptCatalog.prompts.find(
-      (prompt) => prompt.id === profilePromptCatalog.defaultPromptIds[0]
-    ) ?? profilePromptCatalog.prompts[0];
     const profile = publicProfileFromUserProfileDoc(completeUser({
       profilePrompts: [],
       bio: "Old bio\n\n\nstill useful",
     } as Partial<UserProfileDocument>));
 
-    assert.deepEqual(profile.profilePrompts, [{
-      promptId: defaultPrompt.id,
-      prompt: defaultPrompt.title,
-      answer: "Old bio\n\nstill useful",
-    }]);
+    assert.deepEqual(profile.profilePrompts, []);
   }
 );

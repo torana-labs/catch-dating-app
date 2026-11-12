@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -67,8 +67,8 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
       ? const AsyncData<EventParticipation?>(null)
       : ref.watch(watchEventParticipationProvider(eventId, uid));
   final membershipAsync = uid == null || event == null
-      ? const AsyncData<OrganizerMembership?>(null)
-      : ref.watch(watchOrganizerMembershipProvider(event.organizerId, uid));
+      ? const AsyncData<OrganizerFollow?>(null)
+      : ref.watch(watchOrganizerFollowProvider(event.organizerId, uid));
 
   return buildEventDetailViewModel(
     eventAsync: eventAsync,
@@ -94,8 +94,8 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   required AsyncValue<Organizer?> organizerAsync,
   required AsyncValue<SavedEvent?> savedEventAsync,
   required AsyncValue<EventParticipation?> participationAsync,
-  AsyncValue<OrganizerMembership?> membershipAsync =
-      const AsyncData<OrganizerMembership?>(null),
+  AsyncValue<OrganizerFollow?> membershipAsync =
+      const AsyncData<OrganizerFollow?>(null),
   required String? currentUid,
   required bool isAuthenticated,
   AppRole appRole = AppRole.consumer,
@@ -210,7 +210,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   final isSaved = isAuthenticated && savedEventState.value != null;
   final isOrganizerMember =
       isAuthenticated &&
-      membershipState.value?.status == OrganizerMembershipStatus.active;
+      membershipState.value?.status == OrganizerFollowStatus.active;
 
   return AsyncData(
     EventDetailViewModel(

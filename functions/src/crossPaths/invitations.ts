@@ -62,6 +62,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {isReciprocallyEligible} from
   "../shared/relationshipEligibility";
@@ -1303,16 +1304,16 @@ async function deliverPush(params: {
   matchId?: string;
 }): Promise<void> {
   try {
-    const snap = await params.db.collection("users").doc(params.uid).get();
+    const [snap, token] = await Promise.all([
+      params.db.collection("users").doc(params.uid).get(),
+      readConsumerPushToken(params.db, params.uid),
+    ]);
     const user = snap.data() as UserProfileDocument | undefined;
-    if (
-      !user?.fcmToken ||
-      !allowsPushPreference(user, "crossPathsInvitations")
-    ) {
+    if (!token || !allowsPushPreference(user, "crossPathsInvitations")) {
       return;
     }
     await sendFcmNotification({
-      token: user.fcmToken,
+      token,
       type: params.type,
       title: params.title,
       body: params.body,

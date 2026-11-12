@@ -22,9 +22,6 @@ export function communityMembershipFixture() {
     targetId: null,
     linkedUid: uid,
   });
-  Object.assign(store.get(`organizerApplicationResponses/${responseId}`)!, {
-    linkedUid: uid,
-  });
   Object.assign(store.get(`organizerFormResponses/${responseId}`)!, {
     identityKind: "phoneVerified",
     respondentUid: uid,

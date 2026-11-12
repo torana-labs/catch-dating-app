@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {logger} from "firebase-functions";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
@@ -182,19 +183,39 @@ export async function listPrivateEventSetups(params: {
         cursor.lastStartTimeMillis), cursor.lastEventId);
     }
     const page = await tx.get(query.limit(limit + 1));
-    const projected = page.docs.map((doc) =>
-      projectPrivateEventSetupSummary(doc,
-        command.organizerId, asOfMillis, scope));
-    const events = projected.slice(0, limit);
-    const last = events.at(-1);
-    const nextCursor = projected.length > limit && last ?
+    // One record that fails its contract (for example a pre-rename event)
+    // must not fail the whole inventory. It is left out, as the
+    // hostEventSummaries read model already does, and logged for review.
+    const examined = page.docs.slice(0, limit);
+    const events: PrivateEventSetupSummary[] = [];
+    const needsReview: string[] = [];
+    for (const doc of examined) {
+      try {
+        events.push(projectPrivateEventSetupSummary(doc,
+          command.organizerId, asOfMillis, scope));
+      } catch (error) {
+        if (!(error instanceof HttpsError) ||
+            error.code !== "failed-precondition") throw error;
+        needsReview.push(doc.id);
+      }
+    }
+    if (needsReview.length > 0) {
+      logger.warn("Private event setups need review; left out of the list.",
+        {organizerId: command.organizerId, scope, eventIds: needsReview});
+    }
+    // The cursor follows the last examined row, valid or not, so a skipped
+    // row at the page edge can neither repeat nor hide the rows after it.
+    const last = examined.at(-1);
+    const lastStartTimeMillis = last ? millis(last.data().startTime) : null;
+    const nextCursor = page.docs.length > limit && last &&
+      lastStartTimeMillis !== null ?
       Buffer.from(JSON.stringify({
         v: CURSOR_VERSION,
         scope,
         organizerId: command.organizerId,
         asOfMillis,
-        lastStartTimeMillis: last.startTimeMillis,
-        lastEventId: last.eventId,
+        lastStartTimeMillis,
+        lastEventId: last.id,
       } satisfies PageCursor)).toString("base64url") : null;
     return {events, nextCursor};
   });

@@ -47,6 +47,7 @@ import {SiteAccountAction} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
+import {marketingCaptures} from "./marketingCaptures";
 import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
 
 // Distinct compiled entries let a deliberate, bounded retry bypass a browser's
@@ -258,18 +259,18 @@ function CanonicalMarketingRouteShell() {
         <Routes>
           <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
           <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
-          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage />} />
+          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage captures={marketingCaptures} />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
             element={<ExplorePage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage catalog={homeCatalog} />}
+            element={<HomePage captures={marketingCaptures} catalog={homeCatalog} />}
           />
           <Route
             path={marketingRoutePaths.host}
-            element={<HostPage />}
+            element={<HostPage captures={marketingCaptures} />}
           />
           <Route
             path={marketingRoutePaths.organizer_search}

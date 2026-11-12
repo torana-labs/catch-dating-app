@@ -1,0 +1,333 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_organizers.schema.json",
+  "title": "PublicOrganizerDocument",
+  "description": "Backend-owned public organizer projection stored at publicOrganizers/{organizerId}. syncPublicOrganizer copies an allowlist of public fields from organizers/{organizerId}; contact details, host defaults, provenance, intake, admin search, ownership, claim and source evidence never leave the canonical document. The organizer id is the document id and is not stored in document data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "publicOrganizers",
+  "x-firestore-path": "publicOrganizers/{organizerId}",
+  "x-document-id-field": "id",
+  "x-owner": "syncPublicOrganizer trigger",
+  "x-source": "organizers/{organizerId}",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix"
+  ],
+  "x-legacy-tolerated-fields": [
+    "organizerPhotos",
+    "memberCount",
+    "entityKind",
+    "entitySubtypes",
+    "displayCategory"
+  ],
+  "required": [
+    "name",
+    "description",
+    "location",
+    "locationCityId",
+    "locationMarketId",
+    "area",
+    "hostUserId",
+    "hostName",
+    "hostAvatarUrl",
+    "ownerUserId",
+    "hostUserIds",
+    "hostProfiles",
+    "createdAt",
+    "imageUrl",
+    "profileImageUrl",
+    "tags",
+    "organizerPhotos",
+    "followerCount",
+    "organizerType",
+    "rating",
+    "reviewCount",
+    "nextEventAt",
+    "nextEventLabel",
+    "instagramHandle",
+    "status",
+    "archived",
+    "archivedAt"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "location": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "description": "Canonical launch market id. Public URL slugs live under publicPage.citySlug.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "locationCityId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/cityId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "locationMarketId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "area": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Verified locality within the canonical market. May be empty when intake evidence establishes only the city.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "cityName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "regionName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "countryCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{2}$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "countryName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "hostUserId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "hostName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Legacy host display projection. Null when the organizer has not been claimed by a Catch user.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "hostAvatarUrl": {
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "ownerUserId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "hostUserIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "hostProfiles": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/organizerHostProfile"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "imageUrl": {
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "profileImageUrl": {
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerPhotos": {
+      "type": "array",
+      "items": {
+        "$ref": "../embedded/uploaded_photo.schema.json"
+      },
+      "description": "Canonical organizer gallery. organizerPhotos is tolerated only while released clients migrate.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {
+          "$ref": "../embedded/uploaded_photo.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "memberCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "followerCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "description": "Canonical active organizer follower count.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "reviewCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "verifiedReviewCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "description": "Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "nextEventAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "nextEventLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "instagramHandle": {
+      "$ref": "../shared/event_common.schema.json#/definitions/contactString",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "status": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerLifecycleStatus",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "archived": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "archivedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "appVisibility": {
+      "type": "string",
+      "enum": [
+        "discoverable",
+        "hidden"
+      ],
+      "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "supplyCapabilities": {
+      "$ref": "../embedded/organizer_supply_capabilities.schema.json",
+      "description": "Organizer-level member-affordance ceiling. New writes must persist it; legacy readers derive the same fail-closed policy until backfill completes.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerType": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerType",
+      "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicCategoryLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Optional admin-curated public category copy. It never replaces organizerType as the classification authority.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "entityKind": {
+      "type": "string",
+      "enum": [
+        "club",
+        "venue",
+        "eventOrganizer",
+        "creatorCommunity",
+        "brand"
+      ],
+      "description": "Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "entitySubtypes": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "description": "Deprecated free-form organizer classification retained only for migration reads.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "displayCategory": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    }
+  }
+}

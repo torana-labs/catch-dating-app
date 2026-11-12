@@ -223,16 +223,16 @@ class _HostProgrammeDaySheetState extends State<HostProgrammeDaySheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final value = _value;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: widget.title,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
         key: const ValueKey<String>('host-programme-day-use'),
         label: value == null
             ? widget.title
             : l10n.hostProgrammeCreateUseDay(
                 day: AppTimeFormatters.weekdayDayMonth(value),
               ),
-        fullWidth: true,
+        role: CatchButtonEmphasis.commit,
         onPressed: value == null
             ? null
             : () => Navigator.of(context).pop(value),

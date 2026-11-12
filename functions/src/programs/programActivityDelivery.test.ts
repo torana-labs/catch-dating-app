@@ -11,7 +11,7 @@ import {programActivityIntent, recoverProgramActivityJournals} from
 import {newProgramDeliveryRecord} from
   "./programDelivery";
 import {ACTIVITY_NOW, ACTIVITY_WINDOW, activityFirestore, activityHarness,
-  activityItems, activityRecord, activityRequest} from
+  activityItems, activityRecord, activityRequest, setStaffDevice} from
   "./programActivityFixture";
 import {contractValidator} from "../shared/contractTestValidators";
 
@@ -121,7 +121,7 @@ test("activity-only attention is suppressed and readable by staff",
         severity: "urgent" as const, titleTemplate: "Airport staffing gap"}},
     copy: {title: "Airport staffing gap", body: "Airport staffing gap"}};
     const h = runnerHarness(request);
-    h.db.setDoc("users/staff", {});
+    setStaffDevice(h.db, null);
     h.db.setDoc("organizers/org-1", {name: "Organizer"});
     await h.dispatch();
     const row = h.sends()[0][1];
@@ -151,14 +151,16 @@ test("receipt repair pages all recipients and preserves journals",
       const uid = `staff-${index}`;
       const db = activityFirestore();
       const request = {...activityRequest, recipient: {
-        recipientKey: `uid:${uid}`, endpoint: {kind: "uid" as const, uid,
-          fcmToken: "token-1"}, householdId: null}};
-      db.setDoc(`users/${uid}`, {fcmToken: "token-1"});
+        recipientKey: `uid:${uid}`, endpoint: {kind: "uid" as const, uid},
+        householdId: null}};
+      db.setDoc(`users/${uid}`, {});
+      db.setDoc(`users/${uid}/pushInstallations/host-device`,
+        {token: "token-1", appRole: "host"});
       db.setDoc(`programStaffGrants/prog__${uid}`, {
         ...db.getDoc("programStaffGrants/prog__staff"), uid});
       await activityHarness(db, request).deliver();
       const actual = activityRecord(db);
-      h.db.setDoc(`programDeliveryMessages/${actual.messageId}`, {...actual});
+      h.db.setDoc(`deliveryMessages/${actual.messageId}`, {...actual});
     }
     const preserve = "organizerMomentSends/" +
       activityRequest.run.runId + "_uid:staff";
@@ -188,7 +190,7 @@ test("uncommitted intent with expired window is not journaled as sent",
     const h = runnerHarness();
     const intent = programActivityIntent(activityRequest);
     const record = newProgramDeliveryRecord(intent, ACTIVITY_NOW);
-    h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+    h.db.setDoc(`deliveryMessages/${record.messageId}`, {...record});
     h.clock.now += ACTIVITY_WINDOW;
     await h.dispatch();
     assert.equal(h.messages.length, 0);
@@ -360,7 +362,7 @@ test("a full page of held receipts cannot starve newly due activity",
     const h = runnerHarness();
     await h.deliver();
     const source = activityRecord(h.db);
-    h.db.deleteDoc(`programDeliveryMessages/${source.messageId}`);
+    h.db.deleteDoc(`deliveryMessages/${source.messageId}`);
     h.messages.length = 0;
     for (let index = 0; index < 200; index++) {
       const run = {...activityRequest.run,
@@ -371,7 +373,7 @@ test("a full page of held receipts cannot starve newly due activity",
         state: {kind: "unknown", at: ACTIVITY_NOW, providerMessageId: null,
           reason: "workerInterrupted",
           reconcileAfter: ACTIVITY_NOW + 120_000}}];
-      h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+      h.db.setDoc(`deliveryMessages/${record.messageId}`, {...record});
       h.db.setDoc(`organizerMomentRuns/${run.runId}`, {...run});
     }
     h.clock.now += ACTIVITY_WINDOW + 1;
@@ -380,7 +382,9 @@ test("a full page of held receipts cannot starve newly due activity",
       travelOccurrence: {...activityRequest.run.travelOccurrence!,
         createdAtMillis: h.clock.now, occurredAtMillis: h.clock.now}};
     h.db.setDoc(`organizerMomentRuns/${healthy.runId}`, {...healthy});
-    h.db.setDoc("users/healthy", {fcmToken: "healthy-token"});
+    h.db.setDoc("users/healthy", {});
+    h.db.setDoc("users/healthy/pushInstallations/host-device",
+      {token: "healthy-token", appRole: "host"});
     h.db.setDoc("programStaffGrants/prog__healthy", {
       ...h.db.getDoc("programStaffGrants/prog__staff"), uid: "healthy"});
     const first = await runMomentSweep(h.deps);

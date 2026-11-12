@@ -28,6 +28,7 @@ export const inputs = {
 
 export const outputs = {
   dart: "packages/catch_ui/lib/src/foundations/catch_icons.g.dart",
+  roles: "packages/web-ui/src/icons/catchIconRoles.ts",
   glyphs: "packages/web-ui/src/icons/catchIconGlyphs.ts",
   nodes: "packages/web-ui/src/icons/catchIconNodes.ts",
 };
@@ -144,6 +145,7 @@ export function buildIconOutputs({catalog, legacy, activityKinds, family, schema
     errors,
     outputs: {
       dart: renderDart(catalog, aliases, family.codepoints),
+      roles: renderRoles(catalog),
       glyphs: renderGlyphs(catalog),
       nodes: renderNodes(catalog, family.iconNode),
     },
@@ -272,23 +274,16 @@ function renderDart(catalog, aliases, codepoints) {
   ].join("\n")}\n`;
 }
 
-function renderGlyphs(catalog) {
+// Role names, the stroke and the activity map: small, and imported eagerly.
+function renderRoles(catalog) {
   const roles = Object.entries(catalog.roles);
-  const imports = [...new Set(roles.map(([, role]) => pascalCase(role.glyph)))].sort();
   const activity = roles.filter(([, role]) => role.group === "activity");
   return `${[
     header(catalog, "//"),
-    `import type {LucideIcon} from "${catalog.family.react.package}";`,
-    "import {",
-    ...imports.map((name) => `  ${name},`),
-    `} from "${catalog.family.react.package}";`,
     "",
-    "/** Every Catch icon role and the glyph that draws it. */",
-    "export const catchIconGlyphs = {",
-    ...roles.map(([name, role]) => `  ${name}: ${pascalCase(role.glyph)},`),
-    "} as const satisfies Record<string, LucideIcon>;",
-    "",
-    "export type CatchIconName = keyof typeof catchIconGlyphs;",
+    "/** Every Catch icon role. */",
+    "export type CatchIconName =",
+    ...roles.map(([name], index) => `  | "${name}"${index === roles.length - 1 ? ";" : ""}`),
     "",
     "/** The stroke width every role is drawn with, matching the Flutter font. */",
     `export const catchIconStrokeWidth = ${catalog.family.strokeWidth};`,
@@ -299,6 +294,28 @@ function renderGlyphs(catalog) {
     "} as const satisfies Record<string, CatchIconName>;",
     "",
     "export type CatchActivityKind = keyof typeof catchActivityIconNames;",
+  ].join("\n")}\n`;
+}
+
+// The glyph map pulls in a component per role, so it is a lazy chunk: only
+// catchIconGlyphLoader imports it, dynamically, keeping it out of each app's
+// initial JavaScript.
+function renderGlyphs(catalog) {
+  const roles = Object.entries(catalog.roles);
+  const imports = [...new Set(roles.map(([, role]) => pascalCase(role.glyph)))].sort();
+  return `${[
+    header(catalog, "//"),
+    "// Loaded lazily through catchIconGlyphLoader; never import it statically.",
+    `import type {LucideIcon} from "${catalog.family.react.package}";`,
+    "import {",
+    ...imports.map((name) => `  ${name},`),
+    `} from "${catalog.family.react.package}";`,
+    'import type {CatchIconName} from "./catchIconRoles";',
+    "",
+    "/** Every Catch icon role and the glyph that draws it. */",
+    "export const catchIconGlyphs = {",
+    ...roles.map(([name, role]) => `  ${name}: ${pascalCase(role.glyph)},`),
+    "} as const satisfies Record<CatchIconName, LucideIcon>;",
   ].join("\n")}\n`;
 }
 

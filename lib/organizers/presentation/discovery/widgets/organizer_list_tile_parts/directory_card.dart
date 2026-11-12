@@ -134,16 +134,14 @@ class OrganizerJoinAction extends ConsumerWidget {
 
     // Key by organizerId so each tile observes only its own join state; an unkeyed
     // shared mutation would spin/disable every visible Join button at once.
-    final joinMutation = OrganizerMembershipController.joinMutation(
-      organizerId,
-    );
+    final joinMutation = OrganizerFollowController.joinMutation(organizerId);
     final joinMutationState = ref.watch(joinMutation);
     void joinOrganizer() {
       unawaited(
         joinMutation
             .run(ref, (transaction) async {
               await transaction
-                  .get(organizerMembershipControllerProvider.notifier)
+                  .get(organizerFollowControllerProvider.notifier)
                   .join(organizerId);
             })
             .catchError((Object error, StackTrace stackTrace) {

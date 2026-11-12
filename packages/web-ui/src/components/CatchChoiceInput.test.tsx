@@ -88,4 +88,26 @@ describe("CatchChoiceInput", () => {
     fireEvent.click(screen.getByRole("button", {name: "Save"})); expect(submit).toHaveBeenCalledOnce();
     expect(screen.getByRole("radiogroup", {name: "Activity, optional"})).toBeDefined();
   });
+
+  it("lets the keyboard reach an overflowing segmented rail only when no option can take focus", () => {
+    const options = [{value: "a", label: "Alpha"}, {value: "b", label: "Beta"}];
+    const overflow = (scroll: number) => {
+      vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(scroll);
+      vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(100);
+    };
+    const railOf = (container: HTMLElement) => container.querySelector("button")!.parentElement!;
+
+    overflow(240);
+    const disabled = render(<CatchChoiceInput recipe="segmented" options={options} selected="a" onChanged={null} />);
+    expect(railOf(disabled.container).getAttribute("tabindex")).toBe("0");
+    disabled.unmount();
+
+    const enabled = render(<CatchChoiceInput recipe="segmented" options={options} selected="a" onChanged={() => {}} />);
+    expect(railOf(enabled.container).hasAttribute("tabindex")).toBe(false);
+    enabled.unmount();
+
+    overflow(100);
+    const fits = render(<CatchChoiceInput recipe="segmented" options={options} selected="a" onChanged={null} />);
+    expect(railOf(fits.container).hasAttribute("tabindex")).toBe(false);
+  });
 });

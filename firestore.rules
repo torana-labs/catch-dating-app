@@ -1272,6 +1272,17 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // Public organizer projection (#1221). Synced by syncPublicOrganizer from
+    // an allowlist of organizers/{id} fields; contact details, host defaults,
+    // provenance, intake, admin search, ownership and claim never appear here.
+    // Any single organizer resolves by id, so chats and deep links to hidden
+    // organizers keep working; lists return only organizers the app shows.
+    match /publicOrganizers/{organizerId} {
+      allow get: if true;
+      allow list: if resource.data.appVisibility == 'discoverable';
+      allow write: if false;
+    }
+
     match /organizers/{organizerId}/posts/{postId} {
       allow read: if isAuthed();
       allow write: if false;

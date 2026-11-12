@@ -146,6 +146,7 @@
 .status[data-tone="success"] { color: var(--catch-theme-deep-mint); }
 .status[data-tone="warning"] { color: var(--catch-theme-deep-yellow); }
 .status[data-tone="danger"] { color: var(--catch-theme-deep-coral); }
+.status[data-tone="info"] { color: var(--catch-theme-deep-indigo); }
 
 .text { color: var(--catch-theme-ink); font-size: 15px; line-height: 1.45; white-space: normal; }
 .meta { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 500; line-height: 1.38; }
@@ -199,7 +200,7 @@
   justify-content: center;
   gap: var(--catch-space-micro2);
   width: 56px;
-  height: var(--catch-space-s16);
+  height: 64px;
   border-radius: var(--catch-radius-sm);
   background: var(--catch-row-date-fill, var(--catch-theme-tile));
   color: var(--catch-theme-ink);

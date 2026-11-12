@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_planner_reposi
 import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -20,7 +21,9 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final page = ref.watch(programmesOverviewProvider(organizerId));
+    final page = catchAsyncStateFromAsyncValue(
+      ref.watch(programmesOverviewProvider(organizerId)),
+    );
     void create() => context.pushNamed(
       Routes.hostCreateProgramScreen.name,
       pathParameters: {'organizerId': organizerId},
@@ -43,9 +46,9 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
           ],
         ),
         body: HostProgrammesHomeBody(
-          status: page.hasError
+          status: page.error != null
               ? HostProgrammesHomeStatus.error
-              : page.hasValue
+              : page.hasData
               ? HostProgrammesHomeStatus.ready
               : HostProgrammesHomeStatus.loading,
           programmes: page.value?.programs ?? const [],

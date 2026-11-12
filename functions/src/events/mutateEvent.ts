@@ -58,6 +58,7 @@ import {
   sendFcmNotification,
   setActivityNotification,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   eventParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
@@ -203,13 +204,12 @@ type EventDiscoveryField =
 type EventDocumentBeforeDiscovery = Omit<EventDocument, EventDiscoveryField>;
 
 type NotificationUserDocument = {
-  fcmToken?: string;
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
   prefsOrganizerUpdates?: boolean;
 };
 
-type OrganizerMembershipNotificationDocument = {
+type OrganizerFollowNotificationDocument = {
   uid?: string;
   pushNotificationsEnabled?: boolean;
 };
@@ -290,7 +290,6 @@ export async function createEventHandler(
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
-  const useLegacyFollowerProjection = false;
 
   await db.runTransaction(async (tx) => {
     const [
@@ -437,7 +436,6 @@ export async function createEventHandler(
       deps,
       eventId: eventRef.id,
       organizerId,
-      useLegacyFollowerProjection,
       hostUserId,
       organizerName: organizerName,
       event: createdEvent,
@@ -2061,27 +2059,21 @@ async function notifyOrganizerMembersForNewEvent(params: {
   deps: EventMutationDeps;
   eventId: string;
   organizerId: string;
-  useLegacyFollowerProjection: boolean;
   hostUserId: string;
   organizerName: string;
   event: EventDocument;
 }) {
   try {
     const members = await params.db
-      .collection(params.useLegacyFollowerProjection ?
-        "organizerMemberships" : "organizerFollows")
-      .where(
-        params.useLegacyFollowerProjection ? "organizerId" : "organizerId",
-        "==",
-        params.organizerId
-      )
+      .collection("organizerFollows")
+      .where("organizerId", "==", params.organizerId)
       .where("status", "==", "active")
       .get();
     const memberEntries = members.docs
-      .map((doc) => doc.data() as OrganizerMembershipNotificationDocument)
+      .map((doc) => doc.data() as OrganizerFollowNotificationDocument)
       .filter((membership): membership is
-        Required<Pick<OrganizerMembershipNotificationDocument, "uid">> &
-        OrganizerMembershipNotificationDocument =>
+        Required<Pick<OrganizerFollowNotificationDocument, "uid">> &
+        OrganizerFollowNotificationDocument =>
         typeof membership.uid === "string" &&
         membership.uid !== params.hostUserId
       );
@@ -2114,13 +2106,12 @@ async function notifyOrganizerMembersForNewEvent(params: {
         eventId: params.eventId,
         organizerId: params.organizerId,
       });
-      if (
-        membership.pushNotificationsEnabled === true &&
-        user.fcmToken &&
-        allowsPushPreference(user, "organizerUpdates")
-      ) {
+      const token = membership.pushNotificationsEnabled === true &&
+        allowsPushPreference(user, "organizerUpdates") ?
+        await readConsumerPushToken(params.db, uid) : null;
+      if (token) {
         await params.deps.sendNotification?.({
-          token: user.fcmToken,
+          token,
           title: copy.title,
           body: copy.body,
           type: "organizerUpdate",
@@ -2196,9 +2187,11 @@ async function notifyEventParticipants(params: {
         eventId: params.eventId,
         organizerId: params.event.organizerId,
       });
-      if (user.fcmToken && allowsPushPreference(user, "eventStatusUpdates")) {
+      const token = allowsPushPreference(user, "eventStatusUpdates") ?
+        await readConsumerPushToken(params.db, uid) : null;
+      if (token) {
         await params.deps.sendNotification?.({
-          token: user.fcmToken,
+          token,
           title: copy.title,
           body: copy.body,
           type: params.type,

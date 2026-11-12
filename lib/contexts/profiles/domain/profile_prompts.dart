@@ -161,9 +161,8 @@ PhotoPromptAnswer photoPromptAnswerFor({
 }
 
 List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
-  Iterable<ProfilePromptAnswer> answers, {
-  String? legacyBio,
-}) {
+  Iterable<ProfilePromptAnswer> answers,
+) {
   final orderedPromptIds = <String>[];
   final byPromptId = <String, ProfilePromptAnswer>{};
 
@@ -179,18 +178,6 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
       prompt: definition.title,
       answer: normalizedAnswer,
     );
-  }
-
-  if (byPromptId.isEmpty) {
-    final migratedBio = normalizeProfilePromptAnswer(legacyBio ?? '');
-    if (migratedBio.isNotEmpty) {
-      final definition = profilePromptDefinition(profilePromptPerfectEventId);
-      orderedPromptIds.add(definition.id);
-      byPromptId[definition.id] = profilePromptAnswerFor(
-        definition: definition,
-        answer: migratedBio,
-      );
-    }
   }
 
   final ordered = <ProfilePromptAnswer>[

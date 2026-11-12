@@ -4,11 +4,11 @@ import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart'
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -38,9 +38,9 @@ class WidgetbookDashboardScope extends StatelessWidget {
   });
 
   final Stream<UserProfile?>? profileStream;
-  final Stream<List<OrganizerMembership>>? membershipsStream;
+  final Stream<List<OrganizerFollow>>? membershipsStream;
   final Stream<List<Event>>? signedUpEventsStream;
-  final List<OrganizerMembership>? memberships;
+  final List<OrganizerFollow>? memberships;
   final List<Event>? signedUpEvents;
   final AsyncValue<List<ActivityNotification>>? notificationsValue;
   final Widget child;
@@ -71,12 +71,12 @@ class WidgetbookDashboardScope extends StatelessWidget {
               profileStream ??
               Stream<UserProfile?>.value(widgetbookDashboardViewer),
         ),
-        watchActiveOrganizerMembershipsForUserProvider(
+        watchActiveOrganizerFollowsForUserProvider(
           widgetbookDashboardViewer.uid,
         ).overrideWith(
           (ref) =>
               membershipsStream ??
-              Stream<List<OrganizerMembership>>.value(effectiveMemberships),
+              Stream<List<OrganizerFollow>>.value(effectiveMemberships),
         ),
         watchSignedUpEventsProvider(widgetbookDashboardViewer.uid).overrideWith(
           (ref) =>

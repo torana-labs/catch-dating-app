@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.188.0
-updated: 2026-11-08
+version: 1.189.0
+updated: 2026-11-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -3444,6 +3444,7 @@ to private-profile fields or another organizer's records.
 | Verified account identity | Firebase Auth plus the verified `users/{uid}.phoneNumber` mirror | Firebase Auth is authoritative for phone ownership. The private mirror is not a Host projection. |
 | Private Catch/dating profile | `users/{uid}` | Participant-authored source used to build Catch experiences. Its presence does not authorize Host access. |
 | Public dating projection | `publicProfiles/{uid}` | Server-derived, redacted feed shape only. A person-field mapping describes where a published value would land; it is not publication consent. |
+| Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it; contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
 | Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
 | Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
 | Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |

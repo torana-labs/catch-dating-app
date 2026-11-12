@@ -10,10 +10,10 @@ import {
   quotePriceInPaise,
   quoteAttendeeCancellation,
   normalizePolicy,
-  eventPolicyFromEvent,
+  initialPolicyFromTerms,
 } from "./eventPolicy";
 
-test("private event can review capacity and price before venue setup", () => {
+test("a private event gets its first policy from capacity and price", () => {
   // Future private schema permits this partial record; current type is rich.
   const event = {
     publicationState: "private",
@@ -21,7 +21,7 @@ test("private event can review capacity and price before venue setup", () => {
     capacityLimit: 24,
     priceInPaise: 0,
   } as unknown as EventDocument;
-  const resolved = eventPolicyFromEvent(event);
+  const resolved = initialPolicyFromTerms(event);
   assert.equal(resolved.admission.capacityLimit, 24);
   assert.equal(resolved.pricing.basePriceInPaise, 0);
 });

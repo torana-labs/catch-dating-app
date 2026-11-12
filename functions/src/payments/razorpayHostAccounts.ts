@@ -25,6 +25,7 @@ import type {
   HostPaymentAccountDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {findHostPaymentAccount} from "./hostPaymentAccounts";
+import {ownsAnOrganizer} from "./hostPayoutAuthority";
 
 interface RazorpayLinkedAccountSnapshot {
   id: string;
@@ -107,8 +108,7 @@ export async function createRazorpayHostPaymentAccountHandler(
   await deps.checkRateLimit?.(db, uid, "createRazorpayHostPaymentAccount", {
     maxRequests: 5, windowMs: 60 * 1000,
   });
-  const hostClaim = await db.collection("organizerHostClaims").doc(uid).get();
-  if (!hostClaim.exists) {
+  if (!(await ownsAnOrganizer(db, uid))) {
     throw new HttpsError(
       "permission-denied",
       "Only organizer owners can set up payouts."

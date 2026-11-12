@@ -23429,6 +23429,7 @@
             "gaps",
             "equal",
             "wrap",
+            "rail",
             "collapse"
           ]
         },

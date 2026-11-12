@@ -7,6 +7,9 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {type CatchBookingRosterSlot, loadVerifiedRosterPhone,
+  participationAfterPatch, readCatchBookingRoster, writeCatchBookingRoster} from
+  "./catchBookingRoster";
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
@@ -42,6 +45,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
   eventParticipationId,
@@ -138,7 +142,7 @@ export async function createEventWaitlistOffersHandler(
 
   const nowMillis = deps.nowMillis();
   const now = deps.timestampFromMillis(nowMillis);
-  const pushNotifications: FcmParams[] = [];
+  const pushNotifications: QueuedOfferPush[] = [];
   const result: CreateOffersResult = {
     createdCount: 0,
     skippedCount: 0,
@@ -223,8 +227,10 @@ export async function createEventWaitlistOffersHandler(
             organizerId: event.organizerId, uid, policy,
             nowMillis}),
         ]) : [false, false];
+      const rosterSlot = candidate ? await readOfferRoster(db, tx, eventId,
+        uid) : null;
       return {uid, participationRef, participationSnap, userSnap, offerRef,
-        offerSnap, blocked, hasActiveCommunityMembership};
+        offerSnap, blocked, hasActiveCommunityMembership, rosterSlot};
     }));
 
     const expiresInMinutes = offerWindowMinutes(event, payload);
@@ -330,14 +336,17 @@ export async function createEventWaitlistOffersHandler(
         createdAt: now,
         updatedAt: now,
       }, {merge: true});
-      tx.set(row.participationRef, {
+      const offered = {
         waitlistOfferStatus: "active",
         waitlistOfferedAt: now,
         waitlistOfferExpiresAt: expiresAt,
         waitlistOfferAcceptedAt: null,
         waitlistOfferId: offerId,
         updatedAt: now,
-      }, {merge: true});
+      };
+      tx.set(row.participationRef, offered, {merge: true});
+      writeOfferRoster(db, tx, row.rosterSlot, row.participationSnap.data(),
+        offered);
       queueOfferNotification({
         tx,
         db,
@@ -367,7 +376,7 @@ export async function createEventWaitlistOffersHandler(
     }
   });
 
-  await sendQueuedPushes(pushNotifications, deps);
+  await sendQueuedPushes(db, pushNotifications, deps);
   return result;
 }
 
@@ -398,12 +407,13 @@ export async function acceptEventWaitlistOfferHandler(
     const participationRef = db
       .collection("eventParticipations")
       .doc(eventParticipationId(eventId, uid));
-    const [offerSnap, eventSnap, participationSnap, userSnap] =
+    const [offerSnap, eventSnap, participationSnap, userSnap, rosterSlot] =
       await Promise.all([
         tx.get(offerRef),
         tx.get(db.collection("events").doc(eventId)),
         tx.get(participationRef),
         tx.get(db.collection("users").doc(uid)),
+        readOfferRoster(db, tx, eventId, uid),
       ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
@@ -512,13 +522,15 @@ export async function acceptEventWaitlistOfferHandler(
       decidedAt: now,
       updatedAt: now,
     }, {merge: true});
-    tx.set(participationRef, {
+    const accepted = {
       waitlistOfferStatus: "accepted",
       waitlistOfferExpiresAt: offer.expiresAt,
       waitlistOfferAcceptedAt: now,
       waitlistOfferId: offerSnap.id,
       updatedAt: now,
-    }, {merge: true});
+    };
+    tx.set(participationRef, accepted, {merge: true});
+    writeOfferRoster(db, tx, rosterSlot, participationSnap.data(), accepted);
   });
 
   if (!requiresPayment && !alreadyBooked) {
@@ -559,9 +571,10 @@ export async function declineEventWaitlistOfferHandler(
     const participationRef = db
       .collection("eventParticipations")
       .doc(eventParticipationId(eventId, uid));
-    const [offerSnap, participationSnap] = await Promise.all([
+    const [offerSnap, participationSnap, rosterSlot] = await Promise.all([
       tx.get(offerRef),
       tx.get(participationRef),
+      readOfferRoster(db, tx, eventId, uid),
     ]);
     const offer = offerSnap.data();
     if (!offerSnap.exists || !isOpenOfferStatus(offer?.status)) return;
@@ -571,10 +584,10 @@ export async function declineEventWaitlistOfferHandler(
       updatedAt: now,
     }, {merge: true});
     if (participationSnap.data()?.status === "waitlisted") {
-      tx.set(participationRef, {
-        waitlistOfferStatus: "declined",
-        updatedAt: now,
-      }, {merge: true});
+      const declinedOffer = {waitlistOfferStatus: "declined", updatedAt: now};
+      tx.set(participationRef, declinedOffer, {merge: true});
+      writeOfferRoster(db, tx, rosterSlot, participationSnap.data(),
+        declinedOffer);
     }
     declined = true;
   });
@@ -590,7 +603,7 @@ export async function expireEventWaitlistOffersHandler(
   const expiringCutoff = deps.timestampFromMillis(
     nowMillis + 60 * 60 * 1000
   );
-  const pushNotifications: FcmParams[] = [];
+  const pushNotifications: QueuedOfferPush[] = [];
   let expiredCount = 0;
   let expiringNotifiedCount = 0;
 
@@ -634,7 +647,7 @@ export async function expireEventWaitlistOffersHandler(
     }
   }
 
-  await sendQueuedPushes(pushNotifications, deps);
+  await sendQueuedPushes(db, pushNotifications, deps);
   return {expiredCount, expiringNotifiedCount};
 }
 
@@ -644,7 +657,7 @@ async function notifyOfferExpiringIfCurrent(params: {
   offerRef: FirebaseFirestore.DocumentReference;
   now: FirebaseFirestore.Timestamp;
   nowMillis: number;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }): Promise<boolean> {
   let notified = false;
   await params.db.runTransaction(async (tx) => {
@@ -697,7 +710,7 @@ async function expireOfferIfCurrent(params: {
   offerRef: FirebaseFirestore.DocumentReference;
   now: FirebaseFirestore.Timestamp;
   nowMillis: number;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }): Promise<boolean> {
   let expired = false;
   await params.db.runTransaction(async (tx) => {
@@ -711,11 +724,13 @@ async function expireOfferIfCurrent(params: {
     const participationRef = params.db
       .collection("eventParticipations")
       .doc(eventParticipationId(eventId, uid));
-    const [participationSnap, eventSnap, userSnap] = await Promise.all([
-      tx.get(participationRef),
-      tx.get(params.db.collection("events").doc(eventId)),
-      tx.get(params.db.collection("users").doc(uid)),
-    ]);
+    const [participationSnap, eventSnap, userSnap, rosterSlot] =
+      await Promise.all([
+        tx.get(participationRef),
+        tx.get(params.db.collection("events").doc(eventId)),
+        tx.get(params.db.collection("users").doc(uid)),
+        readOfferRoster(params.db, tx, eventId, uid),
+      ]);
     tx.set(params.offerRef, {
       status: "expired",
       decidedAt: params.now,
@@ -725,10 +740,10 @@ async function expireOfferIfCurrent(params: {
       participationSnap.data()?.status === "waitlisted" &&
       isOpenOfferStatus(participationSnap.data()?.waitlistOfferStatus)
     ) {
-      tx.set(participationRef, {
-        waitlistOfferStatus: "expired",
-        updatedAt: params.now,
-      }, {merge: true});
+      const expired = {waitlistOfferStatus: "expired", updatedAt: params.now};
+      tx.set(participationRef, expired, {merge: true});
+      writeOfferRoster(params.db, tx, rosterSlot, participationSnap.data(),
+        expired);
     }
     if (eventSnap.exists && userSnap.exists) {
       queueOfferNotification({
@@ -765,7 +780,7 @@ function queueOfferNotification(params: {
   user: UserProfileDocument;
   type: WaitlistOfferNotificationType;
   createdAt: FirebaseFirestore.Timestamp;
-  pushNotifications: FcmParams[];
+  pushNotifications: QueuedOfferPush[];
 }) {
   const copy = eventActivityNotificationCopy(params.type, params.event);
   setActivityNotificationInTransaction(params.tx, params.db, {
@@ -778,12 +793,9 @@ function queueOfferNotification(params: {
     eventId: params.eventId,
     organizerId: params.event.organizerId,
   });
-  if (
-    params.user.fcmToken &&
-    allowsPushPreference(params.user, "eventStatusUpdates")
-  ) {
+  if (allowsPushPreference(params.user, "eventStatusUpdates")) {
     params.pushNotifications.push({
-      token: params.user.fcmToken,
+      uid: params.uid,
       title: copy.title,
       body: copy.body,
       type: params.type,
@@ -793,12 +805,19 @@ function queueOfferNotification(params: {
   }
 }
 
+/** An offer push awaiting its recipient's device token after commit. */
+type QueuedOfferPush = Omit<FcmParams, "token"> & {uid: string};
+
 async function sendQueuedPushes(
-  pushes: FcmParams[],
+  db: FirebaseFirestore.Firestore,
+  pushes: QueuedOfferPush[],
   deps: WaitlistOfferDeps
 ) {
   const results = await Promise.allSettled(
-    pushes.map((push) => deps.sendNotification(push))
+    pushes.map(async ({uid, ...push}) => {
+      const token = await readConsumerPushToken(db, uid);
+      if (token) await deps.sendNotification({...push, token});
+    })
   );
   for (const result of results) {
     if (result.status === "rejected") {
@@ -926,3 +945,28 @@ export const expireEventWaitlistOffers = onSchedule(
     }
   }
 );
+
+/** The guest's roster slot, read with the offer transaction's other reads. */
+function readOfferRoster(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  eventId: string,
+  uid: string
+): Promise<CatchBookingRosterSlot> {
+  return readCatchBookingRoster({db, tx, eventId, uid,
+    verifiedPhone: () => loadVerifiedRosterPhone(uid)});
+}
+
+/** Mirrors an offer-state change onto the guest's roster row. */
+function writeOfferRoster(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  slot: CatchBookingRosterSlot | null,
+  before: object | undefined,
+  patch: Record<string, unknown>
+): void {
+  if (!slot || !before) return;
+  writeCatchBookingRoster({db, tx, slot,
+    booking: participationAfterPatch(before, patch),
+    now: admin.firestore.Timestamp.now()});
+}

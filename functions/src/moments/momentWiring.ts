@@ -19,6 +19,7 @@ import {
   type ActivityNotificationType,
   type NotificationPreference,
 } from "../shared/notifications";
+import {readPushToken} from "../shared/consumerPushToken";
 import type {
   OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
@@ -321,12 +322,13 @@ async function sendPush(
   const user = userSnap.data() as UserProfileDocument | undefined;
   const preferenceKey = PREFERENCE_KEYS.has(params.preferenceKey) ?
     params.preferenceKey as NotificationPreference : null;
-  if (!user?.fcmToken || preferenceKey === null ||
-      !allowsPushPreference(user, preferenceKey)) {
+  if (preferenceKey === null || !allowsPushPreference(user, preferenceKey)) {
     return;
   }
+  const token = await readPushToken(db, params.uid, params.appRole);
+  if (!token) return;
   await sendNotification({
-    token: user.fcmToken,
+    token,
     title: params.title,
     body: params.body,
     type: params.notificationType,
@@ -365,10 +367,11 @@ async function staffAttention(
       {eventId: params.scope.eventId} : {}),
   });
   const userSnap = await db.collection("users").doc(params.uid).get();
-  const user = userSnap.data() as UserProfileDocument | undefined;
-  if (!user?.fcmToken) return;
+  if (!userSnap.exists) return;
+  const token = await readPushToken(db, params.uid, "host");
+  if (!token) return;
   await sendNotification({
-    token: user.fcmToken,
+    token,
     title: params.title,
     body: params.title,
     type: "organizerUpdate",

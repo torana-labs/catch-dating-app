@@ -10,9 +10,7 @@
     "bq-host-payments": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-reviews": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-saved-events": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-participant-marketplace-metrics": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-metric-counters": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-participant-momentum": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-signal-facts": "firebase/firestore-bigquery-export@0.3.2"
   },
   "hosting": [

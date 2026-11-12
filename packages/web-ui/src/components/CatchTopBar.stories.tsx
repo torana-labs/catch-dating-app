@@ -44,20 +44,26 @@ export const Site: Story = {
   render: () => (
     <CatchRoot size="expanded" theme="day">
       <CatchStack gap={24}>
-        <CatchTopBar
-          actions={<><CatchButton label="Mumbai" onPressed={noop} size="sm" trailingIcon="expand" variant="secondary" /><CatchButton href="#" label="Get the app" size="sm" /></>}
-          homeHref="#"
-          links={[{label: "Explore", href: "#"}, {label: "Organisers", href: "#"}, {label: "For hosts", href: "#"}]}
-          title="Catch"
-          variant="site"
-        />
-        <CatchTopBar
-          actions={<CatchButton href="#" label="Apply for a pilot" size="sm" />}
-          homeHref="#"
-          links={[{label: "On the night", href: "#"}, {label: "Ways to use Catch", href: "#"}, {label: "Pricing", href: "#"}]}
-          title="Catch for hosts"
-          variant="site"
-        />
+        {/* A page holds one banner: each site header sits in its own labelled section. */}
+        <section aria-label="Catch site">
+          <CatchTopBar
+            actions={<><CatchButton label="Mumbai" onPressed={noop} size="sm" trailingIcon="expand" variant="secondary" /><CatchButton href="#" label="Get the app" size="sm" /></>}
+            homeHref="#"
+            links={[{label: "Explore", href: "#"}, {label: "Organisers", href: "#"}, {label: "For hosts", href: "#"}]}
+            title="Catch"
+            variant="site"
+          />
+        </section>
+        <section aria-label="Catch for hosts site">
+          <CatchTopBar
+            actions={<CatchButton href="#" label="Apply for a pilot" size="sm" />}
+            homeHref="#"
+            links={[{label: "On the night", href: "#"}, {label: "Ways to use Catch", href: "#"}, {label: "Pricing", href: "#"}]}
+            linksLabel="Hosts"
+            title="Catch for hosts"
+            variant="site"
+          />
+        </section>
       </CatchStack>
     </CatchRoot>
   ),

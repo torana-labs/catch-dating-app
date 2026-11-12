@@ -11,8 +11,6 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 
-const _legacyUnattributedCohortId = 'legacyUnattributed';
-
 extension EventX on Event {
   double get distanceMiles => distanceKm * 0.621371;
   ActivityKind get activityKind => eventFormat.activityKind;
@@ -76,38 +74,17 @@ extension EventX on Event {
       effectiveMeetingLocation?.latitude ?? startingPointLat;
   double? get effectiveStartingPointLng =>
       effectiveMeetingLocation?.longitude ?? startingPointLng;
+
+  /// The stored policy. An event without one has no capacity and price terms
+  /// yet (a private draft), so it reads as an open event at its draft terms.
   EventPolicyBundle get effectiveEventPolicy =>
       eventPolicy ??
-      EventPolicyBundle.legacyEvent(
+      EventPolicyBundle.openEvent(
         capacityLimit: capacityLimit,
-        priceInPaise: priceInPaise,
-        maxMen: constraints.maxMen,
-        maxWomen: constraints.maxWomen,
+        basePriceInPaise: priceInPaise,
       );
 
-  Map<String, int> get effectiveCohortCounts {
-    if (cohortCounts.isNotEmpty) return cohortCounts;
-    final nonBinaryOrOther =
-        (genderCounts[Gender.nonBinary.name] ?? 0) +
-        (genderCounts[Gender.other.name] ?? 0);
-    final legacyGenderCohorts = {
-      if ((genderCounts[Gender.man.name] ?? 0) > 0)
-        EventCohortIds.menInterestedInWomen: genderCounts[Gender.man.name]!,
-      if ((genderCounts[Gender.woman.name] ?? 0) > 0)
-        EventCohortIds.womenInterestedInMen: genderCounts[Gender.woman.name]!,
-      if (nonBinaryOrOther > 0)
-        EventCohortIds.nonBinaryOrOther: nonBinaryOrOther,
-    };
-    if (legacyGenderCohorts.isNotEmpty) return legacyGenderCohorts;
-
-    // Older event documents projected only an aggregate bookedCount. Preserve
-    // that total for global capacity and waitlist decisions without assigning
-    // it to a real cohort whose cap or pricing rule it could distort.
-    final legacyBookedCount = bookedCount ?? 0;
-    return legacyBookedCount > 0
-        ? {_legacyUnattributedCohortId: legacyBookedCount}
-        : const {};
-  }
+  Map<String, int> get effectiveCohortCounts => cohortCounts;
 
   Map<String, int> get effectiveWaitlistedCohortCounts =>
       waitlistedCohortCounts;
@@ -121,6 +98,7 @@ extension EventX on Event {
           cohort: cohort,
           roster: EventRosterSnapshot(
             bookedCountsByCohort: effectiveCohortCounts,
+            bookedTotal: bookedCount,
             waitlistedCountsByCohort: effectiveWaitlistedCohortCounts,
             crossPathsPairConfirmedCount: crossPathsPairConfirmedCount,
           ),

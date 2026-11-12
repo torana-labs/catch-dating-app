@@ -1,3 +1,4 @@
+import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
@@ -36,11 +37,11 @@ function organizer(): Data {
 }
 
 function liveEvent(): Data {
-  return {name: "Sunday Social Run", organizerId: "org",
+  return withStoredEventPolicy({name: "Sunday Social Run", organizerId: "org",
     startTime: at(nowMillis - hourMillis),
     endTime: at(nowMillis + 3 * hourMillis),
     meetingPoint: "Bandra promenade", capacityLimit: 40, constraints: {},
-    priceInPaise: 0, currency: "INR", waitlistedCount: 0, status: "active"};
+    priceInPaise: 0, currency: "INR", waitlistedCount: 0, status: "active"});
 }
 
 function application(index: number): Data {

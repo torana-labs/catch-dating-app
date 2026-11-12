@@ -471,7 +471,7 @@ test("signed WhatsApp failure unlocks one SMS fallback",
     const proof = h.db
       .entries()
       .find(([path]) =>
-        path.startsWith("eventApprovalNotificationDispatches/"),
+        path.startsWith("whatsappDispatches/"),
       )![1];
     const at = h.clock();
     const stamp = (value: number) => ({

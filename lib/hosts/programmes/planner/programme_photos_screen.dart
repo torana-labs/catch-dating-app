@@ -4,9 +4,11 @@ import 'dart:math';
 import 'package:catch_dating_app/contexts/programmes/data/program_asset_upload.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_photos_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_planner_commands_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -48,7 +50,7 @@ class _HostProgrammePhotosScreenState
           );
       if (asset != null) {
         await ref
-            .read(programWorkRepositoryProvider)
+            .read(hostProgrammePlannerCommandsProvider.notifier)
             .upsertPhoto(
               programId: widget.programId,
               photoId: asset.assetId,
@@ -77,8 +79,8 @@ class _HostProgrammePhotosScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final read = ref.watch(
-      programPhotosViewProvider(widget.programId, _functionId),
+    final read = catchAsyncStateFromAsyncValue(
+      ref.watch(programPhotosViewProvider(widget.programId, _functionId)),
     );
     final photos = read.value?.value;
     return CatchRoot(
@@ -91,11 +93,7 @@ class _HostProgrammePhotosScreenState
           title: l10n.hostProgrammePhotosTitle,
         ),
         body: HostProgrammePhotosBody(
-          status: read.hasError
-              ? HostProgrammeStatus.error
-              : photos == null
-              ? HostProgrammeStatus.loading
-              : HostProgrammeStatus.ready,
+          status: hostProgrammeStatusOf(read),
           photos: photos,
           now: ref.watch(appClockProvider).now(),
           uploading: _uploading,

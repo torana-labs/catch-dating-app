@@ -718,10 +718,6 @@
       ],
       "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
     },
-    "organizerMembershipRole": {
-      "type": "string",
-      "enum": ["owner", "host", "member"]
-    },
     "organizerHostRole": {
       "type": "string",
       "enum": ["owner", "host"]
@@ -746,10 +742,6 @@
           "$ref": "#/definitions/organizerHostRole"
         }
       }
-    },
-    "organizerMembershipStatus": {
-      "type": "string",
-      "enum": ["active", "left", "deleted"]
     },
     "eventLifecycleStatus": {
       "type": "string",
