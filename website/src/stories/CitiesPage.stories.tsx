@@ -53,7 +53,7 @@ export const TwentyFiveCities: Story = {
   render: () => page(twentyFiveCityCatalog),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText("Launching soon in Nepal")).toBeInTheDocument();
+    await expect(within(canvas.getByRole("region", {name: "Nepal"})).getByText("Launching soon in Nepal")).toBeInTheDocument();
     await expect(canvas.queryByText("Launching soon in India")).toBeNull();
   },
 };
