@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.49.0
+version: 0.49.1
 updated: 2026-11-12
 owner: web_platform
 status: active
@@ -467,7 +467,7 @@ The public website reads Firestore only on the server, through these layers:
 
 | Route | Assembler | Reads |
 |---|---|---|
-| `/`, `/explore/`, `/cities/`, city pages (`/mumbai/`) | `assembleHomeCatalog` (`website/src/server/homeCatalog.ts`) | One `cityPlans` document get per market city; a city without a valid document is built from one `assemblePublicCatalog` read |
+| `/`, `/explore/`, `/cities/`, city pages (`/mumbai/`), `/api/home-catalog` | `assembleHomeCatalog` (`website/src/server/homeCatalog.ts`) | One `cityPlans` document get per market city; a city without a valid document is built from one `assemblePublicCatalog` read |
 | `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
 | `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One `organizerPublicPage` read by `path` (a second by `legacyPaths` for an alias) |
 | `/events/<id>/` | `assembleEventDetailCatalog` | One `eventPublicPage` document get |

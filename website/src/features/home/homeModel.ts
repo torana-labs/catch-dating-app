@@ -26,7 +26,7 @@ export function cityStatusLabel(city: HomeCity) {
   return fill(copy.header.liveStatus, {count: city.weekPlanCount});
 }
 
-/** The footer's note after a city: "2 plans this week", "new" or "soon". */
+/** The footer's note after a city: "2 plans this week", "New" or "soon". */
 export function cityFooterNote(city: HomeCity) {
   const notes = siteFooterCopy.cityNotes;
   if (city.status !== "live") return siteFooterCopy.soon;
@@ -157,6 +157,9 @@ export function organizerCard(organizer: HomeOrganizer, city: HomeCity): Organiz
 }
 
 /** The picker searches once there are more cities than this. */
+/** Every city by country, with its waitlist sign-up. */
+export const citiesHref = "/cities/";
+
 export const citySearchThreshold = 8;
 
 /** One country's cities in the picker and on /cities/, in catalog order. */
