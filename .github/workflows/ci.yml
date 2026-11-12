@@ -2,20 +2,25 @@ name: CI
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('CI PR #{0}', github.event.pull_request.number) || 'CI' }}
 
-# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
-# pull requests or pushes; the full run happens once a night on main. A manual
-# dispatch plans the head's own change unless `full` is set; the Website
-# Release train dispatches with `full=true` to validate the head it releases.
+# A manual dispatch plans the head's own change unless `full` is set; the
+# Website Release train dispatches with `full=true` to validate the head it
+# releases when that head ran no website validation of its own.
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  push:
+    branches: [main]
+  merge_group:
   schedule:
-    - cron: '23 2 * * *'
+    - cron: "23 2 * * *"
   workflow_dispatch:
     inputs:
       full:
-        description: Run every lane, as the nightly run does
+        description: Run every validation lane regardless of changed paths.
         required: false
-        default: false
         type: boolean
+        default: false
+
 permissions:
   actions: read
   contents: read

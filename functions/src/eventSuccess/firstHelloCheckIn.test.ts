@@ -74,6 +74,11 @@ class FakeCollectionRef {
     ]);
   }
 
+  limit(count: number) {
+    void count;
+    return this;
+  }
+
   async get(): Promise<{docs: FakeSnapshot[]}> {
     return {docs: this.firestore.query(this.path, this.filters)};
   }
@@ -84,7 +89,9 @@ class FakeTransaction {
 
   constructor(private readonly firestore: FakeFirestore) {}
 
-  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
+  async get(ref: FakeDocRef | FakeCollectionRef):
+      Promise<FakeSnapshot | {docs: FakeSnapshot[]}> {
+    if (ref instanceof FakeCollectionRef) return ref.get();
     return new FakeSnapshot(this.firestore, ref.path);
   }
 

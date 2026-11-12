@@ -4,6 +4,7 @@ import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {hostLandingCopy as copy} from "@content/hostLanding";
 import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
+import {marketingCaptures} from "../app/marketingCaptures";
 import {HostPage} from "../features/host/HostPage";
 
 const meta = {
@@ -111,53 +112,48 @@ function Width({children, width}: {children: ReactNode; width: 390 | 1280}) {
 export const HostLanding1280: Story = {
   name: "Host landing · 1280",
   parameters: {layout: "fullscreen"},
-  render: () => <Width width={1280}><HostPage /></Width>,
+  render: () => <Width width={1280}><HostPage captures={marketingCaptures} /></Width>,
 };
 
 /** The whole landing on a phone: the rows stack and the header's links move into its menu. */
 export const HostLanding390: Story = {
   name: "Host landing · 390 (phone)",
   parameters: {layout: "fullscreen"},
-  render: () => <Width width={390}><HostPage /></Width>,
+  render: () => <Width width={390}><HostPage captures={marketingCaptures} /></Width>,
 };
 
-/** A later chapter of the night: earlier steps muted, the reveal live, the phone following. */
-export const NightChapter: Story = {
-  name: "Host landing · night chapter",
+/** Another format picked in the matrix: the night scene follows the pickleball social. */
+export const NightFormat: Story = {
+  name: "Host landing · night format",
   parameters: {layout: "fullscreen"},
-  render: () => <Width width={1280}><HostPage /></Width>,
+  render: () => <Width width={1280}><HostPage captures={marketingCaptures} /></Width>,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", {name: /The reveal/}));
-    await expect(canvas.getByText("04 / 05 · 8:24 PM")).toBeInTheDocument();
+    await userEvent.click(within(canvas.getByRole("radiogroup", {name: copy.night.pickerLabel})).getByRole("radio", {name: "Pickleball"}));
+    await expect(canvas.getByRole("button", {name: /Levels in, courts balanced/})).toHaveAttribute("aria-current", "step");
   },
 };
 
-/** Pricing at the cap, and the first layer, where Catch runs only the night. */
-export const PricingCapAndLayerOne: Story = {
-  name: "Host landing · pricing cap and layer one",
+/** Pricing at the cap, and the second layer, where bookings move to Catch. */
+export const PricingCapAndLayerTwo: Story = {
+  name: "Host landing · pricing cap and layer two",
   parameters: {layout: "fullscreen"},
-  render: () => <Width width={1280}><HostPage /></Width>,
+  render: () => <Width width={1280}><HostPage captures={marketingCaptures} /></Width>,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[0].label}));
-    const slider = canvas.getByRole("slider", {name: copy.pricing.sales}) as HTMLInputElement;
-    // user-event cannot drive a native range input's End key (it throws "Not implemented"),
-    // so set the slider to its maximum the way the browser's End key does.
-    fireEvent.change(slider, {target: {value: slider.max}});
+    await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[1].label}));
+    fireEvent.change(canvas.getByRole("slider", {name: copy.pricing.sales}), {target: {value: "500000"}});
     await expect(canvas.getByText(copy.pricing.capped)).toBeInTheDocument();
   },
 };
 
-/** The applicant board after a replay, and the application card with a kind chosen. */
-export const ApplicantReplayAndApplyCard: Story = {
-  name: "Host landing · applicant replay and apply card",
+/** The closing band: three steps, Catch Host's badges and the link to Catch for weddings. */
+export const StartBand: Story = {
+  name: "Host landing · start band",
   parameters: {layout: "fullscreen"},
-  render: () => <Width width={1280}><HostPage /></Width>,
+  render: () => <Width width={1280}><HostPage captures={marketingCaptures} /></Width>,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", {name: copy.pipeline.replay}));
-    await userEvent.click(canvas.getByRole("radio", {name: "Pub crawl"}));
-    await expect(canvas.getByRole("link", {name: copy.apply.card.continue})).toHaveAttribute("href", "/host/apply/");
+    await expect(canvas.getByRole("link", {name: copy.start.weddings})).toHaveAttribute("href", "/weddings/");
   },
 };

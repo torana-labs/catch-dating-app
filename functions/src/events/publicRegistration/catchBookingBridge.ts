@@ -1,4 +1,6 @@
 import * as admin from "firebase-admin";
+import {type CatchBookingRosterSlot, participationAfterPatch,
+  readCatchBookingRoster, writeCatchBookingRoster} from "../catchBookingRoster";
 import type {EventDocument, UserProfileDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {
@@ -44,13 +46,17 @@ export async function prepareCatchBookingAdmission(input: {
   eventId: string;
   uid: string;
   paymentId: string;
+  /** The web registration's roster row: the same guest's row. */
+  attendeeId: string;
 }) {
   const {db, tx, eventId, uid, paymentId} = input;
   const participationRef = db.collection("eventParticipations")
     .doc(eventParticipationId(eventId, uid));
-  const [userSnap, participationSnap] = await Promise.all([
+  const [userSnap, participationSnap, rosterSlot] = await Promise.all([
     tx.get(db.collection("users").doc(uid)),
     tx.get(participationRef),
+    readCatchBookingRoster({db, tx, eventId, uid,
+      attendeeId: input.attendeeId}),
   ]);
   if (!userSnap.exists) return null;
   const user = userSnap.data() as UserProfileDocument;
@@ -81,7 +87,7 @@ export async function prepareCatchBookingAdmission(input: {
     },
     apply(event: EventDocument): void {
       const organizerId = event.organizerId;
-      tx.set(participationRef, eventParticipationPatch({
+      const admission = eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
         organizerId,
@@ -90,7 +96,13 @@ export async function prepareCatchBookingAdmission(input: {
         genderAtSignup: gender ?? undefined,
         cohortAtSignup: cohortId,
         paymentId,
-      }), {merge: true});
+      });
+      tx.set(participationRef, admission, {merge: true});
+      // The admission writes the web row itself; it gains only the booking
+      // facts and the pointer here.
+      writeCatchBookingRoster({db, tx, slot: rosterSlot,
+        booking: participationAfterPatch(participationSnap.data(), admission),
+        now: admin.firestore.Timestamp.now(), factsOnly: true});
       const copy = eventActivityNotificationCopy("eventSignup", event);
       setActivityNotificationInTransaction(tx, db, {
         id: activityNotificationId("eventSignup", eventId),
@@ -111,7 +123,9 @@ export async function prepareCatchBookingAdmission(input: {
  * matching native bookings on cancelled events.
  */
 export function catchBookingCancellation(input: {
+  db: FirebaseFirestore.Firestore;
   tx: FirebaseFirestore.Transaction;
+  rosterSlot: CatchBookingRosterSlot;
   participationRef: FirebaseFirestore.DocumentReference;
   participation: Participation;
   event: EventDocument;
@@ -119,13 +133,17 @@ export function catchBookingCancellation(input: {
   uid: string;
 }): Record<string, unknown> {
   const {tx, participationRef, participation, event, eventId, uid} = input;
-  tx.set(participationRef, eventParticipationPatch({
+  const cancellation = eventParticipationPatch({
     exists: true,
     eventId,
     organizerId: event.organizerId,
     uid,
     status: "cancelled",
-  }), {merge: true});
+  });
+  tx.set(participationRef, cancellation, {merge: true});
+  writeCatchBookingRoster({db: input.db, tx, slot: input.rosterSlot,
+    booking: participationAfterPatch(participation, cancellation),
+    now: admin.firestore.Timestamp.now(), factsOnly: true});
   const gender = participation.genderAtSignup;
   return {
     ...(gender ? {[`genderCounts.${gender}`]:

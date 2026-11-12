@@ -196,9 +196,6 @@ export {
   submitEventRehearsalGuestAction,
   updateEventRehearsalSetup,
 } from "./eventRehearsal/handlers";
-export {
-  onEventParticipationRosterProjected,
-} from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
 export {createEventVenueSession} from "./events/venueSessions";
 export {
@@ -339,11 +336,6 @@ export {
   retryOrganizerAutomations,
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
-export {
-  getParticipantOrganizerApplicationForm,
-  revokeParticipantOrganizerDataGrant,
-  submitParticipantOrganizerApplication,
-} from "./organizers/participantOrganizerApplications";
 export {
   mergeOrganizerContacts,
   unmergeOrganizerContacts,

@@ -110,11 +110,50 @@ Event buildEvent({
     waitlistedCount: waitlistedCount,
     status: status,
     constraints: constraints,
-    eventPolicy: eventPolicy,
+    eventPolicy:
+        eventPolicy ??
+        storedPolicyForTerms(
+          capacityLimit: capacityLimit,
+          priceInPaise: priceInPaise,
+          constraints: constraints,
+        ),
     genderCounts: genderCounts,
-    cohortCounts: cohortCounts,
+    cohortCounts: cohortCounts.isNotEmpty
+        ? cohortCounts
+        : cohortCountsFromGenderCounts(genderCounts),
     waitlistedCohortCounts: waitlistedCohortCounts,
   );
+}
+
+/// The policy a stored event carries when its terms cap men or women, as the
+/// event-policy migration and first-terms setup store it. Open events keep no
+/// explicit policy here so tests exercise the draft placeholder too.
+EventPolicyBundle? storedPolicyForTerms({
+  required int capacityLimit,
+  required int priceInPaise,
+  required EventConstraints constraints,
+}) {
+  if (constraints.maxMen == null && constraints.maxWomen == null) return null;
+  return EventPolicyBundle.fixedCohortCapsEvent(
+    capacityLimit: capacityLimit,
+    basePriceInPaise: priceInPaise,
+    maxMenInterestedInWomen: constraints.maxMen,
+    maxWomenInterestedInMen: constraints.maxWomen,
+  );
+}
+
+/// Cohort counts matching [genderCounts], as stored events now carry them.
+Map<String, int> cohortCountsFromGenderCounts(Map<String, int> genderCounts) {
+  final nonBinaryOrOther =
+      (genderCounts[Gender.nonBinary.name] ?? 0) +
+      (genderCounts[Gender.other.name] ?? 0);
+  return {
+    if ((genderCounts[Gender.man.name] ?? 0) > 0)
+      EventCohortIds.menInterestedInWomen: genderCounts[Gender.man.name]!,
+    if ((genderCounts[Gender.woman.name] ?? 0) > 0)
+      EventCohortIds.womenInterestedInMen: genderCounts[Gender.woman.name]!,
+    if (nonBinaryOrOther > 0) EventCohortIds.nonBinaryOrOther: nonBinaryOrOther,
+  };
 }
 
 EventParticipation buildEventParticipation({
@@ -200,7 +239,12 @@ UserProfile buildUser({
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
     profilePrompts:
         profilePrompts ??
-        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+        normalizeProfilePromptAnswers([
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(profilePromptPerfectEventId),
+            answer: bio,
+          ),
+        ]),
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
@@ -275,7 +319,12 @@ PublicProfile buildPublicProfile({
     age: age,
     profilePrompts:
         profilePrompts ??
-        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+        normalizeProfilePromptAnswers([
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(profilePromptPerfectEventId),
+            answer: bio,
+          ),
+        ]),
     gender: gender,
     profilePhotos: _profilePhotosFromUrls(
       uid: uid,

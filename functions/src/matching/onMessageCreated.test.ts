@@ -167,7 +167,7 @@ function harness({
         organizerId: "org-1"} : {}),
     },
     "publicProfiles/runner-1": {name: "Runner One"},
-    "users/runner-2": {fcmToken: "token-2"},
+    "users/runner-2": {},
     "organizers/org-1": {
       ownerUserId: "runner-2", hostUserIds: [], hostProfiles: [],
     },

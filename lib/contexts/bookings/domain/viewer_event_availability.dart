@@ -185,6 +185,7 @@ ViewerEventAvailability resolveViewerEventAvailability({
     ),
     roster: EventRosterSnapshot(
       bookedCountsByCohort: event.effectiveCohortCounts,
+      bookedTotal: event.bookedCount,
       waitlistedCountsByCohort: event.effectiveWaitlistedCohortCounts,
       crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
     ),

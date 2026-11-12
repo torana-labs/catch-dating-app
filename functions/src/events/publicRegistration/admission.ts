@@ -194,6 +194,7 @@ export async function finalizePublicPayment(input: {
         eventId,
         uid,
         paymentId,
+        attendeeId: guest.attendeeId,
       });
       const now = Timestamp.fromMillis(nowMillis);
       const existing = guest.existing;

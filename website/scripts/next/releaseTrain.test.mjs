@@ -145,18 +145,15 @@ test("the CI workflow declares every input the train's validation dispatch sends
   }
   // A full dispatch must still run the full plan, not the head's own change.
   assert.match(workflow, /REQUEST_FULL: \$\{\{ github\.event_name == 'schedule' \|\| inputs\.full \}\}/u);
-  // The sprint keeps CI off pull requests and pushes.
-  assert.doesNotMatch(on, /^ {2}(pull_request|push|merge_group):/mu);
+  // PRs, main pushes and the merge queue run CI; the train follows main's runs.
+  for (const event of ["pull_request", "push", "merge_group"]) assert.match(on, new RegExp(`^ {2}${event}:`, "mu"));
 });
 
 test("the train workflow gates production on the protected environment and never cancels a pending approval", () => {
   const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-release.yml", import.meta.url), "utf8");
-  // CI is off for the redesign sprint (owner, 8 Nov 2026; #1564): the train
-  // runs once a night from main, not after main's CI. When CI returns, assert
-  // the workflow_run trigger (workflows [CI], completed, main) and the hourly
-  // catch-up cron again.
-  assert.doesNotMatch(workflow, /workflow_run:\n {4}workflows:/u);
-  assert.match(workflow, /schedule:\n {4}- cron: "40 22 \* \* \*"/u);
+  // The train follows main's completed CI, with an hourly catch-up.
+  assert.match(workflow, /workflow_run:\n {4}workflows: \[CI\]\n {4}types: \[completed\]\n {4}branches: \[main\]/u);
+  assert.match(workflow, /schedule:\n {4}- cron: "23 \* \* \* \*"/u);
   assert.match(workflow, /concurrency:\n {2}group: website-release\n {2}cancel-in-progress: false/u);
   const job = (name) => workflow.split(`\n  ${name}:\n`)[1].split(/\n {2}[a-z]+:\n/u)[0];
   const approve = job("approve");

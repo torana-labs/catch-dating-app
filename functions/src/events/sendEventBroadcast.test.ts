@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   eventBroadcastDeliveryKey,
@@ -86,6 +87,9 @@ class FakeCollection {
   }
   where(field: string, op: string, value: unknown) {
     return new FakeQuery(this.firestore, this.path, [{field, op, value}]);
+  }
+  limit(count: number) {
+    return new FakeQuery(this.firestore, this.path, [], count);
   }
 }
 
@@ -267,13 +271,13 @@ function baseDocs(
       status: "waitlisted",
       hostApprovalStatus: "pending",
     },
+    ...guestInstallation("user-1", "token-1"),
     "users/user-1": {
-      fcmToken: "token-1",
       prefsRunStatusUpdates: true,
     },
     "users/user-2": {prefsRunStatusUpdates: true},
+    ...guestInstallation("user-3", "token-3"),
     "users/user-3": {
-      fcmToken: "token-3",
       prefsRunStatusUpdates: true,
     },
     "organizerContacts/contact-1": {
@@ -413,8 +417,10 @@ test("prospective audience excludes blocks, deleted users, and missing users",
         uid: "user-6",
         status: "waitlisted",
       },
-      "users/user-4": {fcmToken: "token-4"},
-      "users/user-5": {fcmToken: "token-5"},
+      "users/user-4": {},
+      "users/user-5": {},
+      ...guestInstallation("user-4", "token-4"),
+      ...guestInstallation("user-5", "token-5"),
       "deletedUsers/user-4": {uid: "user-4"},
       [`blocks/${blockDocId("user-5", "cohost-1")}`]: {
         blockerUserId: "user-5",
@@ -660,7 +666,6 @@ test("excludes a user deleted before recipient resolution", async () => {
   const h = harness(baseDocs({
     "users/user-1": {
       deleted: true,
-      fcmToken: "token-1",
       prefsRunStatusUpdates: true,
     },
   }));

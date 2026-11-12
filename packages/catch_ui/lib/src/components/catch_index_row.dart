@@ -514,9 +514,11 @@ class CatchIndexRow extends StatelessWidget {
     final date = this.date;
     if (date != null) {
       final format = date.format;
-      return SizedBox(
-        width: dateTileWidth,
-        height: CatchSpacing.s16,
+      // The tile is at least [CatchSpacing.s16] tall; large text grows it.
+      return ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(
+          width: dateTileWidth,
+        ).copyWith(minHeight: CatchSpacing.s16),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: format?.accent ?? t.tile,
@@ -526,6 +528,7 @@ class CatchIndexRow extends StatelessWidget {
             style: TextStyle(color: format?.ink ?? t.ink),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               spacing: CatchSpacing.micro2,
               children: [
                 CatchText(date.day, variant: CatchTextVariant.labelBadge),

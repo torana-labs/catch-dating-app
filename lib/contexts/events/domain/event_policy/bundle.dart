@@ -170,26 +170,6 @@ class EventPolicyBundle {
     );
   }
 
-  factory EventPolicyBundle.legacyEvent({
-    required int capacityLimit,
-    required int priceInPaise,
-    int? maxMen,
-    int? maxWomen,
-  }) {
-    if (maxMen != null || maxWomen != null) {
-      return EventPolicyBundle.fixedCohortCapsEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: priceInPaise,
-        maxMenInterestedInWomen: maxMen,
-        maxWomenInterestedInMen: maxWomen,
-      );
-    }
-    return EventPolicyBundle.openEvent(
-      capacityLimit: capacityLimit,
-      basePriceInPaise: priceInPaise,
-    );
-  }
-
   factory EventPolicyBundle.fromJson(Map<String, dynamic> json) {
     final pricingPolicy = EventPricingPolicy.fromJson(
       _mapValue(json['pricing']) ?? const {},

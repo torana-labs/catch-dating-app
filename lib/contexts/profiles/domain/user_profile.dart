@@ -308,9 +308,9 @@ abstract class UserProfile with _$UserProfile {
     if (display.isNotEmpty) return display;
     final first = firstName.trim();
     if (first.isNotEmpty) return first;
-    final legacyName = name.trim();
-    if (legacyName.isEmpty) return 'Runner';
-    return legacyName.split(RegExp(r'\s+')).first;
+    final fullName = name.trim();
+    if (fullName.isEmpty) return 'Runner';
+    return fullName.split(RegExp(r'\s+')).first;
   }
 
   String get greetingDisplayName =>
@@ -344,20 +344,6 @@ abstract class UserProfile with _$UserProfile {
 
 Map<String, dynamic> _migrateUserProfileJson(Map<String, dynamic> json) {
   final migrated = Map<String, dynamic>.from(json);
-  final legacyBio = migrated['bio'];
-  final hasStructuredPrompts =
-      migrated['profilePrompts'] is List &&
-      (migrated['profilePrompts'] as List).isNotEmpty;
-
-  if (!hasStructuredPrompts &&
-      legacyBio is String &&
-      legacyBio.trim().isNotEmpty) {
-    migrated['profilePrompts'] = profilePromptsToJson(
-      normalizeProfilePromptAnswers(const [], legacyBio: legacyBio),
-    );
-  }
-
-  migrated.remove('bio');
   _migrateActivityPreferences(migrated);
   return migrated;
 }
@@ -366,14 +352,12 @@ void _migrateActivityPreferences(Map<String, dynamic> migrated) {
   final activityPreferences = _stringKeyedMap(migrated['activityPreferences']);
   final running = _stringKeyedMap(activityPreferences['running']);
 
-  running['paceMinSecsPerKm'] ??=
-      migrated['paceMinSecsPerKm'] ?? defaultPaceMinSecsPerKm;
-  running['paceMaxSecsPerKm'] ??=
-      migrated['paceMaxSecsPerKm'] ?? defaultPaceMaxSecsPerKm;
-  running['preferredDistances'] ??= migrated['preferredDistances'] ?? const [];
-  running['runningReasons'] ??= migrated['runningReasons'] ?? const [];
-  running['preferredRunTimes'] ??= migrated['preferredRunTimes'] ?? const [];
-  running['version'] ??= migrated['runPreferencesVersion'] ?? 0;
+  running['paceMinSecsPerKm'] ??= defaultPaceMinSecsPerKm;
+  running['paceMaxSecsPerKm'] ??= defaultPaceMaxSecsPerKm;
+  running['preferredDistances'] ??= const [];
+  running['runningReasons'] ??= const [];
+  running['preferredRunTimes'] ??= const [];
+  running['version'] ??= 0;
 
   activityPreferences['running'] = running;
   migrated['activityPreferences'] = activityPreferences;

@@ -1,0 +1,103 @@
+/*
+ * Proposal WebEventVideo: a 16:9 frame with the radius of a large tile. The
+ * still sits under a scrim that keeps the white foot (source and running
+ * time) and the white play disc readable on any picture.
+ */
+.video {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  min-width: 0;
+  margin: 0;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-color-dark-ground);
+}
+
+.still {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.still:focus-visible {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-ink);
+  outline-offset: calc(-1 * var(--catch-space-micro6));
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame:not([data-playing])::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, color-mix(in srgb, var(--catch-palette-black) 72%, transparent), transparent 45%);
+  content: "";
+  pointer-events: none;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-black);
+  transform: translate(-50%, -50%);
+}
+
+.foot {
+  position: absolute;
+  right: var(--catch-space-s4);
+  bottom: var(--catch-space-s3);
+  left: var(--catch-space-s4);
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  color: var(--catch-palette-white);
+  font-family: var(--catch-font-stack-sans);
+  font-size: var(--catch-typography-web-context-size);
+  font-weight: 600;
+  text-align: start;
+}
+
+.duration { font-variant-numeric: tabular-nums; }
+
+.player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+}

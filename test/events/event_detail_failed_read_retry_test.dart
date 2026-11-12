@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -50,7 +50,7 @@ void main() {
           event.id,
           user.uid,
         ).overrideWith((ref) => Stream.value(null)),
-        watchOrganizerMembershipProvider(
+        watchOrganizerFollowProvider(
           event.organizerId,
           user.uid,
         ).overrideWith((ref) => Stream.value(null)),

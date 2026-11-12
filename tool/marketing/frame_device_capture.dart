@@ -46,7 +46,11 @@ void main(List<String> args) {
     return;
   }
 
-  final framed = _renderDeviceFrame(screenshot, spec);
+  // An unframed device (a tablet or desktop browser screen) is passed through
+  // at its native size: the website draws its frame in CSS.
+  final framed = spec.framed
+      ? _renderDeviceFrame(screenshot, spec)
+      : screenshot;
   final outputFile = File(outputPath)..parent.createSync(recursive: true);
   outputFile.writeAsBytesSync(img.encodePng(framed), flush: true);
   stdout.writeln('Wrote ${outputFile.path}');
@@ -259,11 +263,13 @@ String? _valueAfter(List<String> args, String flag) {
 
 void _printHelp() {
   stdout.writeln('''
-Usage: dart run tool/marketing/frame_device_capture.dart --input <png> --output <png> [--device generic-phone|iphone-17-pro]
+Usage: dart run tool/marketing/frame_device_capture.dart --input <png> --output <png> [--device generic-phone|iphone-17-pro|generic-tablet|desktop-browser]
 
 Wraps a native 2x capture (804x1748 for both phones) without resizing.
 generic-phone (the default) draws a generic bezel with nothing unique to
 Apple hardware; iphone-17-pro keeps the older frame with a Dynamic Island.
+generic-tablet (2388x1668) and desktop-browser (2880x1800) are unframed:
+the native screen is written as it is, and the website draws the frame.
 ''');
 }
 
@@ -278,6 +284,7 @@ class _DeviceFrameSpec {
     required this.outerRadius,
     required this.screenRadius,
     this.dynamicIsland,
+    this.framed = true,
   });
 
   /// Sizes in points; tool/marketing/lib/capture_devices.mjs holds the same.
@@ -306,6 +313,30 @@ class _DeviceFrameSpec {
         screenRadius: 52,
         dynamicIsland: _DynamicIsland(width: 126, height: 37, top: 12),
       ),
+      // Unframed: the PNG is the screen alone (CatchDeviceFrame kind tablet).
+      'generic-tablet' => const _DeviceFrameSpec(
+        id: 'generic-tablet',
+        logicalWidth: 1194,
+        logicalHeight: 834,
+        outputScale: 2,
+        canvasMargin: 0,
+        frameInset: 0,
+        outerRadius: 0,
+        screenRadius: 0,
+        framed: false,
+      ),
+      // Unframed: the PNG is the screen alone (CatchDeviceFrame kind browser).
+      'desktop-browser' => const _DeviceFrameSpec(
+        id: 'desktop-browser',
+        logicalWidth: 1440,
+        logicalHeight: 900,
+        outputScale: 2,
+        canvasMargin: 0,
+        frameInset: 0,
+        outerRadius: 0,
+        screenRadius: 0,
+        framed: false,
+      ),
       _ => throw ArgumentError.value(id, 'id', 'Unsupported device frame.'),
     };
   }
@@ -321,6 +352,9 @@ class _DeviceFrameSpec {
 
   /// Null for a generic device.
   final _DynamicIsland? dynamicIsland;
+
+  /// False when the website draws the frame and the screen passes through.
+  final bool framed;
 }
 
 class _DynamicIsland {

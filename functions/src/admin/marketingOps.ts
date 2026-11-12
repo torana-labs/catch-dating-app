@@ -749,7 +749,7 @@ function buildFeatureDraftSlides(
     {
       id: "cover",
       role: "cover",
-      headline: "Four things you won't find in a swipe app.",
+      headline: "Four things that make a night with Catch different.",
       body: "A short tour of what makes Catch different, built from " +
         "approved app screenshots.",
       image: null,

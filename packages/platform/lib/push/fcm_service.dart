@@ -179,7 +179,6 @@ class FcmService {
   StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
   StreamSubscription<RemoteMessage>? _foregroundSubscription;
   int _generation = 0;
-  String? _registeredToken;
 
   bool get isSupportedPlatform =>
       AppConfig.supportsPushMessagingOnCurrentPlatform;
@@ -236,7 +235,6 @@ class FcmService {
   Future<void> unregisterCurrentInstallation() async {
     if (!isSupportedPlatform) return;
     final uid = _initializedUid;
-    final token = _registeredToken;
     await reset();
     Future<void> attempt(
       Future<void> Function() operation,
@@ -269,24 +267,8 @@ class FcmService {
           final id = await _pushInstallationId();
           final user = _db.collection('users').doc(uid);
           await user.collection('pushInstallations').doc(id).delete();
-          if (!AppConfig.appRole.isHost && token != null) {
-            await withBackendErrorContext(
-              () => _db.runTransaction((tx) async {
-                final snapshot = await tx.get(user);
-                if (snapshot.data()?['fcmToken'] == token) {
-                  tx.update(user, {'fcmToken': FieldValue.delete()});
-                }
-              }),
-              context: const BackendErrorContext(
-                service: BackendService.firestore,
-                action: 'clear legacy push registration',
-                resource: 'push_installations',
-              ),
-            );
-          }
         }, 'push_installations'),
     ]);
-    _registeredToken = null;
   }
 
   Future<void> _cancelSubscriptions() async {
@@ -404,20 +386,10 @@ class FcmService {
   Future<void> _saveToken(String uid, String token, int generation) async {
     bool isCurrent() => generation == _generation && _initializedUid == uid;
     if (!isCurrent()) return;
-    _registeredToken = token;
     final userRef = _db.collection('users').doc(uid);
 
-    // Keep the legacy consumer field working while older production rules and
-    // senders are still deployed. A denied compatibility-projection write must
-    // not prevent the other token representation from being attempted.
-    if (!AppConfig.appRole.isHost) {
-      try {
-        await userRef.update({'fcmToken': token});
-      } catch (error, stackTrace) {
-        _logError(error, stackTrace, resource: 'users');
-      }
-    }
-
+    // Installations are the only push address store; senders pick the newest
+    // device of the app they target.
     try {
       final installationId = await _pushInstallationId();
       final packageInfo = await PackageInfo.fromPlatform();

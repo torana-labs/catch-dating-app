@@ -5,7 +5,7 @@ import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
   validateOrganizerDocument,
-  validateOrganizerMembershipDocument,
+  validateOrganizerFollowDocument,
   validateEventDocument,
   validateSwipeDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
@@ -161,7 +161,7 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     "hostProfiles",
     "publicProfiles",
     "organizers",
-    "organizerMemberships",
+    "organizerFollows",
     "events",
     "eventParticipations",
     "savedEvents",
@@ -176,11 +176,8 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
       maxDocs
     );
   }
-  result.organizerScheduleLocks = includeScheduleLocks ?
-    await readQuery(firestore.collection("organizerScheduleLocks"), maxDocs) :
-    [];
-  result.userEventScheduleLocks = includeScheduleLocks ?
-    await readQuery(firestore.collection("userEventScheduleLocks"), maxDocs) :
+  result.scheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("scheduleLocks"), maxDocs) :
     [];
   result.outgoing = await readQuery(
     firestore.collectionGroup("outgoing"),
@@ -228,14 +225,13 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   const users = byId(collections.users);
   const hostProfiles = byId(collections.hostProfiles);
   const publicProfiles = byId(collections.publicProfiles);
-  const organizers = byId([...collections.organizers, ...collections.organizers]);
+  const organizers = byId(collections.organizers);
   const events = byId(collections.events);
   const eventParticipations = byId(collections.eventParticipations);
   const matches = byId(collections.matches);
 
   for (const [name, docs] of Object.entries(collections)) {
-    const enabled = !["organizerScheduleLocks", "userEventScheduleLocks"].includes(name) ||
-      checkScheduleLocks;
+    const enabled = name !== "scheduleLocks" || checkScheduleLocks;
     const limitReached = enabled && docs.length >= currentReport.maxDocs;
     currentReport.summary.collections[name] = {
       scannedDocuments: docs.length, enabled, limitReached,
@@ -260,11 +256,11 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     collections.publicProfiles,
     currentReport
   );
-  for (const doc of [...collections.organizers, ...collections.organizers]) {
+  for (const doc of collections.organizers) {
     validateOrganizer(doc, users, currentReport);
   }
-  for (const doc of collections.organizerMemberships) {
-    validateOrganizerMembership(doc, users, organizers, currentReport);
+  for (const doc of collections.organizerFollows) {
+    validateOrganizerFollow(doc, users, organizers, currentReport);
   }
   for (const doc of collections.events) validateRun(doc, organizers, currentReport);
   for (const doc of collections.eventParticipations) {
@@ -287,9 +283,9 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   for (const doc of collections.onboarding_drafts) {
     validateOnboardingDraft(doc, currentReport);
   }
-  validateOrganizerMemberCountAggregates(
+  validateOrganizerFollowerCountAggregates(
     collections.organizers,
-    collections.organizerMemberships,
+    collections.organizerFollows,
     currentReport
   );
   validateRunAggregateCounts(
@@ -440,23 +436,23 @@ function isSyntheticPublicProfile(doc) {
     doc.id.startsWith("demo_");
 }
 
-function validateOrganizerMembership(doc, users, organizers, currentReport) {
+function validateOrganizerFollow(doc, users, organizers, currentReport) {
   const data = doc.data;
-  validateSchema(doc, validateOrganizerMembershipDocument, currentReport);
-  requireTimestamp(data, "joinedAt", doc, currentReport);
-  for (const field of ["leftAt", "deletedAt"]) {
-    if (data[field] != null) requireTimestamp(data, field, doc, currentReport);
+  validateSchema(doc, validateOrganizerFollowDocument, currentReport);
+  requireTimestamp(data, "followedAt", doc, currentReport);
+  if (data.unfollowedAt != null) {
+    requireTimestamp(data, "unfollowedAt", doc, currentReport);
   }
   if (data.organizerId && data.uid && doc.id !== `${data.organizerId}_${data.uid}`) {
-    issue(currentReport, "error", doc.path, "membership-id-mismatch",
+    issue(currentReport, "error", doc.path, "follow-id-mismatch",
       "document id must be {organizerId}_{uid}.");
   }
   if (data.organizerId && !organizers.has(data.organizerId)) {
-    issue(currentReport, "warning", doc.path, "missing-membership-club",
+    issue(currentReport, "warning", doc.path, "missing-follow-organizer",
       `organizerId references missing organizers/${data.organizerId}.`);
   }
   if (data.uid && !users.has(data.uid)) {
-    issue(currentReport, "warning", doc.path, "missing-membership-user",
+    issue(currentReport, "warning", doc.path, "missing-follow-user",
       `uid references missing users/${data.uid}.`);
   }
 }
@@ -798,13 +794,13 @@ function validateOnboardingDraft(doc, currentReport) {
   requireInteger(doc.data, "step", doc, currentReport);
 }
 
-function validateOrganizerMemberCountAggregates(
+function validateOrganizerFollowerCountAggregates(
   organizers,
-  organizerMemberships,
+  organizerFollows,
   currentReport
 ) {
   const activeCounts = new Map();
-  for (const doc of organizerMemberships) {
+  for (const doc of organizerFollows) {
     const data = doc.data;
     if (data.status !== "active" || typeof data.organizerId !== "string") continue;
     activeCounts.set(data.organizerId, (activeCounts.get(data.organizerId) ?? 0) + 1);
@@ -812,11 +808,10 @@ function validateOrganizerMemberCountAggregates(
 
   for (const doc of organizers) {
     const expected = activeCounts.get(doc.id) ?? 0;
-    // memberCount is a legacy field: an organizer without one has nothing to drift.
-    if (doc.data.memberCount !== undefined && doc.data.memberCount !== expected) {
-      issue(currentReport, "error", doc.path, "member-count-drift",
-        `memberCount is ${doc.data.memberCount}, but active ` +
-        `organizerMemberships count is ${expected}.`);
+    if (doc.data.followerCount !== undefined && doc.data.followerCount !== expected) {
+      issue(currentReport, "error", doc.path, "follower-count-drift",
+        `followerCount is ${doc.data.followerCount}, but active ` +
+        `organizerFollows count is ${expected}.`);
     }
   }
 }
@@ -893,9 +888,9 @@ function publicDisplayName(user) {
   const firstName = user.firstName?.trim();
   if (firstName) return firstName;
 
-  const legacyName = user.name?.trim();
-  if (!legacyName) return "Runner";
-  return legacyName.split(/\s+/)[0];
+  const fullName = user.name?.trim();
+  if (!fullName) return "Runner";
+  return fullName.split(/\s+/)[0];
 }
 
 function publicAvatarUrl(user) {
@@ -920,8 +915,7 @@ function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}
     events: collections.events.filter((doc) => !unscheduled.has(doc.id)),
     participations: collections.eventParticipations.filter((doc) =>
       !unscheduled.has(doc.data.eventId)),
-    organizerScheduleLocks: collections.organizerScheduleLocks,
-    userEventScheduleLocks: collections.userEventScheduleLocks,
+    scheduleLocks: collections.scheduleLocks,
     checkLocks: checkScheduleLocks,
   });
   for (const found of issues) {

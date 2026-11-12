@@ -44,10 +44,12 @@ void main() {
         ],
       );
       final profile = base.copyWith(
-        profilePrompts: normalizeProfilePromptAnswers(
-          const [],
-          legacyBio: '  Long events and filter coffee.  ',
-        ),
+        profilePrompts: normalizeProfilePromptAnswers([
+          profilePromptAnswerFor(
+            definition: profilePromptDefinition(profilePromptPerfectEventId),
+            answer: '  Long events and filter coffee.  ',
+          ),
+        ]),
         profilePhotos: [
           base.profilePhotos[0],
           base.profilePhotos[1].copyWith(

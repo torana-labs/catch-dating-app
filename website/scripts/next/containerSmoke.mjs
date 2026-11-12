@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {explorePageCopy} from "../../src/content/explorePage.ts";
 import {homePageCopy} from "../../src/content/homePage.ts";
-import {hostLandingCopy} from "../../src/content/hostLanding.ts";
+import {hostLandingCopy, hostNightFormats} from "../../src/content/hostLanding.ts";
 import {inMarket as activeMarket} from "../../src/content/markets/in.ts";
 const base = process.argv[2];
 assert.match(base ?? "", /^http:\/\/127\.0\.0\.1:\d+$/u);
@@ -16,7 +16,10 @@ for (let attempt = 0; attempt < 30; attempt++) {
 assert.equal(response.status, 200, "Production-eligible container must render the authored Host page");
 const hostHtml = await response.text();
 assert.ok(hostHtml.includes(hostLandingCopy.hero.title), "Container must serve the redesigned Host page");
-assert.ok(hostHtml.includes(hostLandingCopy.night.chapters[0].body), "The night's chapters must survive packaging");
+// The night scene opens on the first format's evening; its authored moments
+// must survive packaging (the redesign replaced the night's chapters with them).
+assert.ok(hostHtml.includes(hostLandingCopy.night.title), "The night scene must survive packaging");
+assert.ok(hostHtml.includes(hostNightFormats[0].moments[0].title), "The night's moments must survive packaging");
 assert.equal((await get("/not-a-real-preview-route/")).status, 404);
 // Without credentials nothing public can be read. Home, Explore and the city
 // pages keep their own unavailable message, but answer an uncached 503 at once,

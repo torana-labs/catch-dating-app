@@ -86,13 +86,13 @@ import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart'
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
@@ -166,6 +166,10 @@ import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
+import 'package:catch_dating_app/hosts/events/events_controller.dart'
+    show HostEventsRequest, hostEventsControllerProvider;
+import 'package:catch_dating_app/hosts/events/events_screen.dart'
+    show HostEventsTabScreen;
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
@@ -292,6 +296,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../hosts/events/events_fixtures.dart' as events_fixtures;
 import '../../hosts/forms/forms_captures.dart';
 import '../../hosts/live/formats/formats_captures.dart';
 import '../../hosts/live/live_captures.dart';
@@ -1617,18 +1622,16 @@ void _ignoreFiltersRange(RangeValues _) {}
 
 void _ignoreFiltersGender(Gender _) {}
 
-OrganizerMembership _captureMembership({
+OrganizerFollow _captureMembership({
   required String organizerId,
   required String uid,
-  OrganizerMembershipRole role = OrganizerMembershipRole.member,
-}) => OrganizerMembership(
-  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+}) => OrganizerFollow(
+  id: organizerFollowId(organizerId: organizerId, uid: uid),
   organizerId: organizerId,
   uid: uid,
-  role: role,
-  status: OrganizerMembershipStatus.active,
+  status: OrganizerFollowStatus.active,
   pushNotificationsEnabled: true,
-  joinedAt: DateTime(2026, 1, 12),
+  followedAt: DateTime(2026, 1, 12),
 );
 
 final _dashboardJoinedOrganizer = _captureFixtures.captureOrganizer(
@@ -2324,9 +2327,9 @@ NetworkException _dashboardOfflineException({required String action}) {
 
 List<Object> _dashboardProviderOverrides({
   Stream<UserProfile?>? profileStream,
-  Stream<List<OrganizerMembership>>? membershipsStream,
+  Stream<List<OrganizerFollow>>? membershipsStream,
   Stream<List<Event>>? signedUpEventsStream,
-  List<OrganizerMembership>? memberships,
+  List<OrganizerFollow>? memberships,
   List<Event>? signedUpEvents,
   AsyncValue<List<Event>>? attendedEvents,
   AsyncValue<List<ActivityNotification>>? notifications,
@@ -2357,12 +2360,10 @@ List<Object> _dashboardProviderOverrides({
     watchUserProfileProvider.overrideWith(
       (ref) => profileStream ?? Stream.value(_captureViewer),
     ),
-    watchActiveOrganizerMembershipsForUserProvider(
-      _captureViewerUid,
-    ).overrideWith(
+    watchActiveOrganizerFollowsForUserProvider(_captureViewerUid).overrideWith(
       (ref) =>
           membershipsStream ??
-          Stream<List<OrganizerMembership>>.value(effectiveMemberships),
+          Stream<List<OrganizerFollow>>.value(effectiveMemberships),
     ),
     watchSignedUpEventsProvider(_captureViewerUid).overrideWith(
       (ref) =>
@@ -2631,7 +2632,7 @@ OrganizerDetailViewModel _organizerDetailViewModel({
 
 List<Object> _organizerDetailProviderOverrides({
   String? uid = _captureViewerUid,
-  OrganizerMembership? membership,
+  OrganizerFollow? membership,
   required AsyncValue<OrganizerDetailViewModel?> viewModel,
 }) {
   final effectiveUid = uid;
@@ -2641,7 +2642,7 @@ List<Object> _organizerDetailProviderOverrides({
       (ref) => Stream.value(effectiveUid == null ? null : _captureViewer),
     ),
     if (effectiveUid != null)
-      watchOrganizerMembershipProvider(
+      watchOrganizerFollowProvider(
         _organizerDetailOrganizer.id,
         effectiveUid,
       ).overrideWith((ref) => Stream.value(membership)),
@@ -3300,6 +3301,34 @@ Widget _hostTodayCapture() => _HostRoutedShellCapture(
   child: HostTodayScreen(
     initialOrganizerId: _hostTodayOrganizer.id,
     now: _hostTodayNow,
+  ),
+);
+
+// The Events tab the afternoon before Tuesday trivia: tonight and three more
+// coming nights, a draft, last Sunday's run and a wedding programme, through
+// the real Host shell with Events selected.
+final _hostEventsOrganizer = HostOperationsFixtures.primaryOrganizer;
+
+List<Object> _hostEventsCaptureOverrides() => [
+  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ..._hostOperationsProviderOverrides(
+    hostedOrganizers: [_hostEventsOrganizer],
+    ownedOrganizers: [_hostEventsOrganizer],
+  ),
+  hostEventsControllerProvider(
+    HostEventsRequest(
+      organizerId: _hostEventsOrganizer.id,
+      now: events_fixtures.eventsNow,
+    ),
+  ).overrideWithValue(events_fixtures.eventsReady()),
+];
+
+Widget _hostEventsCapture() => _HostRoutedShellCapture(
+  initialLocation: '/host/events',
+  activeIndex: 1,
+  child: HostEventsTabScreen(
+    initialOrganizerId: _hostEventsOrganizer.id,
+    now: events_fixtures.eventsNow,
   ),
 );
 
@@ -4546,7 +4575,7 @@ class _HostEditEventMutationCaptureState
 List<Object> _hostOrganizerDetailProviderOverrides({
   String? uid = HostOperationsFixtures.hostUid,
   Organizer? organizer,
-  OrganizerMembership? membership,
+  OrganizerFollow? membership,
   AsyncValue<OrganizerDetailViewModel?>? viewModel,
 }) {
   final effectiveOrganizer =
@@ -4557,10 +4586,10 @@ List<Object> _hostOrganizerDetailProviderOverrides({
       (ref) => Stream.value(uid == null ? null : HostOperationsFixtures.owner),
     ),
     if (uid != null)
-      watchOrganizerMembershipProvider(
+      watchOrganizerFollowProvider(
         effectiveOrganizer.id,
         uid,
-      ).overrideWith((ref) => Stream<OrganizerMembership?>.value(membership)),
+      ).overrideWith((ref) => Stream<OrganizerFollow?>.value(membership)),
     organizerDetailViewModelProvider(effectiveOrganizer.id).overrideWith(
       (ref) =>
           viewModel ??
@@ -9189,6 +9218,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_guests_desktop',
     routeIds: const <String>['hostProgramGuestsScreen'],
     device: CaptureDevice.auditDesktop,
+    marketingFixtureKeys: const <String>['weddingsPilot.planner.guestsDesktop'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerGuestsCapture(),
   ),
@@ -9210,6 +9240,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_rooms_desktop',
     routeIds: const <String>['hostProgramLodgingScreen'],
     device: CaptureDevice.auditDesktop,
+    marketingFixtureKeys: const <String>['weddingsPilot.planner.roomsDesktop'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerRoomsCapture(),
   ),
@@ -9238,6 +9269,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_message_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>['weddingsPilot.planner.message'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerMessageCapture(),
   ),
@@ -9245,6 +9277,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_live_board_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.claudePhone390,
+    providerOverrides: plannerCaptureOverrides(),
+    builder: (context) => plannerLiveBoardCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_programme_live_board_desktop',
+    routeIds: const <String>['hostProgramWorkspaceScreen'],
+    device: CaptureDevice.auditDesktop,
+    marketingFixtureKeys: const <String>['weddingsPilot.planner.liveBoard'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerLiveBoardCapture(),
   ),
@@ -9266,6 +9306,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_reconcile_desktop',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.auditDesktop,
+    marketingFixtureKeys: const <String>[
+      'weddingsPilot.planner.reconcileDesktop',
+    ],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerReconcileCapture(),
   ),
@@ -9287,6 +9330,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_programme_inbox_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>['weddingsPilot.planner.inbox'],
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerInboxListCapture(),
   ),
@@ -9357,6 +9401,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_staff_door_phone',
     routeIds: const <String>['hostWorkDoorScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>['weddingsPilot.staff.door'],
     providerOverrides: hostStaffCaptureOverrides(
       outbox: staffOfflineOutbox(),
       offline: true,
@@ -9381,6 +9426,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_staff_departures_phone',
     routeIds: const <String>['hostWorkHotelScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>['weddingsPilot.staff.departures'],
     providerOverrides: hostStaffCaptureOverrides(),
     builder: (context) => hostStaffDeparturesCapture(),
   ),
@@ -10382,7 +10428,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['dashboardScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _dashboardProviderOverrides(
-      membershipsStream: _captureErrorStream<List<OrganizerMembership>>(
+      membershipsStream: _captureErrorStream<List<OrganizerFollow>>(
         'Capture dashboard memberships failed',
       ),
     ),
@@ -10653,6 +10699,34 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostTodayCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_home_events_list',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_medium',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditMedium,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_tablet',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_events_desktop',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: _hostEventsCaptureOverrides(),
+    builder: (context) => _hostEventsCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_forms_phone',
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
@@ -10707,6 +10781,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_door_arriving',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.doorArriving',
+    ],
     providerOverrides: _doorCaptureOverrides(),
     builder: (context) => _doorCapture(),
   ),
@@ -10714,6 +10791,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_door_in',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.doorCheckedIn',
+    ],
     providerOverrides: _doorCaptureOverrides(),
     builder: (context) => _doorCapture(filter: DoorFilter.checkedIn),
   ),
@@ -10753,6 +10833,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_now_tablet',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLiveTablet,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.liveConsoleTablet',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
@@ -10764,6 +10847,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_needs_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveNeeds'],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
@@ -10786,6 +10870,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_scores_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveScores'],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
@@ -10808,6 +10893,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_courts_setup_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCourtsSetup',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10821,6 +10909,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_courts_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCourts',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10843,6 +10934,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_mix_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsMix'],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10854,6 +10946,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_crawl_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCrawl',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10865,6 +10960,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_crawl_move_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsCrawlMove',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10878,6 +10976,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_pods_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsPods'],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -10889,6 +10988,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_formats_rules_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: _hostLivePhone,
+    marketingFixtureKeys: const <String>[
+      'hostMarketingIndia.host.formatsRules',
+    ],
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
@@ -11791,7 +11893,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
         uid: _organizerDetailOrganizer.ownerOrPrimaryHostUserId ?? 'host-mira',
-        role: OrganizerMembershipRole.owner,
       ),
       viewModel: AsyncData(
         _organizerDetailViewModel(
@@ -15129,6 +15230,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_micro_pod_assignment',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.checkedIn'],
     providerOverrides: _eventSuccessCompanionProviderOverrides(),
     builder: (context) => _eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),

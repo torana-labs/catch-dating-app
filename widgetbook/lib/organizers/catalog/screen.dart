@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
@@ -211,14 +211,13 @@ OrganizerDetailViewModel _viewModel({
   );
 }
 
-OrganizerMembership _membership({bool pushNotificationsEnabled = false}) {
-  return OrganizerMembership(
+OrganizerFollow _membership({bool pushNotificationsEnabled = false}) {
+  return OrganizerFollow(
     id: '${widgetbookOrganizerOrganizer.id}_$widgetbookOrganizerViewerUid',
     organizerId: widgetbookOrganizerOrganizer.id,
     uid: widgetbookOrganizerViewerUid,
-    role: OrganizerMembershipRole.member,
-    status: OrganizerMembershipStatus.active,
+    status: OrganizerFollowStatus.active,
     pushNotificationsEnabled: pushNotificationsEnabled,
-    joinedAt: DateTime(2026, 1, 12),
+    followedAt: DateTime(2026, 1, 12),
   );
 }
