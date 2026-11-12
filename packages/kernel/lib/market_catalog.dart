@@ -71,6 +71,8 @@ const generatedCityOptions = [
     hostCreatable: true,
     eventCreatable: true,
     exploreVisible: true,
+    lifecycle: 'live',
+    websiteListed: true,
     aliases: ['mumbai', 'bombay'],
   ),
   CityOption(
@@ -90,6 +92,8 @@ const generatedCityOptions = [
     hostCreatable: true,
     eventCreatable: true,
     exploreVisible: true,
+    lifecycle: 'live',
+    websiteListed: true,
     aliases: ['indore'],
   ),
   CityOption(
@@ -104,6 +108,8 @@ const generatedCityOptions = [
     currencyCode: 'INR',
     dialCode: '+91',
     timeZone: 'Asia/Kolkata',
+    lifecycle: 'waitlist',
+    websiteListed: true,
     aliases: ['delhi', 'new-delhi', 'delhi-ncr', 'ncr'],
   ),
   CityOption(
@@ -118,6 +124,8 @@ const generatedCityOptions = [
     currencyCode: 'INR',
     dialCode: '+91',
     timeZone: 'Asia/Kolkata',
+    lifecycle: 'waitlist',
+    websiteListed: true,
     aliases: ['bengaluru', 'bangalore'],
   ),
   CityOption(
@@ -132,6 +140,8 @@ const generatedCityOptions = [
     currencyCode: 'INR',
     dialCode: '+91',
     timeZone: 'Asia/Kolkata',
+    lifecycle: 'waitlist',
+    websiteListed: true,
     aliases: ['hyderabad'],
   ),
   CityOption(
@@ -174,6 +184,8 @@ const generatedCityOptions = [
     currencyCode: 'INR',
     dialCode: '+91',
     timeZone: 'Asia/Kolkata',
+    lifecycle: 'waitlist',
+    websiteListed: true,
     aliases: ['pune'],
   ),
   CityOption(

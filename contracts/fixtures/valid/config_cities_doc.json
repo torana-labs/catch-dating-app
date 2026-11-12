@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "cityNames": ["in-mh-mumbai", "in-mp-indore"],
   "marketIds": ["in-mh-mumbai", "in-mp-indore", "in-dl-delhi-ncr"],
   "launchMarketIds": ["in-mh-mumbai", "in-mp-indore"],
@@ -20,7 +20,9 @@
       "profileSelectable": true,
       "hostCreatable": true,
       "eventCreatable": true,
-      "exploreVisible": true
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
     },
     {
       "name": "in-mp-indore",
@@ -38,7 +40,9 @@
       "profileSelectable": true,
       "hostCreatable": true,
       "eventCreatable": true,
-      "exploreVisible": true
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
     }
   ],
   "markets": [
@@ -62,7 +66,9 @@
       "profileSelectable": true,
       "hostCreatable": true,
       "eventCreatable": true,
-      "exploreVisible": true
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
     },
     {
       "marketId": "in-mp-indore",
@@ -84,7 +90,9 @@
       "profileSelectable": true,
       "hostCreatable": true,
       "eventCreatable": true,
-      "exploreVisible": true
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
     },
     {
       "marketId": "in-dl-delhi-ncr",
@@ -106,7 +114,22 @@
       "profileSelectable": false,
       "hostCreatable": false,
       "eventCreatable": false,
-      "exploreVisible": false
+      "exploreVisible": false,
+      "lifecycle": "waitlist",
+      "websiteListed": true
+    }
+  ],
+  "countries": [
+    {
+      "isoCode": "IN",
+      "name": "India",
+      "currencyCode": "INR",
+      "currencySymbol": "₹",
+      "dialCode": "+91",
+      "locale": "en-IN",
+      "timeZone": "Asia/Kolkata",
+      "appStoreCountryCodes": ["IN"],
+      "defaultMarketId": "in-mh-mumbai"
     }
   ]
 }

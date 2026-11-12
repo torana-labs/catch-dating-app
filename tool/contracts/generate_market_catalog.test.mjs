@@ -18,6 +18,9 @@ import {
   renderRules,
   schemaErrors,
 } from "./generate_market_catalog.mjs";
+import {configCitiesDocument} from "../lib/location_markets.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
+import * as schemaRegistry from "./generated/schema_contract_registry.mjs";
 
 const catalog = readMarketCatalog();
 const clone = () => structuredClone(catalog);
@@ -134,6 +137,38 @@ test("the allowlist only shrinks and rejects new hand-maintained lists", () => {
   assert.deepEqual(result.stale, [{file: "b.ts", count: 3}]);
   assert.match(
     compareHandLists({}, {"d.ts": {cities: 3, kind: "other"}}).errors[0],
-    /kind \(pending or fixture\)/
+    /kind \(pending, fixture or reference\)/
   );
+});
+
+test("config/cities validates against its Firestore contract", () => {
+  const requireFromFunctions = createFunctionsRequire();
+  const Ajv = requireFromFunctions("ajv");
+  const addFormats = requireFromFunctions("ajv-formats");
+  const ajv = new (Ajv.default ?? Ajv)({allErrors: true, strict: false});
+  (addFormats.default ?? addFormats)(ajv);
+  const validate = ajv.compile(schemaRegistry.configCitiesDocumentSchema);
+  const doc = configCitiesDocument();
+  assert.ok(validate(doc), JSON.stringify(validate.errors));
+  assert.equal(doc.version, 3);
+  assert.deepEqual(doc.countries.map((country) => country.isoCode),
+    ["IN", "NP", "AU", "US"]);
+  const pune = doc.markets.find((market) => market.marketId === "in-mh-pune");
+  assert.equal(pune.lifecycle, "waitlist");
+  assert.equal(pune.websiteListed, true);
+  assert.equal(pune.launchStatus, "planned");
+  for (const city of doc.cities) assert.equal(city.lifecycle, "live");
+});
+
+test("a reference allowlist entry needs a test that reads the catalog", () => {
+  const entry = (validatedBy) =>
+    ({"x.json": {cities: 3, kind: "reference", reason: "Selects cities by slug.", validatedBy}});
+  const errorsFor = (validatedBy) =>
+    compareHandLists({"x.json": 3}, entry(validatedBy)).errors.join("\n");
+  assert.match(errorsFor(undefined), /needs validatedBy/);
+  assert.match(errorsFor("operations/test/missing.test.mjs"), /does not exist/);
+  assert.match(errorsFor("tool/contracts/market_catalog_fixture_reader.test.mjs"),
+    /does not exist/);
+  assert.match(errorsFor("tool/run.test.mjs"), /does not read contracts\/catalogs\/markets.json/);
+  assert.equal(errorsFor("operations/test/supply-intake-market-catalog.test.mjs"), "");
 });

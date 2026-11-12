@@ -94,6 +94,13 @@ abstract final class CatchInsets {
     top: CatchSpacing.s5,
   );
 
+  /// Host Events: closes the Programmes section, whose cards carry no row
+  /// padding, with an event row's bottom inset, so the gap to the next section
+  /// matches the gap after a row.
+  static const EdgeInsets hostEventsProgrammesEnd = EdgeInsets.only(
+    bottom: CatchSpacing.s3,
+  );
+
   /// Leading route action aligned to the canonical screen gutter.
   static const EdgeInsets topBarLeadingAction = EdgeInsets.only(
     left: CatchSpacing.screenPx,

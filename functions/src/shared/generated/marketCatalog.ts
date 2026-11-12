@@ -4,7 +4,7 @@
 /* eslint-disable max-len */
 import type {CanonicalMarket} from "../../locations/marketConfig";
 
-export const marketCatalogConfigCitiesVersion = 2;
+export const marketCatalogConfigCitiesVersion = 3;
 
 export const canonicalMarketRecords: CanonicalMarket[] = [
   {
@@ -30,7 +30,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": true,
     "hostCreatable": true,
     "eventCreatable": true,
-    "exploreVisible": true
+    "exploreVisible": true,
+    "lifecycle": "live",
+    "websiteListed": true
   },
   {
     "marketId": "in-mp-indore",
@@ -54,7 +56,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": true,
     "hostCreatable": true,
     "eventCreatable": true,
-    "exploreVisible": true
+    "exploreVisible": true,
+    "lifecycle": "live",
+    "websiteListed": true
   },
   {
     "marketId": "in-dl-delhi-ncr",
@@ -81,7 +85,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "waitlist",
+    "websiteListed": true
   },
   {
     "marketId": "in-ka-bengaluru",
@@ -106,7 +112,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "waitlist",
+    "websiteListed": true
   },
   {
     "marketId": "in-tg-hyderabad",
@@ -130,7 +138,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "waitlist",
+    "websiteListed": true
   },
   {
     "marketId": "in-tn-chennai",
@@ -155,7 +165,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "in-wb-kolkata",
@@ -180,7 +192,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "in-mh-pune",
@@ -204,7 +218,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "waitlist",
+    "websiteListed": true
   },
   {
     "marketId": "in-gj-ahmedabad",
@@ -228,7 +244,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "in-ga-goa",
@@ -254,7 +272,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "np-p3-kathmandu",
@@ -278,7 +298,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "np-p4-pokhara",
@@ -302,7 +324,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "au-nsw-sydney",
@@ -326,7 +350,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "au-vic-melbourne",
@@ -350,7 +376,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "au-qld-brisbane",
@@ -374,7 +402,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "us-ny-new-york",
@@ -400,7 +430,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "us-ca-san-francisco",
@@ -425,7 +457,9 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   },
   {
     "marketId": "us-ca-los-angeles",
@@ -450,6 +484,8 @@ export const canonicalMarketRecords: CanonicalMarket[] = [
     "profileSelectable": false,
     "hostCreatable": false,
     "eventCreatable": false,
-    "exploreVisible": false
+    "exploreVisible": false,
+    "lifecycle": "hidden",
+    "websiteListed": false
   }
 ];

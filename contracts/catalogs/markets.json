@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "marketCatalog",
   "description": "The one source of truth for the countries and cities Catch serves. tool/contracts/generate_market_catalog.mjs generates every consumer copy from this file and fails CI when a copy drifts. Edit this file, then run that generator.",
-  "configCitiesVersion": 2,
+  "configCitiesVersion": 3,
   "defaultCountryIsoCode": "IN",
   "countries": [
     {
