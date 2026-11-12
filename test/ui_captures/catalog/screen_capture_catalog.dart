@@ -355,6 +355,27 @@ const _organizerHeroPortraitAssetImage = AssetImage(
 );
 const _profilePortraitAssetPath = 'assets/fixtures/profile_portrait.jpg';
 const _profilePortraitAssetImage = AssetImage(_profilePortraitAssetPath);
+
+/// Event scenes (a social run, a rooftop social, a long dinner table, a
+/// pickleball doubles game) for photos a host shares after an event.
+const _eventScenePhotoAssetPaths = [
+  'assets/fixtures/event_social_run.jpg',
+  'assets/fixtures/event_rooftop_social.jpg',
+  'assets/fixtures/event_dinner_table.jpg',
+  'assets/fixtures/event_pickleball.jpg',
+];
+const _eventScenePhotoAssetImages = [
+  AssetImage('assets/fixtures/event_social_run.jpg'),
+  AssetImage('assets/fixtures/event_rooftop_social.jpg'),
+  AssetImage('assets/fixtures/event_dinner_table.jpg'),
+  AssetImage('assets/fixtures/event_pickleball.jpg'),
+];
+const _eventScenePhotoSizes = [
+  (1200, 675),
+  (1200, 668),
+  (1200, 900),
+  (1200, 900),
+];
 final _organizerHeroPortraitBytes = File(
   _organizerHeroPortraitAssetPath,
 ).readAsBytesSync();
@@ -3854,17 +3875,13 @@ final _hostReportPhotoAlbum = EventHostPhotoAlbum(
   access: EventHostPhotoAccess.host,
   maxPhotos: 100,
   photos: [
-    for (final (index, path) in const [
-      _organizerHeroPortraitAssetPath,
-      _profilePortraitAssetPath,
-      _organizerHeroPortraitAssetPath,
-    ].indexed)
+    for (final (index, path) in _eventScenePhotoAssetPaths.take(3).indexed)
       EventHostPhoto(
         photoId: 'capture-host-photo-$index',
         thumbnailUrl: path,
         displayUrl: path,
-        width: 1200,
-        height: 1600,
+        width: _eventScenePhotoSizes[index].$1,
+        height: _eventScenePhotoSizes[index].$2,
         uploadedByUid: HostOperationsFixtures.hostUid,
         createdAt: _hostReportNow.subtract(Duration(minutes: index)),
       ),
@@ -11072,6 +11089,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_event_report_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.claudePhone390,
+    precache: _eventScenePhotoAssetImages,
     providerOverrides: _hostReportCaptureOverrides(),
     builder: (context) => _hostReportCapture(),
   ),
@@ -11079,10 +11097,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_event_report_photos_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.claudePhone390,
-    precache: const [
-      _organizerHeroPortraitAssetImage,
-      _profilePortraitAssetImage,
-    ],
+    precache: _eventScenePhotoAssetImages,
     providerOverrides: [
       ..._hostReportCaptureOverrides(),
       hostEventPhotosControllerProvider.overrideWith2(
