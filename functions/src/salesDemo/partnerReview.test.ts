@@ -609,8 +609,7 @@ test(
 
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import {readFileSync} from "node:fs";
-import {resolve} from "node:path";
+import {contractFile} from "../shared/contractFixtures";
 import {
   validateProposeSalesPartnerDemoWordingCallablePayload,
 } from "../shared/generated/validators/proposeSalesPartnerDemoWordingInput";
@@ -621,15 +620,9 @@ test(
     const f = transactionFixture(true);
     const ajv = new Ajv({strict: false});
     addFormats(ajv);
-    const schema = (path: string) =>
-      JSON.parse(
-        readFileSync(resolve(__dirname, "../../../contracts/" + path), "utf8"),
-      );
     const input = ajv.compile(
-      schema(
-        "callables/" +
-          "propose_sales_partner_demo_wording_payload.schema.json",
-      ),
+      contractFile(
+        "callables/propose_sales_partner_demo_wording_payload.schema.json"),
     );
     const good = {
       ...f.proposalInput,
@@ -655,7 +648,7 @@ test(
       .entries()
       .find(([p]) => p.startsWith("salesActionReceipts/"))![1];
     const receiptValidator = ajv.compile(
-      schema("firestore/sales_action_receipts.schema.json"),
+      contractFile("firestore/sales_action_receipts.schema.json"),
     );
     assert.equal(
       receiptValidator(receipt),
@@ -672,7 +665,7 @@ test(
       .entries()
       .find(([p]) => p.startsWith("salesDemoReceipts/"))![1];
     const demoReceiptValidator = ajv.compile(
-      schema("firestore/sales_demo_receipts.schema.json"),
+      contractFile("firestore/sales_demo_receipts.schema.json"),
     );
     assert.equal(
       demoReceiptValidator(demoReceipt),

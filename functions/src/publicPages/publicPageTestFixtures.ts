@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import {contractFile} from "../shared/contractFixtures";
 
 /** The shared public page parity corpus, with timestamps hydrated. */
 export type Row = Record<string, unknown>;
@@ -13,13 +12,6 @@ export interface ParityCase {
   catchEvents: FixtureDocument[];
   externalEvents: FixtureDocument[];
   reviews: FixtureDocument[];
-}
-
-const fixtures = path.resolve(__dirname, "..", "..", "..", "contracts",
-  "fixtures", "public_pages");
-
-export function readPublicPageFixture(name: string): unknown {
-  return JSON.parse(fs.readFileSync(path.join(fixtures, name), "utf8"));
 }
 
 /** Admin SDK timestamps keep _seconds and _nanoseconds and add toMillis. */
@@ -51,7 +43,8 @@ export interface ParityInputs {
 }
 
 export function parityInputs(): ParityInputs {
-  const inputs = readPublicPageFixture("parity_inputs.json") as ParityInputs;
+  const inputs = contractFile<ParityInputs>(
+    "fixtures/public_pages/parity_inputs.json");
   const cases = inputs.cases.map((parity) => ({
     ...parity,
     organizer: hydrateDocument(parity.organizer),
