@@ -97,7 +97,7 @@
     "contracts-generated-flutter": {
       "direct": {
         "pr": {"ciTargets": ["contracts", "flutter"]},
-        "merge_group": {"ciTargets": ["contracts", "flutter"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "contracts", "flutter"]},
         "main": {"ciTargets": ["contracts", "flutter"]},
         "nightly": {"ciTargets": ["contracts", "flutter"]}
       },
@@ -296,7 +296,7 @@
     "generated-flutter-contract": {
       "direct": {
         "pr": {"ciTargets": ["flutter"]},
-        "merge_group": {"ciTargets": ["flutter"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter"]},
         "main": {"ciTargets": ["flutter"]},
         "nightly": {"ciTargets": ["flutter"]}
       },
@@ -416,7 +416,7 @@
     "app-shared": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "visual_integration"]},
-        "merge_group": {"ciTargets": ["flutter", "visual_integration"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "visual_integration"]},
         "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
         "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
@@ -425,7 +425,7 @@
     "app-l10n-source": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
-        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
         "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
         "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
@@ -443,7 +443,7 @@
     "app-host": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
-        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
         "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["host-android", "host-ios"]},
         "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
@@ -456,7 +456,7 @@
     "app-consumer": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
-        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
         "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-android", "consumer-ios"]},
         "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
@@ -496,7 +496,7 @@
     "flutter-tests": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "visual_integration"]},
-        "merge_group": {"ciTargets": ["flutter", "visual_integration"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "visual_integration"]},
         "main": {"ciTargets": ["flutter", "visual_integration"]},
         "nightly": {"ciTargets": ["flutter", "visual_integration"]}
       },
@@ -604,7 +604,7 @@
     "app-dependencies": {
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
         "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
         "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
@@ -988,7 +988,7 @@
     }
   ],
   "components": [
-    {"id": "marketing.capture-freshness", "owner": "marketing_website", "risk": "standard", "operationProfile": "capture-freshness", "pathType": "consumer", "dependsOn": ["web.marketing"], "alsoAffects": [], "description": "Exact-source native capture production, input provenance, image bytes, website copies and design metadata for website and capture-tool changes. App changes do not select it: the marketing release produces and checks captures itself before it publishes. Consumers import the immutable bundle before validation."},
+    {"id": "marketing.capture-freshness", "owner": "marketing_website", "risk": "standard", "operationProfile": "capture-freshness", "pathType": "consumer", "dependsOn": ["web.marketing"], "alsoAffects": [], "description": "Exact-source native capture production, input provenance, image bytes, website copies and design metadata for website and capture-tool changes. App render inputs select it in the merge queue only (the app profiles' merge_group operations), so main reuses the queue's captures; without a queue run the marketing release produces and checks captures itself before it publishes. Consumers import the immutable bundle before validation."},
     {"id": "ci.workflow.capture", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-capture", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated capture freshness workflow validates provenance and policy without release authority."},
     {"id": "design.todo-decisions", "owner": "design_system", "risk": "standard", "operationProfile": "design-todo-decisions", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Authored design-priority decisions retain scoped integrity checks; migration counts are derived at consumption."},
     {"id": "ci.workflow.app-builds", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-app-builds", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "App build orchestration validates both app roles on every platform plus toolchain and policy checks, without backend or mobile release authority."},

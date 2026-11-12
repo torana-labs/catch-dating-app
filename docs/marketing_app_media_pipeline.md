@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.16.0
-updated: 2026-11-11
+version: 1.16.1
+updated: 2026-11-12
 owner: marketing_website
 status: active
 ---
@@ -156,11 +156,16 @@ Capture provenance is checked where images get published, not on app pull
 requests. App source changes all the time, so the images tracked in Git are
 expected to be behind it and `--check` fails on them. Tool CI checks the
 authored manifest, the catalog mapping and the design context, which need no
-images. App changes select no capture job in CI: the `captures` job in
-`marketing-website.yml` produces them for that commit before anything is
-published. Website, capture-tool and capture-image changes, and full runs such
-as nightly, still select the producer in CI, because the website build imports
-its images and the preview release reads that binding.
+images. App changes select no capture job on a pull request. In the merge
+queue, app render inputs (the app components' Dart sources, tests, assets,
+tokens, generated l10n and Flutter contracts, and package manifests) select
+the producer (owner decision, 12 Nov 2026), so main finds the queue's
+same-commit capture binding and renders nothing. Without a queue run for a
+commit, the `captures` job in `marketing-website.yml` produces them for that
+commit before anything is published, as before. Website, capture-tool and
+capture-image changes, and full runs such as nightly, still select the
+producer in CI, because the website build imports its images and the preview
+release reads that binding.
 
 `node tool/marketing/export_app_screenshots.mjs --check` and
 `node tool/marketing/sync_website_media.mjs --check` run in the producer, after
