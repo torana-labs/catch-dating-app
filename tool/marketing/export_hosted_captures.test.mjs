@@ -6,6 +6,7 @@ import {spawnSync} from "node:child_process";
 import test from "node:test";
 import vm from "node:vm";
 import crypto from "node:crypto";
+import {deflateRawSync, inflateRawSync} from "node:zlib";
 import {pathToFileURL} from "node:url";
 import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
@@ -893,11 +894,14 @@ sys.stdout.buffer.write(output.getvalue())`, directory], {maxBuffer: 64 * 1024 *
 const producerWorkflowIds = {"ci.yml": 7, "marketing-website.yml": 8, "marketing-captures.yml": 9};
 
 // A fake GitHub holding one producer run whose bundle rendered this source.
-function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = []} = {}) {
+function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = [], tamper = {}} = {}) {
   const f = fixture(t);
   exportHostedCaptures(f.options);
   for (const id of omit) {
     fs.rmSync(path.join(f.options.outputDir, f.manifest.captures.find(c => c.id === id).sourcePath));
+  }
+  for (const [id, edit] of Object.entries(tamper)) {
+    editProvenance(path.join(f.options.outputDir, f.manifest.captures.find(c => c.id === id).sourcePath), edit);
   }
   const zip = packBundle(f.options.outputDir);
   f.git("checkout", "--", ".");
@@ -1161,4 +1165,42 @@ function writeCaptureCatalog(write, entries) {
 final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
 ${entries.map(entry => `  '${entry.id}': () => ${variable(entry.id)},\n`).join("")}};\n`);
   write("test/ui_captures/catalog/screen_capture_entry.dart", "class ScreenCaptureEntry {}\n");
+}
+
+// Rewrites a PNG's caPt provenance record, keeping the PNG structurally valid.
+function editProvenance(file, edit) {
+  const bytes = fs.readFileSync(file);
+  const out = [bytes.subarray(0, 8)];
+  for (let offset = 8; offset < bytes.length;) {
+    const length = bytes.readUInt32BE(offset);
+    const type = bytes.toString("ascii", offset + 4, offset + 8);
+    const end = offset + length + 12;
+    if (type === "caPt") {
+      const data = Buffer.from(JSON.stringify(edit(JSON.parse(bytes.toString("utf8", offset + 8, end - 4)))));
+      const payload = Buffer.concat([Buffer.from(type), data]);
+      let crc = 0xffffffff;
+      for (const byte of payload) { crc ^= byte; for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); }
+      const head = Buffer.alloc(4); head.writeUInt32BE(data.length);
+      const tail = Buffer.alloc(4); tail.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
+      out.push(head, payload, tail);
+    } else out.push(bytes.subarray(offset, end));
+    offset = end;
+  }
+  fs.writeFileSync(file, Buffer.concat(out));
+}
+
+for (const [label, edit] of [
+  ["claims a fingerprint its recorded list does not produce", record => ({...record,
+    inputFiles: deflateRawSync(Buffer.from(inflateRawSync(Buffer.from(record.inputFiles, "base64")).toString("utf8")
+      .split("\n").filter(file => file !== "lib/leaf.dart").join("\n"))).toString("base64")})],
+  ["claims a fingerprint the current files do not produce", record => ({...record, inputSha256: "0".repeat(64)})],
+]) {
+  test(`a bundle PNG that ${label} is recomputed by the consumer and never seeds`, async t => {
+    const forged = "host-today";
+    const h = seedHarness(t, {}, {}, {tamper: {[forged]: edit}});
+    const plan = await h.plan();
+    assert.deepEqual(plan.renderIds, [forged]);
+    assert.ok(!plan.seedIds.includes(forged));
+    assert.equal(plan.seedIds.length, h.manifest.captures.length - 1);
+  });
 }
