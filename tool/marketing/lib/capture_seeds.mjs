@@ -3,33 +3,44 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
-import {isMainCiSource} from "../../ci/wait_main_marketing_validation.mjs";
 import {canonicalInventory, readProvenance} from "../export_hosted_captures.mjs";
 import {readCaptureArchive} from "../import_hosted_captures.mjs";
 
 // Plans a canonical capture run on Linux, before any macOS runner starts.
-// Earlier CI bundles from main often already hold a render of these exact
-// inputs; those PNGs become seeds, and only what is still stale goes to the
-// macOS renderer. Nothing here is trusted downstream: the render and reuse
-// jobs re-verify every seed exactly as they verify a committed PNG.
+// Earlier capture bundles (from this repository's PR, merge-queue, main,
+// nightly and manual runs) often already hold a render of these exact inputs;
+// those PNGs become seeds, and only what is still stale goes to the macOS
+// renderer. A PNG is reused when its recorded input fingerprint and font
+// match the source exactly, whichever commit rendered it (owner decision,
+// 12 Nov 2026: the fingerprint replaces the commit-ancestry rule, so a
+// squash-merged PR render still counts). Nothing here is trusted downstream:
+// the render and reuse jobs re-verify every seed as they verify a committed PNG.
 
 const manifestPath = "tool/marketing/capture_manifest.json";
-export const SEED_LOOKBACK = 5;
+export const SEED_LOOKBACK = 20;
+// Workflows whose runs upload canonical-marketing bundles: CI's capture lane,
+// the Marketing Website release and the capture workflow's own dispatch and
+// label runs (a reusable workflow's artifacts belong to its caller's run).
+export const PRODUCER_WORKFLOWS = Object.freeze(["ci.yml", "marketing-website.yml", "marketing-captures.yml"]);
 const digest = bytes => `sha256:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
 
-/** CI on main's code: its push, nightly and dispatched runs, and merge queue runs. */
-export function trustedSeedRun(run) {
-  return isMainCiSource(run);
+/**
+ * A producer run of this repository whose code also came from it. Fork pull
+ * requests are refused; same-repository pull requests, merge-queue, main,
+ * nightly and manual runs are accepted.
+ */
+export function trustedSeedRun(run, {repositoryId, workflowIds}) {
+  const file = run?.path?.split("@")[0]?.replace(/^\.github\/workflows\//u, "");
+  return PRODUCER_WORKFLOWS.includes(file) && workflowIds.get(file) === run.workflow_id &&
+    run.repository?.id === repositoryId && run.head_repository?.id === repositoryId &&
+    /^[0-9a-f]{40}$/u.test(run.head_sha ?? "") && Number.isSafeInteger(run.id) && Number.isSafeInteger(run.run_attempt);
 }
 
-/** This repository's recent main-line CI runs, newest first. */
-export function seedRuns({runs, repositoryId, canonicalId}) {
-  assert.ok(Array.isArray(runs), "Missing CI run listing.");
-  return runs.filter(run => trustedSeedRun(run) && run.workflow_id === canonicalId &&
-    run.path?.split("@")[0] === ".github/workflows/ci.yml" && run.repository?.id === repositoryId &&
-    run.head_repository?.id === repositoryId && /^[0-9a-f]{40}$/u.test(run.head_sha ?? "") &&
-    Number.isSafeInteger(run.id) && Number.isSafeInteger(run.run_attempt))
-    .sort((left, right) => Date.parse(right.created_at) - Date.parse(left.created_at));
+/** This repository's recent producer runs, newest first. */
+export function seedRuns({runs, repositoryId, workflowIds}) {
+  assert.ok(Array.isArray(runs), "Missing producer run listing.");
+  const unique = new Map(runs.filter(run => trustedSeedRun(run, {repositoryId, workflowIds})).map(run => [run.id, run]));
+  return [...unique.values()].sort((left, right) => Date.parse(right.created_at) - Date.parse(left.created_at));
 }
 
 /** The one capture bundle a run uploaded, by its exact name. */
@@ -51,31 +62,11 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   assert.equal(git("rev-parse", "HEAD"), sourceSha, "Planner source differs from the requested source.");
   const captures = canonicalInventory(JSON.parse(fs.readFileSync(path.join(root, manifestPath), "utf8")));
-  const ancestors = new Map();
-  const verifiedAncestor = revision => {
-    if (!/^[0-9a-f]{40}$/u.test(revision ?? "")) return false;
-    if (!ancestors.has(revision)) {
-      ancestors.set(revision, run("git", ["merge-base", "--is-ancestor", revision, sourceSha]).status === 0);
-    }
-    return ancestors.get(revision);
-  };
   // The source's own exporter judges every candidate, with the source's hashing.
   const stale = () => {
     const result = run(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"]);
     assert.equal(result.status, 0, result.stderr || "Capture planning failed.");
-    const remaining = new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
-    // Current input hashes alone do not prove that a committed PNG may be
-    // reused: its original PR render commit can disappear after a squash.
-    // Search trusted ancestor seeds or render afresh, rather than selecting
-    // a reuse job that the unchanged ancestry validator must later reject.
-    for (const capture of captures) {
-      if (remaining.has(capture.id)) continue;
-      try {
-        const provenance = readProvenance(fs.readFileSync(path.join(root, capture.sourcePath)));
-        if (!verifiedAncestor(provenance.sourceRevision)) remaining.add(capture.id);
-      } catch { remaining.add(capture.id); }
-    }
-    return remaining;
+    return new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
   };
   const seeds = new Map();
   const sources = [];
@@ -83,11 +74,14 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   // Linux reuse cannot see.
   if (eventName !== "schedule") {
     const repositoryId = (await request(`repos/${repository}`)).id;
-    const canonical = await request(`repos/${repository}/actions/workflows/ci.yml`);
-    const runs = `repos/${repository}/actions/workflows/${canonical.id}/runs`;
-    const candidates = seedRuns({repositoryId, canonicalId: canonical.id, runs: [
-      ...(await request(`${runs}?branch=main&per_page=20`)).workflow_runs,
-      ...(await request(`${runs}?event=merge_group&per_page=20`)).workflow_runs]});
+    const workflowIds = new Map();
+    const listed = [];
+    for (const file of PRODUCER_WORKFLOWS) {
+      const workflow = await request(`repos/${repository}/actions/workflows/${file}`);
+      workflowIds.set(file, workflow.id);
+      listed.push(...(await request(`repos/${repository}/actions/workflows/${workflow.id}/runs?per_page=${SEED_LOOKBACK}`)).workflow_runs);
+    }
+    const candidates = seedRuns({repositoryId, workflowIds, runs: listed});
     let font = null;
     let consulted = 0;
     let remaining = stale();
@@ -108,7 +102,6 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
         let provenance;
         try { provenance = readProvenance(png); } catch { continue; }
         if (font && provenance.nativeFontSha256 !== font) continue;
-        if (!verifiedAncestor(provenance.sourceRevision)) continue;
         fs.writeFileSync(path.join(root, capture.sourcePath), png);
         tried.push({capture, png, provenance});
       }

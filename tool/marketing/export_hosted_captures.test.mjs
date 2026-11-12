@@ -318,11 +318,14 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.doesNotMatch(plan, /export_hosted_captures\.mjs( --reuse)?\n|canonical-marketing-\$|setup-flutter/u);
   assert.match(source, /ref: \$\{\{ env.CAPTURE_WORKFLOW_SHA \}\}/u);
   assert.match(source, /ref: \$\{\{ env.CAPTURE_SOURCE_SHA \}\}/u);
-  assert.match(source, /path: capture-source\n[^]*?fetch-depth: 0\n/u);
+  // Reuse is decided by input fingerprints, so the source needs no history.
+  assert.doesNotMatch(source, /fetch-depth: 0/u);
   assert.ok(steps.findIndex(s => s.name === "Validate capture request and controller identity") <
     steps.findIndex(s => s.name === "Checkout exact capture source separately"));
   assert.match(source, /if-no-files-found: error/u);
-  assert.match(source, /retention-days: 7/u);
+  // Both producers keep their bundle for 30 days, so later plans can reuse it.
+  const bundles = [...source.matchAll(/name: canonical-marketing-[^\n]*\n\s+path:[^\n]*\n\s+if-no-files-found: error\n(?:\s+#[^\n]*\n)?\s+retention-days: (\d+)/gu)];
+  assert.deepEqual(bundles.map(match => match[1]), ["30", "30"]);
   assert.ok(source.includes("--enforce-lockfile"));
   assert.ok(source.includes("artifact-digest"));
   assert.doesNotMatch(source, /secrets\.|id-token|pull_request_target|git push|update-goldens|firebase deploy/u);
@@ -597,18 +600,20 @@ test("one corrupted capture rerenders alone while the other eleven retain origin
   assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 2);
 });
 
-test("valid image bytes from an unrelated render revision cannot be reused", t => {
+test("valid image bytes from an unrelated render revision are reused by fingerprint", t => {
   const f = fixture(t);
-  exportHostedCaptures(f.options);
+  const rendered = exportHostedCaptures(f.options);
   preserveAndAdvance(f, "Preserve rendered captures");
   const unrelated = f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
     "commit-tree", f.git("rev-parse", "HEAD^{tree}"), "-m", "Unrelated history with identical files");
   f.git("reset", "--hard", unrelated);
   f.options.sourceSha = unrelated;
   const calls = fs.readFileSync(f.calls, "utf8");
-  assert.throws(() => exportHostedCaptures(f.options), /merge-base --is-ancestor/);
-  assert.equal(fs.readFileSync(f.calls, "utf8"), calls);
-  assert.ok(!fs.existsSync(f.options.outputDir));
+  const result = exportHostedCaptures(f.options);
+  assert.ok(result.captures.every(c => c.disposition === "reused"));
+  // Reused PNGs keep the revision that rendered them; they are never restamped.
+  assert.ok(result.captures.every(c => c.provenance.sourceRevision === rendered.sourceSha));
+  assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "reuse renders nothing");
 });
 
 test("changed transitive inputs and changed native font invalidate reuse", t => {
@@ -881,7 +886,9 @@ sys.stdout.buffer.write(output.getvalue())`, directory], {maxBuffer: 64 * 1024 *
   return packed.stdout;
 }
 
-// A fake GitHub holding one main-line CI run whose bundle rendered this source.
+const producerWorkflowIds = {"ci.yml": 7, "marketing-website.yml": 8, "marketing-captures.yml": 9};
+
+// A fake GitHub holding one producer run whose bundle rendered this source.
 function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = []} = {}) {
   const f = fixture(t);
   exportHostedCaptures(f.options);
@@ -899,8 +906,10 @@ function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = []} =
   const request = async (endpoint, options = {}) => {
     endpoints.push(endpoint);
     if (endpoint === "repos/owner/repo") return {id: 1};
-    if (endpoint.endsWith("/workflows/ci.yml")) return {id: 7};
-    if (endpoint.includes("/workflows/7/runs?")) return {workflow_runs: endpoint.includes("event=merge_group") ? [run] : []};
+    for (const [file, id] of Object.entries(producerWorkflowIds)) {
+      if (endpoint.endsWith(`/workflows/${file}`)) return {id};
+      if (endpoint.includes(`/workflows/${id}/runs?`)) return {workflow_runs: run.workflow_id === id ? [run] : []};
+    }
     if (endpoint.endsWith(`/runs/${run.id}/artifacts?per_page=100`)) return {artifacts: [artifact]};
     if (endpoint.endsWith(`/artifacts/${artifact.id}/zip`)) { assert.equal(options.binary, true); return zip; }
     throw new Error(`Unexpected endpoint ${endpoint}`);
@@ -918,15 +927,17 @@ test("a change that leaves capture inputs alone is planned entirely from an earl
   assert.deepEqual(plan.seedSources.map(s => s.event), ["merge_group"]);
 });
 
-test("planner rerenders committed captures when their original revision is missing or unrelated", async t => {
+test("committed captures whose render commit is missing or unrelated reuse by fingerprint", async t => {
   const f = fixture(t);
   const rendered = exportHostedCaptures(f.options);
   preserveAndAdvance(f, "Preserve current-input captures");
   const calls = fs.readFileSync(f.calls, "utf8");
   const request = async endpoint => {
     if (endpoint === "repos/owner/repo") return {id: 1};
-    if (endpoint.endsWith("/workflows/ci.yml")) return {id: 7};
-    if (endpoint.includes("/workflows/7/runs?")) return {workflow_runs: []};
+    for (const [file, id] of Object.entries(producerWorkflowIds)) {
+      if (endpoint.endsWith(`/workflows/${file}`)) return {id};
+      if (endpoint.includes(`/workflows/${id}/runs?`)) return {workflow_runs: []};
+    }
     throw new Error(`Unexpected endpoint ${endpoint}`);
   };
   const plan = (sourceDir, sourceSha) => planHostedCaptures({sourceDir, sourceSha,
@@ -952,19 +963,20 @@ test("planner rerenders committed captures when their original revision is missi
   assert.equal(inputs.status, 0, inputs.stderr);
   assert.ok(JSON.parse(inputs.stdout).every(capture => !capture.render), "all render inputs remain current");
   assert.notEqual(spawnSync("git", ["cat-file", "-e", `${rendered.sourceSha}^{commit}`], {cwd: fresh}).status, 0);
+  // Owner decision (12 Nov 2026): an exact input fingerprint replaces the
+  // ancestry rule, so a squash-merged PR render is reused, not re-rendered.
   for (const state of ["missing", "unrelated"]) {
     if (state === "unrelated") git("fetch", "--no-tags", f.root, rendered.sourceSha);
     const result = await plan(fresh, sha);
-    assert.equal(result.render, true, state);
-    assert.deepEqual(result.renderIds.sort(), f.manifest.captures.map(capture => capture.id).sort(), state);
-    assert.deepEqual(result.seedIds, []);
+    assert.equal(result.render, false, state);
+    assert.deepEqual(result.renderIds, [], state);
   }
   assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "planning never renders or reframes");
 });
 
 for (const [label, runOverrides, artifactOverrides] of [
-  ["a pull request run", {event: "pull_request", head_branch: "feature"}, {}],
-  ["another repository's run", {head_repository: {id: 2}}, {}],
+  ["a fork pull request run", {event: "pull_request", head_branch: "feature", head_repository: {id: 2}}, {}],
+  ["another repository's run", {repository: {id: 2}}, {}],
   ["another workflow", {path: ".github/workflows/other.yml"}, {}],
   ["a bundle whose bytes differ from its digest", {}, {digest: `sha256:${"0".repeat(64)}`}],
   ["an expired bundle", {}, {expired: true}],
@@ -978,6 +990,24 @@ for (const [label, runOverrides, artifactOverrides] of [
     assert.equal(h.git("status", "--porcelain"), "", "rejected candidates leave the source untouched");
   });
 }
+
+for (const [label, runOverrides] of [
+  ["a same-repository pull request render", {event: "pull_request", head_branch: "feature"}],
+  ["a Marketing Website release render", {event: "push", head_branch: "main", workflow_id: 8, path: ".github/workflows/marketing-website.yml"}],
+  ["a labelled capture run", {event: "pull_request", head_branch: "feature", workflow_id: 9, path: ".github/workflows/marketing-captures.yml"}],
+]) {
+  test(`${label} seeds captures whose fingerprints match`, async t => {
+    const h = seedHarness(t, runOverrides);
+    const plan = await h.plan();
+    assert.deepEqual([plan.render, plan.renderIds], [false, []]);
+    assert.deepEqual(plan.seedIds.sort(), h.manifest.captures.map(c => c.id).sort());
+  });
+}
+
+test("a run whose workflow id does not match its path never seeds a capture", async t => {
+  const h = seedHarness(t, {workflow_id: 8});
+  assert.deepEqual((await h.plan()).seedIds, []);
+});
 
 test("a capture the earlier bundle lacks, such as a new manifest slot, renders alone", async t => {
   const added = "host-today";
