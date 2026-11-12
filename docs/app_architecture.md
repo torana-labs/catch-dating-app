@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.104.0
-updated: 2026-11-03
+version: 1.104.1
+updated: 2026-11-12
 owner: app_architecture
 status: active
 ---
@@ -3190,7 +3190,7 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
   Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition, Root,
-  Stack, AppShell, Screen, Identity.
+  Stack, AppShell, Screen, Identity, Marker, Meter, Calendar.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
