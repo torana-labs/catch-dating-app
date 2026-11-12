@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +61,10 @@ class _EventHostPhotoViewerScreenState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final photos = widget.photos;
+    // Media sit on night, as platform photo viewers do; the close button
+    // and the count read on it.
     return CatchRoot(
+      theme: CatchThemeMode.night,
       child: CatchScreen(
         key: const ValueKey<String>('after-event-photo-viewer'),
         bodyScrolls: false,

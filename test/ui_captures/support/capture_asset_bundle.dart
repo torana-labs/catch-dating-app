@@ -15,6 +15,10 @@ class CaptureAssetBundle extends CachingAssetBundle {
   static const _fixtureKeys = {
     'assets/fixtures/club_hero_portrait.jpg',
     'assets/fixtures/profile_portrait.jpg',
+    'assets/fixtures/event_social_run.jpg',
+    'assets/fixtures/event_rooftop_social.jpg',
+    'assets/fixtures/event_dinner_table.jpg',
+    'assets/fixtures/event_pickleball.jpg',
   };
 
   @override

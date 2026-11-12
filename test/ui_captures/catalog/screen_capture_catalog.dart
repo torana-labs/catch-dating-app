@@ -352,6 +352,27 @@ const _organizerHeroPortraitAssetImage = AssetImage(
 );
 const _profilePortraitAssetPath = 'assets/fixtures/profile_portrait.jpg';
 const _profilePortraitAssetImage = AssetImage(_profilePortraitAssetPath);
+
+/// Event scenes (a social run, a rooftop social, a long dinner table, a
+/// pickleball doubles game) for photos a host shares after an event.
+const _eventScenePhotoAssetPaths = [
+  'assets/fixtures/event_social_run.jpg',
+  'assets/fixtures/event_rooftop_social.jpg',
+  'assets/fixtures/event_dinner_table.jpg',
+  'assets/fixtures/event_pickleball.jpg',
+];
+const _eventScenePhotoAssetImages = [
+  AssetImage('assets/fixtures/event_social_run.jpg'),
+  AssetImage('assets/fixtures/event_rooftop_social.jpg'),
+  AssetImage('assets/fixtures/event_dinner_table.jpg'),
+  AssetImage('assets/fixtures/event_pickleball.jpg'),
+];
+const _eventScenePhotoSizes = [
+  (1200, 675),
+  (1200, 668),
+  (1200, 900),
+  (1200, 900),
+];
 final _organizerHeroPortraitBytes = File(
   _organizerHeroPortraitAssetPath,
 ).readAsBytesSync();
@@ -7997,20 +8018,15 @@ EventHostPhotoAlbum _eventRecapHostPhotoAlbum(
   urlsExpireAt: DateTime(2030),
 );
 
-/// Four photos from the capture fixture portraits.
+/// Four event scenes the host shared after the run.
 final _eventRecapHostPhotos = <EventHostPhoto>[
-  for (final (index, path) in const [
-    _organizerHeroPortraitAssetPath,
-    _profilePortraitAssetPath,
-    _organizerHeroPortraitAssetPath,
-    _profilePortraitAssetPath,
-  ].indexed)
+  for (final (index, path) in _eventScenePhotoAssetPaths.indexed)
     EventHostPhoto(
       photoId: 'capture-guest-photo-$index',
       thumbnailUrl: path,
       displayUrl: path,
-      width: 1200,
-      height: 1600,
+      width: _eventScenePhotoSizes[index].$1,
+      height: _eventScenePhotoSizes[index].$2,
       uploadedByUid: 'capture-host',
       createdAt: DateTime(2026, 5, 30, 8, index),
     ),
@@ -14469,10 +14485,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_recap_host_photos',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
-    precache: const [
-      _organizerHeroPortraitAssetImage,
-      _profilePortraitAssetImage,
-    ],
+    precache: _eventScenePhotoAssetImages,
     providerOverrides: _eventRecapProviderOverrides(
       hostPhotos: _eventRecapHostPhotos,
     ),
@@ -14490,10 +14503,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_recap_host_photo_viewer',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
-    precache: const [
-      _organizerHeroPortraitAssetImage,
-      _profilePortraitAssetImage,
-    ],
+    precache: _eventScenePhotoAssetImages,
     builder: (context) => EventHostPhotoViewerScreen(
       photos: _eventRecapHostPhotos,
       initialIndex: 1,
