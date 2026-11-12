@@ -860,6 +860,9 @@ export {
   listEventHostPhotos,
 } from "./events/eventHostPhotos";
 export {
+  cleanUpStagedHostPhotosDaily,
+} from "./events/eventHostPhotoStagingCleanup";
+export {
   getProgramAssistantSettings,
   getProgramWhatsappThread,
   listProgramWhatsappCannedReplies,
