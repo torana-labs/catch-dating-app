@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/admin_people_index.schema.json",
+  "title": "AdminPeopleIndexDocument",
+  "description": "Admin people-search entry for one account: search tokens, masked phone, city. Dates are ISO strings.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adminPeopleIndex",
+  "x-firestore-path": "adminPeopleIndex/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "Admin people search index trigger",
+  "required": [
+    "schemaVersion",
+    "uid",
+    "name",
+    "phoneMasked",
+    "city",
+    "deleted",
+    "tokens",
+    "updatedAt"
+  ],
+  "properties": {
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "deleted": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "phoneMasked": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "schemaVersion": {
+      "const": 1,
+      "type": "number",
+      "x-catch-ownership": "server-only"
+    },
+    "tokens": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

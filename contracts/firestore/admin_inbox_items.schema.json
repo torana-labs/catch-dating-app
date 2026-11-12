@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/admin_inbox_items.schema.json",
+  "title": "AdminInboxItemDocument",
+  "description": "One Admin inbox item: a nomination, claim, listing or other source waiting on staff. Dates are ISO strings.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adminInboxItems",
+  "x-firestore-path": "adminInboxItems/{itemId}",
+  "x-document-id-field": "id",
+  "x-owner": "Admin inbox projection and its callables",
+  "required": [
+    "schemaVersion",
+    "itemId",
+    "type",
+    "sourceKind",
+    "sourceId",
+    "sourcePath",
+    "title",
+    "subtitle",
+    "cameFrom",
+    "nominatorUid",
+    "city",
+    "state",
+    "status",
+    "waitingSince",
+    "updatedAt",
+    "doneAt",
+    "assigneeUid",
+    "snoozedUntil",
+    "recommendation"
+  ],
+  "properties": {
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "cameFrom": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "dismissal": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "description": "A person's decision to close an item whose source would keep it open.",
+          "properties": {
+            "at": {
+              "type": "string"
+            },
+            "byUid": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "stateBefore": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "tone": {
+                  "enum": [
+                    "neutral",
+                    "info",
+                    "success",
+                    "warning",
+                    "danger"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "label",
+                "tone"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "byUid",
+            "at",
+            "note",
+            "stateBefore"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "doneAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "itemId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "listingEvent": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "description": "Where a listing's imported event is reviewed and published from.",
+          "properties": {
+            "eventWorkItemId": {
+              "type": "string"
+            },
+            "intakeRequestId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "intakeRequestId",
+            "eventWorkItemId"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "nominatorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "recommendation": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "type": "string"
+            },
+            "byUid": {
+              "type": "string"
+            },
+            "decision": {
+              "enum": [
+                "approve",
+                "reject"
+              ],
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "decision",
+            "byUid",
+            "at",
+            "note"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "schemaVersion": {
+      "const": 1,
+      "type": "number",
+      "x-catch-ownership": "server-only"
+    },
+    "snoozedUntil": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceKind": {
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent"
+      ],
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "sourcePath": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tone": {
+          "enum": [
+            "neutral",
+            "info",
+            "success",
+            "warning",
+            "danger"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "label",
+        "tone"
+      ],
+      "type": "object",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "description": "working: nobody needs to act yet. waiting/snoozed: a person does. done: decided or gone.",
+      "enum": [
+        "working",
+        "waiting",
+        "snoozed",
+        "done"
+      ],
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "subtitle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "title": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "type": {
+      "enum": [
+        "listing",
+        "event",
+        "claim",
+        "enquiry",
+        "access",
+        "stuck"
+      ],
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "waitingSince": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
