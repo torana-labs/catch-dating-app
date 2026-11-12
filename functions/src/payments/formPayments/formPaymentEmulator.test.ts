@@ -31,7 +31,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
     const collections = ["organizers", "organizerForms",
       "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
-      "organizerFormPayments", "organizerFormPaymentWebhooks",
+      "guestPayments", "organizerFormPaymentWebhooks",
       "organizerFormResponses",
       "participantFormProfileProposals", "participantOrganizerCards",
       "participantProfileClaimReceipts", "users", "participantIntakeProfiles",
@@ -76,7 +76,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
           token: {phone_number: "+919000000002"}}} as
           unknown as CallableRequest<unknown>,
       }));
-      const paymentRef = db.doc(`organizerFormPayments/${first.paymentId}`);
+      const paymentRef = db.doc(`guestPayments/${first.paymentId}`);
       await paymentRef.update({status: "captured", capturedAt: now,
         providerOrderId: "order_one", providerPaymentId: "pay_one"});
       await Promise.all([
@@ -201,7 +201,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
           unknown as CallableRequest<unknown>});
       await expireFormPaymentReservation({db, paymentId: late.paymentId,
         now: late.payment.checkoutExpiresAt});
-      const lateRef = db.doc(`organizerFormPayments/${late.paymentId}`);
+      const lateRef = db.doc(`guestPayments/${late.paymentId}`);
       await lateRef.update({status: "captured", capturedAt: now,
         providerOrderId: "order_late", providerPaymentId: "pay_late"});
       await Promise.all([
@@ -217,7 +217,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
       // Equal timestamps still paginate exactly once by document id. Neither
       // foreign financial records nor unsubmitted answers enter this ledger.
       const foreignId = `fp_${"f".repeat(32)}`;
-      await db.doc(`organizerFormPayments/${foreignId}`).set({
+      await db.doc(`guestPayments/${foreignId}`).set({
         ...(await paymentRef.get()).data(), organizerId: "foreign-org"});
       const deps = {db: () => db, rateLimit: async () => undefined,
         requireManager: async () => undefined};
@@ -247,7 +247,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
       await db.doc("organizerFormResponseDrafts/manual").set(fixture.draft);
       const manual = await reserveFormPayment({db, now,
         data: {...fixture.data, draftId: "manual"}, request: fixture.request});
-      const manualRef = db.doc(`organizerFormPayments/${manual.paymentId}`);
+      const manualRef = db.doc(`guestPayments/${manual.paymentId}`);
       await manualRef.update({status: "reviewRequired"});
       const visited: string[] = [];
       await reconcileOrganizerFormPaymentsHandler({db,

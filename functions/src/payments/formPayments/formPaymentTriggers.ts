@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import {onRequest, type Request} from "firebase-functions/v2/https";
@@ -99,13 +100,15 @@ export async function reconcileOrganizerFormPaymentsHandler(
       .where("status", "==", "pending")
       .where("nextAttemptAt", "<=", Timestamp.fromMillis(now))
       .orderBy("nextAttemptAt").limit(40).get(),
-    db.collection("organizerFormPayments").where("status", "in", [
-      "creatingOrder", "orderUnknown", "checkoutReady", "verifying",
-      "captured", "failed", "expired", "refundPending", "reviewRequired"])
+    db.collection(GUEST_PAYMENTS).where("purpose", "==", "form")
+      .where("status", "in", [
+        "creatingOrder", "orderUnknown", "checkoutReady", "verifying",
+        "captured", "failed", "expired", "refundPending", "reviewRequired"])
       .where("updatedAt", "<=", cutoff).orderBy("updatedAt").limit(40).get(),
     // Recent completed payments get a slower reconciliation pass in case a
     // refund callback was missed. No application state is changed by refunds.
-    db.collection("organizerFormPayments").where("status", "==", "submitted")
+    db.collection(GUEST_PAYMENTS).where("purpose", "==", "form")
+      .where("status", "==", "submitted")
       .where("createdAt", ">=", Timestamp.fromMillis(now - 45 * 86400_000))
       .where("updatedAt", "<=", Timestamp.fromMillis(now - 6 * 3600_000))
       .orderBy("createdAt").orderBy("updatedAt").limit(20).get(),

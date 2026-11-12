@@ -288,12 +288,12 @@ const collections = {
   versions: "organizerFormVersions",
   drafts: "organizerFormResponseDrafts",
   responses: "organizerFormResponses",
-  formPayments: "organizerFormPayments",
-  publicPayments: "publicEventPayments",
+  formPayments: "guestPayments:form",
+  publicPayments: "guestPayments:publicEvent",
   receipts: "publicEventAdmissionReceipts",
   formAdmissions: "organizerFormAdmissions",
   formAdmissionReceipts: "organizerFormAdmissionReceipts",
-  offerPayments: "organizerEventOfferPayments",
+  offerPayments: "guestPayments:offer",
 } as const;
 function fromStore(
   store: Map<string, Record<string, unknown>>
@@ -302,11 +302,14 @@ function fromStore(
     incomplete: false,
     unavailable: false,
   } as RegistrationRecords;
-  for (const [key, collection] of Object.entries(collections)) {
+  for (const [key, source] of Object.entries(collections)) {
+    // Guest payments share one ledger; each export reads its own purpose.
+    const [collection, purpose] = source.split(":");
     (records as unknown as Record<string, unknown>)[key] = [
       ...store.entries(),
     ]
-      .filter(([path]) => path.startsWith(`${collection}/`))
+      .filter(([path, data]) => path.startsWith(`${collection}/`) &&
+        (!purpose || data.purpose === purpose))
       .map(([path, data]) => ({
         id: path.slice(collection.length + 1),
         data,

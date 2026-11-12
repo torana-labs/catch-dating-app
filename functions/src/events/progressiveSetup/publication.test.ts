@@ -101,7 +101,7 @@ test("republish keeps registration closed and retains payment history",
       publicRegistrationEnabled: true, publicRegistrationMode: "paid",
       publicRegistrationRevision: 2});
     const stamp = h.store.get("events/event1")!.firstPublishedAt;
-    h.store.put("publicEventPayments/payment1", {eventId: "event1",
+    h.store.put("guestPayments/payment1", {eventId: "event1",
       status: "admitted"});
     const locks = h.store.writes.filter((p) =>
       p.startsWith("scheduleLocks/organizer_"));
@@ -116,7 +116,7 @@ test("republish keeps registration closed and retains payment history",
     assert.equal(h.store.get("events/event1")!.publicRegistrationMode,
       "closed");
     assert.equal(h.store.get("events/event1")!.firstPublishedAt, stamp);
-    assert.equal(h.store.get("publicEventPayments/payment1")!.status,
+    assert.equal(h.store.get("guestPayments/payment1")!.status,
       "admitted");
   });
 

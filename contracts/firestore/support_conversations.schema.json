@@ -155,7 +155,7 @@
           },
           "path": {
             "type": "string",
-            "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+            "pattern": "^(eventParticipations|eventAttendees|payments|guestPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
           },
           "label": {
             "type": "string",

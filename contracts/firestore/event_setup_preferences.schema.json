@@ -2,6 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_setup_preferences.schema.json",
   "title": "EventSetupPreferencesDocument",
+  "x-firestore-collection": "eventSetupPreferences",
+  "x-firestore-path": "eventSetupPreferences/{eventId}",
   "type": "object",
   "additionalProperties": false,
   "required": [

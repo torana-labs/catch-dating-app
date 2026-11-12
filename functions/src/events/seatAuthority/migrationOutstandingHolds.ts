@@ -1,14 +1,14 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {MAX_LIVE_MIGRATION_SOURCE_ROWS} from "./liveMigrationSource";
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 
 const terminalStatuses: Record<string, readonly string[]> = {
   eventWaitlistOffers: ["declined", "expired", "cancelled"],
   crossPathsPairHolds: ["confirmed", "expired", "cancelled", "invalidated"],
   razorpayPendingOrders: ["failed", "expired"],
   payments: ["completed", "failed", "refunded"],
-  organizerEventOfferPayments: ["admitted", "expired", "refunded", "failed",
-    "cancelled"],
-  publicEventPayments: ["admitted", "expired", "refunded", "failed",
+  // Website and offer checkouts; paid forms carry no event.
+  [GUEST_PAYMENTS]: ["admitted", "expired", "refunded", "failed",
     "cancelled"],
 };
 
@@ -28,7 +28,8 @@ export async function assertNoOutstandingMigrationHolds(params: {
     // Activation already contains staged reservations from all three roster
     // sources; their combined bound can exceed one source page budget.
     const limit = MAX_LIVE_MIGRATION_SOURCE_ROWS *
-      (collection === "eventSeatReservations" ? 3 : 1);
+      (collection === "eventSeatReservations" ? 3 :
+        collection === GUEST_PAYMENTS ? 2 : 1);
     const snap = await tx.get(db.collection(collection)
       .where("eventId", "==", eventId)
       .select("status", "signUpFailed", "checkoutHold", "temporaryHold",

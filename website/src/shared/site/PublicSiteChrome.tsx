@@ -138,12 +138,14 @@ export interface SiteFooterCity {
  * Privacy choices. A product page may name itself ("Catch for weddings")
  * and give its own line; the columns stay the same everywhere.
  */
-export function PublicSiteFooter({appHref, cities, exploreHref, tagline = siteFooterCopy.tagline, wordmark = publicSiteCopy.wordmark}: {
+export function PublicSiteFooter({appHref, cities, exploreHref, navLabel = siteFooterCopy.nav, tagline = siteFooterCopy.tagline, wordmark = publicSiteCopy.wordmark}: {
   /** Where Get the app goes: the homepage's own band from the homepage. */
   appHref?: string;
   cities?: readonly SiteFooterCity[];
   /** Where What's on goes: a city page links its own plans. */
   exploreHref?: string;
+  /** The footer nav's name; only a page showing several footers needs another. */
+  navLabel?: string;
   tagline?: string;
   wordmark?: string;
 }) {
@@ -162,7 +164,7 @@ export function PublicSiteFooter({appHref, cities, exploreHref, tagline = siteFo
       brandLabel={brand}
       brandSubBrand={subBrand}
       groups={groups}
-      navLabel={siteFooterCopy.nav}
+      navLabel={navLabel}
       note={publicSiteCopy.footerOperator}
       onLinkPressed={(link) => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
       tagline={tagline}

@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import type {HostEventSetupViewDocument} from
@@ -110,9 +111,11 @@ export async function reconcileEventSetupView(
       tx.get(db.collection("organizers").doc(organizerId)),
       tx.get(db.collection("eventSetupPreferences").doc(eventId)),
       tx.get(db.collection("payments").where("eventId", "==", eventId)),
-      tx.get(db.collection("publicEventPayments")
+      tx.get(db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "publicEvent")
         .where("eventId", "==", eventId)),
-      tx.get(db.collection("organizerEventOfferPayments")
+      tx.get(db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "offer")
         .where("eventId", "==", eventId)),
       tx.get(db.collection("organizerMoments").doc(arrivalMomentId(eventId))),
     ]);

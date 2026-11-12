@@ -31,7 +31,7 @@
     "payment_source": {
       "description": "The payment record collection a payment or refund row came from.",
       "type": ["string", "null"],
-      "enum": ["payments", "publicEventPayments", "organizerEventOfferPayments", "organizerFormPayments", null]
+      "enum": ["payments", "publicEvent", "offer", "form", null]
     },
     "payment_id": {"type": ["string", "null"], "maxLength": 180},
     "currency": {"type": ["string", "null"], "maxLength": 3},

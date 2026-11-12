@@ -38,9 +38,16 @@
     "eventName",
     "requestHash",
     "inviteLinkId",
-    "cancellationPolicy"
+    "cancellationPolicy",
+    "purpose"
   ],
   "properties": {
+    "purpose": {
+      "type": "string",
+      "const": "publicEvent",
+      "description": "A public event checkout. guestPayments holds every guest checkout; purpose names the flow that owns this document.",
+      "x-catch-ownership": "server-only"
+    },
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
@@ -237,8 +244,8 @@
       ]
     }
   },
-  "x-firestore-collection": "publicEventPayments",
-  "x-firestore-path": "publicEventPayments/{paymentId}",
+  "x-firestore-collection": "guestPayments",
+  "x-firestore-path": "guestPayments/{paymentId}",
   "x-document-id-field": "paymentId",
   "x-owner": "public event checkout service"
 }

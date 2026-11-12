@@ -71,7 +71,7 @@ const seedThreads = (): Thread[] => [
     displayName: "Rhea Kapoor", subject: "I paid but have no ticket",
     audience: "guest", uid: "user_204",
     waitingSinceMillis: sampleNow - 2 * HOUR,
-    links: [{kind: "payment", path: "publicEventPayments/sample-pay-rhea",
+    links: [{kind: "payment", path: "guestPayments/sample-pay-rhea",
       label: "₹1,500 captured, no booking"}]}),
   messages: [inbound("m1", "Hi, I paid ₹1,500 for Takeoff on Saturday but " +
     "I have no ticket. Money is gone from my account.",
