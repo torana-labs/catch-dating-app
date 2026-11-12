@@ -377,12 +377,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/swipes/presentation/event_recap_screen.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar"
-    },
-    {
       "path": "lib/swipes/presentation/filters_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -563,13 +557,6 @@
       "role": "legacy",
       "owner": "CatchTextStyles.headline",
       "reason": "Checkout hero: event identity on the activity backdrop above the payment body; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
-    },
-    {
-      "path": "lib/swipes/presentation/event_recap_screen.dart",
-      "symbol": "RecapHeader",
-      "role": "legacy",
-      "owner": "CatchTextStyles.headline",
-      "reason": "Recap hero: event kicker and stats on the dark recap card; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
     },
     {
       "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",

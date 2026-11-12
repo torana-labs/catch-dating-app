@@ -259,7 +259,7 @@ Widget userAnalyticsInlineStatStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'count',
-        child: CatchMetricTile(label: 'Mutual catches', value: '9'),
+        child: CatchMetricTile(label: 'Mutual picks', value: '9'),
       ),
     ],
   );

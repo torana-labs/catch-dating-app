@@ -28,6 +28,7 @@
 .text[data-variant^="display"] {
   font-family: var(--catch-font-voice), sans-serif;
   font-stretch: 78%;
+  word-spacing: var(--catch-font-word-spacing-voice);
   font-variation-settings: "wdth" 78;
 }
 

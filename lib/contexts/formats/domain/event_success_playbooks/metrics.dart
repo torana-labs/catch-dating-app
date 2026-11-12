@@ -20,23 +20,23 @@ abstract final class EventSuccessMetricCatalog {
 
   static const wingmanRequestRate = EventSuccessMetric(
     id: 'wingman_requests_rate',
-    label: 'Wingman request rate',
+    label: 'Host-help request rate',
     description: 'Share of checked-in attendees who asked the host for help.',
     target: 'Use as a live facilitation signal, not a success target.',
   );
 
   static const mutualMatchRate = EventSuccessMetric(
     id: 'mutual_match_rate',
-    label: 'Mutual match rate',
+    label: 'Mutual pick rate',
     description:
-        'Share of attendees who convert into at least one mutual match.',
+        'Share of attendees who convert into at least one mutual pick.',
     target: 'Measure by format; optimize trend, not one-event spikes.',
   );
 
   static const chatStartRate = EventSuccessMetric(
     id: 'chat_start_rate',
     label: 'Chat start rate',
-    description: 'Share of mutual matches where someone sends a first message.',
+    description: 'Share of mutual picks where someone sends a first message.',
     target: '60 percent or higher when contextual openers are available.',
   );
 

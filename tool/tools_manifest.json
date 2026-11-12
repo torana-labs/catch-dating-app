@@ -7,7 +7,8 @@
       "meta:tool-manifest",
       "meta:brand-literals",
       "meta:repository-root-hygiene",
-      "operations:boundaries"
+      "operations:boundaries",
+      "contracts:market-lists"
     ],
     "additionalFullPaths": [
       "functions/package.json",
@@ -5667,6 +5668,60 @@
           ],
           "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only."
         }
+      ]
+    },
+    {
+      "id": "contracts:market-catalog",
+      "category": "contracts",
+      "path": "tool/contracts/generate_market_catalog.mjs",
+      "command": "node tool/contracts/generate_market_catalog.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "functions-npm"
+        ]
+      },
+      "impactPaths": [
+        "contracts/catalogs/markets.json",
+        "contracts/shared/market_catalog.schema.json",
+        "tool/contracts/market_list_allowlist.json",
+        "tool/contracts/generate_market_catalog.test.mjs",
+        "tool/lib/market_catalog.mjs",
+        "tool/lib/location_markets.mjs",
+        "functions/src/shared/generated/marketCatalog.ts",
+        "packages/kernel/lib/market_catalog.dart",
+        "admin/src/shared/config/generated/marketCatalog.ts",
+        "firestore.rules",
+        "tool/contracts/generate_market_catalog.mjs"
+      ],
+      "role": "gate",
+      "description": "Keeps contracts/catalogs/markets.json the one source of countries and cities: validates it against contracts/shared/market_catalog.schema.json and its cross-record lifecycle rules, fails when a generated copy (Functions, kernel Dart, admin launch markets, the Firestore rules launch-market block) is stale, and fails when tracked source names three or more catalog cities outside the shrink-only market_list_allowlist.json.",
+      "checks": [
+        "node --check tool/contracts/generate_market_catalog.mjs",
+        "node --test tool/contracts/generate_market_catalog.test.mjs",
+        "node tool/contracts/generate_market_catalog.mjs --check"
+      ]
+    },
+    {
+      "id": "contracts:market-lists",
+      "category": "contracts",
+      "path": "tool/contracts/generate_market_catalog.mjs",
+      "command": "node tool/contracts/generate_market_catalog.mjs --check --without-schema",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "gate",
+      "description": "Runs on every change: fails when a generated market-catalog copy is stale, when the catalog breaks a cross-record lifecycle rule, or when tracked source names three or more catalog cities outside the shrink-only tool/contracts/market_list_allowlist.json. Needs no installed packages; contracts:market-catalog adds JSON Schema validation whenever the catalog changes.",
+      "checks": [
+        "node tool/contracts/generate_market_catalog.mjs --check --without-schema"
       ]
     },
     {

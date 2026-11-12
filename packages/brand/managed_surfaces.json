@@ -3,12 +3,6 @@
   "surfaces": [
     {"path": "packages/l10n/lib/app_en.arb", "kind": "json-values", "then": "node packages/l10n/generate.mjs",
       "exceptKeys": [
-        "matchesMatchCelebrationDialogTitleItSACatch",
-        "swipesSwipeEmptyContentTitleCatchUnavailable",
-        "swipesSwipeEmptyContentTitleCatchWindowClosed",
-        "swipesEventRecapScreenStateVisiblecopyCatchWindowClosed",
-        "dashboardDashboardEmptyTitleCatchWithin24Hours",
-        "dashboardDashboardEmptyBodyYouGetTheRoster",
         "coreCatchPrivacyBadgeLabelCatchPrivate"
       ]},
     {"path": "copy/native_en.json", "kind": "json-values", "then": "node tool/copy/sync_native_copy.mjs"},

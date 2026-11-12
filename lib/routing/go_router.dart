@@ -98,7 +98,6 @@ import 'package:catch_dating_app/safety/presentation/messaging_permissions_scree
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
@@ -393,17 +392,17 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                         eventId: state.pathParameters['eventId']!,
                       ),
                     ),
+                    // The retired swipe deck's address; older links open
+                    // the event's after-event screen instead.
                     GoRoute(
                       path: 'catches/:eventId',
                       name: Routes.swipeEventScreen.name,
                       parentNavigatorKey: keys.root,
-                      builder: (context, state) => SwipeScreen(
-                        eventId: state.pathParameters['eventId']!,
-                        vibeIds: switch (state.extra) {
-                          final Set<String> ids => ids,
-                          _ => const {},
-                        },
-                      ),
+                      redirect: (context, state) =>
+                          Routes.eventRecapScreen.path.replaceFirst(
+                            ':eventId',
+                            state.pathParameters['eventId']!,
+                          ),
                     ),
                   ],
                 ),

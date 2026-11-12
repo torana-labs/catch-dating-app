@@ -125,7 +125,7 @@
       "description": "Event Success social-intensity label."
     },
     "eventSuccessSocialIntensityRevealLedDescription": {
-      "value": "Short questions, match clues, and live reveal moments.",
+      "value": "Short questions, conversation clues, and live reveal moments.",
       "description": "Event Success social-intensity description."
     },
     "eventSuccessStageBefore": {"value": "Before", "description": "Event Success stage label."},
@@ -147,9 +147,9 @@
     "eventSuccessLayerLiveRevealLabel": {"value": "Live reveal", "description": "Event Success product-layer label."},
     "eventSuccessLayerLiveRevealDescription": {"value": "Creates countdowns, clues, synchronized reveals, and anticipation.", "description": "Event Success product-layer description."},
     "eventSuccessLayerConversationLabel": {"value": "Conversation prompts", "description": "Event Success product-layer label."},
-    "eventSuccessLayerConversationDescription": {"value": "Provides live prompts and post-match openers from shared context.", "description": "Event Success product-layer description."},
+    "eventSuccessLayerConversationDescription": {"value": "Provides live prompts and first-message openers from shared context.", "description": "Event Success product-layer description."},
     "eventSuccessLayerHostFacilitationLabel": {"value": "Host facilitation", "description": "Event Success product-layer label."},
-    "eventSuccessLayerHostFacilitationDescription": {"value": "Lets attendees explicitly ask the host for live help without exposing private matching choices.", "description": "Event Success product-layer description."},
+    "eventSuccessLayerHostFacilitationDescription": {"value": "Lets attendees explicitly ask the host for live help without exposing private picks.", "description": "Event Success product-layer description."},
     "eventSuccessLayerHostCoachLabel": {"value": "Host coach", "description": "Event Success product-layer label."},
     "eventSuccessLayerHostCoachDescription": {"value": "Turns event outcomes into clear advice for the next event.", "description": "Event Success product-layer description."},
     "eventSuccessLayerSafetyLabel": {"value": "Safety layer", "description": "Event Success product-layer label."},
@@ -235,7 +235,7 @@
       "description": "Event Success library copy for socialRun.title."
     },
     "library.socialRun.summary.1": {
-      "value": "An event-first format that adds arrival structure, pace pods, optional prompts, and post-event Catches follow-up.",
+      "value": "An event-first format that adds arrival structure, pace pods, optional prompts, and staying in touch after the event.",
       "description": "Event Success library copy for socialRun.summary."
     },
     "library.socialRun.attendeePromise.1": {
@@ -243,7 +243,7 @@
       "description": "Event Success library copy for socialRun.attendeePromise."
     },
     "library.socialRun.hostPromise.1": {
-      "value": "Use check-in, pace pods, and a short cooldown prompt without turning the event into speed dating.",
+      "value": "Use check-in, pace pods, and a short cooldown prompt without turning the event into a rotation event.",
       "description": "Event Success library copy for socialRun.hostPromise."
     },
     "library.socialRun.rationale.1": {
@@ -315,7 +315,7 @@
       "description": "Event Success library copy for socialRun.antiPatterns."
     },
     "library.socialRun.antiPatterns.2": {
-      "value": "Do not make one-to-one romantic pairing the headline for beginner events.",
+      "value": "Do not make one-to-one pairing the headline for beginner events.",
       "description": "Event Success library copy for socialRun.antiPatterns."
     },
     "library.socialRun.antiPatterns.3": {
@@ -355,7 +355,7 @@
       "description": "Event Success library copy for pickleball.attendeePromise."
     },
     "library.pickleball.hostPromise.1": {
-      "value": "The app handles pairings, sit-outs, timing, and post-event matching context.",
+      "value": "The app handles pairings, sit-outs, timing, and post-event follow-up context.",
       "description": "Event Success library copy for pickleball.hostPromise."
     },
     "library.pickleball.rationale.1": {
@@ -471,7 +471,7 @@
       "description": "Event Success library copy for pubQuiz.hostInstruction."
     },
     "library.pubQuiz.attendeeExperience.2": {
-      "value": "Talk through trivia without forced dating rounds.",
+      "value": "Talk through trivia without forced pairing rounds.",
       "description": "Event Success library copy for pubQuiz.attendeeExperience."
     },
     "library.pubQuiz.title.4": {
@@ -727,7 +727,7 @@
       "description": "Event Success library copy for hostLedSocial.attendeePromise."
     },
     "library.hostLedSocial.hostPromise.1": {
-      "value": "Use check-in, a short script, prompts, wingman requests, feedback, and coaching without forcing rotations.",
+      "value": "Use check-in, a short script, prompts, host-help requests, feedback, and coaching without forcing rotations.",
       "description": "Event Success library copy for hostLedSocial.hostPromise."
     },
     "library.hostLedSocial.rationale.1": {
@@ -947,7 +947,7 @@
       "description": "Event Success modules copy for checkIn.attendeePromise."
     },
     "modules.checkIn.hostPromise.1": {
-      "value": "Confirms who actually attended before matching and reviews.",
+      "value": "Confirms who actually attended before after-event picks and reviews.",
       "description": "Event Success modules copy for checkIn.hostPromise."
     },
     "modules.checkIn.setupSteps.1": {
@@ -963,7 +963,7 @@
       "description": "Event Success modules copy for checkIn.setupSteps."
     },
     "modules.checkIn.setupSteps.4": {
-      "value": "Use checked-in attendees as the eligible pool for post-event Catches.",
+      "value": "Use checked-in attendees as the eligible pool for after-event picks.",
       "description": "Event Success modules copy for checkIn.setupSteps."
     },
     "modules.checkIn.riskControls.1": {
@@ -1047,7 +1047,7 @@
       "description": "Event Success modules copy for microPods.setupSteps."
     },
     "modules.microPods.setupSteps.2": {
-      "value": "Prefer pace, skill, geography, or interests over hidden romance scoring.",
+      "value": "Prefer pace, skill, geography, or interests over hidden scoring of people.",
       "description": "Event Success modules copy for microPods.setupSteps."
     },
     "modules.microPods.setupSteps.3": {
@@ -1139,15 +1139,15 @@
       "description": "Event Success modules copy for liveReveal.riskControls."
     },
     "modules.liveReveal.riskControls.2": {
-      "value": "Do not expose normal post-event catch targets to hosts.",
+      "value": "Do not expose guests' after-event picks to hosts.",
       "description": "Event Success modules copy for liveReveal.riskControls."
     },
     "modules.compatibilityQuestionnaire.title.1": {
-      "value": "Match clue questions",
+      "value": "Conversation questions",
       "description": "Event Success modules copy for compatibilityQuestionnaire.title."
     },
     "modules.compatibilityQuestionnaire.attendeePromise.1": {
-      "value": "Matching moments have a reason beyond looks.",
+      "value": "Conversations start with a reason beyond looks.",
       "description": "Event Success modules copy for compatibilityQuestionnaire.attendeePromise."
     },
     "modules.compatibilityQuestionnaire.hostPromise.1": {
@@ -1215,7 +1215,7 @@
       "description": "Event Success modules copy for contextualOpeners.title."
     },
     "modules.contextualOpeners.attendeePromise.1": {
-      "value": "A match starts with shared context instead of a cold hi.",
+      "value": "A first message starts with shared context instead of a cold hi.",
       "description": "Event Success modules copy for contextualOpeners.attendeePromise."
     },
     "modules.contextualOpeners.hostPromise.1": {
@@ -1331,7 +1331,7 @@
       "description": "Event Success metrics copy for introCoverage.target."
     },
     "metrics.wingmanRequestRate.label.1": {
-      "value": "Wingman request rate",
+      "value": "Host-help request rate",
       "description": "Event Success metrics copy for wingmanRequestRate.label."
     },
     "metrics.wingmanRequestRate.description.1": {
@@ -1343,11 +1343,11 @@
       "description": "Event Success metrics copy for wingmanRequestRate.target."
     },
     "metrics.mutualMatchRate.label.1": {
-      "value": "Mutual match rate",
+      "value": "Mutual pick rate",
       "description": "Event Success metrics copy for mutualMatchRate.label."
     },
     "metrics.mutualMatchRate.description.1": {
-      "value": "Share of attendees who convert into at least one mutual match.",
+      "value": "Share of attendees who convert into at least one mutual pick.",
       "description": "Event Success metrics copy for mutualMatchRate.description."
     },
     "metrics.mutualMatchRate.target.1": {
@@ -1359,7 +1359,7 @@
       "description": "Event Success metrics copy for chatStartRate.label."
     },
     "metrics.chatStartRate.description.1": {
-      "value": "Share of mutual matches where someone sends a first message.",
+      "value": "Share of mutual picks where someone sends a first message.",
       "description": "Event Success metrics copy for chatStartRate.description."
     },
     "metrics.chatStartRate.target.1": {
@@ -1395,7 +1395,7 @@
       "description": "Event Success coach copy for analyze.rationale."
     },
     "coach.analyze.strength.1": {
-      "value": "Arrival data is reliable enough for matching and reports.",
+      "value": "Arrival data is reliable enough for after-event picks and reports.",
       "description": "Event Success coach copy for analyze.strength."
     },
     "coach.analyze.title.3": {
@@ -1459,7 +1459,7 @@
       "description": "Event Success coach copy for analyze.strength."
     },
     "coach.analyze.title.8": {
-      "value": "Use wingman requests before the final reveal",
+      "value": "Use host-help requests before the final reveal",
       "description": "Event Success coach copy for analyze.title."
     },
     "coach.analyze.rationale.9": {
@@ -1467,15 +1467,15 @@
       "description": "Event Success coach copy for analyze.rationale."
     },
     "coach.analyze.title.9": {
-      "value": "Give matches event-specific openers",
+      "value": "Give mutual picks event-specific openers",
       "description": "Event Success coach copy for analyze.title."
     },
     "coach.analyze.rationale.10": {
-      "value": "Matches are forming, but chat is not starting reliably. Shared event context should make the first message easier.",
+      "value": "Mutual picks are forming, but chat is not starting reliably. Shared event context should make the first message easier.",
       "description": "Event Success coach copy for analyze.rationale."
     },
     "coach.analyze.strength.6": {
-      "value": "Mutual matches are converting into chat starts.",
+      "value": "Mutual picks are converting into chat starts.",
       "description": "Event Success coach copy for analyze.strength."
     },
     "coach.analyze.title.10": {

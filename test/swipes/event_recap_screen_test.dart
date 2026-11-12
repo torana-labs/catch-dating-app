@@ -1,322 +1,284 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
-import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_platform/theme/app_theme.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart';
+import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
 
+class _FakeSwipeRepository extends Fake implements SwipeRepository {
+  final recorded = <Swipe>[];
+  Completer<void>? completer;
+
+  @override
+  Future<void> recordSwipe({required Swipe swipe}) async {
+    recorded.add(swipe);
+    await completer?.future;
+  }
+}
+
+class _FakeEventSuccessRepository extends Fake
+    implements EventSuccessRepository {
+  final submitted = <EventSuccessFeedback>[];
+
+  @override
+  Future<void> submitFeedback(EventSuccessFeedback feedback) async {
+    submitted.add(feedback);
+  }
+}
+
+const _viewer = 'viewer';
+
 void main() {
-  testWidgets('EventRecapScreen shows recap-shaped skeleton while loading', (
-    tester,
-  ) async {
-    final eventController = StreamController<Event?>();
-    addTearDown(eventController.close);
+  late _FakeSwipeRepository swipes;
+  late _FakeEventSuccessRepository feedback;
+  late Event event;
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
-          watchEventProvider(
-            'loading-event',
-          ).overrideWith((ref) => eventController.stream),
-          swipeCandidatesProvider(
-            'loading-event',
-          ).overrideWithValue(const AsyncData<List<PublicProfile>>([])),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventRecapScreen(eventId: 'loading-event'),
-        ),
-      ),
+  setUp(() {
+    swipes = _FakeSwipeRepository();
+    feedback = _FakeEventSuccessRepository();
+    final endedAt = DateTime.now().subtract(const Duration(hours: 2));
+    event = buildEvent(
+      id: 'recap-event',
+      organizerId: 'org',
+      name: 'Tuesday Trivia Night',
+      startTime: endedAt.subtract(const Duration(hours: 2)),
+      endTime: endedAt,
+      checkedInCount: 4,
     );
-    await tester.pump();
-
-    expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.text('Event recap'), findsOneWidget);
-    expect(find.byType(EventRecapLoadingBody), findsOneWidget);
-    expect(find.byType(CatchSkeleton), findsWidgets);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.byKey(SwipeKeys.openCatchesDeckButton), findsNothing);
   });
 
-  testWidgets('EventRecapScreen builds roster from server-owned candidates', (
-    tester,
-  ) async {
-    final endedAt = DateTime.now().subtract(const Duration(hours: 3));
-    final event = buildEvent(
-      id: 'recap-event',
-      startTime: endedAt.subtract(const Duration(hours: 1)),
-      endTime: endedAt,
-      checkedInCount: 3,
+  Future<void> pump(
+    WidgetTester tester, {
+    Set<String> followed = const {},
+    bool socialReady = true,
+  }) async {
+    tester.view.physicalSize = const Size(430, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final organizer = buildOrganizer(id: 'org', name: 'Lantern Lane Social');
+    final next = buildEvent(
+      id: 'next-event',
+      organizerId: 'org',
+      name: 'Next Tuesday',
+      startTime: DateTime.now().add(const Duration(days: 7)),
+      endTime: DateTime.now().add(const Duration(days: 7, hours: 2)),
     );
-
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          uidProvider.overrideWith((ref) => Stream.value(_viewer)),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream<UserProfile?>.value(
+              socialReady
+                  ? buildSocialReadyUser(uid: _viewer)
+                  : buildUser(uid: _viewer),
+            ),
+          ),
           watchEventProvider(
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           swipeCandidatesProvider(event.id).overrideWith(
             (ref) async => [
-              buildPublicProfile(uid: 'runner-2'),
-              buildPublicProfile(uid: 'runner-3'),
+              buildPublicProfile(uid: 'rhea', name: 'Rhea'),
+              buildPublicProfile(uid: 'dev', name: 'Dev'),
             ],
           ),
           publicProfilesByIdsProvider(
-            PublicProfilesQuery(['runner-2', 'runner-3']),
+            PublicProfilesQuery(['rhea', 'dev']),
           ).overrideWith(
             (ref) async => {
-              'runner-2': buildPublicProfile(uid: 'runner-2'),
-              'runner-3': buildPublicProfile(uid: 'runner-3'),
+              'rhea': buildPublicProfile(uid: 'rhea', name: 'Rhea'),
+              'dev': buildPublicProfile(uid: 'dev', name: 'Dev'),
             },
           ),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: EventRecapScreen(eventId: event.id),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-
-    expect(find.text('5km · Easy · 3 checked in'), findsOneWidget);
-    expect(find.byKey(SwipeKeys.vibeTile('runner-2')), findsOneWidget);
-    expect(find.byKey(SwipeKeys.vibeTile('runner-3')), findsOneWidget);
-    expect(find.byKey(SwipeKeys.vibeTile('runner-1')), findsNothing);
-    expect(find.byKey(SwipeKeys.vibeTile('runner-4')), findsNothing);
-  });
-
-  testWidgets('keeps profile lookup loading distinct from missing profiles', (
-    tester,
-  ) async {
-    final event = buildEvent(id: 'recap-event');
-    final profiles = Completer<Map<String, PublicProfile>>();
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
-          watchEventProvider(
-            event.id,
-          ).overrideWithValue(AsyncData<Event?>(event)),
-          swipeCandidatesProvider(event.id).overrideWithValue(
-            AsyncData<List<PublicProfile>>([
-              buildPublicProfile(uid: 'runner-2'),
-            ]),
+          watchOrganizerProvider(
+            'org',
+          ).overrideWith((ref) => Stream<Organizer?>.value(organizer)),
+          watchEventParticipationProvider(event.id, _viewer).overrideWith(
+            (ref) => Stream<EventParticipation?>.value(
+              buildEventParticipation(
+                event: event,
+                uid: _viewer,
+                status: EventParticipationStatus.attended,
+              ),
+            ),
           ),
-          publicProfilesByIdsProvider(
-            PublicProfilesQuery(['runner-2']),
-          ).overrideWith((ref) => profiles.future),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: EventRecapScreen(eventId: event.id),
-        ),
-      ),
-    );
-    await tester.pump();
-    await tester.pump();
-
-    expect(find.byType(VibeGridSkeleton), findsOneWidget);
-    expect(find.text('Guest'), findsNothing);
-    expect(find.byKey(SwipeKeys.openCatchesDeckButton), findsOneWidget);
-
-    profiles.complete({
-      'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
-    });
-    await pumpFeatureUi(tester);
-    expect(find.text('Mira'), findsOneWidget);
-  });
-
-  testWidgets('profile lookup failures expose retry and recover', (
-    tester,
-  ) async {
-    final event = buildEvent(id: 'recap-event');
-    var attempts = 0;
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
-          watchEventProvider(
-            event.id,
-          ).overrideWithValue(AsyncData<Event?>(event)),
-          swipeCandidatesProvider(event.id).overrideWithValue(
-            AsyncData<List<PublicProfile>>([
-              buildPublicProfile(uid: 'runner-2'),
-            ]),
-          ),
-          publicProfilesByIdsProvider(
-            PublicProfilesQuery(['runner-2']),
-          ).overrideWith((ref) async {
-            attempts += 1;
-            if (attempts == 1) throw StateError('profiles failed');
-            return {
-              'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
-            };
-          }),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: EventRecapScreen(eventId: event.id),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-
-    expect(find.text('Profile unavailable'), findsOneWidget);
-    expect(find.text('Reload profile'), findsOneWidget);
-    expect(find.text('Guest'), findsNothing);
-
-    await tester.ensureVisible(find.text('Reload profile'));
-    await tester.pump();
-    await tester.tap(find.text('Reload profile'));
-    await pumpFeatureUi(tester);
-    expect(attempts, 2);
-    expect(find.text('Mira'), findsOneWidget);
-  });
-
-  testWidgets('EventRecapScreen can seed selected vibe ids', (tester) async {
-    final endedAt = DateTime.now().subtract(const Duration(hours: 3));
-    final event = buildEvent(
-      id: 'recap-event',
-      startTime: endedAt.subtract(const Duration(hours: 1)),
-      endTime: endedAt,
-      checkedInCount: 2,
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchEventProvider(
-            event.id,
-          ).overrideWith((ref) => Stream.value(event)),
-          swipeCandidatesProvider(event.id).overrideWith(
-            (ref) async => [
-              buildPublicProfile(uid: 'runner-2'),
-              buildPublicProfile(uid: 'runner-3'),
-            ],
-          ),
-          publicProfilesByIdsProvider(
-            PublicProfilesQuery(['runner-2', 'runner-3']),
-          ).overrideWith(
-            (ref) async => {
-              'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
-              'runner-3': buildPublicProfile(uid: 'runner-3', name: 'Kabir'),
-            },
-          ),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: EventRecapScreen(
+          watchUserEventSuccessFeedbackProvider(
             eventId: event.id,
-            initialSelectedVibeIds: const {'runner-2'},
+            uid: _viewer,
+          ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(null)),
+          watchUserEventSuccessAssignmentProvider(
+            eventId: event.id,
+            uid: _viewer,
+          ).overrideWith(
+            (ref) => Stream<EventSuccessAssignment?>.value(
+              EventSuccessAssignment(
+                id: 'a',
+                eventId: event.id,
+                organizerId: 'org',
+                uid: _viewer,
+                moduleId: 'microPods',
+                label: 'Team 4',
+                displayTitle: 'Harbour Lights',
+                peerUids: const ['dev'],
+                source: 'test',
+                createdAt: DateTime(2026),
+                updatedAt: DateTime(2026),
+              ),
+            ),
           ),
+          eventChatAccessProvider(event.id).overrideWith(
+            (ref) async => EventChatAccess(
+              eventId: event.id,
+              title: 'Tuesday Trivia Night',
+              organizerId: 'org',
+              roomStatus: 'open',
+              roomRevision: 1,
+              membershipStatus: 'joined',
+              membershipRevision: 1,
+              canManage: false,
+              canJoin: true,
+              canReadMessages: true,
+              profileClaimRequired: false,
+              termsVersion: 'event-chat-v1',
+            ),
+          ),
+          watchActiveEventsForOrganizerProvider(
+            ActiveOrganizerEventsQuery(organizerId: 'org', day: DateTime.now()),
+          ).overrideWith((ref) => Stream.value([next])),
+          currentUserFollowedOrganizerIdsProvider.overrideWithValue(
+            AsyncData(followed),
+          ),
+          swipeRepositoryProvider.overrideWith((ref) => swipes),
+          eventSuccessRepositoryProvider.overrideWith((ref) => feedback),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventRecapScreen(eventId: event.id),
         ),
       ),
     );
     await pumpFeatureUi(tester);
+  }
 
-    final selectedTooltip = tester.widget<Tooltip>(
-      find.descendant(
-        of: find.byKey(SwipeKeys.vibeTile('runner-2')),
-        matching: find.byType(Tooltip),
-      ),
-    );
-    final unselectedTooltip = tester.widget<Tooltip>(
-      find.descendant(
-        of: find.byKey(SwipeKeys.vibeTile('runner-3')),
-        matching: find.byType(Tooltip),
-      ),
-    );
+  testWidgets('shows the social after-event sections', (tester) async {
+    await pump(tester);
 
-    expect(selectedTooltip.message, 'Remove Mira');
-    expect(unselectedTooltip.message, 'Remember Kabir');
+    expect(
+      find.text('Tuesday Trivia Night · Lantern Lane Social'),
+      findsOneWidget,
+    );
+    expect(find.text('How was it?'), findsOneWidget);
+    expect(
+      find.text('Only Lantern Lane Social sees this, as part of a summary.'),
+      findsOneWidget,
+    );
+    expect(find.text('GROUP CHAT'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventGroupChat), findsOneWidget);
+    expect(find.text('STAY IN TOUCH'), findsOneWidget);
+    expect(find.text('Your team · Harbour Lights'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventNext), findsOneWidget);
+    expect(find.text('Next Tuesday'), findsOneWidget);
+    expect(find.text('Follow Lantern Lane Social'), findsOneWidget);
   });
 
-  testWidgets('EventRecapScreen passes selected vibe ids to catches deck', (
+  testWidgets('uses no dating language', (tester) async {
+    await pump(tester);
+
+    final banned = RegExp(
+      r'\b(match\w*|catch(es|ing)?|swip\w*|deck|crush\w*|dat(e|ing)|'
+      r'romanc\w*|afterglow|liked you|wingman)\b',
+      caseSensitive: false,
+    );
+    final texts = tester
+        .widgetList<Text>(find.byType(Text))
+        .map((text) => text.data ?? text.textSpan?.toPlainText() ?? '')
+        .where(banned.hasMatch)
+        .toList();
+    expect(texts, isEmpty);
+  });
+
+  testWidgets('a pick records a like and cannot be taken back', (tester) async {
+    await pump(tester);
+
+    final rhea = find.byKey(SwipeKeys.afterEventPerson('rhea'));
+    await tester.ensureVisible(rhea);
+    await tester.tap(find.descendant(of: rhea, matching: find.text('Pick')));
+    await pumpFeatureUi(tester);
+
+    expect(swipes.recorded, hasLength(1));
+    expect(swipes.recorded.single.targetId, 'rhea');
+    expect(swipes.recorded.single.swiperId, _viewer);
+    expect(swipes.recorded.single.eventId, event.id);
+    expect(swipes.recorded.single.direction, SwipeDirection.like);
+    expect(
+      find.descendant(of: rhea, matching: find.text('Picked')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.descendant(of: rhea, matching: find.text('Picked')));
+    await pumpFeatureUi(tester);
+    expect(swipes.recorded, hasLength(1));
+  });
+
+  testWidgets('the rating saves private feedback for the organiser', (
     tester,
   ) async {
-    final endedAt = DateTime.now().subtract(const Duration(hours: 3));
-    final event = buildEvent(
-      id: 'recap-event',
-      startTime: endedAt.subtract(const Duration(hours: 1)),
-      endTime: endedAt,
-      checkedInCount: 2,
-    );
-    Object? routedExtra;
+    await pump(tester);
 
-    final router = GoRouter(
-      initialLocation: '/recap',
-      routes: [
-        GoRoute(
-          path: '/recap',
-          builder: (context, state) => EventRecapScreen(eventId: event.id),
-        ),
-        GoRoute(
-          name: Routes.swipeEventScreen.name,
-          path: Routes.swipeEventScreen.path,
-          builder: (context, state) {
-            routedExtra = state.extra;
-            return Text('Deck ${state.pathParameters['eventId']}');
-          },
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchEventProvider(
-            event.id,
-          ).overrideWith((ref) => Stream.value(event)),
-          swipeCandidatesProvider(event.id).overrideWith(
-            (ref) async => [
-              buildPublicProfile(uid: 'runner-2'),
-              buildPublicProfile(uid: 'runner-3'),
-            ],
-          ),
-          publicProfilesByIdsProvider(
-            PublicProfilesQuery(['runner-2', 'runner-3']),
-          ).overrideWith(
-            (ref) async => {
-              'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
-              'runner-3': buildPublicProfile(uid: 'runner-3', name: 'Kabir'),
-            },
-          ),
-        ],
-        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
-      ),
-    );
+    await tester.tap(find.byKey(SwipeKeys.afterEventRatingStar(4)));
     await pumpFeatureUi(tester);
 
-    await tester.tap(find.byKey(SwipeKeys.vibeTile('runner-3')));
-    await tester.pump();
-    await tester.ensureVisible(find.byKey(SwipeKeys.openCatchesDeckButton));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.byKey(SwipeKeys.openCatchesDeckButton));
-    await pumpFeatureUi(tester);
+    expect(feedback.submitted, hasLength(1));
+    final saved = feedback.submitted.single;
+    expect(saved.eventId, event.id);
+    expect(saved.organizerId, 'org');
+    expect(saved.uid, _viewer);
+    expect(saved.welcomeRating, 4);
+  });
 
-    expect(find.text('Deck ${event.id}'), findsOneWidget);
-    expect(routedExtra, isA<Set<String>>());
-    expect(routedExtra, {'runner-3'});
+  testWidgets('hides Follow once the guest follows the organiser', (
+    tester,
+  ) async {
+    await pump(tester, followed: const {'org'});
+
+    expect(find.byKey(SwipeKeys.afterEventFollowOrganizer), findsNothing);
+  });
+
+  testWidgets('asks for a profile before picks, keeping the rest open', (
+    tester,
+  ) async {
+    await pump(tester, socialReady: false);
+
+    expect(find.byKey(SwipeKeys.afterEventFinishProfile), findsOneWidget);
+    expect(find.text('Finish your profile'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventPerson('rhea')), findsNothing);
+    expect(find.byKey(SwipeKeys.afterEventGroupChat), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventRatingStar(1)), findsOneWidget);
   });
 }

@@ -44,14 +44,18 @@ void main() {
     await tester.pump();
 
     expect(effects.playedKinds, [CelebrationMomentKind.match]);
-    expect(find.text('NEW CATCH'), findsOneWidget);
-    expect(find.text("It's a Catch."), findsOneWidget);
-    expect(find.text('You and Taylor both liked each other.'), findsOneWidget);
+    expect(find.text('NEW CONNECTION'), findsOneWidget);
+    expect(find.text('You picked each other.'), findsOneWidget);
+    expect(
+      find.text('You and Taylor both want to stay in touch.'),
+      findsOneWidget,
+    );
 
+    await tester.ensureVisible(find.text('Send a message'));
     await tester.tap(find.text('Send a message'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Keep catching'));
-    await tester.tap(find.text('Keep catching'));
+    await tester.ensureVisible(find.text('Not now'));
+    await tester.tap(find.text('Not now'));
     await tester.pump();
 
     expect(sendPressed, 1);

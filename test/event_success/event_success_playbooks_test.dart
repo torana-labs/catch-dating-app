@@ -1053,12 +1053,14 @@ void main() {
 
       expect(
         brief.strengths,
-        contains('Arrival data is reliable enough for matching and reports.'),
+        contains(
+          'Arrival data is reliable enough for after-event picks and reports.',
+        ),
       );
       expect(brief.strengths, contains('Most attendees met multiple people.'));
       expect(
         brief.strengths,
-        contains('Mutual matches are converting into chat starts.'),
+        contains('Mutual picks are converting into chat starts.'),
       );
       expect(
         brief.strengths,

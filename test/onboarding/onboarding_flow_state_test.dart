@@ -51,7 +51,7 @@ void main() {
 
       expect(state.entryMode, OnboardingEntryMode.profileCompletion);
       expect(state.previousStep, OnboardingStep.photos);
-      expect(state.topBar?.title, 'Add prompts to start catching');
+      expect(state.topBar?.title, 'Add prompts so people know you');
       expect(state.topBar?.stepNumber, 4);
       expect(state.topBar?.stepTotal, 4);
     });

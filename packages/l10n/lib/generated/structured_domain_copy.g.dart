@@ -30,7 +30,7 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessSocialIntensityStructuredLabel = 'Structured';
   static const eventSuccessSocialIntensityStructuredDescription = 'Planned rotations, teams, or timed moments.';
   static const eventSuccessSocialIntensityRevealLedLabel = 'Reveal-led';
-  static const eventSuccessSocialIntensityRevealLedDescription = 'Short questions, match clues, and live reveal moments.';
+  static const eventSuccessSocialIntensityRevealLedDescription = 'Short questions, conversation clues, and live reveal moments.';
   static const eventSuccessStageBefore = 'Before';
   static const eventSuccessStageArrival = 'Arrival';
   static const eventSuccessStageOpening = 'Opening';
@@ -50,9 +50,9 @@ abstract final class StructuredDomainCopy {
   static const eventSuccessLayerLiveRevealLabel = 'Live reveal';
   static const eventSuccessLayerLiveRevealDescription = 'Creates countdowns, clues, synchronized reveals, and anticipation.';
   static const eventSuccessLayerConversationLabel = 'Conversation prompts';
-  static const eventSuccessLayerConversationDescription = 'Provides live prompts and post-match openers from shared context.';
+  static const eventSuccessLayerConversationDescription = 'Provides live prompts and first-message openers from shared context.';
   static const eventSuccessLayerHostFacilitationLabel = 'Host facilitation';
-  static const eventSuccessLayerHostFacilitationDescription = 'Lets attendees explicitly ask the host for live help without exposing private matching choices.';
+  static const eventSuccessLayerHostFacilitationDescription = 'Lets attendees explicitly ask the host for live help without exposing private picks.';
   static const eventSuccessLayerHostCoachLabel = 'Host coach';
   static const eventSuccessLayerHostCoachDescription = 'Turns event outcomes into clear advice for the next event.';
   static const eventSuccessLayerSafetyLabel = 'Safety layer';

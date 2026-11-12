@@ -125,17 +125,17 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
         ),
       ),
       WidgetbookPageStateCard(
-        label: 'selected vibe tile',
+        label: 'one person picked',
         child: WidgetbookCatchesDeviceFrame(
           child: WidgetbookCatchesRecapReadyBodyPreview(
-            event: event,
+            event: openEvent,
             attendeeIds: attendeeIds,
-            selectedVibeIds: const {CatchesSurfaceFixtures.secondCandidateUid},
+            pickedIds: const {CatchesSurfaceFixtures.secondCandidateUid},
           ),
         ),
       ),
       WidgetbookPageStateCard(
-        label: 'open catch window',
+        label: 'picks open',
         child: WidgetbookCatchesDeviceFrame(
           child: _RecapRouteScope(
             event: openEvent,

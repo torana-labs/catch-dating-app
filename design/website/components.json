@@ -147,7 +147,6 @@
       },
       "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
-        "catch.stack",
         "catch.step_header",
         "catch.top_bar",
         "catch.workspace_header"
@@ -166,7 +165,6 @@
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
       "exportName": "PublicPageHeader",
       "comparedWith": [
-        "catch.button",
         "catch.step_header",
         "catch.workspace_header"
       ],
@@ -5119,11 +5117,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The Website v2 site header: the wordmark, the main links and the page's own controls (a city picker, Get the app) on one 84px row at the content width. Links not marked compact and the wide actions leave the bar below 840px; the footer carries every link. Nearest concept: shared_public_site_header (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteHeader, TopBar, NavBar, Masthead, PageHeader.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site header: the wordmark, the main links and the page's own controls (a city picker, Get the app) on one 84px row at the content width. Links not marked compact and the wide actions leave the bar below 840px; the footer carries every link. Nearest concept: shared_public_site_header (PublicSiteChrome), the legacy chrome it replaces. Since the one-header change (Explore and the city pages moved to PublicSiteHeader) no route renders it; retire it with its story and test. Search aliases: SiteHeader, TopBar, NavBar, Masthead, PageHeader."
     },
     {
       "id": "shared_catch_site_footer",
@@ -5717,7 +5711,7 @@
       ],
       "owner": "features/account",
       "source": "website/src/features/account/SignInSheet.tsx",
-      "exportName": "SiteAccountAction",
+      "exportName": "SiteAccountProvider",
       "css": [
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
@@ -5728,7 +5722,7 @@
           "signed-in"
         ]
       },
-      "notes": "The header's account action through SiteAccountActionProvider: Sign in, or the account link once signed in."
+      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both, and Firebase loads only for a reader this device has seen signed in or one returning from an email link."
     },
     {
       "id": "sign_in_prompt",

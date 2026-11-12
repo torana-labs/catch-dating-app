@@ -221,8 +221,8 @@ final class MatchesChatSurfaceFixtures {
     ),
     SuvbotActionItem(
       id: 'matchTesterByPhone',
-      label: 'Match tester',
-      description: 'Create a tester match.',
+      label: 'Mutual pick tester',
+      description: 'Create a tester mutual pick.',
       icon: 'personAdd',
       requiresText: true,
     ),
