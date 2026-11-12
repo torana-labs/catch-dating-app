@@ -14,11 +14,11 @@ abstract final class EventSuccessPlaybookLibrary {
     socialIntensity: EventSocialIntensity.light,
     durationShape: EventSuccessDurationShape.segments,
     summary:
-        'An event-first format that adds arrival structure, pace pods, optional prompts, and post-event Catches follow-up.',
+        'An event-first format that adds arrival structure, pace pods, optional prompts, and staying in touch after the event.',
     attendeePromise:
         'You can run naturally, meet people at your pace, and follow up privately afterward.',
     hostPromise:
-        'Use check-in, pace pods, and a short cooldown prompt without turning the event into speed dating.',
+        'Use check-in, pace pods, and a short cooldown prompt without turning the event into a rotation event.',
     capacity: EventCapacityGuidance(
       min: 8,
       max: 36,
@@ -87,7 +87,7 @@ abstract final class EventSuccessPlaybookLibrary {
     metrics: EventSuccessMetricCatalog.core,
     antiPatterns: [
       'Do not interrupt the actual event with phone-heavy prompts.',
-      'Do not make one-to-one romantic pairing the headline for beginner events.',
+      'Do not make one-to-one pairing the headline for beginner events.',
       'Do not publish attendee interest unless it is mutual.',
     ],
     iterationQuestions: [
@@ -112,7 +112,7 @@ abstract final class EventSuccessPlaybookLibrary {
     attendeePromise:
         'Play real games while meeting multiple partners without awkward logistics.',
     hostPromise:
-        'The app handles pairings, sit-outs, timing, and post-event matching context.',
+        'The app handles pairings, sit-outs, timing, and post-event follow-up context.',
     capacity: EventCapacityGuidance(
       min: 12,
       max: 32,
@@ -229,7 +229,8 @@ abstract final class EventSuccessPlaybookLibrary {
         title: 'Quiz rounds with role prompts',
         durationMinutes: 60,
         hostInstruction: 'Use prompts between rounds, not during questions.',
-        attendeeExperience: 'Talk through trivia without forced dating rounds.',
+        attendeeExperience:
+            'Talk through trivia without forced pairing rounds.',
         moduleIds: ['social_missions'],
       ),
       EventRunOfShowStep(
@@ -359,7 +360,8 @@ abstract final class EventSuccessPlaybookLibrary {
     capacity: EventCapacityGuidance(
       min: 8,
       max: 40,
-      rationale: 'A moving group stays manageable for one host and a few stops.',
+      rationale:
+          'A moving group stays manageable for one host and a few stops.',
     ),
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
@@ -384,7 +386,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 15,
         hostInstruction:
             'Check guests in and send each one to say hello to someone they have not met.',
-        attendeeExperience: 'Meet one person, check each other in, and start the night in a mixed group.',
+        attendeeExperience:
+            'Meet one person, check each other in, and start the night in a mixed group.',
         moduleIds: ['qr_check_in'],
       ),
       EventRunOfShowStep(
@@ -410,7 +413,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 10,
         hostInstruction:
             'Mark who left with the group and who departed, then move on.',
-        attendeeExperience: 'Get one easy prompt for the walk to the next stop.',
+        attendeeExperience:
+            'Get one easy prompt for the walk to the next stop.',
         moduleIds: ['social_missions'],
       ),
       EventRunOfShowStep(
@@ -451,7 +455,7 @@ abstract final class EventSuccessPlaybookLibrary {
     attendeePromise:
         'The event stays natural, with enough structure to arrive, talk, and follow up.',
     hostPromise:
-        'Use check-in, a short script, prompts, wingman requests, feedback, and coaching without forcing rotations.',
+        'Use check-in, a short script, prompts, host-help requests, feedback, and coaching without forcing rotations.',
     capacity: EventCapacityGuidance(
       min: 6,
       max: 80,

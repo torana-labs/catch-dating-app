@@ -51,12 +51,14 @@ service cloud.firestore {
         || data[field] in values;
     }
 
+    // BEGIN GENERATED launch markets (tool/contracts/generate_market_catalog.mjs)
     function isDefaultCity(city) {
       return city in [
         'in-mh-mumbai',
         'in-mp-indore'
       ];
     }
+    // END GENERATED launch markets
 
     function isConfiguredCity(city) {
       return exists(/databases/$(database)/documents/config/cities)

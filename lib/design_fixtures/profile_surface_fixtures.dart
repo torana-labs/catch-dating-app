@@ -174,7 +174,7 @@ final class ProfileSurfaceFixtures {
       ),
       UserAnalyticsMetricCard(
         id: 'incomingLikes',
-        label: 'Caught you',
+        label: 'Picked you',
         value: 38,
         unit: UserAnalyticsMetricUnit.count,
         status: UserAnalyticsMetricStatus.ready,
@@ -182,7 +182,7 @@ final class ProfileSurfaceFixtures {
       ),
       UserAnalyticsMetricCard(
         id: 'mutualCatches',
-        label: 'Mutual catches',
+        label: 'Mutual picks',
         value: 9,
         unit: UserAnalyticsMetricUnit.count,
         status: UserAnalyticsMetricStatus.ready,

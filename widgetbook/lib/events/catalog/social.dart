@@ -372,15 +372,15 @@ Widget swipeWindowBannerStates(BuildContext context) {
         label: 'locked',
         child: SwipeWindowBanner(
           icon: CatchIcons.locked,
-          message: 'Catches unlock for 24 hours after the event finishes.',
+          message:
+              'After the event, you have 24 hours to pick people you’d like to see again.',
         ),
       ),
       WidgetbookPageStateCard(
         label: 'open',
         child: SwipeWindowBanner(
           icon: CatchIcons.like,
-          message:
-              'The catch window is open for 24 hours after the event finishes.',
+          message: 'Picks are open for 24 hours after the event finishes.',
         ),
       ),
       WidgetbookPageStateCard(
@@ -390,7 +390,7 @@ Widget swipeWindowBannerStates(BuildContext context) {
             final style = EventDetailSurfaceStyle.dark(CatchTokens.of(context));
             return SwipeWindowBanner(
               icon: CatchIcons.time,
-              message: 'The catch window for this event has closed.',
+              message: 'Picks for this event have closed.',
               surfaceStyle: style,
             );
           },

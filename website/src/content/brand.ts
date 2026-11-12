@@ -4,7 +4,7 @@
 // Website code imports the brand from here, never from @catch/brand: the
 // release smoke runs website modules where no package is installed.
 
-export const brand = {
+const record = {
   "name": "Catch",
   "shortName": "Catch",
   "web": {
@@ -31,7 +31,15 @@ export const brand = {
   },
   "stores": {
     "consumerAppName": "Catch",
-    "hostAppName": "Catch Host"
+    "hostAppName": "Catch Host",
+    "consumer": {
+      "ios": null,
+      "android": null
+    },
+    "host": {
+      "ios": "https://apps.apple.com/app/catch-host/id6778927317",
+      "android": null
+    }
   },
   "adminName": "Catch Admin",
   "senders": {
@@ -40,6 +48,14 @@ export const brand = {
     "whatsappDisplayName": "Catch"
   }
 } as const;
+
+/** A store listing URL, or null while the app is not live on that store. */
+export type StoreLink = string | null;
+export type StoreLinks = {readonly ios: StoreLink; readonly android: StoreLink};
+type StoreRecord = Omit<typeof record.stores, "consumer" | "host"> &
+  {readonly consumer: StoreLinks; readonly host: StoreLinks};
+
+export const brand: Omit<typeof record, "stores"> & {readonly stores: StoreRecord} = record;
 
 const tokenPattern = /\{\{\s*brand\.([A-Za-z0-9_.]+)\s*\}\}/gu;
 

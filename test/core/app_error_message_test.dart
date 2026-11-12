@@ -112,8 +112,8 @@ void main() {
         context: AppErrorContext.swipes,
       );
 
-      expect(descriptor.title, 'Catches unavailable');
-      expect(descriptor.retryLabel, 'Reload catches');
+      expect(descriptor.title, 'People unavailable');
+      expect(descriptor.retryLabel, 'Reload people');
       expect(descriptor.retryable, isTrue);
     });
 

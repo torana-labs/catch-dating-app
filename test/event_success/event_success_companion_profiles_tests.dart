@@ -64,7 +64,7 @@ void _registerEventSuccessCompanionProfilesTests() {
 
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Social prompt'), findsNothing);
-      expect(find.text('Private afterglow'), findsOneWidget);
+      expect(find.text('Your recap'), findsOneWidget);
       expect(find.textContaining('not a public share card'), findsOneWidget);
       expect(find.text('Suggested first-message openers'), findsOneWidget);
       final copyOpener = findTooltipIn<StageCueCard>(

@@ -21,7 +21,7 @@ import '../test_pump_helpers.dart';
 
 void main() {
   group('DashboardScreen Catch windows', () {
-    testWidgets('logs each Home window and opens its existing catch route', (
+    testWidgets('logs each Home window and opens its after-event screen', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -42,10 +42,10 @@ void main() {
             builder: (_, _) => const DashboardScreen(),
           ),
           GoRoute(
-            path: Routes.swipeEventScreen.path,
-            name: Routes.swipeEventScreen.name,
+            path: Routes.eventRecapScreen.path,
+            name: Routes.eventRecapScreen.name,
             builder: (_, state) => Scaffold(
-              body: Text('Catch ${state.pathParameters['eventId']}'),
+              body: Text('After ${state.pathParameters['eventId']}'),
             ),
           ),
         ],
@@ -97,9 +97,9 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Start catching'));
+      await tester.tap(find.text('See who you met'));
       await pumpFeatureUi(tester);
-      expect(find.text('Catch home-window'), findsOneWidget);
+      expect(find.text('After home-window'), findsOneWidget);
       expect(
         reporter.events,
         contains(
@@ -147,12 +147,12 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      expect(find.text('Start catching'), findsOneWidget);
+      expect(find.text('See who you met'), findsOneWidget);
 
       now = now.add(const Duration(hours: 2));
       await pumpFeatureUiFor(tester, dashboardHomeClockTick);
       await tester.pump();
-      expect(find.text('Start catching'), findsNothing);
+      expect(find.text('See who you met'), findsNothing);
       expect(find.text('Write review'), findsOneWidget);
     });
   });

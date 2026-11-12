@@ -1,4 +1,5 @@
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:test/test.dart';
 
@@ -30,6 +31,44 @@ void main() {
       expect(dialCodeForCityName('kathmandu'), '+977');
       expect(marketForCityName('new-york').isoCode, 'US');
       expect(defaultCityDataForMarket().name, 'in-mh-mumbai');
+    });
+
+    test('cities carry their catalog lifecycle and website listing', () {
+      final mumbai = cityOptionByName('mumbai')!;
+      expect(mumbai.lifecycle, 'live');
+      expect(mumbai.websiteListed, isTrue);
+      expect(mumbai.toCityData().effectiveLifecycle, 'live');
+      expect(cityOptionByName('pune')!.lifecycle, 'waitlist');
+      final kathmandu = cityOptionByName('kathmandu')!;
+      expect(kathmandu.lifecycle, 'hidden');
+      expect(kathmandu.websiteListed, isFalse);
+      for (final city in defaultCityOptions) {
+        expect(city.launchStatus == 'launched', city.lifecycle == 'live');
+      }
+    });
+
+    test('config written before lifecycles infers one from launchStatus', () {
+      CityData legacy(String launchStatus) => CityData.fromJson({
+        'name': 'in-mh-pune',
+        'label': 'Pune',
+        'latitude': 18.5204,
+        'longitude': 73.8567,
+        'launchStatus': launchStatus,
+      });
+      expect(legacy('launched').effectiveLifecycle, 'live');
+      expect(legacy('paused').effectiveLifecycle, 'paused');
+      expect(legacy('planned').effectiveLifecycle, 'hidden');
+      expect(legacy('planned').websiteListed, isFalse);
+      final current = CityData.fromJson({
+        'name': 'in-mh-pune',
+        'label': 'Pune',
+        'latitude': 18.5204,
+        'longitude': 73.8567,
+        'lifecycle': 'launching',
+        'launchDate': '2027-01-15',
+      });
+      expect(current.effectiveLifecycle, 'launching');
+      expect(current.launchDate, '2027-01-15');
     });
 
     test('unknown city labels fall back to title case', () {

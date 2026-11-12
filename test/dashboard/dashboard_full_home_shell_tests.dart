@@ -122,7 +122,7 @@ void _dashboardFullHomeShellTests() {
 
       expect(find.text('Event Focus'), findsOneWidget);
       expect(find.textContaining('After the event'), findsOneWidget);
-      expect(find.text('Start catching'), findsOneWidget);
+      expect(find.text('See who you met'), findsOneWidget);
       expect(find.byKey(EventFocusList.listKey), findsOneWidget);
       final focusList = tester.widget<EventFocusList>(
         find.byType(EventFocusList),
@@ -591,7 +591,7 @@ void _dashboardFullHomeShellTests() {
 
         expect(find.text('Event Focus'), findsOneWidget);
         expect(find.textContaining('After the event'), findsOneWidget);
-        expect(find.text('Start catching'), findsOneWidget);
+        expect(find.text('See who you met'), findsOneWidget);
         expect(find.text('Write review'), findsOneWidget);
         expect(find.text('Review your event'), findsNothing);
       },

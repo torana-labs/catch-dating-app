@@ -6,8 +6,9 @@ import {fileURLToPath} from "node:url";
 import record from "./brand.json" with {type: "json"};
 import {applyBrand, applyBrandText, brand, brandConsistencyErrors, webUrl} from "./index.mjs";
 import {compare, rules, scanText} from "./check_brand_literals.mjs";
-import {outputs} from "./generate.mjs";
+import {outputs, renderDartModule, renderFunctionsModule, renderWebsiteModule} from "./generate.mjs";
 import {rewriteSurface, surfacePaths} from "./managed.mjs";
+import {launchGateGaps, launchGateMessage, loadMarketCities} from "./launch_gate.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -106,4 +107,92 @@ test("a rebrand rewrites every managed surface and leaves the noun exceptions al
 test("the applied record matches brand.json", () => {
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(packageDir, "applied.json"), "utf8")),
     JSON.parse(JSON.stringify(brand)));
+});
+
+const withStores = (consumer, host = {ios: null, android: null}) =>
+  ({...record, stores: {...record.stores, consumer, host}});
+
+test("store links are a validated URL or null", () => {
+  const schema = JSON.parse(fs.readFileSync(path.join(packageDir, "brand.schema.json"), "utf8"));
+  const valid = withStores(
+    {ios: "https://apps.apple.com/in/app/catch-run-clubs/id6739000001",
+      android: "https://play.google.com/store/apps/details?id=com.catchdates.app"},
+    {ios: "https://apps.apple.com/app/id6739000002", android: null});
+  assert.deepEqual(schemaErrors(schema, schema, withStores({ios: null, android: null},
+    {ios: "https://apps.apple.com/app/catch-host/id6778927317", android: null}), "brand"), [],
+  "the storefront-neutral form (slug, no country) is accepted");
+  assert.deepEqual(schemaErrors(schema, schema, valid, "brand"), []);
+  // Each rejected link is built from parts with URL, so the hosts are exact
+  // values rather than strings that read like patterns.
+  const link = (host, pathname, search = "", protocol = "https:") =>
+    Object.assign(new URL(`${protocol}//${host}`), {pathname, search}).href;
+  const rejected = [
+    ["ios", "no app id", link("apps.apple.com", "/in/app/catch")],
+    ["ios", "plain http", link("apps.apple.com", "/app/id1", "", "http:")],
+    ["ios", "look-alike host", link("apps.apple.com.evil.example", "/app/id1")],
+    ["ios", "Play link in the iOS slot", link("play.google.com", "/store/apps/details", "?id=com.catchdates.app")],
+    ["android", "package not reverse-DNS", link("play.google.com", "/store/apps/details", "?id=Catch")],
+    ["android", "extra query", link("play.google.com", "/store/apps/details", "?id=com.catchdates.app&hl=en")],
+    ["android", "App Store link in the Android slot", link("apps.apple.com", "/app/id1")],
+    ["android", "empty", ""],
+  ];
+  assert.equal(new URL(rejected[2][2]).hostname, "apps.apple.com.evil.example");
+  assert.notEqual(new URL(rejected[2][2]).hostname, "apps.apple.com");
+  for (const [platform, why, value] of rejected) {
+    const candidate = withStores({ios: null, android: null, [platform]: value});
+    const errors = schemaErrors(schema, schema, candidate, "brand");
+    assert.ok(errors.some((error) => error.startsWith(`brand.stores.consumer.${platform} `)),
+      `rejects ${platform}: ${why}`);
+  }
+  assert.match(schemaErrors(schema, schema, withStores({ios: null}), "brand").join(), /android is required/u);
+});
+
+test("a Google Play link names the role's production package", () => {
+  const targets = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/app_targets.json"), "utf8"));
+  const productionIds = JSON.stringify(targets).match(/"applicationId":\s*"com\.catchdates\.(?:app|host)"/gu) ?? [];
+  assert.equal(productionIds.length, 2, "tool/app_targets.json lists both production applicationIds");
+  for (const role of ["consumer", "host"]) {
+    const link = brand.stores[role].android;
+    if (link === null) continue;
+    const expected = role === "consumer" ? "com.catchdates.app" : "com.catchdates.host";
+    assert.equal(new URL(link).searchParams.get("id"), expected, `stores.${role}.android`);
+  }
+});
+
+test("store links reach every runtime copy, null or set", () => {
+  const empty = withStores({ios: null, android: null});
+  const dartEmpty = renderDartModule(empty);
+  assert.match(dartEmpty, /static const String\? storesConsumerIos = null;/u);
+  assert.match(dartEmpty, /static const String\? storesHostAndroid = null;/u);
+  const ios = "https://apps.apple.com/app/id6739000001";
+  const set = withStores({ios, android: null});
+  // Compare whole lines and parsed records, not substrings.
+  const dartLines = renderDartModule(set).split("\n");
+  const at = dartLines.indexOf("  static const String? storesConsumerIos =");
+  assert.ok(at > 0, "a set link keeps String? (and wraps past 80 columns)");
+  assert.equal(dartLines[at + 1], `      '${ios}';`);
+  assert.equal(dartLines[at - 1], "  // ignore: unnecessary_nullable_for_final_variable_declarations",
+    "a set link keeps String? without tripping --fatal-infos");
+  assert.ok(dartEmpty.split("\n").every((line) => !line.startsWith("  // ignore:")), "null slots need no ignore");
+  const recordOf = (source) => JSON.parse(/const record = (\{[\s\S]*?\n\}) as const;/u.exec(source)[1]);
+  for (const render of [renderFunctionsModule, renderWebsiteModule]) {
+    assert.deepEqual(recordOf(render(empty)).stores.consumer, {ios: null, android: null});
+    assert.deepEqual(recordOf(render(set)).stores.consumer, {ios, android: null});
+    assert.match(render(set), /export type StoreLink = string \| null;/u);
+  }
+});
+
+test("the launch gate names the Consumer store slots a live market lacks", async () => {
+  const cities = [{id: "a", label: "Mumbai", status: "live"}, {id: "b", label: "Delhi", status: "waitlist"}];
+  const none = withStores({ios: null, android: null});
+  assert.deepEqual(launchGateGaps(none, cities), {live: ["Mumbai"], missing: ["stores.consumer.ios", "stores.consumer.android"]});
+  assert.match(launchGateMessage(launchGateGaps(none, cities)), /Mumbai is live but stores\.consumer\.ios and stores\.consumer\.android are null/u);
+  const iosOnly = withStores({ios: "https://apps.apple.com/app/id1", android: null});
+  assert.deepEqual(launchGateGaps(iosOnly, cities).missing, ["stores.consumer.android"]);
+  const both = withStores({ios: "https://apps.apple.com/app/id1",
+    android: "https://play.google.com/store/apps/details?id=com.catchdates.app"});
+  assert.equal(launchGateMessage(launchGateGaps(both, cities)), null);
+  assert.equal(launchGateMessage(launchGateGaps(none, [{id: "b", status: "waitlist"}])), null, "no live city, no gate");
+  const marketCities = await loadMarketCities(repoRoot);
+  assert.ok(marketCities.length > 0 && marketCities.every((city) => typeof city.status === "string"));
 });

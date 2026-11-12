@@ -1,0 +1,40 @@
+/*
+ * catch.wordmark: the display voice of catch.text's display roles (Archivo at
+ * its single 78% width, weight 760, -0.04em tracking) at the top bar's size or
+ * the footer band's. The tracking is a ratio of the size, so both sizes share
+ * the one letterform.
+ */
+.wordmark {
+  display: inline-block;
+  color: inherit;
+  font-family: var(--catch-typography-role-display-xl-family), var(--catch-font-stack-display);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  font-weight: var(--catch-typography-role-display-xl-weight);
+  line-height: 1;
+  letter-spacing: var(--catch-typography-role-display-xl-tracking);
+  word-spacing: var(--catch-font-word-spacing-voice);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wordmark[data-size="bar"] { font-size: 26px; }
+.wordmark[data-size="band"] { font-size: var(--catch-typography-role-display-xl-size); }
+
+a.wordmark:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid currentColor;
+  outline-offset: var(--catch-space-micro2);
+}
+
+/*
+ * Phones: a sub-brand steps under the brand as a small second line, so
+ * "Catch for weddings" and the page's primary action share one 56px bar.
+ */
+@media (max-width: 599px) {
+  .wordmark[data-size="bar"] .sub {
+    display: block;
+    font-size: var(--catch-typography-role-label-kicker-size);
+    letter-spacing: 0;
+  }
+}
