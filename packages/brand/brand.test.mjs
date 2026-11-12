@@ -122,19 +122,27 @@ test("store links are a validated URL or null", () => {
     {ios: "https://apps.apple.com/app/catch-host/id6778927317", android: null}), "brand"), [],
   "the storefront-neutral form (slug, no country) is accepted");
   assert.deepEqual(schemaErrors(schema, schema, valid, "brand"), []);
-  for (const [platform, url] of [
-    ["ios", "https://apps.apple.com/in/app/catch"],
-    ["ios", "http://apps.apple.com/app/id1"],
-    ["ios", "https://apps.apple.com.evil.example/app/id1"],
-    ["ios", "https://play.google.com/store/apps/details?id=com.catchdates.app"],
-    ["android", "https://play.google.com/store/apps/details?id=Catch"],
-    ["android", "https://play.google.com/store/apps/details?id=com.catchdates.app&hl=en"],
-    ["android", "https://apps.apple.com/app/id1"],
-    ["android", ""],
-  ]) {
-    const candidate = withStores({ios: null, android: null, [platform]: url});
-    assert.match(schemaErrors(schema, schema, candidate, "brand").join(),
-      new RegExp(`stores\\.consumer\\.${platform}`, "u"), url);
+  // Each rejected link is built from parts with URL, so the hosts are exact
+  // values rather than strings that read like patterns.
+  const link = (host, pathname, search = "", protocol = "https:") =>
+    Object.assign(new URL(`${protocol}//${host}`), {pathname, search}).href;
+  const rejected = [
+    ["ios", "no app id", link("apps.apple.com", "/in/app/catch")],
+    ["ios", "plain http", link("apps.apple.com", "/app/id1", "", "http:")],
+    ["ios", "look-alike host", link("apps.apple.com.evil.example", "/app/id1")],
+    ["ios", "Play link in the iOS slot", link("play.google.com", "/store/apps/details", "?id=com.catchdates.app")],
+    ["android", "package not reverse-DNS", link("play.google.com", "/store/apps/details", "?id=Catch")],
+    ["android", "extra query", link("play.google.com", "/store/apps/details", "?id=com.catchdates.app&hl=en")],
+    ["android", "App Store link in the Android slot", link("apps.apple.com", "/app/id1")],
+    ["android", "empty", ""],
+  ];
+  assert.equal(new URL(rejected[2][2]).hostname, "apps.apple.com.evil.example");
+  assert.notEqual(new URL(rejected[2][2]).hostname, "apps.apple.com");
+  for (const [platform, why, value] of rejected) {
+    const candidate = withStores({ios: null, android: null, [platform]: value});
+    const errors = schemaErrors(schema, schema, candidate, "brand");
+    assert.ok(errors.some((error) => error.startsWith(`brand.stores.consumer.${platform} `)),
+      `rejects ${platform}: ${why}`);
   }
   assert.match(schemaErrors(schema, schema, withStores({ios: null}), "brand").join(), /android is required/u);
 });
