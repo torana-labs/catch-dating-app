@@ -13,7 +13,7 @@ describe("Interest by city", () => {
   it("lists each city with its people and 7- and 30-day change, busiest first", () => {
     render(<CityInterestScreen controller={controller(sampleCityInterest())} />);
     const rows = screen.getAllByRole("row").slice(1).map((row) => row.textContent ?? "");
-    expect(rows[0]).toContain("Pune");
+    expect(rows[0]).toContain(sampleCityInterest().cities[0]!.label);
     expect(rows[0]).toContain("31 (+9)");
     expect(screen.getByText("Other (India)")).toBeTruthy();
     expect(screen.getByText("Not in the catalog")).toBeTruthy();

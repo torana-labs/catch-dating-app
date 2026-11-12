@@ -7,6 +7,7 @@ import type {AdminGetCityInterestCallableResponse} from
   "../../../generated/contracts/adminGetCityInterestCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
+import {generatedMarketCities} from "../../../shared/config/generated/marketCatalog";
 
 export type CityInterest = AdminGetCityInterestCallableResponse;
 
@@ -29,17 +30,17 @@ export async function loadCityInterest(): Promise<CityInterest> {
 const span = (total: number, last7: number, previous7: number, last30: number, previous30: number) =>
   ({total, last7, previous7, last30, previous30});
 
-// Sample mode. Synthetic only.
+// Sample mode. Synthetic counts over the catalog's public waitlist cities.
+const sampleCounts: Array<Parameters<typeof span>> = [
+  [184, 31, 22, 96, 61], [143, 18, 25, 70, 52], [121, 20, 20, 64, 40], [58, 6, 9, 27, 18],
+];
+
 export function sampleCityInterest(): CityInterest {
+  const waiting = generatedMarketCities.filter((city) => city.websiteListed && city.lifecycle === "waitlist")
+    .slice(0, sampleCounts.length);
   const cities: CityInterest["cities"] = [
-    {cityKey: "in-mh-pune", cityId: "in-mh-pune", label: "Pune", countryIsoCode: "IN", lifecycle: "waitlist",
-      interest: span(184, 31, 22, 96, 61)},
-    {cityKey: "in-ka-bengaluru", cityId: "in-ka-bengaluru", label: "Bengaluru", countryIsoCode: "IN", lifecycle: "waitlist",
-      interest: span(143, 18, 25, 70, 52)},
-    {cityKey: "in-dl-delhi-ncr", cityId: "in-dl-delhi-ncr", label: "Delhi NCR", countryIsoCode: "IN", lifecycle: "waitlist",
-      interest: span(121, 20, 20, 64, 40)},
-    {cityKey: "in-tg-hyderabad", cityId: "in-tg-hyderabad", label: "Hyderabad", countryIsoCode: "IN", lifecycle: "waitlist",
-      interest: span(58, 6, 9, 27, 18)},
+    ...waiting.map((city, index) => ({cityKey: city.marketId, cityId: city.marketId, label: city.label,
+      countryIsoCode: city.countryIsoCode, lifecycle: city.lifecycle, interest: span(...sampleCounts[index]!)})),
     {cityKey: "other-in", cityId: null, label: "Other (India)", countryIsoCode: "IN", lifecycle: null,
       interest: span(37, 4, 3, 15, 12)},
   ];
