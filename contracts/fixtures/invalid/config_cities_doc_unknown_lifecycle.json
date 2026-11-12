@@ -1,0 +1,157 @@
+{
+  "version": 3,
+  "cityNames": [
+    "in-mh-mumbai",
+    "in-mp-indore"
+  ],
+  "marketIds": [
+    "in-mh-mumbai",
+    "in-mp-indore",
+    "in-dl-delhi-ncr"
+  ],
+  "launchMarketIds": [
+    "in-mh-mumbai",
+    "in-mp-indore"
+  ],
+  "cities": [
+    {
+      "name": "in-mh-mumbai",
+      "cityId": "in-mh-mumbai",
+      "marketId": "in-mh-mumbai",
+      "slug": "mumbai",
+      "label": "Mumbai",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "countryIsoCode": "IN",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata",
+      "launchStatus": "launched",
+      "profileSelectable": true,
+      "hostCreatable": true,
+      "eventCreatable": true,
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
+    },
+    {
+      "name": "in-mp-indore",
+      "cityId": "in-mp-indore",
+      "marketId": "in-mp-indore",
+      "slug": "indore",
+      "label": "Indore",
+      "latitude": 22.7196,
+      "longitude": 75.8577,
+      "countryIsoCode": "IN",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata",
+      "launchStatus": "launched",
+      "profileSelectable": true,
+      "hostCreatable": true,
+      "eventCreatable": true,
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
+    }
+  ],
+  "markets": [
+    {
+      "marketId": "in-mh-mumbai",
+      "cityId": "in-mh-mumbai",
+      "slug": "mumbai",
+      "label": "Mumbai",
+      "cityLabel": "Mumbai",
+      "regionCode": "MH",
+      "regionName": "Maharashtra",
+      "countryIsoCode": "IN",
+      "countryName": "India",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "aliases": [
+        "mumbai",
+        "bombay"
+      ],
+      "launchStatus": "launched",
+      "profileSelectable": true,
+      "hostCreatable": true,
+      "eventCreatable": true,
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
+    },
+    {
+      "marketId": "in-mp-indore",
+      "cityId": "in-mp-indore",
+      "slug": "indore",
+      "label": "Indore",
+      "cityLabel": "Indore",
+      "regionCode": "MP",
+      "regionName": "Madhya Pradesh",
+      "countryIsoCode": "IN",
+      "countryName": "India",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata",
+      "latitude": 22.7196,
+      "longitude": 75.8577,
+      "aliases": [
+        "indore"
+      ],
+      "launchStatus": "launched",
+      "profileSelectable": true,
+      "hostCreatable": true,
+      "eventCreatable": true,
+      "exploreVisible": true,
+      "lifecycle": "live",
+      "websiteListed": true
+    },
+    {
+      "marketId": "in-dl-delhi-ncr",
+      "cityId": "in-dl-new-delhi",
+      "slug": "delhi-ncr",
+      "label": "Delhi NCR",
+      "cityLabel": "New Delhi",
+      "regionCode": "DL",
+      "regionName": "Delhi",
+      "countryIsoCode": "IN",
+      "countryName": "India",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata",
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "aliases": [
+        "delhi",
+        "new-delhi",
+        "delhi-ncr",
+        "ncr"
+      ],
+      "launchStatus": "planned",
+      "profileSelectable": false,
+      "hostCreatable": false,
+      "eventCreatable": false,
+      "exploreVisible": false,
+      "lifecycle": "soon",
+      "websiteListed": true
+    }
+  ],
+  "countries": [
+    {
+      "isoCode": "IN",
+      "name": "India",
+      "currencyCode": "INR",
+      "currencySymbol": "₹",
+      "dialCode": "+91",
+      "locale": "en-IN",
+      "timeZone": "Asia/Kolkata",
+      "appStoreCountryCodes": [
+        "IN"
+      ],
+      "defaultMarketId": "in-mh-mumbai"
+    }
+  ]
+}

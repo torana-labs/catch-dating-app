@@ -60,6 +60,16 @@ abstract class CityData with _$CityData {
 
     /// Whether Explore should show this market.
     @Default(false) bool exploreVisible,
+
+    /// Launch lifecycle: hidden, waitlist, launching, live or paused. Empty in
+    /// config written before lifecycles; read [effectiveLifecycle] instead.
+    @Default('') String lifecycle,
+
+    /// Whether the public website lists this market.
+    @Default(false) bool websiteListed,
+
+    /// Planned launch day (YYYY-MM-DD) of a launching market.
+    String? launchDate,
   }) = _CityData;
 
   factory CityData.fromJson(Map<String, dynamic> json) =>
@@ -68,4 +78,14 @@ abstract class CityData with _$CityData {
   String get effectiveMarketId => marketId.isNotEmpty ? marketId : name;
   String get effectiveCityId => cityId.isNotEmpty ? cityId : effectiveMarketId;
   String get effectiveSlug => slug.isNotEmpty ? slug : name;
+
+  /// The lifecycle, inferred from [launchStatus] when config predates it.
+  String get effectiveLifecycle {
+    if (lifecycle.isNotEmpty) return lifecycle;
+    return switch (launchStatus) {
+      'launched' => 'live',
+      'paused' => 'paused',
+      _ => 'hidden',
+    };
+  }
 }

@@ -1,15 +1,10 @@
 {
-  "description": "Files that name three or more catalog cities in string literals. A pending entry is a hand-maintained list still to migrate onto contracts/catalogs/markets.json; a fixture entry is synthetic or demo data where a city is an attribute, not the list of served cities. Counts may only shrink: run node tool/contracts/generate_market_catalog.mjs --prune after a migration. Never add an entry for a new product city list; read the catalog or a generated copy instead.",
+  "description": "Files that name three or more catalog cities in string literals. A pending entry is a hand-maintained list still to migrate onto contracts/catalogs/markets.json; a fixture entry is synthetic or demo data where a city is an attribute, not the list of served cities; a reference entry selects catalog cities by slug, and its validatedBy test checks every reference against the catalog. Counts may only shrink: run node tool/contracts/generate_market_catalog.mjs --prune after a migration. Never add an entry for a new product city list; read the catalog or a generated copy instead.",
   "allowlisted": {
     "admin/src/features/marketplace/api/marketplaceRepository.ts": {
       "cities": 3,
       "kind": "fixture",
       "reason": "Sample marketplace metrics for the admin preview data source."
-    },
-    "admin/src/features/marketplace/ui/MarketplaceScreen.tsx": {
-      "cities": 3,
-      "kind": "pending",
-      "reason": "City label map for the marketplace view; PR 2 reads labels from the generated catalog."
     },
     "admin/src/features/sales/api/salesRepository.ts": {
       "cities": 9,
@@ -23,13 +18,15 @@
     },
     "operations/src/workflows/supply-intake/config/search_matrix.json": {
       "cities": 7,
-      "kind": "pending",
-      "reason": "Supply-intake search matrix city slugs; PR 2 validates them against the catalog."
+      "kind": "reference",
+      "reason": "Supply-intake search matrix keyed by catalog slug; validatedBy checks each slug is a catalog crawl target.",
+      "validatedBy": "operations/test/supply-intake-market-catalog.test.mjs"
     },
     "operations/src/workflows/supply-intake/config/target_categories.json": {
       "cities": 8,
-      "kind": "pending",
-      "reason": "Supply-intake crawl targets name catalog cities; PR 2 validates or derives them from the catalog."
+      "kind": "reference",
+      "reason": "Supply-intake crawl targets and weights keyed by catalog slug; validatedBy checks each slug, name and country against the catalog.",
+      "validatedBy": "operations/test/supply-intake-market-catalog.test.mjs"
     },
     "tool/demo/demo_ops_core.mjs": {
       "cities": 9,

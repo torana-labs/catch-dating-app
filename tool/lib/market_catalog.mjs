@@ -152,8 +152,9 @@ export function assertValidMarketCatalog(catalog) {
 }
 
 /**
- * The flat market record Functions, demo tools and config/cities have always
- * used. Field order and values match the hand-written copies this replaced.
+ * The flat market record Functions, demo tools and config/cities use. The
+ * first twenty fields are the ones every reader has always had; lifecycle,
+ * websiteListed and launchDate follow, so older readers can ignore them.
  */
 export function canonicalMarketsFromCatalog(catalog) {
   const countries = new Map(
@@ -182,8 +183,26 @@ export function canonicalMarketsFromCatalog(catalog) {
       hostCreatable: city.surfaces.hostCreatable,
       eventCreatable: city.surfaces.eventCreatable,
       exploreVisible: city.surfaces.exploreVisible,
+      lifecycle: city.lifecycle,
+      websiteListed: city.surfaces.websiteListed,
+      ...(city.launchDate === undefined ? {} : {launchDate: city.launchDate}),
     };
   });
+}
+
+/** Country records as config/cities and the generated copies carry them. */
+export function countryRecordsFromCatalog(catalog) {
+  return catalog.countries.map((country) => ({
+    isoCode: country.isoCode,
+    name: country.name,
+    currencyCode: country.currencyCode,
+    currencySymbol: country.currencySymbol,
+    dialCode: country.dialCode,
+    locale: country.locale,
+    timeZone: country.timeZone,
+    appStoreCountryCodes: [...country.appStoreCountryCodes],
+    defaultMarketId: country.defaultMarketId,
+  }));
 }
 
 function isTimeZone(value) {
