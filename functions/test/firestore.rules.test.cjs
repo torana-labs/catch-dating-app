@@ -2279,6 +2279,23 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps waitlist city interest counters and markers server-only", async () => {
+      for (const [collectionName, documentId] of [
+        ["cityInterest", "in-mh-pune"],
+        ["cityInterestMarkers", "a".repeat(64)],
+      ]) {
+        await seed([collectionName, documentId], {schemaVersion: 1, cityKey: "in-mh-pune"});
+        for (const db of [authedDb("owner-1"), testEnv.unauthenticatedContext().firestore()]) {
+          const ref = doc(db, collectionName, documentId);
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {total: 100}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {schemaVersion: 1, cityKey: "in-mh-pune"}));
+          await assertFails(getDocs(collection(db, collectionName)));
+        }
+      }
+    });
+
     it("keeps organizer insights and follower message quotas server-only", async () => {
       for (const [collectionName, documentId] of [
         ["organizerInsights", "organizer-1_20261107"],

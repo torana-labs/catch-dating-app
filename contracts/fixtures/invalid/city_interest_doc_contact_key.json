@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cityKey": "in-mh-pune",
+  "cityId": "in-mh-pune",
+  "countryIsoCode": "IN",
+  "total": 1,
+  "daily": {"2026-11-12": 1},
+  "phone": "+919812345678",
+  "updatedAt": {"_seconds": 1794500000, "_nanoseconds": 0}
+}

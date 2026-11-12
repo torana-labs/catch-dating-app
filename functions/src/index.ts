@@ -1183,3 +1183,4 @@ export {adminGetFinanceMonth} from "./money/financeMonth";
 export {adminManagePaymentIssues} from "./money/paymentIssues";
 export {adminGetGrowth} from "./growth/adminGetGrowth";
 export {adminGetMarketplace} from "./marketplace/adminGetMarketplace";
+export {adminGetCityInterest} from "./cityInterest/adminGetCityInterest";
