@@ -12,6 +12,7 @@ run-name: Cancel runs for closed PR #${{ github.event.pull_request.number }}
 # - ci.yml:          ci-<event>-<PR number> (the pull_request branch of its key)
 # - nx-shadow.yml:   nx-shadow-<PR number>
 # - infra-plan.yml:  infra-plan-<PR number>
+# - demo-ops-ci.yml: demo-ops-ci-<event>-<PR number> (its pull_request branch)
 #
 # If one of those keys changes, change the matching group here.
 on:
@@ -53,3 +54,14 @@ jobs:
     steps:
       - name: Release the PR's infra plan group
         run: echo "Any in-progress infra plan run for this PR was cancelled."
+
+  demo-ops-ci:
+    name: Cancel demo ops CI for the closed PR
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    concurrency:
+      group: demo-ops-ci-pull_request-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Release the PR's demo ops CI group
+        run: echo "Any in-progress demo ops CI run for this PR was cancelled."
