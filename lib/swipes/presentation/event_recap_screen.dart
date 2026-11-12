@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
@@ -15,7 +17,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_controller.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_host_photos_section.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -32,7 +36,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// After the event (RbAppAfter, RbAppDinnerAfter): how it went, the group
-/// chat, the people you'd like to see again and the organiser's next event.
+/// chat, the host's photos, the people you'd like to see again and the
+/// organiser's next event.
 class EventRecapScreen extends ConsumerStatefulWidget {
   const EventRecapScreen({super.key, required this.eventId, this.now});
 
@@ -124,6 +129,12 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       ),
     );
 
+    // Photos the host shared with guests who checked in. Anyone else, and a
+    // failed load, gets none and the section stays out.
+    final hostPhotos =
+        _value(ref.watch(eventHostPhotoAlbumProvider(eventId)))?.photos ??
+        const <EventHostPhoto>[];
+
     final followMutation = event == null
         ? null
         : OrganizerFollowController.joinMutation(event.organizerId);
@@ -167,6 +178,14 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           ),
           EventRecapReady ready => EventRecapReadyBody(
             state: ready,
+            hostPhotos: hostPhotos,
+            onOpenHostPhoto: (index) => unawaited(
+              EventHostPhotoViewerScreen.open(
+                context,
+                photos: hostPhotos,
+                initialIndex: index,
+              ),
+            ),
             pendingPicks: _pending,
             onRate: event == null
                 ? null
@@ -333,6 +352,8 @@ class EventRecapReadyBody extends StatelessWidget {
     required this.onOpenNext,
     required this.onFollow,
     required this.onOpenOrganizer,
+    this.hostPhotos = const <EventHostPhoto>[],
+    this.onOpenHostPhoto,
     this.pendingPicks = const <String>{},
     this.followPending = false,
   });
@@ -349,6 +370,10 @@ class EventRecapReadyBody extends StatelessWidget {
   final VoidCallback onFollow;
   final VoidCallback onOpenOrganizer;
   final bool followPending;
+
+  /// The host's photos for checked-in guests; empty leaves the section out.
+  final List<EventHostPhoto> hostPhotos;
+  final ValueChanged<int>? onOpenHostPhoto;
 
   @override
   Widget build(BuildContext context) {
@@ -474,6 +499,12 @@ class EventRecapReadyBody extends StatelessWidget {
                 onTap: onOpenChat,
               ),
             ],
+          ),
+        if (hostPhotos.isNotEmpty)
+          EventRecapHostPhotosSection(
+            organizerName: organizerName,
+            photos: hostPhotos,
+            onOpen: (index) => onOpenHostPhoto?.call(index),
           ),
         CatchSection.divided(
           title: l10n.afterEventStayInTouchTitle,
