@@ -84,7 +84,15 @@
   background: var(--flow-surface);
 }
 
+/*
+ * The application's fields rest as boxes, as fields in the quiet register do
+ * (CatchField's --catch-field-rest-*): a page of inputs has to say it can be
+ * typed into, not read as labels over blank space.
+ */
 .host-application__stage {
+  --catch-field-rest-fill: var(--catch-theme-surface);
+  --catch-field-rest-line: var(--catch-theme-line2);
+
   display: grid;
   gap: 20px;
 }
@@ -345,8 +353,11 @@
   color: var(--website-bg);
 }
 
+/* The summary keeps its own height beside a tall form; its rows never spread down the column. */
 .host-application__summary {
   display: grid;
+  align-self: start;
+  align-content: start;
   gap: 16px;
 }
 
