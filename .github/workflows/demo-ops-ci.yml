@@ -1,9 +1,26 @@
 name: Demo Ops CI
 
-# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
-# pull requests or pushes; the full run happens once a night on main.
 on:
+  pull_request:
+    paths:
+      - "tool/demo/**"
+      - "tool/data/recompute_event_*counts*.mjs"
+      - "tool/data/recompute_organizer_*counts*.mjs"
+      - "docs/demo_data_seeding.md"
+      - ".github/actions/**"
+      - ".github/workflows/demo-ops-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "tool/demo/**"
+      - "tool/data/recompute_event_*counts*.mjs"
+      - "tool/data/recompute_organizer_*counts*.mjs"
+      - "docs/demo_data_seeding.md"
+      - ".github/actions/**"
+      - ".github/workflows/demo-ops-ci.yml"
   workflow_dispatch:
+
 permissions:
   contents: read
 
