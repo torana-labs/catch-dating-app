@@ -279,7 +279,6 @@
     "EventAttendanceReportCallableResponse",
     "EventAttendeeDocument",
     "EventAttendeeIndexDocument",
-    "PushInstallationDocument",
     "EventBookingCallablePayload",
     "EventCloseOutDocument",
     "EventDocument",
