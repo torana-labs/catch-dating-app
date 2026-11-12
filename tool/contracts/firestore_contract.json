@@ -1,6 +1,76 @@
 {
   "schemaVersion": 2,
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
+  "collectionsWithoutRulesTests": {
+    "issue": "https://github.com/torana-labs/catch-dating-app/issues/1765",
+    "description": "Collections with no Firestore rules test. check_firestore_contract.mjs requires every collection to have a rulesTestFile or an entry here; remove an entry when its test lands.",
+    "collections": [
+      {
+        "id": "config_public_contact",
+        "reason": "Server-only collection read through the website's Firestore viewer identity; no rules test yet."
+      },
+      {
+        "id": "hostProfiles",
+        "reason": "Client access (public) has no rules test yet."
+      },
+      {
+        "id": "organizerContactIdentityLinks",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactEventEdges",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactIdentityClaims",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactTraits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerAudienceSummaries",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactMergeReceipts",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerAudienceProjectionReceipts",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "eventWaitlistOffers",
+        "reason": "Client access (offered attendee or club host) has no rules test yet."
+      },
+      {
+        "id": "eventInviteLinks",
+        "reason": "Client access (club host only) has no rules test yet."
+      },
+      {
+        "id": "payments",
+        "reason": "Client access (payment owner only) has no rules test yet."
+      },
+      {
+        "id": "moderationFlags",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "rateLimits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "programFunctionGuests",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "seedEvents",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      }
+    ]
+  },
   "collections": [
     {
       "id": "catchWhatsappOperatorSetupOperations",
@@ -319,6 +389,7 @@
       "id": "config_cities",
       "path": "config/cities",
       "rulesMatch": "/config/cities",
+      "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
       "owner": "public read, server/admin write",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
@@ -330,6 +401,7 @@
       "id": "config_brand",
       "path": "config/brand",
       "rulesMatch": "/config/brand",
+      "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
       "owner": "public read, admin write through tool/firebase/create_config_brand.mjs",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
@@ -522,6 +594,7 @@
       "rulesMatch": "/publicProfiles/{uid}",
       "typescriptInterface": "PublicProfileDocument",
       "dartModel": "lib/contexts/profiles/domain/public_profile.dart",
+      "rulesTestFile": "functions/test/rules/swipes.rules.test.cjs",
       "owner": "syncPublicProfile trigger",
       "read": "authenticated users, except deleted or blocked relationships",
       "write": "server only",
@@ -2742,6 +2815,7 @@
       "rulesMatch": "/matches/{matchId}",
       "typescriptInterface": "MatchDocument",
       "dartModel": "lib/contexts/connections/domain/match.dart",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
       "owner": "matching triggers own lifecycle; participants may reset only their unread count",
       "read": "participants only",
       "write": "server create/delete/status; participant unread reset only",
@@ -2757,6 +2831,7 @@
       "rulesMatch": "/matches/{matchId}/messages/{messageId}",
       "typescriptInterface": "ChatMessageDocument",
       "dartModel": "lib/contexts/messaging/domain/chat_message.dart",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
       "owner": "active match participant creates message; triggers own derived match preview/unread/moderation",
       "read": "active match participants",
       "write": "sender create only",
@@ -2794,6 +2869,7 @@
       "path": "blocks/{blockId}",
       "rulesMatch": "/blocks/{blockId}",
       "typescriptInterface": "BlockDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "safety callables and block trigger",
       "read": "users involved in the block edge",
       "write": "server only",
@@ -2808,6 +2884,7 @@
       "path": "reports/{reportId}",
       "rulesMatch": "/reports/{reportId}",
       "typescriptInterface": "ReportDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "reportUser callable",
       "read": "server/admin only",
       "write": "server only",
@@ -2832,6 +2909,7 @@
       "id": "deletedUsers",
       "path": "deletedUsers/{uid}",
       "rulesMatch": "/deletedUsers/{uid}",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "requestAccountDeletion callable and account cleanup graph",
       "read": "server/admin only",
       "write": "server only",
@@ -2885,6 +2963,7 @@
       "id": "functionEventReceipts",
       "path": "functionEventReceipts/{receiptId}",
       "rulesMatch": "/functionEventReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "idempotent Cloud Function trigger handlers",
       "read": "server/admin only",
       "write": "server only",
