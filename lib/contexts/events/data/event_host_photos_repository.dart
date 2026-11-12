@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
-import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
-import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -111,9 +110,8 @@ class FirebaseEventHostPhotosRepository implements EventHostPhotosRepository {
   );
 }
 
-// keepalive: one stateless callable facade shared by the host and guest
-// photo surfaces.
-@Riverpod(keepAlive: true)
+/// One stateless callable facade shared by the host and guest photo surfaces.
+@riverpod
 EventHostPhotosRepository eventHostPhotosRepository(Ref ref) =>
     FirebaseEventHostPhotosRepository(
       ref.watch(firebaseFunctionsProvider),

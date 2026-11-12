@@ -8,9 +8,12 @@ part of 'event_host_photos_repository.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// One stateless callable facade shared by the host and guest photo surfaces.
 
 @ProviderFor(eventHostPhotosRepository)
 final eventHostPhotosRepositoryProvider = EventHostPhotosRepositoryProvider._();
+
+/// One stateless callable facade shared by the host and guest photo surfaces.
 
 final class EventHostPhotosRepositoryProvider
     extends
@@ -20,13 +23,14 @@ final class EventHostPhotosRepositoryProvider
           EventHostPhotosRepository
         >
     with $Provider<EventHostPhotosRepository> {
+  /// One stateless callable facade shared by the host and guest photo surfaces.
   EventHostPhotosRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventHostPhotosRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +59,7 @@ final class EventHostPhotosRepositoryProvider
 }
 
 String _$eventHostPhotosRepositoryHash() =>
-    r'ec57e1f957f6612cafc10122450c3631d8a3d60c';
+    r'e7d2aa04e3a45db727a92fdf61a72a4469ee8ac7';
 
 /// The event's shared host photos for the signed-in viewer.
 

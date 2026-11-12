@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
@@ -44,7 +42,7 @@ void main() {
   });
 
   test('an outsider album is empty and cannot be managed', () {
-    final album = EventHostPhotoAlbum.fromMap({
+    final album = EventHostPhotoAlbum.fromMap(const {
       'eventId': 'event-1',
       'organizerName': null,
       'access': 'none',
@@ -58,18 +56,15 @@ void main() {
   });
 
   test('rejects a malformed album payload', () {
-    expect(
-      () => EventHostPhotoAlbum.fromMap({
-        'eventId': 'event-1',
-        'access': 'host',
-        'maxPhotos': 100,
-        'photos': [
-          {..._photo, 'displayUrl': ''},
-        ],
-        'urlsExpireAtMillis': 1,
-      }),
-      throwsFormatException,
-    );
+    final unsignedPhoto = Map<Object?, Object?>.of(_photo)..['displayUrl'] = '';
+    final payload = <Object?, Object?>{
+      'eventId': 'event-1',
+      'access': 'host',
+      'maxPhotos': 100,
+      'photos': [unsignedPhoto],
+      'urlsExpireAtMillis': 1,
+    };
+    expect(() => EventHostPhotoAlbum.fromMap(payload), throwsFormatException);
   });
 
   test('stages the original before sharing it under the same id', () async {
