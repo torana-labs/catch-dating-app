@@ -1,130 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {FakeFirestore} from "../shared/testing/fakeFirestore";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {selfCheckInAttendanceHandler} from "./selfCheckInAttendance";
 import {eventVenueSessionRedemptionId} from "./venueSessions";
 
-type FakeData = Record<string, unknown>;
-
 const sessionId = "session_123456789012345678901234";
 const token =
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const now = admin.firestore.Timestamp.fromMillis(1_000_000);
-
-class FakeDocRef {
-  constructor(readonly firestore: FakeFirestore, readonly path: string) {}
-  get id() {
-    return this.path.split("/").at(-1)!;
-  }
-}
-
-class FakeQuery {
-  constructor(private readonly firestore: FakeFirestore,
-    private readonly path: string,
-    private readonly filters: Array<[string, unknown]> = [],
-    private readonly max = Infinity) {}
-  where(field: string, _op: string, value: unknown) {
-    return new FakeQuery(this.firestore, this.path,
-      [...this.filters, [field, value]], this.max);
-  }
-  limit(max: number) {
-    return new FakeQuery(this.firestore, this.path, this.filters, max);
-  }
-  get() {
-    const docs = this.firestore.children(this.path).filter((data) =>
-      this.filters.every(([field, value]) => data[field] === value))
-      .slice(0, this.max).map((data) => ({data: () => data}));
-    return {docs, size: docs.length, empty: docs.length === 0};
-  }
-}
-
-class FakeSnapshot {
-  constructor(
-    private readonly firestore: FakeFirestore,
-    readonly path: string
-  ) {}
-  get exists() {
-    return this.firestore.get(this.path) !== undefined;
-  }
-  data() {
-    return this.firestore.get(this.path);
-  }
-}
-
-class FakeCollectionRef {
-  constructor(
-    private readonly firestore: FakeFirestore,
-    private readonly path: string
-  ) {}
-  doc(id: string) {
-    return new FakeDocRef(this.firestore, `${this.path}/${id}`);
-  }
-  where(field: string, op: string, value: unknown) {
-    return new FakeQuery(this.firestore, this.path).where(field, op, value);
-  }
-  limit(max: number) {
-    return new FakeQuery(this.firestore, this.path).limit(max);
-  }
-}
-
-class FakeTransaction {
-  private readonly writes: Array<() => void> = [];
-  constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef | FakeQuery) {
-    if (ref instanceof FakeQuery) return ref.get();
-    return new FakeSnapshot(this.firestore, ref.path);
-  }
-  create(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => {
-      if (this.firestore.get(ref.path)) {
-        throw new Error(`Document exists: ${ref.path}`);
-      }
-      this.firestore.set(ref.path, data);
-    });
-  }
-  set(ref: FakeDocRef, data: FakeData, options?: {merge: boolean}) {
-    this.writes.push(() => this.firestore.set(
-      ref.path,
-      options?.merge ? {...this.firestore.get(ref.path), ...data} : data
-    ));
-  }
-  update(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.set(ref.path, {
-      ...this.firestore.get(ref.path),
-      ...data,
-    }));
-  }
-  commit() {
-    for (const write of this.writes) write();
-  }
-}
-
-class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
-  collection(path: string) {
-    return new FakeCollectionRef(this, path);
-  }
-  async runTransaction<T>(callback: (tx: FakeTransaction) => Promise<T>) {
-    const tx = new FakeTransaction(this);
-    const result = await callback(tx);
-    tx.commit();
-    return result;
-  }
-  get(path: string) {
-    const data = this.docs[path];
-    return data === undefined ? undefined : {...data};
-  }
-  set(path: string, data: FakeData) {
-    this.docs[path] = {...data};
-  }
-  children(collection: string): FakeData[] {
-    return Object.entries(this.docs).flatMap(([path, data]) =>
-      path.startsWith(`${collection}/`) &&
-        !path.slice(collection.length + 1).includes("/") && data ?
-        [data] : []);
-  }
-}
 
 function harness() {
   const firestore = new FakeFirestore({
