@@ -43,7 +43,7 @@ function ExploreHeading({explore}: {explore: Explore}) {
           <CatchLegacyText as="p" color="coral" variant="supportingStrong">{fill(copy.eyebrow, {city})}</CatchLegacyText>
           <CatchLegacyText as="h1" id="explore-title" variant="displayXl">{fill(soon ? copy.soonTitle : copy.title, {city})}</CatchLegacyText>
           <CatchLegacyText as="p" color="ink2" variant="bodyLead">
-            {soon ? fill(copy.soonLead, {liveCity: explore.liveCity?.label ?? city}) : copy.lead}
+            {soon ? explore.liveCity ? fill(copy.soonLead, {liveCity: explore.liveCity.label}) : copy.soonLeadAlone : copy.lead}
           </CatchLegacyText>
         </CatchGap>
       }
@@ -88,12 +88,29 @@ function ExploreFilterBar({explore}: {explore: Explore}) {
   );
 }
 
+/**
+ * Nothing to show with no filter set: the city is waiting for plans (or, not
+ * yet open, for its first hosts), not missing a filter, so it gets its own
+ * empty state and no "0 plans" count.
+ */
+function waitingForFirstPlans(explore: Explore) {
+  const shown = explore.filters.view === "organisers" ? explore.organizers.length : explore.plans.length;
+  return !explore.unavailable && !explore.filtered && shown === 0;
+}
+
 function ExploreResults({explore}: {explore: Explore}) {
+  const city = explore.city.label;
   const empty = (title: string, message: string) => (
     <CatchEmptyState actions={explore.filtered ? <CatchButton label={copy.clear} onPressed={explore.clear} variant="secondary" /> : undefined}
       announce="polite" message={message} title={title} />
   );
   if (explore.unavailable) return empty(copy.unavailable, copy.unavailableBody);
+  if (waitingForFirstPlans(explore)) {
+    if (explore.filters.view === "organisers") return empty(fill(copy.soonNoOrganisers, {city}), copy.soonNoOrganisersBody);
+    return explore.live
+      ? empty(fill(copy.liveNoPlans, {city}), copy.liveNoPlansBody)
+      : empty(fill(copy.soonNoPlans, {city}), copy.soonNoPlansBody);
+  }
   if (explore.filters.view === "organisers") {
     return explore.organizers.length ? (
       <CatchGrid columns={3} compactColumns={1}>
@@ -141,7 +158,9 @@ export function ExplorePageSections({explore}: {explore: Explore}) {
           <ExploreHeading explore={explore} />
           <ExploreFilterBar explore={explore} />
           <CatchGap size="section">
-            <CatchLegacyText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchLegacyText>
+            {waitingForFirstPlans(explore) ? null : (
+              <CatchLegacyText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchLegacyText>
+            )}
             <ExploreResults explore={explore} />
           </CatchGap>
         </CatchGap>

@@ -3426,6 +3426,19 @@
       ]
     },
     {
+      "id": "firebase:create-config-brand",
+      "category": "firebase",
+      "path": "tool/firebase/create_config_brand.mjs",
+      "command": "node tool/firebase/create_config_brand.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Publishes packages/brand/brand.json to config/brand with dry-run and prod guards; --verify compares the live document read-only.",
+      "checks": [
+        "node --check tool/firebase/create_config_brand.mjs",
+        "node --test tool/firebase/create_config_brand.test.mjs"
+      ]
+    },
+    {
       "id": "env:flutter",
       "category": "env",
       "path": "tool/flutter_with_env.sh",

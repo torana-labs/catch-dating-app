@@ -9,7 +9,7 @@ test("only a build passing the existing production environment contract can be p
     VITE_FIREBASE_PROJECT_ID: "catch-dating-app-64e51", VITE_FIREBASE_STORAGE_BUCKET: "catch-dating-app-64e51.appspot.com",
     VITE_FIREBASE_MESSAGING_SENDER_ID: "123456", VITE_FIREBASE_APP_ID: "1:123:web:fixture",
     VITE_FIREBASE_MEASUREMENT_ID: "G-FIXTURE", VITE_GTM_ID: "GTM-FIXTURE",
-    VITE_WEBSITE_APPCHECK_SITE_KEY: "public-site-key", VITE_STORE_LINKS_MODE: "prelaunch",
+    VITE_WEBSITE_APPCHECK_SITE_KEY: "public-site-key",
   };
   function eligible(configuration) {
     const result = spawnSync(process.execPath, ["--input-type=module", "-e",
@@ -20,10 +20,8 @@ test("only a build passing the existing production environment contract can be p
   }
   assert.equal(eligible({}), "false");
   assert.equal(eligible(publicConfiguration), "true");
-  for (const key of ["VITE_FIREBASE_API_KEY", "VITE_WEBSITE_APPCHECK_SITE_KEY", "VITE_STORE_LINKS_MODE"]) {
+  for (const key of ["VITE_FIREBASE_API_KEY", "VITE_WEBSITE_APPCHECK_SITE_KEY"]) {
     assert.equal(eligible({...publicConfiguration, [key]: ""}), "false", key);
   }
   assert.equal(eligible({...publicConfiguration, VITE_FIREBASE_PROJECT_ID: "catchdates-dev"}), "false");
-  assert.equal(eligible({...publicConfiguration, VITE_STORE_LINKS_MODE: "live"}), "false");
-  assert.equal(eligible({...publicConfiguration, VITE_APP_STORE_URL: "https://example.test/unapproved"}), "false");
 });

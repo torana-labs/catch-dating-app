@@ -23,7 +23,6 @@ const required = target === "marketing" ? [
   "VITE_GTM_ID",
   "VITE_FIREBASE_MEASUREMENT_ID",
   "VITE_WEBSITE_APPCHECK_SITE_KEY",
-  "VITE_STORE_LINKS_MODE",
 ] : [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",
@@ -39,9 +38,9 @@ for (const name of required) {
   }
 }
 
-if (target === "marketing" && process.env.VITE_STORE_LINKS_MODE?.trim()) {
-  validateMarketingStoreLinks(process.env.VITE_STORE_LINKS_MODE.trim());
-}
+// Store links are not build configuration: the website reads them from
+// packages/brand/brand.json, whose schema validates them, and the brand
+// launch gate (packages/brand/launch_gate.mjs) checks a live market has them.
 
 if (
   target === "marketing" &&
@@ -154,87 +153,6 @@ function projectIdForAlias(env) {
     return typeof projectId === "string" ? projectId : null;
   } catch {
     return null;
-  }
-}
-
-function validateStoreUrl({
-  name,
-  hostname,
-  pathPattern,
-  requiredSearchParam = null,
-  description,
-}) {
-  const value = process.env[name]?.trim();
-  if (!value) return;
-  try {
-    const url = new URL(value);
-    const hasRequiredParam = requiredSearchParam === null ||
-      Boolean(url.searchParams.get(requiredSearchParam)?.trim());
-    if (
-      url.protocol !== "https:" ||
-      url.hostname !== hostname ||
-      !pathPattern.test(url.pathname) ||
-      !hasRequiredParam
-    ) {
-      errors.push(`${name} must be ${description}.`);
-    }
-  } catch {
-    errors.push(`${name} must be ${description}.`);
-  }
-}
-
-function validateMarketingStoreLinks(mode) {
-  if (mode === "prelaunch") {
-    for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL", "VITE_HOST_APP_STORE_URL", "VITE_HOST_PLAY_STORE_URL"]) {
-      if (process.env[name]?.trim()) {
-        errors.push(`${name} must be empty when VITE_STORE_LINKS_MODE is prelaunch.`);
-      }
-    }
-    return;
-  }
-
-  if (mode !== "live") {
-    errors.push("VITE_STORE_LINKS_MODE must be prelaunch or live.");
-    return;
-  }
-
-  for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL"]) {
-    if (!process.env[name]?.trim()) {
-      errors.push(`${name} is required when VITE_STORE_LINKS_MODE is live.`);
-    }
-  }
-
-  validateStoreUrl({
-    name: "VITE_APP_STORE_URL",
-    hostname: "apps.apple.com",
-    pathPattern: /\/id\d+(?:$|[/?#])/u,
-    description: "an HTTPS apps.apple.com product URL containing an Apple app id",
-  });
-  validateStoreUrl({
-    name: "VITE_PLAY_STORE_URL",
-    hostname: "play.google.com",
-    pathPattern: /^\/store\/apps\/details$/u,
-    requiredSearchParam: "id",
-    description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
-  });
-  // Catch Host's store pages are optional while live: until the owner adds
-  // them, the host landing's badges stay pending and record the press.
-  if (process.env.VITE_HOST_APP_STORE_URL?.trim()) {
-    validateStoreUrl({
-      name: "VITE_HOST_APP_STORE_URL",
-      hostname: "apps.apple.com",
-      pathPattern: /\/id\d+(?:$|[/?#])/u,
-      description: "an HTTPS apps.apple.com product URL containing an Apple app id",
-    });
-  }
-  if (process.env.VITE_HOST_PLAY_STORE_URL?.trim()) {
-    validateStoreUrl({
-      name: "VITE_HOST_PLAY_STORE_URL",
-      hostname: "play.google.com",
-      pathPattern: /^\/store\/apps\/details$/u,
-      requiredSearchParam: "id",
-      description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
-    });
   }
 }
 

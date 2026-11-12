@@ -85,14 +85,10 @@
 }
 
 .host-application__stage {
+  --catch-field-rest-fill: var(--catch-theme-surface);
+  --catch-field-rest-line: var(--catch-theme-line2);
   display: grid;
   gap: 20px;
-}
-
-.host-application__stage h3 {
-  margin-top: 8px;
-  font-size: 30px;
-  line-height: 1.05;
 }
 
 .host-application__stage p {
@@ -347,6 +343,7 @@
 
 .host-application__summary {
   display: grid;
+  align-self: start;
   gap: 16px;
 }
 

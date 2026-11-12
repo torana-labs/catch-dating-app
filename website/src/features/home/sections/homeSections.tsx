@@ -63,7 +63,7 @@ function StoreButtons({placement, size = "l"}: {placement: string; size?: "m" | 
   return (
     <CatchStack align="center" direction="row" gap={12} wrap>
       {stores.map((store) => (
-        <CatchStoreButton badgeSrc={store.badgeSrc} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} size={size} store={store.store} />
+        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} size={size} store={store.store} />
       ))}
     </CatchStack>
   );
@@ -114,7 +114,8 @@ function HomeFormats({home}: {home: Home}) {
       <HeadingRow aside={<CatchText tone="secondary" variant="body">{copy.formats.lead}</CatchText>}>
         <Heading id="home-formats-title" kicker={copy.formats.eyebrow} title={copy.formats.title} tone="success" />
       </HeadingRow>
-      <CatchScroller gap="related" itemWidth="m" label={copy.formats.label}>
+      {/* The band already pads to the content edge, so the rail's first tile lines up with the heading. */}
+      <CatchScroller edge="none" gap="related" itemWidth="m" label={copy.formats.label}>
         {home.tiles.map((tile) => home.live ? (
           <CatchFormatTile body={tile.body} format={tile.format} key={tile.format} kicker={tile.kicker} onPressed={() => {
             home.chooseTile(tile.format);

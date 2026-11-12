@@ -1,4 +1,5 @@
 import {useCallback, useMemo} from "react";
+import {brand} from "@catch/brand";
 import {homePageCopy} from "@content/homePage";
 import {trackMarketingEvent} from "../../analytics";
 import {trackCtaClick} from "./tracking";
@@ -17,6 +18,8 @@ export interface AppDownloadCta {
   accessibleLabel: string;
   /** The store's official badge artwork (website/public/assets/store-badges, with provenance). */
   badgeSrc: string;
+  /** Shown in place of the badge while the store has no link: "Coming soon on Google Play". */
+  comingSoon: {kicker: string; store: string};
   /** Empty until the store is live for this app; a pending store is recorded, not followed. */
   href: string;
   onClick: () => void;
@@ -27,25 +30,18 @@ const badgeSrc = {
   googlePlay: "/assets/store-badges/google-play-get-it-on.png",
 } as const;
 
-// The marketing environment contract (tool/env/check_web_hosting_env.mjs)
-// keeps every URL empty while VITE_STORE_LINKS_MODE is prelaunch. Catch Host's
-// URLs are placeholders until the owner adds them: empty, its badges stay
-// pending and record the press.
+// packages/brand/brand.json owns the store links: null until the app is on
+// that store, when its badge is a "Coming soon" chip that records the press.
 const storeUrls: Record<DownloadApp, Record<StorePlatform, string>> = {
-  guest: {
-    ios: import.meta.env.VITE_APP_STORE_URL?.trim() ?? "",
-    android: import.meta.env.VITE_PLAY_STORE_URL?.trim() ?? "",
-  },
-  host: {
-    ios: import.meta.env.VITE_HOST_APP_STORE_URL?.trim() ?? "",
-    android: import.meta.env.VITE_HOST_PLAY_STORE_URL?.trim() ?? "",
-  },
+  guest: {ios: brand.stores.consumer.ios ?? "", android: brand.stores.consumer.android ?? ""},
+  host: {ios: brand.stores.host.ios ?? "", android: brand.stores.host.android ?? ""},
 };
 
 /**
  * Both store badges for one placement. A live store is followed and its
  * click recorded with the placement and destination; a store that is not
- * live yet records a pending click and stays on the page.
+ * live yet is a "Coming soon" chip that records a pending click and stays on
+ * the page.
  */
 export function useAppDownloadCtas({placement, app = "guest", urls}: {placement: string; app?: DownloadApp; urls?: Record<StorePlatform, string>}): AppDownloadCta[] {
   const hrefs = urls ?? storeUrls[app];

@@ -56,6 +56,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/schedule_lock_doc.json", "scheduleLockDocumentSchema"],
   ["valid/config_cities_doc.json", "configCitiesDocumentSchema"],
   ["invalid/config_cities_doc_unknown_lifecycle.json", "configCitiesDocumentSchema"],
+  ["valid/config_brand_doc.json", "configBrandDocumentSchema"],
   ["valid/create_chat_message_client_write.json", "createChatMessageClientWriteSchema"],
   ["valid/create_organizer_payload.json", "createOrganizerCallablePayloadSchema"],
   ["valid/create_organizer_response.json", "createOrganizerCallableResponseSchema"],

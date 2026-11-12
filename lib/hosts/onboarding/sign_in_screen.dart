@@ -5,7 +5,7 @@ import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/hosts/onboarding/code_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_body.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -62,11 +62,13 @@ class _HostSignInScreenState extends ConsumerState<HostSignInScreen> {
     );
   }
 
-  void _getCatch() => unawaited(
-    ref
-        .read(externalLinkControllerProvider)
-        .openExternal(AppConfig.publicSiteUrl.resolve('/download/')),
-  );
+  void _getCatch() => unawaited(_openCatchApp());
+
+  Future<bool> _openCatchApp() async {
+    final brand = await ref.read(liveBrandProvider.future);
+    if (!mounted) return false;
+    return ref.read(externalLinkControllerProvider).openCatchApp(brand: brand);
+  }
 
   @override
   Widget build(BuildContext context) {

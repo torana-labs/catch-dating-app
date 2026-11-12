@@ -1,5 +1,7 @@
 import 'package:catch_kernel/brand.dart';
+import 'package:catch_platform/brand/live_brand.dart';
 import 'package:catch_platform/device/external_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -53,11 +55,82 @@ void main() {
       return true;
     });
 
-    final opened = await controller.openHostApp();
+    final opened = await controller.openHostApp(
+      brand: const LiveBrand(consumer: StoreLinks(), host: StoreLinks()),
+      platform: TargetPlatform.iOS,
+    );
 
     expect(opened, isTrue);
     expect(launchedUri, Uri.parse('${Brand.webOrigin}/host'));
     expect(launchMode, LaunchMode.externalApplication);
+  });
+
+  group('store links', () {
+    final hostIos = Uri.parse('https://apps.apple.com/app/catch-host/id1');
+    final catchAndroid = Uri.parse(
+      'https://play.google.com/store/apps/details?id=com.catchdates.app',
+    );
+    final brand = LiveBrand(
+      consumer: StoreLinks(android: catchAndroid),
+      host: StoreLinks(ios: hostIos),
+    );
+
+    Future<Uri?> launched(
+      Future<bool> Function(ExternalLinkController controller) open,
+    ) async {
+      Uri? launchedUri;
+      final controller = ExternalLinkController((
+        uri, {
+        mode = LaunchMode.platformDefault,
+      }) async {
+        launchedUri = uri;
+        return true;
+      });
+      await open(controller);
+      return launchedUri;
+    }
+
+    test('openHostApp opens the store listing for this device', () async {
+      expect(
+        await launched(
+          (c) => c.openHostApp(brand: brand, platform: TargetPlatform.iOS),
+        ),
+        hostIos,
+      );
+    });
+
+    test('openHostApp falls back to the web page for a null slot', () async {
+      expect(
+        await launched(
+          (c) => c.openHostApp(brand: brand, platform: TargetPlatform.android),
+        ),
+        Uri.parse('${Brand.webOrigin}/host'),
+      );
+    });
+
+    test('openCatchApp opens the store listing for this device', () async {
+      expect(
+        await launched(
+          (c) => c.openCatchApp(brand: brand, platform: TargetPlatform.android),
+        ),
+        catchAndroid,
+      );
+    });
+
+    test('openCatchApp falls back to the download page', () async {
+      expect(
+        await launched(
+          (c) => c.openCatchApp(brand: brand, platform: TargetPlatform.iOS),
+        ),
+        Uri.parse('${Brand.webOrigin}/download/'),
+      );
+      expect(
+        await launched(
+          (c) => c.openCatchApp(brand: brand, platform: TargetPlatform.macOS),
+        ),
+        Uri.parse('${Brand.webOrigin}/download/'),
+      );
+    });
   });
 
   test(

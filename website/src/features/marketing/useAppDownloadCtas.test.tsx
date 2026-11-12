@@ -7,6 +7,7 @@ const trackCtaClick = vi.hoisted(() => vi.fn());
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("./tracking", () => ({trackCtaClick}));
 
+import {brand} from "@catch/brand";
 import {useAppDownloadCtas} from "./useAppDownloadCtas";
 
 describe("useAppDownloadCtas", () => {
@@ -51,10 +52,27 @@ describe("useAppDownloadCtas", () => {
     ]);
   });
 
-  it("keeps Catch Host's badges pending until its store URLs are configured", () => {
+  it("reads each app's links from the brand record, a null slot as no link", () => {
+    for (const [app, slots] of [["guest", brand.stores.consumer], ["host", brand.stores.host]] as const) {
+      const {result} = renderHook(() => useAppDownloadCtas({placement: "test", app}));
+      expect(result.current.map((store) => store.href)).toEqual([slots.ios ?? "", slots.android ?? ""]);
+    }
+  });
+
+  it("follows Catch Host's App Store listing and keeps its Play badge coming soon", () => {
     const {result} = renderHook(() => useAppDownloadCtas({placement: "host_hero", app: "host"}));
-    expect(result.current.map((store) => store.href)).toEqual(["", ""]);
-    result.current[1].onClick();
+    const [appStore, play] = result.current;
+    expect(appStore.href).toBe(brand.stores.host.ios);
+    expect(appStore.href).toMatch(/^https:\/\/apps\.apple\.com\/app\/catch-host\/id\d+$/u);
+    appStore.onClick();
+    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_click", expect.objectContaining({platform: "ios", store_href: appStore.href}));
+    expect(play.href).toBe("");
+    play.onClick();
     expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", {platform: "android", placement: "host_hero", page_path: "/?source=test"});
+  });
+
+  it("names the coming-soon chip of each store", () => {
+    const {result} = renderHook(() => useAppDownloadCtas({placement: "home_hero", urls: {ios: "", android: ""}}));
+    expect(result.current.map((store) => `${store.comingSoon.kicker} ${store.comingSoon.store}`)).toEqual(["Coming soon on the App Store", "Coming soon on Google Play"]);
   });
 });

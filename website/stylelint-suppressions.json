@@ -36,10 +36,10 @@
   },
   "src/styles/flows.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 85
+      "count": 83
     },
     "declaration-property-value-allowed-list": {
-      "count": 16
+      "count": 15
     },
     "media-feature-name-value-allowed-list": {
       "count": 3

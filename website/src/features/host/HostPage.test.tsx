@@ -1,5 +1,6 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
+import {brand} from "@catch/brand";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
@@ -33,13 +34,19 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(screen.getByText(copy.footer.tagline)).toBeTruthy();
   });
 
-  it("states the trial terms in the hero and offers Catch Host's official badges, pending until its store links are set", () => {
+  it("states the trial terms in the hero and links Catch Host's App Store listing, with Google Play coming soon", () => {
     renderPage();
     expect(screen.getByText(copy.hero.terms)).toBeTruthy();
-    const apple = screen.getAllByRole("button", {name: "Download on the App Store"});
-    const google = screen.getAllByRole("button", {name: "Get it on Google Play"});
-    expect([apple.length, google.length]).toEqual([2, 2]);
+    const apple = screen.getAllByRole("link", {name: "Download on the App Store"});
+    expect(apple).toHaveLength(2);
+    expect(apple.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.ios, brand.stores.host.ios]);
     expect(within(apple[0]).getByRole("img").getAttribute("src")).toBe("/assets/store-badges/app-store-download-on-the.svg");
+    if (brand.stores.host.android) {
+      expect(screen.getAllByRole("link", {name: "Get it on Google Play"})).toHaveLength(2);
+    } else {
+      expect(screen.getAllByRole("button", {name: "Coming soon on Google Play"})).toHaveLength(2);
+      expect(screen.queryByRole("img", {name: "Get it on Google Play"})).toBeNull();
+    }
   });
 
   it("keeps the retired host routes' anchors on the bands that carry their content", () => {
@@ -102,7 +109,7 @@ describe("host landing", {timeout: 20_000}, () => {
     renderPage();
     const start = within(screen.getByRole("region", {name: copy.start.title}));
     expect(start.getAllByRole("listitem")).toHaveLength(3);
-    expect(start.getByRole("button", {name: "Download on the App Store"})).toBeTruthy();
+    expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
     expect(start.queryByRole("img", {name: /QR/i})).toBeNull();
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
   });
