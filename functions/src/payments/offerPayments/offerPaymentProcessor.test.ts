@@ -138,7 +138,7 @@ test("host refund waits for an in-flight settlement or another refund lease",
       h.observe();
       const admitted = await h.processor.reconcile();
       h.store.get(`events/${eventId}`)!.status = "cancelled";
-      const ledger = h.store.get("organizerEventOfferPayments/" +
+      const ledger = h.store.get("guestPayments/" +
         h.paymentId)!;
       if (settlementLease) {
         ledger.settlement = {...admitted.settlement,
@@ -245,7 +245,7 @@ for (const amount of [0, 10000]) {
       const h = await processorFixture();
       await h.processor.ensureOrder(); h.observe();
       await h.processor.reconcile();
-    h.store.get("organizerEventOfferPayments/" +
+    h.store.get("guestPayments/" +
       h.paymentId)!.cancellationPolicy = {
         refundDeadlineMillis: amount ? 3000 : 2000, eventStartsAtMillis:
         5_000_000};

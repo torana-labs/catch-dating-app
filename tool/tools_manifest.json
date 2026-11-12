@@ -2945,6 +2945,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-city-interest",
+      "category": "data",
+      "path": "tool/data/backfill_city_interest.mjs",
+      "command": "node tool/data/backfill_city_interest.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Maps existing launch-notice cities to market catalog ids where one city matches, counts each person once per city in cityInterest, and reports the rest.",
+      "checks": [
+        "node --check tool/data/backfill_city_interest.mjs",
+        "node --test tool/data/backfill_city_interest.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-event-discovery",
       "category": "data",
       "path": "tool/data/backfill_event_discovery_fields.mjs",
@@ -6985,6 +6999,25 @@
       "checks": [
         "node --check tool/ci/superseded_push_run.mjs",
         "node --test tool/ci/superseded_push_run.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:main-push-base",
+      "category": "ci",
+      "path": "tool/ci/main_push_base.mjs",
+      "command": "node tool/ci/main_push_base.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/main_push_base.mjs",
+        "tool/ci/main_push_base.test.mjs"
+      ],
+      "description": "Chooses the base a main push CI run plans from: the newest earlier main push run that ran, so the commits of a pending run a newer merge replaced are still validated; validates everything when that run is unknown or off main's history.",
+      "checks": [
+        "node --check tool/ci/main_push_base.mjs",
+        "node --test tool/ci/main_push_base.test.mjs"
       ],
       "role": "gate"
     },

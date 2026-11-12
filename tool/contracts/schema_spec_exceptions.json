@@ -164,6 +164,8 @@
       "AdminExportMoneyLedgerCallableResponse",
       "AdminGetFinanceMonthCallablePayload",
       "AdminGetFinanceMonthCallableResponse",
+      "AdminGetCityInterestCallablePayload",
+      "AdminGetCityInterestCallableResponse",
       "AdminGetGrowthCallablePayload",
       "AdminGetGrowthCallableResponse",
       "AdminGetInboxItemCallablePayload",

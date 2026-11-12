@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_signal_facts.schema.json",
+  "title": "ParticipantSignalFactDocument",
+  "description": "One immutable participant signal (attendance, feedback, chat, match) used for marketplace metrics. Admin-only unless marked aggregate-safe.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantSignalFacts",
+  "x-firestore-path": "participantSignalFacts/{factId}",
+  "x-document-id-field": "id",
+  "x-owner": "Participant signal recorder",
+  "required": [
+    "uid",
+    "type",
+    "source",
+    "direction",
+    "value",
+    "visibility",
+    "occurredAt",
+    "createdAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "outgoing_like",
+        "incoming_like",
+        "private_interest_sent",
+        "private_interest_received",
+        "match_created",
+        "chat_message_sent",
+        "chat_message_received",
+        "chat_started",
+        "event_attended",
+        "event_attendance_removed",
+        "event_feedback_submitted"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "swipe",
+        "match",
+        "chat",
+        "attendance",
+        "event_feedback"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "received",
+        "self"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "value": {
+      "type": "number",
+      "x-catch-ownership": "server-only"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "adminOnly",
+        "aggregateSafe"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "occurredAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "matchId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "peerUid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -5,7 +5,9 @@ import {countryName} from "@content/markets";
 import {siteFooterCopy} from "@content/site";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity} from "../../../shared/site";
-import {cityFooterNote, cityGroups} from "../homeModel";
+import {citiesHref, cityFooterNote, cityGroups} from "../homeModel";
+
+export {citiesHref};
 import {CityPicker} from "./CityPicker";
 import type {HomeCity} from "../homeTypes";
 
@@ -15,7 +17,6 @@ const follow = () => undefined;
 /** Where a city's pages live: its city page for Explore and the footer, the homepage for the picker. */
 export const cityPagePath = (slug: string) => ["", encodeURIComponent(slug), ""].join("/");
 export const organisersHref = "/explore/?show=organisers";
-export const citiesHref = "/cities/";
 
 /**
  * The footer's Cities column: open cities with their honest note, one

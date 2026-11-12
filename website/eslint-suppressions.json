@@ -109,14 +109,6 @@
       "count": 1
     }
   },
-  "src/shared/ui/primitives/consumerHome.tsx": {
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
   "src/shared/ui/primitives/eventRuntime.tsx": {
     "react/forbid-component-props": {
       "count": 3

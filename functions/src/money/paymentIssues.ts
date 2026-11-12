@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {Timestamp} from "firebase-admin/firestore";
@@ -37,11 +38,10 @@ import {organizerBillsCollection} from "./organizerBills";
 export const issueResolutionsCollection = "moneyIssueResolutions";
 type Issue = Result["issues"][number];
 type Raw = Record<string, unknown>;
-type CheckoutSource = "publicEventPayments" | "organizerEventOfferPayments";
+type CheckoutSource = "publicEvent" | "offer";
 
 const minute = 60 * 1000;
-const checkoutSources: CheckoutSource[] = ["publicEventPayments",
-  "organizerEventOfferPayments"];
+const checkoutSources: CheckoutSource[] = ["publicEvent", "offer"];
 // A capture the 5-minute sweep has not admitted within 15 minutes, or a
 // refund still pending after a day, is waiting on a person.
 const capturedGraceMillis = 15 * minute;
@@ -61,7 +61,7 @@ const millisOf = (value: unknown) => value instanceof Timestamp ?
 
 /**
  * A website or offer checkout as an issue, or null when nothing waits.
- * @param {CheckoutSource} source Collection.
+ * @param {CheckoutSource} source Guest payment purpose.
  * @param {string} id Payment id.
  * @param {Raw} data Payment record.
  * @param {number} nowMillis Now.
@@ -167,7 +167,8 @@ export async function openIssues(db: FirebaseFirestore.Firestore,
   nowMillis: number): Promise<Issue[]> {
   const [checkouts, signUpFailed, refundFailed, bills] = await Promise.all([
     Promise.all(checkoutSources.map(async (source) => (await db
-      .collection(source).where("status", "in",
+      .collection(GUEST_PAYMENTS).where("purpose", "==", source)
+      .where("status", "in",
         ["captured", "refundPending", "reviewRequired"]).limit(300).get())
       .docs.map((doc) => checkoutIssue(source, doc.id, doc.data(),
         nowMillis)))),
@@ -218,13 +219,13 @@ function counts(issues: Issue[]): Result["counts"] {
  * when the payment is captured and the seat is still held, or starts the
  * refund when it is not.
  * @param {FirebaseFirestore.Firestore} db Firestore.
- * @param {CheckoutSource} source Collection.
+ * @param {CheckoutSource} source Guest payment purpose.
  * @param {string} paymentId Payment id.
  * @return {Promise<string>} Status afterwards.
  */
 async function reconcileCheckout(db: FirebaseFirestore.Firestore,
   source: CheckoutSource, paymentId: string): Promise<string> {
-  const execution = source === "publicEventPayments" ?
+  const execution = source === "publicEvent" ?
     await publicPaymentExecutionFor({db, paymentId}) :
     await offerPaymentExecutionFor({db, paymentId});
   const after = await execution.reconcile();

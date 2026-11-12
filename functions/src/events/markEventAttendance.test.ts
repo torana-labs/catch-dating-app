@@ -1,163 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {FieldValue} from "firebase-admin/firestore";
+import {FakeFirestore, type FakeData} from "../shared/testing/fakeFirestore";
 import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {markEventAttendanceHandler} from "./markEventAttendance";
 import type {FcmParams} from "../shared/notifications";
-
-type FakeData = Record<string, unknown>;
-
-class FakeDocRef {
-  constructor(readonly firestore: FakeFirestore, readonly path: string) {}
-
-  get id(): string {
-    return this.path.split("/").at(-1)!;
-  }
-
-  async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.firestore.get(this.path));
-  }
-
-  async set(data: FakeData): Promise<void> {
-    this.firestore.merge(this.path, data);
-  }
-}
-
-class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
-
-  get exists(): boolean {
-    return this.value !== undefined;
-  }
-
-  data(): FakeData | undefined {
-    return this.value === undefined ? undefined : {...this.value};
-  }
-}
-
-class FakeCollectionRef {
-  constructor(
-    private readonly firestore: FakeFirestore,
-    private readonly path: string
-  ) {}
-
-  doc(docId: string): FakeDocRef {
-    return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
-  }
-
-  limit(count: number) {
-    return this.where("__all__", "==", undefined, count);
-  }
-
-  where(field: string, _op: string, value: unknown, max = Infinity,
-    filters: Array<[string, unknown]> = []): FakeQuery {
-    return new FakeQuery(this.firestore, this.path,
-      field === "__all__" ? filters : [...filters, [field, value]], max);
-  }
-}
-
-class FakeQuery {
-  constructor(private readonly firestore: FakeFirestore,
-    private readonly path: string,
-    private readonly filters: Array<[string, unknown]>,
-    private readonly max: number) {}
-
-  where(field: string, _op: string, value: unknown): FakeQuery {
-    return new FakeQuery(this.firestore, this.path,
-      [...this.filters, [field, value]], this.max);
-  }
-
-  limit(count: number): FakeQuery {
-    return new FakeQuery(this.firestore, this.path, this.filters, count);
-  }
-
-  async get() {
-    const docs = this.firestore.children(this.path)
-      .filter((data) => this.filters.every(([field, value]) =>
-        data[field] === value))
-      .slice(0, this.max).map((data) => ({data: () => ({...data})}));
-    return {docs, size: docs.length, empty: docs.length === 0};
-  }
-}
-
-class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
-
-  collection(collectionPath: string): FakeCollectionRef {
-    return new FakeCollectionRef(this, collectionPath);
-  }
-
-  batch(): FakeBatch {
-    return new FakeBatch(this);
-  }
-
-  async runTransaction<T>(
-    updateFn: (tx: FakeTransaction) => Promise<T>
-  ): Promise<T> {
-    const tx = new FakeTransaction(this);
-    const result = await updateFn(tx);
-    tx.commit();
-    return result;
-  }
-
-  get(path: string): FakeData | undefined {
-    const data = this.docs[path];
-    return data === undefined ? undefined : {...data};
-  }
-
-  merge(path: string, data: FakeData): void {
-    this.docs[path] = {...(this.docs[path] ?? {}), ...data};
-  }
-
-  children(collectionPath: string): FakeData[] {
-    const prefix = `${collectionPath}/`;
-    return Object.entries(this.docs).flatMap(([path, data]) =>
-      path.startsWith(prefix) && !path.slice(prefix.length).includes("/") &&
-        data !== undefined ? [data] : []);
-  }
-}
-
-class FakeBatch {
-  private readonly writes: Array<() => void> = [];
-
-  constructor(private readonly firestore: FakeFirestore) {}
-
-  update(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  set(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  async commit(): Promise<void> {
-    for (const write of this.writes) write();
-  }
-}
-
-class FakeTransaction {
-  private readonly writes: Array<() => void> = [];
-
-  constructor(private readonly firestore: FakeFirestore) {}
-
-  async get(ref: FakeDocRef | FakeQuery) {
-    if (ref instanceof FakeQuery) return ref.get();
-    return new FakeSnapshot(this.firestore.get(ref.path));
-  }
-
-  update(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  set(ref: FakeDocRef, data: FakeData): void {
-    this.writes.push(() => this.firestore.merge(ref.path, data));
-  }
-
-  commit(): void {
-    for (const write of this.writes) write();
-  }
-}
 
 test(
   "markEventAttendanceHandler sends companion-ready push after host check-in",
@@ -254,8 +103,7 @@ function buildHarness(
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
       now: () => now,
-      increment: (value: number) =>
-        ({__op: "increment", value}) as unknown as FirebaseFirestore.FieldValue,
+      increment: (value: number) => FieldValue.increment(value),
       checkRateLimit: async () => undefined,
       recordSignalFacts: async () => undefined,
       sendNotification: async (notification: FcmParams) => {

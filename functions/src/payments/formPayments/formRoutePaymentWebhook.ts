@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {Timestamp} from "firebase-admin/firestore";
@@ -103,7 +104,8 @@ export async function processFormRoutePaymentWebhook(receiptId: string,
       accountId: receipt.accountId, mode: deps.profile.mode,
       route: "razorpayRoute"});
     if (/^cfp_[a-f0-9]{32}$/u.test(order.receipt)) {
-      const candidates = await deps.db.collection("organizerFormPayments")
+      const candidates = await deps.db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "form")
         .where("receipt", "==", order.receipt).limit(2).get();
       if (candidates.docs.length > 1) invalid();
       const candidate = candidates.docs[0];

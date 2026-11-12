@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {Timestamp} from "firebase-admin/firestore";
@@ -101,9 +102,10 @@ export async function reconcileOrganizerGrowth(deps: GrowthDeps):
       db.collection("organizerClaimRequests").limit(sourceLimit).get(),
       db.collection("events").where("bookedCount", ">", 0)
         .limit(sourceLimit).get(),
-      db.collection("publicEventPayments").where("capturedAt", "!=", null)
-        .limit(sourceLimit).get(),
-      db.collection("organizerEventOfferPayments")
+      db.collection(GUEST_PAYMENTS).where("purpose", "==", "publicEvent")
+        .where("capturedAt", "!=", null).limit(sourceLimit).get(),
+      db.collection(GUEST_PAYMENTS)
+        .where("purpose", "==", "offer")
         .where("capturedAt", "!=", null).limit(sourceLimit).get(),
     ]);
   const steps = milestonesFromSources({organizers: rows(organizers),

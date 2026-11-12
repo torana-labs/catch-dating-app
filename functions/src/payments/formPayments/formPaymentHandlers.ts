@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
@@ -72,7 +73,7 @@ export async function prepareOrganizerFormPaymentHandler(
   "OrganizerFormResponseDraftDocument");
   if (draft.respondentUid !== uid) unavailable();
   const paymentId = formPaymentId(data.draftId);
-  const existing = await db.collection("organizerFormPayments")
+  const existing = await db.collection(GUEST_PAYMENTS)
     .doc(paymentId).get();
   let current: Payment;
   if (existing.exists) {
@@ -117,7 +118,7 @@ export async function getOrganizerFormPaymentHandler(
     maxRequests: 30, windowMs: 60 * 1000,
   });
   const current = requireDoc<Payment>(await db
-    .collection("organizerFormPayments").doc(data.paymentId).get(),
+    .collection(GUEST_PAYMENTS).doc(data.paymentId).get(),
   "OrganizerFormPaymentDocument");
   if (current.respondentUid !== uid) unavailable();
   // Receipts and ended/manual-review attempts remain readable during provider
@@ -156,7 +157,8 @@ export async function findOrganizerFormPaymentHandler(
   if (forms.docs.length !== 1) return {payment: null};
   const formSnap = forms.docs[0];
   const form = requireDoc<Form>(formSnap, "OrganizerFormDocument");
-  const payments = await db.collection("organizerFormPayments")
+  const payments = await db.collection(GUEST_PAYMENTS)
+    .where("purpose", "==", "form")
     .where("formId", "==", formSnap.id)
     .where("respondentUid", "==", uid)
     .orderBy("createdAt", "desc").limit(26).get();

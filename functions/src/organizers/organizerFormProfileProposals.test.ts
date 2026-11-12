@@ -229,7 +229,7 @@ test("captured receipt offers claim only while the owned proposal is active",
     h.capture(paymentId);
     await h.finalize(paymentId);
     const payment = h.store.records.get(
-      `organizerFormPayments/${paymentId}`) as unknown as Payment;
+      `guestPayments/${paymentId}`) as unknown as Payment;
     const project = () => projectFormPayment({db: h.db, paymentId, payment,
       respondentUid: "person"});
     assert.equal((await project()).receipt?.profileReviewAvailable, true);
@@ -259,7 +259,7 @@ test("ordinary forms do not advertise profile claiming", async () => {
   h.capture(paymentId);
   await h.finalize(paymentId);
   const payment = h.store.records.get(
-    `organizerFormPayments/${paymentId}`) as unknown as Payment;
+    `guestPayments/${paymentId}`) as unknown as Payment;
   const response = h.store.records.get(
     `organizerFormResponses/${payment.responseId}`) as unknown as Response;
   const receipt = await organizerFormResponseReceipt(h.db, payment.responseId!,

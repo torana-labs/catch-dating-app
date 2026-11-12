@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import {onDocumentCreated, onDocumentWritten} from
@@ -175,17 +176,18 @@ async function recordCheckoutPayments(source: PaymentFact["source"],
   }
 }
 
-export const onOrganizerGrowthPublicPaymentWritten = onDocumentWritten({
-  document: "publicEventPayments/{paymentId}",
-}, (event) => recordCheckoutPayments("publicEventPayments",
-  event.params.paymentId, event.data?.before.data(),
-  event.data?.after.data()));
-
-export const onOrganizerGrowthOfferPaymentWritten = onDocumentWritten({
-  document: "organizerEventOfferPayments/{paymentId}",
-}, (event) => recordCheckoutPayments("organizerEventOfferPayments",
-  event.params.paymentId, event.data?.before.data(),
-  event.data?.after.data()));
+// Website and offer checkouts count toward growth as they are written; paid
+// forms are counted by the daily replay.
+export const onOrganizerGrowthGuestPaymentWritten = onDocumentWritten({
+  document: `${GUEST_PAYMENTS}/{paymentId}`,
+}, (event) => {
+  const before = event.data?.before.data();
+  const after = event.data?.after.data();
+  const purpose = (after ?? before)?.purpose;
+  if (purpose !== "publicEvent" && purpose !== "offer") return;
+  return recordCheckoutPayments(purpose, event.params.paymentId, before,
+    after);
+});
 
 export const onOrganizerGrowthNativePaymentWritten = onDocumentWritten({
   document: "payments/{paymentId}",

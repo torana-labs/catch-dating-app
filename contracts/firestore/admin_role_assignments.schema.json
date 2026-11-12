@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/admin_role_assignments.schema.json",
+  "title": "AdminRoleAssignmentDocument",
+  "description": "The Admin roles one Firebase Auth account currently holds, mirrored from its custom claims when an owner changes them.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adminRoleAssignments",
+  "x-firestore-path": "adminRoleAssignments/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "adminSetAdminUserRoles",
+  "required": [
+    "targetUid",
+    "roles",
+    "status",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "disabled": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "salesStaff"
+        ]
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -51,10 +51,10 @@ function everySource(): ReplaySources {
   return {
     facts: [facts("org")],
     checkouts: [
-      {source: "publicEventPayments", id: "pp_1",
+      {source: "publicEvent", id: "pp_1",
         data: {...captured, refundedAmountPaise: 20_000}},
-      {source: "organizerEventOfferPayments", id: "of_1", data: captured},
-      {source: "organizerFormPayments", id: "fm_1",
+      {source: "offer", id: "of_1", data: captured},
+      {source: "form", id: "fm_1",
         data: {...captured, eventId: undefined, refundedAmountPaise: 50_000}},
     ],
     nativePayments: [{id: "pay_1", organizerId: "org", data: completed}],
@@ -98,12 +98,12 @@ test("the replay sends every missing row once, and nothing on later runs",
     const first = await send(table.client);
     assert.deepEqual(idsOf(table.rows).sort(), [
       "org:claimed", "org:first_event", "org:listed",
-      "organizerEventOfferPayments:of_1:captured",
-      "organizerFormPayments:fm_1:captured",
-      "organizerFormPayments:fm_1:refund:50000",
+      "offer:of_1:captured",
+      "form:fm_1:captured",
+      "form:fm_1:refund:50000",
       "payments:pay_1:captured", "payments:pay_1:refund:30000",
-      "publicEventPayments:pp_1:captured",
-      "publicEventPayments:pp_1:refund:20000",
+      "publicEvent:pp_1:captured",
+      "publicEvent:pp_1:refund:20000",
     ].sort());
     assert.equal(first?.sent, 10);
     for (let run = 0; run < 5; run++) {
@@ -125,13 +125,13 @@ test("a row the live path sent is never sent again", async () => {
   ] as unknown as Array<Record<string, unknown>>;
   const before = {...captured};
   const liveFacts = [
-    ...checkoutPaymentFacts("publicEventPayments", "pp_1", undefined,
+    ...checkoutPaymentFacts("publicEvent", "pp_1", undefined,
       before),
-    ...checkoutPaymentFacts("publicEventPayments", "pp_1", before,
+    ...checkoutPaymentFacts("publicEvent", "pp_1", before,
       {...before, refundedAmountPaise: 20_000}),
-    ...checkoutPaymentFacts("organizerEventOfferPayments", "of_1", undefined,
+    ...checkoutPaymentFacts("offer", "of_1", undefined,
       captured),
-    ...checkoutPaymentFacts("organizerFormPayments", "fm_1", undefined,
+    ...checkoutPaymentFacts("form", "fm_1", undefined,
       {...captured, eventId: undefined, refundedAmountPaise: 50_000}),
     ...nativePaymentFacts("pay_1", {status: "pending"},
       {...completed, status: "completed"}),
@@ -161,7 +161,7 @@ test("a record written in the last hour waits for the next run", async () => {
   const table = fakeTable();
   const sources: ReplaySources = {
     facts: [facts("org", justNow)],
-    checkouts: [{source: "publicEventPayments", id: "pp_1",
+    checkouts: [{source: "publicEvent", id: "pp_1",
       data: {...captured, updatedAt: justNow}}],
     nativePayments: [{id: "pay_1", organizerId: "org",
       data: {...completed, updatedAt: justNow}}],
@@ -211,21 +211,21 @@ test("an insert that landed but reported failure is not sent again",
 test("a lost partial refund is made up, and a refund never counts past its " +
   "total", async () => {
   const live = facts("org");
-  const [later] = checkoutPaymentFacts("publicEventPayments", "pp_1",
+  const [later] = checkoutPaymentFacts("publicEvent", "pp_1",
     {...captured, refundedAmountPaise: 10_000},
     {...captured, refundedAmountPaise: 25_000});
   // The 10,000 refund's row was lost; the 15,000 one after it landed.
   const table = fakeTable([{
     ...paymentEvent(live, later, now)} as unknown as Record<string, unknown>]);
   const sources: ReplaySources = {facts: [live], nativePayments: [],
-    checkouts: [{source: "publicEventPayments", id: "pp_1",
+    checkouts: [{source: "publicEvent", id: "pp_1",
       data: {...captured, refundedAmountPaise: 25_000}}]};
   const refunds = () => table.rows.filter((row) =>
     row.event_name === "refund");
   await send(table.client, sources);
   assert.deepEqual(refunds().map((row) => row.growth_event_id), [
-    "publicEventPayments:pp_1:refund:25000",
-    "publicEventPayments:pp_1:refund:25000:rest:10000"]);
+    "publicEvent:pp_1:refund:25000",
+    "publicEvent:pp_1:refund:25000:rest:10000"]);
   assert.equal(refunds().reduce((sum, row) =>
     sum + Number(row.amount_minor), 0), 25_000);
   await send(table.client, sources);
@@ -236,7 +236,7 @@ test("a lost partial refund is made up, and a refund never counts past its " +
 
 test("form payments keep their own names and never count as bookings", () => {
   const rows = missingGrowthRows({facts: [facts("org")], nativePayments: [],
-    checkouts: [{source: "organizerFormPayments", id: "fm_1",
+    checkouts: [{source: "form", id: "fm_1",
       data: {...captured, eventId: undefined, refundedAmountPaise: 5_000}}]},
   new Map(), now).filter((row) => row.payment_source);
   assert.deepEqual(rows.map((row) => row.event_name),
@@ -248,7 +248,7 @@ test("form payments keep their own names and never count as bookings", () => {
 test("a payment without growth facts sends nothing", () => {
   assert.deepEqual(missingGrowthRows({facts: [], nativePayments:
     [{id: "pay_1", organizerId: null, data: completed}], checkouts:
-    [{source: "publicEventPayments", id: "pp_1", data: captured}]},
+    [{source: "publicEvent", id: "pp_1", data: captured}]},
   new Map(), now), []);
 });
 

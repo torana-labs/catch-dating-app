@@ -1,3 +1,5 @@
+import {GUEST_PAYMENTS, type GuestPaymentPurpose} from
+  "../payments/guestPayments";
 import * as logger from "firebase-functions/logger";
 import {Timestamp} from "firebase-admin/firestore";
 import {type BigQueryClient, defaultBigQueryClient} from "../shared/bigQuery";
@@ -37,16 +39,14 @@ import {
  *   and the next run sees whatever landed.
  */
 type Raw = Record<string, unknown>;
-type CheckoutSource = "publicEventPayments" | "organizerEventOfferPayments" |
-  "organizerFormPayments";
+type CheckoutSource = GuestPaymentPurpose;
 
 const settleMillis = 60 * 60 * 1000;
 const sourceLimit = 10_000;
 const insertBatchSize = 500;
 const milestones: GrowthMilestone[] = ["listedAt", "claimRequestedAt",
   "claimedAt", "firstEventAt", "firstPaidBookingAt"];
-const checkoutSources: CheckoutSource[] = ["publicEventPayments",
-  "organizerEventOfferPayments", "organizerFormPayments"];
+const checkoutSources: CheckoutSource[] = ["publicEvent", "offer", "form"];
 const checkoutFields = ["organizerId", "eventId", "currency", "amountPaise",
   "capturedAt", "refundedAmountPaise", "providerFees", "updatedAt",
   "createdAt"];
@@ -290,8 +290,9 @@ async function loadReplaySources(db: FirebaseFirestore.Firestore):
     read(db.collection(growthFactsCollection), growthFactsCollection),
     read(db.collection("payments").where("status", "in",
       ["completed", "refunded"]).select(...nativeFields), "payments"),
-    ...checkoutSources.map((source) => read(db.collection(source)
-      .where("capturedAt", "!=", null).select(...checkoutFields), source)),
+    ...checkoutSources.map((source) => read(db.collection(GUEST_PAYMENTS)
+      .where("purpose", "==", source).where("capturedAt", "!=", null)
+      .select(...checkoutFields), `${GUEST_PAYMENTS}:${source}`)),
   ]);
   const eventIds = [...new Set(native.map((doc) => doc.get("eventId"))
     .filter((id): id is string => typeof id === "string"))];

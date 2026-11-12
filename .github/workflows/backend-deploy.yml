@@ -1,21 +1,22 @@
 name: Deploy backend
 
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
-# and Storage rules). In sprint mode nothing deploys on merge: the owner's rule
-# is one full backend deploy a week, so the window run (dispatch, full) ships
-# everything merged since the last one, dev first, then prod automatically
-# once dev succeeds (the prod environment has no required reviewer since
-# 30 Oct 2026). Each deploy
-# rebuilds only the Functions codebases whose code, parameters or secrets
-# changed; the Firebase CLI skips the rest. A run that would update more than
-# 200 Functions stops before changing anything until one is run with
-# allow_large. Run it manually for prod, dev or
-# staging, optionally as a full deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
+# and Storage rules). Once a day (03:00 IST) it deploys the newest main commit
+# whose CI passed to dev, then to prod once dev succeeds (the prod environment
+# has no required reviewer since 30 Oct 2026). Each deploy rebuilds only the
+# Functions codebases whose code, parameters or secrets changed; the Firebase
+# CLI skips the rest, and each changed codebase is one Cloud Build (its
+# Functions share the build). So a day's deploy costs about a build-minute per
+# changed codebase, at most a dozen or so, and updating Functions costs
+# nothing. The daily run skips when prod already has that commit, and until the
+# environment's last delivered deploy recorded codebase hashes (a full run
+# writes them). Run it manually for prod, dev or staging, optionally as a full
+# deploy (every codebase, even unchanged) or for named Functions only.
+# Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
-  # Sprint mode (8 Nov 2026): a merge to main no longer deploys. The backend
-  # ships in the one weekly window run (dispatch with full=true on the
-  # window day; #1552 schedules it). Restore the push trigger with CI.
+  schedule:
+    - cron: '30 21 * * *'
   workflow_dispatch:
     inputs:
       environment:
@@ -33,40 +34,88 @@ on:
           feature switch). Nothing else deploys and the deployed commit stays.
         type: string
         default: ''
-      allow_large:
-        description: >-
-          Deploy even when more than 200 Functions would change (a shared module
-          or dependency change); a merge's own run stops before changing anything.
-        type: boolean
-        default: false
 
 permissions:
+  actions: read
   contents: write
   deployments: write
   id-token: write
 
 jobs:
+  # The daily run deploys the newest main commit whose CI run succeeded, not
+  # main's head, which may still be under test.
+  pick:
+    if: ${{ github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.pick.outputs.ref }}
+      go: ${{ steps.pick.outputs.go }}
+    steps:
+      - id: pick
+        name: Choose the newest green main commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&status=success&per_page=30" \
+            -q '[.workflow_runs[] | select(.event != "pull_request")][0].head_sha // ""')"
+          if [[ -z "$sha" ]]; then
+            echo "::notice::No main commit has a successful CI run among the latest; nothing to deploy today."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Prod's newest delivered record: any success status counts, because
+          # GitHub marks a record inactive seconds after it succeeds.
+          record=""
+          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=prod&task=deploy:backend&per_page=30" -q '.[].id'); do
+            delivered="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=100" -q 'any(.[]; .state == "success")')"
+            if [[ "$delivered" == "true" ]]; then record="$id"; break; fi
+          done
+          if [[ -n "$record" ]]; then
+            deployed="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$record" -q .sha)"
+            hashes="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$record" -q '(.payload.codebases // {}) | length')"
+          else
+            deployed=""
+            hashes=0
+          fi
+          if [[ "$hashes" == "0" ]]; then
+            echo "::notice::Prod's last delivered deploy recorded no codebase hashes. Run Deploy backend with full for dev, then prod; daily runs start after that."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$deployed" == "$sha" ]]; then
+            echo "::notice::Prod already has $sha, the newest green main commit; nothing to deploy today."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf 'ref=%s\ngo=true\n' "$sha" >> "$GITHUB_OUTPUT"
+          echo "Deploying $sha (newest green main commit; prod has $deployed)." >> "$GITHUB_STEP_SUMMARY"
+
   dev:
-    if: ${{ github.event_name == 'push' || inputs.environment == 'dev' }}
+    needs: pick
+    if: >-
+      ${{ !cancelled() && (
+        github.event_name == 'schedule' && needs.pick.outputs.go == 'true' ||
+        github.event_name == 'workflow_dispatch' && inputs.environment == 'dev') }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
       environment: dev
+      ref: ${{ needs.pick.outputs.ref || '' }}
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
-      allow_large: ${{ inputs.allow_large == true }}
 
   prod:
-    needs: dev
+    needs: [pick, dev]
     if: >-
       ${{ !cancelled() && (
-        github.event_name == 'push' && needs.dev.result == 'success' ||
+        github.event_name == 'schedule' && needs.dev.result == 'success' ||
         github.event_name == 'workflow_dispatch' && inputs.environment == 'prod') }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
       environment: prod
+      ref: ${{ needs.pick.outputs.ref || '' }}
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
-      allow_large: ${{ inputs.allow_large == true }}
 
   staging:
     if: >-
@@ -76,4 +125,3 @@ jobs:
       environment: staging
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
-      allow_large: ${{ inputs.allow_large == true }}

@@ -270,7 +270,7 @@ export function paymentEventId(fact: PaymentFact): string {
  */
 export function paymentEvent(facts: OrganizerGrowthFactsDocument,
   fact: PaymentFact, ingestedAt: Date): OrganizerGrowthEvent {
-  const form = fact.source === "organizerFormPayments";
+  const form = fact.source === "form";
   const name = fact.kind === "paid_booking" ?
     form ? "form_payment" : "paid_booking" :
     form ? "form_refund" : "refund";

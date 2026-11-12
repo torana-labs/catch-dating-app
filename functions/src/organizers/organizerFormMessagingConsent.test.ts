@@ -125,7 +125,7 @@ test("free submissions share the same consent transaction without a payment",
     assert.equal(
       h.records("organizerCommunicationPermissionReceipts").length, 1);
     assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
-    assert.equal(h.records("organizerFormPayments").length, 0);
+    assert.equal(h.records("guestPayments").length, 0);
   });
 
 test("delayed capture cannot overwrite a later organizer STOP or Catch opt-out",

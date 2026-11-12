@@ -78,8 +78,8 @@ test("discovery is account-owned and independent of current form availability",
       {data: input} as CallableRequest<unknown>, h.deps), /signed in/u);
     await assert.rejects(findOrganizerFormPaymentHandler(
       request({publicFormId: "../private"}), h.deps));
-    h.store.records.set(`organizerFormPayments/${paymentId}`, {
-      ...h.store.records.get(`organizerFormPayments/${paymentId}`),
+    h.store.records.set(`guestPayments/${paymentId}`, {
+      ...h.store.records.get(`guestPayments/${paymentId}`),
       organizerId: "other-org",
     });
     await assert.rejects(findOrganizerFormPaymentHandler(request(input),
@@ -91,7 +91,7 @@ test("ended and manual-review payments can be read without provider mutations",
     const h = harness();
     const {paymentId, payment} = await h.reserve();
     for (const status of ["expired", "refunded", "reviewRequired"]) {
-      h.store.records.set(`organizerFormPayments/${paymentId}`, {
+      h.store.records.set(`guestPayments/${paymentId}`, {
         ...payment, status,
       });
       const current = await getOrganizerFormPaymentHandler(
@@ -110,8 +110,8 @@ test("newer ended retries do not conceal an earlier paid receipt", async () => {
   const {paymentId} = await h.reserve();
   h.capture(paymentId);
   await h.finalize(paymentId);
-  const old = h.store.records.get(`organizerFormPayments/${paymentId}`)!;
-  h.store.records.set(`organizerFormPayments/cfp_${"a".repeat(32)}`, {
+  const old = h.store.records.get(`guestPayments/${paymentId}`)!;
+  h.store.records.set(`guestPayments/cfp_${"a".repeat(32)}`, {
     ...old, status: "expired", responseId: null,
     createdAt: Timestamp.fromMillis(2000),
   });
@@ -127,17 +127,17 @@ test("bounded discovery fails explicitly when ended retries fill the window",
   async () => {
     const h = harness();
     const {paymentId, payment} = await h.reserve();
-    h.store.records.set(`organizerFormPayments/${paymentId}`,
+    h.store.records.set(`guestPayments/${paymentId}`,
       {...payment, status: "expired"});
     for (let index = 0; index < 24; index++) {
-      h.store.records.set(`organizerFormPayments/cfp_${index.toString(16)
+      h.store.records.set(`guestPayments/cfp_${index.toString(16)
         .padStart(32, "0")}`, {...payment, status: "expired",
         createdAt: Timestamp.fromMillis(2000 + index)});
     }
     assert.deepEqual(await findOrganizerFormPaymentHandler(request({
       publicFormId: h.draft.publicFormId,
     }), h.deps), {payment: null});
-    h.store.records.set(`organizerFormPayments/cfp_${"f".repeat(32)}`,
+    h.store.records.set(`guestPayments/cfp_${"f".repeat(32)}`,
       {...payment, status: "expired", createdAt: Timestamp.fromMillis(3000)});
     await assert.rejects(findOrganizerFormPaymentHandler(request({
       publicFormId: h.draft.publicFormId,

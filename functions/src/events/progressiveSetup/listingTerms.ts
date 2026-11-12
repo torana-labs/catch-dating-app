@@ -1,3 +1,4 @@
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {randomUUID} from "crypto";
 import {SeatLedger} from "../seatAuthority/seatAuthority";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
@@ -93,8 +94,8 @@ export async function preparePrivateListingTerms(params: {
       "Reconcile existing guests before changing admission terms.");
   }
   for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", "publicEventPayments", "payments",
-    "organizerEventOfferPayments", "organizerContactOrigins",
+    "eventWaitlistOffers", GUEST_PAYMENTS, "payments",
+    "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
     "eventAttendeeImports", "razorpayPendingOrders"]) {
     const witness = await tx.get(db.collection(collection)

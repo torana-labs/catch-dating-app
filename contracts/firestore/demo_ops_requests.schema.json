@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/demo_ops_requests.schema.json",
+  "title": "DemoOpsRequestDocument",
+  "description": "One Suvbot demo operation a tester started from chat, and its outcome.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "demoOpsRequests",
+  "x-firestore-path": "demoOpsRequests/{operationId}",
+  "x-document-id-field": "id",
+  "x-owner": "Suvbot demo operations",
+  "required": [
+    "uid",
+    "action",
+    "status",
+    "matchId",
+    "createdAt",
+    "updatedAt",
+    "text",
+    "targetPhone"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "action": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "started",
+        "completed",
+        "failed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "matchId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "targetPhone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "completedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "failedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "errorMessage": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
