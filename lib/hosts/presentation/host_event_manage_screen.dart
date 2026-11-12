@@ -34,7 +34,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_p
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -44,6 +43,7 @@ import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
