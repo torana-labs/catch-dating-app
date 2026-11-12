@@ -74,7 +74,7 @@ final class HostEventPhotosControllerProvider
 }
 
 String _$hostEventPhotosControllerHash() =>
-    r'1b4bca8e23f70f9f594093786aefd651ec54df40';
+    r'f70bd3ac1195abfa26e50fec3e096f0277bdb8e4';
 
 /// The host team's photos for one event's checked-in guests: the shared
 /// album, picking several photos at once, per-photo upload progress, retry,

@@ -149,12 +149,14 @@ void main() {
       );
 
       expect(
-        run.recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
+        run
+            .recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
             .reason,
         contains('away while the activity runs'),
       );
       expect(
-        crawl.recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
+        crawl
+            .recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
             .reason,
         contains('only between stops'),
       );
@@ -163,7 +165,8 @@ void main() {
         contains('only between rounds'),
       );
       expect(
-        dinner.recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
+        dinner
+            .recommendationFor(EventSuccessModuleCatalog.socialMissions.id)!
             .reason,
         contains('allowed at any time'),
       );
@@ -193,9 +196,7 @@ void main() {
       final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
       final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
           .copyWith(
-            selectedModuleIds: [
-              ...profile.playbook.moduleIds,
-            ],
+            selectedModuleIds: [...profile.playbook.moduleIds],
             activeStepIndex: activeStepIndex,
             wingmanRequestsEnabled: true,
             contextualOpenersEnabled: true,
@@ -319,7 +320,10 @@ void main() {
 
     test('resolves continuous phone use with table seating', () {
       expect(profile.interactionModel, EventInteractionModel.seatedTable);
-      expect(profile.phoneAvailability, EventSuccessPhoneAvailability.continuous);
+      expect(
+        profile.phoneAvailability,
+        EventSuccessPhoneAvailability.continuous,
+      );
       expect(profile.durationShape, EventSuccessDurationShape.courses);
       expect(profile.summary, contains('keep phones away'));
     });
@@ -382,10 +386,7 @@ void main() {
         profile.phoneAvailability,
         EventSuccessPhoneAvailability.plannedPauses,
       );
-      expect(
-        profile.rotationSuitability,
-        EventSuccessRotationSuitability.none,
-      );
+      expect(profile.rotationSuitability, EventSuccessRotationSuitability.none);
       expect(profile.assignmentAlgorithm, EventSuccessAssignmentAlgorithm.none);
       expect(profile.unitOutcome, EventSuccessUnitOutcome.none);
       expect(profile.structureConfig.unitKind, EventSuccessUnitKind.wholeGroup);
@@ -435,7 +436,9 @@ void main() {
     });
 
     test('saved crawl formats round-trip the new model', () {
-      final format = EventFormatSnapshot.fromActivityKind(ActivityKind.barCrawl);
+      final format = EventFormatSnapshot.fromActivityKind(
+        ActivityKind.barCrawl,
+      );
       final restored = EventFormatSnapshot.fromJson(
         Map<String, dynamic>.from(format.toJson()),
       );
@@ -444,24 +447,27 @@ void main() {
   });
 
   group('setup readiness', () {
-    test('a quiz with score standings can reveal without pods or rotations', () {
-      // Quiz keeps the group tool by default (team balancing ships), so turn
-      // it off to pin the standings rule on its own.
-      final draft = EventSuccessHostDraft.fromActivity(
-        ActivityKind.pubQuiz,
-      ).withModuleSelection(EventSuccessModuleCatalog.microPods.id, false);
+    test(
+      'a quiz with score standings can reveal without pods or rotations',
+      () {
+        // Quiz keeps the group tool by default (team balancing ships), so turn
+        // it off to pin the standings rule on its own.
+        final draft = EventSuccessHostDraft.fromActivity(
+          ActivityKind.pubQuiz,
+        ).withModuleSelection(EventSuccessModuleCatalog.microPods.id, false);
 
-      expect(
-        draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
-        isTrue,
-      );
-      expect(
-        draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
-        isFalse,
-      );
-      expect(draft.readinessIssues, isEmpty);
-      expect(draft.status, EventSuccessSetupStatus.readyForLaunch);
-    });
+        expect(
+          draft.isModuleSelected(EventSuccessModuleCatalog.liveReveal.id),
+          isTrue,
+        );
+        expect(
+          draft.isModuleSelected(EventSuccessModuleCatalog.microPods.id),
+          isFalse,
+        );
+        expect(draft.readinessIssues, isEmpty);
+        expect(draft.status, EventSuccessSetupStatus.readyForLaunch);
+      },
+    );
 
     test('a reveal without standings still needs pods or rotations', () {
       final draft = EventSuccessHostDraft.fromActivity(

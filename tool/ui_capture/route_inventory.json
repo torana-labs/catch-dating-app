@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "0d050c50e966f2269c278479e83b76ee9bcee0cbeac00c810082faa159213218",
+    "routeContractSha256": "34fdd95671863885aadf1d2ac632b482d58cc22a710205b4b6170bbb792c4b6b",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -424,9 +424,9 @@
       "runtimePath": "/catches/:eventId",
       "runtimeParentId": "dashboardScreen",
       "runtimePathExpression": "'catches/:eventId'",
-      "renderKind": "builder",
-      "presentationExpression": "(context,state)=>SwipeScreen(eventId:state.pathParameters['eventId']!,vibeIds:switch(state.extra){final Set<String>ids=>ids,_=>const{}})",
-      "presentationTarget": "SwipeScreen",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>Routes.eventRecapScreen.path.replaceFirst(':eventId',state.pathParameters['eventId']!)",
+      "presentationTarget": "Routes.eventRecapScreen.path.replaceFirst",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },

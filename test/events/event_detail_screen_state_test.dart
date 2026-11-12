@@ -153,7 +153,10 @@ void main() {
       expect(state.priceNote, '3 spots left');
       expect(state.priceWarn, true);
       expect(state.useAccent, true);
-      expect(state.catchLine, 'Matching opens for everyone who goes');
+      expect(
+        state.catchLine,
+        'After the event, stay in touch with anyone who went',
+      );
       expect(state.isPrimaryActionEnabled, true);
 
       final unsupported = eventDetailBookingDockStateFrom(

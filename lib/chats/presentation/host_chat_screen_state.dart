@@ -142,7 +142,7 @@ class HostChatScreenState {
           ? StructuredDomainCopy.chatSuvbotTitle
           : isHostInquiry
           ? name
-          : profile?.name ?? 'your match',
+          : profile?.name ?? 'this person',
       messagesRetryIntent: messagesAsync.status == CatchAsyncStatus.error
           ? HostChatRetryIntent.reloadMessages
           : null,

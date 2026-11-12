@@ -195,7 +195,9 @@ Future<void> openEventDetail(
   }
 }
 
-Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
+/// Pushes the retired swipe deck's route, which now redirects to the
+/// event's after-event screen.
+Future<void> openRetiredSwipeDeckRoute(WidgetTester tester, Event event) async {
   final router = _routerFor(tester);
   unawaited(
     router.pushNamed(

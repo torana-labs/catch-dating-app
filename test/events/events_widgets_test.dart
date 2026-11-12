@@ -939,9 +939,7 @@ void main() {
         expect(find.text('8/20'), findsOneWidget);
         expect(find.text('+1'), findsOneWidget);
         expect(
-          find.text(
-            'The catch window is open for 24 hours after the event finishes.',
-          ),
+          find.text('Picks are open for 24 hours after the event finishes.'),
           findsOneWidget,
         );
       },

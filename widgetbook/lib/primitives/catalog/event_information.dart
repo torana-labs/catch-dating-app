@@ -341,7 +341,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
                 warn: true,
               ),
               buttonAccentColor: t.primary,
-              catchLine: 'Matching opens for everyone who goes',
+              catchLine: 'After the event, stay in touch with anyone who went',
               catchLineAccent: t.primary,
             ),
             gapH12,

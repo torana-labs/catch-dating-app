@@ -529,11 +529,11 @@ void main() {
       find.byType(CatchRootScreenScaffold),
     );
     expect(rootScaffold.bodyLayout, CatchPageBodyMode.fullBleed);
-    expect(find.text('No catches yet'), findsOneWidget);
+    expect(find.text('No messages yet'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(
       find.text(
-        'When someone catches you back after a shared event, the conversation opens here with that event as context.',
+        'When you and someone you met both pick each other after an event, your conversation opens here with that event as context.',
       ),
       findsOneWidget,
     );
@@ -574,7 +574,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('No catches yet'), findsNothing);
+    expect(find.text('No messages yet'), findsNothing);
   });
 
   testWidgets('shows search-specific empty copy when a query has no matches', (
@@ -621,7 +621,7 @@ void main() {
       find.text('Try another name or clear the search field.'),
       findsOneWidget,
     );
-    expect(find.text('No catches yet'), findsNothing);
+    expect(find.text('No messages yet'), findsNothing);
   });
 
   testWidgets('collapses duplicate match docs into one chat row per person', (

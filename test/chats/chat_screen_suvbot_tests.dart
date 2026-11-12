@@ -111,11 +111,11 @@ void _registerChatScreenSuvbotTests() {
 
       expect(suvbotRepository.calls.last.actionId, 'resetChats');
 
-      await tester.tap(find.text('Match tester'));
+      await tester.tap(find.text('Mutual pick tester'));
       await pumpFeatureUi(tester);
       expect(find.byType(TextField), findsOneWidget);
       await tester.enterText(find.byType(TextField), '+919999999999');
-      await tester.tap(find.text('Create match'));
+      await tester.tap(find.text('Create a mutual pick'));
       await pumpFeatureUi(tester);
 
       expect(suvbotRepository.calls.last.actionId, 'matchTesterByPhone');

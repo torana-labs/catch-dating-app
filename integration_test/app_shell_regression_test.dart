@@ -52,7 +52,7 @@ void main() {
     expect(reporter.screenViews, contains(Routes.eventDetailScreen.name));
   });
 
-  testWidgets('catches deck route opens above app shell navigation chrome', (
+  testWidgets('the retired deck address opens the after-event screen', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -80,16 +80,18 @@ void main() {
         joinedOrganizerIds: {organizer.id},
         attendedEvents: [attendedRun],
         swipeCandidates: [candidate],
+        publicProfiles: [candidate],
       ),
     );
 
     expect(find.byKey(AppShellKeys.navigationBar), findsOneWidget);
 
-    await openSwipeDeck(tester, attendedRun);
+    await openRetiredSwipeDeckRoute(tester, attendedRun);
     await flushAppShellCallbacks(tester);
     await pumpAppShellFrames(tester);
 
-    expect(find.byKey(SwipeKeys.passButton), findsOneWidget);
+    expect(find.text('How was it?'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.afterEventPerson(candidate.uid)), findsOne);
     expect(find.byKey(AppShellKeys.navigationBar), findsNothing);
   });
 }

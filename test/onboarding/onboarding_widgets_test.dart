@@ -616,7 +616,7 @@ void main() {
       expect(empty.continueHint(_l10n), 'Add 2 more photos to continue.');
       expect(
         empty.supportingCopy(_l10n),
-        'Running photos boost catches by 2.3x.',
+        'A photo from an event helps people recognise you.',
       );
 
       final pending = OnboardingPhotosState.from(
@@ -631,7 +631,7 @@ void main() {
       );
       expect(
         pending.supportingCopy(_l10n),
-        'This only gates Catches. Event booking stays available.',
+        'Photos are only needed to stay in touch after events. Booking stays available.',
       );
 
       final ready = OnboardingPhotosState.from(
@@ -755,7 +755,9 @@ void main() {
       );
 
       expect(
-        find.text('This only gates Catches. Event booking stays available.'),
+        find.text(
+          'Photos are only needed to stay in touch after events. Booking stays available.',
+        ),
         findsOneWidget,
       );
     });

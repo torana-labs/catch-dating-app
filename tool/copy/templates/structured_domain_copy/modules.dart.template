@@ -8,8 +8,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.crowdBalance,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.before,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.crowdBalance.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.crowdBalance.hostConfigurable}},
     attendeePromise: {{modules.crowdBalance.attendeePromise.1}},
     hostPromise:
         {{modules.crowdBalance.hostPromise.1}},
@@ -30,10 +29,10 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.checkIn,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.arrival,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.checkIn.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.checkIn.hostConfigurable}},
     attendeePromise: {{modules.checkIn.attendeePromise.1}},
-    hostPromise: {{modules.checkIn.hostPromise.1}},
+    hostPromise:
+        {{modules.checkIn.hostPromise.1}},
     requiresLivePhoneUse: true,
     setupSteps: [
       {{modules.checkIn.setupSteps.1}},
@@ -202,8 +201,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.wingmanRequests,
     productLayer: EventSuccessProductLayer.hostFacilitation,
     stage: EventSuccessStage.mixing,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.wingmanRequests.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.wingmanRequests.hostConfigurable}},
     attendeePromise:
         {{modules.wingmanRequests.attendeePromise.1}},
     hostPromise:
@@ -226,9 +224,9 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.contextualOpeners,
     productLayer: EventSuccessProductLayer.conversation,
     stage: EventSuccessStage.after,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.contextualOpeners.hostConfigurable}},
-    attendeePromise: {{modules.contextualOpeners.attendeePromise.1}},
+    hostConfigurable: {{eventSuccessModuleMetadata.contextualOpeners.hostConfigurable}},
+    attendeePromise:
+        {{modules.contextualOpeners.attendeePromise.1}},
     hostPromise: {{modules.contextualOpeners.hostPromise.1}},
     setupSteps: [
       {{modules.contextualOpeners.setupSteps.1}},
@@ -245,8 +243,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.decomposedFeedback.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.decomposedFeedback.hostConfigurable}},
     attendeePromise: {{modules.decomposedFeedback.attendeePromise.1}},
     hostPromise:
         {{modules.decomposedFeedback.hostPromise.1}},
@@ -262,8 +259,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.hostAnalytics,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.hostDebrief,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.hostAnalytics.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.hostAnalytics.hostConfigurable}},
     attendeePromise:
         {{modules.hostAnalytics.attendeePromise.1}},
     hostPromise:
@@ -281,8 +277,7 @@ abstract final class EventSuccessModuleCatalog {
     type: EventSuccessModuleType.safetyControls,
     productLayer: EventSuccessProductLayer.safety,
     stage: EventSuccessStage.before,
-    hostConfigurable:
-        {{eventSuccessModuleMetadata.safetyControls.hostConfigurable}},
+    hostConfigurable: {{eventSuccessModuleMetadata.safetyControls.hostConfigurable}},
     attendeePromise: {{modules.safetyControls.attendeePromise.1}},
     hostPromise: {{modules.safetyControls.hostPromise.1}},
     setupSteps: [

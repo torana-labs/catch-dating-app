@@ -594,7 +594,7 @@
   "@hostsTrackingSettingsEnabled": {"description": "Organiser provider tracking settings in Host Insights.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_tracking_settings_section"},
   "hostsTrackingSettingsInvalidId": "Enter a valid provider ID or leave this field blank.",
   "@hostsTrackingSettingsInvalidId": {"description": "Organiser provider tracking settings in Host Insights.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_tracking_settings_section"},
-  "hostsTrackingSettingsPrivacy": "Sensitive social, dating and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.",
+  "hostsTrackingSettingsPrivacy": "Sensitive social and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.",
   "@hostsTrackingSettingsPrivacy": {"description": "Organiser provider tracking settings in Host Insights.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_tracking_settings_section"},
   "hostsTrackingSettingsSaveDisabled": "Save disabled configuration",
   "@hostsTrackingSettingsSaveDisabled": {"description": "Organiser provider tracking settings in Host Insights.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_tracking_settings_section"},
@@ -1434,7 +1434,7 @@
     "x-surface": "hosts.event_report",
     "x-max-chars": 40
   },
-  "hostEventReportStayInTouchBody": "They matched after the event. Only they see who.",
+  "hostEventReportStayInTouchBody": "They picked each other after the event. Only they see who.",
   "@hostEventReportStayInTouchBody": {
     "description": "Event report line under the stay-in-touch count.",
     "x-audience": "host",
@@ -2360,7 +2360,7 @@
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.suvbot_action_bar"
   },
-  "chatsSuvbotActionBarTextMatchTester": "Match tester",
+  "chatsSuvbotActionBarTextMatchTester": "Mutual pick tester",
   "@chatsSuvbotActionBarTextMatchTester": {
     "description": "Product copy used by lib/chats/presentation/widgets/suvbot_action_bar.dart (Text).",
     "x-audience": "consumer",
@@ -2381,7 +2381,7 @@
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.suvbot_action_bar"
   },
-  "chatsSuvbotActionBarLabelCreateMatch": "Create match",
+  "chatsSuvbotActionBarLabelCreateMatch": "Create a mutual pick",
   "@chatsSuvbotActionBarLabelCreateMatch": {
     "description": "Product copy used by lib/chats/presentation/widgets/suvbot_action_bar.dart (label).",
     "x-audience": "consumer",
@@ -2764,7 +2764,7 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
   },
-  "coreCatchPersonRowLabelNewMatch": "New match",
+  "coreCatchPersonRowLabelNewMatch": "New connection",
   "@coreCatchPersonRowLabelNewMatch": {
     "description": "Product copy resolved by packages/platform/lib/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
@@ -2970,7 +2970,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.activity_section"
   },
-  "dashboardActivitySectionMessageNewCatchesBookingsAnd": "New catches, bookings, and event reminders will collect here.",
+  "dashboardActivitySectionMessageNewCatchesBookingsAnd": "New connections, bookings and event reminders will collect here.",
   "@dashboardActivitySectionMessageNewCatchesBookingsAnd": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/activity_section.dart (message).",
     "x-audience": "consumer",
@@ -3005,14 +3005,14 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.empty_hero_card"
   },
-  "dashboardEmptyHeroCardTextYourCatchesUnlockAfter": "Your catches unlock\nafter your first event.",
+  "dashboardEmptyHeroCardTextYourCatchesUnlockAfter": "The people you meet\nshow up after your first event.",
   "@dashboardEmptyHeroCardTextYourCatchesUnlockAfter": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/empty_hero_card.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.empty_hero_card"
   },
-  "dashboardEmptyHeroCardTextTheDatingAppWhere": "The dating app where you''ve already met. No cold swiping — just people you actually crossed paths with.",
+  "dashboardEmptyHeroCardTextTheDatingAppWhere": "Go to something you’d do anyway, meet the people there, and stay in touch with the ones you click with.",
   "@dashboardEmptyHeroCardTextTheDatingAppWhere": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/empty_hero_card.dart (Text).",
     "x-audience": "consumer",
@@ -3068,7 +3068,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_feature_blocks"
   },
-  "eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone": "Caught someone",
+  "eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone": "Picked someone",
   "@eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone": {
     "description": "Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).",
     "x-audience": "consumer",
@@ -3264,7 +3264,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
-  "eventSuccessEventSuccessSetupBodyTextMatchClueQuestions": "Match clue questions",
+  "eventSuccessEventSuccessSetupBodyTextMatchClueQuestions": "Conversation questions",
   "@eventSuccessEventSuccessSetupBodyTextMatchClueQuestions": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).",
     "x-audience": "consumer",
@@ -3944,21 +3944,21 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.who_is_going"
   },
-  "eventsWhoIsGoingMessageCatchesUnlockFor24": "Catches unlock for 24 hours after the event finishes.",
+  "eventsWhoIsGoingMessageCatchesUnlockFor24": "After the event, you have 24 hours to pick people you’d like to see again.",
   "@eventsWhoIsGoingMessageCatchesUnlockFor24": {
     "description": "Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.who_is_going"
   },
-  "eventsWhoIsGoingMessageTheCatchWindowIs": "The catch window is open for 24 hours after the event finishes.",
+  "eventsWhoIsGoingMessageTheCatchWindowIs": "Picks are open for 24 hours after the event finishes.",
   "@eventsWhoIsGoingMessageTheCatchWindowIs": {
     "description": "Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.who_is_going"
   },
-  "eventsWhoIsGoingMessageTheCatchWindowFor": "The catch window for this event has closed.",
+  "eventsWhoIsGoingMessageTheCatchWindowFor": "Picks for this event have closed.",
   "@eventsWhoIsGoingMessageTheCatchWindowFor": {
     "description": "Product copy used by lib/events/presentation/widgets/who_is_going.dart (message).",
     "x-audience": "consumer",
@@ -4070,7 +4070,7 @@
     "x-owner": "product",
     "x-surface": "events.shared.event_joined_celebration_screen"
   },
-  "eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting": "Arrive by the meeting time. Catches unlock automatically when the event finishes.",
+  "eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting": "Arrive by the meeting time. After the event, you can stay in touch with the people you met.",
   "@eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting": {
     "description": "Product copy used by lib/events/shared/event_joined_celebration_screen.dart (note).",
     "x-audience": "consumer",
@@ -5038,7 +5038,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen"
   },
-  "hostsHostEventManageScreenTextTrackWhichChannelsCreate": "Track which channels create demand, bookings, arrivals, catches, and chats.",
+  "hostsHostEventManageScreenTextTrackWhichChannelsCreate": "Track which channels create demand, bookings, arrivals, connections and chats.",
   "@hostsHostEventManageScreenTextTrackWhichChannelsCreate": {
     "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (Text).",
     "x-audience": "host",
@@ -5925,21 +5925,21 @@
     "x-owner": "product",
     "x-surface": "launch_access.presentation.launch_access_application_screen"
   },
-  "matchesMatchCelebrationDialogEyebrowNewCatch": "New catch",
+  "matchesMatchCelebrationDialogEyebrowNewCatch": "New connection",
   "@matchesMatchCelebrationDialogEyebrowNewCatch": {
     "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (eyebrow).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
-  "matchesMatchCelebrationDialogTitleItSACatch": "It''s a Catch.",
+  "matchesMatchCelebrationDialogTitleItSACatch": "You picked each other.",
   "@matchesMatchCelebrationDialogTitleItSACatch": {
     "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
-  "matchesMatchCelebrationDialogLabelMatch": "Match",
+  "matchesMatchCelebrationDialogLabelMatch": "Mutual pick",
   "@matchesMatchCelebrationDialogLabelMatch": {
     "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).",
     "x-audience": "consumer",
@@ -5960,7 +5960,7 @@
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
-  "matchesMatchCelebrationDialogLabelKeepCatching": "Keep catching",
+  "matchesMatchCelebrationDialogLabelKeepCatching": "Not now",
   "@matchesMatchCelebrationDialogLabelKeepCatching": {
     "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).",
     "x-audience": "consumer",
@@ -7075,72 +7075,9 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "swipesEventRecapScreenTitleEventRecap": "Event recap",
-  "@swipesEventRecapScreenTitleEventRecap": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
   "swipesEventRecapScreenTooltipCloseRecap": "Close recap",
   "@swipesEventRecapScreenTooltipCloseRecap": {
     "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (tooltip).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenTextWhoBroughtTheVibe": "Who brought the vibe?",
-  "@swipesEventRecapScreenTextWhoBroughtTheVibe": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenTextTapPeopleYouRemember": "Tap people you remember. They''ll be easier to spot when you open the catches deck.",
-  "@swipesEventRecapScreenTextTapPeopleYouRemember": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenTitleNoAttendeesToTag": "No attendees to tag",
-  "@swipesEventRecapScreenTitleNoAttendeesToTag": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenMessageNoOtherCheckedIn": "No other checked-in attendees are attached to this event yet.",
-  "@swipesEventRecapScreenMessageNoOtherCheckedIn": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (message).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenLabelOpenCatchesDeck": "Open catches deck",
-  "@swipesEventRecapScreenLabelOpenCatchesDeck": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenLabelWhen": "When",
-  "@swipesEventRecapScreenLabelWhen": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenLabelTime": "Time",
-  "@swipesEventRecapScreenLabelTime": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen"
-  },
-  "swipesEventRecapScreenLabelCatches": "Catches",
-  "@swipesEventRecapScreenLabelCatches": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.event_recap_screen"
@@ -7186,48 +7123,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.filters_screen"
-  },
-  "swipesSwipeScreenTooltipBackToCatches": "Back to Catches",
-  "@swipesSwipeScreenTooltipBackToCatches": {
-    "description": "Product copy used by lib/swipes/presentation/swipe_screen.dart (tooltip).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.swipe_screen"
-  },
-  "swipesSwipeScreenTooltipFilters": "Filters",
-  "@swipesSwipeScreenTooltipFilters": {
-    "description": "Product copy used by lib/swipes/presentation/swipe_screen.dart (tooltip).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.swipe_screen"
-  },
-  "swipesCatchesPassButtonMessagePassing": "Passing",
-  "@swipesCatchesPassButtonMessagePassing": {
-    "description": "Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (message).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.widgets.catches_pass_button"
-  },
-  "swipesCatchesPassButtonMessagePass": "Pass",
-  "@swipesCatchesPassButtonMessagePass": {
-    "description": "Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (message).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.widgets.catches_pass_button"
-  },
-  "swipesCatchesPassButtonLabelPassingProfile": "Passing profile",
-  "@swipesCatchesPassButtonLabelPassingProfile": {
-    "description": "Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.widgets.catches_pass_button"
-  },
-  "swipesCatchesPassButtonLabelPassProfile": "Pass profile",
-  "@swipesCatchesPassButtonLabelPassProfile": {
-    "description": "Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.widgets.catches_pass_button"
   },
   "swipesCatchProfileViewLabelPace": "PACE",
   "@swipesCatchProfileViewLabelPace": {
@@ -8509,7 +8404,7 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
   },
-  "notificationArrivalMatchTitle": "It''s a catch",
+  "notificationArrivalMatchTitle": "You picked each other",
   "@notificationArrivalMatchTitle": {
     "description": "Fallback title for a foreground match arrival when the server supplies no title.",
     "x-audience": "shared",
@@ -8786,7 +8681,7 @@
     "x-owner": "product",
     "x-surface": "launch_access.presentation.launch_access_application_screen"
   },
-  "matchesMatchCelebrationDialogMessageYouAndNameBoth": "You and {name} both liked each other.",
+  "matchesMatchCelebrationDialogMessageYouAndNameBoth": "You and {name} both want to stay in touch.",
   "@matchesMatchCelebrationDialogMessageYouAndNameBoth": {
     "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (message).",
     "placeholders": {
@@ -9015,16 +8910,6 @@
     "x-owner": "product",
     "x-surface": "swipes.presentation.event_recap_screen"
   },
-  "swipesSwipeScreenTextCatchesRemainingcountLeft": "Catches · {remainingCount} left",
-  "@swipesSwipeScreenTextCatchesRemainingcountLeft": {
-    "description": "Product copy used by lib/swipes/presentation/swipe_screen.dart (Text).",
-    "placeholders": {
-      "remainingCount": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.swipe_screen"
-  },
   "swipesCatchProfileViewTextNameAge": "{name}, {age}",
   "@swipesCatchProfileViewTextNameAge": {
     "description": "Product copy used by lib/swipes/shared/profile_surface/catch_profile_view.dart (Text).",
@@ -9216,7 +9101,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.dashboard_home_screen"
   },
-  "eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow": "Private afterglow",
+  "eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow": "Your recap",
   "@eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart (label).",
     "x-audience": "consumer",
@@ -10032,7 +9917,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"
   },
-  "eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA": "Use one after a mutual match opens.",
+  "eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA": "Use one when you message someone you met.",
   "@eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA": {
     "description": "Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (subtitle).",
     "x-audience": "consumer",
@@ -10102,7 +9987,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": "Close with one suggested first message after mutual matches.",
+  "eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": "Close with one suggested first message for people who pick each other.",
   "@eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": {
     "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).",
     "x-audience": "host",
@@ -10412,7 +10297,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
-  "eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": "Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.",
+  "eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": "Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.",
   "@eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": {
     "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
@@ -10629,7 +10514,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
-  "eventSuccessEventSuccessHostReportLabelCaughtSomeone": "Caught someone",
+  "eventSuccessEventSuccessHostReportLabelCaughtSomeone": "Picked someone",
   "@eventSuccessEventSuccessHostReportLabelCaughtSomeone": {
     "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
@@ -10650,7 +10535,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
-  "eventSuccessEventSuccessHostReportLabelWingmanHelp": "Wingman help",
+  "eventSuccessEventSuccessHostReportLabelWingmanHelp": "Host-help requests",
   "@eventSuccessEventSuccessHostReportLabelWingmanHelp": {
     "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
@@ -10668,7 +10553,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
-  "eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": "{attendeesWhoCaughtSomeone} caught someone",
+  "eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": "{attendeesWhoCaughtSomeone} picked someone",
   "@eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": {
     "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
@@ -10678,7 +10563,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
-  "eventSuccessEventSuccessHostReportLabelCatchesSent": "Catches sent",
+  "eventSuccessEventSuccessHostReportLabelCatchesSent": "Picks sent",
   "@eventSuccessEventSuccessHostReportLabelCatchesSent": {
     "description": "Label for the number of post-event catches sent.",
     "x-audience": "host",
@@ -10954,7 +10839,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
-  "eventSuccessEventSuccessHostSharedTextMatchClueQuestions": "Match clue questions",
+  "eventSuccessEventSuccessHostSharedTextMatchClueQuestions": "Conversation questions",
   "@eventSuccessEventSuccessHostSharedTextMatchClueQuestions": {
     "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).",
     "x-audience": "host",
@@ -12174,7 +12059,7 @@
     "x-owner": "product",
     "x-surface": "hosts.today"
   },
-  "coreBlockUserDialogMessageYouWillStopSeeing": "You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.",
+  "coreBlockUserDialogMessageYouWillStopSeeing": "You will stop seeing each other in chats, after-event picks and future event slots where the other person is already booked.",
   "@coreBlockUserDialogMessageYouWillStopSeeing": {
     "description": "Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (message).",
     "x-audience": "shared",
@@ -12247,7 +12132,7 @@
     "x-owner": "product",
     "x-surface": "force_update.presentation.update_required_screen"
   },
-  "onboardingWelcomePageTextShowUpToSomething": "Show up to something you''d do anyway — a long run, a long table, trivia night. Match only with the people who were actually there.",
+  "onboardingWelcomePageTextShowUpToSomething": "Show up to something you’d do anyway — a long run, a long table, trivia night. Stay in touch with the people who were actually there.",
   "@onboardingWelcomePageTextShowUpToSomething": {
     "description": "Product copy used by lib/onboarding/presentation/pages/welcome_page.dart (Text).",
     "x-audience": "consumer",
@@ -12289,7 +12174,7 @@
     "x-owner": "product",
     "x-surface": "payments.presentation.payment_confirmation_screen"
   },
-  "paymentsPaymentConfirmationScreenTextBringAWaterBottle": "Bring a water bottle and arrive by the meeting time. Catches unlock automatically when the event finishes — keep your phone charged.",
+  "paymentsPaymentConfirmationScreenTextBringAWaterBottle": "Bring a water bottle and arrive by the meeting time. After the event, you can stay in touch with the people you met, so keep your phone charged.",
   "@paymentsPaymentConfirmationScreenTextBringAWaterBottle": {
     "description": "Product copy used by lib/payments/presentation/payment_confirmation_screen.dart (Text).",
     "x-audience": "consumer",
@@ -12317,7 +12202,7 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepSubtitleLastNameStaysPrivate": "Last name stays private until you catch.",
+  "onboardingOnboardingStepSubtitleLastNameStaysPrivate": "Last name stays private until you message someone.",
   "@onboardingOnboardingStepSubtitleLastNameStaysPrivate": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
@@ -12345,14 +12230,14 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepTitleCompleteYourProfileFor": "Complete your profile for Catches",
+  "onboardingOnboardingStepTitleCompleteYourProfileFor": "Complete your profile to stay in touch",
   "@onboardingOnboardingStepTitleCompleteYourProfileFor": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepSubtitleCatchesNeedPhotosSo": "Catches need photos so people can decide who they want to meet. You can still book events with your current details.",
+  "onboardingOnboardingStepSubtitleCatchesNeedPhotosSo": "People you met see your photos when you pick them. You can still book events with your current details.",
   "@onboardingOnboardingStepSubtitleCatchesNeedPhotosSo": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
@@ -12373,14 +12258,14 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepTitleAddPromptsToStart": "Add prompts to start catching",
+  "onboardingOnboardingStepTitleAddPromptsToStart": "Add prompts so people know you",
   "@onboardingOnboardingStepTitleAddPromptsToStart": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepSubtitlePromptsGivePeopleSomething": "Prompts give people something real to respond to before you match.",
+  "onboardingOnboardingStepSubtitlePromptsGivePeopleSomething": "Prompts give people something real to talk about.",
   "@onboardingOnboardingStepSubtitlePromptsGivePeopleSomething": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
@@ -12401,14 +12286,14 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepTitleFinishYourCatchesProfile": "Finish your Catches profile",
+  "onboardingOnboardingStepTitleFinishYourCatchesProfile": "Finish your profile",
   "@onboardingOnboardingStepTitleFinishYourCatchesProfile": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
-  "onboardingOnboardingStepSubtitleTheseAreOptionalBut": "These are optional, but they help us rank compatible people in Catches.",
+  "onboardingOnboardingStepSubtitleTheseAreOptionalBut": "These are optional, but they help us suggest people you’d get on with.",
   "@onboardingOnboardingStepSubtitleTheseAreOptionalBut": {
     "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
@@ -13000,7 +12885,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": "Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.",
+  "eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": "Keep the useful parts of the room, send private feedback, and use event-specific openers when you message someone you met.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
@@ -13140,21 +13025,21 @@
     "x-owner": "product",
     "x-surface": "payments.presentation.payment_history_screen"
   },
-  "swipesSwipeEmptyContentTitleNoMoreAttendees": "No more attendees",
+  "swipesSwipeEmptyContentTitleNoMoreAttendees": "Nobody else to pick",
   "@swipesSwipeEmptyContentTitleNoMoreAttendees": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentMessageJoinMoreEventsTo": "Join more events to meet new people",
+  "swipesSwipeEmptyContentMessageJoinMoreEventsTo": "You’ve seen everyone from this event. Join more events to meet new people.",
   "@swipesSwipeEmptyContentMessageJoinMoreEventsTo": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentTitleCatchUnavailable": "Catch unavailable",
+  "swipesSwipeEmptyContentTitleCatchUnavailable": "Picks aren’t available",
   "@swipesSwipeEmptyContentTitleCatchUnavailable": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).",
     "x-audience": "consumer",
@@ -13175,14 +13060,14 @@
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentMessageSignInAgainTo": "Sign in again to catch fellow attendees.",
+  "swipesSwipeEmptyContentMessageSignInAgainTo": "Sign in again to see who came.",
   "@swipesSwipeEmptyContentMessageSignInAgainTo": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentMessageYouCanOnlyCatch": "You can only catch attendees from events you attended.",
+  "swipesSwipeEmptyContentMessageYouCanOnlyCatch": "You can pick people from events you checked in to.",
   "@swipesSwipeEmptyContentMessageYouCanOnlyCatch": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).",
     "x-audience": "consumer",
@@ -13196,21 +13081,21 @@
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentMessageCatchesUnlockFor24": "Catches unlock for 24 hours after the event finishes.",
+  "swipesSwipeEmptyContentMessageCatchesUnlockFor24": "After the event, you have 24 hours to pick people you’d like to see again.",
   "@swipesSwipeEmptyContentMessageCatchesUnlockFor24": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentTitleCatchWindowClosed": "Catch window closed",
+  "swipesSwipeEmptyContentTitleCatchWindowClosed": "Picks have closed",
   "@swipesSwipeEmptyContentTitleCatchWindowClosed": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.swipe_empty_content"
   },
-  "swipesSwipeEmptyContentMessageThisEventIsPast": "This event is past the 24-hour catch window.",
+  "swipesSwipeEmptyContentMessageThisEventIsPast": "Picks close 24 hours after the event.",
   "@swipesSwipeEmptyContentMessageThisEventIsPast": {
     "description": "Product copy used by lib/swipes/presentation/swipe_empty_content.dart (message).",
     "x-audience": "consumer",
@@ -14103,35 +13988,35 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyBodyMeetTheOrganizerAt": "Meet the organizer at the event. No cold matching happens here.",
+  "dashboardDashboardEmptyBodyMeetTheOrganizerAt": "Meet the organizer and the group at the event.",
   "@dashboardDashboardEmptyBodyMeetTheOrganizerAt": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyTitleCatchWithin24Hours": "Catch within 24 hours",
+  "dashboardDashboardEmptyTitleCatchWithin24Hours": "Stay in touch within 24 hours",
   "@dashboardDashboardEmptyTitleCatchWithin24Hours": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyBodyYouGetTheRoster": "You get the roster of who came. Catch anyone who caught your eye.",
+  "dashboardDashboardEmptyBodyYouGetTheRoster": "See who came, rate the event and pick anyone you’d like to see again.",
   "@dashboardDashboardEmptyBodyYouGetTheRoster": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyTitleTheyCatchYouBack": "They catch you back?",
+  "dashboardDashboardEmptyTitleTheyCatchYouBack": "They pick you too?",
   "@dashboardDashboardEmptyTitleTheyCatchYouBack": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyBodyMatchMessagePlanThe": "Match. Message. Plan the next event together.",
+  "dashboardDashboardEmptyBodyMatchMessagePlanThe": "Message each other. Plan the next event together.",
   "@dashboardDashboardEmptyBodyMatchMessagePlanThe": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).",
     "x-audience": "consumer",
@@ -14272,74 +14157,9 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_shared"
   },
-  "swipesEventRecapScreenStateVisiblecopyCatchesOpenUntilTime": "Catches open until {time}",
-  "@swipesEventRecapScreenStateVisiblecopyCatchesOpenUntilTime": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).",
-    "placeholders": {
-      "time": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateVisiblecopyCatchWindowClosed": "Catch window closed",
-  "@swipesEventRecapScreenStateVisiblecopyCatchWindowClosed": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateKickerTouppercaseComplete": "{toUpperCase} · COMPLETE",
-  "@swipesEventRecapScreenStateKickerTouppercaseComplete": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (kicker).",
-    "placeholders": {
-      "toUpperCase": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateVisiblecopyActivitysummarylabelCheckedincountCheckedIn": "{activitySummaryLabel} · {checkedInCount} checked in",
-  "@swipesEventRecapScreenStateVisiblecopyActivitysummarylabelCheckedincountCheckedIn": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).",
-    "placeholders": {
-      "activitySummaryLabel": {},
-      "checkedInCount": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
   "swipesEventRecapScreenStateDisplaynameGuest": "Guest",
   "@swipesEventRecapScreenStateDisplaynameGuest": {
     "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (displayName).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateVisiblecopyGuest": "guest",
-  "@swipesEventRecapScreenStateVisiblecopyGuest": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateTooltipRemoveTooltipname": "Remove {tooltipName}",
-  "@swipesEventRecapScreenStateTooltipRemoveTooltipname": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (tooltip).",
-    "placeholders": {
-      "tooltipName": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "swipes.presentation.event_recap_screen_state"
-  },
-  "swipesEventRecapScreenStateTooltipRememberTooltipname": "Remember {tooltipName}",
-  "@swipesEventRecapScreenStateTooltipRememberTooltipname": {
-    "description": "Product copy used by lib/swipes/presentation/event_recap_screen_state.dart (tooltip).",
-    "placeholders": {
-      "tooltipName": {}
-    },
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "swipes.presentation.event_recap_screen_state"
@@ -14795,7 +14615,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
-  "dashboardEventFocusRailLabelStartCatching": "Start catching",
+  "dashboardEventFocusRailLabelStartCatching": "See who you met",
   "@dashboardEventFocusRailLabelStartCatching": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
@@ -15026,7 +14846,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener": "Post-match opener",
+  "eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener": "First-message opener",
   "@eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener": {
     "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).",
     "x-audience": "consumer",
@@ -15540,7 +15360,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_afterglow"
   },
-  "eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent": "Use the shared event context when a match opens.",
+  "eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent": "Use the shared event context when you message someone you met.",
   "@eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -15733,7 +15553,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"
   },
-  "eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap": "afterglow-recap",
+  "eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap": "after-event-recap",
   "@eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap": {
     "description": "Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -15782,7 +15602,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"
   },
-  "eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman": "wingman",
+  "eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman": "host-help",
   "@eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman": {
     "description": "Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -15887,7 +15707,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": "Match clues",
+  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": "Conversation questions",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -15901,7 +15721,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": "Hosts do not see individual match clue answers.",
+  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": "Hosts do not see your individual answers.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -16027,14 +15847,14 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": "Afterglow",
+  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": "Recap",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": "Your afterglow is ready.",
+  "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": "Your recap is ready.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": {
     "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -16462,7 +16282,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_detail_screen_state"
   },
-  "eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone": "Matching opens for everyone who goes",
+  "eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone": "After the event, stay in touch with anyone who went",
   "@eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -18295,14 +18115,14 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou": "Caught you",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou": "Picked you",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches": "Mutual catches",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches": "Mutual picks",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -18344,14 +18164,14 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas": "Matches where interest was mutual.",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas": "Picks that were mutual.",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter": "Conversations that opened after matching.",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter": "Conversations that opened after a mutual pick.",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -18365,7 +18185,7 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual": "Chats started from mutual catches.",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual": "Chats started from mutual picks.",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -18386,7 +18206,7 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyVisiblecopyMatches": "Matches",
+  "userAnalyticsUserAnalyticsCopyVisiblecopyMatches": "Mutual picks",
   "@userAnalyticsUserAnalyticsCopyVisiblecopyMatches": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -18428,7 +18248,7 @@
     "x-owner": "product",
     "x-surface": "user_analytics.shared.user_analytics_copy"
   },
-  "userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter": "A short message after a mutual catch is the clearest follow-through signal.",
+  "userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter": "A short message after a mutual pick is the clearest follow-through signal.",
   "@userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter": {
     "description": "Product copy used by lib/user_analytics/shared/user_analytics_copy.dart (body).",
     "x-audience": "consumer",
@@ -19002,7 +18822,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyCatchesUnavailable": "Catches unavailable",
+  "coreAppErrorMessageVisiblecopyCatchesUnavailable": "People unavailable",
   "@coreAppErrorMessageVisiblecopyCatchesUnavailable": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19079,7 +18899,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyReloadCatches": "Reload catches",
+  "coreAppErrorMessageVisiblecopyReloadCatches": "Reload people",
   "@coreAppErrorMessageVisiblecopyReloadCatches": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19135,7 +18955,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyCatchesNotFound": "Catches not found",
+  "coreAppErrorMessageVisiblecopyCatchesNotFound": "People not found",
   "@coreAppErrorMessageVisiblecopyCatchesNotFound": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19232,14 +19052,14 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.pages.photos_page_state"
   },
-  "onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches": "This only gates Catches. Event booking stays available.",
+  "onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches": "Photos are only needed to stay in touch after events. Booking stays available.",
   "@onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches": {
     "description": "Product copy used by lib/onboarding/presentation/pages/photos_page_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.pages.photos_page_state"
   },
-  "onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches": "Running photos boost catches by 2.3x.",
+  "onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches": "A photo from an event helps people recognise you.",
   "@onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches": {
     "description": "Product copy used by lib/onboarding/presentation/pages/photos_page_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -19476,7 +19296,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyPleaseChooseYourDating": "Please choose your dating preferences before continuing.",
+  "coreAppErrorMessageVisiblecopyPleaseChooseYourDating": "Please choose who you’d like to meet before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseChooseYourDating": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19843,9 +19663,9 @@
   "@sharedValidationMinimumAtMostMaximum": {"description": "Validation requiring the minimum age not to exceed the maximum.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.validators"},
   "sharedValidationMaximumAtLeastMinimum": ">= min",
   "@sharedValidationMaximumAtLeastMinimum": {"description": "Validation requiring the maximum age not to be below the minimum.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.validators"},
-  "chatsEmptyStateNoCatchesTitle": "No catches yet",
+  "chatsEmptyStateNoCatchesTitle": "No messages yet",
   "@chatsEmptyStateNoCatchesTitle": {"description": "Consumer inbox empty-state title before a mutual Catch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
-  "chatsEmptyStateNoCatchesMessage": "When someone catches you back after a shared event, the conversation opens here with that event as context.",
+  "chatsEmptyStateNoCatchesMessage": "When you and someone you met both pick each other after an event, your conversation opens here with that event as context.",
   "@chatsEmptyStateNoCatchesMessage": {"description": "Consumer inbox empty-state guidance before a mutual Catch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
   "chatsEmptyStateHostInboxTitle": "No attendee queries yet",
   "@chatsEmptyStateHostInboxTitle": {"description": "Host inbox empty-state title.", "x-audience": "host", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
@@ -19899,7 +19719,7 @@
   "@eventsInviteShareBookingPrompt": {"description": "Prompt before an event deep link in shared copy.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.shared.event_invite_share_copy"},
   "eventsInviteShareFree": "Free",
   "@eventsInviteShareFree": {"description": "Price label for a free event in shared invite copy.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.shared.event_invite_share_copy"},
-  "eventsInviteShareFooter": "Curated singles event",
+  "eventsInviteShareFooter": "Curated social event",
   "@eventsInviteShareFooter": {"description": "Brand descriptor on the event invite share card.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.shared.event_share_card"},
   "eventsInviteShareSpotsLeft": "{count, plural, =1{1 spot left} other{{count} spots left}}",
   "@eventsInviteShareSpotsLeft": {"description": "Remaining-capacity label on an event share card.", "placeholders": {"count": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "events.shared.event_share_card"},
@@ -19981,7 +19801,7 @@
   "@launchAccessValidationChooseTime": {"description": "Launch-access availability validation message.", "x-audience": "consumer", "x-owner": "product", "x-surface": "launch_access.presentation.launch_access_application_screen"},
   "launchAccessValidationTellUsMore": "Tell us a little more.",
   "@launchAccessValidationTellUsMore": {"description": "Launch-access motivation validation message.", "x-audience": "consumer", "x-owner": "product", "x-surface": "launch_access.presentation.launch_access_application_screen"},
-  "matchesCelebrationLikedBack": "{name} liked you back.",
+  "matchesCelebrationLikedBack": "{name} picked you too.",
   "@matchesCelebrationLikedBack": {"description": "Match celebration detail after a mutual like.", "placeholders": {"name": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "matches.shared.match_celebration_dialog"},
   "onboardingRunningPrefsContinueBooking": "Continue booking",
   "@onboardingRunningPrefsContinueBooking": {"description": "Action after editing run preferences during booking.", "x-audience": "consumer", "x-owner": "product", "x-surface": "onboarding.presentation.pages.running_prefs_page_state"},
@@ -22639,7 +22459,7 @@
   "@hostEventRehearsalModuleCues": {"description": "Conversation cue playbook module.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalModuleReveal": "Reveal",
   "@hostEventRehearsalModuleReveal": {"description": "Reveal playbook module.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalModuleAfterglow": "Afterglow",
+  "hostEventRehearsalModuleAfterglow": "Recap",
   "@hostEventRehearsalModuleAfterglow": {"description": "Afterglow playbook module.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalModuleAccountability": "Accountability",
   "@hostEventRehearsalModuleAccountability": {"description": "Accountability playbook module.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
@@ -27083,7 +26903,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.form_profiles"
   },
-  "formProfileReviewDescription": "Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.",
+  "formProfileReviewDescription": "Choose which form details to use. Saving does not change your original submission, admit you to an event, or share your profile with other guests.",
   "@formProfileReviewDescription": {
     "description": "Participant form profile review copy.",
     "x-audience": "consumer",
@@ -27304,7 +27124,7 @@
   "eventChatHostSetup": "Open a shared conversation for people admitted to this event. Each person chooses whether to join.",
   "eventChatGuestWaiting": "Your host can open a shared conversation for people attending this event.",
   "eventChatJoinTitle": "Meet your fellow attendees",
-  "eventChatJoinDisclosure": "Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.",
+  "eventChatJoinDisclosure": "Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not share your Catch profile with other guests.",
   "eventChatProfileRequired": "Review your Catch profile before joining",
   "eventChatProfileHelp": "Choose the name you want other attendees to see. Your submitted form details stay private until you review them.",
   "eventChatReviewProfile": "Review my profile",
@@ -32676,5 +32496,59 @@
   "hostProgrammeInboxLanguageMr": "Marathi",
   "@hostProgrammeInboxLanguageMr": {"description": "Language name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
   "hostProgrammeInboxLanguageGu": "Gujarati",
-  "@hostProgrammeInboxLanguageGu": {"description": "Language name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"}
+  "@hostProgrammeInboxLanguageGu": {"description": "Language name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
+  "afterEventKicker": "{eventTitle} · {organizer}",
+  "@afterEventKicker": {"description": "Kicker over the after-event title: the event and its organiser.", "placeholders": {"eventTitle": {"type": "String"}, "organizer": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventTitle": "How was it?",
+  "@afterEventTitle": {"description": "After-event screen title, asking how the event went.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventRatingLabel": "Rate the event, from one to five stars",
+  "@afterEventRatingLabel": {"description": "Accessibility label for the private star rating.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventRatingPrivacy": "Only {organizer} sees this, as part of a summary.",
+  "@afterEventRatingPrivacy": {"description": "Under the private rating: who sees it.", "placeholders": {"organizer": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventRatingPrivacyFallback": "Only the organizer sees this, as part of a summary.",
+  "@afterEventRatingPrivacyFallback": {"description": "Under the private rating when the organiser's name hasn't loaded.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventChatTitle": "Group chat",
+  "@afterEventChatTitle": {"description": "Section title for the event's group chat.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventChatOpenUntil": "Open until {date}, then read-only",
+  "@afterEventChatOpenUntil": {"description": "Group chat row subtitle: when the host closes it.", "placeholders": {"date": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventStayInTouchTitle": "Stay in touch",
+  "@afterEventStayInTouchTitle": {"description": "Section title for picking people to see again.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventStayInTouchBody": "Pick anyone you’d like to see again. Only you see your picks. If someone picks you too, you can message each other.",
+  "@afterEventStayInTouchBody": {"description": "How picks work, under Stay in touch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventFilters": "Filters",
+  "@afterEventFilters": {"description": "Section action opening the people filters.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPeopleCount": "{count, plural, =1{1 person from {eventTitle}, by your filters} other{{count} people from {eventTitle}, by your filters}}",
+  "@afterEventPeopleCount": {"description": "How many people are listed to pick from.", "placeholders": {"count": {"type": "int"}, "eventTitle": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPicksOpenUntil": "Picks open until {time}",
+  "@afterEventPicksOpenUntil": {"description": "When picking closes, 24 hours after the event.", "placeholders": {"time": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPicksClosed": "Picks have closed",
+  "@afterEventPicksClosed": {"description": "Picking closed 24 hours after the event.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPick": "Pick",
+  "@afterEventPick": {"description": "Row action: pick someone you'd like to see again.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPicked": "Picked",
+  "@afterEventPicked": {"description": "Row action after picking someone.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventYourGroup": "Your team",
+  "@afterEventYourGroup": {"description": "Person row subtitle: they were on your team or table.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventYourGroupNamed": "Your team · {group}",
+  "@afterEventYourGroupNamed": {"description": "Person row subtitle: they were on your named team or table.", "placeholders": {"group": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPersonCityAge": "{city} · {age}",
+  "@afterEventPersonCityAge": {"description": "Person row subtitle: city and age.", "placeholders": {"city": {"type": "String"}, "age": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPersonAge": "{age}",
+  "@afterEventPersonAge": {"description": "Person row subtitle: age only.", "placeholders": {"age": {"type": "int"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventPersonCameToo": "Came to this event",
+  "@afterEventPersonCameToo": {"description": "Person row subtitle when their profile hasn't loaded.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventNextKicker": "Next · {date}",
+  "@afterEventNextKicker": {"description": "Kicker on the organiser's next event.", "placeholders": {"date": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventBookNext": "Book the next one",
+  "@afterEventBookNext": {"description": "Button opening the organiser's next event.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventSeeOrganizer": "See what the organizer has coming up",
+  "@afterEventSeeOrganizer": {"description": "Button opening the organiser when nothing is scheduled yet.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventFollowOrganizer": "Follow {organizer}",
+  "@afterEventFollowOrganizer": {"description": "Button to follow the event's organizer from the after-event screen.", "placeholders": {"organizer": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventNeedsProfileTitle": "Add a photo to stay in touch",
+  "@afterEventNeedsProfileTitle": {"description": "Stay in touch, when picks need a profile: title.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventNeedsProfileBody": "People you met see your photo and a few details when you pick them. You can still rate the event and use the group chat.",
+  "@afterEventNeedsProfileBody": {"description": "Stay in touch, when picks need a profile: body.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"},
+  "afterEventNeedsProfileAction": "Finish your profile",
+  "@afterEventNeedsProfileAction": {"description": "Stay in touch, when picks need a profile: action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "swipes.presentation.event_recap_screen"}
 }

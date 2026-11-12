@@ -337,7 +337,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsTrackingSettingsPrivacy =>
-      'Sensitive social, dating and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.';
+      'Sensitive social and private events remain blocked. Guest lists, form answers, interests and payment details are never included in provider tracking.';
 
   @override
   String get hostsTrackingSettingsSaveDisabled => 'Save disabled configuration';
@@ -942,7 +942,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventReportStayInTouchBody =>
-      'They matched after the event. Only they see who.';
+      'They picked each other after the event. Only they see who.';
 
   @override
   String get hostEventReportReviewsTitle => 'What guests said';
@@ -1327,7 +1327,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'These actions only touch demo-owned data.';
 
   @override
-  String get chatsSuvbotActionBarTextMatchTester => 'Match tester';
+  String get chatsSuvbotActionBarTextMatchTester => 'Mutual pick tester';
 
   @override
   String get chatsSuvbotActionBarTextEnterAnAllowlistedBeta =>
@@ -1337,7 +1337,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatsSuvbotActionBarTitlePhoneNumber => 'Phone number';
 
   @override
-  String get chatsSuvbotActionBarLabelCreateMatch => 'Create match';
+  String get chatsSuvbotActionBarLabelCreateMatch => 'Create a mutual pick';
 
   @override
   String get organizersOrganizerDetailScreenBodyOrganizerid => 'organizerId';
@@ -1519,7 +1519,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchPersonRowLabelUnreadChat => 'Unread chat';
 
   @override
-  String get coreCatchPersonRowLabelNewMatch => 'New match';
+  String get coreCatchPersonRowLabelNewMatch => 'New connection';
 
   @override
   String get coreCatchShareCardFooterTextCatch => 'CATCH';
@@ -1629,7 +1629,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardActivitySectionMessageNewCatchesBookingsAnd =>
-      'New catches, bookings, and event reminders will collect here.';
+      'New connections, bookings and event reminders will collect here.';
 
   @override
   String get dashboardOrganizerPostsHomeSectionTitleOrganizerUpdates =>
@@ -1647,11 +1647,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardEmptyHeroCardTextYourCatchesUnlockAfter =>
-      'Your catches unlock\nafter your first event.';
+      'The people you meet\nshow up after your first event.';
 
   @override
   String get dashboardEmptyHeroCardTextTheDatingAppWhere =>
-      'The dating app where you\'ve already met. No cold swiping — just people you actually crossed paths with.';
+      'Go to something you’d do anyway, meet the people there, and stay in touch with the ones you click with.';
 
   @override
   String get dashboardEmptyHeroCardLabelFindAnEventNear =>
@@ -1683,7 +1683,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone =>
-      'Caught someone';
+      'Picked someone';
 
   @override
   String get eventSuccessEventSuccessFeatureBlocksLabelHostHelp => 'Host help';
@@ -1797,7 +1797,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessSetupBodyTextMatchClueQuestions =>
-      'Match clue questions';
+      'Conversation questions';
 
   @override
   String get eventSuccessEventSuccessSetupBodyLabelRevealCountdown =>
@@ -2186,15 +2186,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsWhoIsGoingMessageCatchesUnlockFor24 =>
-      'Catches unlock for 24 hours after the event finishes.';
+      'After the event, you have 24 hours to pick people you’d like to see again.';
 
   @override
   String get eventsWhoIsGoingMessageTheCatchWindowIs =>
-      'The catch window is open for 24 hours after the event finishes.';
+      'Picks are open for 24 hours after the event finishes.';
 
   @override
   String get eventsWhoIsGoingMessageTheCatchWindowFor =>
-      'The catch window for this event has closed.';
+      'Picks for this event have closed.';
 
   @override
   String get eventsEventCheckInCelebrationScreenEyebrowCheckedIn =>
@@ -2247,7 +2247,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting =>
-      'Arrive by the meeting time. Catches unlock automatically when the event finishes.';
+      'Arrive by the meeting time. After the event, you can stay in touch with the people you met.';
 
   @override
   String get eventsEventJoinedCelebrationScreenLabelViewEvent => 'View event';
@@ -2730,7 +2730,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventManageScreenTextTrackWhichChannelsCreate =>
-      'Track which channels create demand, bookings, arrivals, catches, and chats.';
+      'Track which channels create demand, bookings, arrivals, connections and chats.';
 
   @override
   String get hostsHostEventManageScreenTextLoadingInviteLinks =>
@@ -3259,13 +3259,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Update application';
 
   @override
-  String get matchesMatchCelebrationDialogEyebrowNewCatch => 'New catch';
+  String get matchesMatchCelebrationDialogEyebrowNewCatch => 'New connection';
 
   @override
-  String get matchesMatchCelebrationDialogTitleItSACatch => 'It\'s a Catch.';
+  String get matchesMatchCelebrationDialogTitleItSACatch =>
+      'You picked each other.';
 
   @override
-  String get matchesMatchCelebrationDialogLabelMatch => 'Match';
+  String get matchesMatchCelebrationDialogLabelMatch => 'Mutual pick';
 
   @override
   String get matchesMatchCelebrationDialogNoteStartWithSomethingSpecific =>
@@ -3275,7 +3276,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchesMatchCelebrationDialogLabelSendAMessage => 'Send a message';
 
   @override
-  String get matchesMatchCelebrationDialogLabelKeepCatching => 'Keep catching';
+  String get matchesMatchCelebrationDialogLabelKeepCatching => 'Not now';
 
   @override
   String get onboardingGenderInterestPageLabelContinue => 'Continue';
@@ -3823,38 +3824,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenLabelUnblock => 'Unblock';
 
   @override
-  String get swipesEventRecapScreenTitleEventRecap => 'Event recap';
-
-  @override
   String get swipesEventRecapScreenTooltipCloseRecap => 'Close recap';
-
-  @override
-  String get swipesEventRecapScreenTextWhoBroughtTheVibe =>
-      'Who brought the vibe?';
-
-  @override
-  String get swipesEventRecapScreenTextTapPeopleYouRemember =>
-      'Tap people you remember. They\'ll be easier to spot when you open the catches deck.';
-
-  @override
-  String get swipesEventRecapScreenTitleNoAttendeesToTag =>
-      'No attendees to tag';
-
-  @override
-  String get swipesEventRecapScreenMessageNoOtherCheckedIn =>
-      'No other checked-in attendees are attached to this event yet.';
-
-  @override
-  String get swipesEventRecapScreenLabelOpenCatchesDeck => 'Open catches deck';
-
-  @override
-  String get swipesEventRecapScreenLabelWhen => 'When';
-
-  @override
-  String get swipesEventRecapScreenLabelTime => 'Time';
-
-  @override
-  String get swipesEventRecapScreenLabelCatches => 'Catches';
 
   @override
   String get swipesFiltersScreenTitleFilters => 'Filters';
@@ -3873,24 +3843,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swipesFiltersScreenLabelApplyFilters => 'Apply filters';
-
-  @override
-  String get swipesSwipeScreenTooltipBackToCatches => 'Back to Catches';
-
-  @override
-  String get swipesSwipeScreenTooltipFilters => 'Filters';
-
-  @override
-  String get swipesCatchesPassButtonMessagePassing => 'Passing';
-
-  @override
-  String get swipesCatchesPassButtonMessagePass => 'Pass';
-
-  @override
-  String get swipesCatchesPassButtonLabelPassingProfile => 'Passing profile';
-
-  @override
-  String get swipesCatchesPassButtonLabelPassProfile => 'Pass profile';
 
   @override
   String get swipesCatchProfileViewLabelPace => 'PACE';
@@ -4602,7 +4554,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get notificationArrivalMatchTitle => 'It\'s a catch';
+  String get notificationArrivalMatchTitle => 'You picked each other';
 
   @override
   String get notificationArrivalMessageTitle => 'New message';
@@ -4767,7 +4719,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String matchesMatchCelebrationDialogMessageYouAndNameBoth({
     required Object name,
   }) {
-    return 'You and $name both liked each other.';
+    return 'You and $name both want to stay in touch.';
   }
 
   @override
@@ -4906,13 +4858,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This event is no longer available.';
 
   @override
-  String swipesSwipeScreenTextCatchesRemainingcountLeft({
-    required Object remainingCount,
-  }) {
-    return 'Catches · $remainingCount left';
-  }
-
-  @override
   String swipesCatchProfileViewTextNameAge({
     required Object name,
     required Object age,
@@ -5020,7 +4965,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow =>
-      'Private afterglow';
+      'Your recap';
 
   @override
   String eventSuccessEventSuccessCompanionAfterglowTextYourNightAtTitle({
@@ -5548,7 +5493,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessCompanionBodyScreenSubtitleUseOneAfterA =>
-      'Use one after a mutual match opens.';
+      'Use one when you message someone you met.';
 
   @override
   String
@@ -5589,7 +5534,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested =>
-      'Close with one suggested first message after mutual matches.';
+      'Close with one suggested first message for people who pick each other.';
 
   @override
   String get eventSuccessEventSuccessHostLiveTitleGuestPresence =>
@@ -5782,7 +5727,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent =>
-      'Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.';
+      'Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.';
 
   @override
   String
@@ -5920,7 +5865,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostReportLabelCaughtSomeone =>
-      'Caught someone';
+      'Picked someone';
 
   @override
   String get eventSuccessEventSuccessHostReportLabelPeopleIncluded =>
@@ -5931,7 +5876,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostReportLabelWingmanHelp =>
-      'Wingman help';
+      'Host-help requests';
 
   @override
   String
@@ -5947,12 +5892,11 @@ class AppLocalizationsEn extends AppLocalizations {
   eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone({
     required Object attendeesWhoCaughtSomeone,
   }) {
-    return '$attendeesWhoCaughtSomeone caught someone';
+    return '$attendeesWhoCaughtSomeone picked someone';
   }
 
   @override
-  String get eventSuccessEventSuccessHostReportLabelCatchesSent =>
-      'Catches sent';
+  String get eventSuccessEventSuccessHostReportLabelCatchesSent => 'Picks sent';
 
   @override
   String
@@ -6124,7 +6068,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostSharedTextMatchClueQuestions =>
-      'Match clue questions';
+      'Conversation questions';
 
   @override
   String get eventSuccessEventSuccessHostSharedLabelCanGuidePairings =>
@@ -6814,7 +6758,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreBlockUserDialogMessageYouWillStopSeeing =>
-      'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.';
+      'You will stop seeing each other in chats, after-event picks and future event slots where the other person is already booked.';
 
   @override
   String get coreCatchFrameworkErrorViewTextThisScreenHitA =>
@@ -6859,7 +6803,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingWelcomePageTextShowUpToSomething =>
-      'Show up to something you\'d do anyway — a long run, a long table, trivia night. Match only with the people who were actually there.';
+      'Show up to something you’d do anyway — a long run, a long table, trivia night. Stay in touch with the people who were actually there.';
 
   @override
   String
@@ -6890,7 +6834,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentsPaymentConfirmationScreenTextBringAWaterBottle =>
-      'Bring a water bottle and arrive by the meeting time. Catches unlock automatically when the event finishes — keep your phone charged.';
+      'Bring a water bottle and arrive by the meeting time. After the event, you can stay in touch with the people you met, so keep your phone charged.';
 
   @override
   String get safetySettingsScreenMessageThisRemovesYourPublic =>
@@ -6904,7 +6848,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingOnboardingStepSubtitleLastNameStaysPrivate =>
-      'Last name stays private until you catch.';
+      'Last name stays private until you message someone.';
 
   @override
   String get onboardingOnboardingStepTitleHowDoYouIdentify =>
@@ -6919,11 +6863,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingOnboardingStepTitleCompleteYourProfileFor =>
-      'Complete your profile for Catches';
+      'Complete your profile to stay in touch';
 
   @override
   String get onboardingOnboardingStepSubtitleCatchesNeedPhotosSo =>
-      'Catches need photos so people can decide who they want to meet. You can still book events with your current details.';
+      'People you met see your photos when you pick them. You can still book events with your current details.';
 
   @override
   String get onboardingOnboardingStepTitleShowYourself => 'Show yourself';
@@ -6934,11 +6878,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingOnboardingStepTitleAddPromptsToStart =>
-      'Add prompts to start catching';
+      'Add prompts so people know you';
 
   @override
   String get onboardingOnboardingStepSubtitlePromptsGivePeopleSomething =>
-      'Prompts give people something real to respond to before you match.';
+      'Prompts give people something real to talk about.';
 
   @override
   String get onboardingOnboardingStepTitleShowYourPersonality =>
@@ -6950,11 +6894,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingOnboardingStepTitleFinishYourCatchesProfile =>
-      'Finish your Catches profile';
+      'Finish your profile';
 
   @override
   String get onboardingOnboardingStepSubtitleTheseAreOptionalBut =>
-      'These are optional, but they help us rank compatible people in Catches.';
+      'These are optional, but they help us suggest people you’d get on with.';
 
   @override
   String get onboardingOnboardingStepTitleSetYourRunPreferences =>
@@ -7264,7 +7208,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts =>
-      'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.';
+      'Keep the useful parts of the room, send private feedback, and use event-specific openers when you message someone you met.';
 
   @override
   String get eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning =>
@@ -7339,15 +7283,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentsPaymentHistoryScreenLabelPending => 'Pending';
 
   @override
-  String get swipesSwipeEmptyContentTitleNoMoreAttendees => 'No more attendees';
+  String get swipesSwipeEmptyContentTitleNoMoreAttendees =>
+      'Nobody else to pick';
 
   @override
   String get swipesSwipeEmptyContentMessageJoinMoreEventsTo =>
-      'Join more events to meet new people';
+      'You’ve seen everyone from this event. Join more events to meet new people.';
 
   @override
   String get swipesSwipeEmptyContentTitleCatchUnavailable =>
-      'Catch unavailable';
+      'Picks aren’t available';
 
   @override
   String get swipesSwipeEmptyContentMessageThisEventCouldNot =>
@@ -7358,26 +7303,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swipesSwipeEmptyContentMessageSignInAgainTo =>
-      'Sign in again to catch fellow attendees.';
+      'Sign in again to see who came.';
 
   @override
   String get swipesSwipeEmptyContentMessageYouCanOnlyCatch =>
-      'You can only catch attendees from events you attended.';
+      'You can pick people from events you checked in to.';
 
   @override
   String get swipesSwipeEmptyContentTitleEventInProgress => 'Event in progress';
 
   @override
   String get swipesSwipeEmptyContentMessageCatchesUnlockFor24 =>
-      'Catches unlock for 24 hours after the event finishes.';
+      'After the event, you have 24 hours to pick people you’d like to see again.';
 
   @override
   String get swipesSwipeEmptyContentTitleCatchWindowClosed =>
-      'Catch window closed';
+      'Picks have closed';
 
   @override
   String get swipesSwipeEmptyContentMessageThisEventIsPast =>
-      'This event is past the 24-hour catch window.';
+      'Picks close 24 hours after the event.';
 
   @override
   String get reviewsReviewsHistoryViewModelTitleSignInToSee =>
@@ -7851,23 +7796,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardDashboardEmptyBodyMeetTheOrganizerAt =>
-      'Meet the organizer at the event. No cold matching happens here.';
+      'Meet the organizer and the group at the event.';
 
   @override
   String get dashboardDashboardEmptyTitleCatchWithin24Hours =>
-      'Catch within 24 hours';
+      'Stay in touch within 24 hours';
 
   @override
   String get dashboardDashboardEmptyBodyYouGetTheRoster =>
-      'You get the roster of who came. Catch anyone who caught your eye.';
+      'See who came, rate the event and pick anyone you’d like to see again.';
 
   @override
   String get dashboardDashboardEmptyTitleTheyCatchYouBack =>
-      'They catch you back?';
+      'They pick you too?';
 
   @override
   String get dashboardDashboardEmptyBodyMatchMessagePlanThe =>
-      'Match. Message. Plan the next event together.';
+      'Message each other. Plan the next event together.';
 
   @override
   String get hostsHostTeamManagementSectionTitleRemoveHost => 'Remove host?';
@@ -7955,51 +7900,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your guide stays private to your ticket and attendance.';
 
   @override
-  String swipesEventRecapScreenStateVisiblecopyCatchesOpenUntilTime({
-    required Object time,
-  }) {
-    return 'Catches open until $time';
-  }
-
-  @override
-  String get swipesEventRecapScreenStateVisiblecopyCatchWindowClosed =>
-      'Catch window closed';
-
-  @override
-  String swipesEventRecapScreenStateKickerTouppercaseComplete({
-    required Object toUpperCase,
-  }) {
-    return '$toUpperCase · COMPLETE';
-  }
-
-  @override
-  String
-  swipesEventRecapScreenStateVisiblecopyActivitysummarylabelCheckedincountCheckedIn({
-    required Object activitySummaryLabel,
-    required Object checkedInCount,
-  }) {
-    return '$activitySummaryLabel · $checkedInCount checked in';
-  }
-
-  @override
   String get swipesEventRecapScreenStateDisplaynameGuest => 'Guest';
-
-  @override
-  String get swipesEventRecapScreenStateVisiblecopyGuest => 'guest';
-
-  @override
-  String swipesEventRecapScreenStateTooltipRemoveTooltipname({
-    required Object tooltipName,
-  }) {
-    return 'Remove $tooltipName';
-  }
-
-  @override
-  String swipesEventRecapScreenStateTooltipRememberTooltipname({
-    required Object tooltipName,
-  }) {
-    return 'Remember $tooltipName';
-  }
 
   @override
   String get exploreExploreFilterRailLabelTonight => 'Tonight';
@@ -8253,7 +8154,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailLabelAddToCalendar => 'Add to calendar';
 
   @override
-  String get dashboardEventFocusRailLabelStartCatching => 'Start catching';
+  String get dashboardEventFocusRailLabelStartCatching => 'See who you met';
 
   @override
   String get dashboardEventFocusRailLabelWriteReview => 'Write review';
@@ -8367,7 +8268,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener =>
-      'Post-match opener';
+      'First-message opener';
 
   @override
   String get eventSuccessEventSuccessConversationCueCopyTitleSharedRoom =>
@@ -8663,7 +8564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionAfterglowVisiblecopyUseTheSharedEvent =>
-      'Use the shared event context when a match opens.';
+      'Use the shared event context when you message someone you met.';
 
   @override
   String
@@ -8791,7 +8692,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyAfterglowRecap =>
-      'afterglow-recap';
+      'after-event-recap';
 
   @override
   String
@@ -8821,7 +8722,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyWingman =>
-      'wingman';
+      'host-help';
 
   @override
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyFeedback =>
@@ -8891,7 +8792,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues =>
-      'Match clues';
+      'Conversation questions';
 
   @override
   String
@@ -8901,7 +8802,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee =>
-      'Hosts do not see individual match clue answers.';
+      'Hosts do not see your individual answers.';
 
   @override
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow =>
@@ -8988,12 +8889,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow =>
-      'Afterglow';
+      'Recap';
 
   @override
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady =>
-      'Your afterglow is ready.';
+      'Your recap is ready.';
 
   @override
   String
@@ -9255,7 +9156,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone =>
-      'Matching opens for everyone who goes';
+      'After the event, stay in touch with anyone who went';
 
   @override
   String get eventsLocationPickerScreenVisiblecopySelecting => 'Selecting...';
@@ -10297,11 +10198,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Profile views';
 
   @override
-  String get userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou => 'Caught you';
+  String get userAnalyticsUserAnalyticsCopyVisiblecopyCaughtYou => 'Picked you';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMutualCatches =>
-      'Mutual catches';
+      'Mutual picks';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyChatsStarted =>
@@ -10326,12 +10227,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyMatchesWhereInterestWas =>
-      'Matches where interest was mutual.';
+      'Picks that were mutual.';
 
   @override
   String
   get userAnalyticsUserAnalyticsCopyVisiblecopyConversationsThatOpenedAfter =>
-      'Conversations that opened after matching.';
+      'Conversations that opened after a mutual pick.';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyEventsYouAttended =>
@@ -10339,7 +10240,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyChatsStartedFromMutual =>
-      'Chats started from mutual catches.';
+      'Chats started from mutual picks.';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyViews => 'Views';
@@ -10348,7 +10249,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userAnalyticsUserAnalyticsCopyVisiblecopyInterest => 'Interest';
 
   @override
-  String get userAnalyticsUserAnalyticsCopyVisiblecopyMatches => 'Matches';
+  String get userAnalyticsUserAnalyticsCopyVisiblecopyMatches => 'Mutual picks';
 
   @override
   String get userAnalyticsUserAnalyticsCopyVisiblecopyChats => 'Chats';
@@ -10369,7 +10270,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userAnalyticsUserAnalyticsCopyBodyAShortMessageAfter =>
-      'A short message after a mutual catch is the clearest follow-through signal.';
+      'A short message after a mutual pick is the clearest follow-through signal.';
 
   @override
   String get userAnalyticsUserAnalyticsCopyTitleShowUpInPerson =>
@@ -10693,7 +10594,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreAppErrorMessageVisiblecopyCatchesUnavailable =>
-      'Catches unavailable';
+      'People unavailable';
 
   @override
   String get coreAppErrorMessageVisiblecopyPaymentsUnavailable =>
@@ -10730,7 +10631,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reload organizer';
 
   @override
-  String get coreAppErrorMessageVisiblecopyReloadCatches => 'Reload catches';
+  String get coreAppErrorMessageVisiblecopyReloadCatches => 'Reload people';
 
   @override
   String get coreAppErrorMessageVisiblecopyReloadPayments => 'Reload payments';
@@ -10758,7 +10659,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreAppErrorMessageVisiblecopyCatchesNotFound =>
-      'Catches not found';
+      'People not found';
 
   @override
   String get coreAppErrorMessageVisiblecopyPaymentNotFound =>
@@ -10812,11 +10713,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingPhotosPageStateVisiblecopyThisOnlyGatesCatches =>
-      'This only gates Catches. Event booking stays available.';
+      'Photos are only needed to stay in touch after events. Booking stays available.';
 
   @override
   String get onboardingPhotosPageStateVisiblecopyRunningPhotosBoostCatches =>
-      'Running photos boost catches by 2.3x.';
+      'A photo from an event helps people recognise you.';
 
   @override
   String
@@ -10955,7 +10856,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreAppErrorMessageVisiblecopyPleaseChooseYourDating =>
-      'Please choose your dating preferences before continuing.';
+      'Please choose who you’d like to meet before continuing.';
 
   @override
   String get coreAppErrorMessageVisiblecopyPleaseChooseWhoYou =>
@@ -11178,11 +11079,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedValidationMaximumAtLeastMinimum => '>= min';
 
   @override
-  String get chatsEmptyStateNoCatchesTitle => 'No catches yet';
+  String get chatsEmptyStateNoCatchesTitle => 'No messages yet';
 
   @override
   String get chatsEmptyStateNoCatchesMessage =>
-      'When someone catches you back after a shared event, the conversation opens here with that event as context.';
+      'When you and someone you met both pick each other after an event, your conversation opens here with that event as context.';
 
   @override
   String get chatsEmptyStateHostInboxTitle => 'No attendee queries yet';
@@ -11291,7 +11192,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsInviteShareFree => 'Free';
 
   @override
-  String get eventsInviteShareFooter => 'Curated singles event';
+  String get eventsInviteShareFooter => 'Curated social event';
 
   @override
   String eventsInviteShareSpotsLeft({required int count}) {
@@ -11432,7 +11333,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String matchesCelebrationLikedBack({required String name}) {
-    return '$name liked you back.';
+    return '$name picked you too.';
   }
 
   @override
@@ -16037,7 +15938,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalModuleReveal => 'Reveal';
 
   @override
-  String get hostEventRehearsalModuleAfterglow => 'Afterglow';
+  String get hostEventRehearsalModuleAfterglow => 'Recap';
 
   @override
   String get hostEventRehearsalModuleAccountability => 'Accountability';
@@ -20194,7 +20095,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfileReviewDescription =>
-      'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.';
+      'Choose which form details to use. Saving does not change your original submission, admit you to an event, or share your profile with other guests.';
 
   @override
   String get formProfileCoreTitle => 'Catch profile details';
@@ -20387,7 +20288,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventChatJoinDisclosure =>
-      'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.';
+      'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not share your Catch profile with other guests.';
 
   @override
   String get eventChatProfileRequired =>
@@ -29265,4 +29166,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostProgrammeInboxLanguageGu => 'Gujarati';
+
+  @override
+  String afterEventKicker({
+    required String eventTitle,
+    required String organizer,
+  }) {
+    return '$eventTitle · $organizer';
+  }
+
+  @override
+  String get afterEventTitle => 'How was it?';
+
+  @override
+  String get afterEventRatingLabel => 'Rate the event, from one to five stars';
+
+  @override
+  String afterEventRatingPrivacy({required String organizer}) {
+    return 'Only $organizer sees this, as part of a summary.';
+  }
+
+  @override
+  String get afterEventRatingPrivacyFallback =>
+      'Only the organizer sees this, as part of a summary.';
+
+  @override
+  String get afterEventChatTitle => 'Group chat';
+
+  @override
+  String afterEventChatOpenUntil({required String date}) {
+    return 'Open until $date, then read-only';
+  }
+
+  @override
+  String get afterEventStayInTouchTitle => 'Stay in touch';
+
+  @override
+  String get afterEventStayInTouchBody =>
+      'Pick anyone you’d like to see again. Only you see your picks. If someone picks you too, you can message each other.';
+
+  @override
+  String get afterEventFilters => 'Filters';
+
+  @override
+  String afterEventPeopleCount({
+    required int count,
+    required String eventTitle,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people from $eventTitle, by your filters',
+      one: '1 person from $eventTitle, by your filters',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String afterEventPicksOpenUntil({required String time}) {
+    return 'Picks open until $time';
+  }
+
+  @override
+  String get afterEventPicksClosed => 'Picks have closed';
+
+  @override
+  String get afterEventPick => 'Pick';
+
+  @override
+  String get afterEventPicked => 'Picked';
+
+  @override
+  String get afterEventYourGroup => 'Your team';
+
+  @override
+  String afterEventYourGroupNamed({required String group}) {
+    return 'Your team · $group';
+  }
+
+  @override
+  String afterEventPersonCityAge({required String city, required int age}) {
+    return '$city · $age';
+  }
+
+  @override
+  String afterEventPersonAge({required int age}) {
+    return '$age';
+  }
+
+  @override
+  String get afterEventPersonCameToo => 'Came to this event';
+
+  @override
+  String afterEventNextKicker({required String date}) {
+    return 'Next · $date';
+  }
+
+  @override
+  String get afterEventBookNext => 'Book the next one';
+
+  @override
+  String get afterEventSeeOrganizer => 'See what the organizer has coming up';
+
+  @override
+  String afterEventFollowOrganizer({required String organizer}) {
+    return 'Follow $organizer';
+  }
+
+  @override
+  String get afterEventNeedsProfileTitle => 'Add a photo to stay in touch';
+
+  @override
+  String get afterEventNeedsProfileBody =>
+      'People you met see your photo and a few details when you pick them. You can still rate the event and use the group chat.';
+
+  @override
+  String get afterEventNeedsProfileAction => 'Finish your profile';
 }

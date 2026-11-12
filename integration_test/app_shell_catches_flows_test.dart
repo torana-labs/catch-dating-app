@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/events_test_helpers.dart' as event_helpers;
@@ -14,7 +12,7 @@ import 'support/app_shell_test_harness.dart';
 void main() {
   ensureAppShellTestBinding();
 
-  testWidgets('home event focus opens the swipe deck for an attended event', (
+  testWidgets('home opens the after-event screen for an attended event', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -39,14 +37,17 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Start catching'));
+    await tester.tap(find.text('See who you met'));
     await pumpAppShellFrames(tester);
 
-    expect(find.text('No more attendees'), findsOneWidget);
-    expect(find.text('Join more events to meet new people'), findsOneWidget);
+    expect(find.text('How was it?'), findsOneWidget);
+    expect(find.text('STAY IN TOUCH'), findsOneWidget);
+    expect(find.text('Nobody else to pick'), findsOneWidget);
   });
 
-  testWidgets('catches deck records like and pass decisions', (tester) async {
+  testWidgets('a pick on the after-event screen records a like', (
+    tester,
+  ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
     final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
@@ -57,14 +58,9 @@ void main() {
       meetingPoint: 'Bandstand Steps',
       checkedInCount: 3,
     );
-    final firstCandidate = event_helpers.buildPublicProfile(
+    final candidate = event_helpers.buildPublicProfile(
       uid: 'runner-2',
       name: 'Taylor',
-      gender: Gender.woman,
-    );
-    final secondCandidate = event_helpers.buildPublicProfile(
-      uid: 'runner-3',
-      name: 'Riya',
       gender: Gender.woman,
     );
     final swipeRepository = FakeShellSwipeRepository();
@@ -77,57 +73,32 @@ void main() {
         organizers: [organizer],
         joinedOrganizerIds: {organizer.id},
         attendedEvents: [attendedRun],
-        swipeCandidates: [firstCandidate, secondCandidate],
+        swipeCandidates: [candidate],
+        publicProfiles: [candidate],
         swipeRepository: swipeRepository,
       ),
     );
 
-    await tester.tap(find.text('Start catching'));
+    await tester.tap(find.text('See who you met'));
     await pumpAppShellFrames(tester);
 
-    expect(find.text('Taylor, 30'), findsOneWidget);
-
-    final promptLikeButton = find.byTooltip(
-      'Like A perfect event with me looks like...',
-    );
-    // The profile body builds lazily, so scroll until the prompt exists.
-    await tester.scrollUntilVisible(
-      promptLikeButton,
-      180,
-      scrollable: find
-          .descendant(
-            of: find.byKey(ProfileBody.scrollViewKey),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pump();
-    await tester.drag(
-      find.byKey(ProfileBody.scrollViewKey),
-      const Offset(0, -180),
-    );
-    await tester.pump();
-    await tester.tap(promptLikeButton);
+    final row = find.byKey(SwipeKeys.afterEventPerson(candidate.uid));
+    await tester.ensureVisible(row);
+    await tester.tap(find.descendant(of: row, matching: find.text('Pick')));
     await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(swipeRepository.recordedSwipes, hasLength(1));
     expect(swipeRepository.recordedSwipes.single.swiperId, user.uid);
-    expect(swipeRepository.recordedSwipes.single.targetId, firstCandidate.uid);
+    expect(swipeRepository.recordedSwipes.single.targetId, candidate.uid);
     expect(swipeRepository.recordedSwipes.single.eventId, attendedRun.id);
     expect(
       swipeRepository.recordedSwipes.single.direction,
       SwipeDirection.like,
     );
-    expect(find.text('Riya, 30'), findsOneWidget);
-
-    await tester.tap(find.byKey(SwipeKeys.passButton));
-    await flushAppShellCallbacks(tester);
-    await pumpAppShellFrames(tester);
-
-    expect(swipeRepository.recordedSwipes, hasLength(2));
-    expect(swipeRepository.recordedSwipes.last.targetId, secondCandidate.uid);
-    expect(swipeRepository.recordedSwipes.last.direction, SwipeDirection.pass);
-    expect(find.text('No more attendees'), findsOneWidget);
+    expect(
+      find.descendant(of: row, matching: find.text('Picked')),
+      findsOneWidget,
+    );
   });
 }

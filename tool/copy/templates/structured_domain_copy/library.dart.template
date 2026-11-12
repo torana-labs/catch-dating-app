@@ -226,7 +226,8 @@ abstract final class EventSuccessPlaybookLibrary {
         title: {{library.pubQuiz.title.3}},
         durationMinutes: 60,
         hostInstruction: {{library.pubQuiz.hostInstruction.2}},
-        attendeeExperience: {{library.pubQuiz.attendeeExperience.2}},
+        attendeeExperience:
+            {{library.pubQuiz.attendeeExperience.2}},
         moduleIds: ['social_missions'],
       ),
       EventRunOfShowStep(
@@ -356,7 +357,8 @@ abstract final class EventSuccessPlaybookLibrary {
     capacity: EventCapacityGuidance(
       min: 8,
       max: 40,
-      rationale: {{library.barCrawl.rationale.1}},
+      rationale:
+          {{library.barCrawl.rationale.1}},
     ),
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
@@ -381,7 +383,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 15,
         hostInstruction:
             {{library.barCrawl.hostInstruction.1}},
-        attendeeExperience: {{library.barCrawl.attendeeExperience.1}},
+        attendeeExperience:
+            {{library.barCrawl.attendeeExperience.1}},
         moduleIds: ['qr_check_in'],
       ),
       EventRunOfShowStep(
@@ -407,7 +410,8 @@ abstract final class EventSuccessPlaybookLibrary {
         durationMinutes: 10,
         hostInstruction:
             {{library.barCrawl.hostInstruction.4}},
-        attendeeExperience: {{library.barCrawl.attendeeExperience.4}},
+        attendeeExperience:
+            {{library.barCrawl.attendeeExperience.4}},
         moduleIds: ['social_missions'],
       ),
       EventRunOfShowStep(
