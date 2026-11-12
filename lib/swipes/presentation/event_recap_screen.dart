@@ -7,12 +7,12 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_controller.dart';
@@ -126,7 +126,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
 
     final followMutation = event == null
         ? null
-        : OrganizerMembershipController.joinMutation(event.organizerId);
+        : OrganizerFollowController.joinMutation(event.organizerId);
     final followPending =
         followMutation != null && ref.watch(followMutation).isPending;
     if (followMutation != null) {
@@ -274,10 +274,10 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
 
   void _follow(String organizerId) {
     unawaited(
-      OrganizerMembershipController.joinMutation(organizerId)
+      OrganizerFollowController.joinMutation(organizerId)
           .run(ref, (tx) async {
             await tx
-                .get(organizerMembershipControllerProvider.notifier)
+                .get(organizerFollowControllerProvider.notifier)
                 .join(organizerId);
           })
           // listenToCatchMutationErrors in build shows the failure.

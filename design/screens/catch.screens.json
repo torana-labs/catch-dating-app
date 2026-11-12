@@ -3100,8 +3100,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           },
           {
             "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
@@ -3997,8 +3997,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           }
         ],
         "notes": "ExploreScreen reads separate club, event-feed, and optional consent-safe Cross Paths provider seams, then maps route provider waves through ExploreDiscoveryScreenState before composing browse chrome, filter state, mixed event/person/organizer feed composition, empty/error states, map-pill copy, and mutation listening. Cross Paths failure stays non-blocking and renders no people."
@@ -11799,8 +11799,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           },
           {
             "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
@@ -20576,8 +20576,8 @@
             "symbol": "EventRecapController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
-            "symbol": "OrganizerMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "symbol": "OrganizerFollowController"
           }
         ],
         "notes": "EventRecapScreen watches the event, the guest's profile, participation, private feedback, team or table assignment, the event chat's access, the organizer and their coming events and follows. EventRecapScreenState builds the kicker, private rating, group chat row, Stay in touch rows (team first), pick window, next event and follow state; the route keeps provider invalidation, the pick and rating mutations and GoRouter navigation."
