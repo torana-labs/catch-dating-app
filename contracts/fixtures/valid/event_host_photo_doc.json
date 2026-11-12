@@ -1,0 +1,12 @@
+{
+  "eventId": "event-1",
+  "organizerId": "org-1",
+  "photoId": "abcdefghijklmnopQRST1234",
+  "displayStoragePath": "events/event-1/hostPhotos/abcdefghijklmnopQRST1234/display.jpg",
+  "thumbnailStoragePath": "events/event-1/hostPhotos/abcdefghijklmnopQRST1234/thumbnail.jpg",
+  "width": 2048,
+  "height": 1536,
+  "sizeBytes": 412000,
+  "uploadedByUid": "host-1",
+  "createdAtMillis": 1800000000000
+}

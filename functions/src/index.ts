@@ -855,6 +855,11 @@ export {
 } from "./programs/hampers";
 export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
 export {
+  addEventHostPhoto,
+  deleteEventHostPhoto,
+  listEventHostPhotos,
+} from "./events/eventHostPhotos";
+export {
   getProgramAssistantSettings,
   getProgramWhatsappThread,
   listProgramWhatsappCannedReplies,

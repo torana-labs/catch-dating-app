@@ -80,7 +80,7 @@ final class HostLiveControllerProvider
 }
 
 String _$hostLiveControllerHash() =>
-    r'd267a25c875f29ec7b2a60f48bedd83453f2f383';
+    r'8724fe6cf77323027e4fba206606161b962f4c87';
 
 /// The live console, composed from listeners only: the plan, the roster,
 /// presence and late arrivals, open help requests, deliveries waiting on the

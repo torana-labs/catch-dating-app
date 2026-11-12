@@ -171,6 +171,8 @@ export const fixtureSchemaCases = Object.freeze([
   ["invalid/program_assistant_run_doc_invalid.json", "programAssistantRunDocumentSchema"],
   ["valid/program_assistant_budget_doc.json", "programAssistantBudgetDocumentSchema"],
   ["invalid/program_assistant_budget_doc_invalid.json", "programAssistantBudgetDocumentSchema"],
+  ["valid/event_host_photo_doc.json", "eventHostPhotoDocumentSchema"],
+  ["invalid/event_host_photo_doc_invalid.json", "eventHostPhotoDocumentSchema"],
   ["valid/program_photo_doc.json", "programPhotoDocumentSchema"],
   ["invalid/program_photo_doc_invalid.json", "programPhotoDocumentSchema"],
   ["valid/program_whatsapp_endpoint_index_doc.json", "programWhatsappEndpointIndexDocumentSchema"],

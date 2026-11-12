@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_host_photos.schema.json",
+  "title": "EventHostPhotoDocument",
+  "description": "One photo the event's host team shared with guests after the event started, at eventHostPhotos/{eventId}_{photoId}. addEventHostPhoto re-encodes the host's staged upload into display and thumbnail JPEGs without EXIF or location metadata; the files live in private Storage under events/{eventId}/hostPhotos/{photoId}/ and leave the server only as short-lived signed URLs from listEventHostPhotos. Guests who checked in and the organizer's owner and managers may read the document; deleteEventHostPhoto removes the document and its files. Kept for as long as the event's chat history is kept.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventHostPhotos",
+  "x-firestore-path": "eventHostPhotos/{eventHostPhotoId}",
+  "x-owner": "addEventHostPhoto and deleteEventHostPhoto callables",
+  "required": [
+    "eventId",
+    "organizerId",
+    "photoId",
+    "displayStoragePath",
+    "thumbnailStoragePath",
+    "width",
+    "height",
+    "sizeBytes",
+    "uploadedByUid",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "photoId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "displayStoragePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^events/[^/]+/hostPhotos/[A-Za-z0-9_-]{16,64}/display\\.jpg$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "thumbnailStoragePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^events/[^/]+/hostPhotos/[A-Za-z0-9_-]{16,64}/thumbnail\\.jpg$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4096,
+      "x-catch-ownership": "callable-owned"
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4096,
+      "x-catch-ownership": "callable-owned"
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8388608,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uploadedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

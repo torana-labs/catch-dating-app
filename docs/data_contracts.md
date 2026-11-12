@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.189.0
-updated: 2026-11-11
+version: 1.190.0
+updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -4403,6 +4403,37 @@ Privacy: the organiser webhook never persists a raw phone number, so an
 unknown sender's thread cannot be answered until the number is added to a
 household. The retention sweep deletes all six collections with the
 archived programme.
+
+### Event Host Photos
+
+`eventHostPhotos/{eventId}_{photoId}` holds one photo the event's host team
+shared with guests after the event started. Organizer owners and managers
+(the organizer's host fields or an active owner/manager team edge) stage one
+original with the Firebase Storage SDK at
+`events/{eventId}/hostPhotoUploads/{photoId}/original.{jpg|jpeg|png}`. Storage
+rules allow only that create, once `events/{eventId}.startTime` has passed,
+for `image/jpeg` or `image/png` up to 8 MB, with `uploaderUid` metadata naming
+the uploader; reads, overwrites and deletes are denied. `addEventHostPhoto`
+checks the staged object's binding, decodes it with sharp (40 megapixel input
+cap), bakes in the EXIF orientation and writes a display JPEG (2048 px long
+edge) and a thumbnail JPEG (480 px) to `events/{eventId}/hostPhotos/{photoId}/`.
+sharp copies no EXIF, GPS, XMP, IPTC or ICC metadata, so location never leaves
+the upload. It deletes the staged original, records the photo and replays an
+existing one; an event holds at most 100 photos. Every direct read of the
+re-encoded files is denied. `listEventHostPhotos` signs fifteen-minute read
+URLs, without download tokens, for the host team and for guests who checked
+in: an `attended` booking, or a ready runtime participant whose linked roster
+row is `checkedIn`, matching `hasCheckedInEventSuccessAccess` in
+`firestore.rules`. Anyone else receives `access: none` and an empty list.
+Firestore rules give the same people read access to the documents; every
+client write is denied. `deleteEventHostPhoto` lets the host team remove a
+photo and its files.
+
+Product defaults pending owner review: guests cannot download photos (the
+apps show no download action), and photos are kept for as long as the
+event's chat history is kept. There is no retention sweep yet, so photos last
+until the host team removes them. A staged original whose add never runs
+stays private and unread.
 
 ### Programme Guest IDs, Hampers, Photos And Vendor Bills
 
