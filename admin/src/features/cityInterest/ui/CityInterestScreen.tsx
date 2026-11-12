@@ -41,8 +41,8 @@ interface CityRow {
 const columns: CatchTableColumn<CityRow>[] = [
   {key: "city", label: "City", kind: "title"},
   {key: "total", label: "People", kind: "number"},
-  {key: "last7", label: "Last 7 days", align: "end"},
-  {key: "last30", label: "Last 30 days", align: "end"},
+  {key: "last7", label: "7 days (change)", align: "end"},
+  {key: "last30", label: "30 days (change)", align: "end"},
 ];
 
 const signed = (now: number, before: number) => {
@@ -102,7 +102,7 @@ export function CityInterestScreen({controller}: {controller: CityInterestContro
         ) : (
           <CatchGap size="section">
             <CatchMetricSection label="Interest at a glance" metrics={metrics(data.totals)} />
-            <CatchSection dividers="none" note={`days end ${data.today} (UTC); change on the days before`} title="By city">
+            <CatchSection dividers="none" note={`to ${data.today} (UTC)`} title="By city">
               <CatchTable<CityRow> columns={columns} density="compact" label="Interest by city" rowKey="key" rows={rows(data)} />
             </CatchSection>
           </CatchGap>
