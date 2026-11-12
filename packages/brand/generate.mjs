@@ -110,7 +110,10 @@ export function renderDartModule(record = brand) {
     const declaration = nullable ? `  static const String? ${camel(keyPath)} =` : `  static const ${camel(keyPath)} =`;
     const initializer = value === null ? "null" : dartString(value);
     const line = `${declaration} ${initializer};`;
-    return line.length <= 80 ? line : `${declaration}\n      ${initializer};`;
+    const rendered = line.length <= 80 ? line : `${declaration}\n      ${initializer};`;
+    // A set store link keeps String? on purpose (see above).
+    return nullable && value !== null ?
+      `  // ignore: unnecessary_nullable_for_final_variable_declarations\n${rendered}` : rendered;
   });
   return `${header}
 final class Brand {

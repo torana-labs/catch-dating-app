@@ -160,6 +160,9 @@ test("store links reach every runtime copy, null or set", () => {
   const dartSet = renderDartModule(set);
   assert.ok(dartSet.includes(`static const String? storesConsumerIos =\n      '${ios}';`) ||
     dartSet.includes(`static const String? storesConsumerIos = '${ios}';`), dartSet);
+  assert.ok(dartSet.includes("  // ignore: unnecessary_nullable_for_final_variable_declarations\n  static const String? storesConsumerIos"),
+    "a set link keeps String? without tripping --fatal-infos");
+  assert.ok(!dartEmpty.includes("// ignore:"), "null slots need no ignore");
   for (const render of [renderFunctionsModule, renderWebsiteModule]) {
     assert.match(render(empty), /"consumer": \{\n\s+"ios": null,/u);
     assert.ok(render(set).includes(`"ios": "${ios}"`));
