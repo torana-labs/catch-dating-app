@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_host_photos_payload.schema.json",
+  "title": "ListEventHostPhotosCallablePayload",
+  "description": "The photos the event's host team shared, newest first. Guests who checked in and the organizer's owner and managers see them; anyone else receives an empty list with access none.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}
