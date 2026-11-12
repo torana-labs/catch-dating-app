@@ -1471,6 +1471,171 @@
     "x-surface": "hosts.event_report",
     "x-max-chars": 40
   },
+  "hostEventPhotosTitle": "Photos for your guests",
+  "@hostEventPhotosTitle": {
+    "description": "Event report section title over the photos the host team shares with guests who checked in.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 32
+  },
+  "hostEventPhotosAdd": "Add photos",
+  "@hostEventPhotosAdd": {
+    "description": "Event report photos action: pick photos to share with guests.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventPhotosEmpty": "Share a few moments from the night. Only guests who checked in see them.",
+  "@hostEventPhotosEmpty": {
+    "description": "Event report photos section, before the host has added any.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 90
+  },
+  "hostEventPhotosNote": "Only guests who checked in see these. Location data is removed from every photo.",
+  "@hostEventPhotosNote": {
+    "description": "Event report photos section note under the shared photos.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 100
+  },
+  "hostEventPhotosCount": "{count} of {max}",
+  "@hostEventPhotosCount": {
+    "description": "Event report photos section: photos shared out of the most an event can share.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 14
+  },
+  "hostEventPhotosFull": "You’ve shared the most photos an event can have.",
+  "@hostEventPhotosFull": {
+    "description": "Event report photos section when the event has reached its photo limit.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 70
+  },
+  "hostEventPhotosPhotoLabel": "Photo {index} of {count}. Double-tap to remove.",
+  "@hostEventPhotosPhotoLabel": {
+    "description": "Screen-reader label for a shared photo thumbnail the host can tap to remove.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 60
+  },
+  "hostEventPhotosUploading": "Uploading {percent}%",
+  "@hostEventPhotosUploading": {
+    "description": "Event report photos: upload progress for one photo.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventPhotosUploadProgress": "Upload progress",
+  "@hostEventPhotosUploadProgress": {
+    "description": "Screen-reader label for the upload progress meter of one photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 24
+  },
+  "hostEventPhotosPreparing": "Preparing",
+  "@hostEventPhotosPreparing": {
+    "description": "Event report photos: a photo is being prepared before upload.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 16
+  },
+  "hostEventPhotosSharing": "Removing location data",
+  "@hostEventPhotosSharing": {
+    "description": "Event report photos: the uploaded photo is being processed before guests see it.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 28
+  },
+  "hostEventPhotosFailed": "Didn’t upload",
+  "@hostEventPhotosFailed": {
+    "description": "Event report photos: a photo failed to upload.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 20
+  },
+  "hostEventPhotosRetry": "Try again",
+  "@hostEventPhotosRetry": {
+    "description": "Event report photos: retry a failed upload.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventPhotosDismiss": "Dismiss",
+  "@hostEventPhotosDismiss": {
+    "description": "Event report photos: dismiss a failed upload.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventPhotosRemoveTitle": "Remove this photo?",
+  "@hostEventPhotosRemoveTitle": {
+    "description": "Confirm dialog title before removing a shared photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 30
+  },
+  "hostEventPhotosRemoveBody": "Guests won’t see it any more.",
+  "@hostEventPhotosRemoveBody": {
+    "description": "Confirm dialog body before removing a shared photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 60
+  },
+  "hostEventPhotosRemoveConfirm": "Remove",
+  "@hostEventPhotosRemoveConfirm": {
+    "description": "Confirm dialog action: remove the shared photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
+  "hostEventPhotosRemoveKeep": "Keep",
+  "@hostEventPhotosRemoveKeep": {
+    "description": "Confirm dialog action: keep the shared photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.event_report",
+    "x-max-chars": 12
+  },
   "hostEventReportReviewAnonymous": "A guest",
   "@hostEventReportReviewAnonymous": {
     "description": "Event report review row title for an anonymous review.",

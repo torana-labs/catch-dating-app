@@ -46,11 +46,13 @@ import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
@@ -171,6 +173,8 @@ import 'package:catch_dating_app/hosts/events/events_controller.dart'
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
@@ -3838,7 +3842,66 @@ List<Object> _hostReportCaptureOverrides() => [
       day: _hostReportNow,
     ),
   ).overrideWith((ref) => Stream.value([_hostReportNext])),
+  eventHostPhotoAlbumProvider(
+    _hostReportEvent.id,
+  ).overrideWith((ref) async => _hostReportPhotoAlbum),
 ];
+
+/// Three shared photos, drawn from the capture fixture portraits.
+final _hostReportPhotoAlbum = EventHostPhotoAlbum(
+  eventId: _hostReportEvent.id,
+  organizerName: _hostTodayOrganizer.name,
+  access: EventHostPhotoAccess.host,
+  maxPhotos: 100,
+  photos: [
+    for (final (index, path) in const [
+      _organizerHeroPortraitAssetPath,
+      _profilePortraitAssetPath,
+      _organizerHeroPortraitAssetPath,
+    ].indexed)
+      EventHostPhoto(
+        photoId: 'capture-host-photo-$index',
+        thumbnailUrl: path,
+        displayUrl: path,
+        width: 1200,
+        height: 1600,
+        uploadedByUid: HostOperationsFixtures.hostUid,
+        createdAt: _hostReportNow.subtract(Duration(minutes: index)),
+      ),
+  ],
+  urlsExpireAt: _hostReportNow.add(const Duration(minutes: 15)),
+);
+
+/// The report's photos while one picked photo uploads and one failed.
+class _HostReportUploadingPhotosController extends HostEventPhotosController {
+  @override
+  Future<HostEventPhotosState> build(String eventId) async =>
+      HostEventPhotosState(
+        album: _hostReportPhotoAlbum,
+        uploads: const [
+          HostEventPhotoUpload(
+            photoId: 'capture-upload-1',
+            stage: HostEventPhotoUploadStage.uploading,
+            progress: 0.64,
+          ),
+          HostEventPhotoUpload(
+            photoId: 'capture-upload-2',
+            stage: HostEventPhotoUploadStage.failed,
+          ),
+        ],
+      );
+}
+
+Future<void> _driveHostReportToPhotos(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const ValueKey('host-event-photos')),
+    320,
+    scrollable: findVerticalScrollable(
+      within: find.byKey(const ValueKey('host-event-report-scroll-view')),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
 
 Widget _hostReportCapture() => _AppRoleCapture(
   role: AppRole.host,
@@ -11011,6 +11074,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     providerOverrides: _hostReportCaptureOverrides(),
     builder: (context) => _hostReportCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_report_photos_phone',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.claudePhone390,
+    precache: const [
+      _organizerHeroPortraitAssetImage,
+      _profilePortraitAssetImage,
+    ],
+    providerOverrides: [
+      ..._hostReportCaptureOverrides(),
+      hostEventPhotosControllerProvider.overrideWith2(
+        (_) => _HostReportUploadingPhotosController(),
+      ),
+    ],
+    builder: (context) => _hostReportCapture(),
+    drive: _driveHostReportToPhotos,
   ),
   ScreenCaptureEntry(
     id: 'host_organizer_tab_phone',

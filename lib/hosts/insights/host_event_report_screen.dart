@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_body.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_report_photos_section.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
@@ -106,6 +107,7 @@ class HostEventReportScreen extends ConsumerWidget {
                 ),
                 onDownload: (download) =>
                     unawaited(_download(context, ref, download)),
+                photos: HostEventReportPhotosSection(eventId: event.id),
               ),
       ),
     );
