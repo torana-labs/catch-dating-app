@@ -763,9 +763,11 @@ reaching Firebase. The same rules tests run in CI on every PR that touches
 `firestore.rules` or the schema/contract files
 (`.github/workflows/firestore-rules-ci.yml`).
 
-Rules tests live at `test/firestore.rules.test.cjs` and
-`test/storage.rules.test.cjs` and use the `@firebase/rules-unit-testing`
-emulators. Add test cases for any new rule conditions, especially `diff()`
+Firestore rules tests live in `test/rules/`, one `<collection>.rules.test.cjs`
+file per collection area with shared fixtures and the emulator lifecycle in
+`test/rules/rulesHarness.cjs`; Storage rules tests live at
+`test/storage.rules.test.cjs`. They use the `@firebase/rules-unit-testing`
+emulators. Add a new rules file to `test/emulator-tests.json`. Add test cases for any new rule conditions, especially `diff()`
 checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
 Firestore relationship documents.
 
