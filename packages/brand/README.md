@@ -69,6 +69,40 @@ both Consumer links are set. City status comes from the website market pack
 prints a warning naming the missing slots; set `LAUNCH_GATE_MODE` to `"error"`
 once city statuses are honest.
 
+## Live config in the apps
+
+`node tool/firebase/create_config_brand.mjs` publishes this record to the
+public Firestore document `config/brand` (dry-run by default; `--apply`
+writes, `--allow-prod` is required for prod, `--all` targets dev, staging and
+prod, `--verify` compares the live document read-only). The document is the
+record itself, `contracts/firestore/config_brand.schema.json` is
+`brand.schema.json` in draft-07 form, and the writer's tests fail when either
+drifts.
+
+The Flutter apps read `config/brand` when they need a store link
+(`liveBrandProvider` in `catch_platform`), once per session and without
+blocking startup. A missing, slow or invalid document, or a slot that is not
+a store URL, falls back to the generated `Brand` constants. Functions and the
+website keep reading their reviewed generated copies: the website ships
+through a release.
+
+## Changing contact details
+
+The support email, phone and WhatsApp, the domain and the operator are plain
+`brand.json` values. For a new domain or support address:
+
+1. Edit `brand.json` (all origins and the sender domain must stay on
+   `web.domain`; `brandConsistencyErrors` enforces it).
+2. `node packages/brand/generate.mjs`, plus the follow-up commands it prints,
+   and commit the result in one reviewed PR.
+3. After it merges, publish the record to the apps:
+   `node tool/firebase/create_config_brand.mjs --all --apply --allow-prod`,
+   then `--all --verify` to confirm.
+4. Re-register what code cannot switch (the rebrand checklist above).
+
+The website and Functions pick the change up with their next release; the
+apps pick up live values from `config/brand` without one.
+
 ## CI
 
 `meta:brand-literals` is a mandatory check in `tool/tools_manifest.json`, so
