@@ -62,7 +62,7 @@ function HostStoreBadges({placement}: {placement: string}) {
   return (
     <CatchStack align="center" direction="row" gap={12} wrap>
       {stores.map((store) => (
-        <CatchStoreButton badgeSrc={store.badgeSrc} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} store={store.store} />
+        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} store={store.store} />
       ))}
     </CatchStack>
   );

@@ -145,8 +145,11 @@ export const homePageCopy = {
       claim: "Claim your page", help: "Help", safety: "Safety", privacy: "Privacy", terms: "Terms"},
   },
   stores: {
-    appStore: {kicker: "Download on the", label: "App Store", accessibleLabel: "Download on the App Store"},
-    googlePlay: {kicker: "Get it on", label: "Google Play", accessibleLabel: "Get it on Google Play"},
+    appStore: {kicker: "Download on the", label: "App Store", accessibleLabel: "Download on the App Store",
+      /** A store with no link yet: a chip, not the store's badge. */
+      comingSoon: {kicker: "Coming soon on the", store: "App Store", label: "Coming soon on the App Store"}},
+    googlePlay: {kicker: "Get it on", label: "Google Play", accessibleLabel: "Get it on Google Play",
+      comingSoon: {kicker: "Coming soon on", store: "Google Play", label: "Coming soon on Google Play"}},
   },
 } as const;
 

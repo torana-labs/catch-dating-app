@@ -23,14 +23,19 @@ const storyRoutes = ["home", "host", "organizer_listing_canonical", "event_detai
 const appStore: CatchStoreButtonProps = {badgeSrc: appStoreBadge, href: "#app-store", label: "Download on the App Store", store: "appStore"};
 const googlePlay: CatchStoreButtonProps = {badgeSrc: googlePlayBadge, href: "#google-play", label: "Get it on Google Play", store: "googlePlay"};
 
+const comingSoon = {
+  appStore: {kicker: "Coming soon on the", store: "App Store", label: "Coming soon on the App Store"},
+  googlePlay: {kicker: "Coming soon on", store: "Google Play", label: "Coming soon on Google Play"},
+};
+
 const pair = (size?: "m" | "l", live = true) => (
   <CatchGap direction="horizontal" size="inline" wrap>
-    <CatchStoreButton {...appStore} href={live ? appStore.href : undefined} size={size} />
-    <CatchStoreButton {...googlePlay} href={live ? googlePlay.href : undefined} size={size} />
+    <CatchStoreButton {...appStore} comingSoon={comingSoon.appStore} href={live ? appStore.href : undefined} size={size} />
+    <CatchStoreButton {...googlePlay} comingSoon={comingSoon.googlePlay} href={live ? googlePlay.href : undefined} size={size} />
   </CatchGap>
 );
 
-/** Both official badges at L (48px) and M (40px), and a store that is not live yet (a button with the same face). */
+/** Both official badges at L (48px) and M (40px), and stores with no link yet (coming-soon chips with the badges' footprint) at both sizes. */
 export const Stores: Story = {
   parameters: {catchComponent: {id: "shared_store_button", routeIds: storyRoutes, states: ["app-store", "google-play", "large", "medium", "pending"]}},
   render: () => (
@@ -40,6 +45,7 @@ export const Stores: Story = {
           {pair("l")}
           {pair("m")}
           {pair("l", false)}
+          {pair("m", false)}
         </CatchGap>
       </CatchBand>
     </StoryPage>

@@ -29,6 +29,27 @@ describe("CatchStoreButton", () => {
     expect(click).toHaveBeenCalledOnce();
   });
 
+  it("draws a coming-soon chip in the badge's footprint when the store has no link, and reports the press", () => {
+    const click = vi.fn();
+    const comingSoon = {kicker: "Coming soon on", store: "Google Play", label: "Coming soon on Google Play"};
+    render(<CatchStoreButton badgeSrc={google} comingSoon={comingSoon} label="Get it on Google Play" onClick={click} size="m" store="googlePlay" />);
+    const chip = screen.getByRole("button", {name: "Coming soon on Google Play"});
+    expect(chip.dataset).toMatchObject({size: "m", state: "coming-soon", store: "googlePlay"});
+    expect(chip.style.width).toBe(`${Math.round(40 * catchStoreBadgeAspect.googlePlay)}px`);
+    expect(chip.textContent).toBe("Coming soon onGoogle Play");
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.queryByRole("link")).toBeNull();
+    fireEvent.click(chip);
+    expect(click).toHaveBeenCalledOnce();
+  });
+
+  it("ignores the coming-soon words once the store has a link", () => {
+    const comingSoon = {kicker: "Coming soon on the", store: "App Store", label: "Coming soon on the App Store"};
+    render(<CatchStoreButton badgeSrc={apple} comingSoon={comingSoon} href="https://apps.apple.com/app/id1" label="Download on the App Store" store="appStore" />);
+    expect(screen.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe("https://apps.apple.com/app/id1");
+    expect(screen.queryByText("Coming soon on the")).toBeNull();
+  });
+
   it("draws the medium badge at 40px and reports clicks", () => {
     const click = vi.fn();
     render(<CatchStoreButton badgeSrc={google} href="#" label="Get it on Google Play" onClick={click} size="m" store="googlePlay" />);

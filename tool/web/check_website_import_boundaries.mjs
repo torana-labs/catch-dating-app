@@ -503,7 +503,7 @@ function runSelfTest() {
     contentSourceViolation(
       "content/site.ts",
       {name: "content"},
-      'export const href = import.meta.env.VITE_APP_STORE_URL;'
+      'export const href = import.meta.env.VITE_CONSUMER_APP_URL;'
     ),
     "content modules must not read import.meta.env; feature adapters own environment values"
   );

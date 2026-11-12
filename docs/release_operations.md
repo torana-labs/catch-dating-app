@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.3.0
-updated: 2026-11-08
+version: 3.3.1
+updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -1916,14 +1916,12 @@ fails if the site would fall back to dev Firebase config, sample admin mode, or
 missing App Check. The packaged Firebase config contains one production target,
 binds the known production Firebase project and surface-specific Hosting site,
 points at the packaged site bytes, and has no `predeploy` or `postdeploy`
-lifecycle hook. Marketing
-production builds also require an
-explicit store-link contract. `VITE_STORE_LINKS_MODE=prelaunch` requires both
-store URLs to remain empty and preserves the honest coming-soon/waitlist CTA;
-`live` requires validated HTTPS `VITE_APP_STORE_URL` and
-`VITE_PLAY_STORE_URL` product links on `apps.apple.com` and `play.google.com`.
-The automatic workflow defaults an unset mode to `prelaunch`, so the website
-can deploy before the mobile listings exist without publishing fake links.
+lifecycle hook. Store links are not build configuration: the website reads
+them from `packages/brand/brand.json`, whose schema validates the App Store and
+Google Play URL shapes, and a store without a link shows a "Coming soon" chip.
+The brand launch gate (`packages/brand/launch_gate.mjs`) reports a live market
+city without both Consumer links. The former `VITE_STORE_LINKS_MODE` and
+`VITE_*_STORE_URL` GitHub variables are retired and no workflow reads them.
 
 All three Hosting workflows use the approval-free `prod-hosting` GitHub
 Environment and deploy automatically after their validation job succeeds on a
@@ -1973,10 +1971,9 @@ any of these console or DNS gates.
 marketing, Host, and admin workflows own their production Hosting builds and the
 `prod-hosting` environment described above. `VITE_GTM_ID` remains optional
 until the production GTM container exists; paid-acquisition readiness still
-requires setting it and validating consent-aware tags. For marketing Hosting,
-an absent environment-level `VITE_STORE_LINKS_MODE` defaults to `prelaunch`;
-cut over by setting it to `live` only after setting both official product URLs
-in the same GitHub Environment.
+requires setting it and validating consent-aware tags. Marketing store links
+go live through a `brand.json` edit and a normal website release, not a GitHub
+Environment variable.
 
 Hosting retry is resume, not generic rollback. An empty manual dispatch remains
 validation-only. Exact recovery requires the failed producing run id/attempt,
