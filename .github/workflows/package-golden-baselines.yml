@@ -1,0 +1,122 @@
+name: Package golden baselines
+run-name: catch_ui baselines for ${{ inputs.ref }} (${{ inputs.name_pattern }})
+
+# The catch_ui package goldens are macOS-rendered (test/goldens/README.md), so
+# a layout change cannot regenerate them on Linux. This manual job renders the
+# selected package golden tests with --update-goldens on the goldens lane's
+# macOS runner image and uploads only the baselines that changed, for a person
+# to review and commit. It never pushes, opens a pull request or changes
+# anything in the repository.
+#
+# The ref is untrusted: a dispatch runs in the default branch's cache scope,
+# so nothing here may write a cache that main's jobs restore. The ref is
+# checked out into its own directory, no local action is executed from it,
+# the toolchain pin is parsed (not sourced) from it, and every setup step runs
+# with caching off.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or full commit SHA in this repository to render
+        required: true
+        type: string
+      name_pattern:
+        description: >-
+          Regular expression over the catch_ui golden test names, as
+          `flutter test --name` takes it (for example `scoreboard`)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-golden-baselines-${{ inputs.ref }}-${{ inputs.name_pattern }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    name: Render catch_ui golden baselines on macOS
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Validate inputs
+        env:
+          NAME_PATTERN: ${{ inputs.name_pattern }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$NAME_PATTERN" || ${#NAME_PATTERN} -gt 200 || "$NAME_PATTERN" == *$'\n'* ]]; then
+            echo "::error::name_pattern must be one line of at most 200 characters."
+            exit 1
+          fi
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ inputs.ref }}
+          path: target
+          persist-credentials: false
+
+      - name: Read the Flutter pin without executing the checkout
+        id: toolchain
+        run: |
+          set -euo pipefail
+          value="$(grep -E '^FLUTTER_VERSION=' target/tool/ci/toolchain.env | tail -n 1 | cut -d= -f2-)"
+          if [[ ! "$value" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "::error::FLUTTER_VERSION in tool/ci/toolchain.env must be a version number."
+            exit 1
+          fi
+          echo "flutter-version=$value" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ steps.toolchain.outputs.flutter-version }}
+          channel: stable
+          cache: false
+
+      - name: Resolve catch_ui dependencies
+        working-directory: target/packages/catch_ui
+        run: flutter pub get
+
+      - name: Render the selected package goldens
+        working-directory: target/packages/catch_ui
+        env:
+          NAME_PATTERN: ${{ inputs.name_pattern }}
+        run: |
+          set -euo pipefail
+          flutter test --concurrency=1 --tags=golden --update-goldens --name "$NAME_PATTERN"
+
+      - name: Collect changed baselines
+        id: collect
+        working-directory: target
+        run: |
+          set -euo pipefail
+          out="build/package-golden-baselines"
+          mkdir -p "$out"
+          git status --porcelain=v1 -z --untracked-files=all -- 'packages/catch_ui/test/goldens/baseline/*.png' |
+            while IFS= read -r -d '' entry; do
+              path="${entry:3}"
+              mkdir -p "$out/$(dirname "$path")"
+              cp "$path" "$out/$path"
+              echo "$path"
+            done > build/package-golden-baselines.txt
+          count="$(wc -l < build/package-golden-baselines.txt | tr -d ' ')"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          {
+            echo "### catch_ui golden baselines rendered on macOS"
+            echo
+            echo "Source: \`$(git rev-parse HEAD)\`; changed baselines: $count."
+            echo
+            sed "s/^/- \`/; s/\$/\`/" build/package-golden-baselines.txt
+            echo
+            echo "Download the artifact, review the images, and commit the ones you accept."
+          } >> "$GITHUB_STEP_SUMMARY"
+          cp build/package-golden-baselines.txt "$out/CHANGED.txt"
+
+      - name: Upload changed baselines for review
+        if: ${{ steps.collect.outputs.count != '0' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package-golden-baselines-${{ github.run_id }}-${{ github.run_attempt }}
+          path: target/build/package-golden-baselines
+          if-no-files-found: error
+          retention-days: 14
