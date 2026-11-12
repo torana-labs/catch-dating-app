@@ -191,22 +191,6 @@
       ],
       "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
     },
-    "screen.catches.event": {
-      "owners": [
-        {
-          "routes": [
-            "swipeEventScreen"
-          ],
-          "file": "lib/swipes/presentation/swipe_screen.dart",
-          "symbol": "_SwipeScreenState",
-          "family": "immersive",
-          "expression": "CatchScaffold.workspace",
-          "bodyGeometry": "full-bleed",
-          "topEdge": "body-owned"
-        }
-      ],
-      "reason": "The event deck is an intentional full-bleed immersive route."
-    },
     "screen.matches.list": {
       "owners": [
         {
@@ -846,12 +830,12 @@
           "file": "lib/swipes/presentation/event_recap_screen.dart",
           "symbol": "_EventRecapScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
+          "expression": "CatchScreen",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
+          "topEdge": "safe-area"
         }
       ],
-      "reason": "Event Recap is a pushed route with canonical route chrome."
+      "reason": "The after-event screen is a pushed route that draws its own moment top bar in CatchScreen."
     },
     "screen.host.club.create": {
       "owners": [
