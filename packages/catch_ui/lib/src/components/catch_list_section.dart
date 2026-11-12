@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_baseline_overhang_layout.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_index_row.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
@@ -80,9 +81,6 @@ class CatchListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = this.title;
-    final kicker = this.kicker;
-    final note = this.note;
-    final action = this.action;
     final empty = this.empty;
     final columns = this.columns;
     final split =
@@ -93,57 +91,96 @@ class CatchListSection extends StatelessWidget {
         : const CatchDivider.section();
     final rows = timeline ? _joined(context) : children;
     final perColumn = split ? (rows.length / columns).ceil() : rows.length;
-    return Column(
+    // The kicker over the title, with the action or note on the title's
+    // baseline. At large text the action takes its own line under the title,
+    // so the title wraps only between words.
+    Widget? header;
+    if (title != null) {
+      final kicker = this.kicker;
+      final action = this.action;
+      final note = this.note;
+      final heading = Semantics(
+        header: true,
+        child: CatchText(title, variant: CatchTextVariant.sectionTitle),
+      );
+      final button = action == null
+          ? null
+          : CatchButton(
+              label: action.label,
+              onPressed: action.onPressed,
+              variant: CatchButtonVariant.quiet,
+              size: CatchButtonSize.sm,
+            );
+      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+      final Widget? trailing = button != null
+          // The quiet action's label sits on the title's baseline. Its 48 px
+          // target overhangs the title line instead of making it taller, so a
+          // section with an action starts where any other section does.
+          ? largeText
+                // At large text the action drops under the title, moved
+                // back by its own leading padding so its label lines up with
+                // the title; its target extends outward instead.
+                ? Transform.translate(
+                    offset: Offset(
+                      Directionality.of(context) == TextDirection.rtl
+                          ? CatchButtonTokens.smallPaddingX
+                          : -CatchButtonTokens.smallPaddingX,
+                      0,
+                    ),
+                    child: button,
+                  )
+                : CatchBaselineOverhangLayout(child: button)
+          : note != null
+          ? CatchText(
+              note,
+              variant: CatchTextVariant.labelKicker,
+              tone: CatchTextTone.secondary,
+              maxLines: 1,
+            )
+          : null;
+      final Widget titleLine = trailing == null
+          ? heading
+          : largeText && action != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              spacing: CatchSpacing.s1,
+              children: [heading, trailing],
+            )
+          : CatchOverhangStack(
+              direction: Axis.horizontal,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              spacing: CatchSpacing.s3,
+              children: [
+                Expanded(child: heading),
+                trailing,
+              ],
+            );
+      header = kicker == null
+          ? titleLine
+          : CatchOverhangStack(
+              direction: Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              spacing: CatchSpacing.s1,
+              children: [
+                CatchText(
+                  kicker,
+                  variant: CatchTextVariant.labelKicker,
+                  tone: CatchTextTone.secondary,
+                ),
+                titleLine,
+              ],
+            );
+    }
+    return CatchOverhangStack(
+      direction: Axis.vertical,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: CatchSpacing.s2,
       children: [
-        if (title != null)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            spacing: CatchSpacing.s3,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: CatchSpacing.s1,
-                  children: [
-                    if (kicker != null)
-                      CatchText(
-                        kicker,
-                        variant: CatchTextVariant.labelKicker,
-                        tone: CatchTextTone.secondary,
-                      ),
-                    Semantics(
-                      header: true,
-                      child: CatchText(
-                        title,
-                        variant: CatchTextVariant.sectionTitle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (action != null)
-                CatchButton(
-                  label: action.label,
-                  onPressed: action.onPressed,
-                  variant: CatchButtonVariant.quiet,
-                  size: CatchButtonSize.sm,
-                )
-              else if (note != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
-                  child: CatchText(
-                    note,
-                    variant: CatchTextVariant.labelKicker,
-                    tone: CatchTextTone.secondary,
-                    maxLines: 1,
-                  ),
-                ),
-            ],
-          ),
+        ?header,
         if (children.isEmpty && empty != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
