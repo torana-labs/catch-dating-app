@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.191.0
+version: 1.192.0
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -45,9 +45,50 @@ Read this before changing:
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
 | Human operation map | `docs/backend_operation_catalog.md` |
 | Rules a tool enforces | `tool/tools_manifest.json` |
+| Countries and cities Catch serves, with each city's lifecycle and surface flags | `contracts/catalogs/markets.json` (see [Market Catalog](#market-catalog)) |
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Market Catalog
+
+`contracts/catalogs/markets.json` is the one source of truth for the
+countries and cities Catch serves. `contracts/shared/market_catalog.schema.json`
+owns its shape. Each country carries its ISO code, name, currency, dial code,
+locale, time zone, App Store countries and default city. Each city carries the
+existing `marketId`/`cityId` scheme (`in-mh-mumbai`), its public slug, aliases,
+coordinates, a lifecycle and per-surface flags.
+
+| Lifecycle | Meaning | `launchStatus` apps read |
+|---|---|---|
+| `hidden` | Not public anywhere. | `planned` |
+| `waitlist` | Public; collecting interest. | `planned` |
+| `launching` | Public; launch planned, with an optional `launchDate`. | `planned` |
+| `live` | Open. | `launched` |
+| `paused` | Was live; temporarily closed. | `paused` |
+
+The app flags (`profileSelectable`, `hostCreatable`, `eventCreatable`,
+`exploreVisible`) may be on only for a `live` city, and `websiteListed` may not
+be on for a `hidden` city. Aliases, slugs, ids and `legacyIds` are unique
+across the catalog.
+
+Never edit a copy. Edit the catalog, then run
+`node tool/contracts/generate_market_catalog.mjs`, which writes:
+
+| Copy | Consumer |
+|---|---|
+| `functions/src/shared/generated/marketCatalog.ts` | `functions/src/locations/marketConfig.ts` |
+| `packages/kernel/lib/market_catalog.dart` | `city_catalog.dart` and `country_markets.dart`, the apps' offline fallback |
+| `admin/src/shared/config/generated/marketCatalog.ts` | Admin launch markets (live cities) |
+| The launch-market block in `firestore.rules` | `isDefaultCity` |
+
+Tools read the catalog directly through `tool/lib/market_catalog.mjs`;
+`tool/firebase/create_config_cities.mjs` writes `config/cities` from it.
+The registered check `contracts:market-lists` runs on every change: it fails
+when a copy is stale, a cross-record rule breaks, or tracked source names three
+or more catalog cities outside `tool/contracts/market_list_allowlist.json`,
+which may only shrink. `contracts:market-catalog` adds JSON Schema validation
+whenever the catalog changes.
 
 ### Profile information by capability
 
