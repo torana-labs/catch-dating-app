@@ -6,9 +6,9 @@ import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {captureDeviceIds, deviceFrameSpec} from "./lib/capture_devices.mjs";
+import {captureCatalogIndex, captureEntryPath, readCaptureCatalogFiles} from "../ui_capture/lib/capture_catalog_sources.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
-const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const designContextPath = fromRepo("tool/marketing/app_screenshots_design_context.json");
 const rawOutputDir = "artifacts/marketing/app-screenshots/raw";
 const supportedDevices = new Set(captureDeviceIds);
@@ -324,6 +324,8 @@ function validateExports(manifest, catalog, {requireSources}) {
       errors.push(`${capture.id}: fixtureKey ${capture.fixtureKey} must map once.`);
     }
 
+    errors.push(...validateEntryPlacement(capture, entry, catalog));
+
     if (requireSources && fs.existsSync(fromRepo(capture.sourcePath))) {
       errors.push(...validateCapture(capture, entry.id));
     }
@@ -332,6 +334,27 @@ function validateExports(manifest, catalog, {requireSources}) {
         `${capture.id}: sourcePath is missing at ${capture.sourcePath}; run node tool/marketing/export_app_screenshots.mjs --update.`
       );
     }
+  }
+  return errors;
+}
+
+// A marketing entry lives alone in entries/<id>.dart, which is that capture's
+// render-input root, and the index resolves the id to that file's entry
+// lazily. The index itself is not a render input, so this check is what binds
+// it to the hashed entry.
+function validateEntryPlacement(capture, entry, catalog) {
+  const expected = captureEntryPath(entry.id);
+  if (entry.file !== expected) {
+    return [`${capture.id}: catalog entry ${entry.id} must be declared in ${expected}, not ${entry.file}.`];
+  }
+  const errors = [];
+  const declared = catalog.filter(other => other.file === expected);
+  if (declared.length !== 1) errors.push(`${capture.id}: ${expected} must declare exactly one ScreenCaptureEntry.`);
+  const variable = catalog.sources.get(expected).match(/^final\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ScreenCaptureEntry\(/mu)?.[1];
+  const index = catalog.sources.get(captureCatalogIndex);
+  const mapping = new RegExp(`^\\s*'${entry.id}':\\s*\\(\\)\\s*=>\\s*${variable}\\s*,`, "mu");
+  if (!variable || !mapping.test(index) || !index.includes(`import 'entries/${entry.id}.dart';`)) {
+    errors.push(`${capture.id}: ${captureCatalogIndex} marketingScreenCaptures must map '${entry.id}' to the entry declared in ${expected}.`);
   }
   return errors;
 }
@@ -443,7 +466,7 @@ function selectCaptures(manifest) {
 function loadContext() {
   return {
     manifest: readJson(manifestPath),
-    catalog: parseCaptureCatalog(fs.readFileSync(catalogPath, "utf8")),
+    catalog: parseCaptureCatalog(readCaptureCatalogFiles()),
   };
 }
 
@@ -462,9 +485,10 @@ function groupBy(values, keyFor) {
   return groups;
 }
 
-function parseCaptureCatalog(source) {
+function parseCaptureCatalog(files) {
   const entries = [];
-  for (const block of extractCallBlocks(source, "ScreenCaptureEntry")) {
+  entries.sources = new Map(files.map(file => [file.path, file.source]));
+  for (const {path: file, source} of files) for (const block of extractCallBlocks(source, "ScreenCaptureEntry")) {
     const id = matchString(block, /\bid:\s*'([^']+)'/u);
     const routeIdsBlock = matchString(block, /\brouteIds:\s*const\s*<String>\s*\[([\s\S]*?)\]/u);
     const marketingBlock = matchString(
@@ -475,6 +499,7 @@ function parseCaptureCatalog(source) {
     if (!id) continue;
     entries.push({
       id,
+      file,
       routeIds: parseStringList(routeIdsBlock),
       marketingFixtureKeys: parseStringList(marketingBlock),
       device: deviceIdFromToken(deviceToken),

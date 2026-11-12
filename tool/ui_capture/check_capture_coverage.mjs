@@ -2,10 +2,10 @@
 import fs from "node:fs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
+import {readCaptureCatalogSource} from "./lib/capture_catalog_sources.mjs";
 
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const coveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
-const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const marketingManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -27,7 +27,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 function checkCoverage({summary = false} = {}) {
   const routeInventory = readJson(routeInventoryPath);
   const coverage = readJson(coveragePath);
-  const catalog = parseCaptureCatalog(fs.readFileSync(catalogPath, "utf8"));
+  const catalog = parseCaptureCatalog(readCaptureCatalogSource());
   const marketingManifest = readJson(marketingManifestPath);
   const errors = validateCoverage({
     routeInventory,

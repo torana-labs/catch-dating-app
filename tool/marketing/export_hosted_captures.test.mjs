@@ -45,6 +45,7 @@ function fixture(t, {web = false, catalog = null} = {}) {
     return destination;
   };
   for (const file of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/ui_capture/run_captures.mjs",
+    "tool/ui_capture/lib/capture_catalog_sources.mjs",
     "tool/marketing/export_app_screenshots.mjs", "tool/marketing/export_hosted_captures.mjs",
     "tool/marketing/import_hosted_captures.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
@@ -88,9 +89,8 @@ function fixture(t, {web = false, catalog = null} = {}) {
     write(capture.sourcePath, png);
     write(capture.websitePath, png);
   }
-  write("test/ui_captures/catalog/screen_capture_catalog.dart", manifest.captures.filter(c => c.kind !== "web-capture").map((c, i) =>
-    `ScreenCaptureEntry(id: 'screen_${i}', routeIds: const <String>['today'],
-      marketingFixtureKeys: const <String>['${c.fixtureKey}'], device: CaptureDevice.iphone17Pro)`).join("\n"));
+  writeCaptureCatalog(write, manifest.captures.filter(c => c.kind !== "web-capture")
+    .map((c, i) => ({id: `screen_${i}`, fixtureKey: c.fixtureKey})));
   write("test/ui_captures/capture_runner_test.dart", "import 'package:catch_dating_app/leaf.dart';\n");
   write("test/ui_captures/flutter_test_config.dart", "");
   write("tool/marketing/frame_device_capture.dart", "");
@@ -1091,3 +1091,17 @@ test("a web capture renders on macOS from a Linux-built Storybook with WebKit, t
   assert.equal(reused.toolchain.playwright, null);
   assert.equal(reused.toolchain.storybookIndexSha256, null);
 });
+
+// The catalog as the exporter reads it: an index that resolves each marketing
+// id lazily, plus one entry file per marketing capture.
+function writeCaptureCatalog(write, entries) {
+  const variable = id => `${id.replace(/_([a-z0-9])/gu, (_, c) => c.toUpperCase())}Capture`;
+  for (const entry of entries) {
+    write(`test/ui_captures/catalog/entries/${entry.id}.dart`, `final ${variable(entry.id)} = ScreenCaptureEntry(id: '${entry.id}', routeIds: const <String>['today'],
+      marketingFixtureKeys: const <String>['${entry.fixtureKey}'], device: CaptureDevice.iphone17Pro);\n`);
+  }
+  write("test/ui_captures/catalog/screen_capture_catalog.dart", `${entries.map(entry => `import 'entries/${entry.id}.dart';\n`).join("")}
+final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
+${entries.map(entry => `  '${entry.id}': () => ${variable(entry.id)},\n`).join("")}};\n`);
+  write("test/ui_captures/catalog/screen_capture_entry.dart", "class ScreenCaptureEntry {}\n");
+}

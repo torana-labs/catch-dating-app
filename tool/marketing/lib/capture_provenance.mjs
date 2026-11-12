@@ -5,34 +5,44 @@ import {spawnSync} from 'node:child_process';
 import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
 import {webCaptureInputHash} from './web_capture_inputs.mjs';
 import {framedSize, isCaptureDevice} from './capture_devices.mjs';
+import {captureCatalogIndex, marketingEntryFile} from '../../ui_capture/lib/capture_catalog_sources.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
 const chunkType = 'caPt';
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-const roots = [
-  'test/ui_captures/catalog/screen_capture_catalog.dart',
+// Shared harness: every app capture renders through these. The catalog index
+// is deliberately absent: it lists every capture, and the runner resolves a
+// marketing capture lazily from its own entry file, which joins the inputs
+// below. The exporter checks that the index maps each id to that file.
+const harnessRoots = [
   'test/ui_captures/capture_runner_test.dart',
   'test/ui_captures/flutter_test_config.dart',
+  'test/ui_captures/catalog/screen_capture_entry.dart',
   'tool/marketing/frame_device_capture.dart',
   'tool/marketing/export_app_screenshots.mjs',
   'tool/marketing/lib/capture_provenance.mjs',
   'tool/marketing/lib/capture_devices.mjs',
   'tool/ui_capture/run_captures.mjs',
+  'tool/ui_capture/lib/capture_catalog_sources.mjs',
   'tool/lib/repo_paths.mjs',
   'pubspec.yaml', 'pubspec.lock', 'tool/ci/toolchain.env',
 ];
+const notFollowed = new Set([captureCatalogIndex]);
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 // A capture renders from these manifest fields alone. Everything else in an
 // entry (website copy, the pages that show it, scenario pointers and facts) is
 // presentation and never invalidates a render; scenario data enters through
-// its files below.
+// the data files its Dart inputs name.
 const renderFields = ['id', 'status', 'device', 'fixtureKey', 'sourcePath'];
+// Fixtures read data files at runtime (scenario and persona JSON, images) by
+// literal repo path. Those named files are inputs; a computed path is refused
+// because the hash could not see which file it reads.
+const dataLiteral = /(['"])((?:assets|lib|packages|test|tool)\/(?:(?!\1)[^\n])*\.(?:json|jpe?g|png|webp|gif|svg|txt|csv))\1/gu;
 
-export function captureInputHash(capture) {
-  if (capture.kind === 'web-capture') return webCaptureInputHash(capture);
-  const inputs = new Set(roots);
-  // These canonical fixtures load JSON at runtime rather than through imports.
-  for (const directory of ['tool/demo/demo_seed/scenarios', 'tool/demo/demo_seed/personas']) addTree(directory, inputs);
+/** Repo-relative files whose bytes decide an app capture's render. */
+export function captureInputFiles(capture) {
+  const inputs = new Set(harnessRoots);
+  inputs.add(marketingEntryFile(capture.fixtureKey));
   const packages = new Map();
   const pubspecs = ['pubspec.yaml'];
   for (const dir of fs.readdirSync(fromRepo('packages'), {withFileTypes: true})) {
@@ -56,6 +66,7 @@ export function captureInputHash(capture) {
   for (let i = 0; i < queue.length; i++) {
     const file = queue[i];
     const source = fs.readFileSync(fromRepo(file), 'utf8');
+    for (const data of dataFilesNamedBy(source, file)) inputs.add(data);
     for (const directive of source.matchAll(/^\s*(?:import|export|part)\s+([^;]+);/gmu)) {
       for (const match of directive[1].matchAll(/['"]([^'"]+)['"]/gu)) {
         const uri = match[1];
@@ -69,7 +80,7 @@ export function captureInputHash(capture) {
         } else {
           dependency = path.posix.normalize(path.posix.join(path.posix.dirname(file), uri));
         }
-        if (!dependency.endsWith('.dart') || inputs.has(dependency)) continue;
+        if (!dependency.endsWith('.dart') || inputs.has(dependency) || notFollowed.has(dependency)) continue;
         if (dependency.startsWith('../') || !fs.existsSync(fromRepo(dependency))) {
           throw new Error(`Missing capture dependency: ${dependency} (from ${file})`);
         }
@@ -78,15 +89,31 @@ export function captureInputHash(capture) {
       }
     }
   }
+  return [...inputs].sort();
+}
+
+function dataFilesNamedBy(source, file) {
+  const named = [];
+  for (const match of source.matchAll(dataLiteral)) {
+    const literal = match[2];
+    if (literal.includes('$')) throw new Error(`Capture data path must be literal: ${literal} (in ${file})`);
+    if (fs.existsSync(fromRepo(literal)) && fs.statSync(fromRepo(literal)).isFile()) named.push(literal);
+  }
+  return named;
+}
+
+export function captureInputHash(capture) {
+  if (capture.kind === 'web-capture') return webCaptureInputHash(capture);
   const recipe = Object.fromEntries(renderFields.map(key => [key, capture[key] ?? null]));
   const hash = crypto.createHash('sha256').update(JSON.stringify(recipe));
-  for (const file of [...inputs].sort()) {
+  for (const file of captureInputFiles(capture)) {
     hash.update(file).update('\0').update(fs.readFileSync(fromRepo(file))).update('\0');
   }
   return hash.digest('hex');
 }
 
 function addTree(file, inputs) {
+  file = file.replace(/\/+$/u, '');
   if (fs.statSync(fromRepo(file)).isDirectory()) {
     for (const item of fs.readdirSync(fromRepo(file)).sort()) addTree(`${file}/${item}`, inputs);
   } else inputs.add(file);
