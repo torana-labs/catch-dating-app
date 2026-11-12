@@ -158,15 +158,18 @@ test("store links reach every runtime copy, null or set", () => {
   assert.match(dartEmpty, /static const String\? storesHostAndroid = null;/u);
   const ios = "https://apps.apple.com/app/id6739000001";
   const set = withStores({ios, android: null});
-  const dartSet = renderDartModule(set);
-  assert.ok(dartSet.includes(`static const String? storesConsumerIos =\n      '${ios}';`) ||
-    dartSet.includes(`static const String? storesConsumerIos = '${ios}';`), dartSet);
-  assert.ok(dartSet.includes("  // ignore: unnecessary_nullable_for_final_variable_declarations\n  static const String? storesConsumerIos"),
+  // Compare whole lines and parsed records, not substrings.
+  const dartLines = renderDartModule(set).split("\n");
+  const at = dartLines.indexOf("  static const String? storesConsumerIos =");
+  assert.ok(at > 0, "a set link keeps String? (and wraps past 80 columns)");
+  assert.equal(dartLines[at + 1], `      '${ios}';`);
+  assert.equal(dartLines[at - 1], "  // ignore: unnecessary_nullable_for_final_variable_declarations",
     "a set link keeps String? without tripping --fatal-infos");
-  assert.ok(!dartEmpty.includes("// ignore:"), "null slots need no ignore");
+  assert.ok(dartEmpty.split("\n").every((line) => !line.startsWith("  // ignore:")), "null slots need no ignore");
+  const recordOf = (source) => JSON.parse(/const record = (\{[\s\S]*?\n\}) as const;/u.exec(source)[1]);
   for (const render of [renderFunctionsModule, renderWebsiteModule]) {
-    assert.match(render(empty), /"consumer": \{\n\s+"ios": null,/u);
-    assert.ok(render(set).includes(`"ios": "${ios}"`));
+    assert.deepEqual(recordOf(render(empty)).stores.consumer, {ios: null, android: null});
+    assert.deepEqual(recordOf(render(set)).stores.consumer, {ios, android: null});
     assert.match(render(set), /export type StoreLink = string \| null;/u);
   }
 });
