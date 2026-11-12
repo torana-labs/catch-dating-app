@@ -36,6 +36,12 @@ pull request reaches no strict test, one job for up to 15 tests, otherwise
 three. The merge queue, main and nightly always run the whole list in three.
 A local run without that variable executes the whole list.
 
+Functions tests read repository contracts through `contractFixture("name")`
+(`contracts/fixtures/valid/<name>.json`) and `contractFile("dir/x.json")` in
+`functions/src/shared/contractFixtures.ts`, each with one string literal. Pull
+request selection then runs only the tests that read a changed contract; a path
+built from a variable makes that test run for every contract change.
+
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the

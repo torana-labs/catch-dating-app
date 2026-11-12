@@ -131,13 +131,15 @@
       "impactPaths": [
         "tool/lib/functions_test_selection.mjs",
         "tool/lib/functions_test_selection.test.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/contract_reads.test.mjs",
         "tool/lib/dependency_cruiser.mjs",
         "tool/impact/package.json",
         "tool/impact/package-lock.json"
       ],
       "checks": [
         "node --check tool/impact/emulator_test_selection.mjs",
-        "node --test tool/lib/functions_test_selection.test.mjs"
+        "node --test tool/lib/functions_test_selection.test.mjs tool/lib/contract_reads.test.mjs"
       ],
       "role": "generator"
     },

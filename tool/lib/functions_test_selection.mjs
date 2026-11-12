@@ -1,4 +1,5 @@
 import path from "node:path";
+import {contractReads} from "./contract_reads.mjs";
 
 // Pull requests run only the strict emulator tests a change can reach; the
 // merge queue, main and nightly still run every listed test. Code inputs come
@@ -18,8 +19,12 @@ const fullInputs = [
 ];
 const dataInputs = [
   {pattern: /^firestore\.indexes\.json$/u, mentions: ["firestore.indexes"]},
-  {pattern: /^contracts\//u, mentions: ["contracts"]},
 ];
+// A contract change selects the tests that read that file (tool/lib/contract_reads.mjs),
+// the tests whose sources read contracts dynamically, and the importers of the
+// generated modules built from it, which name it in their schema $id.
+const generatedRoot = "src/shared/generated/";
+const generatedSchemaId = /"\$id":\s*"https:\/\/catch\.app\/(contracts\/[^"#]+)"/gu;
 
 /** The authored source of a listed test: compiled lib/**.test.js comes from src/**.test.ts. */
 export function sourceForListedTest(test) {
@@ -97,9 +102,34 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
     return textCache.get(file);
   };
   const closures = new Map();
-  const readsAny = (test, keys, options) => {
+  const closureOf = (test) => {
     if (!closures.has(test)) closures.set(test, [...closure([testSources.get(test)], edges)]);
-    return closures.get(test).some((file) => keys.some((key) => mentions(text(file), key, options)));
+    return closures.get(test);
+  };
+  const readsAny = (test, keys, options) =>
+    closureOf(test).some((file) => keys.some((key) => mentions(text(file), key, options)));
+  const contractCache = new Map();
+  const contractsOf = (file) => {
+    if (!contractCache.has(file)) contractCache.set(file, contractReads(text(file), {file}));
+    return contractCache.get(file);
+  };
+  const readsContract = (test, changed) => closureOf(test).some((file) => {
+    const reads = contractsOf(file);
+    return reads.dynamic || reads.paths.includes(changed);
+  });
+  let generatedByContract;
+  const generatedFrom = (changed) => {
+    if (!generatedByContract) {
+      generatedByContract = new Map();
+      for (const file of known) {
+        if (!file.startsWith(generatedRoot)) continue;
+        for (const [, id] of text(file).matchAll(generatedSchemaId)) {
+          if (!generatedByContract.has(id)) generatedByContract.set(id, []);
+          generatedByContract.get(id).push(file);
+        }
+      }
+    }
+    return generatedByContract.get(changed) ?? [];
   };
 
   const selected = new Set();
@@ -110,6 +140,11 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
     // Before that build its importers' edges have no extension.
     if (changed === "contracts/admin/admin_action_catalog.json" || changed.startsWith("contracts/admin/actions/")) {
       seeds.push("src/shared/generated/adminActionCatalog", "src/shared/generated/adminActionCatalog.ts");
+    }
+    if (changed.startsWith("contracts/")) {
+      for (const test of listed) if (readsContract(test, changed)) selected.add(test);
+      seeds.push(...generatedFrom(changed));
+      continue;
     }
     const data = dataInputs.find(({pattern}) => pattern.test(changed));
     if (data) {
