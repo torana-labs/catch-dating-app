@@ -250,6 +250,10 @@ test("Flutter selection keeps full validation and bounds matrix outputs", () => 
   assert.match(flutter, /matrix: \$\{\{ fromJSON\(needs.test-plan.outputs.matrix\) \}\}/u);
   assert.match(namedStep(flutter, "Verify test selection safety"), /dart test tool\/harness\/lib\/flutter_test_selection_test.dart/u);
   assert.match(namedStep(flutter, "Select tests from committed dependency closures"), /--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  // Without the generator's dependencies every contract change runs the suite.
+  assert.match(namedStep(flutter, "Install the contract generator's dependencies"), /npm --prefix functions ci --ignore-scripts/u);
+  assert.ok(flutter.indexOf("Install the contract generator's dependencies") <
+    flutter.indexOf("Select tests from committed dependency closures"));
   assert.match(flutter, /TEST_PLAN_RESULT: \$\{\{ needs\['test-plan'\].result \}\}/u);
   assert.match(flutter, /"\$\{TEST_PLAN_RESULT\}" != "success"/u);
   assert.match(namedStep(flutter, "Unit & widget tests"), /\.sourceSha == \$sha/u);

@@ -665,9 +665,7 @@ void main() {
         {'$generatedDir/unused.g.dart': 'const unused = 2;'},
         {'$generatedDir/added.g.dart': 'const added = 1;'},
       ]) {
-        final result = rendersPlan({
-          'contracts/catalogs/x.json',
-        }, after: after);
+        final result = rendersPlan({'contracts/catalogs/x.json'}, after: after);
         expect(result['mode'], 'full', reason: '$after');
         expect(result['reason'], contains(after.keys.single));
       }
@@ -688,10 +686,10 @@ void main() {
         'test/probe_test.dart',
       ]);
       // Without the rendered outputs the generated module is opaque.
-      expect(
-        selected(plan({'lib/c.dart'}, before: files, after: files)),
-        ['test/c_test.dart', 'test/probe_test.dart'],
-      );
+      expect(selected(plan({'lib/c.dart'}, before: files, after: files)), [
+        'test/c_test.dart',
+        'test/probe_test.dart',
+      ]);
     });
     test('an import of an output the generator did not emit fails closed', () {
       final result = selectFlutterTests(
