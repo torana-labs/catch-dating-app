@@ -75,6 +75,7 @@
   font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
   font-size: 26px;
   font-stretch: 78%;
+  word-spacing: var(--catch-font-word-spacing-voice);
   font-variation-settings: "wdth" 78;
   font-weight: var(--catch-typography-role-display-hero-weight);
   line-height: 1.1;
@@ -160,6 +161,7 @@
   font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
   font-size: clamp(28px, calc(var(--catch-night-scene-height) * 0.04), 36px);
   font-stretch: 78%;
+  word-spacing: var(--catch-font-word-spacing-voice);
   font-variation-settings: "wdth" 78;
   font-weight: var(--catch-typography-role-display-hero-weight);
   line-height: 1.02;

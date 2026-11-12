@@ -418,6 +418,9 @@
       "priority": "P2",
       "captureIds": [
         "event_recap_attendees",
+        "event_recap_host_photos",
+        "event_recap_host_photos_none",
+        "event_recap_host_photo_viewer",
         "event_recap_rated_following",
         "event_recap_loading",
         "event_recap_error",

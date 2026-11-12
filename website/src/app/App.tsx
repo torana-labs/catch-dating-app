@@ -42,8 +42,8 @@ import {eventPageFromListing} from "../features/events/eventPageFromListing";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
-import {PageShell, SiteAccountActionProvider} from "../shared/site";
-import {SiteAccountAction} from "../features/account/SignInSheet";
+import {PageShell} from "../shared/site";
+import {SiteAccountProvider} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
@@ -191,9 +191,9 @@ function App() {
       <PendingRequestProvider>
         <CustomFormDomainGate>
           <PublicEventListingsProvider>
-            <SiteAccountActionProvider value={<SiteAccountAction />}>
+            <SiteAccountProvider>
               <MarketingRouteShell />
-            </SiteAccountActionProvider>
+            </SiteAccountProvider>
           </PublicEventListingsProvider>
         </CustomFormDomainGate>
       </PendingRequestProvider>
