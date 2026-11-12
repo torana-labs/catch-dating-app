@@ -45,7 +45,7 @@
     },
     "status": {
       "type": "string",
-      "description": "live when the market has launched and has enough plans in the window to fill a page; otherwise launchingSoon, so a thin city never renders a sparse page.",
+      "description": "live when the market has launched, however few plans it has: the page shows the honest count. launchingSoon only for a market that has not launched.",
       "enum": ["live", "launchingSoon"]
     },
     "builtAt": {

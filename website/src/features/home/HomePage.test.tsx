@@ -118,10 +118,13 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 
-  it("lists every city in the footer, the ones not open marked soon", () => {
+  it("lists every city in the footer: open ones with their plans this week, the rest soon", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));
-    expect(footer.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/mumbai/");
+    const mumbai = mumbaiLiveCatalog.cities.find((city) => city.slug === "mumbai")!;
+    const mumbaiName = mumbai.weekPlanCount === 0 ? "Mumbai · new" :
+      mumbai.weekPlanCount === 1 ? "Mumbai · 1 plan this week" : `Mumbai · ${mumbai.weekPlanCount} plans this week`;
+    expect(footer.getByRole("link", {name: mumbaiName}).getAttribute("href")).toBe("/mumbai/");
     expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
   });
 

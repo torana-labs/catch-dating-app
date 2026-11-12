@@ -39,6 +39,7 @@ export const outputPaths = Object.freeze({
   functions: "functions/src/shared/generated/marketCatalog.ts",
   dart: "packages/kernel/lib/market_catalog.dart",
   admin: "admin/src/shared/config/generated/marketCatalog.ts",
+  website: "website/src/content/markets/generated/catalog.ts",
   rules: "firestore.rules",
 });
 
@@ -113,6 +114,50 @@ export const generatedMarketCities = ${JSON.stringify(cities, null, 2)} as const
 
 /** Countries Catch serves. */
 export const generatedMarketCountries = ${JSON.stringify(countryRecordsFromCatalog(catalog), null, 2)} as const;
+`;
+}
+
+const titleCase = (slug) => slug.split("-")
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+
+/**
+ * Cities the public website lists (websiteListed), in catalog order. Aliases
+ * are the human spellings listings use ("New Delhi", "Bangalore");
+ * legacySlugs are the website's retired path slugs, which redirect.
+ */
+export function websiteCitiesFromCatalog(catalog) {
+  return catalog.cities.filter((city) => city.surfaces.websiteListed)
+    .map((city) => {
+      const aliases = Array.from(new Set([city.cityLabel, ...city.aliases.map(titleCase)]))
+        .filter((alias) => alias.toLowerCase() !== city.label.toLowerCase());
+      const legacySlugs = (city.legacyIds ?? [])
+        .map((id) => id.replace(/^[a-z]{2}-/u, ""))
+        .filter((slug) => slug !== city.slug);
+      return {
+        id: city.marketId,
+        slug: city.slug,
+        marketSlug: city.slug,
+        label: city.label,
+        aliases,
+        legacySlugs,
+        timezone: city.timeZone,
+        status: city.lifecycle,
+        ...(city.launchDate === undefined ? {} : {launchDate: city.launchDate}),
+        countryIsoCode: city.countryIsoCode,
+      };
+    });
+}
+
+export function renderWebsiteModule(catalog) {
+  return `${tsHeader}
+// Website code reads cities and countries from here, never from contracts/:
+// the release smoke runs website modules where only website/ resolves.
+
+/** Countries in the market catalog. */
+export const generatedWebsiteCountries = ${JSON.stringify(countryRecordsFromCatalog(catalog), null, 2)} as const;
+
+/** Cities the website lists, in display order, with their lifecycle as status. */
+export const generatedWebsiteCities = ${JSON.stringify(websiteCitiesFromCatalog(catalog), null, 2)} as const;
 `;
 }
 
@@ -257,6 +302,7 @@ export function outputs(catalog, root = repoRoot) {
     {path: outputPaths.functions, content: renderFunctionsModule(catalog)},
     {path: outputPaths.dart, content: renderDartModule(catalog)},
     {path: outputPaths.admin, content: renderAdminModule(catalog)},
+    {path: outputPaths.website, content: renderWebsiteModule(catalog)},
     {path: outputPaths.rules, content: renderRules(catalog, rules)},
   ];
 }

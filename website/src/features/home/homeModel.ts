@@ -1,6 +1,7 @@
 import type {CatchFormat, CatchBandGround} from "@catch/web-ui";
 import {homeFormats, homePageCopy as copy, otherFormatPoster} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {siteFooterCopy} from "@content/site";
 import type {HomeCity, HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
 
 const week = 7 * 24 * 60 * 60 * 1000;
@@ -14,8 +15,24 @@ export function weekPlans(plans: readonly HomePlan[], readAt: number): HomePlan[
   });
 }
 
+/**
+ * The picker's line under a city. A live city is open however quiet it is:
+ * it shows its honest count, or "New" before its first plan this week.
+ */
 export function cityStatusLabel(city: HomeCity) {
-  return city.status === "live" ? fill(copy.header.liveStatus, {count: city.weekPlanCount}) : copy.header.soonStatus;
+  if (city.status !== "live") return copy.header.soonStatus;
+  if (city.weekPlanCount === 0) return copy.header.newStatus;
+  if (city.weekPlanCount === 1) return copy.header.liveStatusOne;
+  return fill(copy.header.liveStatus, {count: city.weekPlanCount});
+}
+
+/** The footer's note after a city: "2 plans this week", "new" or "soon". */
+export function cityFooterNote(city: HomeCity) {
+  const notes = siteFooterCopy.cityNotes;
+  if (city.status !== "live") return siteFooterCopy.soon;
+  if (city.weekPlanCount === 0) return notes.new;
+  if (city.weekPlanCount === 1) return notes.plan;
+  return fill(notes.plans, {count: city.weekPlanCount});
 }
 
 const formatName = (format: HomeFormat) => homeFormats.find((item) => item.format === format)?.name;

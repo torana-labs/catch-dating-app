@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.193.0
+version: 1.194.0
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -5449,8 +5449,9 @@ organisers in the city and whether the city is `live` or `launchingSoon`
 - Every launched and planned market in `functions/src/locations/marketConfig.ts`
   has a document. A launched city is built only from its
   `organizerPublicPage` documents, so it adds no publication rule of its own.
-- A launched city reads as `launchingSoon` until it has four plans in the
-  window, so a thin city never renders a sparse page.
+- A launched city is `live` however few plans it has; the website shows the
+  honest count ("2 plans this week", or "new" before the first). Only a city
+  that has not launched reads as `launchingSoon`.
 - A planned city has no plans. It lists the published organisers joining it,
   projected under the organiser page rules with that city treated as live.
   They carry no page link, because their pages stay withheld until the city

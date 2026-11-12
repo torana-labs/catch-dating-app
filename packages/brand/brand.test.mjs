@@ -195,4 +195,6 @@ test("the launch gate names the Consumer store slots a live market lacks", async
   assert.equal(launchGateMessage(launchGateGaps(none, [{id: "b", status: "waitlist"}])), null, "no live city, no gate");
   const marketCities = await loadMarketCities(repoRoot);
   assert.ok(marketCities.length > 0 && marketCities.every((city) => typeof city.status === "string"));
+  assert.deepEqual(marketCities.filter((city) => city.status === "live").map((city) => city.id),
+    ["in-mh-mumbai", "in-mp-indore"], "the gate reads catalog lifecycles");
 });

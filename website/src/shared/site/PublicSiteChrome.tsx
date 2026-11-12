@@ -126,6 +126,8 @@ export interface SiteFooterCity {
   label: string;
   /** Not yet open: the column marks it "soon". */
   soon: boolean;
+  /** The city's own note, such as "2 plans this week"; it replaces "soon". */
+  note?: string;
 }
 
 /**
@@ -150,7 +152,7 @@ export function PublicSiteFooter({appHref, cities, exploreHref, tagline = siteFo
   const help = siteFooterCopy.helpOrder.map((href) => siteFooterLegalLinks.find((link) => link.href === href)!);
   const groups: CatchSiteFooterGroup[] = [
     {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, organisers, {...app, href: appHref ?? app.href}]},
-    ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.soon ? siteFooterCopy.soon : undefined}))}] : []),
+    ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
     {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
     {title: siteFooterCopy.groups.help, links: help, trailing: <PrivacyChoicesButton tone="link" />},
   ];

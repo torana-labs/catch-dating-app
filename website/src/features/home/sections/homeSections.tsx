@@ -32,7 +32,7 @@ import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot"
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {cityStatusLabel} from "../homeModel";
+import {cityFooterNote, cityStatusLabel} from "../homeModel";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {cityPagePath} from "./cityChrome";
@@ -378,7 +378,8 @@ function HomeFaq() {
 function HomeFooter({home}: {home: Home}) {
   return (
     <PublicSiteFooter appHref="#app" exploreHref={home.exploreHref}
-      cities={home.cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live"}))} />
+      cities={home.cities.map((item) => ({href: cityPagePath(item.slug), label: item.label, soon: item.status !== "live",
+        note: cityFooterNote(item)}))} />
   );
 }
 

@@ -78,7 +78,7 @@ describe("public form model", () => {
     const city = {...question("city", "Home city", "shortText", false),
       canonicalFieldId: "city" as const, answerDestination: "catchProfile" as const};
     const cities = [{marketId: "in-mh-mumbai", cityId: "city-mumbai",
-      label: activeMarket.cities.find((city) => city.id === "in-mumbai")!.label,
+      label: activeMarket.cities.find((city) => city.id === "in-mh-mumbai")!.label,
       regionName: "Maharashtra", countryIsoCode: "IN"}];
     expect(answerSummary(city, "in-mh-mumbai", cities)).toBe("Mumbai, Maharashtra");
     expect(answerSummary(city, "city-mumbai", cities)).toBe("city-mumbai");

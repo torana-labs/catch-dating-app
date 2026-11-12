@@ -53,6 +53,8 @@ export const siteFooterCopy = {
   helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/"],
   /** A city not yet open: "Pune · soon". */
   soon: "soon",
+  /** An open city's note: "Mumbai · 2 plans this week", or "new" before its first plan. */
+  cityNotes: {plans: "{count} plans this week", plan: "1 plan this week", new: "new"},
 } as const;
 
 /**
