@@ -131,6 +131,15 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 
+  it("reads a quiet open city as new and open, never as zero", () => {
+    const quiet = {...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, planCount: 0, plans: []}};
+    render(<HomePage captures={captures} catalog={quiet} />);
+    const week = within(screen.getByRole("region", {name: "This week in Mumbai"}));
+    expect(week.getByText("New in Mumbai")).toBeTruthy();
+    expect(week.getByText("Nothing on in Mumbai this week yet. New plans go up as hosts add them.")).toBeTruthy();
+    expect(screen.queryByText(/^0 /)).toBeNull();
+  });
+
   it("lists the open cities in the footer with their plans this week, then More cities", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));

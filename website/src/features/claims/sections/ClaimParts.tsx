@@ -96,7 +96,7 @@ export function ClaimGuidance() {
       <CatchAccordion items={claimGuidance.items.map((item) => ({title: item.question, body: item.answer}))} size="md" />
       <CatchStack direction="row" gap={8} wrap>
         <CatchButton href="/help/" label={claimGuidance.help} size="sm" variant="secondary" />
-        <CatchButton href="/host/apply/" label={claimGuidance.pilot} size="sm" variant="quiet" />
+        <CatchButton href="/host/#start" label={claimGuidance.trial} size="sm" variant="quiet" />
       </CatchStack>
     </CatchStack>
   );

@@ -6,6 +6,9 @@ const retiredDestinations: Readonly<Record<string, string>> = {
   overview: "/", platform: "/host/#features", workflows: "/host/#how-it-works",
   planners: "/host/#use-cases", mixers: "/host/#use-cases", clubs: "/host/#use-cases",
   stack: "/host/#existing-tools", directory: "/organizers/", claim: "/claim/", preview: "/host/",
+  // The host pilot application retired (owner decision, 12 Nov 2026): Catch
+  // Host is a free trial that starts in the app, from the landing's Start band.
+  apply: "/host/#start",
 };
 
 /**
@@ -30,7 +33,7 @@ export function retiredMarketingDestination(location: {pathname: string; search:
   const slug = /^\/host\/([^/]+)(?:\/|$)/.exec(location.pathname)?.[1];
   let destination = slug ? retiredDestinations[slug] : undefined;
   if (/^\/host\/?$/.test(location.pathname)) {
-    if (location.hash === "#founding-hosts") destination = "/host/apply/";
+    if (location.hash === "#founding-hosts") destination = "/host/#start";
     if (location.hash === "#workflow") destination = "/host/#how-it-works";
   }
   if (location.pathname === "/" && ["#waitlist", "#events", "#formats", "#members", "#hosts", "#trust", "#download-app"].includes(location.hash)) {
