@@ -17,6 +17,7 @@ function responder(base, change = () => {}) {
     const titles = {"/": homePageCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": explorePageCopy.lead, "/mumbai/": explorePageCopy.lead};
     if (titles[path]) body = `<h1>${titles[path]}</h1>`;
     if (path === "/organizers/?q=run") {status = 301; headers.location = `${base}/explore/?q=run&show=organisers`;}
+    if (path === "/host/apply/") {status = 301; headers.location = `${base}/host/#start`;}
     if (path === "/api/public-catalog") body = JSON.stringify({listings: [{path: "/organizers/mumbai/club/", catchEvents: [{id: "event"}]}]});
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";

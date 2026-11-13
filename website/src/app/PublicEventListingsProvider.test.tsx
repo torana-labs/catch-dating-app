@@ -14,7 +14,7 @@ describe("public discovery feed", () => {
     render(<MemoryRouter initialEntries={[route]}><PublicEventListingsProvider><span /></PublicEventListingsProvider></MemoryRouter>);
     expect(feed).toHaveBeenLastCalledWith(true);
   });
-  it.each(["/host/", "/host/apply/", "/claim/", "/booking/private-event"])("does not load discovery for %s", (route) => {
+  it.each(["/host/", "/claim/", "/booking/private-event"])("does not load discovery for %s", (route) => {
     render(<MemoryRouter initialEntries={[route]}><PublicEventListingsProvider><span /></PublicEventListingsProvider></MemoryRouter>);
     expect(feed).toHaveBeenLastCalledWith(false);
   });
