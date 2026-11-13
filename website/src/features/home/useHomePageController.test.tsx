@@ -27,4 +27,17 @@ describe("useHomePageController", () => {
     result.current.chooseCity("mumbai");
     expect(navigate).toHaveBeenCalledWith("/?city=mumbai");
   });
+
+  it("reads a quiet open city as open: no zero counts, no '0 of 0 plans shown'", () => {
+    const quiet = {...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, planCount: 0, plans: []}};
+    const {result} = renderHook(() => useHomePageController(quiet));
+    expect(result.current.live).toBe(true);
+    expect(result.current.tiles.map((tile) => tile.kicker)).toEqual(Array(5).fill("In Mumbai"));
+    expect(result.current.note).toBe("Nothing on in Mumbai this week yet. New plans go up as hosts add them.");
+  });
+
+  it("keeps a waitlist city's tiles on its launch line", () => {
+    const {result} = renderHook(() => useHomePageController(puneLaunchingSoonCatalog));
+    expect(result.current.tiles.map((tile) => tile.kicker)).toEqual(Array(5).fill("Coming to Pune"));
+  });
 });

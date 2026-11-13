@@ -47,7 +47,7 @@ async function check(path, status, needle) {
 }
 let browser;
 try {
-  for (const path of ["/", "/explore/", "/host/", "/host/apply/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/", "/organizers/"]) await check(path, 200, "<h1");
+  for (const path of ["/", "/explore/", "/host/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/", "/organizers/"]) await check(path, 200, "<h1");
   await check("/", 200, "Next proof organizer");
   await check("/claim/", 200, "Next proof organizer");
   const listing = await check("/organizers/next-proof/", 200, "Next proof organizer");
@@ -81,6 +81,9 @@ try {
   assert.equal(alias.response.headers.get("location"), "/organizers/next-proof/?utm_source=proof");
   const retired = await check("/host/platform/?utm_source=proof", 301);
   assert.equal(retired.response.headers.get("location"), "/host/?utm_source=proof#features");
+  // The host pilot application retired: Catch Host's free trial starts in the app.
+  const application = await check("/host/apply/?utm_source=proof", 301);
+  assert.equal(application.response.headers.get("location"), "/host/?utm_source=proof#start");
   for (const family of ["join", "booking", "event-update", "rehearse", "invite", "rsvp", "f", "demo"]) {
     const {response, text} = await check(`/${family}/private-proof-token/?grant=private-proof-grant`, 200);
     assert(!text.includes("private-proof-token") && !text.includes("private-proof-grant") && !text.includes("self.__next_f"));

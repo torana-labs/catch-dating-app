@@ -1161,7 +1161,8 @@ test("Admin and Host releases validate for themselves unless the queue passed th
   assert.match(admin.split("\n  queue-validation:\n")[1].split("\n  validate:")[0],
     /find-queue-validation[\s\S]*admin \/ Validate admin website/u);
   const adminValidate = admin.split("\n  validate:\n")[1].split("\n  package:")[0];
-  assert.match(adminValidate, /!cancelled\(\) && needs\.queue-validation\.outputs\.validated != 'true'/u);
+  assert.match(adminValidate,
+    /!cancelled\(\) && needs\.queue-validation\.outputs\.superseded != 'true' && needs\.queue-validation\.outputs\.validated != 'true'/u);
   assert.match(admin.split("\n  package:\n")[1].split("\n  promote:")[0],
     /needs\.validate\.result == 'skipped' && needs\.queue-validation\.outputs\.validated == 'true'/u);
 

@@ -2,7 +2,7 @@
 import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 import previewCards from "../content/previewCards.json" with {type: "json"};
-import {pageMeta, pageMetaForHostPath} from "../app/pageMeta";
+import {pageMeta} from "../app/pageMeta";
 import {activityMeta} from "../content/marketing";
 import {previewCardFor, previewCardImage, type PreviewCardId} from "./previewCards";
 import {brand} from "@catch/brand";
@@ -21,7 +21,6 @@ describe("link-preview cards", () => {
     expect(previewCardFor(pageMeta.home.canonicalPath)).toBe("home");
     expect(previewCardFor(pageMeta.visitor_discovery.canonicalPath)).toBe("home");
     expect(previewCardFor(pageMeta.host.canonicalPath)).toBe("host");
-    expect(previewCardFor(pageMetaForHostPath("/host/apply/")!.canonicalPath)).toBe("apply");
     expect(previewCardFor(pageMeta.claim.canonicalPath)).toBe("claim");
     expect(previewCardFor(pageMeta.organizers.canonicalPath)).toBe("organizers");
     expect(previewCardFor(pageMeta.public_form.canonicalPath)).toBe("form");

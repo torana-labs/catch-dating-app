@@ -90,12 +90,19 @@ jobs:
       actions: read
       contents: read
     outputs:
+      superseded: ${{ steps.superseded.outputs.superseded }}
       validated: ${{ steps.queue.outputs.validated }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
+      - name: Skip work a newer main push run of this workflow supersedes
+        id: superseded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/superseded_push_run.mjs
       - id: queue
+        if: ${{ steps.superseded.outputs.superseded != 'true' }}
         uses: ./.github/actions/find-queue-validation
         with:
           jobs: |
@@ -105,7 +112,7 @@ jobs:
     name: Validate admin website
     needs: queue-validation
     if: >-
-      ${{ !cancelled() && needs.queue-validation.outputs.validated != 'true' &&
+      ${{ !cancelled() && needs.queue-validation.outputs.superseded != 'true' && needs.queue-validation.outputs.validated != 'true' &&
           (github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '') }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
@@ -117,7 +124,7 @@ jobs:
     name: Package exact admin Hosting bytes
     needs: [queue-validation, validate]
     if: >-
-      ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      ${{ !cancelled() && needs.queue-validation.outputs.superseded != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
           (needs.validate.result == 'success' ||
            (needs.validate.result == 'skipped' && needs.queue-validation.outputs.validated == 'true')) }}
     uses: ./.github/workflows/_web-hosting-build.yml

@@ -16,10 +16,10 @@ export const productionProbeContracts = [
     markers: ["Find runs, dinners, games and nights out in your city"],
   },
   {
+    // The host pilot application retired: Catch Host's trial starts in the app.
     path: "/host/apply/",
-    title: "Apply for a pilot | Catch Host",
-    canonicalPath: "/host/apply/",
-    markers: ["Catch reviews each pilot application"],
+    status: 301,
+    location: "/host/#start",
   },
   {
     // The directory is Explore's organisers view (CAT-261).
