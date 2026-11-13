@@ -277,34 +277,6 @@
   border-radius: var(--catch-radius-pill);
 }
 
-.profile-strength {
-  display: grid;
-  gap: 7px;
-  min-width: 96px;
-  color: var(--website-text-muted);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.profile-strength i {
-  display: block;
-  height: 7px;
-  overflow: hidden;
-  border: var(--catch-stroke-hairline) solid var(--website-line);
-  border-radius: var(--catch-radius-pill);
-  background: var(--website-raised);
-}
-
-.profile-strength b {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--website-text);
-}
-
 .organizer-search-stats {
   display: flex;
   flex-wrap: wrap;

@@ -1,14 +1,16 @@
 name: Website Release
 
-# The release train from main to the production website. After main CI succeeds (and
-# hourly, in case an event was missed), it previews main's validated head, by
-# commit, with the existing Next Website Preview workflow, so merges landing
-# meanwhile never strand it. It passes the prod environment's gate
+# The release train from main to the production website. After main CI
+# completes (and hourly, in case an event was missed), it previews the newest
+# commit of main newer than live whose own CI passed with website validation,
+# by commit, with the existing Next Website Preview workflow. That is often not
+# main's head: on a busy day the head's CI has rarely finished (owner
+# decision, 12 Nov 2026). It passes the prod environment's gate
 # (no required reviewer since 30 Oct 2026; add one to approve releases by
 # hand again), then promotes that exact preview
 # with Next Website Promotion. Both workflows keep every check of their own.
-# When the website changed since live but main's head ran no website
-# validation of its own, the train first runs full CI on that head.
+# When no such commit exists but the website changed since live, the train
+# first runs CI on main's head, planned over every commit since live.
 # Trains queue rather than cancel, so an approval is never reset by a newer
 # merge; the newest pending train waits behind it. Operator guide:
 # docs/web_surface_architecture.md, "Release train".
@@ -31,7 +33,7 @@ concurrency:
 
 jobs:
   plan:
-    name: Decide whether main's head should be released
+    name: Decide which validated commit of main to release
     if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event.workflow_run.event)) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -43,6 +45,7 @@ jobs:
       release: ${{ steps.plan.outputs.release }}
       validate: ${{ steps.plan.outputs.validate }}
       source_sha: ${{ steps.plan.outputs.source_sha }}
+      live_sha: ${{ steps.plan.outputs.live_sha }}
     steps:
       # Full history: Nx compares live with main's head.
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -58,12 +61,11 @@ jobs:
       - id: plan
         env:
           GH_TOKEN: ${{ github.token }}
-          EVENT_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           EVENT_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: node website/scripts/next/releaseTrain.mjs plan
 
   validate:
-    name: Validate main's head with full CI
+    name: Validate main's head with CI planned from live
     needs: plan
     if: ${{ needs.plan.outputs.validate == 'true' }}
     runs-on: ubuntu-24.04
@@ -84,6 +86,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          LIVE_SHA: ${{ needs.plan.outputs.live_sha }}
         run: node website/scripts/next/releaseTrain.mjs validate
 
   preview:

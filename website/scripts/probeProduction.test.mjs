@@ -72,9 +72,17 @@ test("production probes check the retired directory's redirect to Explore", asyn
   assert.equal(elsewhere.ok, false);
 });
 
+test("production probes check the retired host application's redirect to the trial", async () => {
+  const application = productionProbeContracts.find((entry) => entry.path === "/host/apply/");
+  assert.deepEqual(application, {path: "/host/apply/", status: 301, location: "/host/#start"});
+  const result = await probePage({baseUrl: brand.web.origin, contract: application, timeoutMs: 100,
+    fetchImpl: async () => new Response(null, {status: 301, headers: {location: `${brand.web.origin}/host/#start`}})});
+  assert.deepEqual(result.findings, []);
+});
+
 test("production probes follow the canonical organiser and preserved visitor metadata", () => {
   const meta = JSON.parse(fs.readFileSync(new URL("../src/content/meta.json", import.meta.url), "utf8"));
-  for (const [path, routeId] of [["/", "home"], ["/explore/", "visitor_discovery"], ["/host/apply/", "host_apply"]]) {
+  for (const [path, routeId] of [["/", "home"], ["/explore/", "visitor_discovery"]]) {
     const probe = productionProbeContracts.find((entry) => entry.path === path);
     const route = meta.routes[routeId];
     assert.ok(probe, `missing production probe for ${path}`);

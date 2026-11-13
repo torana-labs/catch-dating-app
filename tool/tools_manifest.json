@@ -7003,6 +7003,33 @@
       "role": "gate"
     },
     {
+      "id": "ci:superseded-push-run",
+      "category": "ci",
+      "path": "tool/ci/superseded_push_run.mjs",
+      "command": "node tool/ci/superseded_push_run.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/host-website.yml",
+        "tool/ci/superseded_push_run.mjs",
+        "tool/ci/superseded_push_run.test.mjs"
+      ],
+      "description": "Skips a website push run's validation, packaging and promotion once a newer main push run of the same workflow exists; every run is still admitted, and the check fails open.",
+      "checks": [
+        "node --check tool/ci/superseded_push_run.mjs",
+        "node --test tool/ci/superseded_push_run.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",
