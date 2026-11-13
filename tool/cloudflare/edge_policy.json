@@ -4,10 +4,7 @@
   "description": "Free-plan Cloudflare protection in front of catchdates.com. Search engines and link previews stay welcome; scripted bulk reading of organizer and event pages is challenged or slowed. Rules this tool owns start with the managed prefix; anything else in the zone is left alone.",
   "managedPrefix": "catch-edge: ",
   "dns": {
-    "proxied": [
-      "catchdates.com",
-      "www.catchdates.com"
-    ]
+    "proxied": ["catchdates.com", "www.catchdates.com"]
   },
   "settings": {
     "ssl": "strict",
@@ -42,10 +39,7 @@
         "action": "block",
         "expression": "(http.request.uri.path contains \"/organizers/\" or http.request.uri.path contains \"/events/\" or http.request.uri.path contains \"/og/\")",
         "ratelimit": {
-          "characteristics": [
-            "cf.colo.id",
-            "ip.src"
-          ],
+          "characteristics": ["cf.colo.id", "ip.src"],
           "period": 10,
           "requests_per_period": 40,
           "mitigation_timeout": 10
