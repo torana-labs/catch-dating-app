@@ -91,10 +91,10 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 55
+      "count": 50
     },
     "declaration-property-value-allowed-list": {
-      "count": 21
+      "count": 20
     }
   },
   "src/styles/public-forms.css": {

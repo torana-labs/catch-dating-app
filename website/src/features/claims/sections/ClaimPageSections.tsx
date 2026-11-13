@@ -74,7 +74,7 @@ export function ClaimSearchSection({controller}: {controller: ClaimFlowControlle
         ))}
       </CatchSection>
       <CatchStack align="start">
-        <CatchButton href="/host/apply/" label={searchResults.length ? websiteCopy["claimpagesections_0064"] : websiteCopy["claimpagesections_0090"]}
+        <CatchButton href="/host/#start" label={searchResults.length ? websiteCopy["claimpagesections_0064"] : websiteCopy["claimpagesections_0090"]}
           size="sm" variant="quiet" />
       </CatchStack>
     </CatchStack>
@@ -122,7 +122,7 @@ export function ClaimUrlStateSection({
         actions={[
           {href: listing.path, label: websiteCopy["claimpagesections_0099"]},
           {href: "/claim/", label: websiteCopy["claimpagesections_0084"]},
-          {href: "/host/apply/", label: websiteCopy["claimpagesections_0090"]},
+          {href: "/host/#start", label: websiteCopy["claimpagesections_0090"]},
         ]}
         body={websiteCopy["claimpagesections_0040"]}
         items={[
@@ -142,7 +142,7 @@ export function ClaimUrlStateSection({
         actions={[
           {href: listing.path, label: websiteCopy["claimpagesections_0099"]},
           {href: "/claim/", label: websiteCopy["claimpagesections_0084"]},
-          {href: "/host/apply/", label: websiteCopy["claimpagesections_0034"]},
+          {href: "/host/#start", label: websiteCopy["claimpagesections_0034"]},
         ]}
         body={websiteCopy["claimpagesections_0041"]}
         items={[
@@ -179,7 +179,7 @@ export function ClaimUrlStateSection({
       actions={[
         {href: "/claim/", label: websiteCopy["claimpagesections_0084"]},
         {href: "/organizers/", label: websiteCopy["claimpagesections_0070"]},
-        {href: "/host/apply/", label: websiteCopy["claimpagesections_0090"]},
+        {href: "/host/#start", label: websiteCopy["claimpagesections_0090"]},
       ]}
       body={websiteCopy["claimpagesections_0093"]}
       items={[

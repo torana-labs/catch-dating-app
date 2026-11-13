@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.26.0
+version: 0.27.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -370,22 +370,21 @@ The website is already split out of the old monolithic shell:
   blocked by `web:react-component-governance`.
 - `website/src/features/host/HostPage.tsx` is the single canonical host route.
   `/host/preview{,/**}` is retired at Firebase Hosting with a permanent redirect
-  to `/host/`. `HostPage.tsx` composes the board's bands itself, and
-  `HostApplicationPage.tsx` renders `/host/apply/`. The pre-#704 host sections
+  to `/host/`. `HostPage.tsx` composes the board's bands itself. `/host/apply/` retired
+  (12 Nov 2026) with a permanent redirect to `/host/#start`: Catch Host is a
+  free trial that starts in the app. The pre-#704 host sections
   were retired in CAT-218; Linear CAT-224 records their copy. The public route starts with an external guest
   list and a no-download attendee runtime; Catch-native booking, member
   profiles, chats, and network effects stay below the explicit coming-later
   boundary.
-  Host application form state lives under `website/src/features/host/application/**`.
 - The remaining legacy-named `HostPreviewSection`, `HostPreviewSectionHead`
   and `HostPreviewFaqList` primitives serve the claim page;
   no preview route or preview feature owner remains. New public concepts use
   Host or Playbook names and must not recreate the retired route boundary.
-- Shared Host Application flow shells live in
+- Shared Host Application flow shells remain in
   `website/src/shared/ui/primitives/` as `HostApplication*` and
-  `OperationalNote`. `HostApplicationFlow.tsx` owns the form state and field
-  choices, but configures shared flow shells instead of rendering raw
-  `host-application*`, `submitted-panel__mark`, or `operational-note` markup.
+  `OperationalNote`, covered by their RouteShellPrimitives story; no route
+  renders them since `/host/apply/` retired.
 - Shared app capture card shells live in
   `website/src/shared/ui/primitives/` as `CaptureCard`.
   Home and Host sections pass capture manifests and fallback labels to that
@@ -866,10 +865,6 @@ website/src/
       sections/
     host/
       HostPage.tsx
-      application/
-        HostApplicationFlow.tsx
-        applicationModel.ts
-        useHostApplicationController.ts
       sections/
         HostPageSections.tsx
     organizers/
@@ -1013,11 +1008,9 @@ website/src/
 
 3. Keep `HostPages` split.
 
-   `/host/` and `/host/apply/` now live in route-specific files
-   (`HostPage.tsx`, `HostApplicationPage.tsx`). Shared host sections live under
-   `features/host/sections/` and the host application flow lives under
-   `features/host/application/`. No `HostPages` barrel remains; import the
-   route files directly.
+   `/host/` lives in its route file (`HostPage.tsx`); `/host/apply/` retired
+   to a redirect. Shared host sections live under `features/host/sections/`.
+   No `HostPages` barrel remains; import the route files directly.
 
 4. Keep shared site primitives split.
 
@@ -1231,12 +1224,13 @@ is "Other". What reaches Cloud Run:
 
 | Hop | Location headers |
 |---|---|
-| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` only with the "Add visitor location headers" managed transform, which `tool/cloudflare/edge_policy.json` does not enable. Turning it on is an edge-policy change to propose there, not a website change. |
+| Cloudflare (proxied DNS) | `CF-IPCountry` always. `cf-ipcity`, `cf-region-code`, `cf-iplatitude` and `cf-iplongitude` from the "Add visitor location headers" managed transform, which the owner turned on in the dashboard and `tool/cloudflare/edge_policy.json` records under `declared`. |
 | Firebase Hosting (Fastly) | Adds none. Whether it forwards Cloudflare's `cf-*` request headers to Cloud Run is not yet measured. |
 | Cloud Run | Adds none; Next reads the request headers as forwarded. |
 
-So today the guess is country-level at best: an Indian visitor gets India's
-default city, as before. The endpoint logs, once per server instance for each
+Until the Fastly hop is measured to forward the city and coordinate headers,
+expect the guess to be country-level: an Indian visitor gets India's default
+city, as before. The endpoint logs, once per server instance for each
 distinct set, which location header names arrived and what the guess rested on
 (`website_city_guess_headers`), never their values; that log is the measurement
 for the Fastly hop.
@@ -1248,7 +1242,10 @@ logged or sent. A city picked or found this way is remembered in
 `localStorage` (`catch_city_choice_v1`, the slug and how it was reached:
 `picked` or `precise`), which is essential storage for a choice the visitor
 made, not consented measurement. The source (`CitySource`) is what the
-waitlist contract's `citySource` records. The privacy page says what is
+waitlist contract's `citySource` records: the launching-soon "Tell me when it
+opens" form sends the city's catalog `cityId` and `countryIsoCode`, and
+`citySource` when the page knows how it reached the city, beside the label in
+`city`, so `joinWaitlist` counts interest by city. The privacy page says what is
 inferred. An unavailable catalogue does
 not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback
@@ -1264,11 +1261,9 @@ this consolidation does not rename organiser or event URLs.
 `/host/` is the RbWebHostV2 board on the system; its retired-route anchors
 (`#features`, `#use-cases`, `#how-it-works`, `#existing-tools`, `#pricing`) sit on
 the bands that now carry that content (kinds of night, the night, layers,
-pricing). `content/hostProduct.ts` holds only the application page's copy;
-supported pilot copy remains in `content/host.ts`. Layers are not published
-commercial tiers. `/host/apply/` is the sole five-stage pilot intake, reusing the
-existing application controller and HTTP contracts; the landing's step-1 card
-links to it. Applying does not book a call or grant a workspace.
+pricing). Layers are not published commercial tiers. Catch Host is a free trial
+that starts in the app from the landing's start band; `/host/apply/`, the
+retired pilot intake, redirects permanently to `/host/#start`.
 
 `/organizers/` owns real directory search; `/claim/` and `/claim/:listing`
 own the existing claim flow and explanatory guidance in `content/claimGuidance.ts`.
@@ -1343,12 +1338,12 @@ ownership without recreating duplicate marketing destinations.
 white ground: hero, kinds of night, a night on Catch (chapters on a joined
 timeline with the phone following), the iPad, the applicant board (replayable),
 guests, growth links, layers (a segmented control over what Catch runs), pricing
-(a slider over the 5% fee capped at ₹10,000), the FAQ and the step-1
-application card, then the short footer. `src/content/hostLanding.ts` owns the
+(a slider over the 5% fee capped at ₹10,000), the FAQ and the free-trial start
+band, then the short footer. `src/content/hostLanding.ts` owns the
 board's copy; `features/host/HostPage.tsx` composes the bands and
 `useHostLandingController.ts` owns their state. The page has no stylesheet of its
 own. Examples are illustrative and execute no booking, messaging, grouping or
-payment. The card's Continue opens `/host/apply/`, the only acquisition form.
+payment. The start band's store badges begin the free trial in the app.
 
 ### Catch for weddings
 
