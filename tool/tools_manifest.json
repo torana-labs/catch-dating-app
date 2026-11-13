@@ -7047,6 +7047,26 @@
       "role": "gate"
     },
     {
+      "id": "ci:main-red-alert",
+      "category": "ci",
+      "path": "tool/ci/main_red_alert.mjs",
+      "command": "node tool/ci/main_red_alert.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/main-red-alert.yml",
+        "tool/ci/main_red_alert.mjs",
+        "tool/ci/main_red_alert.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
+      ],
+      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run.",
+      "checks": [
+        "node --check tool/ci/main_red_alert.mjs",
+        "node --test tool/ci/main_red_alert.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",

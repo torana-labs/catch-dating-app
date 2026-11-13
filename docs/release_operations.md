@@ -2036,6 +2036,18 @@ If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
+### Main CI alert
+
+A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
+no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
+driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
+completes. It keeps one open issue titled "Main CI is red": opened on the
+first failure, naming the failed gating jobs (Required CI) and reporting
+jobs separately; commented on each further failure; closed with a comment on
+the next green run. Opening the issue notifies repository watchers. Cancelled
+runs change nothing. Fix forward on main; never close the issue by hand
+while main is still red.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
