@@ -15,7 +15,6 @@ import {
   pageClassFor,
   pageMeta,
   pageMetaForEvent,
-  pageMetaForHostPath,
   pageMetaForWeddingsPath,
   pageMetaForListing,
   type PageKey,
@@ -75,7 +74,6 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/programmes/ProgrammeFamilyPage.tsx",
   "../features/forms/PublicFormPage.tsx",
   "../features/organizers/HostListingPage.tsx",
-  "../features/host/HostApplicationPage.tsx",
   "../features/host/HostPage.tsx",
   "../features/weddings/WeddingsPage.tsx",
   "../features/weddings/WeddingsApplicationPage.tsx",
@@ -169,9 +167,6 @@ const PublicFormPage = route(async () => ({
 const HostListingPage = route(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
 }), "../features/organizers/HostListingPage", "HostListingPage");
-const HostApplicationPage = route(async () => ({
-  default: (await import("../features/host/HostApplicationPage")).HostApplicationPage,
-}), "../features/host/HostApplicationPage", "HostApplicationPage");
 const HostPage = route(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
 }), "../features/host/HostPage", "HostPage");
@@ -244,7 +239,7 @@ function CanonicalMarketingRouteShell() {
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
-    pageMetaForHostPath(location.pathname) ?? pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
+    pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
 
   useMarketingAnalytics(page, routeKey);
   useDocumentMeta(meta);
@@ -260,7 +255,6 @@ function CanonicalMarketingRouteShell() {
             page === "programme_link" ? "" : location.hash}
         />
         <Routes>
-          <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
           <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
           <Route path={marketingRoutePaths.weddings} element={<WeddingsPage captures={marketingCaptures} />} />
           <Route path={marketingRoutePaths.sales_demo}
