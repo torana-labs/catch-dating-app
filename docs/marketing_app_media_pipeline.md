@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.19.0
+version: 1.20.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -253,8 +253,12 @@ fingerprint replaces the ancestry rule, so a render from a squash-merged pull
 request is reused on main and in the merge queue. If nothing is stale, the Linux reuse job packages those PNGs with no
 Flutter, no font and no macOS runner. Otherwise the macOS render job renders
 what is stale and reuses the rest, checking each seed's font against its own.
-The nightly run always renders everything, which re-checks the macOS font
-that a Linux reuse cannot see. Both producers publish the same bundle and
+Linux cannot see the macOS font or runner image, so on the nightly run a
+one-step macOS job (`native_probe`) hashes `/System/Library/Fonts/SFNS.ttf` and
+reads the runner's `ImageVersion`. Each PNG records the runner image it was
+rendered on (`runnerImage`) next to its font hash. The nightly renders
+everything only when a reused PNG's font or runner image differs from the
+probe's, or either is unknown; otherwise it plans like any other run. Both producers publish the same bundle and
 binding; neither trusts the plan, and both verify every seed as they verify a
 committed PNG. Required Marketing validation imports its
 immutable artifact before dependency setup, checks and builds. Tools imports
@@ -282,6 +286,20 @@ its actual built site and retains a separately named validation artifact with
 all capture/manifest byte comparisons. It uses real run identity but has no
 production promotion authority and makes no live-listing calls. Manual
 review/export remains available below. Never manually stamp old PNGs.
+
+### Weekly drift check
+
+`.github/workflows/marketing-captures-drift.yml` runs every Monday (and on
+demand) and never republishes. A Linux job finds the app capture PNGs main
+would reuse (`compare_capture_drift.mjs --plan`, the same planner), and a
+macOS job renders those captures afresh and compares the image hash each
+provenance records (`--compare`). Any difference fails the run, names the
+captures in the job summary and annotations, says whether the recorded inputs
+were the same (a missed input, such as a multi-hop const chain), and keeps
+both images for 14 days. Captures with no reusable render, or whose reused
+render used another native font, are listed as not compared. Web captures
+are not included: their inputs are a static import closure, without the
+recorded-input gap.
 
 ## Link-Preview Cards
 

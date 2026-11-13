@@ -31,6 +31,7 @@ function evaluate(expression, options) {
       sha: options.runSha, workflow_sha: options.workflowDefinitionSha, run_id: "123", run_attempt: "2"},
     env: {CAPTURE_SOURCE_SHA: options.sourceSha},
     inputs: {automatic_source_sha: "", ...options.event.inputs}, cancelled: () => false,
+    needs: {native_probe: {result: options.probeResult ?? "skipped", outputs: {}}},
     contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
   }, {timeout: 1000});
 }
@@ -457,6 +458,9 @@ test("actual job guard and source-keyed concurrency exclude unrelated PR metadat
   assert.doesNotMatch(source, /^concurrency:/mu, "ineligible jobs must never enter capture concurrency");
   const good = requestOptions(labelEvent());
   assert.equal(evaluate(guard, good), true);
+  // The nightly's native probe gates the plan only when it ran and failed.
+  assert.equal(evaluate(guard, {...good, probeResult: "success"}), true);
+  assert.equal(evaluate(guard, {...good, probeResult: "failure"}), false);
   assert.equal(evaluate(expression("CAPTURE_SOURCE_SHA"), good), good.event.pull_request.head.sha);
   assert.equal(evaluate(expression("CAPTURE_WORKFLOW_SHA"), good), good.event.pull_request.base.sha);
   assert.equal(evaluate(expression("CAPTURE_WORKFLOW_DEFINITION_SHA"), good), good.workflowDefinitionSha);
@@ -918,8 +922,8 @@ function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = [], t
     if (endpoint.endsWith(`/artifacts/${artifact.id}/zip`)) { assert.equal(options.binary, true); return zip; }
     throw new Error(`Unexpected endpoint ${endpoint}`);
   };
-  const plan = (eventName = "pull_request") => planHostedCaptures({sourceDir: f.root, sourceSha: f.options.sourceSha,
-    repository: "owner/repo", eventName, request});
+  const plan = (eventName = "pull_request", nativeProbe = null) => planHostedCaptures({sourceDir: f.root,
+    sourceSha: f.options.sourceSha, repository: "owner/repo", eventName, request, nativeProbe});
   return {...f, plan, endpoints};
 }
 
@@ -1022,11 +1026,22 @@ test("a capture the earlier bundle lacks, such as a new manifest slot, renders a
   assert.ok(!plan.seedIds.includes(added));
 });
 
-test("the nightly run renders everything and consults no earlier bundle", async t => {
+test("the nightly reuses unless the native font or macOS runner image changed, and fails closed", async t => {
+  const image = "macos-26-arm64/20261101.1";
+  const previous = process.env.ImageVersion;
+  process.env.ImageVersion = image; // The renders record the runner image they ran on.
+  t.after(() => { if (previous === undefined) delete process.env.ImageVersion; else process.env.ImageVersion = previous; });
   const h = seedHarness(t);
-  const plan = await h.plan("schedule");
-  assert.deepEqual(plan.renderIds.sort(), h.manifest.captures.map(c => c.id).sort());
-  assert.deepEqual([plan.seedIds, h.endpoints], [[], []]);
+  const font = crypto.createHash("sha256").update(fs.readFileSync(h.options.sfFont)).digest("hex");
+  const all = h.manifest.captures.map(c => c.id).sort();
+  let plan = await h.plan("schedule", {fontSha256: font, runnerImage: image});
+  assert.deepEqual([plan.render, plan.nativeChanged, plan.seedIds.length], [false, false, all.length]);
+  for (const probe of [{fontSha256: "0".repeat(64), runnerImage: image}, {fontSha256: font, runnerImage: "macos-26-arm64/20261201.1"},
+    {fontSha256: font, runnerImage: null}, null]) {
+    h.git("checkout", "--", ".");
+    plan = await h.plan("schedule", probe);
+    assert.deepEqual([plan.nativeChanged, plan.renderIds.sort()], [true, all], JSON.stringify(probe));
+  }
 });
 
 test("the plan command runs end to end as the workflow calls it", t => {

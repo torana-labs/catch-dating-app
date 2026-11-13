@@ -345,6 +345,9 @@ export function stampCapture(capture, captureId, fontPath, {executedFiles} = {})
     ...(web ? {} : {inputRecipe: INPUT_RECIPE, inputFiles: encodeInputFiles(inputFiles)}),
     inputSha256: captureInputHash(capture, inputFiles),
     nativeFontSha256: digest(fs.readFileSync(fontPath)),
+    // The macOS runner image the render ran on, so the nightly can tell
+    // whether a reused PNG predates a runner image change.
+    runnerImage: process.env.ImageVersion ?? null,
     imageSha256: digest(image),
   };
   const chunk = encodeChunk(chunkType, Buffer.from(JSON.stringify(provenance)));
