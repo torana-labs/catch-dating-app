@@ -8,7 +8,7 @@ const browser = await chromium.launch({headless: true});
 const results = [];
 try {
   for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 1000}]) {
-    for (const route of (process.env.NEXT_AUDIT_ROUTES?.split(",") ?? ["/", "/explore/", "/host/", "/organizers/", "/organizers/next-proof/", "/host/apply/"])) {
+    for (const route of (process.env.NEXT_AUDIT_ROUTES?.split(",") ?? ["/", "/explore/", "/host/", "/organizers/", "/organizers/next-proof/"])) {
       const context = await browser.newContext({viewport, reducedMotion: "reduce"});
       const page = await context.newPage();
       const errors = [];
