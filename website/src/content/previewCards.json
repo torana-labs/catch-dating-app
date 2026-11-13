@@ -4,52 +4,45 @@
   "cards": {
     "default": {
       "path": "/assets/og/default.png",
-      "version": "acbf366c925d",
+      "version": "1919689c778f",
       "alt": "Catch: Find something worth showing up for",
       "capture": null,
-      "inputHash": "acbf366c925de322bc8ea5bbbf38051f9e3193069893f8cffd1e6a24f0314ce4"
+      "inputHash": "1919689c778f93e72710af346d956873191c0dc624d0885d79777abac9141f9e"
     },
     "home": {
       "path": "/assets/og/home.png",
-      "version": "62dbd1930d57",
+      "version": "4606798e30bf",
       "alt": "Catch: Find something worth showing up for",
       "capture": null,
-      "inputHash": "62dbd1930d5706e68e3a433d36d29ed493dc486d1b64bc6d8f82ec577ff54216"
+      "inputHash": "4606798e30bf0ffd72210aa7b4272b8f474043198c92fc6e727310d6bfda299b"
     },
     "host": {
       "path": "/assets/og/host.png",
-      "version": "57e28646c4e3",
+      "version": "f6b48c60d3d6",
       "alt": "Catch Host: Run great events. Build a business around them.",
       "capture": "host-live-console",
-      "inputHash": "57e28646c4e3cc43303df6cf25da0010992be09c1d64c8354e3d1380a2534095"
-    },
-    "apply": {
-      "path": "/assets/og/apply.png",
-      "version": "43c7fe29d3af",
-      "alt": "Catch Host: Apply for a pilot",
-      "capture": "host-create-basics",
-      "inputHash": "43c7fe29d3afcb21a008acc86304a29a010a73b5c996c6c428c8ecbf90d3b120"
+      "inputHash": "f6b48c60d3d6a6d82e89988690c4bce48001be6bb63d64326e6e250498085f7b"
     },
     "claim": {
       "path": "/assets/og/claim.png",
-      "version": "585a8219da3d",
+      "version": "75fef8cfd7bc",
       "alt": "Catch: Claim your organizer page",
       "capture": null,
-      "inputHash": "585a8219da3df9d3bb6a2709d7f0b620e276ebc8551c41971fe6b01aa6cdac20"
+      "inputHash": "75fef8cfd7bcfe57ab0187c36c5ddb03e667737f5867ed05c25801211f558181"
     },
     "organizers": {
       "path": "/assets/og/organizers.png",
-      "version": "2f279b6ba09e",
+      "version": "f46d0491ff90",
       "alt": "Catch: Organisers, clubs and communities",
       "capture": null,
-      "inputHash": "2f279b6ba09eb0bea4afdc09c31d55e5f078d650b6d5f19f0adbcf3ad49d069b"
+      "inputHash": "f46d0491ff90449c5331c1fb33bfbb5f6639fa3092a5cf3ae027d8c6edc294f6"
     },
     "form": {
       "path": "/assets/og/form.png",
-      "version": "70942ef8ccad",
+      "version": "ce5253b7b466",
       "alt": "Catch: Organizer form",
       "capture": null,
-      "inputHash": "70942ef8ccad707370b198572c7a21897546748028c84a2c349ff77e30f78b49"
+      "inputHash": "ce5253b7b4668a802a6fe26fda3a9e7e80fa502c4f48d58668086f79f57c8380"
     }
   },
   "generated": {
