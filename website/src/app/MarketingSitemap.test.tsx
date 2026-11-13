@@ -2,17 +2,17 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
-import {HostApplicationPage} from "../features/host/HostApplicationPage";
 import {hostLandingCopy} from "@content/hostLanding";
 import {marketingCaptures} from "./marketingCaptures";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
-import {getPageKey, pageMeta, pageMetaForHostPath, pageMetaForWeddingsPath} from "./pageMeta";
+import {getPageKey, pageMeta, pageMetaForWeddingsPath} from "./pageMeta";
 import {brand} from "@catch/brand";
 
 const redirects = [
   ["overview", "/"], ["platform", "/host/#features"], ["workflows", "/host/#how-it-works"],
   ["planners", "/host/#use-cases"], ["mixers", "/host/#use-cases"], ["clubs", "/host/#use-cases"],
   ["stack", "/host/#existing-tools"], ["directory", "/organizers/"], ["claim", "/claim/"], ["preview", "/host/"],
+  ["apply", "/host/#start"],
 ];
 
 afterEach(cleanup);
@@ -27,12 +27,9 @@ describe("consolidated public sitemap", () => {
     expect(starts.length).toBeGreaterThan(0);
     for (const link of starts) expect(link.getAttribute("href")).toBe("#start");
   });
-  it("mounts the existing application at the canonical apply page", () => {
-    const {container} = renderPage(<HostApplicationPage />);
-    expect(screen.getByRole("heading", {level: 1, name: "Apply for a Catch Host pilot"})).toBeTruthy();
-    expect(container.querySelectorAll("form")).toHaveLength(1);
-    expect(screen.getByText(/submission does not book a call or grant access/)).toBeTruthy();
-    expect(pageMetaForHostPath("/host/apply/")?.canonicalPath).toBe("/host/apply/");
+  it("retires the pilot application: Catch Host's trial starts in the app, from the start band", () => {
+    for (const pathname of ["/host/apply", "/host/apply/"]) expect(getPageKey(pathname)).toBe("not_found");
+    expect(retiredMarketingDestination({pathname: "/host/apply/", search: "?utm_source=partner", hash: ""})).toBe("/host/?utm_source=partner#start");
   });
   it("routes Catch for weddings and its application under one page key; the landing is indexed, the application is not", () => {
     for (const pathname of ["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"]) expect(getPageKey(pathname)).toBe("weddings");
@@ -51,7 +48,7 @@ describe("consolidated public sitemap", () => {
         expect(result).toBe(`${target.pathname}?listing=real-id&utm_source=partner${target.hash}`);
       }
     }
-    expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=old", hash: "#founding-hosts"})).toBe("/host/apply/?utm_source=old");
+    expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=old", hash: "#founding-hosts"})).toBe("/host/?utm_source=old#start");
     expect(retiredMarketingDestination({pathname: "/delhi/", search: "?utm_source=old", hash: ""})).toBe("/delhi-ncr/?utm_source=old");
     expect(retiredMarketingDestination({pathname: "/bangalore", search: "", hash: ""})).toBe("/bengaluru/");
     expect(retiredMarketingDestination({pathname: "/mumbai/", search: "", hash: ""})).toBeNull();

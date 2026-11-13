@@ -19,25 +19,6 @@ export interface PublicSearchSuggestion {
 
 export {classNames};
 
-export function ProfileStrength({
-  className,
-  value,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  value: number;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("profile-strength", className)}
-      aria-label={props["aria-label"] ?? `Profile strength ${value}%`}
-    >
-      <span>{value}%</span>
-      <i><b style={{width: `${value}%`}} /></i>
-    </div>
-  );
-}
-
 export const actionGroupClassNames: Record<ActionGroupVariant, string> = {
   flow: "flow-actions",
   hero: "hero__actions",
