@@ -213,18 +213,21 @@ main's Explore). Main's checkout supplies every other promotion script.
 catchdates.com without hand dispatches. It runs when main CI (push, nightly or
 dispatched) completes and hourly as a fallback:
 
-1. **Plan** (no credentials). It skips when CI failed or main's head is
-   already live. It releases main's head when that head has successful same-source CI
-   with Marketing validation and captures.
-   Whichever commit's CI completed, the train considers main's head. Its
-   same-source CI is the merge queue run that tested the exact commit main
-   received (`gh-readonly-queue/main/pr-<n>-<base>`), main's own push run for
-   a commit that reached main without the queue, or a nightly or dispatched
-   full CI run of main. A later merge cancels main's push run of a commit
-   (`ci.yml` concurrency) but never the others, so a busy merge day still
-   releases; plan, preview and promotion all read the same completed run,
-   preferring one that ran Marketing validation. The hourly schedule is only
-   a fallback: GitHub may delay or drop scheduled runs.
+1. **Plan** (no credentials). It skips when main's head is already live.
+   Otherwise it releases the newest commit of main newer than live whose own
+   same-source CI passed with Marketing validation and captures, whether or
+   not that commit is main's head (owner decision, 12 Nov 2026). It inspects
+   up to eight commits that a completed main CI run tested, newest first
+   (`releaseCandidates` in `releaseTrain.mjs`). A commit whose pending main
+   run a newer merge replaced never ran, so it is never a candidate; a later
+   candidate includes its changes. Same-source CI is main's push run, a
+   nightly or dispatched CI run of main, or the merge queue run that
+   tested the exact commit main received
+   (`gh-readonly-queue/main/pr-<n>-<base>`). Plan, preview and promotion all
+   read the same completed run, preferring one that ran Marketing validation.
+   The hourly schedule is only a fallback: GitHub may delay or drop scheduled
+   runs. When no commit newer than live is validated and the CI that
+   triggered the train failed, it skips.
    A head whose own change ran no Marketing validation (docs, tooling,
    backend or app-only merges) does not wait for the next website merge. The
    plan asks the CI planner (`tool/harness.mjs plan`, `merge_group` mode)
@@ -233,8 +236,11 @@ dispatched) completes and hourly as a fallback:
    ride with the next website release. If it does, the train validates the
    head first, once: a failed validation stops the train until a person
    re-runs that CI run or main moves on.
-2. **Validate** (only when the plan asks). It dispatches full CI (`ci.yml`,
-   `full: true`, the nightly mode) on main's head and waits for it. That run's
+2. **Validate** (only when the plan asks). It dispatches CI (`ci.yml`,
+   `base_sha` set to the live commit) on main's head and waits for it. That run
+   plans every commit since live, as a main push does, so a website change
+   selects Marketing validation and captures without running Flutter, visual
+   or app-build lanes nothing since live touched. That run's
    Marketing validation and captures are the head's exact-source evidence. If
    main moved past the head meanwhile, the train still releases the commit it
    validated; the next train releases what came after.

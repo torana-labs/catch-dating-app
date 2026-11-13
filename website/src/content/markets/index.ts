@@ -20,11 +20,6 @@ export const activeEventLiveCities = activeMarket.cities.filter(
   (city) => city.status === "live"
 );
 
-export const activeHostApplicationCityOptions = [
-  ...activeMarket.cities.map((city) => city.label),
-  activeMarket.otherCityOptionLabel,
-];
-
 export const activeFeaturedCity = activeMarket.cities.find(
   (city) => city.id === activeMarket.featuredCityId
 )!;

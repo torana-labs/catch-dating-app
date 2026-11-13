@@ -133,7 +133,6 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   for (const [routeKey, relativeOutput] of [
     ["home", "index.html"],
     ["host", path.join("host", "index.html")],
-    ["host_apply", path.join("host", "apply", "index.html")],
     ["visitor_discovery", path.join("explore", "index.html")],
     ["event_offer", path.join("offer", "index.html")],
     ["account", path.join("account", "index.html")],
