@@ -24,6 +24,12 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # As in ci.yml: a newer push to a PR cancels that PR's older run, and main
+  # pushes share one group so a newer merge supersedes the older main run.
+  group: demo-ops-ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+
 jobs:
   demo-ops:
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ import {brand} from "@catch/brand";
 export type PreviewCardId = keyof typeof previewCards.cards;
 
 const cardForCanonicalPath: Record<string, PreviewCardId> = {
-  "/": "home", "/explore/": "home", "/host/": "host", "/host/apply/": "apply",
+  "/": "home", "/explore/": "home", "/host/": "host",
   "/claim/": "claim", "/organizers/": "organizers", "/f/": "form",
 };
 
