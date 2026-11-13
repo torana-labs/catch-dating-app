@@ -1,9 +1,7 @@
 import {expect, fireEvent, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {hostLandingCopy as copy} from "@content/hostLanding";
-import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
 import {marketingCaptures} from "../app/marketingCaptures";
 import {HostPage} from "../features/host/HostPage";
 
@@ -22,25 +20,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const HostApplicationFlowInitial: Story = {
-  name: "Host application flow · initial",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "host_application_flow",
-      routeIds: ["host_apply"],
-      states: ["initial", "interactive-steps"],
-    },
-  },
-  render: () => (
-    <CatchRoot theme="day">
-      <CatchSurface aria-label="Host application" as="section" block="band">
-        <HostApplicationFlow />
-      </CatchSurface>
-    </CatchRoot>
-  ),
-};
 
 // WCAG contrast from rendered colors, including transparent ancestor surfaces.
 function contrastRatio(element: HTMLElement, foreground = getComputedStyle(element).color) {
