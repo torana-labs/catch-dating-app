@@ -689,6 +689,31 @@
       "role": "gate"
     },
     {
+      "id": "ci:brand-config-publish-workflow",
+      "category": "ci",
+      "path": "tool/ci/brand_config_publish_workflow.test.mjs",
+      "command": "node --test tool/ci/brand_config_publish_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/brand-config-publish.yml",
+        ".github/workflows/_brand-config-publish.yml",
+        "tool/ci/brand_config_publish_workflow.test.mjs"
+      ],
+      "description": "Keeps config/brand publishing on main only, prod after dev, keyless and least-privileged, and never writing a stale brand record.",
+      "checks": [
+        "node --check tool/ci/brand_config_publish_workflow.test.mjs",
+        "node --test tool/ci/brand_config_publish_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",

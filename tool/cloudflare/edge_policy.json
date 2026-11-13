@@ -18,6 +18,13 @@
     "enable_js": true,
     "is_robots_txt_managed": false
   },
+  "declared": {
+    "description": "Zone settings the owner sets in the Cloudflare dashboard and this file records, so the policy matches the zone. apply_edge_policy checks their shape but neither plans nor writes them.",
+    "managedTransforms": {
+      "add_visitor_location_headers": true
+    },
+    "managedTransformsNote": "Rules -> Settings -> Managed Transforms. Visitor location headers add cf-ipcity, cf-region, cf-region-code, cf-postal-code, cf-iplatitude, cf-iplongitude and cf-timezone to requests; the website's city guess (website/src/server/cityGuess.ts) reads the city and coordinates and never stores them."
+  },
   "rulesets": {
     "http_request_firewall_custom": [
       {

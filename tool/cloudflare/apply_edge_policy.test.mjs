@@ -124,3 +124,18 @@ test("a stored rule that differs from the policy is still planned", async () => 
   const replan = await planEdgePolicy({policy, api: cf.api});
   assert.deepEqual(replan.changes.map((change) => change.target), ["http_ratelimit"]);
 });
+
+test("declared managed transforms are recorded, checked for shape, and never planned or written", async () => {
+  assert.equal(policy.declared.managedTransforms.add_visitor_location_headers, true);
+  const {api, writes} = fakeCloudflare();
+  const plan = await planEdgePolicy({policy, api});
+  assert.equal(plan.changes.some((change) => JSON.stringify(change).includes("visitor_location")), false);
+  await applyEdgePlan({plan, api});
+  assert.equal(writes.some((write) => write.route.includes("managed_headers") || JSON.stringify(write.data ?? {}).includes("visitor_location")), false);
+  const fs = await import("node:fs");
+  const os = await import("node:os");
+  const path = await import("node:path");
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "edge-")), "policy.json");
+  fs.writeFileSync(file, JSON.stringify({...policy, declared: {managedTransforms: {add_visitor_location_headers: "yes"}}}));
+  assert.throws(() => loadEdgePolicy(file), /must be true or false/u);
+});

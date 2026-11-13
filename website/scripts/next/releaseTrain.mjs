@@ -13,24 +13,32 @@ import {brand} from "../../../packages/brand/index.mjs";
 import {nxLanes} from "../../../tool/nx/select_lanes.mjs";
 
 // The website release train. After main CI completes (or on the hourly
-// fallback), it previews main's validated head through the existing preview
-// workflow, by commit, so merges landing meanwhile never strand it,
+// fallback), it previews the newest commit of main whose own CI passed with
+// website validation (not necessarily main's head) through the existing
+// preview workflow, by commit, so merges landing meanwhile never strand it,
 // passes the prod environment's gate (no required reviewer since 30 Oct 2026;
 // adding one makes it wait for approval again), then runs the existing
 // promotion workflow on that exact preview. It never
 // relaxes either workflow's own checks; it only removes the hand dispatches.
 // When the website changed since live but main's head ran no website
-// validation of its own, it first runs full CI on that head, so a docs or
+// validation of its own, it first runs CI on that head planned from live, so a docs or
 // tooling merge on top of a website change never strands it.
 
 export const APPROVAL_ENVIRONMENT = "prod";
 export const PREVIEW_WORKFLOW = "website-next-preview.yml";
 export const PROMOTE_WORKFLOW = "website-next-promote.yml";
 export const CI_WORKFLOW = "ci.yml";
-// The inputs the train's validation dispatch sends. GitHub rejects a dispatch
-// whose inputs the workflow does not declare (HTTP 422, run 42944434174), so
-// ci.yml's workflow_dispatch must declare each of these.
-export const CI_VALIDATION_INPUTS = Object.freeze({full: "true"});
+// The inputs the train's validation dispatch sends: plan every commit since
+// live, as a main push does, so only the lanes those commits touched run
+// (a website change selects Marketing validation and captures). Full CI ran
+// Flutter, visual and app builds for website-only changes, about 125 of its
+// 250 runner-minutes (20 dispatches on 11-12 Nov 2026). GitHub rejects a
+// dispatch whose inputs the workflow does not declare (HTTP 422, run
+// 42944434174), so ci.yml's workflow_dispatch must declare each of these.
+export function ciValidationInputs(liveSha) {
+  assert.match(liveSha ?? "", /^[a-f0-9]{40}$/u, "Validation plans from the exact live commit");
+  return {base_sha: liveSha};
+}
 const BOT = "github-actions[bot]";
 const POLL_MS = 20_000;
 
@@ -43,32 +51,59 @@ const github = (endpoint) => JSON.parse(command("gh", ["api", "-H", "Cache-Contr
 
 /**
  * Whether this train should release, and what. Pure, so every skip and
- * refusal is testable without GitHub. `websiteChanged` is whether the website
- * changed between live and main's head; `validationRuns` are the full CI runs
+ * refusal is testable without GitHub. `candidate` is the newest commit of main
+ * newer than live whose own CI passed with website validation and captures
+ * (`{sha, validation}`), or null. `websiteChanged` is whether the website
+ * changed between live and main's head; `validationRuns` are the CI runs
  * a train already dispatched for the head.
  */
-export function planDecision({event, eventSha, eventConclusion, mainSha, validation, lineage,
+export function planDecision({event, eventConclusion, mainSha, lineage, candidate = null,
   websiteChanged, validationRuns = []}) {
-  // A newer merge cancels main's push run of a commit; the merge queue run that
-  // tested the same commit still validates it, so only a failure stops here.
-  if (event === "workflow_run" && !["success", "cancelled"].includes(eventConclusion)) return skip("ci_unsuccessful");
   if (lineage.alreadyLive) return skip("already_live");
-  // Any CI completion considers main's head, not the commit that completed: a
-  // later merge supersedes that commit, and the head's merge queue run already
-  // validated it. Scheduled runs are no fallback; GitHub may delay or drop them.
-  if (validation?.validated && validation.captureBinding) {
-    return {release: true, validate: false, sourceSha: mainSha, liveSha: lineage.liveSha, reason: "release"};
+  // Release the newest commit that fully passed, not main's head (owner
+  // decision, 12 Nov 2026). On a busy day main's head is almost never the
+  // commit whose CI just finished, so waiting for the head starves the train.
+  // The preview and promotion still re-check that exact commit's CI, captures
+  // and lineage, so the release never moves behind live.
+  if (candidate?.validation?.validated && candidate.validation.captureBinding) {
+    assert.match(candidate.sha ?? "", /^[a-f0-9]{40}$/u, "A release candidate is an exact commit");
+    return {release: true, validate: false, sourceSha: candidate.sha, liveSha: lineage.liveSha,
+      reason: candidate.sha === mainSha ? "release" : "release_newest_validated"};
   }
+  // No validated commit is newer than live. A failed CI never triggers a
+  // full validation of the head.
+  if (event === "workflow_run" && !["success", "cancelled"].includes(eventConclusion)) return skip("ci_unsuccessful");
   // The head's own change ran no website validation. Docs, tooling and backend
   // merges leave the website as live has it: nothing to release.
   assert.equal(typeof websiteChanged, "boolean", "Whether the website changed since live must be known");
   if (!websiteChanged) return skip("website_unchanged_since_live");
   // Otherwise the website changes since live would wait for the next website
-  // merge. Validate the head with full CI, once: a failed run stops the train
+  // merge. Validate the head with CI planned from live, once: a failed run stops the train
   // until a person re-runs it or main moves on.
   if (validationRuns.some((run) => run.status !== "completed")) return skip("website_validation_running");
   if (validationRuns.length > 0) return skip("website_validation_failed");
   return {release: true, validate: true, sourceSha: mainSha, liveSha: lineage.liveSha, reason: "validate_and_release"};
+}
+
+/** How many commits newer than live the train inspects for website validation. */
+export const MAX_CANDIDATE_INSPECTIONS = 8;
+
+/**
+ * The commits of main newer than live that a completed main CI run tested,
+ * newest first: the commits worth inspecting for website validation. A commit
+ * whose run a newer merge replaced while pending never ran, so it has none.
+ * `commits` is main's history newest first; it stops at live.
+ */
+export function releaseCandidates({commits, liveSha, runs, limit = MAX_CANDIDATE_INSPECTIONS}) {
+  const tested = new Set(runs.filter((run) => run.status === "completed" && ["success", "failure"].includes(run.conclusion) &&
+    ["push", "workflow_dispatch", "schedule"].includes(run.event) && run.head_branch === "main")
+    .map((run) => run.head_sha));
+  const newer = [];
+  for (const commit of commits) {
+    if (commit.sha === liveSha) break;
+    newer.push(commit.sha);
+  }
+  return newer.filter((sha) => tested.has(sha)).slice(0, limit);
 }
 
 function skip(reason) {
@@ -127,25 +162,38 @@ export function selectDispatchedRun({runs, requestedAt, expectedSha = null, expe
 async function plan() {
   const repository = canonicalRepository(process.env);
   const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
-  let validation = null;
-  try {
-    validation = await waitMainMarketingValidation({repository, sourceSha: mainSha, maxWaitMs: 0});
-  } catch {
-    validation = null;
-  }
   const lineage = await currentReleaseLineage(repository, mainSha);
-  const unvalidated = !lineage.alreadyLive && !(validation?.validated && validation.captureBinding);
+  let candidate = null;
+  if (!lineage.alreadyLive) {
+    const commits = github(`repos/${repository}/commits?sha=${mainSha}&per_page=100`);
+    const runs = github(`repos/${repository}/actions/workflows/${CI_WORKFLOW}/runs?branch=main&status=completed&per_page=100`).workflow_runs;
+    for (const sha of releaseCandidates({commits, liveSha: lineage.liveSha, runs})) {
+      let validation = null;
+      try {
+        validation = await waitMainMarketingValidation({repository, sourceSha: sha, maxWaitMs: 0});
+      } catch {
+        validation = null;
+      }
+      if (validation?.validated && validation.captureBinding) {
+        // The same lineage the preview requires: on main and newer than live.
+        await currentReleaseLineage(repository, sha);
+        candidate = {sha, validation};
+        break;
+      }
+    }
+  }
+  const unvalidated = !lineage.alreadyLive && !candidate;
   const websiteChanged = unvalidated ? websiteChangedBetween(lineage.liveSha, mainSha) : undefined;
   const validationRuns = unvalidated ? github(`repos/${repository}/actions/workflows/${CI_WORKFLOW}/runs?branch=main&event=workflow_dispatch&head_sha=${mainSha}&per_page=100`)
     .workflow_runs.filter((run) => run.head_sha === mainSha && run.triggering_actor?.login === BOT) : [];
-  const decision = planDecision({event: process.env.GITHUB_EVENT_NAME, eventSha: process.env.EVENT_HEAD_SHA,
-    eventConclusion: process.env.EVENT_CONCLUSION, mainSha, validation, lineage,
+  const decision = planDecision({event: process.env.GITHUB_EVENT_NAME,
+    eventConclusion: process.env.EVENT_CONCLUSION, mainSha, lineage, candidate,
     websiteChanged, validationRuns});
   output({release: String(decision.release), validate: String(decision.validate), source_sha: decision.sourceSha ?? "",
-    reason: decision.reason});
+    live_sha: decision.liveSha ?? "", reason: decision.reason});
   summary(!decision.release ? `Nothing to release: ${decision.reason.replaceAll("_", " ")}.` : decision.validate ?
-    `Validating \`${decision.sourceSha}\` with full CI, then releasing it (live: \`${decision.liveSha}\`).` :
-    `Releasing \`${decision.sourceSha}\` (live: \`${decision.liveSha}\`).`);
+    `Validating \`${decision.sourceSha}\` with CI planned from live, then releasing it (live: \`${decision.liveSha}\`).` :
+    `Releasing \`${decision.sourceSha}\`${decision.sourceSha === mainSha ? "" : ` (newest validated; main is at \`${mainSha}\`)`} (live: \`${decision.liveSha}\`).`);
 }
 
 async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha = null, expectedTitle = null, timeoutMs}) {
@@ -174,19 +222,19 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha =
   throw new Error(`${workflow} did not finish within ${Math.round(timeoutMs / 60_000)} minutes`);
 }
 
-// Full CI of main's head: the nightly mode, which runs Marketing validation
-// and captures for the exact commit. The preview then reads that run as the
+// CI of main's head planned from live, which runs Marketing validation and
+// captures for the exact commit because the website changed since live. The preview then reads that run as the
 // head's validation. It takes about an hour, so main has usually moved by
 // then; the train still releases the commit it validated (1 Nov 2026: with
 // the queue busy, six trains in a row validated a head and released nothing).
 async function runValidation() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
-  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: CI_VALIDATION_INPUTS, expectedSha: sourceSha,
+  await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: ciValidationInputs(process.env.LIVE_SHA), expectedSha: sourceSha,
     timeoutMs: 140 * 60_000});
   const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
-  summary(mainSha === sourceSha ? `Full CI validated \`${sourceSha}\`.` :
-    `Full CI validated \`${sourceSha}\`; main has since moved to \`${mainSha}\`, which a later train releases.`);
+  summary(mainSha === sourceSha ? `CI validated \`${sourceSha}\`.` :
+    `CI validated \`${sourceSha}\`; main has since moved to \`${mainSha}\`, which a later train releases.`);
 }
 
 /**
