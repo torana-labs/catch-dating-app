@@ -97,6 +97,7 @@ jobs:
             /tool/harness/compare_selectors.mjs
             /tool/nx/select_lanes.mjs
             /tool/nx/shadow_plan.mjs
+            /tool/nx/workflow_callers.mjs
             /tool/ci/toolchain.env
             /tool/ci/main_push_base.mjs
             /tool/harness/component_graph.json
