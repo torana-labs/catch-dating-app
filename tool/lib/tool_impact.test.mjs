@@ -646,8 +646,11 @@ test("tool-lane classification uses the authoritative Harness mode", () => {
     componentGraph: graph,
     mode: "pr",
   });
-  assert.equal(pr.mode, "full");
+  // A path the PR mode ignores selects nothing of its own; it no longer
+  // escalates to the full matrix.
+  assert.equal(pr.mode, "affected");
   assert.deepEqual(pr.ignoredPaths, ["tool/docs/check.mjs"]);
+  assert.ok(!pr.toolIds.includes("docs-check"));
 });
 
 test("explicit full remains full and affected outputs stay bounded", () => {
@@ -982,4 +985,27 @@ test("additional full paths cannot duplicate canonical harness authority", () =>
     }),
     ["tool/ci/**", "tool/run.mjs"],
   );
+});
+
+test("a change no Tools-lane path owns runs the mandatory checks, not the full matrix", () => {
+  // #1772 (a website footer) and #1777 ran all six Tools buckets this way.
+  const changedPaths = [
+    "website/src/shared/site/PublicSiteChrome.tsx",
+    "website/src/features/events/EventDetailPage.tsx",
+  ];
+  const plan = planAffectedToolChecks({changedPaths, manifest: productionManifest,
+    componentGraph: productionGraph});
+  assert.deepEqual(plan.toolLanePaths, []);
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.fullReasons, []);
+  for (const id of productionManifest.ciImpact.mandatoryCheckIds) {
+    assert.ok(plan.toolIds.includes(id), `mandatory ${id}`);
+  }
+  assert.ok(plan.toolIds.length < 40, `expected a narrow plan, got ${plan.toolIds.length} checks`);
+
+  // An unresolved change set is unknown and still fails closed.
+  const empty = planAffectedToolChecks({changedPaths: [], manifest: productionManifest,
+    componentGraph: productionGraph});
+  assert.equal(empty.mode, "full");
+  assert.deepEqual(empty.fullReasons, ["no changed paths were resolved"]);
 });

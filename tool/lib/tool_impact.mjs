@@ -80,8 +80,12 @@ export function planAffectedToolChecks({
   }
 
   if (full) fullReasons.push("full execution was explicitly requested");
-  if (!full && toolLanePaths.length === 0) {
-    fullReasons.push("no changed path is owned by the Tools lane");
+  // A change that no Tools-lane path owns runs only the mandatory checks and
+  // the companion checks its paths name (selectedIds already holds both); the
+  // nightly full run still executes every check. Only an unresolved change set
+  // is unknown enough to fail closed.
+  if (!full && paths.length === 0) {
+    fullReasons.push("no changed paths were resolved");
   }
   for (const changedPath of controlPlanePaths) {
     fullReasons.push(`control-plane path changed: ${changedPath}`);
