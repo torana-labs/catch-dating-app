@@ -5,12 +5,12 @@ import {publicExternalEvent} from "./publicExternalEvent";
 import {projectPublicOrganizer} from "./publicOrganizer";
 import {
   parityInputs,
-  readPublicPageFixture,
   type FixtureDocument,
 } from "./publicPageTestFixtures";
 import {publicEventAuthorized} from "./publicReadPolicy";
 import {projectPublicReview} from "./publicReview";
 import {liveMarkets} from "./rebuild";
+import {contractFile} from "../shared/contractFixtures";
 
 /**
  * The website reader owns parity_expected.json
@@ -45,7 +45,7 @@ test("the port reproduces the website reader's projections", () => {
     reviews: byId(parity.reviews, (id, data) =>
       projectPublicReview(id, data, parity.organizer.id)),
   }));
-  const expected = readPublicPageFixture("parity_expected.json") as
+  const expected = contractFile("fixtures/public_pages/parity_expected.json") as
     typeof actual;
   assert.equal(actual.length, expected.length);
   actual.forEach((parity, index) => {

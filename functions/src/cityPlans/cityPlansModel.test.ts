@@ -5,7 +5,6 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {validateCityPlansDocument} from
   "../shared/generated/validators/cityPlansDocument";
-import {readPublicPageFixture} from "../publicPages/publicPageTestFixtures";
 import type {HostListing} from "../publicPages/publicOrganizer";
 import {
   buildCityPlans,
@@ -17,6 +16,7 @@ import {
   type CityOrganizerPage,
 } from "./cityPlansModel";
 import {cityMarket, cityMarkets} from "./rebuild";
+import {contractFixture} from "../shared/contractFixtures";
 
 type Row = Record<string, unknown>;
 const hour = 60 * 60 * 1000;
@@ -28,7 +28,7 @@ const pune: CityMarket = {slug: "pune", label: "Pune",
 
 const fixturePage = JSON.parse(JSON.stringify(
   // The valid organizer page fixture, one upcoming Catch event as a base.
-  (readPublicPageFixture("../valid/organizer_public_page_doc.json")))) as Row;
+  (contractFixture("organizer_public_page_doc")))) as Row;
 const baseEvent = (fixturePage.upcomingEvents as Row[])
   .find((item) => item.source === "catch") as Row;
 

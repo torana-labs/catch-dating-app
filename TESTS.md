@@ -36,6 +36,12 @@ pull request reaches no strict test, one job for up to 15 tests, otherwise
 three. The merge queue, main and nightly always run the whole list in three.
 A local run without that variable executes the whole list.
 
+Functions tests read repository contracts through `contractFixture("name")`
+(`contracts/fixtures/valid/<name>.json`) and `contractFile("dir/x.json")` in
+`functions/src/shared/contractFixtures.ts`, each with one string literal. Pull
+request selection then runs only the tests that read a changed contract; a path
+built from a variable makes that test run for every contract change.
+
 Flutter CI runs only the root unit and widget tests a change can reach;
 `docs/release_operations.md` owns the selection rules. To see the selection
 for a change locally, install the contract generator's dependencies once with

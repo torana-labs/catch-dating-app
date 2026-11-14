@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
-import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

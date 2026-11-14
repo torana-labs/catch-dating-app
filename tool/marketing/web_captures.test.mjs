@@ -23,7 +23,7 @@ function fixture(t) {
   for (const name of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/marketing/export_app_screenshots.mjs",
     "tool/marketing/lib/web_capture_render.mjs", "tool/marketing/lib/web_capture_screen.mjs",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/web_capture_inputs.mjs",
-    "tool/marketing/lib/capture_devices.mjs"]) {
+    "tool/marketing/lib/capture_devices.mjs", "tool/ui_capture/lib/capture_catalog_sources.mjs"]) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   write("tool/marketing/frame_device_capture.dart", "// frame\n");

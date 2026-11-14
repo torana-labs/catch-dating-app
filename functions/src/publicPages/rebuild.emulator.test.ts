@@ -9,7 +9,7 @@ import {validateEventPublicPageDocument} from
 import {validateOrganizerPublicPageDocument} from
   "../shared/generated/validators/organizerPublicPageDocument";
 import {buildOrganizerScope} from "./pageModel";
-import {readPublicPageFixture} from "./publicPageTestFixtures";
+import {contractFile} from "../shared/contractFixtures";
 import {
   collections,
   commitOrganizerScope,
@@ -28,7 +28,7 @@ interface RawCase {
   externalEvents: Array<{id: string; data: Row}>;
   reviews: Array<{id: string; data: Row}>;
 }
-const inputs = readPublicPageFixture("parity_inputs.json") as {
+const inputs = contractFile("fixtures/public_pages/parity_inputs.json") as {
   now: number;
   cases: RawCase[];
 };

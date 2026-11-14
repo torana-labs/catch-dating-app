@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {readFileSync} from "node:fs";
 import type {Firestore} from "firebase-admin/firestore";
 import {ProgressFirestore, seedJoiningProgress} from
   "./groupProgressTestFixtures";
@@ -11,13 +10,12 @@ import {EventPlanChangeSourceReader, PostEventFollowUpSourceReader,
 import {OperationalNoticePublisher} from "./operationalNoticePublication";
 import {EventAssistanceSettingsStore} from "./policySettingsStore";
 import {rcsHarness} from "./rcsDispatchTestHarness";
+import {contractFixture} from "../../shared/contractFixtures";
 
 const start = Date.parse("2026-09-07T12:00:00Z");
 const end = start + 3_600_000;
 const stamp = (millis: number) => ({_seconds: Math.floor(millis / 1000),
   _nanoseconds: millis % 1000 * 1_000_000});
-const fixture = (name: string) => JSON.parse(readFileSync(
-  "../contracts/fixtures/valid/" + name + ".json", "utf8"));
 
 async function setup() {
   const fake = new ProgressFirestore();
@@ -26,7 +24,7 @@ async function setup() {
     organizerId: "organizer-source"};
   const attendeeId = "attendee-source";
   const seeded = await seedJoiningProgress(db, context, start, end);
-  const attendee = {...fixture("event_attendee_doc"),
+  const attendee = {...contractFixture("event_attendee_doc"),
     eventId: context.eventId, organizerId: context.organizerId,
     status: "checkedIn",
     createdAt: stamp(start - 10_000), updatedAt: stamp(start - 1_000),
@@ -126,7 +124,7 @@ test("trusted plan-change source publishes through the notice boundary",
   async () => {
     const h = await rcsHarness(undefined, "plan-source",
       ["catchEventRcs"], end);
-    const attendee = {...fixture("event_attendee_doc"),
+    const attendee = {...contractFixture("event_attendee_doc"),
       eventId: h.context.eventId, organizerId: h.context.organizerId,
       status: "registered",
       linkedUid: h.actor.uid, phoneE164: h.actor.phone,

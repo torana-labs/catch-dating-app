@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.16.0
-updated: 2026-11-11
+version: 1.17.0
+updated: 2026-11-12
 owner: marketing_website
 status: active
 ---
@@ -177,18 +177,45 @@ changed.
 The exporter embeds one `caPt` ancillary chunk in each framed PNG. For app
 captures it records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
-byte hash, and capture input hash. Inputs include the capture runner/catalog,
-local transitive Dart imports/exports/parts (including production widgets and
-fixtures), canonical scenario/persona JSON, declared assets/fonts, package
-manifests/lock, framing/export tools,
-and pinned toolchain configuration. Of the capture's manifest entry, only its
+byte hash, and capture input hash. An app capture's inputs are the shared
+harness and its own entry:
+
+- Shared harness: the capture runner and test config, `ScreenCaptureEntry`,
+  the framing and export tools, declared assets/fonts, package
+  manifests/lock and pinned toolchain configuration, each with its local
+  transitive Dart imports/exports/parts.
+- The capture's entry file, `test/ui_captures/catalog/entries/<catalog id>.dart`,
+  with its local transitive Dart imports/exports/parts (production widgets,
+  fixtures, theme and tokens).
+- The data files those Dart inputs name by literal repo path, such as
+  `tool/demo/demo_seed/scenarios/host-marketing-india.json`. A computed data
+  path (one with `$`) fails hashing, because the hash could not see which file
+  it reads.
+- The persona catalogs under `tool/demo/demo_seed/personas/` that define a
+  `personaId` cast by one of those scenario files. Scenarios cast people by id,
+  not path, so the hash follows each id to every catalog that defines it. An id
+  no catalog defines fails hashing.
+
+The catalog index, `screen_capture_catalog.dart`, is not an input. It lists
+the review-only captures and maps each marketing id to its entry file in
+`marketingScreenCaptures`, which the runner reads lazily, so a marketing
+render never evaluates another capture's fixtures. Because the index is not
+hashed, the exporter checks that each manifest capture's catalog entry is the
+only entry in `entries/<catalog id>.dart` and that the index imports that
+file and maps the id to its entry. Fixtures shared by several marketing
+entries live in `catalog/shared/`, and only the entries that import a shared
+file depend on it.
+
+Of the capture's manifest entry, only its
 render fields enter the hash: `id`, `status`, `device`, `fixtureKey` and
 `sourcePath`. Every other field, known or new (website copy, destinations,
 pages, scenario pointers, facts, disclosure), is presentation and never
 invalidates a render; scenario data enters through its JSON files.
-The catalog is shared, so an input change
-can conservatively invalidate multiple slots. Adding an asset to a declared
-directory also invalidates captures. No machine-specific font path or font
+Production screens import each other for navigation, and
+`lib/routing/go_router.dart` imports every screen, so most entries' import
+closures still cover much of `lib/` and a widget change can conservatively
+invalidate several slots. Adding an asset to a declared
+directory invalidates every app capture. No machine-specific font path or font
 bytes are distributed.
 
 Capture production starts on Linux. The plan job (`export_hosted_captures.mjs
@@ -312,7 +339,11 @@ media pipeline, not approval of a product availability claim.
 ## Rendering And Review
 
 The implemented exporter maps manifest fixture keys to production screen builders
-in `test/ui_captures/catalog/screen_capture_catalog.dart`. The export-only
+in `test/ui_captures/catalog/entries/` (one file per marketing capture, named by
+catalog id); review-only captures stay in
+`test/ui_captures/catalog/screen_capture_catalog.dart`. To add a marketing
+capture, add its entry file, import it in the index and map its id in
+`marketingScreenCaptures`. The export-only
 `capture_runner_test.dart` renders those widgets using synthetic fixtures; it
 does not compare or update golden baselines.
 

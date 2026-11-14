@@ -95,16 +95,11 @@ export function PrivacyChoicesButton({tone = "inline"}: {tone?: keyof typeof pri
   );
 }
 
-/** The organiser and event pages' top bar: the same header as every general page. */
-export function PublicPageHeader() {
-  return <PublicSiteHeader />;
-}
-
 /**
- * The boards' short footer: the wordmark across from quiet links. The
- * organiser and event pages close their main column with the four default
- * links; the claim, form and offer pages pass the site and legal links and
- * the operator line. Only a page that records site clicks passes
+ * The boards' short footer: the wordmark across from quiet links. The form,
+ * offer, account and billing pages pass the site and legal links and the
+ * operator line; the four default links wait for organiser pages served on
+ * their own domain. Only a page that records site clicks passes
  * `onLinkPressed` (the private offer and form pages record none).
  */
 export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, links = publicPageChromeCopy.footerLinks, note, onLinkPressed}: {

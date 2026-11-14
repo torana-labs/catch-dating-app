@@ -1,10 +1,14 @@
 // What each lane-* project in nx.json reads. A lane input wider than the
 // planner's selection runs a lane on changes that cannot affect it.
 import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+
+import {targets} from "./shadow_plan.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -21,4 +25,32 @@ test("only the pending-operations scanner's Admin inputs select the Tools lane",
   assert.deepEqual(adminInputs.map((input) => input.replace("{workspaceRoot}/", "")).sort(),
     [...scanner.impactPaths].filter((file) => file.startsWith("admin/")).sort());
   assert.ok(adminInputs.every((input) => !input.includes("*")), "Admin Tools inputs name files, not globs");
+});
+
+// The tasks `nx affected` selects for one changed file, without their dependencies.
+function affectedTasks(file) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nx-lane-inputs-"));
+  const graphFile = path.join(dir, "graph.json");
+  execFileSync("npx", ["nx", "affected", "-t", ...targets, "--files", file, "--excludeTaskDependencies",
+    `--graph=${graphFile}`], {cwd: workspaceRoot, stdio: "ignore"});
+  const tasks = Object.keys(JSON.parse(fs.readFileSync(graphFile, "utf8")).tasks.tasks).sort();
+  fs.rmSync(dir, {recursive: true, force: true});
+  return tasks;
+}
+
+// functions/README.md alone ran ~15 min of backend jobs (32e79379), and a
+// README under lib/ or functions/src/ ran Flutter, Functions, Firestore rules
+// and contracts. Markdown is not a project input; a check that reads one
+// names it, as the Functions export inventory does with functions/README.md.
+test("documents select the docs lane and the checks that read them, nothing else", () => {
+  assert.deepEqual(affectedTasks("functions/src/salesDemo/README.md"), ["lane-docs:lane"]);
+  assert.deepEqual(affectedTasks("lib/safety/README.md"), ["lane-docs:lane"]);
+  assert.deepEqual(affectedTasks("website/README.md"), ["lane-docs:lane"]);
+  assert.deepEqual(affectedTasks("functions/README.md"), ["functions:check", "lane-docs:lane"]);
+  const functionsSource = affectedTasks("functions/src/index.ts");
+  assert.ok(["functions:check", "functions:test", "lane-firestore-rules:lane"].every((task) => functionsSource.includes(task)),
+    "a Functions source change still runs Functions and its inventory check");
+  assert.ok(affectedTasks("tool/tools_manifest.json").includes("functions:check"),
+    "functions-ci runs its governance checks through the tool manifest");
+  assert.deepEqual(affectedTasks("contracts/README.md"), ["contracts:check", "contracts:conformance", "lane-docs:lane"]);
 });
