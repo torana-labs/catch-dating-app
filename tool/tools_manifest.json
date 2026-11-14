@@ -145,6 +145,29 @@
       "role": "generator"
     },
     {
+      "id": "functions:unit-test-selection",
+      "category": "ci",
+      "path": "tool/impact/functions_unit_test_selection.mjs",
+      "command": "node tool/impact/functions_unit_test_selection.mjs --base origin/main",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Chooses the Functions node --test files a pull request can reach for CATCH_UNIT_TEST_SELECTION, with the same dependency-cruiser graph and data-path rules as the emulator selection; shared inputs keep every test, and only pull requests narrow.",
+      "impactPaths": [
+        "tool/lib/functions_module_graph.mjs",
+        "tool/lib/functions_unit_selection.test.mjs",
+        "tool/lib/functions_test_selection.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/dependency_cruiser.mjs",
+        "tool/impact/package.json",
+        "tool/impact/package-lock.json"
+      ],
+      "checks": [
+        "node --check tool/impact/functions_unit_test_selection.mjs",
+        "node --test tool/lib/functions_unit_selection.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "tool:import-owners",
       "category": "meta",
       "path": "tool/impact/import_owners.mjs",
