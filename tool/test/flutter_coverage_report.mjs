@@ -192,20 +192,37 @@ function formatPercent(value) {
   return value == null ? "n/a" : `${value.toFixed(1)}%`;
 }
 
+/**
+ * The LCOV of each downloaded coverage shard artifact under [directory]: one
+ * subdirectory per artifact. actions/download-artifact extracts a lone matching
+ * artifact straight into [directory], so a single expected shard may also be
+ * an `lcov.info` file at its top level.
+ */
+export function readShardSources(directory, expectedShards) {
+  const entries = fs.readdirSync(directory, {withFileTypes: true});
+  if (expectedShards === 1 && entries.length > 0 && entries.every((entry) => !entry.isDirectory())) {
+    const lcov = path.join(directory, "lcov.info");
+    if (!fs.existsSync(lcov) || !fs.lstatSync(lcov).isFile()) {
+      throw new Error("Invalid coverage shard: the single artifact has no lcov.info.");
+    }
+    return [fs.readFileSync(lcov, "utf8")];
+  }
+  if (entries.some((entry) => !entry.isDirectory())) {
+    throw new Error("Coverage shard input must contain only artifact directories.");
+  }
+  return entries.sort((a, b) => a.name.localeCompare(b.name)).map((entry) => {
+    const lcov = path.join(directory, entry.name, "lcov.info");
+    if (!fs.existsSync(lcov) || !fs.lstatSync(lcov).isFile()) throw new Error(`Invalid coverage shard: ${entry.name}`);
+    return fs.readFileSync(lcov, "utf8");
+  });
+}
+
 function runCli(argv) {
   const args = parseArgs(argv);
   if (args.mergeShards) {
     if (!args.output) throw new Error("--merge-shards requires --output.");
     const directory = path.resolve(fromRepo(), args.mergeShards);
-    const entries = fs.readdirSync(directory, {withFileTypes: true});
-    if (entries.some((entry) => !entry.isDirectory())) {
-      throw new Error("Coverage shard input must contain only artifact directories.");
-    }
-    const sources = entries.sort((a, b) => a.name.localeCompare(b.name)).map((entry) => {
-      const lcov = path.join(directory, entry.name, "lcov.info");
-      if (!fs.lstatSync(lcov).isFile()) throw new Error(`Invalid coverage shard: ${entry.name}`);
-      return fs.readFileSync(lcov, "utf8");
-    });
+    const sources = readShardSources(directory, args.expectedShards);
     const output = path.resolve(fromRepo(), args.output);
     fs.mkdirSync(path.dirname(output), {recursive: true});
     fs.writeFileSync(output, mergeCoverageShards(sources, args.expectedShards));
