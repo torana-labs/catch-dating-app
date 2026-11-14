@@ -51,6 +51,24 @@ final d = FileSystemEntity.isFileSync('./contracts/shared/b.json');
     test('a file importing dart:io that touches no path reads nothing', () {
       expect(reads("final env = Platform.environment['HOME'];"), isEmpty);
     });
+    test('a name that shadows a top-level constant is computed', () {
+      const root = "const _root = 'test/fixtures';\n";
+      for (final body in [
+        "File local() { final _root = Platform.environment['P']!; return File('\$_root/x.json'); }",
+        'File parameter(String _root) => File(_root);',
+        "void loop(List<String> roots) { for (final _root in roots) { File('\$_root/x.json'); } }",
+        "void caught() { try {} catch (_root) { File('\$_root'); } }",
+        'void pattern(Object o) { if (o case String _root) File(_root); }',
+        'class C { final String _root; C(this._root); File f() => File(_root); }',
+        "void nested() { String _root() => 'elsewhere'; File(_root()); }",
+      ]) {
+        expect(reads('$root$body'), isNull, reason: body);
+      }
+      // An unshadowed constant still bounds the read.
+      expect(reads("${root}final f = File('\$_root/x.json');"), {
+        'test/fixtures/x.json',
+      });
+    });
     test('a computed path without a declaration stays a probe', () {
       for (final body in [
         "final f = File(Platform.environment['P']!);",
