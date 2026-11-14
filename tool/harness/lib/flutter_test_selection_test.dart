@@ -726,7 +726,7 @@ void main() {
     final files = {
       ...probed,
       'test/support/schemas.dart':
-          "// test-selection-reads: design/\n"
+          '// test-selection-reads: design/\n'
           "import 'dart:io'; File schema(String s) => File('design/\$s');",
       'test/schema_test.dart': "import 'support/schemas.dart'; void main() {}",
       'test/support/fixture.dart':

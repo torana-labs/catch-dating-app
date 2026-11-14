@@ -119,7 +119,7 @@ final config = File('.dart_tool/package_config.json');
     test('a declared root absent from the tree stays a probe', () {
       expect(
         reads(
-          "// test-selection-reads: contracts/missing/\nFile f(String s) => File(s);",
+          '// test-selection-reads: contracts/missing/\nFile f(String s) => File(s);',
         ),
         isNull,
       );
@@ -127,7 +127,7 @@ final config = File('.dart_tool/package_config.json');
     test('an unbounded declared root stays a probe', () {
       for (final root in ['/etc', '../x', '', '.']) {
         expect(
-          reads("// test-selection-reads: $root\nFile f(String s) => File(s);"),
+          reads('// test-selection-reads: $root\nFile f(String s) => File(s);'),
           isNull,
           reason: root,
         );
