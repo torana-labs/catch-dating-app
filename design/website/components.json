@@ -151,44 +151,10 @@
       "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row."
     },
     {
-      "id": "shared_public_page_header",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_detail_canonical",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/site",
-      "source": "website/src/shared/site/PublicSiteChrome.tsx",
-      "exportName": "PublicPageHeader",
-      "comparedWith": [
-        "catch.step_header",
-        "catch.workspace_header"
-      ],
-      "comparisonReason": "Configures the site top bar (PublicSiteHeader, CatchTopBar variant site) with the organiser and event boards' links and Get the app; it is site chrome, not a wizard step header, a workspace pane header or a button.",
-      "css": [
-        "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "links",
-          "get-the-app"
-        ]
-      },
-      "notes": "The organiser and event pages' site top bar: the wordmark, Explore and For organisers, and Get the app. Rendered at the top of both pages."
-    },
-    {
       "id": "shared_public_page_footer",
       "kind": "supporting-component",
       "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_detail_canonical",
         "event_offer",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
         "public_form"
       ],
       "owner": "shared/site",
@@ -212,7 +178,7 @@
           "site-and-legal-links"
         ]
       },
-      "notes": "The boards' short footer. The organiser and event pages close their main column with the default links (Privacy, Terms, For organisers, Help); the claim, form and offer pages pass the site and legal links and the operator line. Only the claim page records footer clicks."
+      "notes": "The boards' short footer for transactional pages: the form, offer, account and billing pages pass the site and legal links and the operator line. Organiser pages served on their own domain will use it with its default links (Privacy, Terms, For organisers, Help) once custom domains ship; on the site's own domain organiser and event pages use PublicSiteFooter (owner decision, 14 Nov 2026)."
     },
     {
       "id": "route_home",
@@ -522,7 +488,7 @@
           "claim-pitch"
         ]
       },
-      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Every organiser page, claimed or generated, carries the site top bar (PublicPageHeader) and ends with the boards' short footer (PublicPageFooter), both from shared/site (PublicSiteChrome.tsx). The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
+      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Every organiser page, claimed or generated, carries the site header (PublicSiteHeader) and ends with the site footer (PublicSiteFooter), both from shared/site (PublicSiteChrome.tsx); a page served on the organiser's own domain will keep the short PublicPageFooter once custom domains ship. The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
     },
     {
       "id": "route_event_detail",
@@ -556,7 +522,7 @@
           "mobile-sticky-action"
         ]
       },
-      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, the page beside the booking card's 380px rail at the site content width (CatchStack railWidth, proposal E1; the rail sticks from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
+      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, the page beside the booking card's 380px rail at the site content width (CatchStack railWidth, proposal E1; the rail sticks from 840px, docked bar and sheet below), then the site footer (PublicSiteFooter) below the page. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
     },
     {
       "id": "event_page_frame",
@@ -581,7 +547,7 @@
           "booking-aside"
         ]
       },
-      "notes": "The event page's frame shared by the route and EventPage.stories.tsx: the site top bar, the reading lane with the sections and the short footer, and the booking aside. The band is only the container the booking aside measures."
+      "notes": "The event page's frame shared by the route and EventPage.stories.tsx: the site header, the reading lane with the sections beside the booking aside, then the site footer. The band is only the container the booking aside measures."
     },
     {
       "id": "event_detail_public_registration",
@@ -1305,7 +1271,7 @@
           "claim-unavailable"
         ]
       },
-      "notes": "Claim route on the RbWebClaim boards (white ground, reading layout): search or the link states with the help beside them, then the instant claim for one listing, and the boards' short footer (PublicPageFooter). The story wraps the route in the website Query provider because submission owns a TanStack Query mutation. Direct links to listings without a verified claim target render claim-unavailable. site-shell.css and flows.css stay only for the demo continuation (?continuation=), which still renders inside ClaimFlowMain."
+      "notes": "Claim route on the RbWebClaim boards (white ground, reading layout): search or the link states with the help beside them, then the instant claim for one listing, between the site header and footer (PublicSiteHeader, PublicSiteFooter). The story wraps the route in the website Query provider because submission owns a TanStack Query mutation. Direct links to listings without a verified claim target render claim-unavailable. site-shell.css and flows.css stay only for the demo continuation (?continuation=), which still renders inside ClaimFlowMain."
     },
     {
       "id": "shared_legal_document_shell",
@@ -5242,10 +5208,11 @@
           "first-moment",
           "badge",
           "format-picker",
-          "compact"
+          "compact",
+          "focus-crop"
         ]
       },
-      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
+      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. frame=\"capture\" (proposal night-framing, approved 14 Nov 2026): on a wide band the framed capture runs large off the scene's bottom edge (a partial device); at phone width each moment shows only its focus box as a frameless card at the band's width, beside the caption on a phone held sideways. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
     },
     {
       "id": "shared_pipeline_board",
@@ -5509,7 +5476,9 @@
       "id": "web_ui_catch_search_field",
       "kind": "supporting-component",
       "routeIds": [
-        "visitor_discovery"
+        "visitor_discovery",
+        "claim",
+        "cities"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchSearchField.tsx",
@@ -5523,7 +5492,7 @@
           "default"
         ]
       },
-      "notes": "Explore's search box for plans and organisers, with its clear button."
+      "notes": "Explore's search box for plans and organisers, the claim page's search for a page to claim and the city picker's search, each with its clear button."
     },
     {
       "id": "route_account",
@@ -5669,6 +5638,8 @@
       "exportName": "SignInSheetView",
       "css": [
         "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchAdaptiveSheet.module.css",
+        "packages/web-ui/src/components/CatchDialog.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
@@ -5679,11 +5650,10 @@
         "states": [
           "start",
           "code",
-          "link-sent",
-          "confirm-email"
+          "dropdown"
         ]
       },
-      "notes": "The one sign-in sheet: phone code first, then Google and an email link. Opens from the header and inline at the moment of need, never as a gate before browsing."
+      "notes": "The one sign-in sheet, as in the apps: a phone number, then a six-digit code (no Google or email link). A bottom sheet on phones and a 380px dropdown under the control that opened it at 900px and wider (CatchAdaptiveSheet). Opens from the header and inline at the moment of need, never as a gate before browsing."
     },
     {
       "id": "sign_in_button",
@@ -5724,7 +5694,7 @@
           "signed-in"
         ]
       },
-      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both, and Firebase loads only for a reader this device has seen signed in or one returning from an email link."
+      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both; the sign-in dropdown hangs from the bar entry, and Firebase loads only for a reader this device has seen signed in."
     },
     {
       "id": "sign_in_prompt",

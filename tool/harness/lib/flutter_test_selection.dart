@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 
+import 'flutter_test_reads.dart';
+
 bool _testFile(String name) =>
     name.startsWith('test/') &&
     name.endsWith('_test.dart') &&
@@ -62,13 +64,35 @@ bool needsUiLintSmoke({
 
 /// Only narrows root unit/widget tests. Native, package, golden, integration,
 /// analysis and contract gates retain their independent owners.
+///
+/// [generatedBefore] and [generatedAfter] hold the untracked Dart the schema
+/// contract generator emits at base and head. With both, a contract or
+/// generator change selects the importers of the generated files it changes,
+/// and generated files' own imports join the graph. Without them, a generator
+/// input keeps the full suite and generated Dart is an opaque leaf.
 Map<String, Object> selectFlutterTests({
   required Map<String, String> before,
   required Map<String, String> after,
   required Set<String> changed,
   bool full = false,
   Set<String> ordinaryDocuments = const {},
+  Map<String, String>? generatedBefore,
+  Map<String, String>? generatedAfter,
+  Set<String>? beforePaths,
+  Set<String>? afterPaths,
 }) {
+  // Every tracked path at each commit, against which declared reads resolve.
+  beforePaths ??= before.keys.toSet();
+  afterPaths ??= after.keys.toSet();
+  final generated = generatedBefore != null && generatedAfter != null;
+  if (generated) {
+    final names = {...generatedBefore.keys, ...generatedAfter.keys};
+    if (names.any((name) => !_untrackedGeneratedDart(name))) {
+      throw ArgumentError('Generated contract outputs must be untracked Dart');
+    }
+    before = {...before, ...generatedBefore};
+    after = {...after, ...generatedAfter};
+  }
   final all = after.keys.where(_testFile).toList()..sort();
   if (all.isEmpty) throw StateError('No root Flutter tests exist.');
   Map<String, Object> result(List<String> files, String reason) => {
@@ -82,12 +106,18 @@ Map<String, Object> selectFlutterTests({
   if (full || sourceChanges.isEmpty) {
     return result(all, 'Full validation or no usable change window');
   }
+  final generatedChanges = <String>{
+    if (generated)
+      for (final name in {...generatedBefore.keys, ...generatedAfter.keys})
+        if (generatedBefore[name] != generatedAfter[name]) name,
+  };
   // Package resolution, toolchain, generated localizations, runner
   // configuration and bundled assets reach every test without an import.
   final global =
       sourceChanges
           .where(
             (name) =>
+                (!generated && _generatedContractInput(name)) ||
                 _globalTestInput(name) ||
                 _possiblyBundled(name, before) ||
                 _possiblyBundled(name, after),
@@ -101,8 +131,16 @@ Map<String, Object> selectFlutterTests({
     );
   }
   try {
-    final oldGraph = _Imports(before);
-    final newGraph = _Imports(after);
+    final oldGraph = _Imports(
+      before,
+      opaqueGenerated: !generated,
+      paths: beforePaths,
+    );
+    final newGraph = _Imports(
+      after,
+      opaqueGenerated: !generated,
+      paths: afterPaths,
+    );
     final selected = <String>[];
     final coveredChanges = <String>{
       // Removed test files cannot execute at head. Their deletion does not
@@ -113,7 +151,8 @@ Map<String, Object> selectFlutterTests({
             !after.containsKey(name))
           name,
       // Outside the root package and its bundle, a test can only read these
-      // from disk. Every such reader is a retained filesystem probe below.
+      // from disk. Every such reader is a retained filesystem probe or a test
+      // whose bounded reads select it below.
       ...sourceChanges.where(_probeOnlyInput),
     };
     for (final test in all) {
@@ -121,10 +160,16 @@ Map<String, Object> selectFlutterTests({
       final previous = before.containsKey(test)
           ? oldGraph.testClosure(test)
           : <String>{};
+      // A dart:io file with bounded reads selects the tests that reach it
+      // only when a changed path is one it can read.
+      final reads = {...newGraph.reads(current), ...oldGraph.reads(previous)};
       final impactedChanges = {
-        ...current,
-        ...previous,
-      }.intersection(sourceChanges);
+        ...{
+          ...current,
+          ...previous,
+        }.intersection({...sourceChanges, ...generatedChanges}),
+        ...sourceChanges.where((name) => readsPath(reads, name)),
+      };
       coveredChanges.addAll(impactedChanges);
       final impacted = !before.containsKey(test) || impactedChanges.isNotEmpty;
       if (impacted ||
@@ -135,7 +180,10 @@ Map<String, Object> selectFlutterTests({
     }
     // An untested source or an unsupported relationship must not turn the
     // required test gate into a green no-op.
-    final uncovered = sourceChanges.difference(coveredChanges).toList()..sort();
+    final uncovered = {
+      ...sourceChanges,
+      ...generatedChanges,
+    }.difference(coveredChanges).toList()..sort();
     if (uncovered.isNotEmpty || selected.isEmpty) {
       return result(
         all,
@@ -144,7 +192,8 @@ Map<String, Object> selectFlutterTests({
     }
     return result(
       selected,
-      'Union of base/head transitive imports, exports, parts and test configs; filesystem probes retained',
+      'Union of base/head transitive imports, exports, parts, test configs and bounded file reads; filesystem probes retained'
+      '${generatedChanges.isEmpty ? '' : '; ${generatedChanges.length} generated contract outputs changed'}',
     );
   } on Object catch (error) {
     return result(all, 'Conservative fallback: $error');
@@ -167,8 +216,10 @@ const _globalInputPaths = {
   '.github/workflows/flutter-ci.yml',
   'tool/ci/toolchain.env',
 };
-// The schema generator's outputs aren't tracked, so these reach every test
-// that imports one, and no import graph can show which.
+// The schema generator's outputs aren't tracked. Without its rendered output
+// at both commits, these reach every test that imports one, and no import
+// graph can show which. With it, they are probe-only like the rest of
+// contracts/ and tool/, and the changed outputs need import proof instead.
 bool _generatedContractInput(String name) =>
     (name.startsWith('contracts/') && name.endsWith('.json')) ||
     const {
@@ -188,7 +239,6 @@ const _globalInputDirectories = [
 ];
 
 bool _globalTestInput(String name) =>
-    _generatedContractInput(name) ||
     _globalInputNames.contains(name.split('/').last) ||
     name.endsWith('.arb') ||
     _globalInputPaths.contains(name) ||
@@ -218,9 +268,11 @@ const _probeOnlyDirectories = [
   'integration_test/',
   'operations/',
   'packages/brand/',
-  // The library's own goldens (P2.1): the package job and the macOS goldens
-  // lane own them, as they do test/goldens.
-  'packages/catch_ui/test/goldens/',
+  // The package job ("Catch UI, Consumer & Host package tests") owns these
+  // suites, and the macOS goldens lane owns packages/catch_ui/test/goldens.
+  // A root test that imports one still reaches it through the import graph.
+  'packages/catch_ui/test/',
+  'packages/kernel/test/',
   'packages/web-config/',
   'packages/web-ui/',
   'test/goldens/',
@@ -299,7 +351,8 @@ bool _possiblyBundled(String name, Map<String, String> tree) {
 }
 
 class _Imports {
-  _Imports(this.files) {
+  _Imports(this.files, {this.opaqueGenerated = true, Set<String>? paths})
+    : paths = paths ?? files.keys.toSet() {
     for (final entry in files.entries) {
       if (entry.key != 'pubspec.yaml' && !entry.key.endsWith('/pubspec.yaml')) {
         continue;
@@ -323,8 +376,23 @@ class _Imports {
   }
   static const fileSystemProbe = '@filesystem-probe';
   final Map<String, String> files;
+
+  /// Whether an import of absent generated contract Dart is a leaf. When the
+  /// generated sources are in [files], an absent one is a missing module.
+  final bool opaqueGenerated;
   final packages = <String, String>{};
   final edges = <String, Set<String>>{};
+
+  /// Every tracked path, against which declared reads must resolve.
+  final Set<String> paths;
+
+  /// The bounded reads of each `dart:io` file reached so far.
+  final readsOf = <String, Set<String>>{};
+
+  /// The paths the `dart:io` files in [closure] can read.
+  Set<String> reads(Set<String> closure) => {
+    for (final name in closure) ...?readsOf[name],
+  };
 
   Set<String> closure(String start) {
     final visited = <String>{};
@@ -374,7 +442,17 @@ class _Imports {
       if (uri.scheme == 'dart') {
         if (value == 'dart:io' &&
             (name.startsWith('test/') || name.startsWith('tool/'))) {
-          dependencies.add(fileSystemProbe);
+          final bounded = fileReads(
+            name: name,
+            source: source,
+            unit: parsed.unit,
+            paths: paths,
+          );
+          if (bounded == null) {
+            dependencies.add(fileSystemProbe);
+          } else {
+            readsOf[name] = bounded;
+          }
         }
         return;
       }
@@ -394,7 +472,7 @@ class _Imports {
         throw StateError('Unsupported Dart URI: $value');
       }
       if (!files.containsKey(target)) {
-        if (_untrackedGeneratedDart(target)) return;
+        if (opaqueGenerated && _untrackedGeneratedDart(target)) return;
         throw StateError('Missing local Dart module: $target');
       }
       dependencies.add(target);
@@ -522,6 +600,40 @@ Future<Set<String>> _ordinaryDocuments(
   }
 }
 
+/// The generated contract Dart at [base] and [head], or null when it cannot be
+/// rendered (no Node, no generator dependencies, a differing lockfile).
+Future<({Map<String, String> before, Map<String, String> after})?>
+_generatedContractOutputs(String base, String head) async {
+  try {
+    final helper = File.fromUri(
+      Platform.script.resolve('flutter_contract_outputs.mjs'),
+    ).path;
+    final process = await Process.start('node', [
+      helper,
+      '--base',
+      base,
+      '--head',
+      head,
+    ]);
+    await process.stdin.close();
+    final output = process.stdout.transform(utf8.decoder).join();
+    final errors = process.stderr.transform(utf8.decoder).join();
+    final text = await output;
+    final message = await errors;
+    if (await process.exitCode != 0) {
+      stderr.writeln('Generated contract outputs unavailable: $message');
+      return null;
+    }
+    final parsed = jsonDecode(text) as Map<String, dynamic>;
+    Map<String, String> tree(String key) =>
+        (parsed[key] as Map<String, dynamic>).cast<String, String>();
+    return (before: tree('before'), after: tree('after'));
+  } on Object catch (error) {
+    stderr.writeln('Generated contract outputs unavailable: $error');
+    return null;
+  }
+}
+
 Future<void> main(List<String> arguments) async {
   final args = <String, String>{};
   for (var i = 0; i < arguments.length; i += 2) {
@@ -582,14 +694,31 @@ Future<void> main(List<String> arguments) async {
   final documents = changed.where((name) => name.endsWith('.md')).toSet();
   final before = await _tree(base, includePaths: documents);
   final after = await _tree(head, includePaths: documents);
+  Set<String> listing(String sha) =>
+      (_git(['ls-tree', '-r', '--name-only', '-z', sha]).stdout as String)
+          .split('\u0000')
+          .where((name) => name.isNotEmpty)
+          .toSet();
   final ordinaryDocuments = await _ordinaryDocuments(before, after, changed);
+  // A commit window can change and restore a contract between its endpoints,
+  // which endpoint renders cannot see, so such a window keeps the full suite.
+  final generatedOutputs =
+      args['--full'] == 'true' ||
+          (commitWindow && changed.any(_generatedContractInput))
+      ? null
+      : await _generatedContractOutputs(base, head);
   final plan = selectFlutterTests(
     before: before,
     after: after,
+    beforePaths: listing(base),
+    afterPaths: listing(head),
     changed: changed,
     full: args['--full'] == 'true',
     ordinaryDocuments: ordinaryDocuments,
+    generatedBefore: generatedOutputs?.before,
+    generatedAfter: generatedOutputs?.after,
   );
+  plan['generatedContractOutputs'] = generatedOutputs != null;
   plan['uiLintSmoke'] = needsUiLintSmoke(
     before: before,
     after: after,

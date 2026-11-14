@@ -4597,7 +4597,7 @@ Current code verification is distributed across focused tests:
 - `test/event_success/*`
 - `functions/src/eventSuccess/*.test.ts`
 - `functions/src/marketplace/eventSuccessScorecards.test.ts`
-- `functions/test/firestore.rules.test.cjs`
+- `functions/test/rules/event_success.rules.test.cjs`
 - `tool/demo/seed_demo_data_schema.test.mjs`
 - `test/core/schema_contracts_generated_test.dart`
 

@@ -446,12 +446,14 @@ test("provider graph changes keep a bounded Flutter source closure", () => {
 });
 
 test("React dependency graph changes keep a bounded root npm closure", () => {
-  for (const changedPath of [
-    "tool/web/react_dependency_graph.mjs",
-    "tool/web/react_dependency_graph.test.mjs",
-    "packages/web-ui/src/primitives.tsx",
-    "packages/web-ui/tsconfig.json",
-    "packages/web-ui/package.json",
+  // web-ui source also selects design:publish-design-system, whose token build
+  // runs `dart format`, so it needs the Flutter SDK as well.
+  for (const [changedPath, setup] of [
+    ["tool/web/react_dependency_graph.mjs", ["node", "root-npm"]],
+    ["tool/web/react_dependency_graph.test.mjs", ["node", "root-npm"]],
+    ["packages/web-ui/src/primitives.tsx", ["node", "flutter", "root-npm"]],
+    ["packages/web-ui/tsconfig.json", ["node", "flutter", "root-npm"]],
+    ["packages/web-ui/package.json", ["node", "flutter", "root-npm"]],
   ]) {
     const plan = planAffectedToolChecks({
       changedPaths: [changedPath],
@@ -460,7 +462,7 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
     });
     assert.equal(plan.mode, "affected", changedPath);
     assert.equal(plan.repositoryView, "full", changedPath);
-    assert.deepEqual(plan.setupRequirements, ["node", "root-npm"], changedPath);
+    assert.deepEqual(plan.setupRequirements, setup, changedPath);
     assert.ok(plan.toolIds.includes("web:react-dependency-graph"), changedPath);
   }
 });

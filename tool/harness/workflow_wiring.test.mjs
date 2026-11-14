@@ -250,6 +250,10 @@ test("Flutter selection keeps full validation and bounds matrix outputs", () => 
   assert.match(flutter, /matrix: \$\{\{ fromJSON\(needs.test-plan.outputs.matrix\) \}\}/u);
   assert.match(namedStep(flutter, "Verify test selection safety"), /dart test tool\/harness\/lib\/flutter_test_selection_test.dart/u);
   assert.match(namedStep(flutter, "Select tests from committed dependency closures"), /--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  // Without the generator's dependencies every contract change runs the suite.
+  assert.match(namedStep(flutter, "Install the contract generator's dependencies"), /npm --prefix functions ci --ignore-scripts/u);
+  assert.ok(flutter.indexOf("Install the contract generator's dependencies") <
+    flutter.indexOf("Select tests from committed dependency closures"));
   assert.match(flutter, /TEST_PLAN_RESULT: \$\{\{ needs\['test-plan'\].result \}\}/u);
   assert.match(flutter, /"\$\{TEST_PLAN_RESULT\}" != "success"/u);
   assert.match(namedStep(flutter, "Unit & widget tests"), /\.sourceSha == \$sha/u);
@@ -1475,7 +1479,9 @@ test("backend integration runs strict execution inside both emulators with a bou
   const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(pkg.scripts["test:rules"], "npm run build && node scripts/run-tests.cjs --require-emulators");
   const listed = JSON.parse(fs.readFileSync(new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
-  assert.ok(listed.includes("test/firestore.rules.test.cjs"));
+  assert.ok(listed.includes("test/rules/organizers.rules.test.cjs"));
+  // Rules specs are one file per collection so shards balance and selection can narrow.
+  assert.equal(listed.includes("test/firestore.rules.test.cjs"), false);
   assert.ok(listed.includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 

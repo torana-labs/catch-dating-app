@@ -3,7 +3,7 @@ import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
-import {PublicPageFooter, PublicPageHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
 import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
 import type {HostListing} from "../organizers/types";
@@ -84,8 +84,8 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
 }
 
 /**
- * The page around the event: the site top bar, then the event and the short
- * footer beside the booking rail. Stories render it with a
+ * The page around the event: the site top bar, the event beside the booking
+ * rail, then the site footer (owner decision, 14 Nov 2026). Stories render it with a
  * stand-in for the booking steps.
  */
 export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: {
@@ -97,7 +97,7 @@ export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: 
 }) {
   return (
     <CatchRoot theme="day">
-      <PublicPageHeader />
+      <PublicSiteHeader />
       <WebsitePageMain id="event-detail">
         {/*
           * The band is the page container the booking aside measures to dock on a phone,
@@ -108,12 +108,12 @@ export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: 
           <CatchStack collapseBelow="expanded" direction="row" gap={48} railWidth={booking ? "narrow" : undefined} stickyRail>
             <CatchStack gap={40}>
               <EventPageMain mapImageUrl={mapImageUrl} onShare={onShare} view={view} />
-              <PublicPageFooter />
             </CatchStack>
             {booking}
           </CatchStack>
         </CatchBand>
       </WebsitePageMain>
+      <PublicSiteFooter />
       {children}
     </CatchRoot>
   );

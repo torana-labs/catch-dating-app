@@ -70,7 +70,10 @@ void main() {
       for (final entry in fixture.entries) {
         write(entry.key, entry.value);
       }
-      write('test/probe_test.dart', "import 'dart:io'; void main() {}");
+      write(
+        'test/probe_test.dart',
+        "import 'dart:io'; void main() => File(Platform.environment['P']!);",
+      );
       write('docs/feature.md', 'Before');
       write(
         'tool/harness/component_graph.json',
@@ -269,7 +272,8 @@ void main() {
     );
     final files = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     expect(
       selected(
@@ -352,7 +356,8 @@ void main() {
   test('filesystem probes do not cover unrelated changed source', () {
     final before = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     final after = {...before, 'lib/uncovered.dart': 'const value = 1;'};
     expect(
@@ -381,7 +386,8 @@ void main() {
   test('filesystem source probes always run', () {
     final files = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     expect(selected(plan({'lib/c.dart'}, before: files, after: files)), [
       'test/c_test.dart',
@@ -420,7 +426,8 @@ void main() {
   // suite, so a missing rule shows up as an affected plan instead of full.
   final probed = {
     ...fixture,
-    'test/support/reader.dart': "import 'dart:io'; const reader = 1;",
+    'test/support/reader.dart':
+        "import 'dart:io'; final reader = File(Platform.environment['P']!);",
     'test/probe_test.dart': "import 'support/reader.dart'; void main() {}",
   };
   Map<String, Object> probedPlan(
@@ -548,6 +555,10 @@ void main() {
       'test/goldens/home_golden_test.dart',
       'packages/catch_ui/test/goldens/baseline/root_family.light.png',
       'packages/catch_ui/test/goldens/root_family_test.dart',
+      'packages/catch_ui/test/primitives/catch_button_test.dart',
+      'packages/catch_ui/test/flutter_test_config.dart',
+      'packages/catch_ui/test/fixtures/sample.json',
+      'packages/kernel/test/labelled_test.dart',
       'widgetbook/lib/main.dart',
       'apps/host/ios/Runner/Info.plist',
       'firestore.rules',
@@ -590,6 +601,186 @@ void main() {
       );
     },
   );
+  test('a root test importing a package-owned test helper still needs it', () {
+    final files = {
+      ...probed,
+      'packages/catch_ui/pubspec.yaml': 'name: catch_ui\n',
+      'packages/catch_ui/test/support/pump.dart': 'const pump = 1;',
+      'test/uses_pump_test.dart':
+          "import '../packages/catch_ui/test/support/pump.dart'; void main() {}",
+    };
+    expect(
+      selected(
+        plan(
+          {'packages/catch_ui/test/support/pump.dart'},
+          before: files,
+          after: files,
+        ),
+      ),
+      ['test/probe_test.dart', 'test/uses_pump_test.dart'],
+    );
+  });
+  group('rendered contract outputs', () {
+    const generatedDir = 'packages/platform/lib/schema_contracts/generated';
+    final files = {
+      ...probed,
+      'packages/platform/pubspec.yaml': 'name: catch_platform\n',
+      'lib/uses_generated.dart':
+          "import 'package:catch_platform/schema_contracts/generated/paths.g.dart'; const usesGenerated = 1;",
+      'test/g_test.dart': "import '../lib/uses_generated.dart'; void main() {}",
+    };
+    const rendered = {
+      '$generatedDir/paths.g.dart':
+          "import 'package:example/c.dart'; const paths = 1;",
+      '$generatedDir/unused.g.dart': 'const unused = 1;',
+      'lib/contexts/events/data/generated/request.g.dart': 'const r = 1;',
+    };
+    Map<String, Object> rendersPlan(
+      Set<String> changed, {
+      Map<String, String> after = const {},
+    }) => selectFlutterTests(
+      before: files,
+      after: files,
+      changed: changed,
+      generatedBefore: rendered,
+      generatedAfter: {...rendered, ...after},
+    );
+
+    test('an input with unchanged outputs selects only filesystem probes', () {
+      for (final input in [
+        'contracts/bigquery/events.schema.json',
+        'contracts/functions/runtime_modules.json',
+        'contracts/callables/create_event.schema.json',
+        'tool/contracts/generate_schema_contracts.mjs',
+        'tool/contracts/schema_spec_order.json',
+      ]) {
+        final result = rendersPlan({input});
+        expect(result['mode'], 'affected', reason: input);
+        expect(selected(result), ['test/probe_test.dart'], reason: input);
+      }
+    });
+    test('a changed output selects its importers', () {
+      final result = rendersPlan(
+        {'contracts/firestore/events.schema.json'},
+        after: {'$generatedDir/paths.g.dart': 'const paths = 2;'},
+      );
+      expect(selected(result), ['test/g_test.dart', 'test/probe_test.dart']);
+      expect(result['reason'], contains('1 generated contract outputs'));
+    });
+    test('an added, removed or unimported output needs proof', () {
+      for (final after in [
+        {'$generatedDir/unused.g.dart': 'const unused = 2;'},
+        {'$generatedDir/added.g.dart': 'const added = 1;'},
+      ]) {
+        final result = rendersPlan({'contracts/catalogs/x.json'}, after: after);
+        expect(result['mode'], 'full', reason: '$after');
+        expect(result['reason'], contains(after.keys.single));
+      }
+      final removed = selectFlutterTests(
+        before: files,
+        after: files,
+        changed: {'contracts/catalogs/x.json'},
+        generatedBefore: rendered,
+        generatedAfter: {...rendered}..remove('$generatedDir/unused.g.dart'),
+      );
+      expect(removed['mode'], 'full');
+      expect(removed['reason'], contains('unused.g.dart'));
+    });
+    test('generated imports of tracked sources join the graph', () {
+      expect(selected(rendersPlan({'lib/c.dart'})), [
+        'test/c_test.dart',
+        'test/g_test.dart',
+        'test/probe_test.dart',
+      ]);
+      // Without the rendered outputs the generated module is opaque.
+      expect(selected(plan({'lib/c.dart'}, before: files, after: files)), [
+        'test/c_test.dart',
+        'test/probe_test.dart',
+      ]);
+    });
+    test('an import of an output the generator did not emit fails closed', () {
+      final result = selectFlutterTests(
+        before: files,
+        after: files,
+        changed: {'lib/c.dart'},
+        generatedBefore: const {},
+        generatedAfter: const {},
+      );
+      expect(result['mode'], 'full');
+      expect(result['reason'], contains('paths.g.dart'));
+    });
+    test('only untracked generated Dart may be rendered', () {
+      expect(
+        () => selectFlutterTests(
+          before: files,
+          after: files,
+          changed: {'lib/c.dart'},
+          generatedBefore: const {'lib/c.dart': 'const c = 3;'},
+          generatedAfter: const {'lib/c.dart': 'const c = 3;'},
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+  group('bounded file reads', () {
+    final files = {
+      ...probed,
+      'test/support/schemas.dart':
+          '// test-selection-reads: design/\n'
+          "import 'dart:io'; File schema(String s) => File('design/\$s');",
+      'test/schema_test.dart': "import 'support/schemas.dart'; void main() {}",
+      'test/support/fixture.dart':
+          "import 'dart:io'; final x = File('test/fixtures/x.json');",
+      'test/fixture_test.dart': "import 'support/fixture.dart'; void main() {}",
+    };
+    final paths = {
+      ...files.keys,
+      'design/screens/a.json',
+      'test/fixtures/x.json',
+      'test/fixtures/y.json',
+    };
+    Map<String, Object> boundedPlan(Set<String> changed) => selectFlutterTests(
+      before: files,
+      after: files,
+      beforePaths: paths,
+      afterPaths: paths,
+      changed: changed,
+    );
+
+    test('a change under a declared root selects the tests that read it', () {
+      expect(selected(boundedPlan({'design/screens/a.json'})), [
+        'test/probe_test.dart',
+        'test/schema_test.dart',
+      ]);
+    });
+    test('a change outside the reads leaves bounded readers out', () {
+      expect(selected(boundedPlan({'lib/a.dart'})), [
+        'test/a_test.dart',
+        'test/probe_test.dart',
+      ]);
+    });
+    test('a fixture its literal reader reads no longer needs the suite', () {
+      final result = boundedPlan({'test/fixtures/x.json'});
+      expect(result['mode'], 'affected');
+      expect(selected(result), [
+        'test/fixture_test.dart',
+        'test/probe_test.dart',
+      ]);
+      // A fixture nothing is known to read still keeps the full suite.
+      expect(boundedPlan({'test/fixtures/y.json'})['mode'], 'full');
+    });
+    test('a declaration whose root is not in the tree keeps a probe', () {
+      final plan = selectFlutterTests(
+        before: files,
+        after: files,
+        beforePaths: files.keys.toSet(),
+        afterPaths: files.keys.toSet(),
+        changed: {'lib/a.dart'},
+      );
+      expect(selected(plan), contains('test/schema_test.dart'));
+      expect(selected(plan), isNot(contains('test/fixture_test.dart')));
+    });
+  });
   test('Dart sources outside lib and test are covered by the import graph', () {
     final files = {
       ...probed,

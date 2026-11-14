@@ -33,6 +33,12 @@ const laneByProject = {
   "functions": "functions",
   "operations": "operations",
   "contracts": "contracts",
+  // The Tools lane runs meta:brand-literals: `generate.mjs --check`, the brand
+  // tests and the literal scan.
+  "brand": "tools",
+  // design:tokens and design:widget-dedupe-fingerprints run in the Tools lane.
+  "design-tokens": "tools",
+  "widget_dedupe": "tools",
   "lane-admin-design": "admin",
   "lane-marketing-design": "marketing",
   "lane-flutter-design": "flutter",
@@ -60,7 +66,6 @@ export const isControlPlane = (file) =>
 export function laneForTask(taskId, tags = []) {
   const project = taskId.slice(0, taskId.lastIndexOf(":")).replace(/^@catch\//, "");
   if (project in laneByProject) return laneByProject[project];
-  if (project === "widget_dedupe") return null;
   return tags.includes("lang:dart") ? "flutter" : null;
 }
 
@@ -72,8 +77,72 @@ export function laneForTask(taskId, tags = []) {
  * because the website build needs @catch/web-ui:build. A change that does
  * reach web-ui selects its tasks itself.
  */
+const projectOf = (task) => task.slice(0, task.lastIndexOf(":"));
+// Directories the contracts scans read outside contracts/ (contracts:check
+// and :conformance inputs in nx.json). lane_inputs.test.mjs keeps it in step.
+export const contractsConsumerScanPrefixes = ["functions/src/", "lib/", "packages/kernel/lib/", "packages/platform/lib/",
+  "tool/contracts/"];
+
+/**
+ * Known reasons the planner and Nx disagree on a lane. A disagreement that
+ * matches one is explained; anything else is unexplained and counts against
+ * the cut-over (#1554). Each rule is pinned by a fixture in shadow_plan.test.mjs.
+ *
+ * Planner rules read the planner's own provenance for the lane
+ * (plan.operationSources.ciTargets entries whose value is the lane).
+ */
+export const explanationRules = [
+  {id: "planner-full-selection", side: "planner",
+    why: "The planner runs every lane for its own control plane (repo.harness: tools_manifest.json, the graph, tool/ci) and retired root shells.",
+    matches: ({sources}) => sources.some((source) => ["repo.harness", "app.native.retired"].includes(source.component))},
+  {id: "planner-functions-implies-contracts", side: "planner", lanes: ["contracts"],
+    why: "The planner adds Contracts for any Functions or backend-deploy file; the contracts scans read only functions/src and the lockfile, so Nx skips it.",
+    matches: ({sources}) => sources.length > 0 &&
+      sources.every((source) => ["backend.functions", "ci.backend-delivery"].includes(source.component))},
+  {id: "planner-propagates-to-captures", side: "planner", lanes: ["capture_freshness"],
+    why: "The planner reaches capture freshness through an affected component; Nx runs it only when the website itself changes.",
+    matches: ({sources, nxTasks}) => sources.length > 0 && sources.every((source) => source.relationship === "affected") &&
+      !nxTasks.some((task) => projectOf(task) === "catch-marketing")},
+  {id: "planner-operations-doc", side: "planner", lanes: ["functions"],
+    why: "The planner runs Functions for operations READMEs, which no check reads.",
+    matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "operations.workflow-doc")},
+  {id: "planner-contracts-source", side: "planner",
+    why: "The planner runs nine lanes for any contract file; Nx runs only the consumers of the changed contract family.",
+    matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "contracts.source")},
+  {id: "nx-control-plane", side: "nx",
+    why: "An edit to how CI or Nx runs selects every lane in Nx.",
+    matches: ({changedFiles}) => changedFiles.some(isControlPlane)},
+  {id: "docs-reads-every-markdown", side: "nx", lanes: ["docs"],
+    why: "lane-docs reads every Markdown file; the planner leaves doc-contract files (READMEs it classifies as terminal) out of Docs.",
+    matches: ({changedFiles}) => changedFiles.some((file) => file.endsWith(".md"))},
+  {id: "contracts-scan-consumers", side: "nx", lanes: ["contracts"],
+    why: "The contracts scans read consumer code (path literals, type boundaries); the planner does not model that.",
+    matches: ({changedFiles}) => changedFiles.some((file) => contractsConsumerScanPrefixes.some((prefix) => file.startsWith(prefix)))},
+  {id: "design-lane-reads-flutter", side: "nx", lanes: ["admin", "marketing"],
+    why: "The Admin and Marketing design-parity lanes read Flutter UI sources; the planner keeps those changes in Flutter.",
+    matches: ({lane, nxTasks}) => {
+      const tasks = nxTasks.filter((task) => laneForTask(task) === lane);
+      return tasks.length > 0 && tasks.every((task) => projectOf(task) === `lane-${lane}-design`);
+    }},
+  {id: "lane-tools-coarse", side: "nx", lanes: ["tools"],
+    why: "lane-tools reads whole source trees until tool checks become Nx targets (stage 2); the planner selects tool checks by import graph.",
+    matches: ({nxTasks, changedFiles}) => nxTasks.filter((task) => laneForTask(task) === "tools")
+      .every((task) => task === "lane-tools:lane") && !changedFiles.some((file) => file.startsWith("tool/"))},
+  {id: "brand-guard-in-functions", side: "nx", lanes: ["functions", "firestore_rules"],
+    why: "functions/src/shared/brand.test.ts re-runs the brand guard, so brand changes run Functions (and the rules lane that depends on it); the planner misses that.",
+    matches: ({changedFiles}) => changedFiles.some((file) => file.startsWith("packages/brand/"))},
+];
+
+/** The rule that explains one disagreeing lane, or null. */
+export function explain({lane, side, sources = [], nxTasks = [], changedFiles = []}) {
+  const rule = explanationRules.find((candidate) => candidate.side === side &&
+    (!candidate.lanes || candidate.lanes.includes(lane)) &&
+    candidate.matches({lane, sources: sources.filter((source) => source.value === lane), nxTasks, changedFiles}));
+  return rule?.id ?? null;
+}
+
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
-  changedFiles = []}) {
+  changedFiles = [], plannerSources = []}) {
   const nxLanes = new Set(changedFiles.some(isControlPlane) ? comparedLanes : []);
   const unmappedTasks = [];
   for (const task of nxTasks) {
@@ -85,8 +154,18 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
   const planner = new Set(plannerLanes);
   const plannerOnly = comparedLanes.filter((lane) => planner.has(lane) && !nxLanes.has(lane));
   const nxOnly = comparedLanes.filter((lane) => nxLanes.has(lane) && !planner.has(lane));
+  const explained = [
+    ...plannerOnly.map((lane) => ({lane, side: "planner"})),
+    ...nxOnly.map((lane) => ({lane, side: "nx"})),
+  ].map((entry) => ({...entry, rule: explain({...entry, sources: plannerSources, nxTasks, changedFiles})}));
+  const unexplained = (side) => explained.filter((entry) => entry.side === side && !entry.rule).map((entry) => entry.lane);
   return {
     agree: plannerOnly.length === 0 && nxOnly.length === 0,
+    explainedAgree: explained.every((entry) => entry.rule),
+    unexplainedPlannerOnly: unexplained("planner"),
+    unexplainedNxOnly: unexplained("nx"),
+    explained: explained.filter((entry) => entry.rule),
+    plannerSources,
     plannerFull,
     plannerLanes: [...planner].sort(),
     nxLanes: [...nxLanes].sort(),
@@ -100,6 +179,7 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
 export function summary(result, {base, head, mode}) {
   const list = (items) => items.length ? items.map((item) => `\`${item}\``).join(", ") : "none";
   const verdict = result.agree ? "Agree on the compared lanes." :
+    result.explainedAgree ? "Every disagreement has a known explanation." :
     result.nxOnly.length ? "**Nx selects a lane the planner skips.** Check this before cut-over." :
       "Nx is narrower. Check each lane below is safe to skip.";
   return [
@@ -111,9 +191,20 @@ export function summary(result, {base, head, mode}) {
     `- Nx lanes: ${list(result.nxLanes)}`,
     `- Planner only: ${list(result.plannerOnly)}`,
     `- Nx only: ${list(result.nxOnly)}`,
+    `- Explained: ${list(result.explained.map((entry) => `${entry.lane} (${entry.side} only: ${entry.rule})`))}`,
+    `- **Unexplained**: planner only ${list(result.unexplainedPlannerOnly)}; Nx only ${list(result.unexplainedNxOnly)}`,
     `- Nx tasks: ${list(result.nxTasks)}`,
+    ...(result.unmappedTasks.length ? [`- **Unmapped Nx tasks** (map them in shadow_plan.mjs): ${list(result.unmappedTasks)}`] : []),
     "",
   ].join("\n");
+}
+
+/**
+ * The shadow run's exit code. A disagreement is the report's subject, so it
+ * passes; an Nx task with no lane means the comparison itself is incomplete.
+ */
+export function shadowExitCode(result) {
+  return result.unmappedTasks.length > 0 ? 1 : 0;
 }
 
 function run(command, args) {
@@ -144,11 +235,15 @@ function main(argv) {
     "--mode", args.mode, "--json"]));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
   const result = compare({plannerLanes: plan.operations.ciTargets, plannerFull: plan.full === true,
-    ...nxAffected(args), mode: args.mode, changedFiles});
+    ...nxAffected(args), mode: args.mode, changedFiles, plannerSources: plan.operationSources?.ciTargets ?? []});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
   if (args.out) fs.writeFileSync(args.out, `${JSON.stringify(report, null, 2)}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(result, args));
   console.log(summary(result, args));
+  if (result.unmappedTasks.length > 0) {
+    console.error(`::error::Nx tasks with no CI lane: ${result.unmappedTasks.join(", ")}. Map them in tool/nx/shadow_plan.mjs.`);
+  }
+  process.exitCode = shadowExitCode(result);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

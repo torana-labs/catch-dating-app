@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {accountExport, passPayload, requestId, splitPlans, tabFromHash, type AccountPlan} from "./accountPageModel";
-import {emailLinkReturnUrl, isMarkedEmailLinkReturn, withoutEmailLinkParams} from "./signInModel";
+import {normalizePhone, phonePattern} from "./signInModel";
 
 const plan = (eventId: string, timing: "upcoming" | "past", startsAt: string): AccountPlan => ({eventId, eventName: eventId,
   organizerId: "o", organizerName: "O", startsAt, endsAt: null, venue: null, status: "signedUp", timing, passAvailable: timing === "upcoming"});
@@ -34,22 +34,11 @@ describe("account page model", () => {
   });
 });
 
-describe("sign-in email links", () => {
-  it("returns to the same page, marked, without stale link parameters", () => {
-    const url = new URL(emailLinkReturnUrl("https://site.example/organizers/run/?ref=ig&oobCode=old#reviews"));
-    expect(url.pathname).toBe("/organizers/run/");
-    expect(url.searchParams.get("ref")).toBe("ig");
-    expect(url.searchParams.get("oobCode")).toBeNull();
-    expect(url.searchParams.get("catchSignIn")).toBe("1");
-    expect(url.hash).toBe("");
-  });
-  it("recognises only this sheet's links, directly or through continueUrl", () => {
-    expect(isMarkedEmailLinkReturn("https://site.example/a/?catchSignIn=1&oobCode=x&mode=signIn")).toBe(true);
-    expect(isMarkedEmailLinkReturn(`https://site.example/a/?oobCode=x&continueUrl=${encodeURIComponent("https://site.example/a/?catchSignIn=1")}`)).toBe(true);
-    expect(isMarkedEmailLinkReturn("https://site.example/f/form/?oobCode=x&mode=signIn")).toBe(false);
-  });
-  it("strips the one-time parameters after sign-in", () => {
-    expect(withoutEmailLinkParams("https://site.example/a/?ref=ig&catchSignIn=1&oobCode=x&apiKey=k&mode=signIn&lang=en#top"))
-      .toBe("/a/?ref=ig#top");
+describe("sign-in phone numbers", () => {
+  it("accepts a number with its country code once spaces, brackets and dashes are gone", () => {
+    expect(normalizePhone("+91 (98765) 432-10")).toBe("+919876543210");
+    expect(phonePattern.test(normalizePhone("+91 98765 43210"))).toBe(true);
+    expect(phonePattern.test("9876543210")).toBe(false);
+    expect(phonePattern.test("+0123456789")).toBe(false);
   });
 });

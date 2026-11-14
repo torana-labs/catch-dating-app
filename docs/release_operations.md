@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.2
+version: 3.3.3
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -350,12 +350,42 @@ Root Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-Tests that inspect files through `dart:io` are filesystem probes and are always
-selected. Dart files anywhere in the repository are covered by the import graph.
+A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+changed path is one that file can read, if those reads are bounded
+(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
+path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
+string literal, a constant of the same file, or an interpolation or
+conditional of those, or when the file names its roots in a
+`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+path such a test can read counts as covered, so a test fixture with a known
+reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
+probe and its tests always run, as does a declared file that uses `Process`,
+`Directory.current` or `Platform.script`, has a literal or constant-prefixed
+path outside its roots, or names a root that is not in the tree. Declared roots
+are trusted for computed paths, so the nightly full run is the backstop for a
+wrong declaration. Dart files anywhere in the repository are covered by the
+import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, firebase configuration and
-Markdown outside test or asset directories) are probe-only. A root test can only
-read them from disk, so the probes cover them without broadening the selection.
+golden and integration suites, other packages' apps, the `packages/catch_ui`
+and `packages/kernel` test suites that the package-tests job runs, firebase
+configuration and Markdown outside test or asset directories) are probe-only.
+A root test can only read them from disk, so the probes cover them without
+broadening the selection; a root test that imports one is still selected
+through the import graph.
+The schema contract Dart under `packages/platform/lib/schema_contracts/generated`
+and `lib/contexts/*/data/generated` is not tracked, so the selector renders it:
+`tool/harness/lib/flutter_contract_outputs.mjs` runs
+`tool/contracts/generate_schema_contracts.mjs` on archives of the base and head
+commits (once when their `contracts/` and `tool/contracts/` trees match) with
+the job's installed `functions/node_modules`. The rendered files join both
+import graphs, so a change to a tracked file a generated module imports selects
+that module's importers, and a `contracts/**` or generator change selects the
+importers of each generated file whose content changed. An input that changes
+no generated Dart, such as a BigQuery, Admin or runtime-module contract, selects
+only the filesystem probes. A changed generated file with no importing test,
+a render failure, a `functions/package-lock.json` at a rendered commit that
+differs from the installed one, or a commit window that touches a generator
+input keeps the full suite.
 These inputs keep the full suite: package manifests and the lockfile, analyzer,
 runner, build and localization configuration, `.arb` sources, the Flutter SDK
 pin and the Flutter CI job, and any path that either snapshot's `flutter:`
@@ -550,7 +580,7 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); the merge queue, main and nightly run every discovered test. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
@@ -2036,6 +2066,18 @@ If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
+### Main CI alert
+
+A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
+no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
+driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
+completes. It keeps one open issue titled "Main CI is red": opened on the
+first failure, naming the failed gating jobs (Required CI) and reporting
+jobs separately; commented on each further failure; closed with a comment on
+the next green run. Opening the issue notifies repository watchers. Cancelled
+runs change nothing. Fix forward on main; never close the issue by hand
+while main is still red.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
@@ -3372,3 +3414,12 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## City interest backfill
+
+`.github/workflows/city-interest-backfill.yml` runs `tool/data/backfill_city_interest.mjs` against one Firebase environment as that environment's deploy identity (Workload Identity, the same account the brand publish uses; it needs `roles/datastore.user`). It is dispatch-only and runs only from main.
+
+1. Dispatch with `environment` (`dev` or `prod`) and `mode: dry-run`, the default. The job summary shows the plan: rows read, rows gaining a catalog `cityId`, people to count per city key, and the free-text cities that match no single catalog city. It never shows a contact.
+2. Review the numbers with the owner.
+3. Dispatch again with `mode: apply`. That passes `--apply`, plus `--allow-prod` for prod. The GitHub environment's protection applies. Markers make a rerun count nobody twice.
+

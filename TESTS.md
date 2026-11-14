@@ -27,7 +27,10 @@ Use focused tests while iterating, then run the owning surface's full gate befor
 Functions tests are discovered recursively from compiled
 `functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
 remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
-domain test therefore requires no script edit. The `test:rules` lane runs the
+domain test therefore requires no script edit. On a pull request CI runs
+only the discovered files the change can reach (`CATCH_UNIT_TEST_SELECTION`,
+from `tool/impact/functions_unit_test_selection.mjs`); a local `npm test` and
+the merge queue run them all. The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
 redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
@@ -35,6 +38,42 @@ them across emulator jobs with `CATCH_TEST_SHARD=<index>/<total>`: no job when a
 pull request reaches no strict test, one job for up to 15 tests, otherwise
 three. The merge queue, main and nightly always run the whole list in three.
 A local run without that variable executes the whole list.
+
+Functions tests read repository contracts through `contractFixture("name")`
+(`contracts/fixtures/valid/<name>.json`) and `contractFile("dir/x.json")` in
+`functions/src/shared/contractFixtures.ts`, each with one string literal. Pull
+request selection then runs only the tests that read a changed contract; a path
+built from a variable makes that test run for every contract change.
+
+Flutter CI runs only the root unit and widget tests a change can reach;
+`docs/release_operations.md` owns the selection rules. To see the selection
+for a change locally, install the contract generator's dependencies once with
+`npm --prefix functions ci --ignore-scripts`, then run
+`dart run tool/harness/lib/flutter_test_selection.dart --base <sha> --head <sha> --output build/ci/flutter-test-plan.json`.
+Without those dependencies, a `contracts/**` change selects every test.
+
+### Filesystem reads
+
+A test or helper that reads files through `dart:io` runs only when a path it
+can read changes, if the selector can bound its reads. Literal paths need
+nothing: `File('test/my_feature/fixtures/case.json')`, a same-file constant
+such as `const _root = 'test/my_feature/fixtures';`, or a conditional between
+literals all count. When a path is computed (from a parameter, the
+environment or a package root), name the repository roots it stays within at
+the top of the file:
+
+```dart
+// test-selection-reads: contracts/, packages/catch_ui/assets/fonts/
+```
+
+Keep the comment current when you change what the file reads. The selector
+keeps the file a probe that always runs when it uses `Process`,
+`Directory.current` or `Platform.script`, when a literal or constant-prefixed
+path falls outside the declared roots, or when a declared root is not in the
+tree. Paths under `.dart_tool/` and files outside the repository, such as the
+Flutter SDK, need no root because they follow global inputs. A computed path
+inside a declared root is trusted, so the nightly full run is the backstop for
+a declaration that misses a read.
 
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.

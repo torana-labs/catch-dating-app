@@ -456,3 +456,48 @@ test("a narrowed shard may be empty while an unnarrowed shard may not", () => {
   assert.deepEqual(shardFiles(["a"], "2/3", {allowEmpty: true}).files, []);
   assert.throws(() => shardFiles(["a"], "2/3"), /selects no backend integration tests/u);
 });
+
+test("npm test runs only a pull request's selected Functions tests", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-unit-tests-"));
+  try {
+    const write = (file, name) => {
+      fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+      fs.writeFileSync(path.join(root, file),
+        `require("node:test").test(${JSON.stringify(name)}, () => {});\n`);
+    };
+    write("lib/a/one.test.js", "one ran");
+    write("test/two.test.cjs", "two ran");
+    const runSelection = (selection) => {
+      const env = {...process.env};
+      delete env.NODE_TEST_CONTEXT;
+      delete env.CATCH_UNIT_TEST_SELECTION;
+      if (selection) {
+        fs.writeFileSync(path.join(root, "selection.json"), JSON.stringify(selection));
+        env.CATCH_UNIT_TEST_SELECTION = path.join(root, "selection.json");
+      }
+      const launcher = path.join(root, "launcher.cjs");
+      fs.writeFileSync(launcher, `require(${JSON.stringify(runner)}).run([], {root: ${JSON.stringify(root)}})` +
+        ".then(code => process.exitCode = code).catch(error => {console.error(error); process.exitCode = 1;});");
+      return spawnSync(process.execPath, [launcher], {env, encoding: "utf8", timeout: 15000});
+    };
+    const narrowed = runSelection({mode: "selected", tests: ["test/two.test.cjs"]});
+    assert.equal(narrowed.status, 0, narrowed.stderr);
+    assert.match(narrowed.stdout, /Running 1 of 2 discovered Functions test files/u);
+    assert.match(narrowed.stdout, /two ran/u);
+    assert.doesNotMatch(narrowed.stdout, /one ran/u);
+    const empty = runSelection({mode: "selected", tests: []});
+    assert.equal(empty.status, 0, empty.stderr);
+    assert.match(empty.stdout, /No Functions test can be affected by this change \(0 of 2\)/u);
+    for (const selection of [undefined, {mode: "full", tests: [], reasons: ["shared input"]}]) {
+      const all = runSelection(selection);
+      assert.equal(all.status, 0, all.stderr);
+      assert.match(all.stdout, /Running 2 discovered Functions test files/u);
+      assert.match(all.stdout, /one ran/u);
+    }
+    const outside = runSelection({mode: "selected", tests: ["lib/missing.test.js"]});
+    assert.equal(outside.status, 1);
+    assert.match(outside.stderr, /outside the discovered Functions tests/u);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});

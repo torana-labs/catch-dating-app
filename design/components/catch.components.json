@@ -8008,6 +8008,9 @@
         "symbol": "CatchSheet",
         "file": "packages/web-ui/src/components/CatchSheet.tsx",
         "api": "styled",
+        "additionalSymbols": [
+          "CatchAdaptiveSheet"
+        ],
         "storybook": {
           "status": "ready",
           "story": "packages/web-ui/src/components/CatchSheet.stories.tsx",
@@ -8023,7 +8026,7 @@
             "filter"
           ]
         },
-        "notes": "A native modal dialog docked to the viewport's bottom edge, with the default, standard and filter recipes. Web props: open, and onClose on every recipe (Escape, the backdrop or the filter's Close dismiss it); children is Flutter's child; label names a sheet that has no title. keyboardSafe is accepted for parity, as the browser resizes the viewport for the keyboard itself. The header badge renders CatchBadge's functional recipe."
+        "notes": "A native modal dialog docked to the viewport's bottom edge, with the default, standard and filter recipes. Web props: open, and onClose on every recipe (Escape, the backdrop or the filter's Close dismiss it); children is Flutter's child; label names a sheet that has no title. keyboardSafe is accepted for parity, as the browser resizes the viewport for the keyboard itself. The header badge renders CatchBadge's functional recipe. CatchAdaptiveSheet is the website's adaptive member: this standard sheet under 900px; at 900px and wider a non-modal dropdown anchored under the top-bar control that opened it (Escape or an outside press closes it, focus moves in, Tab cycles inside and Escape returns focus to the trigger; it scrolls inside itself) or, for page content too big for a dropdown, CatchDialog's content recipe."
       },
       "design": {
         "figma": {
@@ -14715,6 +14718,26 @@
           "CatchSearchField.expanding"
         ]
       },
+      "react": {
+        "symbol": "CatchSearchField",
+        "file": "packages/web-ui/src/components/CatchSearchField.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSearchField.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "empty",
+            "filled",
+            "focused",
+            "disabled",
+            "collapsed",
+            "expanded",
+            "large-text"
+          ]
+        },
+        "notes": "Flutter's three constructors map to recipe=\"field\" | \"expanded\" | \"expanding\". copy carries the localized search label, clear tooltip and close label that Flutter reads from its localizations. Explore, the claim page and the city picker use the field recipe."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -16317,7 +16340,7 @@
             "destructive"
           ]
         },
-        "notes": "A native modal dialog for confirming a risky action: focus stays inside, Escape and the scrim close it, and the confirming action comes last."
+        "notes": "A native modal dialog. The confirmation recipe (the web default, Flutter's CatchDialog.confirmation) confirms a risky action: focus stays inside, Escape and the scrim close it, and the confirming action comes last. The content recipe is Flutter's default constructor: a title and subtitle beside a close button (closeLabel names it), slotted children that scroll inside the card when the window is short, and optional trailing actions."
       },
       "system": {
         "name": "Dialog",

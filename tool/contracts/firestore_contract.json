@@ -1,6 +1,76 @@
 {
   "schemaVersion": 2,
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
+  "collectionsWithoutRulesTests": {
+    "issue": "https://github.com/torana-labs/catch-dating-app/issues/1765",
+    "description": "Collections with no Firestore rules test. check_firestore_contract.mjs requires every collection to have a rulesTestFile or an entry here; remove an entry when its test lands.",
+    "collections": [
+      {
+        "id": "config_public_contact",
+        "reason": "Server-only collection read through the website's Firestore viewer identity; no rules test yet."
+      },
+      {
+        "id": "hostProfiles",
+        "reason": "Client access (public) has no rules test yet."
+      },
+      {
+        "id": "organizerContactIdentityLinks",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactEventEdges",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactIdentityClaims",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactTraits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerAudienceSummaries",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactMergeReceipts",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerAudienceProjectionReceipts",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "eventWaitlistOffers",
+        "reason": "Client access (offered attendee or club host) has no rules test yet."
+      },
+      {
+        "id": "eventInviteLinks",
+        "reason": "Client access (club host only) has no rules test yet."
+      },
+      {
+        "id": "payments",
+        "reason": "Client access (payment owner only) has no rules test yet."
+      },
+      {
+        "id": "moderationFlags",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "rateLimits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "programFunctionGuests",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "seedEvents",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      }
+    ]
+  },
   "collections": [
     {
       "id": "catchWhatsappOperatorSetupOperations",
@@ -8,7 +78,7 @@
       "rulesMatch": "/catchWhatsappOperatorSetupOperations/{operationId}",
       "typescriptInterface": "CatchWhatsappOperatorSetupOperationDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps catchWhatsappOperatorSetupOperations permanently server-only"
       ],
@@ -26,7 +96,7 @@
       "rulesMatch": "/catchWhatsappOperatorSetupAudits/{auditId}",
       "typescriptInterface": "CatchWhatsappOperatorSetupAuditDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps catchWhatsappOperatorSetupAudits permanently server-only"
       ],
@@ -44,7 +114,7 @@
       "rulesMatch": "/programLodgingProposals/{proposalId}",
       "typescriptInterface": "ProgramLodgingProposalDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -66,7 +136,7 @@
       "rulesMatch": "/programLodgingWorkflows/{programId}",
       "typescriptInterface": "ProgramLodgingWorkflowDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -88,7 +158,7 @@
       "rulesMatch": "/programLodgingReceipts/{receiptId}",
       "typescriptInterface": "ProgramLodgingReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -110,7 +180,7 @@
       "rulesMatch": "/workspaceMembershipAssertions/{assertionId}",
       "typescriptInterface": "WorkspaceMembershipAssertionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -131,7 +201,7 @@
       "rulesMatch": "/workspaceMembershipDecisions/{decisionId}",
       "typescriptInterface": "WorkspaceMembershipDecisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -152,7 +222,7 @@
       "rulesMatch": "/programLodgingSourceVersions/{programId}",
       "typescriptInterface": "ProgramLodgingSourceVersionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -174,7 +244,7 @@
       "rulesMatch": "/programLodgingConfigs/{programId}",
       "typescriptInterface": "ProgramLodgingConfigDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "rulesTestNames": [
         "denies direct access for guests, managers and unauthenticated viewers"
       ],
@@ -241,7 +311,7 @@
       "rulesMatch": "/organizerPaymentConnections/{connectionId}",
       "typescriptInterface": "OrganizerPaymentConnectionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps form payment state server-only"
       ],
@@ -264,7 +334,7 @@
       "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
       "typescriptInterface": "OrganizerPaymentOauthStateDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps form payment state server-only"
       ],
@@ -282,7 +352,7 @@
       "rulesMatch": "/organizerFormPayments/{paymentId}",
       "typescriptInterface": "OrganizerFormPaymentDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps form payment state server-only"
       ],
@@ -302,7 +372,7 @@
       "rulesMatch": "/organizerFormPaymentWebhooks/{receiptId}",
       "typescriptInterface": "OrganizerFormPaymentWebhookDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps form payment state server-only"
       ],
@@ -319,6 +389,7 @@
       "id": "config_cities",
       "path": "config/cities",
       "rulesMatch": "/config/cities",
+      "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
       "owner": "public read, server/admin write",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
@@ -330,6 +401,7 @@
       "id": "config_brand",
       "path": "config/brand",
       "rulesMatch": "/config/brand",
+      "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
       "owner": "public read, admin write through tool/firebase/create_config_brand.mjs",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
@@ -354,7 +426,7 @@
       "rulesMatch": "/users/{uid}",
       "typescriptInterface": "UserProfileDocument",
       "dartModel": "lib/contexts/profiles/domain/user_profile.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/users.rules.test.cjs",
       "owner": "document id must equal Firebase Auth uid for client writes",
       "read": "owner only; app-facing user discovery reads publicProfiles",
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
@@ -491,7 +563,7 @@
       "path": "onboarding_drafts/{uid}",
       "rulesMatch": "/onboarding_drafts/{uid}",
       "dartModel": "lib/contexts/profiles/domain/onboarding_draft.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/onboarding_drafts.rules.test.cjs",
       "owner": "document id must equal Firebase Auth uid",
       "read": "owner only",
       "write": "owner only; intentionally extensible draft payload",
@@ -522,6 +594,7 @@
       "rulesMatch": "/publicProfiles/{uid}",
       "typescriptInterface": "PublicProfileDocument",
       "dartModel": "lib/contexts/profiles/domain/public_profile.dart",
+      "rulesTestFile": "functions/test/rules/swipes.rules.test.cjs",
       "owner": "syncPublicProfile trigger",
       "read": "authenticated users, except deleted or blocked relationships",
       "write": "server only",
@@ -534,7 +607,7 @@
       "path": "crossPathsShowcaseEligibility/{uid}",
       "rulesMatch": "/crossPathsShowcaseEligibility/{uid}",
       "typescriptInterface": "CrossPathsShowcaseEligibilityDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "adminSetCrossPathsShowcaseEligibility callable",
       "read": "server only; admin reviewers use a sanitized role-gated callable projection",
       "write": "server only; audited admin review decision",
@@ -602,7 +675,7 @@
       "rulesMatch": "/events/{eventId}",
       "typescriptInterface": "EventDocument",
       "dartModel": "lib/contexts/events/domain/event.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
       "owner": "host creates and edits events through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
       "read": "published and legacy public events; private events require current organizer manager or active viewRoster staff grant; public lists constrain publicationState",
       "write": "all event writes are callable-owned; direct client writes are denied",
@@ -761,7 +834,7 @@
       "rulesMatch": "/organizerEventVenues/{venueDocumentId}",
       "typescriptInterface": "OrganizerEventVenueDocument",
       "dartModel": "lib/contexts/events/domain/organizer_event_venue.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer managers through upsertOrganizerEventVenue",
       "read": "organizer managers only",
       "write": "server only; all mutations are callable-owned",
@@ -800,7 +873,7 @@
       "rulesMatch": "/eventRehearsals/{sessionId}",
       "typescriptInterface": "EventRehearsalDocument",
       "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -833,7 +906,7 @@
       "rulesMatch": "/eventRehearsalActors/{actorId}",
       "typescriptInterface": "EventRehearsalActorDocument",
       "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -861,7 +934,7 @@
       "rulesMatch": "/eventRehearsalActions/{actionId}",
       "typescriptInterface": "EventRehearsalActionDocument",
       "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -883,7 +956,7 @@
       "rulesMatch": "/eventRehearsalGuestViews/{viewId}",
       "typescriptInterface": "EventRehearsalGuestViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -904,7 +977,7 @@
       "rulesMatch": "/eventAttendees/{attendeeId}",
       "typescriptInterface": "EventAttendeeDocument",
       "dartModel": "lib/contexts/bookings/domain/event_attendee.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
       "read": "authorized event host only; attendee-facing state is callable-owned",
       "write": "server only",
@@ -928,7 +1001,7 @@
       "rulesMatch": "/eventStaffPresence/{presenceId}",
       "typescriptInterface": "EventStaffPresenceDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "lets an event's managers and roster staff list who is on the door"
       ],
@@ -948,7 +1021,7 @@
       "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
       "typescriptInterface": "EventAttendeeAttendanceReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "setEventAttendeeAttendance callable",
       "read": "server only; replay result is returned by the callable",
       "write": "server only",
@@ -965,7 +1038,7 @@
       "rulesMatch": "/hostRosterIntakeSessions/{sessionId}",
       "typescriptInterface": "HostRosterIntakeSessionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps Host roster intake sessions and receipts server-only"
       ],
@@ -1001,7 +1074,7 @@
       "rulesMatch": "/hostRosterIntakeSessions/{sessionId}/receipts/{receiptId}",
       "typescriptInterface": "HostRosterIntakeReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps Host roster intake sessions and receipts server-only"
       ],
@@ -1021,7 +1094,7 @@
       "rulesMatch": "/organizerCommunicationPreferences/{preferenceId}",
       "typescriptInterface": "OrganizerCommunicationPreferenceDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "public registration and account-deletion callables",
       "read": "server only; Hosts receive aggregate CRM counts",
       "write": "server only",
@@ -1042,7 +1115,7 @@
       "rulesMatch": "/organizerCommunicationPermissionReceipts/{receiptId}",
       "typescriptInterface": "OrganizerCommunicationPermissionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "participant registration, self-service preference, unsubscribe, and inbound STOP handlers",
       "read": "server only; manager projections expose consequences, not private receipt internals",
       "write": "server only and append-only by operation design",
@@ -1062,7 +1135,7 @@
       "rulesMatch": "/organizerContactOrigins/{originId}",
       "typescriptInterface": "OrganizerContactOriginDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "approved organizer contact creators and organizer contact merge callables",
       "read": "server only; manager callables may expose bounded provenance summaries",
       "write": "server only; source facts are immutable and currentContactId moves only with merge receipts",
@@ -1083,7 +1156,7 @@
       "rulesMatch": "/organizerContacts/{contactId}",
       "typescriptInterface": "OrganizerContactDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
       "owner": "organizer audience projection and manager-only CRM callables",
       "read": "server only; manager access is through safe paginated callables",
       "write": "server only",
@@ -1109,7 +1182,7 @@
       "rulesMatch": "/organizerManualSendTasks/{taskId}",
       "typescriptInterface": "OrganizerManualSendTaskDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_manual_send_task.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps invite secrets, touches, share intents, and attribution server-only"
       ],
@@ -1136,7 +1209,7 @@
       "rulesMatch": "/organizerAttentionItems/{attentionId}",
       "typescriptInterface": "OrganizerAttentionItemDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers listen to their own open organizer attention rows"
       ],
@@ -1170,7 +1243,7 @@
       "rulesMatch": "/organizerAttentionSchedules/{organizerId}",
       "typescriptInterface": "OrganizerAttentionScheduleDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their organizer attention schedule and nothing else"
       ],
@@ -1203,7 +1276,7 @@
       "rulesMatch": "/hostEventSetupViews/{eventId}",
       "typescriptInterface": "HostEventSetupViewDocument",
       "dartModel": "lib/contexts/events/data/private_event_setup_view.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets active managers get their event setup views and nothing else"
       ],
@@ -1234,7 +1307,7 @@
       "rulesMatch": "/hostEventSetupDefaultViews/{organizerId}",
       "typescriptInterface": "HostEventSetupDefaultViewDocument",
       "dartModel": "lib/contexts/events/data/manager_event_setup_defaults_view.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets active managers get their setup defaults view and nothing else"
       ],
@@ -1255,7 +1328,7 @@
       "rulesMatch": "/hostProviderConnectionViews/{organizerId}",
       "typescriptInterface": "HostProviderConnectionViewDocument",
       "dartModel": "lib/contexts/audience/data/host_provider_setup_reads.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their door read models and nothing else"
       ],
@@ -1276,7 +1349,7 @@
       "rulesMatch": "/hostEventRosterInsightViews/{eventId}",
       "typescriptInterface": "HostEventRosterInsightViewDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their door read models and nothing else"
       ],
@@ -1302,7 +1375,7 @@
       "rulesMatch": "/hostOrganizerSpendProjections/{organizerId}",
       "typescriptInterface": "HostOrganizerSpendProjectionDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their door read models and nothing else"
       ],
@@ -1322,7 +1395,7 @@
       "rulesMatch": "/organizerSpendTotals/{organizerId}",
       "typescriptInterface": "OrganizerSpendTotalsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their door read models and nothing else"
       ],
@@ -1342,7 +1415,7 @@
       "rulesMatch": "/hostEventCaseViews/{caseId}",
       "typescriptInterface": "HostEventCaseViewDocument",
       "dartModel": "lib/contexts/live/domain/event_assistance_cases_page.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers list an event's help-request and delivery views"
       ],
@@ -1367,7 +1440,7 @@
       "rulesMatch": "/hostEventDeliveryViews/{messageId}",
       "typescriptInterface": "HostEventDeliveryViewDocument",
       "dartModel": "lib/contexts/live/domain/event_assistance_deliveries_page.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers list an event's help-request and delivery views"
       ],
@@ -1395,7 +1468,7 @@
       "rulesMatch": "/hostEventGroupProgressViews/{progressId}",
       "typescriptInterface": "HostEventGroupProgressViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live movement views and nothing else"
       ],
@@ -1426,7 +1499,7 @@
       "rulesMatch": "/hostEventDepartureViews/{rosterId}",
       "typescriptInterface": "HostEventDepartureViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live movement views and nothing else"
       ],
@@ -1456,7 +1529,7 @@
       "rulesMatch": "/hostEventCheckpointViews/{checkpointViewId}",
       "typescriptInterface": "HostEventCheckpointViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live movement views and nothing else"
       ],
@@ -1487,7 +1560,7 @@
       "rulesMatch": "/hostEventAccountabilityViews/{accountabilityViewId}",
       "typescriptInterface": "HostEventAccountabilityViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live guest and settings views and nothing else"
       ],
@@ -1516,7 +1589,7 @@
       "rulesMatch": "/hostEventMembershipViews/{membershipId}",
       "typescriptInterface": "HostEventMembershipViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live guest and settings views and nothing else"
       ],
@@ -1545,7 +1618,7 @@
       "rulesMatch": "/hostEventAssistanceSettingViews/{settingId}",
       "typescriptInterface": "HostEventAssistanceSettingViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live guest and settings views and nothing else"
       ],
@@ -1574,7 +1647,7 @@
       "rulesMatch": "/hostEventRuntimeViews/{runtimeId}",
       "typescriptInterface": "HostEventRuntimeViewDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers read live guest and settings views and nothing else"
       ],
@@ -1603,7 +1676,7 @@
       "rulesMatch": "/organizerEntitlements/{organizerId}",
       "typescriptInterface": "OrganizerEntitlementsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer entitlement state server-only"
       ],
@@ -1627,7 +1700,7 @@
       "rulesMatch": "/organizerEntitlementReceipts/{receiptId}",
       "typescriptInterface": "OrganizerEntitlementReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer entitlement state server-only"
       ],
@@ -1645,7 +1718,7 @@
       "rulesMatch": "/organizerForms/{formId}",
       "typescriptInterface": "OrganizerFormDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer form state server-only"
       ],
@@ -1674,7 +1747,7 @@
       "rulesMatch": "/organizerFormDomains/{hostname}",
       "typescriptInterface": "OrganizerFormDomainDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer form state server-only"
       ],
@@ -1692,7 +1765,7 @@
       "rulesMatch": "/organizerFormDrafts/{formId}",
       "typescriptInterface": "OrganizerFormDraftDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer form state server-only"
       ],
@@ -1715,7 +1788,7 @@
       "rulesMatch": "/organizerFormVersions/{versionId}",
       "typescriptInterface": "OrganizerFormVersionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer form state server-only"
       ],
@@ -1738,7 +1811,7 @@
       "rulesMatch": "/organizerContactNotes/{noteId}",
       "typescriptInterface": "OrganizerContactNoteDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "manager-only organizer contact note callables",
       "read": "server only; bounded manager access is embedded in contact detail",
       "write": "server only",
@@ -1758,7 +1831,7 @@
       "rulesMatch": "/organizerContactOutreach/{outreachId}",
       "typescriptInterface": "OrganizerContactOutreachDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "manager-only organizer contact outreach callable",
       "read": "server only; bounded manager access is embedded in contact detail",
       "write": "server only",
@@ -1777,7 +1850,7 @@
       "rulesMatch": "/organizerContactTagVocabularies/{organizerId}",
       "typescriptInterface": "OrganizerContactTagVocabularyDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "manager-only organizer contact mutation callable",
       "read": "server only; sanitized vocabulary labels are returned by CRM callables",
       "write": "server only",
@@ -1797,7 +1870,6 @@
       "rulesMatch": "/organizerContactIdentityLinks/{identityLinkId}",
       "typescriptInterface": "OrganizerContactIdentityLinkDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience identity resolver",
       "read": "server only",
       "write": "server only",
@@ -1819,7 +1891,6 @@
       "rulesMatch": "/organizerContactEventEdges/{edgeId}",
       "typescriptInterface": "OrganizerContactEventEdgeDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience projection",
       "read": "server only; manager access is through CRM detail callables",
       "write": "server only",
@@ -1838,7 +1909,6 @@
       "rulesMatch": "/organizerContactIdentityClaims/{identityClaimId}",
       "typescriptInterface": "OrganizerContactIdentityClaimDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience identity resolver and merge operations",
       "read": "server only",
       "write": "server only",
@@ -1858,7 +1928,6 @@
       "rulesMatch": "/organizerContactTraits/{contactId}",
       "typescriptInterface": "OrganizerContactTraitDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience projection",
       "read": "server only; purpose-built CRM callables expose safe fields",
       "write": "server only",
@@ -1879,7 +1948,6 @@
       "rulesMatch": "/organizerAudienceSummaries/{organizerId}",
       "typescriptInterface": "OrganizerAudienceSummaryDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience projection and getOrganizerCrmSummary",
       "read": "server only; manager aggregate access is callable-owned",
       "write": "server only",
@@ -1899,7 +1967,6 @@
       "rulesMatch": "/organizerContactMergeReceipts/{receiptId}",
       "typescriptInterface": "OrganizerContactMergeReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer contact merge and unmerge callables",
       "read": "server only; authorized managers receive sanitized merge history",
       "write": "server only",
@@ -1917,7 +1984,7 @@
       "rulesMatch": "/organizerContactMergeReviewDecisions/{decisionId}",
       "typescriptInterface": "OrganizerContactMergeReviewDecisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer contact merge review callables",
       "read": "server only; authorized managers receive sanitized candidate decisions",
       "write": "server only",
@@ -1935,7 +2002,7 @@
       "rulesMatch": "/organizerWhatsappThreads/{threadId}",
       "typescriptInterface": "OrganizerWhatsappThreadDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
       "read": "server only; managers receive a sanitized callable projection",
       "write": "server only",
@@ -1954,7 +2021,7 @@
       "rulesMatch": "/organizerWhatsappMessages/{messageId}",
       "typescriptInterface": "OrganizerWhatsappMessageDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
       "read": "server only; managers receive bounded retained bodies through a callable",
       "write": "server only",
@@ -1972,7 +2039,6 @@
       "rulesMatch": "/organizerAudienceProjectionReceipts/{eventId}",
       "typescriptInterface": "OrganizerAudienceProjectionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer audience summary projection",
       "read": "server only",
       "write": "server only",
@@ -1991,7 +2057,7 @@
       "rulesMatch": "/organizerProviderConnections/{connectionId}",
       "typescriptInterface": "OrganizerProviderConnectionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "organizer booking-provider connection callables",
       "read": "server only; managers read the manager-safe projection in hostProviderConnectionViews",
       "write": "server only; credentials remain in Secret Manager",
@@ -2012,7 +2078,7 @@
       "rulesMatch": "/externalEventMappings/{mappingId}",
       "typescriptInterface": "ExternalEventMappingDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "external event provider mapping and reconciliation callables",
       "read": "current organizer managers get their event's mapping by its derived id under rules (an event without one reads as missing); nobody lists the collection",
       "write": "server only",
@@ -2035,7 +2101,7 @@
       "rulesMatch": "/providerSyncRuns/{runId}",
       "typescriptInterface": "ProviderSyncRunDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "external provider roster reconciliation callable",
       "read": "server only; sanitized result is callable-owned",
       "write": "server only",
@@ -2052,7 +2118,7 @@
       "rulesMatch": "/eventVenueSessions/{sessionId}",
       "typescriptInterface": "EventVenueSessionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "createEventVenueSession callable",
       "read": "server only; signed token is returned by the callable",
       "write": "server only",
@@ -2069,7 +2135,7 @@
       "rulesMatch": "/eventVenueSessionRedemptions/{redemptionId}",
       "typescriptInterface": "EventVenueSessionRedemptionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "attendance and First Hello callables",
       "read": "server only; callers receive bounded callable results",
       "write": "server only",
@@ -2089,7 +2155,7 @@
       "rulesMatch": "/eventRuntimeParticipants/{participantId}",
       "typescriptInterface": "EventRuntimeParticipantDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "Event Success runtime claim and minimum-profile callables",
       "read": "authenticated owner get by deterministic eventId_uid only; no list",
       "write": "server only",
@@ -2109,7 +2175,7 @@
       "rulesMatch": "/eventRuntimeDataRequests/{requestId}",
       "typescriptInterface": "EventRuntimeDataRequestDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "server-only Event Runtime required-data coordinator",
       "read": "server only; future callers receive a bounded guest or Host projection",
       "write": "server only",
@@ -2128,7 +2194,7 @@
       "rulesMatch": "/eventRuntimeDataRequestReceipts/{receiptId}",
       "typescriptInterface": "EventRuntimeDataRequestReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "server-only Event Runtime required-data coordinator",
       "read": "server only",
       "write": "server only and immutable",
@@ -2145,7 +2211,7 @@
       "rulesMatch": "/eventSuccessPresence/{presenceId}",
       "typescriptInterface": "EventSuccessPresenceDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "Event Success attendee heartbeat callable",
       "read": "current organizer managers get or list an event's heartbeats (organizerId and eventId); attendees never read them",
       "write": "server only",
@@ -2162,7 +2228,7 @@
       "rulesMatch": "/eventLiveCommandReceipts/{receiptId}",
       "typescriptInterface": "EventLiveCommandReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
       "rulesTestNames": [
         "keeps close-out, live receipts and guest history server-written"
       ],
@@ -2184,7 +2250,7 @@
       "rulesMatch": "/eventCloseOuts/{eventId}",
       "typescriptInterface": "EventCloseOutDocument",
       "dartModel": "lib/contexts/live/domain/event_close_out.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
       "rulesTestNames": [
         "keeps close-out, live receipts and guest history server-written"
       ],
@@ -2204,7 +2270,7 @@
       "rulesMatch": "/eventSuccessGuestHistory/{historyId}",
       "typescriptInterface": "EventSuccessGuestHistoryDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
       "rulesTestNames": [
         "keeps close-out, live receipts and guest history server-written"
       ],
@@ -2224,7 +2290,7 @@
       "rulesMatch": "/eventLivePositions/{positionId}",
       "typescriptInterface": "EventLivePositionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "Event live-position callable",
       "read": "server only; the public runtime receives fresh positions without account identifiers",
       "write": "server only",
@@ -2242,7 +2308,7 @@
       "rulesMatch": "/eventSuccessLateArrivals/{resolutionId}",
       "typescriptInterface": "EventSuccessLateArrivalDocument",
       "dartModel": "lib/contexts/live/domain/event_success_presence.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "Event Success Host late-arrival callable",
       "read": "attendee own deterministic eventId_uid document or authorized event Host; current organizer managers list an event's placements (organizerId and eventId)",
       "write": "server only",
@@ -2259,7 +2325,7 @@
       "rulesMatch": "/eventRuntimeClaimRequests/{requestId}",
       "typescriptInterface": "EventRuntimeClaimRequestDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "Event Success runtime claim and Host approval callables",
       "read": "authorized event host only",
       "write": "server only",
@@ -2276,7 +2342,7 @@
       "path": "eventAttendeeImports/{importId}",
       "rulesMatch": "/eventAttendeeImports/{importId}",
       "typescriptInterface": "EventAttendeeImportDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "importEventAttendees callable",
       "read": "authorized event host only",
       "write": "server only",
@@ -2293,7 +2359,7 @@
       "rulesMatch": "/eventParticipations/{participationId}",
       "typescriptInterface": "EventParticipationDocument",
       "dartModel": "lib/contexts/bookings/domain/event_participation.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
       "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
       "read": "participant own edge or authorized event host only; candidate discovery is callable-owned",
       "write": "server only",
@@ -2322,7 +2388,7 @@
       "rulesMatch": "/organizerPostDeliveryOperations/{postId}",
       "typescriptInterface": "OrganizerPostDeliveryOperationDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
       "read": "server/admin only; organizer managers receive sanitized delivery counts through callables",
       "write": "server only",
@@ -2359,7 +2425,7 @@
       "rulesMatch": "/organizerPostDeliveryRecipients/{receiptId}",
       "typescriptInterface": "OrganizerPostDeliveryRecipientDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
       "read": "server/admin only; recipient identifiers are hashed and clients receive aggregate counts only",
       "write": "server only",
@@ -2390,7 +2456,7 @@
       "rulesMatch": "/eventBroadcasts/{broadcastId}",
       "typescriptInterface": "EventBroadcastDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "sendEventBroadcast callable and account-deletion cleanup",
       "read": "server/admin only; clients receive only the sanitized callable response",
       "write": "server only",
@@ -2428,7 +2494,7 @@
       "rulesMatch": "/organizerBroadcastSummaries/{broadcastId}",
       "typescriptInterface": "OrganizerBroadcastSummaryDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "sendEventBroadcast projection and listOrganizerCampaigns callable",
       "read": "server only; organizer managers receive sanitized Sends and contact-history rows through callables",
       "write": "server only",
@@ -2462,7 +2528,6 @@
       "rulesMatch": "/eventWaitlistOffers/{offerId}",
       "typescriptInterface": "EventWaitlistOfferDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "waitlist offer callables and expiry scheduler",
       "read": "offered attendee or club host",
       "write": "server only",
@@ -2482,7 +2547,6 @@
       "rulesMatch": "/eventInviteLinks/{inviteLinkId}",
       "typescriptInterface": "EventInviteLinkDocument",
       "dartModel": "lib/contexts/events/domain/event_invite_link.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "event invite link callables and event-success scorecard recomputation",
       "read": "club host only",
       "write": "server only",
@@ -2512,7 +2576,7 @@
       "rulesMatch": "/eventInviteLinkSecrets/{inviteLinkId}",
       "typescriptInterface": "EventInviteLinkSecretDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "event invite link token callables",
       "read": "server only; authorized token retrieval is callable-owned",
       "write": "server only",
@@ -2531,7 +2595,7 @@
       "rulesMatch": "/eventInviteTouches/{touchId}",
       "typescriptInterface": "EventInviteTouchDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "recordEventInviteLinkOpen",
       "read": "server only; Hosts receive aggregate link counts",
       "write": "server only",
@@ -2548,7 +2612,7 @@
       "rulesMatch": "/eventShareIntents/{intentId}",
       "typescriptInterface": "EventShareIntentDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "recordEventShareIntent",
       "read": "server only; Hosts receive aggregate link counts",
       "write": "server only",
@@ -2565,7 +2629,7 @@
       "rulesMatch": "/eventInviteAttributions/{attributionId}",
       "typescriptInterface": "EventInviteAttributionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "verified event fact attribution projection",
       "read": "server only; Hosts receive authorized aggregates and traits",
       "write": "server only",
@@ -2583,7 +2647,7 @@
       "rulesMatch": "/savedEvents/{savedEventId}",
       "typescriptInterface": "SavedEventDocument",
       "dartModel": "lib/contexts/discovery/domain/saved_event.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "authenticated owner",
       "read": "owner only",
       "write": "owner direct create/delete only",
@@ -2629,7 +2693,7 @@
       "rulesMatch": "/reviews/{reviewId}",
       "typescriptInterface": "ReviewDocument",
       "dartModel": "lib/contexts/reviews/domain/review.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/reviews.rules.test.cjs",
       "owner": "review mutations are callable-owned; aggregate stats are trigger-owned",
       "read": "authenticated users",
       "write": "all review writes are callable-owned; direct client writes are denied",
@@ -2706,7 +2770,7 @@
       "rulesMatch": "/profileDecisions/{userId}/outgoing/{targetId}",
       "typescriptInterface": "SwipeDocument",
       "dartModel": "lib/contexts/connections/domain/swipe.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/swipes.rules.test.cjs",
       "owner": "swiper owns outgoing swipe create",
       "read": "swiper only",
       "write": "swiper create only",
@@ -2751,6 +2815,7 @@
       "rulesMatch": "/matches/{matchId}",
       "typescriptInterface": "MatchDocument",
       "dartModel": "lib/contexts/connections/domain/match.dart",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
       "owner": "matching triggers own lifecycle; participants may reset only their unread count",
       "read": "participants only",
       "write": "server create/delete/status; participant unread reset only",
@@ -2766,6 +2831,7 @@
       "rulesMatch": "/matches/{matchId}/messages/{messageId}",
       "typescriptInterface": "ChatMessageDocument",
       "dartModel": "lib/contexts/messaging/domain/chat_message.dart",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
       "owner": "active match participant creates message; triggers own derived match preview/unread/moderation",
       "read": "active match participants",
       "write": "sender create only",
@@ -2780,7 +2846,7 @@
       "rulesMatch": "/notifications/{uid}/items/{notificationId}",
       "typescriptInterface": "ActivityNotificationDocument",
       "dartModel": "lib/contexts/messaging/domain/activity_notification.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/activity_notifications.rules.test.cjs",
       "owner": "notification fan-out Cloud Functions and booking callables",
       "read": "notification owner only",
       "write": "server create/content only; owner may mark read",
@@ -2803,6 +2869,7 @@
       "path": "blocks/{blockId}",
       "rulesMatch": "/blocks/{blockId}",
       "typescriptInterface": "BlockDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "safety callables and block trigger",
       "read": "users involved in the block edge",
       "write": "server only",
@@ -2817,6 +2884,7 @@
       "path": "reports/{reportId}",
       "rulesMatch": "/reports/{reportId}",
       "typescriptInterface": "ReportDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "reportUser callable",
       "read": "server/admin only",
       "write": "server only",
@@ -2841,6 +2909,7 @@
       "id": "deletedUsers",
       "path": "deletedUsers/{uid}",
       "rulesMatch": "/deletedUsers/{uid}",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "requestAccountDeletion callable and account cleanup graph",
       "read": "server/admin only",
       "write": "server only",
@@ -2862,7 +2931,7 @@
       "rulesMatch": "/hostAnalyticsSnapshots/{snapshotId}",
       "typescriptInterface": "HostAnalyticsSnapshotDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps host analytics snapshots server-only"
       ],
@@ -2894,6 +2963,7 @@
       "id": "functionEventReceipts",
       "path": "functionEventReceipts/{receiptId}",
       "rulesMatch": "/functionEventReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "idempotent Cloud Function trigger handlers",
       "read": "server/admin only",
       "write": "server only",
@@ -2908,7 +2978,7 @@
       "id": "eventAssistanceProgressReceipts",
       "path": "eventAssistanceProgressReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceProgressReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance group progress commands",
       "read": "server only",
       "write": "server only",
@@ -2921,7 +2991,7 @@
       "id": "eventAssistanceMemberships",
       "path": "eventAssistanceMemberships/{membershipId}",
       "rulesMatch": "/eventAssistanceMemberships/{membershipId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event group membership",
       "read": "server only",
       "write": "server only",
@@ -2934,7 +3004,7 @@
       "id": "eventAssistanceMembershipReceipts",
       "path": "eventAssistanceMembershipReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceMembershipReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event group membership",
       "read": "server only",
       "write": "server only",
@@ -2946,7 +3016,7 @@
       "id": "eventAssistanceStaffReceipts",
       "path": "eventAssistanceStaffReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceStaffReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event staff group duties",
       "read": "server only",
       "write": "server only",
@@ -2958,7 +3028,7 @@
       "id": "eventStaffGrants",
       "path": "eventStaffGrants/{grantId}",
       "rulesMatch": "/eventStaffGrants/{grantId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "event staff access callables",
       "read": "server only",
       "write": "server only",
@@ -2976,7 +3046,7 @@
       "path": "organizerPrograms/{programId}",
       "rulesMatch": "/organizerPrograms/{programId}",
       "typescriptInterface": "OrganizerProgramDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program management callables",
       "read": "server only; managers and scoped staff receive callable projections",
       "write": "server only",
@@ -2990,7 +3060,7 @@
       "path": "programFunctions/{functionId}",
       "rulesMatch": "/programFunctions/{functionId}",
       "typescriptInterface": "ProgramFunctionDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program management callables",
       "read": "server only",
       "write": "server only",
@@ -3003,7 +3073,7 @@
       "path": "programGuests/{guestId}",
       "rulesMatch": "/programGuests/{guestId}",
       "typescriptInterface": "ProgramGuestDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program guest management and reviewed conversion callables",
       "read": "server only; duty-scoped callables return field-redacted projections",
       "write": "server only",
@@ -3020,7 +3090,6 @@
       "path": "programFunctionGuests/{functionGuestId}",
       "rulesMatch": "/programFunctionGuests/{functionGuestId}",
       "typescriptInterface": "ProgramFunctionGuestDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "program guest management, RSVP conversion, and function check-in callables",
       "read": "server only; duty-scoped callables return field-redacted projections",
       "write": "server only",
@@ -3034,7 +3103,7 @@
       "path": "programHouseholds/{householdId}",
       "rulesMatch": "/programHouseholds/{householdId}",
       "typescriptInterface": "ProgramHouseholdDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program guest management callables",
       "read": "server only",
       "write": "server only",
@@ -3047,7 +3116,7 @@
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",
       "typescriptInterface": "ProgramStaffGrantDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program staff access callables",
       "read": "a staff member may get only their own grant document",
       "write": "server only",
@@ -3061,7 +3130,7 @@
       "path": "programStaffInvites/{inviteId}",
       "rulesMatch": "/programStaffInvites/{inviteId}",
       "typescriptInterface": "ProgramStaffInviteDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program staff invite callables",
       "read": "server only",
       "write": "server only",
@@ -3075,7 +3144,7 @@
       "path": "programPickupPoints/{pickupPointId}",
       "rulesMatch": "/programPickupPoints/{pickupPointId}",
       "typescriptInterface": "ProgramPickupPointDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program resource setup callables",
       "read": "server only",
       "write": "server only",
@@ -3088,7 +3157,7 @@
       "path": "programHotels/{hotelId}",
       "rulesMatch": "/programHotels/{hotelId}",
       "typescriptInterface": "ProgramHotelDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program resource setup callables",
       "read": "server only",
       "write": "server only",
@@ -3101,7 +3170,7 @@
       "path": "programAlerts/{programAlertId}",
       "rulesMatch": "/programAlerts/{programAlertId}",
       "typescriptInterface": "ProgramAlertDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "resolveProgramAlert callable",
       "read": "server only",
       "write": "server only",
@@ -3115,7 +3184,7 @@
       "path": "programGuestIds/{programGuestIdId}",
       "rulesMatch": "/programGuestIds/{programGuestIdId}",
       "typescriptInterface": "ProgramGuestIdDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "submitProgramGuestId and decideProgramGuestId callables",
       "read": "server only",
       "write": "server only",
@@ -3129,7 +3198,7 @@
       "path": "programAssistantRuns/{runId}",
       "rulesMatch": "/programAssistantRuns/{runId}",
       "typescriptInterface": "ProgramAssistantRunDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "wedding assistant (handleProgramWhatsappInbound, previewProgramAssistantReply)",
       "read": "server only",
       "write": "server only",
@@ -3143,7 +3212,7 @@
       "path": "programAssistantBudgets/{budgetId}",
       "rulesMatch": "/programAssistantBudgets/{budgetId}",
       "typescriptInterface": "ProgramAssistantBudgetDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "wedding assistant budget ledger",
       "read": "server only",
       "write": "server only",
@@ -3157,7 +3226,7 @@
       "path": "programHampers/{programHamperId}",
       "rulesMatch": "/programHampers/{programHamperId}",
       "typescriptInterface": "ProgramHamperDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "upsertProgramHamper callable",
       "read": "server only",
       "write": "server only",
@@ -3171,7 +3240,7 @@
       "path": "eventHostPhotos/{eventHostPhotoId}",
       "rulesMatch": "/eventHostPhotos/{eventHostPhotoId}",
       "typescriptInterface": "EventHostPhotoDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/event_host_photos.rules.test.cjs",
       "owner": "addEventHostPhoto and deleteEventHostPhoto callables",
       "read": "checked-in guests of the event and the organizer's owner and managers",
       "write": "server only",
@@ -3184,7 +3253,7 @@
       "path": "programPhotos/{programPhotoId}",
       "rulesMatch": "/programPhotos/{programPhotoId}",
       "typescriptInterface": "ProgramPhotoDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "upsertProgramPhoto callable",
       "read": "server only",
       "write": "server only",
@@ -3198,7 +3267,7 @@
       "path": "programWhatsappEndpointIndex/{endpointIndexId}",
       "rulesMatch": "/programWhatsappEndpointIndex/{endpointIndexId}",
       "typescriptInterface": "ProgramWhatsappEndpointIndexDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "programme WhatsApp endpoint index trigger",
       "read": "server only",
       "write": "server only",
@@ -3213,7 +3282,7 @@
       "path": "programWhatsappThreads/{programWhatsappThreadId}",
       "rulesMatch": "/programWhatsappThreads/{programWhatsappThreadId}",
       "typescriptInterface": "ProgramWhatsappThreadDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "programme WhatsApp inbound router and reply callables",
       "read": "server only",
       "write": "server only",
@@ -3227,7 +3296,7 @@
       "path": "programWhatsappMessages/{programWhatsappMessageId}",
       "rulesMatch": "/programWhatsappMessages/{programWhatsappMessageId}",
       "typescriptInterface": "ProgramWhatsappMessageDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "programme WhatsApp inbound router and reply callables",
       "read": "server only",
       "write": "server only",
@@ -3241,7 +3310,7 @@
       "path": "programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
       "rulesMatch": "/programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
       "typescriptInterface": "ProgramWhatsappReplyOperationDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "sendProgramWhatsappReply callable and sendProgramServiceReply",
       "read": "server only",
       "write": "server only",
@@ -3255,7 +3324,7 @@
       "path": "programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
       "rulesMatch": "/programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
       "typescriptInterface": "ProgramWhatsappCannedReplyDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "upsertProgramWhatsappCannedReply callable",
       "read": "server only",
       "write": "server only",
@@ -3269,7 +3338,7 @@
       "path": "programAssistantSettings/{programId}",
       "rulesMatch": "/programAssistantSettings/{programId}",
       "typescriptInterface": "ProgramAssistantSettingsDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "updateProgramAssistantSettings callable",
       "read": "server only",
       "write": "server only",
@@ -3283,7 +3352,7 @@
       "path": "programVendorBills/{programVendorBillId}",
       "rulesMatch": "/programVendorBills/{programVendorBillId}",
       "typescriptInterface": "ProgramVendorBillDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "reconcileProgramVendorBill callable",
       "read": "server only",
       "write": "server only",
@@ -3297,7 +3366,7 @@
       "path": "programTravelLegs/{legId}",
       "rulesMatch": "/programTravelLegs/{legId}",
       "typescriptInterface": "ProgramTravelLegDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program travel and dispatch callables",
       "read": "server only",
       "write": "server only",
@@ -3311,7 +3380,7 @@
       "path": "programTravelParties/{partyId}",
       "rulesMatch": "/programTravelParties/{partyId}",
       "typescriptInterface": "ProgramTravelPartyDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program travel callables",
       "read": "server only",
       "write": "server only",
@@ -3324,7 +3393,7 @@
       "path": "transportVendors/{vendorId}",
       "rulesMatch": "/transportVendors/{vendorId}",
       "typescriptInterface": "TransportVendorDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "organizer transport vendor callables",
       "read": "server only",
       "write": "server only",
@@ -3338,7 +3407,7 @@
       "path": "transportTrips/{tripId}",
       "rulesMatch": "/transportTrips/{tripId}",
       "typescriptInterface": "TransportTripDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program dispatch and arrival callables",
       "read": "server only",
       "write": "server only",
@@ -3351,7 +3420,7 @@
       "path": "transportActiveAssignments/{assignmentId}",
       "rulesMatch": "/transportActiveAssignments/{assignmentId}",
       "typescriptInterface": "TransportActiveAssignmentDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program dispatch transaction",
       "read": "server only",
       "write": "server only",
@@ -3364,7 +3433,7 @@
       "path": "transportVehicleAssignments/{assignmentId}",
       "rulesMatch": "/transportVehicleAssignments/{assignmentId}",
       "typescriptInterface": "TransportVehicleAssignmentDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program dispatch transaction",
       "read": "server only",
       "write": "server only",
@@ -3378,7 +3447,7 @@
       "path": "transportOperationReceipts/{receiptId}",
       "rulesMatch": "/transportOperationReceipts/{receiptId}",
       "typescriptInterface": "TransportOperationReceiptDocument",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
       "owner": "program transport mutation callables",
       "read": "server only",
       "write": "server only",
@@ -3390,7 +3459,7 @@
       "id": "eventAssistanceParticipationReceipts",
       "path": "eventAssistanceParticipationReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceParticipationReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance participation command",
       "read": "server only",
       "write": "server only",
@@ -3402,7 +3471,7 @@
       "id": "eventAssistanceSettingReceipts",
       "path": "eventAssistanceSettingReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceSettingReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance policy configuration",
       "read": "server only",
       "write": "server only",
@@ -3414,7 +3483,7 @@
       "id": "eventAssistanceRuntimeConfigs",
       "path": "eventAssistanceRuntimeConfigs/{runtimeId}",
       "rulesMatch": "/eventAssistanceRuntimeConfigs/{runtimeId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance runtime configuration",
       "read": "server only",
       "write": "server only",
@@ -3427,7 +3496,7 @@
       "id": "eventAssistanceRuntimeConfigReceipts",
       "path": "eventAssistanceRuntimeConfigReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceRuntimeConfigReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance runtime configuration",
       "read": "server only",
       "write": "server only",
@@ -3440,7 +3509,7 @@
       "id": "eventAssistanceSettings",
       "path": "eventAssistanceSettings/{settingId}",
       "rulesMatch": "/eventAssistanceSettings/{settingId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance policy configuration",
       "read": "server only",
       "write": "server only",
@@ -3452,7 +3521,7 @@
       "id": "eventAssistanceGroupProgress",
       "path": "eventAssistanceGroupProgress/{progressId}",
       "rulesMatch": "/eventAssistanceGroupProgress/{progressId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance group progress commands",
       "read": "server only",
       "write": "server only",
@@ -3465,7 +3534,7 @@
       "id": "eventAssistanceGuests",
       "path": "eventAssistanceGuests/{guestId}",
       "rulesMatch": "/eventAssistanceGuests/{guestId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance guest boundary",
       "read": "server only",
       "write": "server only",
@@ -3482,7 +3551,7 @@
       "id": "eventAssistanceThreads",
       "path": "eventAssistanceThreads/{threadId}",
       "rulesMatch": "/eventAssistanceThreads/{threadId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance guest boundary",
       "read": "server only",
       "write": "server only",
@@ -3495,7 +3564,7 @@
       "id": "eventAssistanceGuestGrants",
       "path": "eventAssistanceGuestGrants/{linkId}",
       "rulesMatch": "/eventAssistanceGuestGrants/{linkId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance guest boundary",
       "read": "server only",
       "write": "server only",
@@ -3508,7 +3577,7 @@
       "id": "eventAssistanceCases",
       "path": "eventAssistanceCases/{caseId}",
       "rulesMatch": "/eventAssistanceCases/{caseId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance guest boundary",
       "read": "server only",
       "write": "server only",
@@ -3524,7 +3593,7 @@
       "id": "eventAssistanceCaseReceipts",
       "path": "eventAssistanceCaseReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceCaseReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance case handling",
       "read": "server only",
       "write": "server only",
@@ -3536,7 +3605,7 @@
       "id": "eventAssistanceRcsSenders",
       "path": "eventAssistanceRcsSenders/{senderId}",
       "rulesMatch": "/eventAssistanceRcsSenders/{senderId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance RCS provisioning",
       "read": "server only",
       "write": "server only",
@@ -3548,7 +3617,7 @@
       "id": "eventAssistanceRcsPermissions",
       "path": "eventAssistanceRcsPermissions/{permissionId}",
       "rulesMatch": "/eventAssistanceRcsPermissions/{permissionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "verified participant event-service preferences",
       "read": "server only",
       "write": "server only",
@@ -3566,7 +3635,7 @@
       "id": "eventAssistanceRcsConsentReceipts",
       "path": "eventAssistanceRcsConsentReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceRcsConsentReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "verified participant event-service preferences",
       "read": "server only",
       "write": "server only",
@@ -3584,7 +3653,7 @@
       "id": "eventAssistanceRcsSubscriptions",
       "path": "eventAssistanceRcsSubscriptions/{subscriptionId}",
       "rulesMatch": "/eventAssistanceRcsSubscriptions/{subscriptionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance authenticated RCS ingress",
       "read": "server only",
       "write": "server only",
@@ -3596,7 +3665,7 @@
       "id": "eventAssistanceRcsCallbacks",
       "path": "eventAssistanceRcsCallbacks/{callbackId}",
       "rulesMatch": "/eventAssistanceRcsCallbacks/{callbackId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance authenticated RCS ingress",
       "read": "server only",
       "write": "server only",
@@ -3608,7 +3677,7 @@
       "id": "eventAssistanceRcsCallbackIdentities",
       "path": "eventAssistanceRcsCallbackIdentities/{receiptKey}",
       "rulesMatch": "/eventAssistanceRcsCallbackIdentities/{receiptKey}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance authenticated RCS ingress",
       "read": "server only",
       "write": "server only",
@@ -3620,7 +3689,7 @@
       "id": "eventAssistanceMessages",
       "path": "eventAssistanceMessages/{messageId}",
       "rulesMatch": "/eventAssistanceMessages/{messageId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance workers",
       "read": "server only",
       "write": "server only",
@@ -3636,7 +3705,7 @@
       "id": "eventAssistanceDeliveryRepairs",
       "path": "eventAssistanceDeliveryRepairs/{receiptId}",
       "rulesMatch": "/eventAssistanceDeliveryRepairs/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance host recovery",
       "read": "server only",
       "write": "server only",
@@ -3651,7 +3720,7 @@
       "id": "operationRuns",
       "path": "operationRuns/{runId}",
       "rulesMatch": "/operationRuns/{runId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3666,7 +3735,7 @@
       "id": "operationWorkItems",
       "path": "operationWorkItems/{workItemId}",
       "rulesMatch": "/operationWorkItems/{workItemId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3681,7 +3750,7 @@
       "id": "operationActionReceipts",
       "path": "operationActionReceipts/{actionId}",
       "rulesMatch": "/operationActionReceipts/{actionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server only",
       "write": "server only"
@@ -3690,7 +3759,7 @@
       "id": "operationLeases",
       "path": "operationLeases/{leaseId}",
       "rulesMatch": "/operationLeases/{leaseId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server only",
       "write": "server only"
@@ -3701,7 +3770,7 @@
       "rulesMatch": "/supplyIntakeRequests/{requestId}",
       "typescriptInterface": "SupplyIntakeRequestsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps durable operations records server-owned"
       ],
@@ -3722,7 +3791,7 @@
       "rulesMatch": "/supplyIntakeUsage/{monthKey}",
       "typescriptInterface": "SupplyIntakeUsageDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps durable operations records server-owned"
       ],
@@ -3737,7 +3806,7 @@
       "id": "adminActionExecutions",
       "path": "adminActionExecutions/{executionId}",
       "rulesMatch": "/adminActionExecutions/{executionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "admin action execution callables",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3754,7 +3823,7 @@
       "id": "adminInboxItems",
       "path": "adminInboxItems/{itemId}",
       "rulesMatch": "/adminInboxItems/{itemId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "admin inbox triggers and callables",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3781,7 +3850,7 @@
       "id": "adminInboxJourney",
       "path": "adminInboxJourney/{stepId}",
       "rulesMatch": "/adminInboxJourney/{stepId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "admin inbox triggers and callables",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3804,7 +3873,7 @@
       "id": "adminPeopleIndex",
       "path": "adminPeopleIndex/{uid}",
       "rulesMatch": "/adminPeopleIndex/{uid}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "people search trigger and callable",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3822,7 +3891,7 @@
       "id": "eventMessagingBudgetDecisions",
       "path": "eventMessagingBudgetDecisions/{decisionId}",
       "rulesMatch": "/eventMessagingBudgetDecisions/{decisionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "admin messaging budget review and decision callables",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3840,7 +3909,7 @@
       "id": "eventMessagingBudgetDecisionReceipts",
       "path": "eventMessagingBudgetDecisionReceipts/{receiptId}",
       "rulesMatch": "/eventMessagingBudgetDecisionReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "adminDecideEventMessagingBudget callable",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3856,7 +3925,7 @@
       "id": "eventMessagingBudgetApplicationReceipts",
       "path": "eventMessagingBudgetApplicationReceipts/{receiptId}",
       "rulesMatch": "/eventMessagingBudgetApplicationReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "adminApplyEventMessagingBudget callable",
       "read": "server/admin callable only",
       "write": "server only",
@@ -3883,7 +3952,7 @@
       "id": "eventAssistanceSmsSenders",
       "path": "eventAssistanceSmsSenders/{senderId}",
       "rulesMatch": "/eventAssistanceSmsSenders/{senderId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance SMS worker",
       "read": "server only",
       "write": "server only",
@@ -3895,7 +3964,7 @@
       "id": "eventAssistanceSmsPermissions",
       "path": "eventAssistanceSmsPermissions/{permissionId}",
       "rulesMatch": "/eventAssistanceSmsPermissions/{permissionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance SMS worker",
       "read": "server only",
       "write": "server only",
@@ -3907,7 +3976,7 @@
       "id": "eventAssistanceSmsBudgets",
       "path": "eventAssistanceSmsBudgets/{budgetId}",
       "rulesMatch": "/eventAssistanceSmsBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance SMS worker",
       "read": "server only",
       "write": "server only",
@@ -3923,7 +3992,7 @@
       "id": "eventAssistanceSmsDispatches",
       "path": "eventAssistanceSmsDispatches/{attemptId}",
       "rulesMatch": "/eventAssistanceSmsDispatches/{attemptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance SMS worker",
       "read": "server only",
       "write": "server only",
@@ -3935,7 +4004,7 @@
       "id": "eventAssistanceSmsConsentReceipts",
       "path": "eventAssistanceSmsConsentReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceSmsConsentReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "verified participant event-service preferences",
       "read": "server only",
       "write": "server only",
@@ -3947,7 +4016,7 @@
       "id": "eventAssistanceWhatsappWithdrawalGrants",
       "path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
       "rulesMatch": "/eventAssistanceWhatsappWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service WhatsApp dispatch and withdrawal",
       "read": "server only",
       "write": "server only",
@@ -3959,7 +4028,7 @@
       "id": "eventAssistanceSmsWithdrawalGrants",
       "path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
       "rulesMatch": "/eventAssistanceSmsWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service SMS dispatch and withdrawal",
       "read": "server only",
       "write": "server only",
@@ -3971,7 +4040,7 @@
       "id": "eventAssistanceWhatsappReplyBindings",
       "path": "eventAssistanceWhatsappReplyBindings/{attemptId}",
       "rulesMatch": "/eventAssistanceWhatsappReplyBindings/{attemptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance WhatsApp dispatch and reply boundary",
       "read": "server only",
       "write": "server only",
@@ -3983,7 +4052,7 @@
       "id": "eventAssistanceWhatsappPolicies",
       "path": "eventAssistanceWhatsappPolicies/{senderId}",
       "rulesMatch": "/eventAssistanceWhatsappPolicies/{senderId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-assistance dispatch",
       "read": "server only",
       "write": "server only",
@@ -3995,7 +4064,7 @@
       "id": "eventAssistanceWhatsappPermissions",
       "path": "eventAssistanceWhatsappPermissions/{permissionId}",
       "rulesMatch": "/eventAssistanceWhatsappPermissions/{permissionId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "verified participant event-service WhatsApp preferences",
       "read": "server only",
       "write": "server only",
@@ -4007,7 +4076,7 @@
       "id": "eventAssistanceWhatsappConsentReceipts",
       "path": "eventAssistanceWhatsappConsentReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceWhatsappConsentReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "verified participant event-service WhatsApp preferences",
       "read": "server only",
       "write": "server only",
@@ -4019,7 +4088,7 @@
       "id": "eventAssistanceWhatsappBudgets",
       "path": "eventAssistanceWhatsappBudgets/{budgetId}",
       "rulesMatch": "/eventAssistanceWhatsappBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-service WhatsApp dispatch",
       "read": "server only",
       "write": "server only",
@@ -4035,7 +4104,7 @@
       "id": "eventAssistanceWhatsappDispatches",
       "path": "eventAssistanceWhatsappDispatches/{attemptId}",
       "rulesMatch": "/eventAssistanceWhatsappDispatches/{attemptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted event-service WhatsApp dispatch",
       "read": "server only",
       "write": "server only",
@@ -4047,7 +4116,7 @@
       "id": "organizerWhatsappEndpointStops",
       "path": "organizerWhatsappEndpointStops/{stopId}",
       "rulesMatch": "/organizerWhatsappEndpointStops/{stopId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "authenticated WhatsApp ingress",
       "read": "server only",
       "write": "server only",
@@ -4059,7 +4128,7 @@
       "id": "eventAssistanceAccountabilityReceipts",
       "path": "eventAssistanceAccountabilityReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceAccountabilityReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance accountability command",
       "read": "server only",
       "write": "server only",
@@ -4071,7 +4140,7 @@
       "id": "eventAssistanceRcsWithdrawalGrants",
       "path": "eventAssistanceRcsWithdrawalGrants/{linkId}",
       "rulesMatch": "/eventAssistanceRcsWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service RCS dispatch and withdrawal",
       "read": "server only",
       "write": "server only",
@@ -4087,7 +4156,7 @@
       "id": "eventAssistanceRcsBudgets",
       "path": "eventAssistanceRcsBudgets/{budgetId}",
       "rulesMatch": "/eventAssistanceRcsBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service RCS dispatch",
       "read": "server only",
       "write": "server only",
@@ -4103,7 +4172,7 @@
       "id": "eventAssistanceRcsDispatches",
       "path": "eventAssistanceRcsDispatches/{attemptId}",
       "rulesMatch": "/eventAssistanceRcsDispatches/{attemptId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service RCS dispatch",
       "read": "server only",
       "write": "server only",
@@ -4115,7 +4184,7 @@
       "id": "eventAssistanceRcsCallbackReceipts",
       "path": "eventAssistanceRcsCallbackReceipts/{callbackId}",
       "rulesMatch": "/eventAssistanceRcsCallbackReceipts/{callbackId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-service RCS callback consumer",
       "read": "server only",
       "write": "server only",
@@ -4129,7 +4198,7 @@
       "rulesMatch": "/eventRehearsalMessages/{messageDocumentId}",
       "typescriptInterface": "EventRehearsalMessageDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -4152,7 +4221,7 @@
       "rulesMatch": "/eventRehearsalCases/{caseId}",
       "typescriptInterface": "EventRehearsalCaseDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -4175,7 +4244,7 @@
       "rulesMatch": "/eventAttendanceDispositions/{dispositionId}",
       "typescriptInterface": "EventAttendanceDispositionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps attendance closeout decisions callable-only"
       ],
@@ -4197,7 +4266,7 @@
       "rulesMatch": "/eventAttendanceDispositionReceipts/{receiptId}",
       "typescriptInterface": "EventAttendanceDispositionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps attendance closeout decisions callable-only"
       ],
@@ -4218,7 +4287,7 @@
       "rulesMatch": "/eventRehearsalMovements/{movementId}",
       "typescriptInterface": "EventRehearsalMovementDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -4241,7 +4310,7 @@
       "rulesMatch": "/eventRehearsalRouteDecisions/{decisionDocumentId}",
       "typescriptInterface": "EventRehearsalRouteDecisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "rulesTestNames": [
         "keeps all dress rehearsal collections callable-only"
       ],
@@ -4262,7 +4331,7 @@
       "id": "eventAssistanceDepartureRosters",
       "path": "eventAssistanceDepartureRosters/{rosterId}",
       "rulesMatch": "/eventAssistanceDepartureRosters/{rosterId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance immutable departure roster",
       "read": "server only",
       "write": "server only",
@@ -4276,7 +4345,7 @@
       "id": "eventAssistanceCheckpoints",
       "path": "eventAssistanceCheckpoints/{reportId}",
       "rulesMatch": "/eventAssistanceCheckpoints/{reportId}",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance checkpoint observation",
       "read": "server only",
       "write": "server only",
@@ -4290,7 +4359,7 @@
       "rulesMatch": "/eventRehearsalMilestones/{organizerId}",
       "typescriptInterface": "EventRehearsalMilestoneDocument",
       "dartModel": "lib/contexts/live/data/event_rehearsal_repository.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get their rehearsal milestone and nothing else"
       ],
@@ -4311,7 +4380,7 @@
       "rulesMatch": "/catchCommunicationPreferences/{uid}",
       "typescriptInterface": "CatchCommunicationPreferenceDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "participant form consent and account deletion",
       "read": "server only; never organizer-visible",
       "write": "server only",
@@ -4331,7 +4400,7 @@
       "rulesMatch": "/catchCommunicationPermissionReceipts/{receiptId}",
       "typescriptInterface": "CatchCommunicationPermissionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "participant form consent and account deletion",
       "read": "server only; never organizer-visible",
       "write": "server only",
@@ -4351,7 +4420,7 @@
       "rulesMatch": "/participantFormProfileProposals/{responseId}",
       "typescriptInterface": "ParticipantFormProfileProposalDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "verified form submission and participant profile claiming",
       "read": "server only; participant claim review requires exact response ownership",
       "write": "server only; never populated from CRM",
@@ -4375,7 +4444,7 @@
       "rulesMatch": "/participantOrganizerCards/{responseId}",
       "typescriptInterface": "ParticipantOrganizerCardDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "participant profile claiming",
       "read": "server only; authenticated participant projection",
       "write": "server only; explicit participant review",
@@ -4394,7 +4463,7 @@
       "rulesMatch": "/participantProfileClaimReceipts/{receiptId}",
       "typescriptInterface": "ParticipantProfileClaimReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "participant profile claiming",
       "read": "server only; authenticated participant projection",
       "write": "server only; explicit participant review",
@@ -4412,7 +4481,7 @@
       "rulesMatch": "/eventChatProfileShares/{shareId}",
       "typescriptInterface": "EventChatProfileShareDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "event participant profile sharing",
       "read": "server only; current joined participants after scoped selection",
       "write": "server only; verified participant choice or own revocation",
@@ -4429,7 +4498,7 @@
       "rulesMatch": "/organizerEventSetupDefaults/{organizerId}",
       "typescriptInterface": "OrganizerEventSetupDefaultsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer event setup defaults and receipts server-only"
       ],
@@ -4447,7 +4516,7 @@
       "rulesMatch": "/organizerEventSetupDefaultReceipts/{receiptId}",
       "typescriptInterface": "OrganizerEventSetupDefaultReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer event setup defaults and receipts server-only"
       ],
@@ -4464,7 +4533,7 @@
       "rulesMatch": "/eventSetupReceipts/{receiptId}",
       "typescriptInterface": "EventSetupReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps private event setup receipts server-only"
       ],
@@ -4485,7 +4554,7 @@
       "rulesMatch": "/eventSetupPreferences/{eventId}",
       "typescriptInterface": "EventSetupPreferencesDocument",
       "dartModel": "lib/contexts/forms/data/event_offer_configuration_reads.dart",
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets managers get event setup preferences and nothing else"
       ],
@@ -4504,7 +4573,7 @@
       "rulesMatch": "/organizerEventOffers/{documentId}",
       "typescriptInterface": "OrganizerEventOfferDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps event offers and evidence server-only"
       ],
@@ -4525,7 +4594,7 @@
       "rulesMatch": "/organizerEventOfferActionReceipts/{documentId}",
       "typescriptInterface": "OrganizerEventOfferActionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps event offers and evidence server-only"
       ],
@@ -4546,7 +4615,7 @@
       "rulesMatch": "/organizerEventOfferBatchReceipts/{documentId}",
       "typescriptInterface": "OrganizerEventOfferBatchReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps event offers and evidence server-only"
       ],
@@ -4567,7 +4636,7 @@
       "rulesMatch": "/organizerEventOfferAudits/{documentId}",
       "typescriptInterface": "OrganizerEventOfferAuditDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps event offers and evidence server-only"
       ],
@@ -4588,7 +4657,7 @@
       "rulesMatch": "/eventOfferConfigurationReceipts/{receiptId}",
       "typescriptInterface": "EventOfferConfigurationReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer event setup defaults and receipts server-only"
       ],
@@ -4605,7 +4674,7 @@
       "rulesMatch": "/organizerFormAdmissions/{documentId}",
       "typescriptInterface": "OrganizerFormAdmissionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps atomic form admission ownership and payment receipts server-only"
       ],
@@ -4620,7 +4689,7 @@
       "rulesMatch": "/organizerFormAdmissionReceipts/{documentId}",
       "typescriptInterface": "OrganizerFormAdmissionReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps atomic form admission ownership and payment receipts server-only"
       ],
@@ -4635,7 +4704,7 @@
       "rulesMatch": "/eventSuccessDeferredCues/{cueId}",
       "typescriptInterface": "EventSuccessDeferredCueDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps held guest cues server-only"
       ],
@@ -4656,7 +4725,7 @@
       "rulesMatch": "/organizerMeetingHistory/{historyId}",
       "typescriptInterface": "OrganizerMeetingHistoryDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer meeting history server-only"
       ],
@@ -4677,7 +4746,7 @@
       "rulesMatch": "/organizerTrackingSettings/{organizerId}",
       "typescriptInterface": "OrganizerTrackingSettingsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer tracking settings server-only"
       ],
@@ -4696,7 +4765,7 @@
       "rulesMatch": "/organizerInsights/{insightId}",
       "typescriptInterface": "OrganizerInsightsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer insights and follower message quotas server-only"
       ],
@@ -4714,7 +4783,7 @@
       "rulesMatch": "/cityInterest/{cityKey}",
       "typescriptInterface": "CityInterestDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps waitlist city interest counters and markers server-only"
       ],
@@ -4732,7 +4801,7 @@
       "rulesMatch": "/cityInterestMarkers/{markerId}",
       "typescriptInterface": "CityInterestMarkerDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps waitlist city interest counters and markers server-only"
       ],
@@ -4750,7 +4819,7 @@
       "rulesMatch": "/organizerFollowerMessageQuotas/{quotaId}",
       "typescriptInterface": "OrganizerFollowerMessageQuotaDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps organizer insights and follower message quotas server-only"
       ],
@@ -4768,7 +4837,7 @@
       "rulesMatch": "/catchWhatsappWebhookEvents/{eventId}",
       "typescriptInterface": "CatchWhatsappWebhookEventDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "rulesTestNames": [
         "keeps Catch WhatsApp webhook receipts server-only"
       ],
@@ -4785,7 +4854,7 @@
       "rulesMatch": "/organizerClaimVerifications/{attemptId}",
       "typescriptInterface": "OrganizerClaimVerificationDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets a requester follow only their own claim verification"
       ],
@@ -4803,7 +4872,7 @@
       "rulesMatch": "/organizerClaimInstagramCodes/{code}",
       "typescriptInterface": "OrganizerClaimInstagramCodeDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets a requester follow only their own claim verification"
       ],
@@ -4821,7 +4890,7 @@
       "rulesMatch": "/organizerClaimInstagramMessages/{messageKey}",
       "typescriptInterface": "OrganizerClaimInstagramMessageDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets a requester follow only their own claim verification"
       ],
@@ -4838,7 +4907,7 @@
       "rulesMatch": "/instagramAccessTokens/{accountId}",
       "typescriptInterface": "InstagramAccessTokenDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets a requester follow only their own claim verification"
       ],
@@ -4856,7 +4925,7 @@
       "rulesMatch": "/workspaceFieldAssertions/{assertionId}",
       "typescriptInterface": "WorkspaceFieldAssertionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "owner": "program guest/household field acquisition adapters",
       "read": "server only; scoped callable projections",
       "write": "server only",
@@ -4877,7 +4946,7 @@
       "rulesMatch": "/workspaceFieldDecisions/{decisionId}",
       "typescriptInterface": "WorkspaceFieldDecisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "owner": "program guest/household explicit field choice adapters",
       "read": "server only; scoped callable projections",
       "write": "server only",
@@ -4897,7 +4966,7 @@
       "rulesMatch": "/organizerCommunityMemberships/{membershipId}",
       "typescriptInterface": "OrganizerCommunityMembershipDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "owner": "explicit organizer community membership callable",
       "read": "server only; scoped callable projections",
       "write": "server only",
@@ -4916,7 +4985,7 @@
       "rulesMatch": "/organizerCommunityMembershipDecisions/{decisionId}",
       "typescriptInterface": "OrganizerCommunityMembershipDecisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
       "owner": "explicit organizer community membership callable",
       "read": "server only; scoped callable projections",
       "write": "server only",
@@ -4935,7 +5004,7 @@
       "rulesMatch": "/hostMembershipPrograms/{organizerId}",
       "typescriptInterface": "HostMembershipProgramDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps membership billing state server-only"
       ],
@@ -4958,7 +5027,7 @@
       "rulesMatch": "/hostMembershipPlans/{planId}",
       "typescriptInterface": "HostMembershipPlanDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "publishes only published membership plans"
       ],
@@ -4981,7 +5050,7 @@
       "rulesMatch": "/hostMemberships/{membershipId}",
       "typescriptInterface": "HostMembershipDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets members read only their own paid membership records"
       ],
@@ -5008,7 +5077,7 @@
       "rulesMatch": "/hostMembershipCheckouts/{checkoutId}",
       "typescriptInterface": "HostMembershipCheckoutDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets members read only their own paid membership records"
       ],
@@ -5030,7 +5099,7 @@
       "rulesMatch": "/hostMembershipCharges/{chargeId}",
       "typescriptInterface": "HostMembershipChargeDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps membership billing state server-only"
       ],
@@ -5051,7 +5120,7 @@
       "rulesMatch": "/commercialTerms/{termsId}",
       "typescriptInterface": "CommercialTermsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
@@ -5072,7 +5141,7 @@
       "rulesMatch": "/commercialTermsRevisions/{revisionId}",
       "typescriptInterface": "CommercialTermsRevisionDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
@@ -5093,7 +5162,7 @@
       "rulesMatch": "/hostMembershipWebhookReceipts/{receiptId}",
       "typescriptInterface": "HostMembershipWebhookReceiptDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps membership billing state server-only"
       ],
@@ -5113,7 +5182,7 @@
       "rulesMatch": "/hostMembershipBenefitUses/{benefitUseId}",
       "typescriptInterface": "HostMembershipBenefitUseDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "lets members read only their own paid membership records"
       ],
@@ -5136,7 +5205,7 @@
       "rulesMatch": "/eventMembershipRules/{eventId}",
       "typescriptInterface": "EventMembershipRulesDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps membership billing state server-only"
       ],
@@ -5278,7 +5347,7 @@
       "rulesMatch": "/organizerPublicPage/{organizerId}",
       "typescriptInterface": "OrganizerPublicPageDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps public page read models and build markers server-only"
       ],
@@ -5304,7 +5373,7 @@
       "rulesMatch": "/eventPublicPage/{eventId}",
       "typescriptInterface": "EventPublicPageDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps public page read models and build markers server-only"
       ],
@@ -5330,7 +5399,7 @@
       "rulesMatch": "/publicPageBuilds/{organizerId}",
       "typescriptInterface": "PublicPageBuildDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps public page read models and build markers server-only"
       ],
@@ -5355,7 +5424,7 @@
       "rulesMatch": "/cityPlans/{citySlug}",
       "typescriptInterface": "CityPlansDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
         "keeps city plans read models server-only"
       ],

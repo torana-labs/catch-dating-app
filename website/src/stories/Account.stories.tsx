@@ -6,6 +6,8 @@ import {AccountPageView, type AccountPageViewProps} from "../features/account/Ac
 import {renderAccountForm} from "../features/account/accountForm";
 import type {WebsiteAccountController} from "../features/account/useWebsiteAccountController";
 import {SignInSheetView} from "../features/account/SignInSheet";
+import {SiteAccountActionProvider} from "../shared/site";
+import {CatchButton, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import type {SignInSheetController, SignInStage} from "../features/account/useSignInSheetController";
 import type {AccountTab} from "../features/account/accountPageModel";
 import type {WebsiteAccount} from "../firebase";
@@ -140,26 +142,36 @@ export const SignedOutDesktop: Story = {...desktop, args: {phase: "signedOut", a
 export const Loading: Story = {args: {phase: "loading", account: undefined}};
 export const Unavailable: Story = {args: {phase: "failed", account: undefined}};
 
+/** The account page under a header whose Sign in the wide dropdown hangs from; phones get the sheet. */
+function SignInPreview({args, controller}: {args: AccountPageViewProps; controller: SignInSheetController}) {
+  const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
+  return (
+    <SiteAccountActionProvider value={{bar: wrap(<CatchButton label={signInCopy.headerSignIn} onPressed={noop} size="sm" variant="quiet" />),
+      menu: {label: signInCopy.headerSignIn, onPressed: noop}}}>
+      <AccountPageView {...args} />
+      <SignInSheetView anchor={anchor} onClose={noop} open sheet={controller} />
+    </SiteAccountActionProvider>
+  );
+}
 const sheet = (stage: SignInStage, extra: Partial<SignInSheetController> = {}): SignInSheetController => ({
   recaptchaId: "preview-sign-in", stage, phone: stage === "start" ? "" : "+91 98765 43210", setPhone: noop, code: "", setCode: noop,
-  email: stage === "linkSent" ? "asha@example.com" : "", setEmail: noop, status: quiet, pending: false,
-  sendCode: asyncNoop, verify: asyncNoop, changePhone: noop, google: asyncNoop, sendLink: asyncNoop, finishEmail: asyncNoop,
-  confirmEmail: noop, reset: noop, ...extra,
+  status: quiet, pending: false, sendCode: asyncNoop, verify: asyncNoop, changePhone: noop, reset: noop, ...extra,
 });
 const sheetStory = (controller: SignInSheetController, wide = false): Story => ({
   ...(wide ? desktop : {}),
   args: {phase: "signedOut", account: undefined},
-  render: (args) => <><AccountPageView {...args} /><SignInSheetView onClose={noop} open sheet={controller} /></>,
+  render: (args) => <SignInPreview args={args} controller={controller} />,
 });
+const codeSent = fill(signInCopy.codeSent, {phone: "+919876543210"});
 
-/** The sheet as it opens: phone code first, then Google and an email link. */
+/** The sheet as it opens, as in the apps: one phone field and one button. Wide, it drops down under the header's Sign in. */
 export const SignInSheet: Story = {...sheetStory(sheet("start")),
   play: async ({canvasElement}) => {
     const body = within(canvasElement.ownerDocument.body);
-    await expect(body.getByRole("button", {name: signInCopy.google})).toBeVisible();
+    await expect(body.getByRole("button", {name: signInCopy.sendCode})).toBeVisible();
+    await expect(body.queryByRole("button", {name: /Google/u})).toBeNull();
   }};
 export const SignInSheetDesktop: Story = sheetStory(sheet("start"), true);
-export const SignInCode: Story = sheetStory(sheet("code", {status: {message: signInCopy.codeSent, tone: "is-success"}}));
+export const SignInCode: Story = sheetStory(sheet("code", {status: {message: codeSent, tone: "is-success"}}));
+export const SignInCodeDesktop: Story = sheetStory(sheet("code", {status: {message: codeSent, tone: "is-success"}}), true);
 export const SignInWrongCode: Story = sheetStory(sheet("code", {code: "123456", status: {message: signInCopy.incorrectCode, tone: "is-error"}}));
-export const SignInLinkSent: Story = sheetStory(sheet("linkSent", {status: {message: signInCopy.linkSent, tone: "is-success"}}));
-export const SignInConfirmEmail: Story = sheetStory(sheet("confirmEmail", {status: {message: signInCopy.confirmEmail, tone: ""}}));

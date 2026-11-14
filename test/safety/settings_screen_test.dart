@@ -13,7 +13,6 @@ import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
-import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/analytics/host_analytics_choice.dart';
 import 'package:catch_platform/app_config.dart';
@@ -22,6 +21,7 @@ import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -412,7 +412,7 @@ void main() {
     expect(authRepository.signOutCallCount, 1);
   });
 
-  testWidgets('host app row opens the central handoff link', (tester) async {
+  testWidgets('host app row opens Catch Host for this device', (tester) async {
     Uri? launchedUri;
     LaunchMode? launchMode;
     final container = _settingsContainer(
@@ -430,7 +430,12 @@ void main() {
     await tester.tap(find.byKey(SettingsKeys.hostAppRow));
     await pumpFeatureUi(tester);
 
-    expect(launchedUri, Uri.parse('${Brand.webOrigin}/host'));
+    // The store listing for this device, else the Host web page.
+    expect(
+      launchedUri,
+      LiveBrand.generated.host.forPlatform(defaultTargetPlatform) ??
+          AppConfig.hostAppUrl,
+    );
     expect(launchMode, LaunchMode.externalApplication);
   });
 

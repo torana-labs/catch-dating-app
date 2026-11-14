@@ -45,6 +45,11 @@ export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:expireEventRehearsals",
   "functions:expireEventWaitlistOffers",
   "functions:reconcileRazorpayOrders",
+  // Reads the organizer WhatsApp token vault but runs as the default runtime
+  // identity, which holds version-manager access for the connection writers.
+  // Held back until it runs as catch-whatsapp-reader@ with the assistant-key,
+  // Eventarc and Firestore grants (14 Nov 2026); the assistant is off anyway.
+  "functions:onProgramWhatsappInboundMessageCreated",
 ]);
 
 export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {
