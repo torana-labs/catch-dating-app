@@ -5747,7 +5747,7 @@
         "packages/web-ui/src/components/CatchAccountButton.module.css",
         "packages/web-ui/src/components/CatchAdaptiveSheet.module.css",
         "packages/web-ui/src/components/CatchSheet.module.css",
-        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css"
       ],
       "storybook": {

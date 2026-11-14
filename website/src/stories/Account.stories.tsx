@@ -201,7 +201,7 @@ const signedInStory = (wide: boolean): Story => ({
     await userEvent.click(canvas.getByRole("button", {name}));
     const menu = within(canvasElement.ownerDocument.body).getByRole("dialog", {name: "Asha Rao"});
     await expect(within(menu).getByRole("link", {name: signInCopy.menu.viewPass})).toHaveAttribute("href", "/account/?pass=sunday-10k#plans");
-    await expect(within(menu).getByRole("menuitem", {name: signInCopy.menu.signOut})).toBeVisible();
+    await expect(within(menu).getByRole("button", {name: signInCopy.menu.signOut})).toBeVisible();
   },
 });
 /** Signed in on a wide page: the avatar's 320px account dropdown. */

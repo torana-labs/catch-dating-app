@@ -1,5 +1,4 @@
-import {CatchAccountButton, CatchAdaptiveSheet, CatchAvatar, CatchButton, CatchIndexRow, CatchMenu, CatchSection, CatchStack,
-  type CatchMenuItem} from "@catch/web-ui";
+import {CatchAccountButton, CatchAdaptiveSheet, CatchAvatar, CatchButton, CatchIndexRow, CatchSection, CatchStack} from "@catch/web-ui";
 import {useState} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {signInCopy} from "../../content/account";
@@ -38,28 +37,28 @@ export function SiteAccountMenu({controller, phone, links = [], menuLabel}: {
   ) : (
     <CatchAccountButton expanded={open} label={fill(copy.avatarLabel, {name})} name={name} onPressed={() => setOpen((value) => !value)} />
   );
-  const items: CatchMenuItem<string>[] = [
-    {value: plansHref, label: copy.myPlans, sublabel: summary?.upcoming ? fill(copy.upcoming, {count: String(summary.upcoming)}) : undefined},
-    {value: detailsHref, label: copy.account},
-    {value: "signOut", label: copy.signOut, startsSection: true},
-    ...links.map((link, index) => ({value: link.href, label: link.label, startsSection: index === 0})),
-  ];
   return (
     <CatchAdaptiveSheet align="end" closeLabel={signInCopy.close} onClose={() => setOpen(false)} open={open}
       subtitle={summary?.phoneNumber ?? undefined} title={name} trigger={trigger} wide="dropdown" width={320}>
       <CatchStack gap={12}>
         {summary?.next ? (
           <CatchSection container="tile" kicker={copy.nextPlan}>
-            <CatchIndexRow date={dateTile(summary.next.startsAt)} density="compact" href={passHref(summary.next.eventId)}
-              meta={[whenLabel(summary.next.startsAt), summary.next.venue].filter(Boolean).join(" · ")} title={summary.next.eventName}
-              trailing={<CatchButton href={passHref(summary.next.eventId)} label={copy.viewPass} size="sm" variant="secondary" />} wrap />
+            <CatchIndexRow date={dateTile(summary.next.startsAt)} density="compact"
+              meta={[whenLabel(summary.next.startsAt), summary.next.venue].filter(Boolean).join(" · ")} title={summary.next.eventName} wrap
+              footer={<CatchButton href={passHref(summary.next.eventId)} label={copy.viewPass} leadingIcon="ticket" size="sm" variant="secondary" />} />
           </CatchSection>
         ) : null}
-        <CatchMenu items={items} label={copy.label} onSelected={(value) => {
-          setOpen(false);
-          if (value === "signOut") void controller.signOut();
-          else window.location.assign(value);
-        }} />
+        <CatchSection dividers="none">
+          <CatchIndexRow density="regular" href={plansHref} icon="ticket" title={copy.myPlans}
+            value={summary?.upcoming ? fill(copy.upcoming, {count: String(summary.upcoming)}) : undefined} />
+          <CatchIndexRow density="regular" href={detailsHref} icon="person" title={copy.account} />
+          <CatchIndexRow density="regular" icon="signOut" onTap={() => {setOpen(false); void controller.signOut();}} title={copy.signOut} />
+        </CatchSection>
+        {links.length > 0 ? (
+          <CatchSection dividers="none">
+            {links.map((link) => <CatchIndexRow density="regular" href={link.href} key={link.href} title={link.label} />)}
+          </CatchSection>
+        ) : null}
       </CatchStack>
     </CatchAdaptiveSheet>
   );
