@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
 /// The comment a `dart:io` test file or helper uses to name the repository
@@ -56,12 +57,20 @@ Set<String>? fileReads({
       return null;
     }
   }
+  // A name the file also binds anywhere below the top level (a parameter,
+  // local, loop or catch variable, pattern variable, nested function or class
+  // member) may shadow the top-level constant where a path uses it. The
+  // unresolved AST cannot tell which binding a use refers to, so such a name
+  // counts as computed.
+  final shadowed = _LocalNames();
+  unit.accept(shadowed);
   final constants = <String, Expression>{
     for (final declaration in unit.declarations)
       if (declaration is TopLevelVariableDeclaration &&
           (declaration.variables.isConst || declaration.variables.isFinal))
         for (final variable in declaration.variables.variables)
-          variable.name.lexeme: ?variable.initializer,
+          if (!shadowed.names.contains(variable.name.lexeme))
+            variable.name.lexeme: ?variable.initializer,
   };
   final visitor = _PathVisitor(constants);
   unit.accept(visitor);
@@ -259,5 +268,74 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
       paths.add(_computed); // A tear-off or alias escapes path evaluation.
     }
     super.visitSimpleIdentifier(node);
+  }
+}
+
+/// Every name bound below the top level of a compilation unit.
+class _LocalNames extends RecursiveAstVisitor<void> {
+  final names = <String>{};
+
+  void _add(Token? name) {
+    if (name != null) names.add(name.lexeme);
+  }
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    if (node.parent?.parent is! TopLevelVariableDeclaration) _add(node.name);
+    super.visitVariableDeclaration(node);
+  }
+
+  @override
+  void visitSimpleFormalParameter(SimpleFormalParameter node) {
+    _add(node.name);
+    super.visitSimpleFormalParameter(node);
+  }
+
+  @override
+  void visitFieldFormalParameter(FieldFormalParameter node) {
+    _add(node.name);
+    super.visitFieldFormalParameter(node);
+  }
+
+  @override
+  void visitSuperFormalParameter(SuperFormalParameter node) {
+    _add(node.name);
+    super.visitSuperFormalParameter(node);
+  }
+
+  @override
+  void visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) {
+    _add(node.name);
+    super.visitFunctionTypedFormalParameter(node);
+  }
+
+  @override
+  void visitDeclaredIdentifier(DeclaredIdentifier node) {
+    _add(node.name);
+    super.visitDeclaredIdentifier(node);
+  }
+
+  @override
+  void visitCatchClauseParameter(CatchClauseParameter node) {
+    _add(node.name);
+    super.visitCatchClauseParameter(node);
+  }
+
+  @override
+  void visitDeclaredVariablePattern(DeclaredVariablePattern node) {
+    _add(node.name);
+    super.visitDeclaredVariablePattern(node);
+  }
+
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (node.parent is! CompilationUnit) _add(node.name);
+    super.visitFunctionDeclaration(node);
+  }
+
+  @override
+  void visitMethodDeclaration(MethodDeclaration node) {
+    _add(node.name);
+    super.visitMethodDeclaration(node);
   }
 }
