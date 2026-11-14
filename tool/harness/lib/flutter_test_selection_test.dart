@@ -30,6 +30,15 @@ Map<String, Object> plan(
 );
 
 void main() {
+  test('shards follow the selection size, between one and four', () {
+    expect(shardCount(0), 0);
+    expect(shardCount(1), 1);
+    expect(shardCount(filesPerShard), 1);
+    expect(shardCount(filesPerShard + 1), 2);
+    expect(shardCount(3 * filesPerShard), 3);
+    expect(shardCount(3 * filesPerShard + 1), 4);
+    expect(shardCount(810), 4);
+  });
   test('CLI binds document ownership and full fallback to committed trees', () {
     final root = Directory.systemTemp.createTempSync(
       'catch-flutter-selection-',
