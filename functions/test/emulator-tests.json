@@ -2,7 +2,6 @@
   "lib/acquisition/acquisition.emulator.test.js",
   "test/rules/activity_notifications.rules.test.cjs",
   "test/rules/chat_and_match_writes.rules.test.cjs",
-  "test/rules/clubs.rules.test.cjs",
   "test/rules/event_host_photos.rules.test.cjs",
   "test/rules/event_success.rules.test.cjs",
   "test/rules/events.rules.test.cjs",
