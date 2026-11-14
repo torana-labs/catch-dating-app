@@ -71,6 +71,9 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   const directory = await get("/organizers/?q=run", 301);
   assert.equal(new URL(directory.response.headers.get("location") ?? "", base).href,
     `${base}/explore/?q=run&show=organisers`, "/organizers/ redirect");
+  // The host pilot application retired: Catch Host's free trial starts in the app.
+  const application = await get("/host/apply/", 301);
+  assert.equal(new URL(application.response.headers.get("location") ?? "", base).href, `${base}/host/#start`, "/host/apply/ redirect");
   const catalog = await get("/api/public-catalog");
   assert.match(catalog.response.headers.get("cache-control"), /no-store/u);
   const data = JSON.parse(catalog.text); assert.ok(Array.isArray(data.listings));
@@ -83,7 +86,7 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
       assert.ok((await get(`/events/${encodeURIComponent(event.id)}/`)).text.includes("<h1"));
     }
   }
-  for (const path of ["/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/", "/host/apply/"]) assert.ok((await get(path)).text.includes("<h1"));
+  for (const path of ["/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/"]) assert.ok((await get(path)).text.includes("<h1"));
   await get("/not-a-real-next-release-route/", 404);
   await get("/events/not-a-real-next-release-event/", 404);
   const privatePage = await get("/f/next-release-private-marker/");

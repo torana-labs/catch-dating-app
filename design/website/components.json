@@ -89,8 +89,7 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical",
-        "host_apply"
+        "event_detail_canonical"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
@@ -125,8 +124,7 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical",
-        "host_apply"
+        "event_detail_canonical"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
@@ -420,7 +418,6 @@
         "organizer_listing_canonical",
         "organizer_listing_legacy",
         "event_detail_canonical",
-        "host_apply",
         "weddings",
         "weddings_apply"
       ],
@@ -1278,30 +1275,6 @@
       "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
     },
     {
-      "id": "host_application_flow",
-      "kind": "flow",
-      "routeIds": [
-        "host_apply"
-      ],
-      "owner": "features/host/application",
-      "source": "website/src/features/host/application/HostApplicationFlow.tsx",
-      "exportName": "HostApplicationFlow",
-      "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostApplicationFlowInitial",
-        "states": [
-          "initial",
-          "interactive-steps"
-        ]
-      },
-      "notes": "Initial flow coverage only; fixed submitted/error states need a later controller seam. HostApplicationFlow configures shared scanner-enforced host application shell primitives instead of rendering raw flow shells."
-    },
-    {
       "id": "route_claim",
       "kind": "route",
       "routeIds": [
@@ -1931,7 +1904,6 @@
         "event_offer",
         "event_rehearsal",
         "event_runtime",
-        "host_apply",
         "household_rsvp",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
@@ -2141,7 +2113,6 @@
       "kind": "supporting-component",
       "routeIds": [
         "event_runtime",
-        "host_apply",
         "household_rsvp"
       ],
       "owner": "shared/ui",
@@ -4155,28 +4126,6 @@
       "notes": "Authenticated guest status and next actions from the canonical viewer contract: a state the guest cannot book from here says what it means and links to its next step. No consumer profile is required."
     },
     {
-      "id": "route_host_apply",
-      "kind": "route",
-      "routeIds": [
-        "host_apply"
-      ],
-      "owner": "features/host",
-      "source": "website/src/features/host/HostApplicationPage.tsx",
-      "exportName": "HostApplicationPage",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostApplication.stories.tsx",
-        "exportName": "Application",
-        "states": [
-          "initial"
-        ]
-      },
-      "notes": "The sole Host pilot intake page: the Host page chrome and section row, one heading, then the existing application controller."
-    },
-    {
       "id": "route_weddings",
       "kind": "route",
       "routeIds": [
@@ -5560,7 +5509,9 @@
       "id": "web_ui_catch_search_field",
       "kind": "supporting-component",
       "routeIds": [
-        "visitor_discovery"
+        "visitor_discovery",
+        "claim",
+        "cities"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchSearchField.tsx",
@@ -5574,7 +5525,7 @@
           "default"
         ]
       },
-      "notes": "Explore's search box for plans and organisers, with its clear button."
+      "notes": "Explore's search box for plans and organisers, the claim page's search for a page to claim and the city picker's search, each with its clear button."
     },
     {
       "id": "route_account",

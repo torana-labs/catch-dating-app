@@ -136,7 +136,8 @@ function HomeThisWeek({home}: {home: Home}) {
     <CatchSurface aria-labelledby="home-week-title" as="section" block="band" color="tile" id="whats-on">
       <HeadingRow aside={<CatchButton href={home.exploreHref} label={fill(copy.week.action, {city})} />}>
         <CatchStack gap={8}>
-          <CatchText tone="danger" variant="label-kicker">{fill(copy.week.eyebrow, {count: home.weekCount})}</CatchText>
+          <CatchText tone="danger" variant="label-kicker">{home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
+            home.weekCount ? copy.week.eyebrowOne : fill(copy.week.eyebrowNew, {city})}</CatchText>
           <CatchText as="h2" id="home-week-title" variant="display-xl">{fill(copy.week.title, {city})}</CatchText>
           <CatchText tone="secondary" variant="body">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
         </CatchStack>
@@ -162,8 +163,9 @@ function HomeThisWeek({home}: {home: Home}) {
 }
 
 /** "Tell me when it opens": one WhatsApp message on opening day, news only if ticked. */
-function HomeLaunchNotice({city}: {city: string}) {
-  const notice = useLaunchNoticeController(city);
+function HomeLaunchNotice({home}: {home: Home}) {
+  const city = home.city.label;
+  const notice = useLaunchNoticeController(city, undefined, {slug: home.city.slug, source: home.citySource});
   return (
     <CatchStack gap={12}>
       <CatchText as="h3" variant="display-sm">{copy.notice.title}</CatchText>
@@ -207,7 +209,7 @@ function HomeLaunchingSoon({home}: {home: Home}) {
           ) : null}
         </CatchSurface>
         <CatchSurface block="floating">
-          <HomeLaunchNotice city={city} />
+          <HomeLaunchNotice home={home} />
           <CatchStack gap={4}>
             <CatchText as="h3" variant="title-row">{fill(copy.soon.knowHost, {city})}</CatchText>
             <CatchStack align="start"><CatchButton href="/host/" label={copy.soon.knowHostAction} size="sm" variant="quiet" /></CatchStack>

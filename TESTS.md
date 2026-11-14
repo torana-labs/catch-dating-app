@@ -30,9 +30,18 @@ remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
 domain test therefore requires no script edit. The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
-redeploy every Function. CI splits that list across three emulator jobs with
-`CATCH_TEST_SHARD=<index>/3`; a local run without that variable executes the
-whole list.
+redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
+them across emulator jobs with `CATCH_TEST_SHARD=<index>/<total>`: no job when a
+pull request reaches no strict test, one job for up to 15 tests, otherwise
+three. The merge queue, main and nightly always run the whole list in three.
+A local run without that variable executes the whole list.
+
+Flutter CI runs only the root unit and widget tests a change can reach;
+`docs/release_operations.md` owns the selection rules. To see the selection
+for a change locally, install the contract generator's dependencies once with
+`npm --prefix functions ci --ignore-scripts`, then run
+`dart run tool/harness/lib/flutter_test_selection.dart --base <sha> --head <sha> --output build/ci/flutter-test-plan.json`.
+Without those dependencies, a `contracts/**` change selects every test.
 
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
