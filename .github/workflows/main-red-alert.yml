@@ -6,10 +6,15 @@ name: Main CI alert
 # main is noticed within one run (owner decision, 12 Nov 2026: alert only, no
 # auto-revert). After a green run it also checks whether main has been fully
 # green for 7 days, and if so opens one issue saying the reporting lanes can
-# block merges again (owner decision, 14 Nov 2026). It reads only main's own
-# runs and checks out main's code.
-# Logic and tests: tool/ci/main_red_alert.mjs. Operator guide:
-# docs/release_operations.md, "Main CI alert".
+# block merges again (owner decision, 14 Nov 2026). After a failed nightly,
+# the selection-miss job checks each failing Functions test against the pull
+# request selection of every commit since the last green nightly, and opens or
+# comments on one "Test selection missed a failing test" issue for any test no
+# commit selected; it is report-only and never changes the nightly's result.
+# It reads only main's own runs and checks out main's code.
+# Logic and tests: tool/ci/main_red_alert.mjs and
+# tool/ci/selection_miss_report.mjs. Operator guide:
+# docs/release_operations.md, "Main CI alert" and "Test selection miss report".
 
 on:
   workflow_run:
@@ -50,3 +55,33 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
         run: node tool/ci/main_red_alert.mjs
+
+  selection-miss:
+    name: Check nightly failures against the test selection
+    if: ${{ github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      # Full first-parent history back to the last green nightly; the
+      # selection needs paths and trees, not old file contents.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - run: npm ci --prefix tool/impact
+      - name: Open or update the selection miss issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node tool/ci/selection_miss_report.mjs

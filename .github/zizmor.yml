@@ -9,9 +9,6 @@ rules:
       # Runs only for main's own push and nightly CI runs, checks out main,
       # and can only write issues.
       - main-red-alert.yml
-      # Runs only for main's own failed nightly CI, checks out that main
-      # commit, and can only write issues.
-      - selection-miss-report.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy,

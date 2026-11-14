@@ -60,7 +60,7 @@ test("a failing test no commit selected opens one issue naming it and its lane",
   assert.match(decision.body, /- `lib\/a\.test\.js` \(Functions unit\)\n- `test\/rules\/b\.rules\.test\.cjs` \(emulator\)/u);
   assert.match(decision.body, /1 other failing test file\(s\) were selected/u);
   assert.match(decision.body, /Rerun the test before treating it as a selector gap/u);
-  assert.match(decision.body, /\n\n---\n_Posted by the Test selection miss report workflow/u);
+  assert.match(decision.body, /\n\n---\n_Posted by the Main CI alert workflow \(tool\/ci\/selection_miss_report\.mjs\)/u);
 });
 
 test("a lane's selection only covers that lane's tests", () => {
@@ -140,17 +140,18 @@ test("selecting the union of several changes' paths selects exactly the union of
   assert.equal(select(pool[7]).mode, "full");
 });
 
-test("the workflow reads only main's failed nightlies and can only write issues", () => {
-  const workflow = fs.readFileSync(new URL("../../.github/workflows/selection-miss-report.yml", import.meta.url), "utf8");
+test("the selection-miss job reads only main's failed nightlies and can only write issues", () => {
+  const workflow = fs.readFileSync(new URL("../../.github/workflows/main-red-alert.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
   assert.match(workflow, /^permissions: \{\}$/mu);
-  assert.match(workflow, /github\.event\.workflow_run\.head_branch == 'main'/u);
-  assert.match(workflow, /github\.event\.workflow_run\.event == 'schedule'/u);
-  assert.match(workflow, /github\.event\.workflow_run\.conclusion == 'failure'/u);
-  assert.match(workflow, /issues: write/u);
-  assert.doesNotMatch(workflow, /contents: write|pull-requests: write|actions: write/u);
-  assert.match(workflow, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
-  assert.match(workflow, /node tool\/ci\/selection_miss_report\.mjs/u);
+  const job = workflow.slice(workflow.indexOf("\n  selection-miss:\n"));
+  assert.ok(job.length > 1, "main-red-alert.yml has a selection-miss job");
+  assert.match(job, /if: \$\{\{ github\.event\.workflow_run\.head_branch == 'main' && github\.event\.workflow_run\.event == 'schedule' && github\.event\.workflow_run\.conclusion == 'failure' \}\}/u);
+  assert.match(job, /permissions:\n\s+actions: read\n\s+contents: read\n\s+issues: write\n/u);
+  assert.doesNotMatch(job, /contents: write|pull-requests: write|actions: write/u);
+  assert.match(job, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
+  assert.match(job, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
+  assert.match(job, /node tool\/ci\/selection_miss_report\.mjs/u);
   // The nightly keeps the unit report this reads; the emulator lane already keeps its evidence.
   const functions = fs.readFileSync(new URL("../../.github/workflows/functions-ci.yml", import.meta.url), "utf8");
   assert.match(functions, /CATCH_UNIT_TEST_JUNIT_PATH: \$\{\{ inputs\.mode == 'nightly' &&/u);

@@ -7,10 +7,10 @@
 // failing test that no commit selected is a possible selector gap: the pull
 // request that broke it got no warning before the merge queue. Each such
 // nightly opens, or comments on, one "Test selection missed a failing test"
-// issue. Report-only: it runs after the nightly in its own workflow and never
-// changes the nightly's result.
+// issue. Report-only: it runs after the nightly in the Main CI alert workflow
+// and never changes the nightly's result.
 //
-// Usage (Test selection miss report workflow): GH_TOKEN, GITHUB_REPOSITORY,
+// Usage (Main CI alert workflow, selection-miss job): GH_TOKEN, GITHUB_REPOSITORY,
 // RUN_ID set; needs `npm ci --prefix tool/impact` and main's history.
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
@@ -24,7 +24,7 @@ export const ISSUE_TITLE = "Test selection missed a failing test";
 // Nightlies are daily, so a day of merges fits well within this; older or
 // unknown green nightlies check only the newest commits.
 export const COMMIT_LIMIT = 150;
-const FOOTER = "\n\n---\n_Posted by the Test selection miss report workflow (tool/ci/selection_miss_report.mjs)._";
+const FOOTER = "\n\n---\n_Posted by the Main CI alert workflow (tool/ci/selection_miss_report.mjs)._";
 const LANES = {unit: "Functions unit", emulator: "emulator"};
 
 /** A test file path from a CI report, named as the selector lists it (relative to functions/). */

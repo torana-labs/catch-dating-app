@@ -7206,7 +7206,7 @@
       "status": "active",
       "impactPaths": [
         ".github/workflows/functions-ci.yml",
-        ".github/workflows/selection-miss-report.yml",
+        ".github/workflows/main-red-alert.yml",
         "functions/scripts/run-tests.cjs",
         "tool/ci/selection_miss_report.mjs",
         "tool/ci/selection_miss_report.test.mjs",

@@ -2146,8 +2146,8 @@ while main is still red.
 ### Test selection miss report
 
 Pull requests run only the Functions unit and emulator tests their change can
-reach; the nightly runs them all. `Test selection miss report`
-(`.github/workflows/selection-miss-report.yml`, driven by
+reach; the nightly runs them all. The `selection-miss` job of `Main CI alert`
+(`.github/workflows/main-red-alert.yml`, driven by
 `tool/ci/selection_miss_report.mjs`) runs after a failed nightly. It reads the
 nightly's failing Functions test files from its reports: the unit lane's JUnit
 report (`functions-unit-junit-*`, kept only on nightly runs through
@@ -2165,7 +2165,7 @@ or drift outside the repository. Rerun the test first. For a gap, `--explain`
 on `tool/impact/functions_unit_test_selection.mjs` for the suspect commit lists
 what it selected and why; the missing test's tree did not read the change, so
 fix the selector or add a `// test-selection-reads:` declaration. The report is report-only: it runs in
-its own workflow after the nightly, so it never changes the nightly's result,
+a separate workflow after the nightly, so it never changes the nightly's result,
 and it checks only test selection within the Functions lanes, not whether CI
 planned those lanes at all.
 
