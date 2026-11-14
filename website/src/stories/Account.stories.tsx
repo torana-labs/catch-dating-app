@@ -1,11 +1,13 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {expect, within} from "storybook/test";
+import {expect, userEvent, within} from "storybook/test";
 import {accountPageCopy, signInCopy} from "../content/account";
 import {interpolateContent as fill} from "@content/interpolate";
 import {AccountPageView, type AccountPageViewProps} from "../features/account/AccountPage";
 import {renderAccountForm} from "../features/account/accountForm";
 import type {WebsiteAccountController} from "../features/account/useWebsiteAccountController";
 import {SignInSheetView} from "../features/account/SignInSheet";
+import {SiteAccountMenu} from "../features/account/SiteAccountMenu";
+import type {SiteAccountMenuController} from "../features/account/useSiteAccountMenuController";
 import {SiteAccountActionProvider} from "../shared/site";
 import {CatchButton, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import type {SignInSheetController, SignInStage} from "../features/account/useSignInSheetController";
@@ -175,3 +177,34 @@ export const SignInSheetDesktop: Story = sheetStory(sheet("start"), true);
 export const SignInCode: Story = sheetStory(sheet("code", {status: {message: codeSent, tone: "is-success"}}));
 export const SignInCodeDesktop: Story = sheetStory(sheet("code", {status: {message: codeSent, tone: "is-success"}}), true);
 export const SignInWrongCode: Story = sheetStory(sheet("code", {code: "123456", status: {message: signInCopy.incorrectCode, tone: "is-error"}}));
+
+const menuController: SiteAccountMenuController = {
+  summary: {name: "Asha Rao", phoneNumber: "+919876543210", next: account.plans![0], upcoming: 2},
+  signOut: asyncNoop,
+};
+/** The plans page under a signed-in top bar: the right-end avatar on wide pages, the Menu button with the avatar on phones. */
+function SignedInPreview({args}: {args: AccountPageViewProps}) {
+  return (
+    <SiteAccountActionProvider value={{barEnd: <SiteAccountMenu controller={menuController} />,
+      menu: {label: signInCopy.headerAccount, href: "/account/"},
+      phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menuController} links={links} menuLabel={menuLabel} phone />}}>
+      <AccountPageView {...args} />
+    </SiteAccountActionProvider>
+  );
+}
+const signedInStory = (wide: boolean): Story => ({
+  ...(wide ? desktop : {}),
+  render: (args) => <SignedInPreview args={args} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const name = wide ? fill(signInCopy.menu.avatarLabel, {name: "Asha Rao"}) : fill(signInCopy.menu.phoneLabel, {name: "Asha Rao"});
+    await userEvent.click(canvas.getByRole("button", {name}));
+    const menu = within(canvasElement.ownerDocument.body).getByRole("dialog", {name: "Asha Rao"});
+    await expect(within(menu).getByRole("link", {name: signInCopy.menu.viewPass})).toHaveAttribute("href", "/account/?pass=sunday-10k#plans");
+    await expect(within(menu).getByRole("menuitem", {name: signInCopy.menu.signOut})).toBeVisible();
+  },
+});
+/** Signed in on a wide page: the avatar's 320px account dropdown. */
+export const AccountMenuDesktop: Story = signedInStory(true);
+/** Signed in on a phone: the Menu sheet with the account, then the site links. */
+export const AccountMenu: Story = signedInStory(false);
