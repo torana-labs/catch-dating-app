@@ -23,12 +23,16 @@ test("every planner lane has an Nx project to compare with", () => {
   assert.equal(laneForTask("lane-flutter-design:lane"), "flutter");
 });
 
-test("an edit to how CI runs selects every lane", () => {
+test("a selector file selects every lane; a workflow selects the lanes that run it", () => {
   assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
-  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
-  const result = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: [".github/actions/setup-flutter/action.yml"]});
-  assert.equal(result.agree, true);
+  assert.equal(isControlPlane("tool/tools_manifest.json"), true);
+  assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
+  const selector = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"]});
+  assert.equal(selector.agree, true);
+  const flutter = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/flutter-ci.yml"]});
+  assert.ok(flutter.nxLanes.includes("flutter"));
+  assert.ok(!flutter.nxLanes.includes("functions") && !flutter.nxLanes.includes("flutter_build_ios"));
 });
 
 test("pull requests leave the queue-only lanes to the merge queue", () => {
@@ -130,8 +134,9 @@ test("a disagreement with no known cause stays unexplained", () => {
   // Admin selected by catch-admin itself is not the design-parity lane.
   assert.equal(explain({lane: "admin", side: "nx", nxTasks: ["lane-admin-design:lane", "catch-admin:test"],
     changedFiles: ["packages/catch_ui/lib/a.dart"]}), null);
-  // lane-tools-coarse does not cover a tool change.
-  assert.equal(explain({lane: "tools", side: "nx", nxTasks: ["lane-tools:lane"], changedFiles: ["tool/run.mjs"]}), null);
+  // lane-tools-coarse does not cover a tool change, here one no lane job runs.
+  assert.equal(explain({lane: "tools", side: "nx", nxTasks: ["lane-tools:lane"],
+    changedFiles: ["tool/agent/context_pack.mjs"], graph: {lanes: new Map(), selectors: new Set()}}), null);
 
   const result = compare({plannerLanes: ["flutter"], nxTasks: ["lane-docs:lane"], changedFiles: ["README.md"],
     plannerSources: [source("app.source", "flutter")]});
