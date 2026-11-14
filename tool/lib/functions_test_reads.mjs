@@ -265,7 +265,7 @@ function fsBindings(code) {
   }
   // Names taken from an fs object afterwards: const {readFileSync} = fs, const read = fs.readFile.
   for (const object of [...objects]) {
-    const escaped = object.replace(/\$/gu, "\\$");
+    const escaped = object.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
     for (const match of code.matchAll(new RegExp(String.raw`\b(?:const|let|var)\s+\{([^}]*)\}\s*=\s*${escaped}(?:\.promises)?\b(?!\s*[.(])`, "gu"))) {
       named(match[1], /\s*:\s*/u);
     }

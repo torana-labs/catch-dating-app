@@ -70,6 +70,7 @@ test("reads through any local name for node:fs are seen", () => {
     "import fs from \"node:fs\";\nconst read = fs.readFileSync;\nread(name);",
     "import fs from \"node:fs\";\nconst files = fs.promises;\nawait files.readFile(name);",
     "const text = require(\"fs\").readFileSync(name);",
+    "import $fs from \"node:fs\";\nconst {readFileSync: read$} = $fs;\nread$(name);",
   ]) assert.match(reads(body).why ?? "", /computed read path/u, body);
 });
 
