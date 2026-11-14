@@ -7062,6 +7062,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:flutter-package-scope",
+      "category": "ci",
+      "path": "tool/ci/flutter_package_scope.mjs",
+      "command": "node tool/ci/flutter_package_scope.mjs",
+      "safety": "read-only",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/flutter-ci.yml",
+        "tool/ci/flutter_package_scope.mjs",
+        "tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "description": "Decides which Flutter package suites and Widgetbook a pull request's change reaches, from the pubspec path-dependency closures at the head commit; workspace inputs, unclassified paths and every non-pull-request event run them all.",
+      "checks": [
+        "node --check tool/ci/flutter_package_scope.mjs",
+        "node --test tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",

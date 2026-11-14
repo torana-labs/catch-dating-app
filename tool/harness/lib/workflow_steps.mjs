@@ -139,7 +139,11 @@ export function extractSteps(source) {
           // Policy tests inspect conditions even when local execution is
           // intentionally deferred. Preserve the declared metadata.
           step.if = value;
-          step.skipReason = "requires an explicit environment, condition, or non-bash shell";
+          // A pull request's change scope only narrows CI
+          // (tool/ci/flutter_package_scope.mjs); locally the step always runs.
+          if (!/^steps\.scope\.outputs\.\w+ == 'true'$/u.test(value)) {
+            step.skipReason = "requires an explicit environment, condition, or non-bash shell";
+          }
         } else if (key === "env" || key === "shell" && (value !== "bash" || body.some(line => line.trim() && !line.trimStart().startsWith("#")))) {
           step.skipReason = "requires an explicit environment, condition, or non-bash shell";
         }
