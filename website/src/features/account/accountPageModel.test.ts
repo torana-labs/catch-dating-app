@@ -1,5 +1,6 @@
 import {describe, expect, it} from "vitest";
-import {accountExport, passPayload, requestId, splitPlans, tabFromHash, type AccountPlan} from "./accountPageModel";
+import {accountExport, nextPlan, passFromSearch, passHref, passPayload, requestId, splitPlans, tabFromHash, withoutPassParam,
+  type AccountPlan} from "./accountPageModel";
 import {normalizePhone, phonePattern} from "./signInModel";
 
 const plan = (eventId: string, timing: "upcoming" | "past", startsAt: string): AccountPlan => ({eventId, eventName: eventId,
@@ -40,5 +41,25 @@ describe("sign-in phone numbers", () => {
     expect(phonePattern.test(normalizePhone("+91 98765 43210"))).toBe(true);
     expect(phonePattern.test("9876543210")).toBe(false);
     expect(phonePattern.test("+0123456789")).toBe(false);
+  });
+});
+
+describe("pass deep links", () => {
+  it("names one plan's pass under My plans, and reads it back", () => {
+    expect(passHref("run-15-nov")).toBe("/account/?pass=run-15-nov#plans");
+    expect(passFromSearch("?pass=run-15-nov")).toBe("run-15-nov");
+    expect(passFromSearch("?pass=")).toBeNull();
+    expect(passFromSearch("?pass=../x")).toBeNull();
+    expect(passFromSearch("?other=1")).toBeNull();
+  });
+  it("drops the pass parameter and keeps the rest", () => {
+    expect(withoutPassParam("/account/", "?pass=a&ref=ig", "#plans")).toBe("/account/?ref=ig#plans");
+    expect(withoutPassParam("/account/", "?pass=a", "#plans")).toBe("/account/#plans");
+  });
+  it("offers the soonest upcoming plan that is still on", () => {
+    const soon = {...plan("soon", "upcoming", "2026-11-15T00:45:00.000Z"), status: "cancelled" as const};
+    const later = plan("later", "upcoming", "2026-11-21T14:00:00.000Z");
+    expect(nextPlan([later, soon, plan("old", "past", "2026-10-01T00:00:00.000Z")])?.eventId).toBe("later");
+    expect(nextPlan([soon])).toBeNull();
   });
 });

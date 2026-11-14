@@ -39,4 +39,12 @@ describe("CatchTopBar site", () => {
     expect(screen.getByRole("link", {name: "For hosts"}).getAttribute("href")).toBe("/host/");
     expect(screen.getByRole("link", {name: "Get the app"})).toBeTruthy();
   });
+
+  it("draws a whole phone menu in place of the built-in one when the site passes it", () => {
+    render(<CatchTopBar links={[{href: "/explore/", label: "Explore"}]} menuExtras={[{label: "Sign in", onPressed: () => undefined}]}
+      accountEnd={<button type="button">Account, Asha</button>} siteMenu={<button type="button">Menu, signed in as Asha</button>} title="Catch" variant="site" />);
+    expect(screen.getByRole("button", {name: "Account, Asha"})).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Menu, signed in as Asha"})).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Menu"})).toBeNull();
+  });
 });

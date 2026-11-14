@@ -54,8 +54,16 @@ export interface CatchTopBarProps {
    * of the left group after the links. Only the page's actions sit on the right.
    */
   account?: ReactNode;
+  /** site: the signed-in account control at the right end, after the actions, from 600px (Website account proposal). */
+  accountEnd?: ReactNode;
   /** site: entries the phone menu adds after the links, such as the account entry the bar drops under 600px. */
   menuExtras?: readonly CatchTopBarAction[];
+  /**
+   * site: a whole phone menu (under 600px) in place of the built-in Menu
+   * dropdown, such as a signed-in reader's account sheet that also lists the
+   * links. menuExtras is ignored when it is given.
+   */
+  siteMenu?: ReactNode;
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
@@ -77,7 +85,7 @@ function TextAction({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, menuExtras = []}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, accountEnd, menuExtras = [], siteMenu}: CatchTopBarProps) {
   const menuItems = [...(links ?? []), ...menuExtras];
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
@@ -95,7 +103,8 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
           </span>
           <span className={styles.actions}>
             {actions}
-            {menuItems.length > 0 ? (
+            {accountEnd ? <span className={styles.account}>{accountEnd}</span> : null}
+            {siteMenu != null ? <span className={styles.siteMenu}>{siteMenu}</span> : menuItems.length > 0 ? (
               <span className={styles.siteMenu}>
                 <CatchMenu
                   align="end"

@@ -1,13 +1,18 @@
-import {CatchAdaptiveSheet, CatchButton, CatchField, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {CatchAdaptiveSheet, CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {interpolateContent as fill} from "@content/interpolate";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {useEffect, useMemo, useState, type ReactNode, type RefObject} from "react";
 import {signInCopy as copy} from "../../content/account";
 import {SiteAccountActionProvider, type SiteAccountEntry} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {readLocal, signedInHintKey, writeLocal} from "./signInModel";
+import {SiteAccountMenu} from "./SiteAccountMenu";
 import {useSignInSheetController, type SignInSheetController} from "./useSignInSheetController";
+import {useSiteAccountMenuController} from "./useSiteAccountMenuController";
 
 const noop = () => undefined;
+/** 0:28: minutes and two-digit seconds, as the apps count down. */
+const countdown = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
 /**
  * The one sign-in sheet, as in the apps: a phone number, then a six-digit
@@ -56,11 +61,21 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
     return (
       <Form noValidate onSubmit={sheet.verify} pending={sheet.pending}>
         <CatchStack gap={12}>
-          <CatchField inputMode="inactive" keyboardType="phone" onChanged={noop} recipe="input" title={copy.phone} value={sheet.phone} />
+          <CatchSection container="tile">
+            <CatchIndexRow density="compact" subtitle={copy.lockedPhone} title={sheet.phone}
+              trailing={<CatchButton label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone}
+                semanticsLabel={copy.changePhoneLabel} size="sm" variant="quiet" />} />
+          </CatchSection>
           <CatchField autoComplete="one-time-code" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="number"
             onChanged={sheet.setCode} recipe="input" title={copy.code} value={sheet.code} />
           <CatchButton fullWidth label={copy.verify} onPressed={noop} status={busy} type="submit" />
-          <CatchButton fullWidth label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone} variant="quiet" />
+          {sheet.resendIn > 0 ? (
+            <CatchText align="center" as="p" tone="secondary" variant="body-small">{fill(copy.resendIn, {time: countdown(sheet.resendIn)})}</CatchText>
+          ) : (
+            <CatchStack align="center">
+              <CatchButton label={copy.resend} onPressed={sheet.pending ? null : () => void sheet.resend()} size="sm" variant="quiet" />
+            </CatchStack>
+          )}
         </CatchStack>
       </Form>
     );
@@ -93,10 +108,12 @@ export function SignInButton({label = copy.headerSignIn, onSignedIn, size = "sm"
 }
 
 /**
- * The header's account entry, provided to the public header: "Sign in"
- * opens the sheet, and a signed-in reader gets "Account". Wide pages draw it
- * as the last item of the top bar's left group, and the sign-in dropdown
- * hangs from it; under 600px it joins the phone menu and opens the sheet.
+ * The header's account entry, provided to the public header. Signed out,
+ * "Sign in" opens the sheet: wide pages draw it as the last item of the top
+ * bar's left group, and the sign-in dropdown hangs from it; under 600px it
+ * joins the phone menu. Signed in, wide pages draw the initials avatar that
+ * opens the account menu, and phones get a Menu button carrying the avatar
+ * that opens the same menu, with the links, as a sheet.
  * One state and one sheet serve both, and the sheet stays mounted while
  * signed out so a typed number survives closing it. Firebase loads only for
  * a reader this device has seen signed in, so a first visit pays nothing for
@@ -107,6 +124,7 @@ export function SiteAccountProvider({children}: {children: ReactNode}) {
   const [watch, setWatch] = useState(false);
   const [open, setOpen] = useState(false);
   const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
+  const menu = useSiteAccountMenuController(state === "signedIn");
   useEffect(() => {
     if (readLocal(signedInHintKey) === "1") setWatch(true); else setState("signedOut");
   }, []);
@@ -126,12 +144,13 @@ export function SiteAccountProvider({children}: {children: ReactNode}) {
   const entry = useMemo<SiteAccountEntry | null>(() => {
     if (!claimFirebaseConfigured || state === "pending") return null;
     if (state === "signedIn") {
-      return {bar: <CatchButton href="/account/" label={copy.headerAccount} size="sm" variant="quiet" />,
-        menu: {label: copy.headerAccount, href: "/account/"}};
+      return {barEnd: <SiteAccountMenu controller={menu} />,
+        menu: {label: copy.headerAccount, href: "/account/"},
+        phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menu} links={links} menuLabel={menuLabel} phone />};
     }
     return {bar: wrap(<CatchButton label={copy.headerSignIn} onPressed={() => setOpen((value) => !value)} size="sm" variant="quiet" />),
       menu: {label: copy.headerSignIn, onPressed: () => setOpen(true)}};
-  }, [state, wrap]);
+  }, [state, wrap, menu]);
   return (
     <SiteAccountActionProvider value={entry}>
       {children}

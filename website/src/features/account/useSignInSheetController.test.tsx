@@ -5,7 +5,9 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import {signInCopy} from "../../content/account";
 const api = vi.hoisted(() => ({begin: vi.fn()}));
 vi.mock("../../firebase", () => ({beginWebsiteAccountPhoneVerification: api.begin}));
-import {useSignInSheetController} from "./useSignInSheetController";
+import {signInResendCooldownSeconds, useSignInSheetController} from "./useSignInSheetController";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
 import {signedInHintKey} from "./signInModel";
 
 function harness() {
@@ -59,5 +61,29 @@ describe("sign-in sheet", () => {
     expect(h.result.current.phone).toBe("+91 98765 43210");
     expect(h.result.current.stage).toBe("start");
     expect(Object.keys(h.result.current)).not.toEqual(expect.arrayContaining(["google", "sendLink", "email"]));
+  });
+  it("counts down before offering to resend, then sends a fresh code to the same number", async () => {
+    vi.useFakeTimers();
+    try {
+      api.begin.mockResolvedValue({clear: vi.fn(), confirm: vi.fn()});
+      const h = harness();
+      act(() => h.result.current.setPhone("+91 98765 43210"));
+      await act(async () => h.result.current.sendCode());
+      expect(h.result.current.resendIn).toBe(signInResendCooldownSeconds);
+      await act(async () => h.result.current.resend());
+      expect(api.begin).toHaveBeenCalledTimes(1);
+      for (let second = 0; second < signInResendCooldownSeconds; second++) act(() => {vi.advanceTimersByTime(1000);});
+      expect(h.result.current.resendIn).toBe(0);
+      await act(async () => h.result.current.resend());
+      expect(api.begin).toHaveBeenCalledTimes(2);
+      expect(api.begin).toHaveBeenLastCalledWith("+919876543210", h.result.current.recaptchaId);
+      expect(h.result.current.resendIn).toBe(signInResendCooldownSeconds);
+      act(() => h.result.current.changePhone());
+      expect(h.result.current.resendIn).toBe(0);
+    } finally {vi.useRealTimers();}
+  });
+  it("waits as long as the apps before a resend", () => {
+    const motion = readFileSync(resolve(process.cwd(), "../packages/catch_tokens/lib/src/semantic/catch_motion.dart"), "utf8");
+    expect(motion).toContain(`authOtpResendCooldown = Duration(seconds: ${signInResendCooldownSeconds})`);
   });
 });
