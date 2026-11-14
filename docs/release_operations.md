@@ -291,7 +291,16 @@ For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
 `nx-shadow` comparison holds parity (#1554). Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
-`@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
+`@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
+input of code tasks; the Functions README and its rate-limit and inventory
+audits are the `functions:check` target, so a README edit runs that check
+rather than the Functions suite. Each contract family (`contracts-admin`,
+`-bigquery`, `-catalogs`, `-client-writes`, `-fixtures`, `-http`, `-patches`,
+`-storage`) is its own Nx project, and only the projects that consume it depend
+on it: for a BigQuery or HTTP contract change Nx selects Functions and its
+readers, not the Flutter app, though the planner's lanes still run until
+parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
