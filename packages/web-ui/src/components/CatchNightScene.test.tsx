@@ -1,6 +1,6 @@
 import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {CatchNightScene, type CatchNightSceneProps} from "./CatchNightScene";
+import {CatchNightScene, catchNightSceneFocus, type CatchNightSceneProps} from "./CatchNightScene";
 
 const props: CatchNightSceneProps = {
   label: "Sunday Social Run, moment by moment",
@@ -96,5 +96,26 @@ describe("CatchNightScene", () => {
     expect(container.querySelector("[data-frame='none']")).toBeTruthy();
     expect(container.querySelector("[data-orientation]")).toBeNull();
     expect(screen.getByRole("img", {name: "Pace groups"})).toBeTruthy();
+  });
+
+  it("draws each moment's framed capture, with its alt, and carries its focus box for the phone-width crop", () => {
+    const capture = (alt: string, focus?: {x: number; y: number; width: number; height: number}) =>
+      ({src: `/${alt}.png`, alt, width: 980, height: 1924, screen: {x: 88, y: 88, width: 804, height: 1748}, focus});
+    const moments = props.journey.moments.map((moment, index) => ({...moment, screen: undefined,
+      capture: capture(`Capture ${index}`, index === 0 ? {x: 112, y: 650, width: 756, height: 1080} : undefined)}));
+    const {container} = render(<CatchNightScene {...props} frame="capture" journey={{...props.journey, moments}} />);
+    expect(container.querySelector("[data-frame='capture']")).toBeTruthy();
+    const first = screen.getByRole("img", {name: "Capture 0"});
+    expect(first.getAttribute("width")).toBe("980");
+    const layer = first.parentElement as HTMLElement;
+    expect(layer.style.getPropertyValue("--catch-night-focus-y")).toBe("650");
+    expect(layer.style.getPropertyValue("--catch-night-focus-h")).toBe("1080");
+    // The others are hidden from assistive tech until focused.
+    expect(screen.queryByRole("img", {name: "Capture 1"})).toBeNull();
+  });
+
+  it("falls back to the top of the screen at full width when a capture has no focus box", () => {
+    expect(catchNightSceneFocus({src: "/a.png", alt: "", width: 980, height: 1924, screen: {x: 88, y: 88, width: 804, height: 1748}}))
+      .toEqual({x: 88, y: 88, width: 804, height: 1149});
   });
 });

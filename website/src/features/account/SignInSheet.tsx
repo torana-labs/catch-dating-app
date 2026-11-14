@@ -1,64 +1,57 @@
-import {CatchButton, CatchField, CatchSheet, CatchStack, CatchText} from "@catch/web-ui";
+import {CatchAdaptiveSheet, CatchButton, CatchField, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
-import {useEffect, useMemo, useState, type ReactNode} from "react";
+import {useEffect, useMemo, useState, type ReactNode, type RefObject} from "react";
 import {signInCopy as copy} from "../../content/account";
 import {SiteAccountActionProvider, type SiteAccountEntry} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
-import {emailForSignInKey, isMarkedEmailLinkReturn, readLocal, signedInHintKey, withoutEmailLinkParams, writeLocal} from "./signInModel";
+import {readLocal, signedInHintKey, writeLocal} from "./signInModel";
 import {useSignInSheetController, type SignInSheetController} from "./useSignInSheetController";
 
 const noop = () => undefined;
 
 /**
- * The one sign-in sheet (CatchSheet): phone code first, then Google and an
- * email link. It opens from the header and inline at the moment of need
- * (follow, book, review, claim) and never stands in front of browsing.
+ * The one sign-in sheet, as in the apps: a phone number, then a six-digit
+ * code. It opens from the header and inline at the moment of need (follow,
+ * book, review, claim) and never stands in front of browsing. On phones it
+ * is a bottom sheet; at 900px and wider it drops down, 380px, under the
+ * control that opened it. The number stays until sign-in finishes.
  */
-function SignInSheet({open, onClose, onSignedIn, confirmEmail = false}: {
+function SignInSheet({open, onClose, onSignedIn, anchor, trigger}: {
   open: boolean;
   onClose: () => void;
   onSignedIn?: () => void;
-  /** A returned email link whose address this device does not hold. */
-  confirmEmail?: boolean;
+  /** The control the wide dropdown hangs from, when it is drawn elsewhere. */
+  anchor?: RefObject<HTMLElement | null>;
+  /** The control that opens it, drawn in place. */
+  trigger?: ReactNode;
 }) {
   const sheet = useSignInSheetController({onSignedIn: () => {onSignedIn?.(); onClose();}});
-  useEffect(() => {
-    if (open && confirmEmail) sheet.confirmEmail();
-  }, [open, confirmEmail]);
-  return <SignInSheetView onClose={() => {sheet.reset(); onClose();}} open={open} sheet={sheet} />;
+  return <SignInSheetView anchor={anchor} onClose={() => {sheet.reset(); onClose();}} open={open} sheet={sheet} trigger={trigger} />;
 }
 
-export function SignInSheetView({open, onClose, sheet}: {open: boolean; onClose: () => void; sheet: SignInSheetController}) {
+export function SignInSheetView({open, onClose, sheet, anchor, trigger}: {
+  open: boolean;
+  onClose: () => void;
+  sheet: SignInSheetController;
+  anchor?: RefObject<HTMLElement | null>;
+  trigger?: ReactNode;
+}) {
   return (
-    <CatchSheet onClose={onClose} open={open} recipe="standard" subtitle={copy.subtitle} title={copy.title}>
-      <CatchStack gap={16}>
-        <SignInMethods sheet={sheet} />
+    <CatchAdaptiveSheet anchor={anchor} closeLabel={copy.close} onClose={onClose} open={open} subtitle={copy.subtitle} title={copy.title}
+      footer={<CatchText as="p" tone="secondary" variant="body-small">{copy.privacy}</CatchText>} trigger={trigger} wide="dropdown" width={380}>
+      <CatchStack gap={12}>
+        <SignInSteps sheet={sheet} />
         <CatchText as="p" role="status" tone={sheet.status.tone === "is-error" ? "danger" : "secondary"} variant="body-small">
           {sheet.status.message}
         </CatchText>
         <CatchStack id={sheet.recaptchaId} />
-        <CatchText as="p" tone="secondary" variant="body-small">{copy.privacy}</CatchText>
       </CatchStack>
-    </CatchSheet>
+    </CatchAdaptiveSheet>
   );
 }
 
-function SignInMethods({sheet}: {sheet: SignInSheetController}) {
+function SignInSteps({sheet}: {sheet: SignInSheetController}) {
   const busy = sheet.pending ? "loading" : "idle";
-  if (sheet.stage === "confirmEmail") {
-    return (
-      <Form noValidate onSubmit={sheet.finishEmail} pending={sheet.pending}>
-        <CatchStack gap={12}>
-          <CatchField autoComplete="email" keyboardType="emailAddress" onChanged={sheet.setEmail} recipe="input"
-            title={copy.email} value={sheet.email} />
-          <CatchButton fullWidth label={copy.finishEmail} onPressed={noop} status={busy} type="submit" />
-        </CatchStack>
-      </Form>
-    );
-  }
-  if (sheet.stage === "linkSent") {
-    return <CatchButton fullWidth label={copy.changePhone} onPressed={sheet.reset} variant="quiet" />;
-  }
   if (sheet.stage === "code") {
     return (
       <Form noValidate onSubmit={sheet.verify} pending={sheet.pending}>
@@ -73,24 +66,14 @@ function SignInMethods({sheet}: {sheet: SignInSheetController}) {
     );
   }
   return (
-    <CatchStack gap={16}>
-      <Form noValidate onSubmit={sheet.sendCode} pending={sheet.pending}>
-        <CatchStack gap={12}>
-          <CatchField autoComplete="tel" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="phone"
-            onChanged={sheet.setPhone} recipe="input" title={copy.phone} value={sheet.phone} />
-          <CatchButton fullWidth label={copy.sendCode} onPressed={noop} status={busy} type="submit" />
-        </CatchStack>
-      </Form>
-      <CatchText align="center" as="p" tone="secondary" variant="label-kicker">{copy.or}</CatchText>
-      <CatchButton fullWidth label={copy.google} onPressed={sheet.pending ? null : sheet.google} variant="secondary" />
-      <Form noValidate onSubmit={sheet.sendLink} pending={sheet.pending}>
-        <CatchStack gap={12}>
-          <CatchField autoComplete="email" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="emailAddress"
-            onChanged={sheet.setEmail} recipe="input" title={copy.email} value={sheet.email} />
-          <CatchButton fullWidth label={copy.sendLink} onPressed={noop} status={busy} type="submit" variant="secondary" />
-        </CatchStack>
-      </Form>
-    </CatchStack>
+    <Form noValidate onSubmit={sheet.sendCode} pending={sheet.pending}>
+      <CatchStack gap={12}>
+        <CatchField autoComplete="tel" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="phone"
+          onChanged={sheet.setPhone} recipe="input" title={copy.phone} value={sheet.phone} />
+        <CatchButton fullWidth label={copy.sendCode} onPressed={noop} status={busy} type="submit" />
+        <CatchText align="center" as="p" variant="body-small">{copy.noPasswords}</CatchText>
+      </CatchStack>
+    </Form>
   );
 }
 
@@ -105,58 +88,27 @@ export function SignInButton({label = copy.headerSignIn, onSignedIn, size = "sm"
   variant?: "quiet" | "secondary" | "primary";
 }) {
   const [open, setOpen] = useState(false);
-  return <>
-    <CatchButton label={label} onPressed={() => setOpen(true)} size={size} variant={variant} />
-    {open ? <SignInSheet onClose={() => setOpen(false)} onSignedIn={onSignedIn} open /> : null}
-  </>;
-}
-
-/**
- * Finishes this sheet's email link when the reader comes back to the page:
- * with the address this device saved it signs in at once; otherwise it asks
- * for the address in the sheet. Other email links (public forms) are left alone.
- */
-function useEmailLinkReturn(onSignedIn: () => void) {
-  const [confirm, setConfirm] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined" || !isMarkedEmailLinkReturn(window.location.href)) return;
-    let cancelled = false;
-    void (async () => {
-      const {completeWebsiteAccountEmailLink, isWebsiteAccountEmailLink} = await import("../../firebase");
-      if (cancelled || !await isWebsiteAccountEmailLink(window.location.href)) return;
-      const saved = readLocal(emailForSignInKey);
-      if (!saved) {if (!cancelled) setConfirm(true); return;}
-      try {
-        await completeWebsiteAccountEmailLink(saved, window.location.href);
-        writeLocal(emailForSignInKey, null); writeLocal(signedInHintKey, "1");
-        window.history.replaceState(window.history.state, "", withoutEmailLinkParams(window.location.href));
-        if (!cancelled) onSignedIn();
-      } catch {
-        if (!cancelled) setConfirm(true);
-      }
-    })();
-    return () => {cancelled = true;};
-  }, []);
-  return {confirm, dismiss: () => setConfirm(false)};
+  return <SignInSheet onClose={() => setOpen(false)} onSignedIn={onSignedIn} open={open}
+    trigger={<CatchButton label={label} onPressed={() => setOpen((value) => !value)} size={size} variant={variant} />} />;
 }
 
 /**
  * The header's account entry, provided to the public header: "Sign in"
  * opens the sheet, and a signed-in reader gets "Account". Wide pages draw it
- * as the last item of the top bar's left group; under 600px it joins the
- * phone menu. One state and one sheet serve both. Firebase loads only for a
- * reader this device has seen signed in, or one coming back from an email
- * link, so a first visit pays nothing for it; there is no entry until the
- * browser has decided.
+ * as the last item of the top bar's left group, and the sign-in dropdown
+ * hangs from it; under 600px it joins the phone menu and opens the sheet.
+ * One state and one sheet serve both, and the sheet stays mounted while
+ * signed out so a typed number survives closing it. Firebase loads only for
+ * a reader this device has seen signed in, so a first visit pays nothing for
+ * it; there is no entry until the browser has decided.
  */
 export function SiteAccountProvider({children}: {children: ReactNode}) {
   const [state, setState] = useState<"pending" | "signedOut" | "signedIn">("pending");
   const [watch, setWatch] = useState(false);
   const [open, setOpen] = useState(false);
-  const link = useEmailLinkReturn(() => setWatch(true));
+  const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
   useEffect(() => {
-    const hinted = readLocal(signedInHintKey) === "1" || isMarkedEmailLinkReturn(window.location.href);
-    if (hinted) setWatch(true); else setState("signedOut");
+    if (readLocal(signedInHintKey) === "1") setWatch(true); else setState("signedOut");
   }, []);
   useEffect(() => {
     if (!watch) return;
@@ -177,15 +129,14 @@ export function SiteAccountProvider({children}: {children: ReactNode}) {
       return {bar: <CatchButton href="/account/" label={copy.headerAccount} size="sm" variant="quiet" />,
         menu: {label: copy.headerAccount, href: "/account/"}};
     }
-    const signIn = () => setOpen(true);
-    return {bar: <CatchButton label={copy.headerSignIn} onPressed={signIn} size="sm" variant="quiet" />,
-      menu: {label: copy.headerSignIn, onPressed: signIn}};
-  }, [state]);
+    return {bar: wrap(<CatchButton label={copy.headerSignIn} onPressed={() => setOpen((value) => !value)} size="sm" variant="quiet" />),
+      menu: {label: copy.headerSignIn, onPressed: () => setOpen(true)}};
+  }, [state, wrap]);
   return (
     <SiteAccountActionProvider value={entry}>
       {children}
-      {entry && state === "signedOut" && (open || link.confirm) ? <SignInSheet confirmEmail={link.confirm} onClose={() => {setOpen(false); link.dismiss();}}
-        onSignedIn={() => setWatch(true)} open /> : null}
+      {entry && state === "signedOut" ? <SignInSheet anchor={anchor} onClose={() => setOpen(false)}
+        onSignedIn={() => setWatch(true)} open={open} /> : null}
     </SiteAccountActionProvider>
   );
 }

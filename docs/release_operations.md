@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.2
+version: 3.3.3
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -350,8 +350,21 @@ Root Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-Tests that inspect files through `dart:io` are filesystem probes and are always
-selected. Dart files anywhere in the repository are covered by the import graph.
+A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+changed path is one that file can read, if those reads are bounded
+(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
+path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
+string literal, a constant of the same file, or an interpolation or
+conditional of those, or when the file names its roots in a
+`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+path such a test can read counts as covered, so a test fixture with a known
+reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
+probe and its tests always run, as does a declared file that uses `Process`,
+`Directory.current` or `Platform.script`, has a literal or constant-prefixed
+path outside its roots, or names a root that is not in the tree. Declared roots
+are trusted for computed paths, so the nightly full run is the backstop for a
+wrong declaration. Dart files anywhere in the repository are covered by the
+import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
 golden and integration suites, other packages' apps, the `packages/catch_ui`
 and `packages/kernel` test suites that the package-tests job runs, firebase
@@ -3401,3 +3414,12 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## City interest backfill
+
+`.github/workflows/city-interest-backfill.yml` runs `tool/data/backfill_city_interest.mjs` against one Firebase environment as that environment's deploy identity (Workload Identity, the same account the brand publish uses; it needs `roles/datastore.user`). It is dispatch-only and runs only from main.
+
+1. Dispatch with `environment` (`dev` or `prod`) and `mode: dry-run`, the default. The job summary shows the plan: rows read, rows gaining a catalog `cityId`, people to count per city key, and the free-text cities that match no single catalog city. It never shows a contact.
+2. Review the numbers with the owner.
+3. Dispatch again with `mode: apply`. That passes `--apply`, plus `--allow-prod` for prod. The GitHub environment's protection applies. Markers make a rerun count nobody twice.
+

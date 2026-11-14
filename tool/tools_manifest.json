@@ -716,6 +716,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:city-interest-backfill-workflow",
+      "category": "ci",
+      "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
+      "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/city-interest-backfill.yml",
+        "tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "description": "Keeps the city interest backfill workflow dispatch-only from main, dry-run by default, keyless and least-privileged, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/city_interest_backfill_workflow.test.mjs",
+        "node --test tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",
@@ -4347,7 +4371,8 @@
         "tool/marketing/lib/web_capture_render.mjs",
         "tool/marketing/lib/web_capture_screen.mjs",
         "tool/marketing/lib/capture_devices.mjs",
-        "tool/marketing/web_captures.test.mjs"
+        "tool/marketing/web_captures.test.mjs",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
@@ -4392,7 +4417,8 @@
         "tool/marketing/lib/web_capture_screen.mjs",
         "tool/marketing/lib/capture_devices.mjs",
         "tool/marketing/web_captures.test.mjs",
-        "tool/ui_capture/check_capture_coverage.mjs"
+        "tool/ui_capture/check_capture_coverage.mjs",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ]
     },
     {
@@ -4571,7 +4597,9 @@
         "tool/ui_capture/route_inventory.json",
         "tool/ui_capture/capture_coverage.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "tool/marketing/capture_manifest.json"
+        "test/ui_captures/catalog/entries/**",
+        "tool/marketing/capture_manifest.json",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -4951,7 +4979,8 @@
         "repositoryView": "full",
         "setup": [
           "node",
-          "root-npm"
+          "root-npm",
+          "flutter"
         ]
       }
     },
@@ -5245,7 +5274,9 @@
         "design/screens/catch.screens.schema.json",
         "tool/ui_capture/route_inventory.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json"
+        "test/ui_captures/catalog/entries/**",
+        "design/components/catch.components.json",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -7192,7 +7223,8 @@
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/react-surface-validation.yml",
         ".github/workflows/tools-ci.yml",
-        ".github/workflows/marketing-captures.yml"
+        ".github/workflows/marketing-captures.yml",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "checks": [
         "node --check tool/marketing/import_hosted_captures.mjs",

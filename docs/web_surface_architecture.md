@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.49.1
-updated: 2026-11-12
+version: 0.50.0
+updated: 2026-11-14
 owner: web_platform
 status: active
 ---
@@ -746,6 +746,15 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
 - Production drawing belongs in `@catch/web-ui`. Existing app/shared drawing
   remains counted debt until migrated; new raw markup and drawing props fail
   the ESLint ratchet. Story/test controls retain their shared-owner boundary.
+- Bottom sheets are for narrow screens. A website overlay is a
+  `CatchAdaptiveSheet`, which draws the standard `CatchSheet` under 900px
+  (phones, phones in landscape) and, at 900px and wider, either a non-modal
+  dropdown under the top-bar control that opened it (`wide="dropdown"`) or
+  `CatchDialog`'s centred content recipe for page content too big for a
+  dropdown (`wide="dialog"`). The feature declares its title, content and
+  footer once and owns the draft state, so closing never loses input. A side
+  panel that already replaces its sheet on wide screens, such as
+  `CatchStickyAside`, stays as it is.
 - Shared keyboard focus behavior starts in
   `packages/web-config/styles/catch-web.css`. Surface CSS may style a composite
   wrapper with `:focus-within`, but it must not remove a native outline without

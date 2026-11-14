@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
-import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {repoRoot} from "../lib/repo_paths.mjs";
+import {readCaptureCatalogSource} from "./lib/capture_catalog_sources.mjs";
 
 const args = process.argv.slice(2);
-const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const profile = valueAfter("--profile");
 const profileConfig = captureProfile(profile);
 
@@ -89,12 +89,12 @@ function captureProfile(name) {
 }
 
 function readCatalogIds() {
-  const source = fs.readFileSync(catalogPath, "utf8");
+  const source = readCaptureCatalogSource();
   const ids = [...source.matchAll(/\bScreenCaptureEntry\(\s*id:\s*'([^']+)'/gu)].map(
     (match) => match[1]
   );
   if (ids.length === 0) {
-    console.error(`No ScreenCaptureEntry ids found in ${catalogPath}.`);
+    console.error("No ScreenCaptureEntry ids found in the capture catalog.");
     process.exit(65);
   }
   return ids;
