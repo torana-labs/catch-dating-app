@@ -400,9 +400,9 @@ jobs:
           retention-days: 7
 
   tools:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: >-
-      ${{ !cancelled() && needs.source-preflight.result == 'success' &&
+      ${{ !cancelled() && needs.plan.result == 'success' &&
           needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
           needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/tools-ci.yml
@@ -414,12 +414,12 @@ jobs:
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
 
   contracts:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/contracts-ci.yml
 
   functions:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/functions-ci.yml
     with:
@@ -427,16 +427,14 @@ jobs:
       mode: ${{ needs.plan.outputs.mode }}
 
   firestore-rules:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: >-
       !cancelled() && !failure() &&
       !(github.event_name == 'pull_request' && github.event.pull_request.draft) &&
       needs.plan.result != 'failure' && needs.plan.result != 'cancelled' &&
-      needs.source-preflight.result != 'failure' && needs.source-preflight.result != 'cancelled' &&
       (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
        needs.plan.outputs.source_sha != github.sha ||
        (needs.plan.result == 'success' &&
-        needs.source-preflight.result == 'success' &&
         needs.plan.outputs.firestore_rules == 'true' &&
         !needs.plan.outputs.queue_verified_run))
     uses: ./.github/workflows/firestore-rules-ci.yml
@@ -447,7 +445,7 @@ jobs:
       mode: ${{ needs.plan.outputs.mode }}
 
   flutter:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.flutter == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/flutter-ci.yml
     with:
@@ -458,19 +456,19 @@ jobs:
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
 
   visual-integration:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/visual-integration-ci.yml
 
   admin:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.admin == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
 
   marketing:
-    needs: [plan, source-preflight, capture-freshness]
+    needs: [plan, capture-freshness]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.marketing == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
@@ -478,19 +476,19 @@ jobs:
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
 
   capture-freshness:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/marketing-captures.yml
     with:
       automatic_source_sha: ${{ needs.plan.outputs.source_sha }}
 
   operations:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/operations-ci.yml
 
   docs-policy:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: >-
       needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       (needs.plan.outputs.docs == 'true' ||
@@ -595,7 +593,7 @@ jobs:
         run: node tool/run.mjs check agent:harness-v2
 
   app-builds:
-    needs: [plan, source-preflight]
+    needs: [plan]
     if: >-
       needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       (needs.plan.outputs.flutter_build_android == 'true' ||
