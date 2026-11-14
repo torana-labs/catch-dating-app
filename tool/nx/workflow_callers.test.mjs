@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
-import {comparedLanes, workflowLanes} from "./shadow_plan.mjs";
+import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
 import {ALL, callerLanes, declaredTargets, isCiConfiguration, isSelector, selectorEntries, selectorFiles,
   workflowCallers} from "./workflow_callers.mjs";
 
@@ -186,4 +186,23 @@ test("negative controls: narrowing a lane away from its caller is caught for bot
   }
   assert.deepEqual(closureViolations(realGraph, {planner}).filter((entry) => entry.selector === "planner"),
     [{selector: "planner", file: ".github/workflows/flutter-ci.yml", job: "flutter"}]);
+});
+
+test("pull requests and the merge queue narrow CI configuration edits the same way", () => {
+  // The only mode difference is the existing one: pull requests leave the
+  // queue-only lanes (app builds, visual integration) to the merge queue.
+  const queueOnly = ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke",
+    "visual_integration"];
+  const edits = [".github/workflows/flutter-ci.yml", ".github/workflows/app-build-matrix.yml",
+    ".github/actions/cache-cocoapods/action.yml", ".github/actions/install-ripgrep/action.yml",
+    ".github/workflows/react-surface-validation.yml", "tool/ci/generated_inventories.mjs", "tool/nx/select_lanes.mjs"];
+  for (const file of edits) {
+    const select = (mode) => compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode, graph: realGraph}).nxLanes;
+    const queue = select("merge_group");
+    assert.deepEqual(select("pr"), queue.filter((lane) => !queueOnly.includes(lane)), file);
+  }
+  // The narrowing never drops the iOS queue lanes from an edit that runs them.
+  const ios = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/app-build-matrix.yml"],
+    mode: "merge_group", graph: realGraph}).nxLanes;
+  assert.ok(ios.includes("flutter_build_ios"));
 });
