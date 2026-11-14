@@ -331,7 +331,17 @@ queue. `main` pushes and the nightly run are not narrowed by it, and the
 nightly full run, which still runs every lane, is the backstop.
 `tool/nx/workflow_callers.test.mjs` proves the closure against both the planner
 and Nx, with a negative control for each, and pins that an
-`app-build-matrix.yml` edit still selects the iOS queue lane. The tool planner honors the graph's terminal classifications
+`app-build-matrix.yml` edit still selects the iOS queue lane. Every tracked
+`.github/**` and `tool/ci/**` file is a selector, reached by a `ci.yml` job, or
+listed with its reason in `notCalledByCi` in that module; Nx selects every lane
+for any other (new, renamed or deleted) CI configuration file, so a new
+workflow or script is classified on purpose. The workflows `ci.yml` never calls
+(deploy, release, maintenance and operations workflows, and those with their
+own pull request triggers) are `harness-scoped-control` in every mode,
+including `main` pushes: an edit runs policy and its own Tools checks, and
+`component_graph.test.mjs` pins the checks each deploy workflow selects.
+`website-release.yml` keeps Marketing (`website-release-control`), whose
+validation runs its release-train tests. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,
