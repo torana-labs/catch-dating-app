@@ -1,0 +1,49 @@
+name: Main CI alert
+
+# Keeps one "Main CI is red" issue in step with main's CI: opened on the first
+# failed main push or nightly run, commented on each further failure, closed
+# on the next green run. Opening it notifies repository watchers, so a red
+# main is noticed within one run (owner decision, 12 Nov 2026: alert only, no
+# auto-revert). It reads only main's own runs and checks out main's code.
+# Logic and tests: tool/ci/main_red_alert.mjs. Operator guide:
+# docs/release_operations.md, "Main CI alert".
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: main-red-alert
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    name: Update the main CI alert issue
+    if: ${{ github.event.workflow_run.head_branch == 'main' && contains(fromJSON('["push", "schedule"]'), github.event.workflow_run.event) && contains(fromJSON('["success", "failure", "timed_out", "startup_failure"]'), github.event.workflow_run.conclusion) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Open, update or close the alert issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node tool/ci/main_red_alert.mjs

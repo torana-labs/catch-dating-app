@@ -11,7 +11,6 @@ test("Nx tasks map onto the CI lanes they would replace", () => {
   assert.equal(laneForTask("contracts:conformance"), "contracts");
   assert.equal(laneForTask(["@catch", "operations"].join("/") + ":test"), "operations");
   assert.equal(laneForTask("widget_dedupe:test", ["lang:dart"]), null);
-  assert.equal(laneForTask("@catch/brand:test"), null);
 });
 
 test("every planner lane has an Nx project to compare with", () => {
@@ -59,5 +58,16 @@ test("the lane plan asks Nx for affected tasks without their dependencies", () =
   const nxTasks = ["catch-marketing:build", "catch-marketing:typecheck", "lane-capture-freshness:lane"];
   const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks});
   assert.deepEqual(result.nxLanes, ["capture_freshness", "marketing"]);
+  assert.equal(result.agree, true);
+});
+
+// codex/brand-config-publish (run 43302464381, 12 Nov 2026) reported
+// @catch/brand:check and :test as unmapped. meta:brand-literals runs both in
+// the Tools lane.
+test("brand tasks select the Tools lane", () => {
+  assert.equal(laneForTask("@catch/brand:check"), "tools");
+  assert.equal(laneForTask("@catch/brand:test"), "tools");
+  const result = compare({plannerLanes: ["tools"], nxTasks: ["@catch/brand:check", "@catch/brand:test"]});
+  assert.deepEqual(result.unmappedTasks, []);
   assert.equal(result.agree, true);
 });
