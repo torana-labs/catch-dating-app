@@ -42,7 +42,17 @@ test("the cache is opt-in and keyed on every generator input", () => {
   }
   assert.ok(key.includes("steps.toolchain.outputs.node-version"), "Node version is part of the key");
   assert.ok(key.includes("'.github/actions/generate-contracts/action.yml'"));
-  assert.match(action, /if: \$\{\{ inputs\.cache == 'true' && inputs\.root == '\.' \}\}\n {6}uses: actions\/cache\/restore@/u);
+  assert.match(action, /if: \$\{\{ steps\.cache-scope\.outputs\.enabled == 'true' \}\}\n {6}uses: actions\/cache\/restore@/u);
+});
+
+test("the cache only holds outputs of the run's own commit, never a dispatched ref", () => {
+  const scope = action.slice(action.indexOf("- id: cache-scope\n"), action.indexOf("- id: restore\n"));
+  assert.match(scope, /if: \$\{\{ inputs\.cache == 'true' && inputs\.root == '\.' && github\.event_name != 'workflow_dispatch' \}\}/u);
+  assert.match(scope, /if \[\[ "\$\(git rev-parse HEAD\)" == "\$GITHUB_SHA" \]\]; then\n {10}echo "enabled=true" >> "\$GITHUB_OUTPUT"/u);
+  // Restore and save both depend on that scope; nothing else enables them.
+  assert.equal(action.match(/steps\.cache-scope\.outputs\.enabled == 'true'/gu)?.length, 2);
+  assert.match(step("Save the generated outputs"),
+    /if: \$\{\{ steps\.cache-scope\.outputs\.enabled == 'true' && steps\.restore\.outputs\.cache-hit != 'true' \}\}/u);
 });
 
 test("restore and save never touch tracked files in the generated folder", () => {

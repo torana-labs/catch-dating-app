@@ -9,7 +9,8 @@ inputs:
     description: >-
       Restore the outputs from a cache keyed on every generator input instead of
       regenerating. Validation jobs opt in; delivery and release jobs must not.
-      Only applies when root is the workspace.
+      Only applies when root is the workspace, the checkout is the run's own
+      commit, and the run was not manually dispatched.
     default: "false"
 
 runs:
@@ -22,8 +23,22 @@ runs:
     # generator's own sources, the functions manifest and lockfile it resolves
     # json-schema-to-typescript from, plus tool/lib, this action and the Node
     # version. Bump the v-prefix to invalidate every entry.
+    #
+    # A cache entry may only hold outputs generated from the commit the run is
+    # for. A manual dispatch can check out another ref (deploys, baselines), so
+    # dispatched runs never use the cache, and any run whose checkout is not
+    # GITHUB_SHA skips it too.
+    - id: cache-scope
+      if: ${{ inputs.cache == 'true' && inputs.root == '.' && github.event_name != 'workflow_dispatch' }}
+      shell: bash
+      run: |
+        if [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]; then
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::notice::Checkout is not $GITHUB_SHA; regenerating contracts without the cache."
+        fi
     - id: restore
-      if: ${{ inputs.cache == 'true' && inputs.root == '.' }}
+      if: ${{ steps.cache-scope.outputs.enabled == 'true' }}
       uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
       with:
         key: schema-contracts-v1-${{ runner.os }}-node${{ steps.toolchain.outputs.node-version }}-${{ hashFiles('contracts/**', 'tool/contracts/**', 'tool/lib/**', 'functions/package.json', 'functions/package-lock.json', '.github/actions/generate-contracts/action.yml') }}
@@ -82,7 +97,7 @@ runs:
           exit 1
         fi
     - name: Save the generated outputs
-      if: ${{ inputs.cache == 'true' && inputs.root == '.' && steps.restore.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache-scope.outputs.enabled == 'true' && steps.restore.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
       with:
         key: ${{ steps.restore.outputs.cache-primary-key }}
