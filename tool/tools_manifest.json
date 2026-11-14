@@ -132,13 +132,15 @@
       "impactPaths": [
         "tool/lib/functions_test_selection.mjs",
         "tool/lib/functions_test_selection.test.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/contract_reads.test.mjs",
         "tool/lib/dependency_cruiser.mjs",
         "tool/impact/package.json",
         "tool/impact/package-lock.json"
       ],
       "checks": [
         "node --check tool/impact/emulator_test_selection.mjs",
-        "node --test tool/lib/functions_test_selection.test.mjs"
+        "node --test tool/lib/functions_test_selection.test.mjs tool/lib/contract_reads.test.mjs"
       ],
       "role": "generator"
     },
@@ -710,6 +712,30 @@
       "checks": [
         "node --check tool/ci/brand_config_publish_workflow.test.mjs",
         "node --test tool/ci/brand_config_publish_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:city-interest-backfill-workflow",
+      "category": "ci",
+      "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
+      "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/city-interest-backfill.yml",
+        "tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "description": "Keeps the city interest backfill workflow dispatch-only from main, dry-run by default, keyless and least-privileged, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/city_interest_backfill_workflow.test.mjs",
+        "node --test tool/ci/city_interest_backfill_workflow.test.mjs"
       ],
       "role": "gate"
     },

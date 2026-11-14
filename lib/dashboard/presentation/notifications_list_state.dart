@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-// ignore: catch_ui_lints/catch_arch_provider_free_boundary -- deep-link path strings only; no navigation happens here
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
+// ignore: catch_ui_lints/catch_arch_provider_free_boundary -- deep-link path strings only; no navigation happens here
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter/material.dart';
 
 sealed class NotificationsListState {

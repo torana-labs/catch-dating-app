@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.2
+version: 3.3.3
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -3401,3 +3401,12 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## City interest backfill
+
+`.github/workflows/city-interest-backfill.yml` runs `tool/data/backfill_city_interest.mjs` against one Firebase environment as that environment's deploy identity (Workload Identity, the same account the brand publish uses; it needs `roles/datastore.user`). It is dispatch-only and runs only from main.
+
+1. Dispatch with `environment` (`dev` or `prod`) and `mode: dry-run`, the default. The job summary shows the plan: rows read, rows gaining a catalog `cityId`, people to count per city key, and the free-text cities that match no single catalog city. It never shows a contact.
+2. Review the numbers with the owner.
+3. Dispatch again with `mode: apply`. That passes `--apply`, plus `--allow-prod` for prod. The GitHub environment's protection applies. Markers make a rerun count nobody twice.
+

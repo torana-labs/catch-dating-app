@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/organizers/shared/organizer_action_keys.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/event_viewer_state_fixtures.dart';

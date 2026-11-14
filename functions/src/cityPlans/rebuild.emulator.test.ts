@@ -5,9 +5,9 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {validateCityPlansDocument} from
   "../shared/generated/validators/cityPlansDocument";
-import {readPublicPageFixture} from "../publicPages/publicPageTestFixtures";
 import {cityPlansCollection, rebuildCityPlans} from "./rebuild";
 import type {CityMarket} from "./cityPlansModel";
+import {contractFile, contractFixture} from "../shared/contractFixtures";
 
 const projectId = "demo-catch-rules";
 type Row = Record<string, unknown>;
@@ -15,11 +15,11 @@ const hour = 60 * 60 * 1000;
 const now = Date.parse("2026-10-28T06:00:00.000Z");
 const json = (data: unknown) => JSON.parse(JSON.stringify(data));
 
-const page = readPublicPageFixture("../valid/organizer_public_page_doc.json") as
+const page = contractFixture("organizer_public_page_doc") as
   Row;
 const baseEvent = (page.upcomingEvents as Row[])
   .find((item) => item.source === "catch") as Row;
-const organizer = (readPublicPageFixture("parity_inputs.json") as
+const organizer = (contractFile("fixtures/public_pages/parity_inputs.json") as
   {cases: Array<{organizer: {data: Row}}>}).cases[0].organizer.data;
 
 function plan(id: string, startsIn: number): Row {

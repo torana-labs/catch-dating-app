@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.28.0
-updated: 2026-11-13
+version: 0.29.0
+updated: 2026-11-14
 owner: marketing_website
 status: active
 ---
@@ -114,8 +114,8 @@ isolated local emulator and packaged server described in `website/README.md`.
 
 ## Canonical public chrome
 
-`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`,
-`PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
+`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`
+and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
 `PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`)
 and the one header on every public route, Explore and the city pages included.
@@ -137,18 +137,20 @@ then the wordmark with the tagline on its baseline and the operator line. The
 homepage and the city pages add their Cities column; a product page (host,
 weddings) may name itself in the wordmark and give its own line, with the same
 columns. Home, Explore and the city pages, the host landing and application,
-weddings, legal, help, 404 and the claim page all end with it; its links come from
+weddings, legal, help, 404, the claim page, organiser pages and event pages all
+end with it; its links come from
 `siteFooterCopy` in `content/site.ts`.
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
-page (`/events/<id>/`) carry the site top bar as `PublicPageHeader` (Explore,
-For organisers and Get the app, from `publicPageChromeCopy` in
-`content/site.ts`) and end with the boards' short footer, `PublicPageFooter`:
-the wordmark across from Privacy, Terms, For organisers and Help, closing the
-main column (the organiser page's list-detail main, the event page's reading
-lane) rather than an ink band. The public form and offer pages render the same
-`PublicPageFooter` below their reading layout with the site and legal links and
-the operator line. Import both from `shared/site`.
+page (`/events/<id>/`) carry `PublicSiteHeader` and end with `PublicSiteFooter`
+below their main (owner decision, 14 Nov 2026: visitors arrive from shares and
+search and get somewhere to go next). An organiser page served on the
+organiser's own domain will keep the boards' short footer, `PublicPageFooter`
+with its default links (Privacy, Terms, For organisers and Help), so it reads
+as the club's page; custom domains are not served yet. The public form, offer,
+account and billing pages render `PublicPageFooter` below their reading layout
+with the site and legal links and the operator line. Import them from
+`shared/site`.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -589,7 +591,7 @@ aggregation points:
 | File | Current role | Refactor pressure |
 |---|---|---|
 | `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `consumerHomeSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
-| `website/src/features/organizers/HostListingPage.tsx` | Thin organiser page shell that wires `useOrganizerPageController` to `HostListingSections`, under the site top bar (`PublicPageHeader`) on every organiser page | Keep page sections under `features/organizers/sections/organizerPage/`; new visual parts go into `@catch/web-ui`, not feature code. |
+| `website/src/features/organizers/HostListingPage.tsx` | Thin organiser page shell that wires `useOrganizerPageController` to `HostListingSections`, between the site header and footer (`PublicSiteHeader`, `PublicSiteFooter`) on every organiser page | Keep page sections under `features/organizers/sections/organizerPage/`; new visual parts go into `@catch/web-ui`, not feature code. |
 | `website/src/features/host/HostPage.tsx` | Canonical host assembly with core, supporting, and Playbook section imports | Keep the route file as a table of contents; section bodies stay under `features/host/sections/`. |
 | `website/src/features/claims/ClaimPage.tsx` | Thin claim route shell using injected `ClaimRouteState`, `useClaimFlowController`, and `ClaimPageSections` | Keep route URL parsing in `features/claims/claimRouting.ts` and the React Router shell; keep auth/submission behavior in the controller; keep visible route sections in `features/claims/sections/`. |
 | `website/src/shared/ui/primitives/` | Family-split governed visual primitives used by website feature sections | Keep repeated shell markup in the relevant family module; state, analytics, and domain mapping stay in feature controllers/adapters. |

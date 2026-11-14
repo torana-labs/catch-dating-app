@@ -62,7 +62,6 @@ test("documents select the docs lane and the checks that read them, nothing else
   assert.deepEqual(affectedTasks("contracts/README.md"), ["contracts:check", "contracts:conformance", "lane-docs:lane"]);
 });
 
-
 // contracts was one project and an implicit dependency of almost everything,
 // so one Admin action-catalog change ran Flutter, Marketing and Operations.
 // Families nothing `$ref`s, and that feed narrow consumers, are their own
