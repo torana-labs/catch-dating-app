@@ -191,6 +191,10 @@ harness and its own entry:
   `tool/demo/demo_seed/scenarios/host-marketing-india.json`. A computed data
   path (one with `$`) fails hashing, because the hash could not see which file
   it reads.
+- The persona catalogs under `tool/demo/demo_seed/personas/` that define a
+  `personaId` cast by one of those scenario files. Scenarios cast people by id,
+  not path, so the hash follows each id to every catalog that defines it. An id
+  no catalog defines fails hashing.
 
 The catalog index, `screen_capture_catalog.dart`, is not an input. It lists
 the review-only captures and maps each marketing id to its entry file in

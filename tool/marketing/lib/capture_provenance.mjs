@@ -89,7 +89,39 @@ export function captureInputFiles(capture) {
       }
     }
   }
+  for (const catalog of personaCatalogsCastBy(inputs)) inputs.add(catalog);
   return [...inputs].sort();
+}
+
+// Scenario worlds cast people by persona id, not by path. Every catalog under
+// the persona directory that defines a cast id is an input, so a persona edit
+// stales the captures whose scenarios cast that persona even if no Dart file
+// names its catalog. An id no catalog defines fails the hash.
+const scenarioDir = 'tool/demo/demo_seed/scenarios/';
+const personaDir = 'tool/demo/demo_seed/personas';
+function personaCatalogsCastBy(inputs) {
+  const cast = new Set();
+  for (const file of inputs) {
+    if (!file.startsWith(scenarioDir) || !file.endsWith('.json')) continue;
+    for (const match of fs.readFileSync(fromRepo(file), 'utf8').matchAll(/"personaId"\s*:\s*"([^"]+)"/gu)) cast.add(match[1]);
+  }
+  if (!cast.size) return [];
+  const catalogs = new Set();
+  const defined = new Set();
+  for (const name of fs.readdirSync(fromRepo(personaDir)).filter(item => item.endsWith('.json')).sort()) {
+    const file = `${personaDir}/${name}`;
+    const personas = JSON.parse(fs.readFileSync(fromRepo(file), 'utf8')).personas;
+    if (!Array.isArray(personas)) continue;
+    for (const persona of personas) {
+      if (cast.has(persona?.id)) {
+        catalogs.add(file);
+        defined.add(persona.id);
+      }
+    }
+  }
+  const missing = [...cast].filter(id => !defined.has(id));
+  if (missing.length) throw new Error(`Capture scenario casts undefined persona ids: ${missing.sort().join(', ')}`);
+  return [...catalogs];
 }
 
 function dataFilesNamedBy(source, file) {
