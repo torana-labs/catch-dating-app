@@ -302,8 +302,6 @@ service cloud.firestore {
           'prefsRunStatusUpdates', 'prefsOrganizerUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
           'prefsCrossPathsInvitations',
-          // Runtime fields
-          'fcmToken',
           // Server-owned lifecycle fields. These must be tolerated on existing
           // retained docs, but clients cannot create or change them.
           'deleted',
@@ -401,8 +399,7 @@ service cloud.firestore {
         && data.prefsShowOnMap is bool
         && optionalBool(data, 'prefsShowInCrossPaths')
         && optionalBool(data, 'prefsCrossPathsInvitations')
-        // Runtime fields (optional)
-        && optionalString(data, 'fcmToken')
+        // Retained lifecycle fields (optional)
         && optionalBool(data, 'deleted')
         && optionalTimestamp(data, 'deletedAt');
     }
@@ -443,15 +440,6 @@ service cloud.firestore {
         && !request.resource.data.keys().hasAny([
           'deleted', 'deletedAt', 'profileRevision', 'profileClaimedAt'
         ]);
-    }
-
-    function userChangedKeys() {
-      return request.resource.data.diff(resource.data).affectedKeys();
-    }
-
-    function isValidFcmTokenUpdate() {
-      return userChangedKeys().hasOnly(['fcmToken'])
-        && optionalString(request.resource.data, 'fcmToken');
     }
 
     function isValidPushInstallation(data) {
@@ -517,13 +505,6 @@ service cloud.firestore {
           (data.linkedOrganizerIds is list && data.linkedOrganizerIds.size() <= 20))
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
-    }
-
-    function isValidUserUpdate(uid) {
-      return isAuthed()
-        && request.auth.uid == uid
-        && !isDeletedUser(uid)
-        && isValidFcmTokenUpdate();
     }
 
     function hasValidOnboardingDraftShape(data) {
@@ -681,10 +662,10 @@ service cloud.firestore {
 
       // Owners create their initial profile directly with full shape validation.
       // Profile edits go through updateUserProfile so complex field validation
-      // stays in Zod instead of Firestore rules. Direct updates here are limited
-      // to narrow runtime fields that rules can validate cheaply.
+      // stays in Zod instead of Firestore rules. Push tokens live on
+      // users/{uid}/pushInstallations, so the profile takes no direct updates.
       allow create: if isValidUserCreate(uid);
-      allow update: if isValidUserUpdate(uid);
+      allow update: if false;
 
       // Client-side deletes are blocked — account deletion is handled
       // exclusively by the requestAccountDeletion Cloud Function, which
@@ -967,23 +948,7 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /operationDecisions/{decisionId} {
-      allow read, write: if false;
-    }
-
     match /operationLeases/{leaseId} {
-      allow read, write: if false;
-    }
-
-    match /operationPublicationPlans/{publicationPlanId} {
-      allow read, write: if false;
-    }
-
-    match /operationRuleProposals/{ruleProposalId} {
-      allow read, write: if false;
-    }
-
-    match /operationRuleEvaluations/{ruleEvaluationId} {
       allow read, write: if false;
     }
 
@@ -1153,10 +1118,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /userEventScheduleLocks/{lockId} {
-      allow read, write: if false;
-    }
-
     // Server-owned durable activity timeline. Users can read their own timeline
     // and mark items as read, but cannot create, delete, or edit notification
     // content.
@@ -1190,16 +1151,14 @@ service cloud.firestore {
     // atomic during the released-client migration window.
     // Private configuration is exposed only through current-manager callables.
     // Immutable admission/payment evidence has no direct client access.
-    match /publicEventPayments/{documentId} {
+    // Every guest checkout (public event, form, offer), keyed by purpose prefix.
+    match /guestPayments/{paymentId} {
       allow read, write: if false;
     }
     match /publicEventAdmissionReceipts/{documentId} {
       allow read, write: if false;
     }
     match /eventRegistrationReceipts/{documentId} {
-      allow read, write: if false;
-    }
-    match /organizerEventOfferPayments/{documentId} {
       allow read, write: if false;
     }
     match /organizerEventOfferRecipients/{documentId} {
@@ -1657,14 +1616,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /organizerApplicationAssets/{assetId} {
-      allow read, write: if false;
-    }
-
-    match /organizerApplicationSourceMappings/{mappingId} {
-      allow read, write: if false;
-    }
-
     match /organizerApplicationImportReceipts/{receiptId} {
       allow read, write: if false;
     }
@@ -1709,9 +1660,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /organizerPaymentOauthStates/{stateId} {
-      allow read, write: if false;
-    }
-    match /organizerFormPayments/{paymentId} {
       allow read, write: if false;
     }
     match /organizerFormPaymentWebhooks/{receiptId} {
@@ -1855,25 +1803,17 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /campaignDeliveryMessages/{messageId} {
+    // The one outbox and WhatsApp dispatch log for campaigns, automations,
+    // programmes and approval notices; source names the flow.
+    match /deliveryMessages/{messageId} {
       allow read, write: if false;
     }
 
-    match /campaignWhatsappDispatches/{attemptId} {
-      allow read, write: if false;
-    }
-
-    match /automationDeliveryMessages/{messageId} {
+    match /whatsappDispatches/{attemptId} {
       allow read, write: if false;
     }
 
     // Approval notification authority and contact evidence are server-only.
-    match /eventApprovalNotificationMessages/{id} {
-      allow read, write: if false;
-    }
-    match /eventApprovalNotificationDispatches/{id} {
-      allow read, write: if false;
-    }
     match /eventApprovalNotificationPreferences/{id} {
       allow read, write: if false;
     }
@@ -1884,10 +1824,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /eventApprovalNotificationBudgets/{id} {
-      allow read, write: if false;
-    }
-
-    match /automationWhatsappDispatches/{attemptId} {
       allow read, write: if false;
     }
 
@@ -1968,7 +1904,8 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /organizerScheduleLocks/{lockId} {
+    // Organizer and guest schedule locks; ownerType names the owner.
+    match /scheduleLocks/{lockId} {
       allow read, write: if false;
     }
 
@@ -2057,6 +1994,12 @@ service cloud.firestore {
           || hasActiveEventOperatorGrant(resource.data.eventId, 'viewRoster')
         );
       allow write: if false;
+    }
+
+    // Server-only pointer from a Catch account to its roster row:
+    // eventAttendeeIndex/{eventId}_{uid}. Booking callables keep it in step.
+    match /eventAttendeeIndex/{indexId} {
+      allow read, write: if false;
     }
 
     // Who of an event's managers and staff is on the door now. Only the
@@ -2352,14 +2295,6 @@ service cloud.firestore {
 
     // Archive-anonymization journal; written only by the retention sweep.
     match /programRetentionRuns/{programId} {
-      allow read, write: if false;
-    }
-
-    match /programDeliveryMessages/{messageId} {
-      allow read, write: if false;
-    }
-
-    match /programWhatsappDispatches/{attemptId} {
       allow read, write: if false;
     }
 
@@ -3184,15 +3119,6 @@ service cloud.firestore {
 
     match /participantMetricCounters/{uid} {
       allow read, write: if false;
-    }
-
-    match /participantMarketplaceMetrics/{uid} {
-      allow read, write: if false;
-    }
-
-    match /participantMomentum/{uid} {
-      allow read: if isAuthed() && request.auth.uid == uid;
-      allow write: if false;
     }
 
     // ── Payments ──────────────────────────────────────────────────────────────

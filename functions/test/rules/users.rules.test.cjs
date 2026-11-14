@@ -166,7 +166,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("denies direct profile edits but allows runtime FCM token updates", async () => {
+    it("denies every direct profile edit, the retired fcmToken included", async () => {
       await seed(["users", "runner-1"], userProfile());
 
       await assertFails(
@@ -175,24 +175,26 @@ describe("firestore.rules", () => {
           prefsWeeklyDigest: true,
         }),
       );
-      await assertSucceeds(
+      await assertFails(
         updateDoc(doc(authedDb("runner-1"), "users", "runner-1"), {
           fcmToken: "token-1",
         }),
       );
     });
 
-    it("tolerates retained server-owned lifecycle fields on profile updates", async () => {
+    it("keeps retained profiles readable and closed to direct updates", async () => {
+      // Profiles written before push installations may still carry fcmToken
+      // and lifecycle fields; owners read them, and nobody updates them here.
       await seed(["users", "runner-1"], userProfile({
         deleted: false,
         deletedAt: null,
+        fcmToken: "legacy-token",
       }));
+      const ownerRef = doc(authedDb("runner-1"), "users", "runner-1");
 
-      await assertSucceeds(
-        updateDoc(doc(authedDb("runner-1"), "users", "runner-1"), {
-          fcmToken: "token-1",
-        }),
-      );
+      await assertSucceeds(getDoc(ownerRef));
+      await assertFails(updateDoc(ownerRef, {fcmToken: "token-1"}));
+      await assertFails(updateDoc(ownerRef, {prefsWeeklyDigest: true}));
     });
 
     it("allows owners to persist push installation tokens", async () => {
@@ -305,7 +307,7 @@ describe("firestore.rules", () => {
         profileComplete: false, interestedInGenders: []}));
       const ownerRef = doc(authedDb("runner-1"), "users", "runner-1");
       await assertSucceeds(getDoc(ownerRef));
-      await assertSucceeds(updateDoc(ownerRef, {fcmToken: "token-claim"}));
+      await assertFails(updateDoc(ownerRef, {fcmToken: "token-claim"}));
       await assertFails(updateDoc(ownerRef, {profileRevision: 2}));
       await assertFails(updateDoc(ownerRef, {profileClaimedAt: Timestamp.now()}));
       await assertFails(getDoc(doc(authedDb("other-host"), "users", "runner-1")));
