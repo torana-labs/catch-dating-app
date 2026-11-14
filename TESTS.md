@@ -94,7 +94,8 @@ a declaration that misses a read.
 Kernel, Consumer and Host package suites on every relevant Flutter change. On
 a pull request each package suite and Widgetbook run only when the change
 reaches its pubspec path-dependency closure
-(`tool/ci/flutter_package_scope.mjs`); a skipped suite leaves its job green
+(`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
+reach none unless a closure bundles or imports them); a skipped suite leaves its job green
 with a "not affected" reason in the job summary. Locally,
 `node tool/harness/verify_local.mjs` runs them all. Each test shard uploads its
 own LCOV; nightly and unverified main runs merge them into a feature-level
