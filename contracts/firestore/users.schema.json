@@ -288,10 +288,6 @@
       "description": "Opt-in push preference for Cross Paths invitations. Missing values resolve to false; durable Activity items are still written.",
       "x-catch-ownership": "client-writable"
     },
-    "fcmToken": {
-      "type": "string",
-      "x-catch-ownership": "client-runtime-writable"
-    },
     "deleted": {
       "type": "boolean",
       "x-catch-ownership": "server-only"

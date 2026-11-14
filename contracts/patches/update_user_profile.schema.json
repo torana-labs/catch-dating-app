@@ -263,7 +263,6 @@
   "x-intentionally-excluded-fields": [
     "firstName",
     "lastName",
-    "fcmToken",
     "deleted",
     "deletedAt",
     "sexualOrientation",

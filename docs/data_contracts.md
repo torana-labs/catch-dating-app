@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.195.0
-updated: 2026-11-12
+version: 1.197.0
+updated: 2026-11-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -1974,7 +1974,7 @@ are recorded in `docs/migrations/clubs_to_organizers.md`; the one-time
 migration is complete and its tool is retired.
 
 New contracts use `organizerId`, `organizerTeamMemberships`,
-`organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
+`organizerFollows`, `organizerClaimRequests`, `scheduleLocks`, and
 `organizers/{organizerId}/posts`. Legacy `clubs`, `organizerMemberships`,
 `organizerClaimRequests`, `organizerScheduleLocks`, `organizerId`, and club-media projections
 are not local contracts, callable aliases, rule paths, or client fallbacks.
@@ -3675,7 +3675,7 @@ path alongside the existing verified-form-respondent path; it retains the
 canonical seat and rejects conflicting aliases. Raw token/phone data is absent
 from the grant, and all direct client access is denied.
 
-`organizerEventOfferPayments` is a separate server-only payment ledger. Its
+Offer checkouts are server-only `guestPayments` documents (`purpose: offer`). Their
 deterministic attempt freezes the grant/UID, source offer revisions, payment
 terms, route, merchant configuration, transfer allocation, canonical seat and
 15-minute hold deadline. Reservation and hold creation commit together.
@@ -3770,8 +3770,8 @@ the Consumer app no longer calls it.
 UID-owned public checkout. It requires App Check, rate limits and current phone
 Auth; deletion and disabled-account checks do not require a Consumer profile.
 The quote freezes the reviewed amount, registration revision, event start and
-cash-refund deadline. `publicEventPayments` owns the attempt and its 15-minute
-seat hold; `publicEventAdmissionReceipts` proves its captured admission. Both
+cash-refund deadline. A `guestPayments` document (`purpose: publicEvent`) owns
+the attempt and its 15-minute seat hold; `publicEventAdmissionReceipts` proves its captured admission. Both
 collections deny client access. They never create a form approval, reviewed
 offer, conversion receipt or Consumer participation edge.
 
@@ -3863,7 +3863,7 @@ shows Reconnect with a revoked explanation, and the owner gets one push. A
 replayed webhook changes and notifies nothing. Without a v2 config the partner
 webhook answers 503 and only 401s are detected.
 
-`organizerFormPayments` freezes the fee, merchant, verified respondent,
+A `guestPayments` document (`purpose: form`) freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's
 `paymentAttemptId` prevents editing; `organizerForms.pendingPaymentCount`
 reserves capacity (legacy omission means zero). Finalization decrements the
@@ -4472,7 +4472,7 @@ characters; media by reference only), its author and delivery status.
 `programWhatsappReplyOperations` reserve each free-text reply before the
 Meta call. `programWhatsappCannedReplies` hold saved replies per language
 and `programAssistantSettings/{programId}` the assistant settings (absent
-means the defaults). `programWhatsappDispatches` gains an optional `kind`
+means the defaults). Programme rows in `whatsappDispatches` carry an optional `kind`
 (`template` | `service`); a service reply's `templateDocumentId` and
 `templateHash` are null.
 
@@ -4898,10 +4898,10 @@ Each device push token lives at
 `environment`, `platform`, optional app version/build, `locale`, `timeZone`, and
 `updatedAt`. The client owns this device metadata and rules restrict writes to
 the authenticated user plus the known role/environment/platform vocabulary.
-Consumer clients attempt the legacy `fcmToken` and installation document as
-independent compatibility writes, so an older deployed rule set cannot prevent
-the other representation from being refreshed. Each failure is still logged
-with its own non-PII resource context.
+Clients write only the installation document. The retired
+`users/{uid}.fcmToken` field takes no client writes (rules deny every direct
+`users` update); older profiles may still carry it, and nothing reads it.
+Each failed installation write is logged with its own non-PII resource context.
 Notification producers select reviewed templates by stable message id and use
 the installation locale when the delivery path supports per-installation
 fan-out. English remains the bundled server fallback; notification prose must
@@ -5145,8 +5145,7 @@ under their own event names (`analytics/sql/README.md`).
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
-entity on `payments`, `publicEventPayments`, `organizerEventOfferPayments` and
-`organizerFormPayments`. It is written once, when the capture is first observed
+entity on `payments` and `guestPayments`. It is written once, when the capture is first observed
 with a reported fee; refunds stay in each record's existing refund fields.
 
 ## Organizer Bills And Nominator Credit
@@ -5760,7 +5759,7 @@ Published answer conditions carry a server-owned version binding. Runs carry
 source identity, original occurrence time, due time and fenced lease fields.
 Message actions pin a draft campaign revision; at handoff the engine mints a
 server-managed companion `organizerMoments` row plus a durable
-`automationDeliveryMessages` intent, and the shared delivery core executes the
+`deliveryMessages` intent (`source: automation`), and the shared delivery core executes the
 send. Companion Moments carry deterministic `(rule, action)` identity and are
 never organizer-editable. The pre-cutover `automationOrigin` campaign drain
 path is removed — no legacy campaigns existed, and ordinary campaigns now flow
