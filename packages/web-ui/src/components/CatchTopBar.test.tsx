@@ -39,4 +39,22 @@ describe("CatchTopBar site", () => {
     expect(screen.getByRole("link", {name: "For hosts"}).getAttribute("href")).toBe("/host/");
     expect(screen.getByRole("link", {name: "Get the app"})).toBeTruthy();
   });
+
+  it("draws the primary action after the page's actions and lists it in the phone menu after the links", () => {
+    const onPressed = vi.fn();
+    const assign = vi.fn();
+    vi.stubGlobal("location", {...window.location, assign});
+    render(<CatchTopBar actions={<button type="button">Mumbai</button>} links={[{label: "Explore", href: "/explore/"}]}
+      menuExtras={[{label: "Sign in", onPressed: () => undefined}]} primaryAction={{label: "Get the app", href: "#app", onPressed}} title="Catch" variant="site" />);
+    const bar = screen.getByRole("link", {name: "Get the app"});
+    expect(bar.getAttribute("href")).toBe("#app");
+    expect(screen.getByRole("button", {name: "Mumbai"}).compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Menu"}));
+    const items = screen.getAllByRole("menuitem").map((item) => item.textContent);
+    expect(items).toEqual(["Explore", "Get the app", "Sign in"]);
+    fireEvent.click(screen.getByRole("menuitem", {name: "Get the app"}));
+    expect(onPressed).toHaveBeenCalledOnce();
+    expect(assign).toHaveBeenCalledWith("#app");
+    vi.unstubAllGlobals();
+  });
 });

@@ -381,8 +381,9 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
   return (
     <>
       <PublicSiteHeader
-        actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
+        actions={<CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} />}
         links={[{href: "#whats-on", label: copy.header.explore}, {href: "#organisers", label: copy.header.organisers}, {href: "/host/", label: copy.header.hosts}]}
+        primary={{href: "#app", label: copy.header.app}}
       />
       <WebsitePageMain id="top">
         <HomeHero captures={captures} home={home} />

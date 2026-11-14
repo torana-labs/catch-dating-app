@@ -177,6 +177,11 @@
  * homepage does at the same width.
  */
 .bar[data-variant="site"] {
+  /*
+   * The links fold by the bar's own width, so a phone-wide frame inside a wider window folds
+   * too. Widths below are the content box: a window under 600px less its 20px gutters.
+   */
+  container: catch-site-bar / inline-size;
   --catch-site-gutter: var(--catch-layout-gutter-compact);
   padding-inline: max(var(--catch-site-gutter), calc((100% - var(--catch-website-content-max)) / 2));
   background: var(--catch-theme-ground);
@@ -191,7 +196,9 @@
   min-height: var(--catch-size-control-md);
 }
 
-.site { display: flex; align-items: center; gap: var(--catch-space-s6); min-width: 0; }
+.site { display: flex; flex: none; align-items: center; gap: var(--catch-space-s6); min-width: 0; }
+
+.primary { display: inline-flex; }
 
 .account { display: inline-flex; flex: none; align-items: center; }
 
@@ -207,8 +214,13 @@
   .bar[data-variant="site"] { --catch-site-gutter: var(--catch-layout-gutter-expanded); }
 }
 
-@media (max-width: 599px) {
+@container catch-site-bar (max-width: 559px) {
   .links,
   .account { display: none; }
   .siteMenu { display: inline-flex; }
+}
+
+/* A window under 390px: beside a city picker the primary action waits in the menu. */
+@container catch-site-bar (max-width: 349px) {
+  .primary { display: none; }
 }
