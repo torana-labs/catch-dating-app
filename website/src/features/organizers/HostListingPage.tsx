@@ -1,6 +1,6 @@
 import {CatchRoot} from "@catch/web-ui";
 import {useMemo} from "react";
-import {PublicPageHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {organizerPageFromListing, type OrganizerPageRecord} from "./organizerPage";
 import {OwnerSignInPrompt, OwnerView} from "./owner/OwnerView";
 import {ownerViewBackends, type OwnerViewBackends} from "./owner/ownerViewBackends";
@@ -13,7 +13,10 @@ import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBac
  * /organizers/<slug>/ on the white ground, as the RbWebOrgV2 board. It
  * renders the organizer's `organizerPublicPage` read model when the route
  * read one, and otherwise the same record built from the listing (pages
- * assembled from their sources, and the static build).
+ * assembled from their sources, and the static build). On the site's own domain it
+ * carries the site header and footer (owner decision, 14 Nov 2026); a page
+ * served on the organiser's own domain, once custom domains ship, keeps the
+ * short footer.
  */
 export function HostListingPage({backends = organizerPageBackends, listing, ownerBackends = ownerViewBackends, ownerUid, page,
   readAt}: {
@@ -35,7 +38,7 @@ export function HostListingPage({backends = organizerPageBackends, listing, owne
 
   return (
     <CatchRoot theme="day">
-      <PublicPageHeader />
+      <PublicSiteHeader />
       <WebsitePageMain id="profile">
         <HostListingSections
           controller={controller}
@@ -44,6 +47,7 @@ export function HostListingPage({backends = organizerPageBackends, listing, owne
           ownerFooter={owner.signedOut ? <OwnerSignInPrompt controller={owner} /> : undefined}
         />
       </WebsitePageMain>
+      <PublicSiteFooter />
     </CatchRoot>
   );
 }

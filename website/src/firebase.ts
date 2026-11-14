@@ -1561,25 +1561,4 @@ export function withdrawWebsiteMessagingPermission(
 ): Promise<WithdrawParticipantMessagingPermissionCallableResponse> {
   return invokeWebsiteCallable("withdrawParticipantMessagingPermission", payload, claimFirebaseConfigured, "Messaging permissions");
 }
-/** Google sign-in keeps an existing UID: it links rather than merges. */
-export const signInWebsiteAccountWithGoogle = signInForClaim;
 export const signOutWebsiteAccount = signOutClaimUser;
-/** Sends a passwordless sign-in link that returns to `returnUrl`. */
-export async function sendWebsiteAccountEmailLink(email: string, returnUrl: string): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) throw new Error("Account sign-in is not configured for this build.");
-  const {sendSignInLinkToEmail} = await import("firebase/auth");
-  await sendSignInLinkToEmail(runtime.auth, email, {url: returnUrl, handleCodeInApp: true});
-}
-export async function isWebsiteAccountEmailLink(link: string): Promise<boolean> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) return false;
-  const {isSignInWithEmailLink} = await import("firebase/auth");
-  return isSignInWithEmailLink(runtime.auth, link);
-}
-export async function completeWebsiteAccountEmailLink(email: string, link: string): Promise<User> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) throw new Error("Account sign-in is not configured for this build.");
-  const {signInOrLinkEmailLink} = await import("./firebaseClaimAccountLinking");
-  return signInOrLinkEmailLink(runtime.auth, email, link);
-}

@@ -11,7 +11,13 @@ import {collectFunctionBindingIntent, collectSecretConsumers, discoverFunctionEx
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 // sendProgramWhatsappReply (#1627) sends a planner's reply on a programme
 // thread exactly as sendOrganizerWhatsappReply does on an organiser thread.
-const whatsappReaderConsumers = ["dispatchOrganizerCampaign", "getOrganizerMessagingSetup",
+// Every WhatsApp token consumer except the two connection writers runs as the
+// reader identity. The scheduled dispatcher and the inbound guest-message
+// trigger joined it on 14 Nov 2026: as the default identity they inherited the
+// writers' version-manager role, and the dev full deploy (run 43583793742)
+// stopped on runtime-secret-permission-leakage.
+const whatsappReaderConsumers = ["dispatchOrganizerCampaign", "dispatchScheduledOrganizerCampaigns",
+  "getOrganizerMessagingSetup", "onProgramWhatsappInboundMessageCreated",
   "sendOrganizerWhatsappReply", "sendOrganizerWhatsappTest", "sendProgramWhatsappReply",
   "syncOrganizerWhatsappTemplates"];
 const whatsappWriterConsumers = ["completeOrganizerWhatsappConnection",
@@ -446,7 +452,7 @@ test("equivalent parenthesized and asserted mutation syntax remains unresolved",
 });
 
 
-test("WhatsApp source separates exactly six readers from the default connection writers in DEV and PROD", () => {
+test("WhatsApp source separates exactly eight readers from the default connection writers in DEV and PROD", () => {
   const consumers = discoverFunctionExportNames(fs.readFileSync(
     path.join(repo, "functions/src/index.ts"), "utf8"));
   for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
