@@ -25,6 +25,14 @@ const journeys: CatchNightSceneJourney[] = [
     ]},
 ];
 
+// Stand-in captures for frame="capture": a tall 390 px board page, cropped to a different focus box per moment.
+const capture = (alt: string, y: number) => ({src: referenceScreenUrl("organizer/guest/390"), alt, width: 390, height: 4384,
+  screen: {x: 0, y: 0, width: 390, height: 4384}, focus: {x: 16, y, width: 358, height: 480}});
+const captureJourney: CatchNightSceneJourney = {
+  ...journeys[0],
+  moments: journeys[0].moments.map((moment, index) => ({...moment, screen: undefined, capture: capture(moment.title, 600 + index * 700)})),
+};
+
 const formats: CatchNightSceneProps["formats"] = [{format: "run", title: "Run clubs"}, {format: "courts", title: "Pickleball"}];
 
 function Scene() {
@@ -69,6 +77,25 @@ export const Compact: Story = {
     <div style={{width: 390}}>
       <StoryPage>
         <CatchSurface aria-label="On the night" block="band" color="ink"><Scene /></CatchSurface>
+      </StoryPage>
+    </div>
+  ),
+};
+
+/**
+ * frame="capture" at phone width: each moment shows only its focus box,
+ * frameless, at the band's width, so the app's own text stays readable. On a
+ * wide band the whole framed capture runs large off the scene's bottom edge.
+ */
+export const CaptureFocusCrop: Story = {
+  parameters: {catchComponent: {id: "shared_night_scene", routeIds: storyRoutes, states: ["compact", "focus-crop"]}},
+  render: () => (
+    <div style={{width: 390}}>
+      <StoryPage>
+        <CatchSurface aria-label="On the night" block="band" color="ink">
+          <CatchNightScene formats={formats} frame="capture" journey={captureJourney} label={`${captureJourney.event}, moment by moment`}
+            pickerLabel="Event type" position={(index, total) => `${index} of ${total}`} selected={0} timelineLabel="Moments in the evening" />
+        </CatchSurface>
       </StoryPage>
     </div>
   ),

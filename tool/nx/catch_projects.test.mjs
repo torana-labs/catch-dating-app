@@ -86,7 +86,7 @@ test("path dependencies and declared sources become graph edges", async () => {
     "catch_ui -> catch_tokens (static)",
     "catch_dating_app -> catch_kernel (static)",
     "catch_consumer_app -> catch_kernel (static)",
-    "catch_kernel -> contracts (implicit)",
+    "catch_kernel -> contracts-catalogs (implicit)",
     "catch_kernel -> @catch/brand (implicit)",
     "catch_dating_app -> catch_l10n (static)",
     "catch_consumer_app -> catch_l10n (static)",
@@ -105,6 +105,7 @@ test("path dependencies and declared sources become graph edges", async () => {
   }
   assert.ok(!edges.some((edge) => edge.startsWith("catch_ui -> catch_dating_app")), "membership must not add a cycle");
   assert.ok(!edges.some((edge) => edge.startsWith("catch_kernel -> catch_")), "the kernel depends on no Dart package of ours");
+  assert.ok(!edges.includes("catch_kernel -> contracts (implicit)"), "the kernel reads only the market catalog");
   assert.ok(!edges.some((edge) => edge.startsWith("catch_l10n -> catch_")), "the l10n package depends on no Dart package of ours");
   assert.ok(!edges.includes("catch_platform -> catch_dating_app (static)"), "the platform package must not depend on the root");
 });

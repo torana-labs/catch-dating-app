@@ -51,9 +51,7 @@ class WidgetbookOrganizerOrganizerScreenPreview extends StatelessWidget {
           watchOrganizerFollowProvider(
             widgetbookOrganizerOrganizer.id,
             effectiveUid,
-          ).overrideWith(
-            (ref) => Stream<OrganizerFollow?>.value(membership),
-          ),
+          ).overrideWith((ref) => Stream<OrganizerFollow?>.value(membership)),
         organizerDetailViewModelProvider(
           widgetbookOrganizerOrganizer.id,
         ).overrideWith((ref) => viewModel),

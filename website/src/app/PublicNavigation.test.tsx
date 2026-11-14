@@ -53,6 +53,7 @@ describe("public route navigation targets", () => {
     expect(within(footer).getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
     expect(within(footer).getByRole("link", {name: "Refunds"}).getAttribute("href")).toBe("/refunds/");
     expect(within(footer).getByRole("link", {name: "Contact"}).getAttribute("href")).toBe("/contact/");
-    expect(within(footer).getByRole("link", {name: "Explore"}).getAttribute("href")).toBe("/explore/");
+    expect(within(footer).getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
+    expect(within(footer).getByRole("button", {name: "Privacy choices"})).toBeTruthy();
   });
 });

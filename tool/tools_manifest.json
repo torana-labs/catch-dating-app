@@ -52,7 +52,37 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-workflow-callers",
+      "category": "meta",
+      "path": "tool/nx/workflow_callers.mjs",
+      "command": "node --test tool/nx/workflow_callers.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Derives from ci.yml which lanes execute or read each CI configuration file, so a workflow, composite action or tool/ci edit selects exactly those lanes and a selector file selects every lane; the test proves the closure against both the planner and Nx.",
+      "checks": [
+        "node --check tool/nx/workflow_callers.mjs",
+        "node --test tool/nx/workflow_callers.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/workflow_callers.test.mjs",
+        "tool/nx/shadow_plan.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/lib/component_graph.mjs",
+        ".github/workflows/**",
+        ".github/actions/**",
+        "tool/ci/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
         ]
       }
     },
@@ -82,16 +112,18 @@
       "id": "meta:nx-project-graph",
       "category": "meta",
       "path": "tool/nx/catch_projects.mjs",
-      "command": "node --test tool/nx/catch_projects.test.mjs",
+      "command": "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs tool/nx/task_lanes.test.mjs",
       "safety": "local-readonly",
       "status": "active",
       "description": "Nx plugin that turns every pubspec.yaml and independently locked npm package into an Nx project, adds path and declared cross-language edges, and gives source projects a generator check target.",
       "checks": [
         "node --check tool/nx/catch_projects.mjs",
-        "node --test tool/nx/catch_projects.test.mjs"
+        "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs tool/nx/task_lanes.test.mjs"
       ],
       "impactPaths": [
         "tool/nx/catch_projects.test.mjs",
+        "tool/nx/lane_inputs.test.mjs",
+        "tool/nx/task_lanes.test.mjs",
         "nx.json"
       ],
       "ciRequirements": {
@@ -131,15 +163,62 @@
       "impactPaths": [
         "tool/lib/functions_test_selection.mjs",
         "tool/lib/functions_test_selection.test.mjs",
+        "tool/lib/functions_test_reads.mjs",
+        "tool/lib/functions_test_reads.test.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/contract_reads.test.mjs",
         "tool/lib/dependency_cruiser.mjs",
         "tool/impact/package.json",
         "tool/impact/package-lock.json"
       ],
       "checks": [
         "node --check tool/impact/emulator_test_selection.mjs",
-        "node --test tool/lib/functions_test_selection.test.mjs"
+        "node --test tool/lib/functions_test_selection.test.mjs tool/lib/functions_test_reads.test.mjs tool/lib/contract_reads.test.mjs"
       ],
       "role": "generator"
+    },
+    {
+      "id": "functions:unit-test-selection",
+      "category": "ci",
+      "path": "tool/impact/functions_unit_test_selection.mjs",
+      "command": "node tool/impact/functions_unit_test_selection.mjs --base origin/main",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Chooses the Functions node --test files a pull request can reach for CATCH_UNIT_TEST_SELECTION, with the same dependency-cruiser graph and data-path rules as the emulator selection; shared inputs keep every test, and only pull requests narrow.",
+      "impactPaths": [
+        "tool/lib/functions_module_graph.mjs",
+        "tool/lib/functions_unit_selection.test.mjs",
+        "tool/lib/functions_test_selection.mjs",
+        "tool/lib/functions_test_reads.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/dependency_cruiser.mjs",
+        "tool/impact/package.json",
+        "tool/impact/package-lock.json"
+      ],
+      "checks": [
+        "node --check tool/impact/functions_unit_test_selection.mjs",
+        "node --test tool/lib/functions_unit_selection.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "functions:selection-replay",
+      "category": "ci",
+      "path": "tool/impact/selection_replay.mjs",
+      "command": "node tool/impact/selection_replay.mjs --baseline <old functions_test_selection.mjs> --commits 100",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Replays the Functions test selection over recent main commits through two copies of the selector and lists every test the newer one drops, with the reads that show it cannot read the change, plus median and p90 selected counts for the unit and emulator lists.",
+      "impactPaths": [
+        "tool/impact/selection_replay.mjs",
+        "tool/lib/functions_test_selection.mjs",
+        "tool/lib/functions_test_reads.mjs",
+        "tool/lib/functions_module_graph.mjs"
+      ],
+      "checks": [
+        "node --check tool/impact/selection_replay.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "tool:import-owners",
@@ -264,7 +343,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test --test-timeout=300000 tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/harness/lib/flutter_contract_outputs.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -437,7 +516,8 @@
       },
       "impactPaths": [
         "tool/git/branch_hygiene.test.mjs",
-        ".github/workflows/branch-hygiene.yml"
+        ".github/workflows/branch-hygiene.yml",
+        ".github/workflows/branch-prune.yml"
       ],
       "description": "Classifies remote or local branches using ancestry, exact tree history, exact merged-PR identity, final changed-path identity, age, and open-PR state so completed refs can be pruned without hiding abandoned code.",
       "checks": [
@@ -713,6 +793,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:city-interest-backfill-workflow",
+      "category": "ci",
+      "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
+      "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/city-interest-backfill.yml",
+        "tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "description": "Keeps the city interest backfill workflow dispatch-only from main, dry-run by default, keyless and least-privileged, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/city_interest_backfill_workflow.test.mjs",
+        "node --test tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",
@@ -779,6 +883,7 @@
         ]
       },
       "impactPaths": [
+        ".github/actions/find-queue-validation/**",
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/_web-hosting-promote.yml",
         ".github/workflows/admin-website.yml",
@@ -4978,7 +5083,8 @@
         "repositoryView": "full",
         "setup": [
           "node",
-          "root-npm"
+          "root-npm",
+          "flutter"
         ]
       }
     },
@@ -7060,6 +7166,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:flutter-package-scope",
+      "category": "ci",
+      "path": "tool/ci/flutter_package_scope.mjs",
+      "command": "node tool/ci/flutter_package_scope.mjs",
+      "safety": "read-only",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/flutter-ci.yml",
+        "tool/ci/flutter_package_scope.mjs",
+        "tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "description": "Decides which Flutter package suites and Widgetbook a pull request's change reaches, from the pubspec path-dependency closures at the head commit; workspace inputs, unclassified paths and every non-pull-request event run them all.",
+      "checks": [
+        "node --check tool/ci/flutter_package_scope.mjs",
+        "node --test tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",
@@ -7075,6 +7200,26 @@
       "checks": [
         "node --check tool/ci/main_push_base.mjs",
         "node --test tool/ci/main_push_base.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:main-red-alert",
+      "category": "ci",
+      "path": "tool/ci/main_red_alert.mjs",
+      "command": "node tool/ci/main_red_alert.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/main-red-alert.yml",
+        "tool/ci/main_red_alert.mjs",
+        "tool/ci/main_red_alert.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
+      ],
+      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run. After a green run it opens one issue once main has been fully green for 7 days, the owner's condition for ending the sprint floor.",
+      "checks": [
+        "node --check tool/ci/main_red_alert.mjs",
+        "node --test tool/ci/main_red_alert.test.mjs"
       ],
       "role": "gate"
     },

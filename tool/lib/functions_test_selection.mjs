@@ -1,4 +1,6 @@
 import path from "node:path";
+import {contractReads} from "./contract_reads.mjs";
+import {readsPath, sourceReads} from "./functions_test_reads.mjs";
 
 // Pull requests run only the strict emulator tests a change can reach; the
 // merge queue, main and nightly still run every listed test. Code inputs come
@@ -18,8 +20,12 @@ const fullInputs = [
 ];
 const dataInputs = [
   {pattern: /^firestore\.indexes\.json$/u, mentions: ["firestore.indexes"]},
-  {pattern: /^contracts\//u, mentions: ["contracts"]},
 ];
+// A contract change selects the tests that read that file (tool/lib/contract_reads.mjs),
+// the tests whose sources read contracts dynamically, and the importers of the
+// generated modules built from it, which name it in their schema $id.
+const generatedRoot = "src/shared/generated/";
+const generatedSchemaId = /"\$id":\s*"https:\/\/catch\.app\/(contracts\/[^"#]+)"/gu;
 
 /** The authored source of a listed test: compiled lib/**.test.js comes from src/**.test.ts. */
 export function sourceForListedTest(test) {
@@ -72,11 +78,114 @@ function mentions(source, key, {fileName = false} = {}) {
 }
 
 /**
+ * The repository paths each test's whole import tree can read
+ * (tool/lib/functions_test_reads.mjs): of(test) is the list, or null when a
+ * file in the tree is unbounded, unreadable, or outside functions/ (the graph
+ * does not follow that file's own imports); unboundedFile(test) names the first
+ * such file.
+ */
+function treeReader({closureOf, readSource}) {
+  const fileReads = new Map();
+  const readsOfFile = (file) => {
+    if (!fileReads.has(file)) {
+      const source = file.startsWith("../") ? null : readSource(file);
+      let result;
+      if (source === null || source === undefined || source === "") {
+        // Generated contract modules are written by the build and never read files.
+        result = file.startsWith(generatedRoot) ? {bounded: true, reads: []} : {bounded: false};
+      } else {
+        result = sourceReads({file: path.posix.normalize(`functions/${file}`), source});
+      }
+      fileReads.set(file, result.bounded ? result.reads : null);
+    }
+    return fileReads.get(file);
+  };
+  const cache = new Map();
+  return {
+    of(test) {
+      if (!cache.has(test)) {
+        let reads = [];
+        for (const file of closureOf(test)) {
+          const own = readsOfFile(file);
+          if (own === null) { reads = null; break; }
+          reads.push(...own);
+        }
+        cache.set(test, reads === null ? null : [...new Set(reads)].sort());
+      }
+      return cache.get(test);
+    },
+    unboundedFile: (test) => closureOf(test).find((file) => readsOfFile(file) === null),
+  };
+}
+
+/**
+ * Whether selectEmulatorTests applies the repository-path rule to a changed
+ * path: anything outside functions/ and contracts/ that is neither a shared
+ * input nor a named data input.
+ */
+export function elsewherePath(changed) {
+  return !fullInputs.some((pattern) => pattern.test(changed)) && !changed.startsWith("contracts/") &&
+    !dataInputs.some(({pattern}) => pattern.test(changed)) && !changed.startsWith("functions/");
+}
+
+/**
+ * The two repository-path rules for each listed test, for
+ * tool/impact/selection_replay.mjs: namesTop(test, top) is the broad rule (the
+ * tree names that top-level folder as a path) and reads(test) is what the tree
+ * can read, or null when it is unbounded.
+ */
+export function repoPathIndex({listed, modules, readSource}) {
+  const edges = importEdges(modules);
+  const closures = new Map();
+  const closureOf = (test) => {
+    if (!closures.has(test)) closures.set(test, [...closure([sourceForListedTest(test)], edges)]);
+    return closures.get(test);
+  };
+  const texts = new Map();
+  const text = (file) => {
+    if (!texts.has(file)) texts.set(file, readSource(file) ?? "");
+    return texts.get(file);
+  };
+  const names = new Map();
+  const reader = treeReader({closureOf, readSource});
+  return {
+    namesTop(test, top) {
+      const key = `${test}\0${top}`;
+      if (!names.has(key)) names.set(key, closureOf(test).some((file) => mentions(text(file), top)));
+      return names.get(key);
+    },
+    reads: (test) => reader.of(test),
+    unboundedFile: (test) => reader.unboundedFile(test),
+  };
+}
+
+/**
+ * For each listed test, the repository paths its import tree can read, or the
+ * file that leaves it unbounded. Used by tool/impact/selection_replay.mjs to
+ * show why a narrower selection can drop a test.
+ */
+export function functionsTestReads({listed, modules, readSource}) {
+  const edges = importEdges(modules);
+  const closureOf = (test) => [...closure([sourceForListedTest(test)], edges)];
+  const reader = treeReader({closureOf, readSource});
+  return new Map(listed.map((test) => {
+    const reads = reader.of(test);
+    return [test, reads === null ? {bounded: false, unbounded: reader.unboundedFile(test)} : {bounded: true, reads}];
+  }));
+}
+
+/**
  * Chooses the listed emulator tests a pull request can affect.
  * changedPaths are repository-relative; modules are dependency-cruiser modules
  * relative to functions/; readSource(file) returns a functions/ file's text.
  */
-export function selectEmulatorTests({changedPaths, listed, modules, readSource}) {
+export function selectEmulatorTests({changedPaths, listed, modules, readSource, explain = false}) {
+  // With explain, the result also says why each selected test runs.
+  const why = new Map();
+  const pick = (test, reason) => {
+    selected.add(test);
+    if (explain && !why.has(test)) why.set(test, reason);
+  };
   const reasons = [];
   for (const changed of changedPaths) {
     if (fullInputs.some((pattern) => pattern.test(changed))) reasons.push(`shared emulator input changed: ${changed}`);
@@ -97,9 +206,36 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
     return textCache.get(file);
   };
   const closures = new Map();
-  const readsAny = (test, keys, options) => {
+  const closureOf = (test) => {
     if (!closures.has(test)) closures.set(test, [...closure([testSources.get(test)], edges)]);
-    return closures.get(test).some((file) => keys.some((key) => mentions(text(file), key, options)));
+    return closures.get(test);
+  };
+  const readsAny = (test, keys, options) =>
+    closureOf(test).some((file) => keys.some((key) => mentions(text(file), key, options)));
+  const contractCache = new Map();
+  const contractsOf = (file) => {
+    if (!contractCache.has(file)) contractCache.set(file, contractReads(text(file), {file}));
+    return contractCache.get(file);
+  };
+  const readsContract = (test, changed) => closureOf(test).some((file) => {
+    const reads = contractsOf(file);
+    return reads.dynamic || reads.paths.includes(changed);
+  });
+  const treeReads = treeReader({closureOf, readSource});
+  const unboundedIn = (test) => treeReads.unboundedFile(test);
+  let generatedByContract;
+  const generatedFrom = (changed) => {
+    if (!generatedByContract) {
+      generatedByContract = new Map();
+      for (const file of known) {
+        if (!file.startsWith(generatedRoot)) continue;
+        for (const [, id] of text(file).matchAll(generatedSchemaId)) {
+          if (!generatedByContract.has(id)) generatedByContract.set(id, []);
+          generatedByContract.get(id).push(file);
+        }
+      }
+    }
+    return generatedByContract.get(changed) ?? [];
   };
 
   const selected = new Set();
@@ -111,9 +247,14 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
     if (changed === "contracts/admin/admin_action_catalog.json" || changed.startsWith("contracts/admin/actions/")) {
       seeds.push("src/shared/generated/adminActionCatalog", "src/shared/generated/adminActionCatalog.ts");
     }
+    if (changed.startsWith("contracts/")) {
+      for (const test of listed) if (readsContract(test, changed)) pick(test, `reads ${changed}`);
+      seeds.push(...generatedFrom(changed));
+      continue;
+    }
     const data = dataInputs.find(({pattern}) => pattern.test(changed));
     if (data) {
-      for (const test of listed) if (readsAny(test, data.mentions)) selected.add(test);
+      for (const test of listed) if (readsAny(test, data.mentions)) pick(test, `names ${changed}`);
       continue;
     }
     if (changed.startsWith("functions/")) {
@@ -126,12 +267,23 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
       }
       const readers = listed.filter((test) => readsAny(test, [path.posix.basename(file)], {fileName: true}));
       if (readers.length === 0) reasons.push(`no test reaches functions file: ${changed}`);
-      for (const test of readers) selected.add(test);
+      for (const test of readers) pick(test, `names ${path.posix.basename(file)}`);
       continue;
     }
-    // Elsewhere in the repository: only tests that name that top-level folder can read it.
+    // Elsewhere in the repository: a test runs when a file in its tree can read
+    // the path (tool/lib/functions_test_reads.mjs). A tree with a read it can't
+    // bound keeps the broad rule: the test runs when it names the path's
+    // top-level folder anywhere.
     const top = changed.split("/")[0];
-    for (const test of listed) if (readsAny(test, [top])) selected.add(test);
+    for (const test of listed) {
+      const reads = treeReads.of(test);
+      if (reads === null) {
+        if (readsAny(test, [top])) pick(test, `broad: ${unboundedIn(test)} has an unbounded read; the tree names ${top}`);
+      } else {
+        const read = reads.find((entry) => readsPath([entry], changed));
+        if (read !== undefined) pick(test, `reads ${read || "the whole repository"}`);
+      }
+    }
   }
   const affected = new Set();
   const pending = [...seeds];
@@ -141,9 +293,11 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
     affected.add(file);
     pending.push(...(reverse.get(file) ?? []));
   }
-  for (const [test, source] of testSources) if (affected.has(source)) selected.add(test);
+  for (const [test, source] of testSources) if (affected.has(source)) pick(test, "imports a changed source");
   if (reasons.length > 0) return {mode: "full", tests: [...listed], reasons};
-  return {mode: "selected", tests: listed.filter((test) => selected.has(test)), reasons: []};
+  const tests = listed.filter((test) => selected.has(test));
+  return explain ? {mode: "selected", tests, reasons: [], why: Object.fromEntries(tests.map((test) => [test, why.get(test)]))} :
+    {mode: "selected", tests, reasons: []};
 }
 
 // Each emulator shard pays about two minutes of setup (dependencies, the

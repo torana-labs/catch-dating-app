@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -125,19 +126,20 @@ class FakeFirestore {
       .filter((snap) => {
         const data = snap.data() ?? {};
         return filters.every((filter) => {
+          const value = fieldAt(data, filter.field);
           if (filter.operator === "==") {
-            return data[filter.field] === filter.value;
+            return value === filter.value;
           }
           if (filter.operator === "in" && Array.isArray(filter.value)) {
-            return filter.value.includes(data[filter.field]);
+            return filter.value.includes(value);
           }
           throw new Error(`Unsupported fake query operator ${filter.operator}`);
         });
       });
     if (order) {
       snapshots.sort((a, b) => {
-        const left = sortableValue(a.data()?.[order.field]);
-        const right = sortableValue(b.data()?.[order.field]);
+        const left = sortableValue(fieldAt(a.data() ?? {}, order.field));
+        const right = sortableValue(fieldAt(b.data() ?? {}, order.field));
         return order.direction === "asc" ? left - right : right - left;
       });
     }
@@ -687,7 +689,7 @@ function harness(
     authorizeRazorpayRefund?: (payment: PaymentDocument) =>
       Promise<LegacyRazorpayRefundAuthorization>} = {}
 ) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(withCatchBookingRows(initialDocs));
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
   const notifications: Array<{
     token: string;
@@ -1148,3 +1150,10 @@ test("an organizer-routed paid booking is not cancelled natively",
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
     assert.deepEqual(h.refunds, []);
   });
+
+/** Reads a dotted field path, as Firestore queries do. */
+function fieldAt(data: FakeData, path: string): unknown {
+  return path.split(".").reduce<unknown>((value, part) =>
+    value && typeof value === "object" ?
+      (value as FakeData)[part] : undefined, data);
+}

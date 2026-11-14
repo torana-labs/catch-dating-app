@@ -1,3 +1,4 @@
+import {expr, projectID} from "firebase-functions/params";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {
   defaultProgramAssistantDeps,
@@ -19,6 +20,12 @@ export const onProgramWhatsappInboundMessageCreated = onDocumentCreated({
   document: "programWhatsappMessages/{messageId}",
   // The holding and answer replies go out through the wedding's sender.
   secrets: [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+  // The WhatsApp reader identity, like every other sender: it holds only
+  // accessor on the token vault. The default runtime identity also holds
+  // version-manager for the connection writers, which the environment
+  // readiness check refuses for any other consumer.
+  serviceAccount:
+    expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   timeoutSeconds: 120,
   maxInstances: 10,
 }, async (event) => {

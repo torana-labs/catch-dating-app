@@ -11,9 +11,17 @@ import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
  */
 export interface SiteAccountEntry {
   /** The top bar's button, the last item of its left group on wide pages. */
-  bar: ReactNode;
+  bar?: ReactNode;
+  /** A signed-in control at the right end of the top bar on wide pages, after the actions. */
+  barEnd?: ReactNode;
   /** The same entry in the phone menu, where the bar has no room for it. */
   menu: {label: string; href?: string; onPressed?: () => void};
+  /**
+   * A signed-in reader's whole phone menu in place of the built-in one: the
+   * Menu button carries their avatar and opens a sheet with the account and
+   * the page's links.
+   */
+  phoneMenu?: (links: readonly SiteNavItem[], menuLabel: string) => ReactNode;
 }
 /** A page link: where it goes and what it says. */
 export interface SiteNavItem {
@@ -49,12 +57,14 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
   return (
     <CatchTopBar
       account={account?.bar}
+      accountEnd={account?.barEnd}
       actions={actions}
       homeHref="/"
       links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}
       linksLabel={publicSiteCopy.menu.navLabel}
       menuExtras={account ? [account.menu] : undefined}
       menuLabel={publicSiteCopy.menu.openLabel}
+      siteMenu={account?.phoneMenu?.(links, publicSiteCopy.menu.openLabel)}
       subBrand={subBrand}
       title={brand}
       variant="site"
@@ -85,16 +95,11 @@ export function PrivacyChoicesButton({tone = "inline"}: {tone?: keyof typeof pri
   );
 }
 
-/** The organiser and event pages' top bar: the same header as every general page. */
-export function PublicPageHeader() {
-  return <PublicSiteHeader />;
-}
-
 /**
- * The boards' short footer: the wordmark across from quiet links. The
- * organiser and event pages close their main column with the four default
- * links; the claim, form and offer pages pass the site and legal links and
- * the operator line. Only a page that records site clicks passes
+ * The boards' short footer: the wordmark across from quiet links. The form,
+ * offer, account and billing pages pass the site and legal links and the
+ * operator line; the four default links wait for organiser pages served on
+ * their own domain. Only a page that records site clicks passes
  * `onLinkPressed` (the private offer and form pages record none).
  */
 export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, links = publicPageChromeCopy.footerLinks, note, onLinkPressed}: {

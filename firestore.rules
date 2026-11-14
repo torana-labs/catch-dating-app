@@ -1280,12 +1280,29 @@ service cloud.firestore {
     // and chats resolve it. A list returns only organizers the app shows, or
     // ones the reader hosts or owns, so nobody can enumerate hidden listings,
     // unapproved drafts or the intake pipeline.
+    // The canonical organizer holds contact details, host defaults,
+    // provenance, intake, admin search, ownership and claim state, so only
+    // the organizer's own hosts, owner and active team read it (#1221).
+    // Everyone else reads publicOrganizers/{organizerId}; the apps fall back
+    // to it when this read is denied.
+    function hasActiveOrganizerTeamMembership(organizerId) {
+      let membership = /databases/$(database)/documents/organizerTeamMemberships/$(
+        organizerId + '_' + request.auth.uid);
+      return exists(membership)
+        && get(membership).data.organizerId == organizerId
+        && get(membership).data.uid == request.auth.uid
+        && get(membership).data.status == 'active';
+    }
+
     match /organizers/{organizerId} {
-      allow get: if true;
-      allow list: if resource.data.appVisibility == 'discoverable'
-        || (isAuthed() && (resource.data.hostUserId == request.auth.uid
-          || resource.data.ownerUserId == request.auth.uid
-          || request.auth.uid in resource.data.hostUserIds));
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && (isOrganizerHostData(resource.data)
+          || hasActiveOrganizerTeamMembership(organizerId));
+      // Same field shape as the Host app's own queries, so Firestore can
+      // prove them; browse lists use publicOrganizers.
+      allow list: if isAuthed() && (resource.data.hostUserId == request.auth.uid
+        || resource.data.ownerUserId == request.auth.uid
+        || request.auth.uid in resource.data.hostUserIds);
       allow create, update, delete: if false;
     }
 

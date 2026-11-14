@@ -31,12 +31,12 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.d
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/organizer_posts_home_section.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

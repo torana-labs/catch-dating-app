@@ -243,6 +243,31 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
   }
 });
 
+test("Flutter package suites and Widgetbook run only for changes their closure reaches", () => {
+  const flutter = workflow("flutter-ci.yml");
+  for (const [step, packages] of [
+    ["Decide which package suites this change reaches", ["packages/catch_ui", "packages/kernel", "apps/consumer", "apps/host"]],
+    ["Decide whether this change reaches Widgetbook", ["widgetbook"]],
+  ]) {
+    const scope = namedStep(flutter, step);
+    assert.match(scope, /node tool\/ci\/flutter_package_scope\.mjs/u);
+    assert.match(scope, /--event "\$EVENT_NAME"/u);
+    assert.match(scope, /EVENT_NAME: \$\{\{ github\.event_name \}\}/u);
+    assert.match(scope, /--summary "\$GITHUB_STEP_SUMMARY"/u);
+    for (const name of packages) assert.match(scope, new RegExp(`--package ${name}\\b`, "u"));
+  }
+  for (const [step, output] of [
+    ["Catch UI package tests", "catch_ui"],
+    ["Kernel package tests", "kernel"],
+    ["Consumer package tests", "consumer"],
+    ["Host package tests", "host"],
+    ["Build Widgetbook web app", "widgetbook"],
+    ["Check the Widgetbook golden inventory", "widgetbook"],
+  ]) {
+    assert.match(namedStep(flutter, step), new RegExp(`if: steps\\.scope\\.outputs\\.${output} == 'true'`, "u"), step);
+  }
+});
+
 test("Flutter selection keeps full validation and bounds matrix outputs", () => {
   const ci = workflow("ci.yml");
   const flutter = workflow("flutter-ci.yml");
@@ -250,6 +275,10 @@ test("Flutter selection keeps full validation and bounds matrix outputs", () => 
   assert.match(flutter, /matrix: \$\{\{ fromJSON\(needs.test-plan.outputs.matrix\) \}\}/u);
   assert.match(namedStep(flutter, "Verify test selection safety"), /dart test tool\/harness\/lib\/flutter_test_selection_test.dart/u);
   assert.match(namedStep(flutter, "Select tests from committed dependency closures"), /--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  // Without the generator's dependencies every contract change runs the suite.
+  assert.match(namedStep(flutter, "Install the contract generator's dependencies"), /npm --prefix functions ci --ignore-scripts/u);
+  assert.ok(flutter.indexOf("Install the contract generator's dependencies") <
+    flutter.indexOf("Select tests from committed dependency closures"));
   assert.match(flutter, /TEST_PLAN_RESULT: \$\{\{ needs\['test-plan'\].result \}\}/u);
   assert.match(flutter, /"\$\{TEST_PLAN_RESULT\}" != "success"/u);
   assert.match(namedStep(flutter, "Unit & widget tests"), /\.sourceSha == \$sha/u);
@@ -282,6 +311,12 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
     flutter.indexOf("  flutter-coverage:"), flutter.indexOf("  app-package-tests:"),
   );
   assert.match(coverageJob, /needs: \[test-plan, flutter-test-shards\]/u);
+  // Visibility-only: pull requests and queue groups don't spend a runner turn on it.
+  assert.match(coverageJob, /if: \$\{\{ github.event_name != 'pull_request' && github.event_name != 'merge_group' \}\}/u);
+  // The aggregate accepts a skipped coverage job only where coverage is meant to skip.
+  const coverageAggregate = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  assert.match(coverageAggregate, /\[\[ "\$\{COVERAGE_RESULT\}" == "skipped" && \( "\$\{EVENT_NAME\}" == "pull_request" \|\| "\$\{EVENT_NAME\}" == "merge_group" \) \]\]/u);
+  assert.match(coverageAggregate, /"\$\{coverage_ok\}" != "true"/u);
   assert.doesNotMatch(coverageJob, /flutter test|setup-flutter/u);
   assert.match(flutter, /name: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\$\{\{ matrix.shard_index \}\}/u);
   assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
@@ -310,7 +345,10 @@ test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequent
     assert.equal(step.run, directory === "packages/catch_ui" ?
       "flutter test --concurrency=1 --exclude-tags=golden" : "flutter test --concurrency=1");
     assert.equal(step.runnable, true);
-    assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
+    // The only condition is the pull request's change scope; locally and on
+    // every other event the suite runs.
+    assert.doesNotMatch(namedStep(job, name), /continue-on-error:/u);
+    assert.match(step.if, /^steps\.scope\.outputs\.\w+ == 'true'$/u);
   }
   const kernel = steps.filter((step) => step.name === "Kernel package tests");
   assert.equal(kernel.length, 1, "Kernel package tests must run exactly once");
@@ -1475,7 +1513,9 @@ test("backend integration runs strict execution inside both emulators with a bou
   const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(pkg.scripts["test:rules"], "npm run build && node scripts/run-tests.cjs --require-emulators");
   const listed = JSON.parse(fs.readFileSync(new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
-  assert.ok(listed.includes("test/firestore.rules.test.cjs"));
+  assert.ok(listed.includes("test/rules/organizers.rules.test.cjs"));
+  // Rules specs are one file per collection so shards balance and selection can narrow.
+  assert.equal(listed.includes("test/firestore.rules.test.cjs"), false);
   assert.ok(listed.includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 
@@ -1528,7 +1568,7 @@ test("canonical native captures reach consumers before dependency setup and buil
   assert.match(capture, /uses: \.\/\.github\/workflows\/marketing-captures.yml/u);
   assert.match(capture, /automatic_source_sha: \$\{\{ github.sha \}\}/u);
   assert.match(capture, /value: \$\{\{ jobs.freshness.outputs.capture_binding \}\}/u);
-  assert.match(ci, /needs: \[plan, source-preflight, capture-freshness\]/u);
+  assert.match(ci, /needs: \[plan, capture-freshness\]/u);
   assert.match(ci, /capture_binding: \$\{\{ needs.capture-freshness.outputs.capture_binding \}\}/u);
   assert.doesNotMatch(react, /capture_freshness_in_ci/u);
   for (const id of ["required"]) {
@@ -1565,8 +1605,8 @@ function captureJobCondition(file, id, context) {
 
 test("capture production follows the plan's website lane and Tools never waits on it", () => {
   const context = {github: {run_attempt: 2}, needs: {
-    plan: {outputs: {producer_attempt: "2", capture_freshness: "true", marketing: "true", tools: "true"}},
-    "source-preflight": {result: "success"}, "capture-freshness": {result: "success"},
+    plan: {result: "success", outputs: {producer_attempt: "2", capture_freshness: "true", marketing: "true", tools: "true"}},
+    "capture-freshness": {result: "success"},
   }};
   assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), true);
   assert.equal(captureJobCondition("ci.yml", "tools", context), true);
@@ -1660,7 +1700,7 @@ test("Flutter design checks share only complete owners in the actual required To
 });
 
 
-test("complete source preflight gates fanout and cannot be bypassed by Required CI", () => {
+test("complete source preflight runs beside the lanes and Required CI demands it", () => {
   const ci = workflow("ci.yml");
   const block = ci.slice(ci.indexOf("  source-preflight:\n"), ci.indexOf("  tools:\n"));
   assert.match(block, /needs: plan/u);
@@ -1673,13 +1713,25 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
   // block. When the sprint ends, assert no continue-on-error here again.
   assert.equal(block.match(/continue-on-error/gu)?.length ?? 0, 1);
   assert.match(block, /# Sprint floor: structural and freshness findings report, they do not block\.\n {8}continue-on-error: true\n/u);
-  const after = ci.slice(ci.indexOf("  tools:\n"));
-  assert.doesNotMatch(after, /^    needs: plan$/mu);
-  for (const id of ["required"]) {
-    const job = ci.slice(ci.indexOf(`\n  ${id}:\n`)).split(/\n  [a-z-]+:\n/u)[1];
-    assert.match(job, /- source-preflight/u);
+  // Preflight is off the critical path: every lane starts from the plan alone,
+  // and no lane reads preflight's result or outputs.
+  const jobs = ci.slice(ci.indexOf("\njobs:\n")).split(/\n  (?=[a-z][a-z0-9-]*:\n)/u).slice(1);
+  const lanes = jobs.filter(job => !/^(plan|source-preflight|required):/u.test(job));
+  assert.ok(lanes.length >= 12, `found ${lanes.length} lanes`);
+  for (const job of lanes) {
+    const id = job.split(":")[0];
+    const needs = job.match(/^    needs: (.+)$/mu)?.[1];
+    // workflow-lint is the one job that needs nothing, not even the plan.
+    if (id === "workflow-lint") assert.equal(needs, undefined);
+    else assert.match(needs ?? "", /^\[plan(, capture-freshness)?\]$/u, `${id} needs only the plan`);
+    assert.doesNotMatch(job, /source-preflight/u, `${id} does not wait on or read preflight`);
   }
-  assert.match(ci.slice(ci.indexOf("  required:\n")), /source-preflight.*result/u);
+  // Required CI still lists preflight and accepts only success, or skipped on
+  // a queue-verified run.
+  const required = jobs.find(job => job.startsWith("required:"));
+  assert.match(required, /\n      - source-preflight\n/u);
+  assert.match(required, /preflight="\$\(jq -er '\.\["source-preflight"\]\.result' <<< "\$NEEDS_JSON"\)"/u);
+  assert.match(required, /\[\[ "\$preflight" == success \|\| \( -n "\$\{QUEUE_RUN:-\}" && "\$preflight" == skipped \) \]\]/u);
 });
 
 test("Tools check shells request inventory producer proofs and no capture proof", context => {

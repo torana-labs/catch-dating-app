@@ -6,6 +6,24 @@ import {brand} from "./brand.ts";
 
 export const claimFlowCopy = {
   kicker: "Claim your page",
+  /** /claim/ before a page is chosen: one headline, the search, its results and one way in for the unlisted. */
+  landing: {
+    kicker: "For organisers",
+    title: "Claim your page.",
+    body: `If you run events, ${brand.name} may already have a page for your club or venue, made from its public events. Find it, sign in with your phone and prove it’s yours. It’s free.`,
+    search: {label: "Search for your page", placeholder: "Name, activity or city", clear: "Clear {query}", close: "Close search"},
+    resultsTitle: "Pages you can claim",
+    matchesTitle: "Matches for “{query}”",
+    row: "{category} · {city}",
+    noMatch: "No page matches “{query}”.",
+    noMatchBody: "Check the spelling, or search for the activity or the city instead.",
+    none: "No pages are waiting to be claimed yet.",
+    notListed: {
+      title: `Not on ${brand.name} yet?`,
+      body: `Start a free ${brand.stores.hostAppName} trial. Your page is made from your first event.`,
+      action: "Start your free trial",
+    },
+  },
   signIn: {
     title: "Is {name} yours?",
     body: "Claim it free. Edit it, add your links and reply to reviews. Takes about a minute.",
@@ -57,6 +75,5 @@ export const claimFlowCopy = {
     openPage: "Open your page",
     host: `Get ${brand.stores.hostAppName} to run your events`,
   },
-  footerLabel: "Footer",
   reviewFootnote: "We already have your name and phone from signing in.",
 } as const;

@@ -22,12 +22,11 @@ import {
   changeEventAssistanceRouteHandler,
   confirmEventAssistanceDepartureHandler,
 } from "./groupProgressHandlers";
+import {contractFixture} from "../../shared/contractFixtures";
 
 const now = Date.parse("2026-09-07T12:00:00Z");
 const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
   _nanoseconds: at % 1000 * 1_000_000});
-const fixture = (name: string) => JSON.parse(readFileSync(
-  "../contracts/fixtures/valid/" + name + ".json", "utf8"));
 async function harness(realDb?: Firestore, id = "fixture") {
   const fake = new ProgressFirestore();
   fake.generation = Timestamp.fromMillis(now - 86_400_000);
@@ -40,7 +39,8 @@ async function harness(realDb?: Firestore, id = "fixture") {
     if (realDb) await realDb.doc(path).set(value);
     else fake.write(path, value as Record<string, unknown>);
   };
-  const event = {...fixture("event_doc"), organizerId: context.organizerId,
+  const event = {...contractFixture("event_doc"),
+    organizerId: context.organizerId,
     name: "Night walk",
     startTime: stamp(now - 60_000), endTime: stamp(now + 3_600_000),
     eventFormat: {version: 1, activityKind: "barCrawl",
@@ -51,11 +51,11 @@ async function harness(realDb?: Firestore, id = "fixture") {
         longitude: 75.8, notes: "Meet at the entrance."}}))};
   const organizerSchema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture(
+  const organizer = {...Object.fromEntries(Object.entries(contractFixture(
     "organizer_doc"))
     .filter(([key]) => key in organizerSchema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
-  const plan = {...fixture("event_success_plan_doc"),
+  const plan = {...contractFixture("event_success_plan_doc"),
     eventId: context.eventId, organizerId: context.organizerId, status: "live"};
   assert.ok(validateEventDocument(event),
     JSON.stringify(validateEventDocument.errors));

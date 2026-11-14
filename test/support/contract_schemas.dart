@@ -1,3 +1,6 @@
+// The Flutter test selector runs tests that reach this helper only when a
+// contract changes (TESTS.md, "Filesystem reads").
+// test-selection-reads: contracts/
 import 'dart:convert';
 import 'dart:io';
 

@@ -93,6 +93,36 @@ export function buildCityInterestBackfillPlan({rows, existingMarkerIds, catalog,
   };
 }
 
+const cell = (value) => String(value).replace(/[|\r\n]+/gu, " ").slice(0, 80);
+
+/**
+ * The plan as a Markdown report for a CI job summary: totals, people per
+ * city key, and the free-text cities nothing matched. Only cities and counts;
+ * never a contact.
+ */
+export function markdownReport(report, {projectId, apply}) {
+  const {summary} = report;
+  const lines = [
+    `## City interest backfill · ${cell(projectId)} · ${apply ? "apply" : "dry run"}`,
+    "",
+    `- launchWaitlist rows read: ${summary.rowsRead}`,
+    `- Rows gaining a cityId: ${summary.rowsGainingCityId}`,
+    `- Person-city pairs to count: ${summary.peopleCounted}`,
+    `- Rows not matched to one catalog city: ${summary.unmatchedRows}`,
+    "",
+    "| City key | People to count |",
+    "|---|---:|",
+    ...(report.counters.length ? report.counters.map((row) => `| ${cell(row.cityKey)} | ${row.people} |`) : ["| (none) | 0 |"]),
+  ];
+  if (report.unmatched.length) {
+    lines.push("", "### Not matched to one catalog city", "", "| City as typed | Rows |", "|---|---:|",
+      ...report.unmatched.map((row) => `| ${cell(row.city)} | ${row.rows} |`));
+  }
+  lines.push("", apply ? "Applied: rows updated and people counted through the markers." :
+    "Dry run: nothing was written. Dispatch again with mode apply to write.");
+  return `${lines.join("\n")}\n`;
+}
+
 /** Writes the plan. Each marker is created in a transaction, so a rerun never counts twice. */
 export async function applyCityInterestBackfillPlan(db, plan, admin) {
   const {FieldValue, Timestamp} = admin.firestore;
@@ -120,7 +150,7 @@ export async function applyCityInterestBackfillPlan(db, plan, admin) {
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const args = parseCommonArgs(argv, {booleanFlags: [], allowPositionals: false, customFieldCase: "camel"});
+  const args = parseCommonArgs(argv, {booleanFlags: ["--markdown"], allowPositionals: false, customFieldCase: "camel"});
   if (args.help) {
     printHelp();
     return;
@@ -146,7 +176,8 @@ export async function main(argv = process.argv.slice(2)) {
   const report = {summary: plan.summary,
     counters: plan.counters.map((entry) => ({cityKey: entry.cityKey, people: entry.markers.length})),
     unmatched: plan.unmatched};
-  if (args.json) console.log(JSON.stringify(report, null, 2));
+  if (args.markdown) process.stdout.write(markdownReport(report, {projectId, apply: Boolean(args.apply)}));
+  else if (args.json) console.log(JSON.stringify(report, null, 2));
   else {
     console.log(`Read ${report.summary.rowsRead} launchWaitlist rows; ${report.summary.rowsGainingCityId} gain a cityId; ` +
       `${report.summary.peopleCounted} person-city pairs to count.`);
@@ -157,11 +188,11 @@ export async function main(argv = process.argv.slice(2)) {
     }
   }
   if (!args.apply) {
-    console.log("\nDry run only. Re-run with --apply to write.");
+    if (!args.markdown) console.log("\nDry run only. Re-run with --apply to write.");
     return;
   }
   await applyCityInterestBackfillPlan(db, plan, admin);
-  console.log("Backfill written.");
+  if (!args.markdown) console.log("Backfill written.");
 }
 
 function printHelp() {
@@ -177,6 +208,7 @@ Options:
   --apply                  Write. Default is dry-run.
   --allow-prod             Required with --apply against prod.
   --json                   Print the report as JSON.
+  --markdown               Print the report as Markdown (for a CI job summary).
   --env <dev|staging|prod> Resolve project id from .firebaserc.
   --project <id>           Firebase project id.
   --emulator-host <host>   Use the Firestore emulator.

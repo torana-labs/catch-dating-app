@@ -3,11 +3,12 @@ import {act, renderHook} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {signInCopy} from "../../content/account";
-const api = vi.hoisted(() => ({begin: vi.fn(), google: vi.fn(), send: vi.fn(), complete: vi.fn()}));
-vi.mock("../../firebase", () => ({beginWebsiteAccountPhoneVerification: api.begin, signInWebsiteAccountWithGoogle: api.google,
-  sendWebsiteAccountEmailLink: api.send, completeWebsiteAccountEmailLink: api.complete}));
-import {useSignInSheetController} from "./useSignInSheetController";
-import {emailForSignInKey, signedInHintKey} from "./signInModel";
+const api = vi.hoisted(() => ({begin: vi.fn()}));
+vi.mock("../../firebase", () => ({beginWebsiteAccountPhoneVerification: api.begin}));
+import {signInResendCooldownSeconds, useSignInSheetController} from "./useSignInSheetController";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+import {signedInHintKey} from "./signInModel";
 
 function harness() {
   const onSignedIn = vi.fn();
@@ -26,6 +27,7 @@ describe("sign-in sheet", () => {
     await act(async () => h.result.current.sendCode());
     expect(api.begin).toHaveBeenCalledWith("+919876543210", h.result.current.recaptchaId);
     expect(h.result.current.stage).toBe("code");
+    expect(h.result.current.status).toEqual({message: "We sent a code to +919876543210. Enter it to sign in.", tone: "is-success"});
     act(() => h.result.current.setCode("12a3456"));
     expect(h.result.current.code).toBe("123456");
     await act(async () => h.result.current.verify());
@@ -52,31 +54,36 @@ describe("sign-in sheet", () => {
     expect(h.result.current.stage).toBe("code");
     expect(h.onSignedIn).not.toHaveBeenCalled();
   });
-  it("signs in with Google", async () => {
-    api.google.mockResolvedValue(undefined);
+  it("keeps the typed number when the sheet closes, and offers no other way in", () => {
     const h = harness();
-    await act(async () => h.result.current.google());
-    expect(h.onSignedIn).toHaveBeenCalled();
+    act(() => h.result.current.setPhone("+91 98765 43210"));
+    act(() => h.result.current.reset());
+    expect(h.result.current.phone).toBe("+91 98765 43210");
+    expect(h.result.current.stage).toBe("start");
+    expect(Object.keys(h.result.current)).not.toEqual(expect.arrayContaining(["google", "sendLink", "email"]));
   });
-  it("sends an email link that returns here, marked, and saves the address on this device", async () => {
-    api.send.mockResolvedValue(undefined);
-    const h = harness();
-    act(() => h.result.current.setEmail(" asha@example.com "));
-    await act(async () => h.result.current.sendLink());
-    expect(api.send).toHaveBeenCalledWith("asha@example.com", expect.stringContaining("catchSignIn=1"));
-    expect(window.localStorage.getItem(emailForSignInKey)).toBe("asha@example.com");
-    expect(h.result.current.stage).toBe("linkSent");
-    expect(h.onSignedIn).not.toHaveBeenCalled();
+  it("counts down before offering to resend, then sends a fresh code to the same number", async () => {
+    vi.useFakeTimers();
+    try {
+      api.begin.mockResolvedValue({clear: vi.fn(), confirm: vi.fn()});
+      const h = harness();
+      act(() => h.result.current.setPhone("+91 98765 43210"));
+      await act(async () => h.result.current.sendCode());
+      expect(h.result.current.resendIn).toBe(signInResendCooldownSeconds);
+      await act(async () => h.result.current.resend());
+      expect(api.begin).toHaveBeenCalledTimes(1);
+      for (let second = 0; second < signInResendCooldownSeconds; second++) act(() => {vi.advanceTimersByTime(1000);});
+      expect(h.result.current.resendIn).toBe(0);
+      await act(async () => h.result.current.resend());
+      expect(api.begin).toHaveBeenCalledTimes(2);
+      expect(api.begin).toHaveBeenLastCalledWith("+919876543210", h.result.current.recaptchaId);
+      expect(h.result.current.resendIn).toBe(signInResendCooldownSeconds);
+      act(() => h.result.current.changePhone());
+      expect(h.result.current.resendIn).toBe(0);
+    } finally {vi.useRealTimers();}
   });
-  it("finishes a returned link with a confirmed address and clears it", async () => {
-    api.complete.mockResolvedValue({uid: "u"});
-    window.localStorage.setItem(emailForSignInKey, "asha@example.com");
-    const h = harness();
-    act(() => {h.result.current.confirmEmail(); h.result.current.setEmail("asha@example.com");});
-    expect(h.result.current.stage).toBe("confirmEmail");
-    await act(async () => h.result.current.finishEmail());
-    expect(api.complete).toHaveBeenCalledWith("asha@example.com", window.location.href);
-    expect(window.localStorage.getItem(emailForSignInKey)).toBeNull();
-    expect(h.onSignedIn).toHaveBeenCalled();
+  it("waits as long as the apps before a resend", () => {
+    const motion = readFileSync(resolve(process.cwd(), "../packages/catch_tokens/lib/src/semantic/catch_motion.dart"), "utf8");
+    expect(motion).toContain(`authOtpResendCooldown = Duration(seconds: ${signInResendCooldownSeconds})`);
   });
 });

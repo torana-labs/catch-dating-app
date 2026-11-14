@@ -1,4 +1,4 @@
-import {CatchAvatar, CatchBadge, CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchText} from "@catch/web-ui";
+import {CatchAvatar, CatchBadge, CatchButton, CatchIndexRow, CatchSearchField, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {claimFlowCopy as flow} from "@content/claimFlow";
 import {websiteCopy} from "@content/generated";
 import {interpolateContent as fill} from "@content/interpolate";
@@ -25,58 +25,70 @@ function trackStatusAction(action: StatusAction) {
   });
 }
 
+const landing = flow.landing;
+
 /**
- * The claim page's opening when no step has begun: the board's kicker over
- * the page title. A link that named its listing asks whether it is yours.
+ * The claim page's opening when no step has begun: one headline over a short
+ * lead. A link that named its listing asks whether it is yours.
  */
 export function ClaimHeroSection({listing}: {listing: HostListing | null}) {
   return listing ?
     <ClaimHead body={flow.signIn.body} id="claim-title" title={fill(flow.signIn.title, {name: listing.name})} /> :
-    <ClaimHead body={websiteCopy["claimpagesections_0056"]} id="claim-title" title={websiteCopy["claimpagesections_0092"]} />;
+    <ClaimHead body={landing.body} id="claim-title" kicker={landing.kicker} title={landing.title} />;
 }
 
 /**
- * Finding the page to claim, for a visitor who arrived without one. Once a
- * page is chosen it collapses to that page's card, and the claim takes over.
+ * Finding the page to claim, for a visitor who arrived without one: a boxed
+ * search over one list of pages as rows, and one way in for an organiser who
+ * isn't listed. Once a page is chosen it collapses to that page's card.
  */
 export function ClaimSearchSection({controller}: {controller: ClaimFlowController}) {
   const {clearListing, listing, query, searchResults, selectListing, setQuery} = controller;
   if (listing) return <ClaimPageCard listing={listing} onChange={clearListing} />;
+  const searching = query.trim().length > 1;
   return (
-    <CatchStack aria-live="polite" gap={16}>
-      <CatchField
-        id="claim-search"
-        inputHint={websiteCopy["claimpagesections_0071"]}
-        onChanged={(value) => setQuery(value)}
-        recipe="input"
-        title={websiteCopy["claimpagesections_0085"]}
+    <CatchStack gap={24}>
+      <CatchSearchField
+        copy={{searchLabel: landing.search.label, clearTooltip: (value) => fill(landing.search.clear, {query: value}), closeSearchLabel: landing.search.close}}
+        onChanged={setQuery}
+        placeholder={landing.search.placeholder}
+        semanticLabel={landing.search.label}
         value={query}
       />
-      <CatchSection
-        empty={
-          <CatchStack gap={8}>
-            <CatchText variant="title-row">{websiteCopy["claimpagesections_0067"]}</CatchText>
-            <CatchText tone="secondary" variant="body-small">{websiteCopy["claimpagesections_0089"]}</CatchText>
-          </CatchStack>
-        }
-      >
-        {searchResults.map((item) => (
-          <CatchIndexRow
-            chevron
-            density="regular"
-            key={item.id}
-            leading={<CatchAvatar name={item.name} size={40} />}
-            onTap={() => selectListing(item)}
-            status={<CatchBadge label={organizerPolicyForListing(item).badge.label} tone="neutral" />}
-            subtitle={`${item.category} · ${item.city} · ${item.sources.length} ${websiteCopy["claimpagesections_0088"]}`}
-            title={item.name}
-          />
-        ))}
-      </CatchSection>
-      <CatchStack align="start">
-        <CatchButton href="/host/#start" label={searchResults.length ? websiteCopy["claimpagesections_0064"] : websiteCopy["claimpagesections_0090"]}
-          size="sm" variant="quiet" />
+      <CatchStack aria-live="polite">
+        <CatchSection
+          dividers="all"
+          empty={
+            <CatchStack gap={4}>
+              <CatchText variant="title-row">{searching ? fill(landing.noMatch, {query: query.trim()}) : landing.none}</CatchText>
+              {searching ? <CatchText tone="secondary" variant="body-small">{landing.noMatchBody}</CatchText> : null}
+            </CatchStack>
+          }
+          title={searching ? fill(landing.matchesTitle, {query: query.trim()}) : landing.resultsTitle}
+        >
+          {searchResults.map((item) => (
+            <CatchIndexRow
+              chevron
+              density="regular"
+              key={item.id}
+              leading={<CatchAvatar name={item.name} size={40} />}
+              onTap={() => selectListing(item)}
+              status={<CatchBadge label={organizerPolicyForListing(item).badge.label} tone="neutral" />}
+              subtitle={fill(landing.row, {category: item.category, city: item.city})}
+              title={item.name}
+            />
+          ))}
+        </CatchSection>
       </CatchStack>
+      <CatchSurface block="tile">
+        <CatchStack gap={4}>
+          <CatchText variant="title-row">{landing.notListed.title}</CatchText>
+          <CatchText tone="secondary" variant="body-small">{landing.notListed.body}</CatchText>
+        </CatchStack>
+        <CatchStack align="start">
+          <CatchButton href="/host/#start" label={landing.notListed.action} />
+        </CatchStack>
+      </CatchSurface>
     </CatchStack>
   );
 }
@@ -122,7 +134,7 @@ export function ClaimUrlStateSection({
         actions={[
           {href: listing.path, label: websiteCopy["claimpagesections_0099"]},
           {href: "/claim/", label: websiteCopy["claimpagesections_0084"]},
-          {href: "/host/#start", label: websiteCopy["claimpagesections_0090"]},
+          {href: "/host/#start", label: landing.notListed.action},
         ]}
         body={websiteCopy["claimpagesections_0040"]}
         items={[
@@ -179,7 +191,7 @@ export function ClaimUrlStateSection({
       actions={[
         {href: "/claim/", label: websiteCopy["claimpagesections_0084"]},
         {href: "/organizers/", label: websiteCopy["claimpagesections_0070"]},
-        {href: "/host/#start", label: websiteCopy["claimpagesections_0090"]},
+        {href: "/host/#start", label: landing.notListed.action},
       ]}
       body={websiteCopy["claimpagesections_0093"]}
       items={[

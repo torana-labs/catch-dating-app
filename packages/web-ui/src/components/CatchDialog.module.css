@@ -25,3 +25,41 @@
   .actions { flex-direction: column-reverse; }
   .actions > * { width: 100%; }
 }
+
+/*
+ * The content recipe: a 440px card that holds page content too big for a
+ * dropdown (a pass). A display-xs title with its body ink2 subtitle and a close
+ * button 12px to its right, 22px insets, and a body that scrolls inside the
+ * card when the window is short, so the header and actions stay in view.
+ */
+.dialog[data-recipe="content"] {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 32px);
+}
+
+.header {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  gap: var(--catch-space-s3);
+  padding: 22px 22px 0;
+}
+
+.heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  min-width: 0;
+}
+
+.heading > * { margin: 0; }
+.content { min-height: 0; padding: 22px; overflow-y: auto; }
+.frame > .actions { flex: none; margin: 0; padding: 0 22px 22px; }

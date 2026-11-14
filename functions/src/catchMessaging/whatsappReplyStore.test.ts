@@ -6,6 +6,7 @@ import {readFileSync} from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {test} from "node:test";
+import {contractFile} from "../shared/contractFixtures";
 import Ajv from "ajv";
 import {initializeApp, deleteApp} from "firebase-admin/app";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
@@ -523,31 +524,14 @@ test(
     await sendCatchWhatsappReply(f.request, f.service);
     await persistCatchStopReceipt(f.db, incoming("stop", "wamid.stop"), time);
     const ajv = new Ajv({strict: false});
-    ajv.addSchema(
-      JSON.parse(
-        readFileSync(
-          path.resolve(
-            __dirname,
-            "../../../contracts/firestore/" +
-            "catch_whatsapp_app_authorities.schema.json",
-          ),
-          "utf8",
-        ),
-      ),
-    );
-    for (const [name, collection] of [
-      ["catch_whatsapp_reply_operations", CATCH_REPLY_OPERATIONS],
-      ["catch_whatsapp_endpoint_stops", CATCH_ENDPOINT_STOPS],
+    ajv.addSchema(contractFile(
+      "firestore/catch_whatsapp_app_authorities.schema.json"));
+    for (const [schema, collection] of [
+      [contractFile("firestore/catch_whatsapp_reply_operations.schema.json"),
+        CATCH_REPLY_OPERATIONS],
+      [contractFile("firestore/catch_whatsapp_endpoint_stops.schema.json"),
+        CATCH_ENDPOINT_STOPS],
     ]) {
-      const schema = JSON.parse(
-        readFileSync(
-          path.resolve(
-            __dirname,
-            "../../../contracts/firestore/" + name + ".schema.json",
-          ),
-          "utf8",
-        ),
-      );
       const validate = ajv.compile(schema);
       const document = [...f.fake.records].find(([key]) =>
         key.startsWith(collection + "/"),

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/events_test_helpers.dart' as event_helpers;

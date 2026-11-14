@@ -296,3 +296,41 @@ export const hostNightFormats: readonly HostNightFormat[] = [
     ],
   },
 ];
+
+/** A rectangle in a capture's own pixels. */
+export interface HostNightBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Where the app screen sits inside every framed phone capture the night scene
+ * shows (980 × 1924 PNGs from tool/marketing; the frame is the same on each).
+ */
+export const hostNightCaptureScreen: HostNightBox = {x: 88, y: 88, width: 804, height: 1748};
+
+/**
+ * The part of each capture a night moment is about, in capture pixels, from
+ * the owner's NightFrameCropMap board (design canvas page "On the night ·
+ * mobile framing"). A phone-width band shows only this box, so the app's text
+ * reads at about 14 px instead of 4.6. Keep each box inside
+ * hostNightCaptureScreen and re-check it when a capture is re-rendered. A slot
+ * without a box shows the top of its screen.
+ */
+export const hostNightFocus: Readonly<Record<string, HostNightBox>> = {
+  "host-formats-pods": {x: 112, y: 650, width: 756, height: 1080},
+  "host-door-in": {x: 112, y: 340, width: 756, height: 910},
+  "host-formats-mix": {x: 112, y: 350, width: 756, height: 580},
+  "host-live-console": {x: 112, y: 500, width: 756, height: 930},
+  "host-post-event-report": {x: 112, y: 380, width: 756, height: 680},
+  "host-door-arriving": {x: 112, y: 700, width: 756, height: 980},
+  "host-live-needs": {x: 112, y: 360, width: 756, height: 860},
+  "host-live-scores": {x: 112, y: 680, width: 756, height: 1040},
+  "host-formats-rules": {x: 112, y: 380, width: 756, height: 790},
+  "host-formats-courts-setup": {x: 112, y: 360, width: 756, height: 1000},
+  "host-formats-courts": {x: 112, y: 360, width: 756, height: 1060},
+  "host-formats-crawl": {x: 112, y: 360, width: 756, height: 1060},
+  "host-formats-crawl-move": {x: 112, y: 660, width: 756, height: 1080},
+};

@@ -1221,11 +1221,39 @@ exact combined source before `main` moves. Pass `--mode merge_group` to
 targets` job gives the early planner feedback within a minute; skipping
 expensive jobs is never evidence that those jobs passed.
 
+The Functions lane narrows the same way: on a pull request,
+`tool/impact/functions_unit_test_selection.mjs` picks the node --test files the
+change can reach from the same graph and data-path rules, and
+`functions/scripts/run-tests.cjs` runs only those through
+`CATCH_UNIT_TEST_SELECTION`. Shared inputs keep every test.
+
 Pull requests also run only the strict Firestore/Storage emulator tests their
 change can reach. `tool/impact/emulator_test_selection.mjs` follows the
-dependency-cruiser graph of `functions/src` and `functions/test`, plus contract,
-index and fixture files a test names as a string path; rules, `firebase.json`,
+dependency-cruiser graph of `functions/src` and `functions/test`, plus index and
+fixture files a test names as a string path. A contract change selects only the
+tests that read that file (`tool/lib/contract_reads.mjs`: a whole-file path, a
+join of literal segments, or `contractFixture("name")` / `contractFile("dir/x.json")`
+from `functions/src/shared/contractFixtures.ts`), tests whose sources read
+contracts dynamically, and importers of the generated modules whose schema `$id`
+names it; rules, `firebase.json`,
 Functions package, TypeScript config and script changes keep the full list.
+A change anywhere else in the repository (docs, `tool/`, `website/`, Flutter
+`test/`) selects only the tests whose import tree can read it
+(`tool/lib/functions_test_reads.mjs`). A file's reads are bounded when every
+path it hands to `node:fs`, a third-party `readFile`, or a dynamic
+`import()`/`require()` evaluates to string literals, a const that is the
+file's only binding of its name, `__dirname`, `process.cwd()`, and
+`path.join`/`path.resolve` of those. Every path-like literal in the file (one
+with a slash or a file extension) also counts as a read, since it may reach a
+reader elsewhere. A `// test-selection-reads: <roots>` comment, the same as
+the Flutter declaration, bounds computed reads to those roots. A tree with an
+unbounded read, a child process, or an import outside `functions/` keeps the
+old broad rule: the test runs when its tree names the changed path's top-level
+folder. `--explain` on `functions_unit_test_selection.mjs` says why each
+selected test runs. `tool/impact/selection_replay.mjs --baseline <old
+functions_test_selection.mjs>` replays recent `main` commits through two
+selectors and lists every test the new one drops, with the reads that show it
+can't read the change.
 `functions/scripts/run-tests.cjs` honors the result through
 `CATCH_TEST_SELECTION`; the merge queue, main and nightly run every listed test
 (`--full`). With `--github-output` it also writes the emulator shards CI starts

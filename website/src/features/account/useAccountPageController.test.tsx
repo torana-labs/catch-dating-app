@@ -34,6 +34,22 @@ describe("account page", () => {
     await waitFor(() => expect(h.result.current.phase).toBe("signedOut"));
     expect(api.read).not.toHaveBeenCalled();
   });
+  it("opens the pass a ?pass= link names once the plans arrive, and drops the parameter", async () => {
+    api.ticket.mockResolvedValue({eventId: "e1", ticketCode: "T1"});
+    window.history.replaceState(null, "", "/account/?pass=e1#plans");
+    const h = harness();
+    await waitFor(() => expect(h.result.current.pass?.state).toBe("ready"));
+    expect(api.ticket).toHaveBeenCalledWith("e1");
+    expect(window.location.search).toBe("");
+    expect(window.location.hash).toBe("#plans");
+  });
+  it("ignores a ?pass= link for a plan without a pass", async () => {
+    window.history.replaceState(null, "", "/account/?pass=missing#plans");
+    const h = harness();
+    await waitFor(() => expect(h.result.current.phase).toBe("ready"));
+    expect(h.result.current.pass).toBeNull();
+    expect(api.ticket).not.toHaveBeenCalled();
+  });
   it("keeps the tab in the fragment", async () => {
     const h = harness();
     act(() => h.result.current.setTab("messages"));

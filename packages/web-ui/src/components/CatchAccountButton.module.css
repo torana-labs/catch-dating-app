@@ -1,0 +1,26 @@
+/*
+ * The top bar's account avatar button: no box of its own, a pill radius so
+ * rings follow the avatar, and a 2px surface gap inside a 2px ink ring when
+ * its menu is open. Keyboard focus draws the shared focus ring.
+ */
+.button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: none;
+  cursor: pointer;
+}
+
+.button[aria-expanded="true"] {
+  box-shadow: 0 0 0 2px var(--catch-theme-surface), 0 0 0 4px var(--catch-theme-ink);
+}
+
+.button:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: 2px;
+}

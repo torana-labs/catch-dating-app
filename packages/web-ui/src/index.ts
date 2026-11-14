@@ -16,6 +16,8 @@ export {CatchAdminSearchCandidateHeader} from "./components/CatchAdminSearchCand
 export type {CatchAdminSearchCandidateHeaderProps} from "./components/CatchAdminSearchCandidateHeader";
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export {CatchAccountButton} from "./components/CatchAccountButton";
+export type {CatchAccountButtonProps} from "./components/CatchAccountButton";
 export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";
 export type {
   CatchAvatarColors,
@@ -132,7 +134,7 @@ export type {
   CatchBarIndicatorProps,
 } from "./components/CatchBarIndicator";
 export {CatchDialog} from "./components/CatchDialog";
-export type {CatchDialogAction, CatchDialogProps} from "./components/CatchDialog";
+export type {CatchDialogAction, CatchDialogConfirmationProps, CatchDialogContentProps, CatchDialogProps} from "./components/CatchDialog";
 export {CatchBadge} from "./components/CatchBadge";
 export type {
   CatchBadgeEmphasis,
@@ -283,6 +285,8 @@ export {CatchShareBar} from "./components/CatchShareBar";
 export {CatchSkeleton} from "./components/CatchSkeleton";
 export type {CatchSkeletonProps} from "./components/CatchSkeleton";
 export type {CatchShareBarProps, CatchShareBarSegment} from "./components/CatchShareBar";
+export {CatchAdaptiveSheet, catchAdaptiveSheetWideMin, useCatchAdaptiveSheetAnchor, useCatchAdaptiveSheetSurface} from "./components/CatchAdaptiveSheet";
+export type {CatchAdaptiveSheetProps, CatchAdaptiveSheetSurface, CatchAdaptiveSheetWide} from "./components/CatchAdaptiveSheet";
 export {CatchSheet} from "./components/CatchSheet";
 export type {
   CatchSheetDefaultProps,

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.3.2
-updated: 2026-11-12
+version: 3.3.5
+updated: 2026-11-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -291,7 +291,16 @@ For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
 `nx-shadow` comparison holds parity (#1554). Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
-`@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
+`@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
+input of code tasks; the Functions README and its rate-limit and inventory
+audits are the `functions:check` target, so a README edit runs that check
+rather than the Functions suite. Each contract family (`contracts-admin`,
+`-bigquery`, `-catalogs`, `-client-writes`, `-fixtures`, `-http`, `-patches`,
+`-storage`) is its own Nx project, and only the projects that consume it depend
+on it: for a BigQuery or HTTP contract change Nx selects Functions and its
+readers, not the Flutter app, though the planner's lanes still run until
+parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
@@ -299,9 +308,40 @@ unrelated clients. Files PR validation never executes run only their own Tools
 checks and policy: harness and CI tests, release, deploy and operations
 workflows, and `tool/ci` release scripts no PR workflow invokes
 (`harness-scoped-control`). Selector controls, including the planner, graph and
-`tool/tools_manifest.json`, still run every target. A harness test proves that
-no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
-narrowed. The tool planner honors the graph's terminal classifications
+`tool/tools_manifest.json`, still run every target. For CI configuration
+(`.github/**` and `tool/ci/**`), every file PR CI executes or reads still
+selects every lane that executes or reads it. `tool/nx/workflow_callers.mjs`
+derives this from `ci.yml`: from each lane job it follows reusable workflows,
+composite actions, scripts named in `run:` steps, the npm scripts and
+`tool/run.mjs check` manifest checks those steps invoke, the modules those
+scripts import and the data files they open. A command it cannot resolve
+selects every lane, never none. What the plan or source-preflight job executes
+or reads (`load-toolchain`, `setup-flutter`, `generate-contracts`) selects
+every lane, because every lane needs those jobs. Selector files select every
+lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
+and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
+`tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
+`tool/ci/toolchain.env`, `tool/tools_manifest.json` and every file the planner
+entry points import or load; tests in those directories are not selectors.
+Workflow files that checks read as text are covered by workflow policy
+(actionlint, zizmor and the wiring tests), which runs for every workflow change.
+This narrowing applies to `pr` and `merge_group` alike, with the same closure
+and selector rules; pull requests still leave the queue-only lanes to the
+queue. `main` pushes and the nightly run are not narrowed by it, and the
+nightly full run, which still runs every lane, is the backstop.
+`tool/nx/workflow_callers.test.mjs` proves the closure against both the planner
+and Nx, with a negative control for each, and pins that an
+`app-build-matrix.yml` edit still selects the iOS queue lane. Every tracked
+`.github/**` and `tool/ci/**` file is a selector, reached by a `ci.yml` job, or
+listed with its reason in `notCalledByCi` in that module; Nx selects every lane
+for any other (new, renamed or deleted) CI configuration file, so a new
+workflow or script is classified on purpose. The workflows `ci.yml` never calls
+(deploy, release, maintenance and operations workflows, and those with their
+own pull request triggers) are `harness-scoped-control` in every mode,
+including `main` pushes: an edit runs policy and its own Tools checks, and
+`component_graph.test.mjs` pins the checks each deploy workflow selects.
+`website-release.yml` keeps Marketing (`website-release-control`), whose
+validation runs its release-train tests. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,
@@ -350,12 +390,42 @@ Root Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-Tests that inspect files through `dart:io` are filesystem probes and are always
-selected. Dart files anywhere in the repository are covered by the import graph.
+A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+changed path is one that file can read, if those reads are bounded
+(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
+path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
+string literal, a constant of the same file, or an interpolation or
+conditional of those, or when the file names its roots in a
+`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+path such a test can read counts as covered, so a test fixture with a known
+reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
+probe and its tests always run, as does a declared file that uses `Process`,
+`Directory.current` or `Platform.script`, has a literal or constant-prefixed
+path outside its roots, or names a root that is not in the tree. Declared roots
+are trusted for computed paths, so the nightly full run is the backstop for a
+wrong declaration. Dart files anywhere in the repository are covered by the
+import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, firebase configuration and
-Markdown outside test or asset directories) are probe-only. A root test can only
-read them from disk, so the probes cover them without broadening the selection.
+golden and integration suites, other packages' apps, the `packages/catch_ui`
+and `packages/kernel` test suites that the package-tests job runs, firebase
+configuration and Markdown outside test or asset directories) are probe-only.
+A root test can only read them from disk, so the probes cover them without
+broadening the selection; a root test that imports one is still selected
+through the import graph.
+The schema contract Dart under `packages/platform/lib/schema_contracts/generated`
+and `lib/contexts/*/data/generated` is not tracked, so the selector renders it:
+`tool/harness/lib/flutter_contract_outputs.mjs` runs
+`tool/contracts/generate_schema_contracts.mjs` on archives of the base and head
+commits (once when their `contracts/` and `tool/contracts/` trees match) with
+the job's installed `functions/node_modules`. The rendered files join both
+import graphs, so a change to a tracked file a generated module imports selects
+that module's importers, and a `contracts/**` or generator change selects the
+importers of each generated file whose content changed. An input that changes
+no generated Dart, such as a BigQuery, Admin or runtime-module contract, selects
+only the filesystem probes. A changed generated file with no importing test,
+a render failure, a `functions/package-lock.json` at a rendered commit that
+differs from the installed one, or a commit window that touches a generator
+input keeps the full suite.
 These inputs keep the full suite: package manifests and the lockfile, analyzer,
 runner, build and localization configuration, `.arb` sources, the Flutter SDK
 pin and the Flutter CI job, and any path that either snapshot's `flutter:`
@@ -367,6 +437,24 @@ Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
+
+On a pull request, the "Catch UI, Consumer & Host package tests" and
+"Widgetbook analyze & build" jobs run each package suite and the Widgetbook
+build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
+A suite's closure is its package directory and those of its transitive pubspec
+path dependencies (only `lib/` and `assets/` of the root package), plus what
+those manifests bundle from outside their directories and every Dart file the
+closure's sources reach transitively through relative `import`, `export` or
+`part` URIs that leave those directories (Widgetbook's and Consumer's tests
+import root `test/` helpers this way), read from the head commit at run time. A `contracts/**` or `tool/contracts/**` change reaches
+`packages/platform` and the root package, where the generated contract Dart
+lives. These keep every suite running: a workspace input (any `pubspec.lock`,
+`analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,
+`.metadata`, `tool/ci/toolchain.env`, `tool/harness/**`, the scope script, the
+Flutter CI workflow or its setup actions); any path no rule classifies; and a
+manifest the script cannot read. A skipped suite leaves its job green with a
+"not affected: <reason>" summary, so the Required CI names are unchanged.
+Merge queue, main, nightly, manual and full runs execute every suite.
 
 ### Selected Check Contracts
 
@@ -385,11 +473,14 @@ successful owning job. Drafts skip planning and publish no Required CI context
 until they are marked ready. A cancelled workflow has no
 successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
 
-The required source preflight runs before validation fanout from a full checkout
+The required source preflight runs beside the validation lanes, from a full checkout
 with pinned Node/Flutter and selected generator dependencies. It checks the
 structural and generation obligations in `verify_local.mjs`, collects failures,
 and refuses unavailable checks. Sparse planning explicitly allows deferral;
 that preliminary result cannot satisfy the required complete preflight job.
+No lane waits on it or reads its result; Required CI lists it and accepts only
+its success, or its skip on a run that cites a passing queue run for the same
+source.
 
 Preserve these contracts when narrowing work:
 
@@ -432,13 +523,17 @@ Selector safety tests run before any selective job can proceed; planner failure
 fails the aggregate. The selected inventory and reasons are CI artifacts, not
 a tracked registry.
 
-Each selected test shard collects line coverage during its single test run.
-The coverage job requires all planned shard artifacts and merges their observed
-lines without rerunning tests or counting shared source files twice. Coverage
-is visibility-only; compare nightly reports for full-suite trends. A shard
+Each selected test shard collects line coverage during its single test run
+and fails unless it uploads that LCOV. The coverage job requires all planned
+shard artifacts and merges their observed lines without rerunning tests or
+counting shared source files twice. Coverage is visibility-only, so the merge
+runs only outside pull requests and queue groups (nightly and unverified main
+runs); a pull request does not wait a runner turn for it. Compare nightly
+reports for full-suite trends. A shard
 containing only repository probes can legitimately observe no product lines.
 The matrix contains at most four nonempty shards and the required aggregate
-rejects missing planner, test or coverage results.
+rejects missing planner or test results, and a missing coverage result outside
+pull requests and queue groups.
 
 The orchestrator also owns cancellation. Reusable fanout workflows must not
 derive a concurrency group from `github.workflow`: inside a called workflow
@@ -550,7 +645,7 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); a change outside `functions/` and `contracts/` reaches a test only when its import tree can read that path (`tool/lib/functions_test_reads.mjs`, `// test-selection-reads:` declarations), and a tree with an unbounded read keeps the broad top-level-folder rule. The merge queue, main and nightly run every discovered test. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
@@ -2036,6 +2131,18 @@ If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
+### Main CI alert
+
+A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
+no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
+driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
+completes. It keeps one open issue titled "Main CI is red": opened on the
+first failure, naming the failed gating jobs (Required CI) and reporting
+jobs separately; commented on each further failure; closed with a comment on
+the next green run. Opening the issue notifies repository watchers. Cancelled
+runs change nothing. Fix forward on main; never close the issue by hand
+while main is still red.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
@@ -2071,7 +2178,16 @@ The source's CI therefore counts as successful when the run succeeded, or when
 its `Required CI` job succeeded and every job that did not succeed belongs to
 one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
 validation, exact-source captures, the main lineage and the live-release order
-are checked exactly as before. Revisit this when the floor ends.
+are checked exactly as before.
+
+The floor ends once main stays green for a week (owner decision, 14 Nov 2026):
+every completed main push and nightly CI run for 7 days concluded success,
+reporting lanes included, with at least 6 nightly runs in that window. The
+Main CI alert workflow checks this after each green main run
+(`decideFloorExit` in `tool/ci/main_red_alert.mjs`) and opens one issue,
+"Main CI green for 7 days: reporting lanes can block again", listing the
+restore steps: put the lanes back in `Required CI`'s needs, empty its
+`$reporting` list and `REPORTING_LANES`, and update this paragraph.
 
 Recovery:
 
@@ -3372,3 +3488,12 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## City interest backfill
+
+`.github/workflows/city-interest-backfill.yml` runs `tool/data/backfill_city_interest.mjs` against one Firebase environment as that environment's deploy identity (Workload Identity, the same account the brand publish uses; it needs `roles/datastore.user`). It is dispatch-only and runs only from main.
+
+1. Dispatch with `environment` (`dev` or `prod`) and `mode: dry-run`, the default. The job summary shows the plan: rows read, rows gaining a catalog `cityId`, people to count per city key, and the free-text cities that match no single catalog city. It never shows a contact.
+2. Review the numbers with the owner.
+3. Dispatch again with `mode: apply`. That passes `--apply`, plus `--allow-prod` for prod. The GitHub environment's protection applies. Markers make a rerun count nobody twice.
+

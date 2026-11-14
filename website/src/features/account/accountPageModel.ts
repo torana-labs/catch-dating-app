@@ -16,6 +16,30 @@ export function tabFromHash(hash: string): AccountTab {
   return (accountTabs as readonly string[]).includes(value) ? value as AccountTab : "plans";
 }
 
+/** The plan id a `?pass=<eventId>` link names, or null for a missing or malformed one. */
+export function passFromSearch(search: string): string | null {
+  const value = new URLSearchParams(search).get("pass");
+  return value && /^[A-Za-z0-9_-]{1,128}$/u.test(value) ? value : null;
+}
+
+/** The deep link that opens one plan's pass on /account/, under My plans. */
+export function passHref(eventId: string): string {
+  return `/account/?pass=${encodeURIComponent(eventId)}#plans`;
+}
+
+/** The same address without its `pass` parameter, so a reload does not reopen the pass. */
+export function withoutPassParam(pathname: string, search: string, hash: string): string {
+  const params = new URLSearchParams(search);
+  params.delete("pass");
+  const rest = params.toString();
+  return `${pathname}${rest ? `?${rest}` : ""}${hash}`;
+}
+
+/** The soonest upcoming plan that is still on (booked or waitlisted), for the account menu. */
+export function nextPlan(plans: readonly AccountPlan[]): AccountPlan | null {
+  return splitPlans(plans).upcoming.find((plan) => plan.status !== "cancelled") ?? null;
+}
+
 // Plans are India-first; the page reads them in the city's own time.
 const zone = "Asia/Kolkata";
 const dayFormat = new Intl.DateTimeFormat("en-IN", {weekday: "short", timeZone: zone});

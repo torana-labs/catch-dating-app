@@ -5,9 +5,11 @@ import type {FormStatus} from "../../shared/forms/types";
 import {
   accountExport,
   accountSections,
+  passFromSearch,
   passPayload,
   requestId,
   tabFromHash,
+  withoutPassParam,
   type AccountMessages,
   type AccountPlan,
   type AccountTab,
@@ -25,6 +27,8 @@ const quiet: FormStatus = {message: "", tone: ""};
  * The /account/ page: one manageWebsiteAccount read of the signed-in UID's
  * own sections, the tab in the URL fragment, and each tab's write through
  * the existing command (follow, WhatsApp withdrawal, account completion).
+ * A `?pass=<eventId>` link (the account menu's View pass) opens that plan's
+ * pass once the plans arrive, and leaves the address without it.
  */
 export function useAccountPageController() {
   const base = useWebsiteAccountController({sections: accountSections});
@@ -57,6 +61,27 @@ export function useAccountPageController() {
   }
   const uid = base.uid;
   const account = base.account;
+  const [linkedPass, setLinkedPass] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : passFromSearch(window.location.search));
+  useEffect(() => {
+    if (!linkedPass || !account) return;
+    setLinkedPass(null);
+    const {pathname, search, hash} = window.location;
+    window.history.replaceState(window.history.state, "", withoutPassParam(pathname, search, hash));
+    const plan = account.plans?.find((item) => item.eventId === linkedPass && item.passAvailable);
+    if (plan) void openPass(plan);
+  }, [linkedPass, account]);
+  async function openPass(plan: AccountPlan) {
+    setPass({plan, state: "loading"});
+    try {
+      const {getWebsiteEventTicketCode} = await import("../../firebase");
+      const ticket = await getWebsiteEventTicketCode(plan.eventId);
+      setPass((current) => current?.plan.eventId === plan.eventId ?
+        {plan, state: "ready", payload: passPayload(ticket.eventId, ticket.ticketCode)} : current);
+    } catch {
+      setPass((current) => current?.plan.eventId === plan.eventId ? {plan, state: "failed"} : current);
+    }
+  }
   return {
     phase: base.loading ? "loading" as const : !uid ? "signedOut" as const :
       !account ? "failed" as const : "ready" as const,
@@ -73,17 +98,7 @@ export function useAccountPageController() {
         expectedReceiptId: row.whatsappReceiptId, requestId: requestId()});
     }, copy.messages.failed, fill(copy.messages.stopped, {organizer: row.organizerName})),
     pass,
-    openPass: async (plan: AccountPlan) => {
-      setPass({plan, state: "loading"});
-      try {
-        const {getWebsiteEventTicketCode} = await import("../../firebase");
-        const ticket = await getWebsiteEventTicketCode(plan.eventId);
-        setPass((current) => current?.plan.eventId === plan.eventId ?
-          {plan, state: "ready", payload: passPayload(ticket.eventId, ticket.ticketCode)} : current);
-      } catch {
-        setPass((current) => current?.plan.eventId === plan.eventId ? {plan, state: "failed"} : current);
-      }
-    },
+    openPass,
     closePass: () => setPass(null),
     details: detailsFor(base, detailsStatus, setDetailsStatus),
     download: () => {

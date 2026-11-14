@@ -59,8 +59,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get
+      # The selector renders the untracked schema contract Dart at base and
+      # head, so a contract change selects only the importers of what changed.
+      - name: Install the contract generator's dependencies
+        run: npm --prefix functions ci --ignore-scripts --no-audit --no-fund
       - name: Retain generated English localization for reviewed source
         env:
           SOURCE_SHA: ${{ github.sha }}
@@ -439,9 +445,13 @@ jobs:
           overwrite: true
           retention-days: 14
 
+  # Coverage is visibility-only, so pull requests and queue groups don't wait
+  # a runner turn for it: every shard already fails unless it uploads its own
+  # LCOV. Nightly and unverified main runs merge the shards into the report.
   flutter-coverage:
     name: Flutter coverage visibility
     needs: [test-plan, flutter-test-shards]
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -498,29 +508,60 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 0
           persist-credentials: false
 
+      # A pull request runs only the suites whose pubspec path-dependency
+      # closure the change reaches; every other event runs them all. A
+      # skipped suite leaves this job green with a "not affected" summary.
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Decide which package suites this change reaches
+        id: scope
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          FULL: ${{ inputs.full }}
+          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: >-
+          node tool/ci/flutter_package_scope.mjs
+          --base "$BASE_SHA" --head "$GITHUB_SHA" --event "$EVENT_NAME"
+          --full "$FULL" --commit-window "$COMMIT_WINDOW"
+          --package packages/catch_ui --package packages/kernel
+          --package apps/consumer --package apps/host
+          --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
+
       - uses: ./.github/actions/generate-contracts
+        if: steps.scope.outputs.any == 'true'
       - uses: ./.github/actions/setup-flutter
+        if: steps.scope.outputs.any == 'true'
 
       - run: flutter pub get
+        if: steps.scope.outputs.any == 'true'
 
       # The library's PNG goldens are macOS-rendered; the macOS goldens lane in
       # visual-integration-ci.yml runs them (packages/catch_ui/dart_test.yaml
       # declares the tag).
       - name: Catch UI package tests
+        if: steps.scope.outputs.catch_ui == 'true'
         working-directory: packages/catch_ui
         run: flutter test --concurrency=1 --exclude-tags=golden
 
       - name: Kernel package tests
+        if: steps.scope.outputs.kernel == 'true'
         working-directory: packages/kernel
         run: dart test --concurrency=1
 
       - name: Consumer package tests
+        if: steps.scope.outputs.consumer == 'true'
         working-directory: apps/consumer
         run: flutter test --concurrency=1
 
       - name: Host package tests
+        if: steps.scope.outputs.host == 'true'
         working-directory: apps/host
         run: flutter test --concurrency=1
 
@@ -532,12 +573,38 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          fetch-depth: 0
           persist-credentials: false
 
+      # A pull request runs only the suites whose pubspec path-dependency
+      # closure the change reaches; every other event runs them all. A
+      # skipped suite leaves this job green with a "not affected" summary.
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Decide whether this change reaches Widgetbook
+        id: scope
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          FULL: ${{ inputs.full }}
+          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: >-
+          node tool/ci/flutter_package_scope.mjs
+          --base "$BASE_SHA" --head "$GITHUB_SHA" --event "$EVENT_NAME"
+          --full "$FULL" --commit-window "$COMMIT_WINDOW"
+          --package widgetbook
+          --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
+
       - uses: ./.github/actions/generate-contracts
+        if: steps.scope.outputs.any == 'true'
       - uses: ./.github/actions/setup-flutter
+        if: steps.scope.outputs.any == 'true'
 
       - name: Resolve Widgetbook dependencies
+        if: steps.scope.outputs.widgetbook == 'true'
         working-directory: widgetbook
         run: flutter pub get
 
@@ -545,15 +612,18 @@ jobs:
       # here on Linux instead of waiting for the merge queue's macOS goldens.
       # The shared font loader reads the repository package config.
       - name: Resolve repository Flutter dependencies
+        if: steps.scope.outputs.widgetbook == 'true'
         run: flutter pub get
 
       - name: Check the Widgetbook golden inventory
+        if: steps.scope.outputs.widgetbook == 'true'
         working-directory: widgetbook
         run: >-
           flutter test test/primitive_goldens_test.dart
           --plain-name "generator visits every registered case and every designation once"
 
       - name: Build Widgetbook web app
+        if: steps.scope.outputs.widgetbook == 'true'
         working-directory: widgetbook
         run: flutter build web --release
 
@@ -579,12 +649,19 @@ jobs:
           COVERAGE_RESULT: ${{ needs['flutter-coverage'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
           WIDGETBOOK_RESULT: ${{ needs.widgetbook.result }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          # Coverage is visibility-only and skipped for pull requests and queue groups.
+          coverage_ok=false
+          if [[ "${COVERAGE_RESULT}" == "success" ]] ||
+            [[ "${COVERAGE_RESULT}" == "skipped" && ( "${EVENT_NAME}" == "pull_request" || "${EVENT_NAME}" == "merge_group" ) ]]; then
+            coverage_ok=true
+          fi
           echo "analysis gates: ${GATES_RESULT}"
           echo "app package tests: ${APP_PACKAGES_RESULT}"
           echo "coverage visibility: ${COVERAGE_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
           echo "widgetbook: ${WIDGETBOOK_RESULT}"
-          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${COVERAGE_RESULT}" != "success" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
+          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
             exit 1
           fi

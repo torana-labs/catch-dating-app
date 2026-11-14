@@ -160,6 +160,16 @@ describe("EventDetailPage", () => {
     expect(trackOrganizerProviderOutboundClick).toHaveBeenCalledWith(listing.id, importedEventPage.eventId);
   });
 
+  it("sits between the site header and the full site footer", () => {
+    render(<EventDetailPage listing={listing} page={importedEventPage} />);
+    const primary = within(screen.getByRole("navigation", {name: "Primary"}));
+    expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "Organisers", "For hosts"]);
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
+    expect(footer.getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
+    expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
+  });
+
   it("puts the guest entry in a Catch event's booking card", () => {
     render(<EventDetailPage listing={listing} page={{...fullEventPage, item: {...fullEventPage.item,
       event: {...fullEventPage.item.event, startTime: "2099-11-22T00:15:00.000Z", endTime: "2099-11-22T03:00:00.000Z"}},

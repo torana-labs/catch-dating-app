@@ -15,7 +15,7 @@ function snapshot(root) {
     .map(file => [file, fs.readFileSync(path.join(root, file), "utf8")]));
 }
 
-function fixture(t, source, name = "publicName", consumer = "dart") {
+function fixture(t, source, name = "publicName", consumer = "dart", coverage = "listed") {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-firestore-contract-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const write = (file, value) => {
@@ -29,8 +29,15 @@ function fixture(t, source, name = "publicName", consumer = "dart") {
   if (consumer === "operation") collection.operations = [
     {id: "read", type: "callable", owner: "server", function: name},
   ];
+  const gap = {issue: "https://example.test/issues/1", collections: []};
+  if (coverage === "listed" || coverage === "both") gap.collections.push({id: "items", reason: "Server only."});
+  if (coverage === "tested" || coverage === "both") {
+    collection.rulesTestFile = "functions/test/rules/items.rules.test.cjs";
+    write(collection.rulesTestFile, "");
+  }
+  if (coverage === "unknown") gap.collections.push({id: "items", reason: "x"}, {id: "gone", reason: "x"});
   write("tool/contracts/firestore_contract.json", {
-    schemaVersion: 2, collections: [collection],
+    schemaVersion: 2, collectionsWithoutRulesTests: gap, collections: [collection],
   });
   write("firestore.rules", "match /items/{id} {}");
   write("functions/src/shared/generated/firestoreAdminTypes.ts", "");
@@ -140,5 +147,20 @@ test("CLI rejects malformed options rather than silently checking another scope"
     const result = spawnSync(process.execPath, [checker, ...args], {encoding: "utf8"});
     assert.equal(result.status, 64, JSON.stringify(args));
     assert.match(result.stderr, /Usage:/);
+  }
+});
+
+test("every collection names its rules test or is listed as untested, never both", t => {
+  const source = "export const publicName = () => {};";
+  accepted(check(fixture(t, source, "publicName", "dart", "listed")));
+  accepted(check(fixture(t, source, "publicName", "dart", "tested")));
+  for (const [coverage, message] of [
+    ["none", /items: needs a rulesTestFile, or an entry with a reason in collectionsWithoutRulesTests/u],
+    ["both", /items: has a rulesTestFile, so remove it from collectionsWithoutRulesTests/u],
+    ["unknown", /collectionsWithoutRulesTests: gone is not a collection/u],
+  ]) {
+    const result = check(fixture(t, source, "publicName", "dart", coverage));
+    assert.equal(result.status, 1, coverage);
+    assert.match(result.stderr, message);
   }
 });

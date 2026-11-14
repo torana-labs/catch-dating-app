@@ -115,8 +115,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'package:catch_platform/routing/route_contract.dart';
-
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_inbox_route.dart';

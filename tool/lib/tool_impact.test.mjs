@@ -446,12 +446,14 @@ test("provider graph changes keep a bounded Flutter source closure", () => {
 });
 
 test("React dependency graph changes keep a bounded root npm closure", () => {
-  for (const changedPath of [
-    "tool/web/react_dependency_graph.mjs",
-    "tool/web/react_dependency_graph.test.mjs",
-    "packages/web-ui/src/primitives.tsx",
-    "packages/web-ui/tsconfig.json",
-    "packages/web-ui/package.json",
+  // web-ui source also selects design:publish-design-system, whose token build
+  // runs `dart format`, so it needs the Flutter SDK as well.
+  for (const [changedPath, setup] of [
+    ["tool/web/react_dependency_graph.mjs", ["node", "root-npm"]],
+    ["tool/web/react_dependency_graph.test.mjs", ["node", "root-npm"]],
+    ["packages/web-ui/src/primitives.tsx", ["node", "flutter", "root-npm"]],
+    ["packages/web-ui/tsconfig.json", ["node", "flutter", "root-npm"]],
+    ["packages/web-ui/package.json", ["node", "flutter", "root-npm"]],
   ]) {
     const plan = planAffectedToolChecks({
       changedPaths: [changedPath],
@@ -460,7 +462,7 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
     });
     assert.equal(plan.mode, "affected", changedPath);
     assert.equal(plan.repositoryView, "full", changedPath);
-    assert.deepEqual(plan.setupRequirements, ["node", "root-npm"], changedPath);
+    assert.deepEqual(plan.setupRequirements, setup, changedPath);
     assert.ok(plan.toolIds.includes("web:react-dependency-graph"), changedPath);
   }
 });
@@ -646,8 +648,11 @@ test("tool-lane classification uses the authoritative Harness mode", () => {
     componentGraph: graph,
     mode: "pr",
   });
-  assert.equal(pr.mode, "full");
+  // A path the PR mode does not assign to Tools no longer escalates to the
+  // full matrix; it still selects the check that declares it.
+  assert.equal(pr.mode, "affected");
   assert.deepEqual(pr.ignoredPaths, ["tool/docs/check.mjs"]);
+  assert.ok(pr.toolIds.includes("docs-check"));
 });
 
 test("explicit full remains full and affected outputs stay bounded", () => {
@@ -982,4 +987,38 @@ test("additional full paths cannot duplicate canonical harness authority", () =>
     }),
     ["tool/ci/**", "tool/run.mjs"],
   );
+});
+
+test("a change no Tools-lane path owns runs the mandatory checks, not the full matrix", () => {
+  // #1772 (a website footer) and #1777 ran all six Tools buckets this way.
+  const changedPaths = [
+    "website/src/shared/site/PublicSiteChrome.tsx",
+    "website/src/features/events/EventDetailPage.tsx",
+  ];
+  const plan = planAffectedToolChecks({changedPaths, manifest: productionManifest,
+    componentGraph: productionGraph});
+  assert.deepEqual(plan.toolLanePaths, []);
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.fullReasons, []);
+  for (const id of productionManifest.ciImpact.mandatoryCheckIds) {
+    assert.ok(plan.toolIds.includes(id), `mandatory ${id}`);
+  }
+  assert.ok(plan.toolIds.length < 40, `expected a narrow plan, got ${plan.toolIds.length} checks`);
+
+  // A Tools input that a check declares through a rule's appliesTo selects it;
+  // a path no check declares stays ignored instead of escalating.
+  const registry = planAffectedToolChecks({
+    changedPaths: ["design/website/components.json", "docs/marketing_website_architecture.md"],
+    manifest: productionManifest, componentGraph: productionGraph});
+  assert.equal(registry.mode, "affected");
+  assert.deepEqual(registry.unmappedPaths, []);
+  assert.ok(registry.ownersByPath["design/website/components.json"]?.length > 0);
+  assert.ok(registry.toolIds.includes("design:component-lexicon"), registry.toolIds.join(", "));
+  assert.ok(registry.ignoredPaths.includes("design/website/components.json"));
+
+  // An unresolved change set is unknown and still fails closed.
+  const empty = planAffectedToolChecks({changedPaths: [], manifest: productionManifest,
+    componentGraph: productionGraph});
+  assert.equal(empty.mode, "full");
+  assert.deepEqual(empty.fullReasons, ["no changed paths were resolved"]);
 });

@@ -6,17 +6,16 @@ import {OrganizerEventsSection, OrganizerMomentsSection} from "./organizerPage/O
 import {OrganizerCover, OrganizerIdentitySection} from "./organizerPage/OrganizerIdentitySection";
 import {OrganizerLinksSection, OrganizerNextUpSection} from "./organizerPage/OrganizerRailSections";
 import {OrganizerReviewsSection} from "./organizerPage/OrganizerReviewsSection";
-import {PublicPageFooter} from "../../../shared/site";
 
 /**
  * The organiser page as the RbWebOrgV2 board lays it out: the profile (the
  * cover, who they are, follow and share, the next event and the links) and
  * the main column (the claim pitch on a generated page, Coming up, What it's
- * like, Reviews, About, "Made with Catch" and the footer). A phone stacks
+ * like, Reviews, About and "Made with Catch"). A phone stacks
  * them in that order; a wider window puts the profile in the list pane
  * beside the rest, as the board's list-detail pane layout does. The owner
- * view (#1109) adds its bar above the page and its sign-in line above the
- * footer, for a claimed page only.
+ * view (#1109) adds its bar above the page and its sign-in line at the end of
+ * the main column, for a claimed page only.
  */
 export function HostListingSections({controller, owner, ownerFooter}: {
   controller: OrganizerPageController;
@@ -41,7 +40,6 @@ export function HostListingSections({controller, owner, ownerFooter}: {
       <OrganizerAboutSection controller={controller} />
       <OrganizerPageFooter controller={controller} />
       {ownerFooter}
-      <PublicPageFooter />
     </CatchStack>
   );
   if (sizeClass === "compact") {

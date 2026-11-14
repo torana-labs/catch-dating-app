@@ -278,8 +278,13 @@ test("pull requests defer exactly the macOS and app-build lanes to the merge que
   assert.deepEqual(pullRequest.queueDeferredCiTargets,
     full.operations.ciTargets.filter((target) => queueOnlyCiTargets.includes(target)));
   assert.ok(pullRequest.queueDeferredCiTargets.includes("visual_integration"));
+  // App render inputs add capture production in merge_group operations only
+  // (component_graph.json app profiles), not by deferral: website and
+  // capture-tool pull requests still need captures before the queue.
+  assert.ok(full.operations.ciTargets.includes("capture_freshness"));
+  assert.ok(!pullRequest.operations.ciTargets.includes("capture_freshness"));
   assert.deepEqual([...pullRequest.operations.ciTargets, ...pullRequest.queueDeferredCiTargets].sort(),
-    full.operations.ciTargets);
+    full.operations.ciTargets.filter((target) => target !== "capture_freshness"));
   assert.ok(pullRequest.operationSources.ciTargets.every((source) => !queueOnlyCiTargets.includes(source.value)));
 
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-harness-output-"));

@@ -81,12 +81,16 @@ export class Store {
           const docs = [...this.rows].filter(([path, row]) =>
             path.startsWith(`${ref.collection}/`) &&
             ref.filters!.every(([field, op, value]) => op === "in" ?
-              (value as unknown[]).includes(row[field]) : row[field] === value))
+              (value as unknown[]).includes(fieldAt(row, field)) :
+              fieldAt(row, field) === value))
             .sort(([, a], [, b]) => {
               if (!ref.order) return 0;
               const [field, direction] = ref.order;
-              const value = (row: Row) => row[field] instanceof Timestamp ?
-                (row[field] as Timestamp).toMillis() : Number(row[field] ?? 0);
+              const value = (row: Row) => {
+                const raw = fieldAt(row, field);
+                return raw instanceof Timestamp ? raw.toMillis() :
+                  Number(raw ?? 0);
+              };
               return (value(a) - value(b)) * (direction === "desc" ? -1 : 1);
             })
             .slice(0, ref.count).map(([path, row]) => ({
@@ -267,4 +271,11 @@ function resolveServerTimestamps(value: unknown): unknown {
       [key, resolveServerTimestamps(item)]));
   }
   return value;
+}
+
+/** Reads a dotted field path, as Firestore queries do. */
+function fieldAt(row: Row, path: string): unknown {
+  return path.split(".").reduce<unknown>((value, part) =>
+    value && typeof value === "object" ?
+      (value as Row)[part] : undefined, row);
 }

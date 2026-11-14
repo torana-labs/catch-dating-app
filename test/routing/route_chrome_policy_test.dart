@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

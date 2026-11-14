@@ -367,8 +367,9 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.deepEqual(tools.fullReasons, []);
       // Workflow edits can add environment-conditional `vars.*` reads, so
       // the environment difference policy guard owns them too.
+      // Every CI configuration edit reruns the caller-closure proof.
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", ...toolsManifest.ciImpact.mandatoryCheckIds,
+        "ci:web-hosting-freshness", "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
         ...(file.startsWith(".github/workflows/") ? ["firebase:environment-parity"] : [])].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
@@ -1282,8 +1283,27 @@ test("only capture tooling and images select capture production; app inputs leav
     "tool/marketing/lib/capture_provenance.mjs",
     "artifacts/marketing/app-screenshots/README.md",
   ];
+  // App render inputs select capture production in the merge queue only
+  // (owner decision, 12 Nov 2026), so main can reuse the queue's captures.
+  const queueInputs = new Set([
+    "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
+    "lib/main_consumer.dart", "packages/l10n/lib/app_en.arb",
+    "packages/l10n/lib/generated/app_localizations.dart",
+    "packages/platform/lib/schema_contracts/generated/schema_paths.dart",
+    "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
+    "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",
+    "assets/images/sample.png", "assets/fonts/sample.ttf", "pubspec.yaml", "pubspec.lock",
+    "packages/catch_tokens/pubspec.yaml", "packages/catch_tokens/lib/example.dart",
+    "packages/catch_ui/lib/example.dart", "packages/catch_ui/assets/example.png",
+  ]);
   for (const file of ["lib/main_consumer.dart", "test/example_test.dart", "assets/images/sample.png"]) {
-    assert.ok(!plan(file).operations.ciTargets.includes("capture_freshness"), file);
+    for (const mode of ["pr", "main", "nightly"]) {
+      assert.ok(!plan(file, mode).operations.ciTargets.includes("capture_freshness"), `${file} ${mode}`);
+    }
+    assert.ok(plan(file, "merge_group").operations.ciTargets.includes("capture_freshness"), file);
+  }
+  for (const file of ["lib/README.md", "packages/catch_ui_lints/lib/example.dart"]) {
+    assert.ok(!plan(file, "merge_group").operations.ciTargets.includes("capture_freshness"), file);
   }
   for (const file of [...appInputs, ...captureInputs]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
@@ -1291,7 +1311,8 @@ test("only capture tooling and images select capture production; app inputs leav
       const after = plan(file, mode);
       assert.equal(after.complete, true, `${file} ${mode}`);
       // A website build imports its images, so a path that selects Marketing keeps them.
-      assert.deepEqual(after.operations.ciTargets, captureInputs.includes(file) || before.operations.ciTargets.includes("marketing")
+      assert.deepEqual(after.operations.ciTargets, captureInputs.includes(file) || before.operations.ciTargets.includes("marketing") ||
+        (mode === "merge_group" && queueInputs.has(file))
         ? [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort()
         : before.operations.ciTargets, `${file} ${mode}`);
       for (const key of ["checkIds", "codegenIds", "buildTargets"]) {
@@ -1317,7 +1338,8 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
     const result = planAffected({graph, mode, changedPaths: [
       "lib/auth/presentation/phone_step.dart", "functions/src/payments/razorpay.ts"]});
     assert.ok(result.operations.ciTargets.includes("functions"));
-    assert.ok(!result.operations.ciTargets.includes("capture_freshness"));
+    // App render inputs produce captures in the merge queue only.
+    assert.equal(result.operations.ciTargets.includes("capture_freshness"), mode === "merge_group", mode);
     const nativeOnly = plan("lib/auth/presentation/phone_step.dart", mode);
     assert.deepEqual(result.operations.buildTargets, nativeOnly.operations.buildTargets);
     assert.deepEqual(deriveAppRoles(result), deriveAppRoles(nativeOnly));
@@ -1327,7 +1349,7 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
 test("minimum safety obligations cover source, tests, lockfiles and generated outputs", () => {
   const fixtures = [
     {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
-    {paths: ["functions/test/firestore.rules.test.cjs"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/test/rules/users.rules.test.cjs"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},
@@ -1414,4 +1436,54 @@ test("nothing PR validation executes can be harness-scoped", () => {
   const widened = clone(graph);
   widened.classifications.find((entry) => entry.id === "harness-scoped-control").paths.include.push(probe);
   assert.equal(plan(probe, "pr", widened).pathMatches[probe].owner, "harness-scoped-control");
+});
+
+// Workflows ci.yml never calls (tool/nx/workflow_callers.mjs notCalledByCi)
+// validate with policy and their own Tools checks, not every product lane.
+// Each deploy or release workflow pins the checks an edit to it selects, so
+// narrowing never drops the tests that prove it.
+test("deploy and maintenance workflows ci.yml never calls select their own tests, not every lane", () => {
+  const ownChecks = {
+    ".github/workflows/main-red-alert.yml": ["ci:main-red-alert"],
+    ".github/workflows/brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
+    ".github/workflows/_brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
+    ".github/workflows/city-interest-backfill.yml": ["ci:city-interest-backfill-workflow"],
+    ".github/workflows/branch-prune.yml": ["git:branch-hygiene"],
+    ".github/workflows/nx-shadow.yml": ["meta:nx-shadow-plan"],
+    ".github/actions/find-queue-validation/action.yml": ["ci:web-hosting-delivery-workflow"],
+    // No test reads these; workflow policy (actionlint, zizmor, wiring) proves them.
+    ".github/workflows/infra-apply.yml": [],
+    ".github/workflows/infra-plan.yml": [],
+    ".github/workflows/infra-drift.yml": [],
+  };
+  for (const [file, checks] of Object.entries(ownChecks)) {
+    for (const mode of ["pr", "merge_group", "main"]) {
+      const result = plan(file, mode);
+      assert.equal(result.pathMatches[file].owner, "harness-scoped-control", `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, ["policy_docs", "tools"], `${file} ${mode}`);
+      const tools = planAffectedToolChecks({changedPaths: [file], manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected", `${file} ${mode}`);
+      for (const id of ["agent:harness-v2", "meta:nx-workflow-callers", ...checks]) {
+        assert.ok(tools.toolIds.includes(id), `${file} ${mode} selects ${id}`);
+      }
+    }
+  }
+  // main-red-alert's check runs its test file.
+  const redAlert = toolsManifest.tools.find((tool) => tool.id === "ci:main-red-alert");
+  assert.ok(redAlert.checks.includes("node --test tool/ci/main_red_alert.test.mjs"));
+});
+
+test("the website release workflow keeps the Marketing lane that runs its release-train tests", () => {
+  const file = ".github/workflows/website-release.yml";
+  for (const mode of ["pr", "merge_group", "main"]) {
+    const result = plan(file, mode);
+    assert.equal(result.pathMatches[file].owner, "website-release-control", `${mode}`);
+    assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
+  }
+  // Marketing validation runs website/scripts/next/*.test.mjs, releaseTrain.test.mjs among them.
+  const websitePackage = JSON.parse(fs.readFileSync(new URL("../../website/package.json", import.meta.url), "utf8"));
+  assert.match(websitePackage.scripts["test:next-policy"], /scripts\/next\/\*\.test\.mjs/u);
+  assert.match(websitePackage.scripts.pretypecheck, /npm run test:next-policy/u);
+  assert.ok(fs.readFileSync(new URL("../../website/scripts/next/releaseTrain.test.mjs", import.meta.url), "utf8")
+    .includes("website-release.yml"));
 });

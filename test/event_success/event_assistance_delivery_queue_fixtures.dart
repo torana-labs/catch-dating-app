@@ -12,7 +12,9 @@ Map<String, Object?> deliveryQueueFixture(
 }) =>
     (jsonDecode(
               File(
-                'test/${practice ? 'event_rehearsal' : 'event_success'}/fixtures/delivery_queue.json',
+                practice
+                    ? 'test/event_rehearsal/fixtures/delivery_queue.json'
+                    : 'test/event_success/fixtures/delivery_queue.json',
               ).readAsStringSync(),
             )
             as Map)[stage]

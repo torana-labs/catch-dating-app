@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import {catchAnchoredPlacement} from "./catchAnchoredPlacement";
 import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchMenu.module.css";
 
@@ -79,10 +80,6 @@ export type CatchMenuProps<T> = CatchMenuPanelProps<T> | CatchMenuAnchoredProps<
 const checkGlyph = (
   <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
 );
-
-// Flutter's CatchLayout.menuViewportInset and the gap under the trigger.
-const viewportInset = 16;
-const panelGap = 8;
 
 function focusable(panel: HTMLElement | null) {
   return panel ? [...panel.querySelectorAll<HTMLButtonElement>("button[data-row]:not(:disabled)")] : [];
@@ -198,16 +195,10 @@ function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, 
     // keep the panel 16px inside the viewport.
     const rect = anchor.current?.getBoundingClientRect();
     if (rect) {
-      const below = window.innerHeight - rect.bottom - viewportInset;
-      const above = rect.top - viewportInset;
-      const needed = panel.current?.scrollHeight ?? 0;
-      const place = needed > below && above > below ? "above" : "below";
       // Keep the panel 16px inside the viewport sideways too: a wide panel
       // aligned to a trigger near one edge would otherwise run off the other.
-      const box = panel.current?.getBoundingClientRect();
-      const shiftX = !box || box.width === 0 ? 0 : box.left < viewportInset ? viewportInset - box.left :
-        box.right > window.innerWidth - viewportInset ? window.innerWidth - viewportInset - box.right : 0;
-      setPlacement({maxHeight: Math.max(0, (place === "above" ? above : below) - panelGap), place, shiftX});
+      setPlacement(catchAnchoredPlacement(rect, panel.current?.scrollHeight ?? 0,
+        {height: window.innerHeight, width: window.innerWidth}, panel.current?.getBoundingClientRect()));
     }
     const rows = focusable(panel.current);
     (rows.find((row) => row.getAttribute("aria-selected") === "true" || row.getAttribute("aria-checked") === "true") ?? rows[0])?.focus();

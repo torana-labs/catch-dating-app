@@ -1,5 +1,5 @@
+import {contractFixture} from "../shared/contractFixtures";
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {EventAssistanceMessageIntent as Intent} from
@@ -16,8 +16,6 @@ export const start = 1_000_000;
 export const end = 3_000_000;
 export const hostDecision: Decision = {kind: "record",
   evidence: {kind: "hostConfirmed"}};
-const fixture = (name: string) => JSON.parse(readFileSync(
-  "../contracts/fixtures/valid/" + name + ".json", "utf8"));
 
 export async function harness(realDb?: Firestore) {
   const fake = new ProgressFirestore();
@@ -30,7 +28,7 @@ export async function harness(realDb?: Firestore) {
   const progress = {...seeded, plan: {...seeded.plan,
     createdAt: Timestamp.fromMillis(start - 1000),
     updatedAt: Timestamp.fromMillis(start)}};
-  const attendee = {...fixture("event_attendee_doc"),
+  const attendee = {...contractFixture("event_attendee_doc"),
     eventId: context.eventId, organizerId: context.organizerId,
     status: "registered", linkedUid: "guest-1",
     checkedInAt: null, checkedInBy: null, attendanceRevision: 7,

@@ -1,3 +1,8 @@
+// The Flutter test selector runs tests that reach this helper only when a
+// changed path is under these roots (TESTS.md, "Filesystem reads"). The
+// Flutter SDK fonts, .dart_tool/package_config.json and a caller's native
+// font sit outside the repository or follow its global inputs.
+// test-selection-reads: packages/catch_ui/assets/fonts/
 import 'dart:convert';
 import 'dart:io';
 

@@ -27,23 +27,35 @@ function listedStrictTests(root = functionsRoot) {
   return listed;
 }
 
-async function run(argv = process.argv.slice(2)) {
+async function run(argv = process.argv.slice(2), {root = functionsRoot,
+  selectionPath = process.env.CATCH_UNIT_TEST_SELECTION} = {}) {
   if (argv[0] === "--require-emulators") {
     const files = argv.slice(1);
     return runStrictFiles(files.length ? files : listedStrictTests());
   }
-  const testFiles = discoverTestFiles();
+  const discovered = discoverTestFiles(root);
   if (argv.includes("--list")) {
-    process.stdout.write(`${testFiles.join("\n")}\n`);
+    process.stdout.write(`${discovered.join("\n")}\n`);
     return 0;
   }
-  if (testFiles.length === 0) {
+  if (discovered.length === 0) {
     console.error("No compiled Functions or harness tests were discovered.");
     return 1;
   }
-  console.log(`Running ${testFiles.length} discovered Functions test files.`);
+  // Pull request CI may narrow discovery to the tests a change can reach
+  // (tool/impact/functions_unit_test_selection.mjs); other runs keep them all.
+  const {files: testFiles, selection} = narrowToSelection(discovered, selectionPath,
+    {list: "the discovered Functions tests"});
+  if (selection?.mode === "selected" && testFiles.length === 0) {
+    console.log(`No Functions test can be affected by this change (0 of ${discovered.length}); ` +
+      "the merge queue runs them all.");
+    return 0;
+  }
+  console.log(selection?.mode === "selected" ?
+    `Running ${testFiles.length} of ${discovered.length} discovered Functions test files this change can reach.` :
+    `Running ${testFiles.length} discovered Functions test files.`);
   const result = spawnSync(process.execPath, ["--test", ...testFiles], {
-    cwd: functionsRoot,
+    cwd: root,
     stdio: "inherit",
   });
   return result.status ?? 1;
@@ -73,14 +85,14 @@ function shardFiles(files, shard, {allowEmpty = false} = {}) {
 
 // Pull request CI may narrow the strict list to the tests a change can reach
 // (tool/impact/emulator_test_selection.mjs); every other run keeps the full list.
-function narrowToSelection(files, selectionPath) {
+function narrowToSelection(files, selectionPath, {list = "the strict list"} = {}) {
   if (!selectionPath) return {files, selection: null};
   const selection = JSON.parse(fs.readFileSync(selectionPath, "utf8"));
   if (!["full", "selected"].includes(selection.mode) || !Array.isArray(selection.tests)) {
     throw new Error(`Invalid CATCH_TEST_SELECTION: ${selectionPath}`);
   }
   const unknown = selection.tests.filter((test) => !files.includes(test));
-  if (unknown.length) throw new Error(`Selection names tests outside the strict list: ${unknown.join(", ")}`);
+  if (unknown.length) throw new Error(`Selection names tests outside ${list}: ${unknown.join(", ")}`);
   const summary = {mode: selection.mode, listed: files.length, reasons: selection.reasons ?? []};
   if (selection.mode === "full") return {files, selection: summary};
   return {files: files.filter((file) => selection.tests.includes(file)), selection: summary};
@@ -165,5 +177,5 @@ function writeEvidence(evidence, status) {
   return status;
 }
 
-module.exports = {discoverTestFiles, listedStrictTests, narrowToSelection, runStrictFiles, shardFiles,
+module.exports = {discoverTestFiles, listedStrictTests, narrowToSelection, run, runStrictFiles, shardFiles,
   strictTestList};

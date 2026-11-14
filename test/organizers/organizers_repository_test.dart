@@ -207,10 +207,9 @@ void main() {
         final synthetic = buildOrganizer(id: 'synthetic');
         await _seedOrganizer(firestore, visible);
         await _seedOrganizer(firestore, synthetic);
-        await firestore.collection('organizers').doc(synthetic.id).update({
-          'synthetic': true,
-          'seedPrefix': 'cross_paths_mumbai_qa',
-        });
+        await firestore.collection('publicOrganizers').doc(synthetic.id).update(
+          {'synthetic': true, 'seedPrefix': 'cross_paths_mumbai_qa'},
+        );
 
         await expectLater(
           repository.watchOrganizersByLocation('in-mh-mumbai'),
@@ -294,6 +293,46 @@ void main() {
           organizerIds: const ['hidden', 'visible'],
         ),
         emits([hidden, visible]),
+      );
+    });
+
+    test(
+      'browse lists read the public copy, never the canonical record',
+      () async {
+        final publicOnly = buildOrganizer(id: 'public-only');
+        final canonicalOnly = buildOrganizer(id: 'canonical-only');
+        await _seedOrganizer(firestore, publicOnly, canonical: false);
+        await _seedOrganizer(firestore, canonicalOnly, public: false);
+
+        await expectLater(
+          repository.watchOrganizersByLocation('in-mh-mumbai'),
+          emits([publicOnly]),
+        );
+        await expectLater(
+          repository.watchOrganizersByIds(
+            organizerIds: const ['public-only', 'canonical-only'],
+          ),
+          emits([publicOnly]),
+        );
+      },
+    );
+
+    test('by-id reads return the full organizer when rules allow', () async {
+      final organizer = buildOrganizer().copyWith(
+        id: 'club-1',
+        email: 'host@example.com',
+      );
+      await _seedOrganizer(firestore, organizer);
+
+      expect(
+        (await repository.fetchOrganizer('club-1'))?.email,
+        'host@example.com',
+      );
+      await expectLater(
+        repository.watchOrganizer('club-1'),
+        emits(
+          predicate<Organizer?>((value) => value?.email == 'host@example.com'),
+        ),
       );
     });
 
@@ -563,15 +602,33 @@ void main() {
   });
 }
 
+/// Seeds the canonical organizer and the public copy the server would sync.
 Future<void> _seedOrganizer(
   FakeFirebaseFirestore firestore,
-  Organizer organizer,
-) {
-  return firestore
-      .collection('organizers')
-      .doc(organizer.id)
-      .set(organizer.toJson());
+  Organizer organizer, {
+  bool canonical = true,
+  bool public = true,
+}) async {
+  if (canonical) {
+    await firestore
+        .collection('organizers')
+        .doc(organizer.id)
+        .set(organizer.toJson());
+  }
+  if (public) {
+    await firestore
+        .collection('publicOrganizers')
+        .doc(organizer.id)
+        .set(_publicJson(organizer));
+  }
 }
+
+const _privateOrganizerFields = {'email', 'phoneNumber', 'hostDefaults'};
+
+Map<String, dynamic> _publicJson(Organizer organizer) => {
+  for (final entry in organizer.toJson().entries)
+    if (!_privateOrganizerFields.contains(entry.key)) entry.key: entry.value,
+};
 
 class _IdleOrganizersRepository extends Fake implements OrganizersRepository {
   _IdleOrganizersRepository({required this.organizersByLocationStream});

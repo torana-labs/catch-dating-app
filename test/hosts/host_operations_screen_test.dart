@@ -58,6 +58,7 @@ import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

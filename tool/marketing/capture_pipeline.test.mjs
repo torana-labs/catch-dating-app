@@ -273,6 +273,31 @@ test('a marketing entry must live alone in its entry file and be mapped by the i
   assert.match(result.stderr, /must be declared in test\/ui_captures\/catalog\/entries\/sample_screen\.dart/);
 });
 
+test('a persona edit stales exactly the captures whose named scenarios cast it', t => {
+  const f = fixture(t, {second: true});
+  const catalog = (id, name) => JSON.stringify({schemaVersion: 1, personas: [{id, firstName: name}]});
+  f.write('tool/demo/demo_seed/personas/cohort_a.json', catalog('persona_a', 'Asha'));
+  f.write('tool/demo/demo_seed/personas/cohort_b.json', catalog('persona_b', 'Ben'));
+  f.write('tool/demo/demo_seed/scenarios/world_a.json', JSON.stringify({people: [{personId: 'p1', personaId: 'persona_a'}]}));
+  f.write('tool/demo/demo_seed/scenarios/world_b.json', JSON.stringify({people: [{personId: 'p2', personaId: 'persona_b'}]}));
+  // Each widget names only its scenario; no Dart file names a persona catalog.
+  f.write('lib/sample_widget.dart', "import 'theme.dart';\nconst world = 'tool/demo/demo_seed/scenarios/world_a.json';\n");
+  f.write('lib/other_widget.dart', "import 'theme.dart';\nconst world = 'tool/demo/demo_seed/scenarios/world_b.json';\n");
+  f.stamp();
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+  f.write('tool/demo/demo_seed/personas/cohort_a.json', catalog('persona_a', 'Asha Rao'));
+  assert.deepEqual(f.stale(), {sample: true, other: false});
+  f.stamp();
+  f.write('tool/demo/demo_seed/personas/cohort_b.json', catalog('persona_b', 'Ben Cho'));
+  assert.deepEqual(f.stale(), {sample: false, other: true});
+  f.stamp();
+  // A cast id no catalog defines fails the hash instead of hashing nothing.
+  f.write('tool/demo/demo_seed/scenarios/world_a.json', JSON.stringify({people: [{personId: 'p1', personaId: 'persona_z'}]}));
+  const result = f.run('hash.mjs', JSON.stringify(f.capture));
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /casts undefined persona ids: persona_z/);
+});
+
 test('a computed data path cannot hide which file a capture reads', t => {
   const f = fixture(t);
   f.write('lib/sample_widget.dart', "const world = 'tool/demo/demo_seed/personas/${name}.json';\n");

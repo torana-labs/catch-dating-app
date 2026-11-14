@@ -33,7 +33,7 @@ const follows = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
 describe("HostListingSections", () => {
-  it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews, about and the footer", () => {
+  it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews, about and the site footer", () => {
     const {container} = renderPage(claimedOrganizerPage);
     const name = screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"});
     const follow = screen.getByRole("button", {name: "Follow"});
@@ -48,8 +48,12 @@ describe("HostListingSections", () => {
     // Every organiser page carries the one site header, with the main site's links.
     const primary = screen.getByRole("navigation", {name: "Primary"});
     expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "Organisers", "For hosts"]);
-    expect(screen.getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
-    expect(screen.getByRole("navigation", {name: "Site links"})).toBeTruthy();
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    // ...and the one site footer: Explore, Hosts and Help and legal.
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
+    expect(footer.getByRole("link", {name: "Weddings"})).toBeTruthy();
+    expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
     expect(screen.getByText("2,140 followers · 4.8 ★ from 186 reviews · 12 nights", {exact: false})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
   });

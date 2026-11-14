@@ -17,8 +17,41 @@ export interface CatchNightSceneMoment {
    * event, such as "Grouped by pace". It shows on the focused moment only.
    */
   badge?: string;
-  /** The phone's screen for this moment, usually a capture image that carries the description. */
-  screen: ReactNode;
+  /**
+   * The phone's screen for this moment, usually a capture image that carries
+   * the description. Ignored with frame "capture", which draws `capture`.
+   */
+  screen?: ReactNode;
+  /** With frame "capture": the framed app capture and the part of it this moment is about. */
+  capture?: CatchNightSceneCapture | null;
+}
+
+/** A rectangle in a capture's own pixels. */
+export interface CatchNightSceneBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * A framed app capture (the PNG carries its device frame) for frame
+ * "capture". On a wide band the scene shows the device large, running off the
+ * bottom edge; on a phone-width band it shows only `focus`, frameless, at the
+ * band's width, so the app's text stays readable.
+ */
+export interface CatchNightSceneCapture {
+  src: string;
+  /** Describes what the moment's screen shows. */
+  alt: string;
+  /** Intrinsic pixel size. */
+  width: number;
+  height: number;
+  /** The app screen inside the device frame; a moment without `focus` shows its top. */
+  screen?: CatchNightSceneBox;
+  /** The part of the screen the moment is about. */
+  focus?: CatchNightSceneBox;
+  loading?: "eager" | "lazy";
 }
 
 export interface CatchNightSceneJourney {
@@ -43,9 +76,11 @@ export interface CatchNightSceneProps {
    * device (the default): the scene draws a generic phone (CatchDeviceFrame)
    * around unframed screens. none: each screen already carries its own frame,
    * such as a framed app capture (CatchAppCaptureImage), so the scene only
-   * stacks and cross-fades them.
+   * stacks and cross-fades them. capture: each moment brings a framed
+   * `capture`; the scene crops the device on a wide band and shows only the
+   * moment's focus box, frameless, on a phone-width band.
    */
-  frame?: "device" | "none";
+  frame?: "device" | "none" | "capture";
   /** The event types the reader can follow; picking one swaps the journey. */
   formats: readonly CatchNightSceneFormat[];
   journey: CatchNightSceneJourney;
@@ -65,6 +100,25 @@ export interface CatchNightSceneProps {
   timelineLabel: string;
 }
 
+/** Where a moment's capture is cropped on a phone-width band: its focus box, or else the top of its screen at full width. */
+export function catchNightSceneFocus(capture: CatchNightSceneCapture): CatchNightSceneBox {
+  if (capture.focus) return capture.focus;
+  const screen = capture.screen ?? {x: 0, y: 0, width: capture.width, height: capture.height};
+  return {x: screen.x, y: screen.y, width: screen.width, height: Math.min(screen.height, Math.round(screen.width * 10 / 7))};
+}
+
+const captureVars = (capture: CatchNightSceneCapture): CSSProperties => {
+  const focus = catchNightSceneFocus(capture);
+  return {
+    "--catch-night-capture-w": capture.width,
+    "--catch-night-capture-h": capture.height,
+    "--catch-night-focus-x": focus.x,
+    "--catch-night-focus-y": focus.y,
+    "--catch-night-focus-w": focus.width,
+    "--catch-night-focus-h": focus.height,
+  } as CSSProperties;
+};
+
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -77,7 +131,9 @@ const prefersReducedMotion = () =>
  * the moment's badge names the event property it relies on. On a wide band
  * the timeline sits to the left of the phone and each moment is a button that
  * scrolls to it; on a phone-width band the chips, phone, progress and a caption
- * stack in the one viewport.
+ * stack in the one viewport. With frame "capture" a phone-width band shows
+ * each moment's focus crop instead of the whole phone, beside the caption when
+ * the screen is short (a phone held sideways).
  */
 export function CatchNightScene({frame = "device", formats, journey, label, onSelect, pickerLabel, pickerLead, position, selected, timelineLabel}: CatchNightSceneProps) {
   const moments = journey.moments;
@@ -127,6 +183,20 @@ export function CatchNightScene({frame = "device", formats, journey, label, onSe
   };
 
   const current = moments[active];
+  const activeCapture = current?.capture ?? moments.find((moment) => moment.capture)?.capture ?? null;
+  const captures = (
+    <div className={styles.card} style={activeCapture ? captureVars(activeCapture) : undefined}>
+      {moments.map((moment, index) => (
+        <div aria-hidden={index === active ? undefined : true} className={styles.layer} data-active={index === active || undefined}
+          key={`${moment.time}-${moment.title}`} style={moment.capture ? captureVars(moment.capture) : undefined}>
+          {moment.capture ? (
+            <img alt={moment.capture.alt} className={styles.capture} decoding="async" height={moment.capture.height}
+              loading={moment.capture.loading ?? "lazy"} src={moment.capture.src} width={moment.capture.width} />
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
   const screens = (
     <div className={styles.screens}>
       {moments.map((moment, index) => (
@@ -138,7 +208,7 @@ export function CatchNightScene({frame = "device", formats, journey, label, onSe
     </div>
   );
   return (
-    <div className={styles.track} data-accent={journey.accent} ref={track} style={{"--catch-night-moments": count} as CSSProperties}>
+    <div className={styles.track} data-accent={journey.accent} data-frame={frame} ref={track} style={{"--catch-night-moments": count} as CSSProperties}>
       <div aria-label={label} className={styles.scene} ref={scene} role="group">
         <div className={styles.story}>
         <div aria-label={pickerLabel} className={styles.picker} role="radiogroup">
@@ -170,7 +240,7 @@ export function CatchNightScene({frame = "device", formats, journey, label, onSe
         </ol>
         </div>
         <div className={styles.phone} data-frame={frame}>
-          {frame === "device" ? <CatchDeviceFrame kind="phone">{screens}</CatchDeviceFrame> : screens}
+          {frame === "capture" ? captures : frame === "device" ? <CatchDeviceFrame kind="phone">{screens}</CatchDeviceFrame> : screens}
         </div>
         <div aria-hidden="true" className={styles.segments}>
           {moments.map((moment, index) => <span data-done={index <= active || undefined} key={`${moment.time}-${moment.title}`} />)}

@@ -38,7 +38,7 @@ const record = {
     },
     "host": {
       "ios": "https://apps.apple.com/app/catch-host/id6778927317",
-      "android": null
+      "android": "https://play.google.com/store/apps/details?id=com.catchdates.host"
     }
   },
   "adminName": "Catch Admin",
