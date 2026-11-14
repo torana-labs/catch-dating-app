@@ -265,7 +265,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/harness/lib/flutter_contract_outputs.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
