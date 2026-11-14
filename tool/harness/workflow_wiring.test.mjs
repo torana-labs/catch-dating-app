@@ -243,6 +243,31 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
   }
 });
 
+test("Flutter package suites and Widgetbook run only for changes their closure reaches", () => {
+  const flutter = workflow("flutter-ci.yml");
+  for (const [step, packages] of [
+    ["Decide which package suites this change reaches", ["packages/catch_ui", "packages/kernel", "apps/consumer", "apps/host"]],
+    ["Decide whether this change reaches Widgetbook", ["widgetbook"]],
+  ]) {
+    const scope = namedStep(flutter, step);
+    assert.match(scope, /node tool\/ci\/flutter_package_scope\.mjs/u);
+    assert.match(scope, /--event "\$EVENT_NAME"/u);
+    assert.match(scope, /EVENT_NAME: \$\{\{ github\.event_name \}\}/u);
+    assert.match(scope, /--summary "\$GITHUB_STEP_SUMMARY"/u);
+    for (const name of packages) assert.match(scope, new RegExp(`--package ${name}\\b`, "u"));
+  }
+  for (const [step, output] of [
+    ["Catch UI package tests", "catch_ui"],
+    ["Kernel package tests", "kernel"],
+    ["Consumer package tests", "consumer"],
+    ["Host package tests", "host"],
+    ["Build Widgetbook web app", "widgetbook"],
+    ["Check the Widgetbook golden inventory", "widgetbook"],
+  ]) {
+    assert.match(namedStep(flutter, step), new RegExp(`if: steps\\.scope\\.outputs\\.${output} == 'true'`, "u"), step);
+  }
+});
+
 test("Flutter selection keeps full validation and bounds matrix outputs", () => {
   const ci = workflow("ci.yml");
   const flutter = workflow("flutter-ci.yml");
@@ -314,7 +339,10 @@ test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequent
     assert.equal(step.run, directory === "packages/catch_ui" ?
       "flutter test --concurrency=1 --exclude-tags=golden" : "flutter test --concurrency=1");
     assert.equal(step.runnable, true);
-    assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
+    // The only condition is the pull request's change scope; locally and on
+    // every other event the suite runs.
+    assert.doesNotMatch(namedStep(job, name), /continue-on-error:/u);
+    assert.match(step.if, /^steps\.scope\.outputs\.\w+ == 'true'$/u);
   }
   const kernel = steps.filter((step) => step.name === "Kernel package tests");
   assert.equal(kernel.length, 1, "Kernel package tests must run exactly once");
