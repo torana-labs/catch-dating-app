@@ -83,6 +83,18 @@ export function useCatchAdaptiveSheetSurface(wide: CatchAdaptiveSheetWide): Catc
   return isWide ? wide : "sheet";
 }
 
+/**
+ * An anchor for a dropdown whose sheet is drawn somewhere else, such as a
+ * header slot that phones hide while the sheet still opens from the menu.
+ * `wrap` draws the trigger in an inline wrapper; pass `anchor` to the
+ * CatchAdaptiveSheet.
+ */
+export function useCatchAdaptiveSheetAnchor(): {anchor: RefObject<HTMLSpanElement | null>; wrap: (trigger: ReactNode) => ReactNode} {
+  const anchor = useRef<HTMLSpanElement>(null);
+  const wrap = useCallback((trigger: ReactNode) => <span className={styles.anchor} ref={anchor}>{trigger}</span>, []);
+  return {anchor, wrap};
+}
+
 const focusableSelector = [
   "a[href]", "button:not(:disabled)", "input:not(:disabled):not([type=hidden])", "select:not(:disabled)",
   "textarea:not(:disabled)", "[tabindex]:not([tabindex='-1'])",

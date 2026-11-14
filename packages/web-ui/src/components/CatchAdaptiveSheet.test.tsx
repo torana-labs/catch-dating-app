@@ -1,7 +1,7 @@
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {useRef, useState} from "react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
-import {CatchAdaptiveSheet, type CatchAdaptiveSheetWide} from "./CatchAdaptiveSheet";
+import {CatchAdaptiveSheet, useCatchAdaptiveSheetAnchor, type CatchAdaptiveSheetWide} from "./CatchAdaptiveSheet";
 import {catchAnchoredPlacement} from "./catchAnchoredPlacement";
 
 // jsdom has no modal dialog, media queries or layout; these stand in for the browser.
@@ -154,6 +154,28 @@ describe("CatchAdaptiveSheet", () => {
     fireEvent.pointerDown(trigger);
     fireEvent.click(trigger);
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("hangs from a wrapped trigger drawn elsewhere", () => {
+    setWidth(1440);
+    function Split() {
+      const [open, setOpen] = useState(false);
+      const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
+      return <>
+        <header>{wrap(<button onClick={() => setOpen(true)} type="button">Sign in</button>)}</header>
+        <CatchAdaptiveSheet anchor={anchor} closeLabel="Close" onClose={() => setOpen(false)} open={open} title="Sign in" wide="dropdown">
+          <input aria-label="Phone number" />
+        </CatchAdaptiveSheet>
+      </>;
+    }
+    const {container} = render(<Split />);
+    stubLayout(container.querySelector("header > span") as HTMLElement);
+    const trigger = screen.getByRole("button", {name: "Sign in"});
+    fireEvent.click(trigger);
+    const panel = screen.getByRole("dialog", {name: "Sign in"});
+    expect(panel.style.top).toBe("56px");
+    fireEvent.keyDown(panel, {key: "Escape"});
+    expect(document.activeElement).toBe(trigger);
   });
 
   it("aligns to the anchor's end edge", () => {

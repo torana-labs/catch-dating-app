@@ -283,7 +283,7 @@ export {CatchShareBar} from "./components/CatchShareBar";
 export {CatchSkeleton} from "./components/CatchSkeleton";
 export type {CatchSkeletonProps} from "./components/CatchSkeleton";
 export type {CatchShareBarProps, CatchShareBarSegment} from "./components/CatchShareBar";
-export {CatchAdaptiveSheet, catchAdaptiveSheetWideMin, useCatchAdaptiveSheetSurface} from "./components/CatchAdaptiveSheet";
+export {CatchAdaptiveSheet, catchAdaptiveSheetWideMin, useCatchAdaptiveSheetAnchor, useCatchAdaptiveSheetSurface} from "./components/CatchAdaptiveSheet";
 export type {CatchAdaptiveSheetProps, CatchAdaptiveSheetSurface, CatchAdaptiveSheetWide} from "./components/CatchAdaptiveSheet";
 export {CatchSheet} from "./components/CatchSheet";
 export type {
