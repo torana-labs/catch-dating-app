@@ -199,6 +199,28 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps the roster pointer index server-only", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event());
+      await seed(["eventAttendeeIndex", "event-1_runner-1"], {
+        eventId: "event-1",
+        uid: "runner-1",
+        attendeeId: "attendee-1",
+      });
+      for (const db of [authedDb("runner-1"), authedDb("host-1"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        const ref = doc(db, "eventAttendeeIndex", "event-1_runner-1");
+        await assertFails(getDoc(ref));
+        await assertFails(updateDoc(ref, {attendeeId: "attendee-2"}));
+        await assertFails(deleteDoc(ref));
+        await assertFails(setDoc(doc(db, "eventAttendeeIndex", "event-1_runner-2"), {
+          eventId: "event-1", uid: "runner-2", attendeeId: "attendee-2",
+        }));
+        await assertFails(getDocs(query(collection(db, "eventAttendeeIndex"),
+          where("eventId", "==", "event-1"))));
+      }
+    });
+
     it("keeps Host roster intake sessions and receipts server-only", async () => {
       await seed(["hostRosterIntakeSessions", "session-1"], {
         draft: {hostUid: "host-1", eventId: "event-1"},
@@ -814,8 +836,6 @@ describe("firestore.rules", () => {
         ["organizerApplicationFormVersions", "version-1"],
         ["organizerApplications", "application-1"],
         ["organizerApplicationResponses", "response-1"],
-        ["organizerApplicationAssets", "asset-1"],
-        ["organizerApplicationSourceMappings", "mapping-2"],
         ["organizerApplicationImportReceipts", "receipt-1"],
         ["participantIntakeProfiles", "profile-1"],
         ["participantOrganizerDataGrants", "grant-1"],

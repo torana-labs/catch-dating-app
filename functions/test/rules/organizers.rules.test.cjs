@@ -379,7 +379,7 @@ describe("firestore.rules", () => {
         requesterUid: "owner-1",
         status: "pending",
       });
-      await seed(["organizerScheduleLocks", "lock-1"], {
+      await seed(["scheduleLocks", "lock-1"], {
         organizerId: "organizer-1",
         eventId: "event-1",
       });
@@ -391,7 +391,7 @@ describe("firestore.rules", () => {
       )));
       await assertFails(getDoc(doc(
         authedDb("owner-1"),
-        "organizerScheduleLocks",
+        "scheduleLocks",
         "lock-1",
       )));
     });
@@ -1487,8 +1487,7 @@ describe("firestore.rules", () => {
 
     it("keeps atomic form admission ownership and payment receipts server-only", async () => {
       for (const collectionName of ["organizerFormAdmissions",
-        "organizerFormAdmissionReceipts", "organizerEventOfferRecipients",
-        "organizerEventOfferPayments"]) {
+        "organizerFormAdmissionReceipts", "organizerEventOfferRecipients"]) {
         await seed([collectionName, "receipt-1"], {
           organizerId: "organizer-1", eventId: "event-1",
           responseId: "response-1", actorUid: "owner-1",
@@ -1510,8 +1509,8 @@ describe("firestore.rules", () => {
     });
 
     it("keeps public checkout and registration receipts server-only", async () => {
-      for (const collectionName of ["publicEventPayments",
-        "publicEventAdmissionReceipts", "eventRegistrationReceipts"]) {
+      for (const collectionName of ["publicEventAdmissionReceipts",
+        "eventRegistrationReceipts"]) {
         await seed([collectionName, "receipt-1"], {
           organizerId: "organizer-1", eventId: "event-1",
           responseId: "response-1", actorUid: "owner-1",
@@ -1572,9 +1571,9 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps form payment state server-only", async () => {
+    it("keeps guest payment state server-only", async () => {
       for (const collectionName of ["paymentRoutingPolicies", "organizerPaymentConnections",
-        "organizerPaymentOauthStates", "organizerFormPayments",
+        "organizerPaymentOauthStates", "guestPayments",
         "organizerFormPaymentWebhooks"]) {
         await seed([collectionName, "payment-1"], {
           organizerId: "organizer-1", respondentUid: "owner-1",
