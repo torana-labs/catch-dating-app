@@ -16,8 +16,15 @@
 // file its job reaches select every lane; it never selects none.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
-import {parse} from "yaml";
+
+// The YAML parser loads on first use, not at import: the website release
+// scripts import this module through select_lanes.mjs and run without npm ci
+// (website/scripts/next/releaseScriptsImports.test.mjs). They never build the
+// caller graph, so they never need it.
+let yamlParse = null;
+const parse = (text) => (yamlParse ??= createRequire(import.meta.url)("yaml").parse)(text);
 
 export const ALL = "*";
 export const ciWorkflow = ".github/workflows/ci.yml";
