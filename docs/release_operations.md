@@ -350,8 +350,21 @@ Root Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-Tests that inspect files through `dart:io` are filesystem probes and are always
-selected. Dart files anywhere in the repository are covered by the import graph.
+A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+changed path is one that file can read, if those reads are bounded
+(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
+path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
+string literal, a constant of the same file, or an interpolation or
+conditional of those, or when the file names its roots in a
+`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+path such a test can read counts as covered, so a test fixture with a known
+reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
+probe and its tests always run, as does a declared file that uses `Process`,
+`Directory.current` or `Platform.script`, has a literal or constant-prefixed
+path outside its roots, or names a root that is not in the tree. Declared roots
+are trusted for computed paths, so the nightly full run is the backstop for a
+wrong declaration. Dart files anywhere in the repository are covered by the
+import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
 golden and integration suites, other packages' apps, the `packages/catch_ui`
 and `packages/kernel` test suites that the package-tests job runs, firebase
