@@ -403,8 +403,10 @@ On a pull request, the "Catch UI, Consumer & Host package tests" and
 build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
 A suite's closure is its package directory and those of its transitive pubspec
 path dependencies (only `lib/` and `assets/` of the root package), plus what
-those manifests bundle from outside their directories, read from the head
-commit at run time. A `contracts/**` or `tool/contracts/**` change reaches
+those manifests bundle from outside their directories and every Dart file the
+closure's sources reach transitively through relative `import`, `export` or
+`part` URIs that leave those directories (Widgetbook's and Consumer's tests
+import root `test/` helpers this way), read from the head commit at run time. A `contracts/**` or `tool/contracts/**` change reaches
 `packages/platform` and the root package, where the generated contract Dart
 lives. These keep every suite running: a workspace input (any `pubspec.lock`,
 `analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,

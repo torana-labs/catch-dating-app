@@ -119,7 +119,28 @@ export function readManifest(source) {
  * dependencies' directories, and what their manifests bundle. Null when a
  * manifest cannot be read or a dependency has no manifest.
  */
-export function packageClosure(packageDirectory, readFile) {
+const DIRECTIVE = /^\s*(?:import|export|part)\b[^;]*;/gmu;
+const QUOTED = /['"]([^'"]+)['"]/gu;
+
+/**
+ * The repository Dart files a source reaches through relative directives
+ * (imports, exports, parts and their conditional variants), resolved against
+ * the source's own directory. Null when one leaves the repository.
+ */
+export function relativeTargets(name, source) {
+  const targets = [];
+  for (const directive of source.match(DIRECTIVE) ?? []) {
+    for (const [, uri] of directive.matchAll(QUOTED)) {
+      if (/^[a-z][\w+.-]*:/iu.test(uri) || !uri.endsWith(".dart")) continue;
+      const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(name), uri));
+      if (resolved.startsWith("..") || path.posix.isAbsolute(resolved)) return null;
+      targets.push(resolved);
+    }
+  }
+  return targets;
+}
+
+export function packageClosure(packageDirectory, readFile, listFiles = () => []) {
   const roots = new Set();
   const owned = new Set();
   const pending = [normalize(packageDirectory)];
@@ -147,6 +168,27 @@ export function packageClosure(packageDirectory, readFile) {
       const resolved = normalize(path.posix.join(directory || ".", entry));
       if (resolved.startsWith("..") || path.posix.isAbsolute(entry)) return null;
       if (resolved !== "") owned.add(resolved);
+    }
+  }
+  // A package's Dart (its tests included) can reach repository files outside
+  // every closure directory through relative directives, as Widgetbook's tests
+  // reach the root package's test helpers. Follow them transitively.
+  const ownedPrefixes = [...owned].filter((entry) => entry.endsWith("/"));
+  const pendingSources = [...ownedPrefixes].flatMap((entry) =>
+    listFiles(entry).filter((name) => name.endsWith(".dart")));
+  const visited = new Set();
+  while (pendingSources.length > 0) {
+    const name = pendingSources.pop();
+    if (visited.has(name)) continue;
+    visited.add(name);
+    const source = readFile(name);
+    if (source == null) return null;
+    const targets = relativeTargets(name, source);
+    if (targets == null) return null;
+    for (const target of targets) {
+      if (ownedPrefixes.some((entry) => target.startsWith(entry))) continue;
+      owned.add(target);
+      pendingSources.push(target);
     }
   }
   return {roots: [...roots].sort(), owned: [...owned].sort()};
@@ -178,7 +220,7 @@ function classified(name, packageDirectories) {
 /**
  * The decision for each package: {run, reason}.
  */
-export function decide({packages, changed, event, full = false, commitWindow = false, readFile, manifests}) {
+export function decide({packages, changed, event, full = false, commitWindow = false, readFile, manifests, files = []}) {
   const all = (reason) => Object.fromEntries(packages.map((name) => [name, {run: true, reason}]));
   if (event !== "pull_request") return all(`${event} runs every package job`);
   if (full) return all("full validation");
@@ -192,7 +234,7 @@ export function decide({packages, changed, event, full = false, commitWindow = f
   const expanded = expandGenerated(changed);
   const decisions = {};
   for (const name of packages) {
-    const closure = packageClosure(name, readFile);
+    const closure = packageClosure(name, readFile, (entry) => files.filter((file) => file.startsWith(entry)));
     if (closure == null) {
       decisions[name] = {run: true, reason: "a manifest in its closure could not be read"};
       continue;
@@ -215,6 +257,30 @@ function git(args) {
   return execFileSync("git", args, {encoding: "utf8", maxBuffer: 1 << 28});
 }
 
+/** Every tracked Dart source and pubspec at [sha], read in one batch. */
+function readTree(sha) {
+  const entries = git(["ls-tree", "-r", "-z", sha]).split("\0").filter(Boolean).map((entry) => {
+    const tab = entry.indexOf("\t");
+    const [, type, object] = entry.slice(0, tab).split(" ");
+    return {name: entry.slice(tab + 1), type, object};
+  }).filter(({name, type}) => type === "blob" &&
+    (name.endsWith(".dart") || name === "pubspec.yaml" || name.endsWith("/pubspec.yaml")));
+  const output = execFileSync("git", ["cat-file", "--batch"], {
+    input: `${entries.map(({object}) => object).join("\n")}\n`,
+    maxBuffer: 1 << 30,
+  });
+  const tree = new Map();
+  let offset = 0;
+  for (const {name, object} of entries) {
+    const end = output.indexOf(10, offset);
+    const [header, , size] = output.subarray(offset, end).toString("utf8").split(" ");
+    if (header !== object) throw new Error(`Unexpected object for ${name}`);
+    tree.set(name, output.subarray(end + 1, end + 1 + Number(size)).toString("utf8"));
+    offset = end + 1 + Number(size) + 1;
+  }
+  return tree;
+}
+
 function main(argv) {
   const options = {package: []};
   for (let index = 0; index < argv.length; index += 2) {
@@ -233,8 +299,8 @@ function main(argv) {
   try {
     changed = git(["diff", "--name-only", "--no-renames", "-z", options.base, options.head])
       .split("\0").filter(Boolean);
-    const manifests = git(["ls-tree", "-r", "--name-only", "-z", options.head])
-      .split("\0").filter((name) => name === "pubspec.yaml" || name.endsWith("/pubspec.yaml"));
+    const tree = readTree(options.head);
+    const manifests = [...tree.keys()].filter((name) => name === "pubspec.yaml" || name.endsWith("/pubspec.yaml"));
     decisions = decide({
       packages: options.package,
       changed,
@@ -242,13 +308,8 @@ function main(argv) {
       full: options.full === "true",
       commitWindow: options["commit-window"] === "true",
       manifests,
-      readFile: (name) => {
-        try {
-          return git(["show", `${options.head}:${name}`]);
-        } catch {
-          return null;
-        }
-      },
+      files: [...tree.keys()],
+      readFile: (name) => tree.get(name) ?? null,
     });
   } catch (error) {
     decisions = Object.fromEntries(options.package.map((name) =>

@@ -3,7 +3,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import {decide, markdownCell, packageClosure, readManifest, workspaceInput} from "./flutter_package_scope.mjs";
+import {decide, markdownCell, packageClosure, readManifest, relativeTargets, workspaceInput} from "./flutter_package_scope.mjs";
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 const readRepo = (name) => {
@@ -139,4 +139,50 @@ test("summary cells escape backslashes before pipes and fold newlines", () => {
   assert.equal(markdownCell("a|b"), "a\\|b");
   assert.equal(markdownCell("a\\|b"), "a\\\\\\|b");
   assert.equal(markdownCell("one\ntwo"), "one two");
+});
+
+test("relative directives that leave a package join its closure transitively", () => {
+  const tree = {
+    ...fixture,
+    "gallery/test/flutter_test_config.dart": "import '../../test/support/fonts.dart';\n",
+    "gallery/test/a_test.dart":
+      "import 'package:flutter_test/flutter_test.dart';\nimport '../../test/pump.dart' if (dart.library.html) '../../test/pump_web.dart';\n",
+    "test/pump.dart": "export 'support/finders.dart';\n",
+    "test/pump_web.dart": "",
+    "test/support/fonts.dart": "",
+    "test/support/finders.dart": "",
+    "test/unrelated_helper.dart": "",
+  };
+  const decisionsFor = (changed) => decide({
+    packages: ["gallery", "packages/ui"],
+    changed,
+    event: "pull_request",
+    manifests: Object.keys(tree).filter((name) => name.endsWith("pubspec.yaml")),
+    files: Object.keys(tree),
+    readFile: (name) => tree[name] ?? null,
+  });
+  for (const helper of ["test/pump.dart", "test/pump_web.dart", "test/support/fonts.dart", "test/support/finders.dart"]) {
+    assert.deepEqual(runs(decisionsFor([helper])), ["gallery"], helper);
+  }
+  assert.deepEqual(runs(decisionsFor(["test/unrelated_helper.dart"])), []);
+  assert.deepEqual(relativeTargets("a/b.dart", "import '../../outside.dart';"), null);
+});
+
+test("Widgetbook and Consumer reach the root test helpers their tests import", () => {
+  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8"}).split("\n").filter(Boolean);
+  const listFiles = (entry) => files.filter((name) => name.startsWith(entry));
+  const widgetbook = packageClosure("widgetbook", readRepo, listFiles);
+  for (const helper of ["test/test_pump_helpers.dart", "test/goldens/support/golden_pump.dart", "test/support/catch_test_fonts.dart"]) {
+    assert.ok(widgetbook.owned.includes(helper), helper);
+  }
+  assert.ok(packageClosure("apps/consumer", readRepo, listFiles).owned.some((entry) => entry.startsWith("test/") && entry.endsWith(".dart")));
+  const decisions = decide({
+    packages: ["widgetbook"],
+    changed: ["test/test_pump_helpers.dart"],
+    event: "pull_request",
+    manifests: repoManifests,
+    files,
+    readFile: readRepo,
+  });
+  assert.equal(decisions.widgetbook.run, true);
 });
