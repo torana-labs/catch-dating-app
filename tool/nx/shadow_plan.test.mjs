@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
+import {pathToFileURL} from "node:url";
 import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, laneForTask,
   shadowExitCode, summary} from "./shadow_plan.mjs";
 
@@ -23,12 +27,16 @@ test("every planner lane has an Nx project to compare with", () => {
   assert.equal(laneForTask("lane-flutter-design:lane"), "flutter");
 });
 
-test("an edit to how CI runs selects every lane", () => {
+test("a selector file selects every lane; a workflow selects the lanes that run it", () => {
   assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
-  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
-  const result = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: [".github/actions/setup-flutter/action.yml"]});
-  assert.equal(result.agree, true);
+  assert.equal(isControlPlane("tool/tools_manifest.json"), true);
+  assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
+  const selector = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"]});
+  assert.equal(selector.agree, true);
+  const flutter = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/flutter-ci.yml"]});
+  assert.ok(flutter.nxLanes.includes("flutter"));
+  assert.ok(!flutter.nxLanes.includes("functions") && !flutter.nxLanes.includes("flutter_build_ios"));
 });
 
 test("pull requests leave the queue-only lanes to the merge queue", () => {
@@ -130,8 +138,9 @@ test("a disagreement with no known cause stays unexplained", () => {
   // Admin selected by catch-admin itself is not the design-parity lane.
   assert.equal(explain({lane: "admin", side: "nx", nxTasks: ["lane-admin-design:lane", "catch-admin:test"],
     changedFiles: ["packages/catch_ui/lib/a.dart"]}), null);
-  // lane-tools-coarse does not cover a tool change.
-  assert.equal(explain({lane: "tools", side: "nx", nxTasks: ["lane-tools:lane"], changedFiles: ["tool/run.mjs"]}), null);
+  // lane-tools-coarse does not cover a tool change, here one no lane job runs.
+  assert.equal(explain({lane: "tools", side: "nx", nxTasks: ["lane-tools:lane"],
+    changedFiles: ["tool/agent/context_pack.mjs"], graph: {lanes: new Map(), selectors: new Set()}}), null);
 
   const result = compare({plannerLanes: ["flutter"], nxTasks: ["lane-docs:lane"], changedFiles: ["README.md"],
     plannerSources: [source("app.source", "flutter")]});
@@ -150,4 +159,31 @@ test("the contracts consumer-scan prefixes are the contracts targets' inputs out
     .map((input) => input.slice("{workspaceRoot}/".length, -"**/*".length))
     .filter((prefix) => prefix !== "contracts/"));
   assert.deepEqual([...prefixes].sort(), [...contractsConsumerScanPrefixes].sort());
+});
+
+// The website release train imports select_lanes.mjs and runs without npm ci,
+// then compares with no changed files (controlPlane: false). That path must
+// never load a package; releaseScriptsImports.test.mjs checks only static
+// imports, so this runs compare() where `yaml` cannot be resolved.
+test("comparing with no changed files never loads the YAML parser", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "no-yaml-"));
+  const hook = path.join(dir, "no_yaml.mjs");
+  fs.writeFileSync(hook, `import {registerHooks} from "node:module";
+registerHooks({resolve(specifier, context, next) {
+  if (specifier === "yaml") throw new Error("yaml is not installed");
+  return next(specifier, context);
+}});
+`);
+  const shadow = new URL("./shadow_plan.mjs", import.meta.url).href;
+  const run = (changedFiles) => spawnSync(process.execPath, ["--import", pathToFileURL(hook).href, "--input-type=module", "-e",
+    `const {compare} = await import(${JSON.stringify(shadow)});
+     const result = compare({nxTasks: ["catch-marketing:build"], mode: "merge_group", changedFiles: ${JSON.stringify(changedFiles)}});
+     console.log(JSON.stringify(result.nxLanes));`], {encoding: "utf8"});
+  const clean = run([]);
+  assert.equal(clean.status, 0, clean.stderr);
+  assert.deepEqual(JSON.parse(clean.stdout), ["marketing"]);
+  // Control: a changed CI file builds the graph, so the hook is really in force.
+  const ci = run([".github/workflows/flutter-ci.yml"]);
+  assert.notEqual(ci.status, 0);
+  assert.match(ci.stderr, /yaml is not installed/u);
 });
