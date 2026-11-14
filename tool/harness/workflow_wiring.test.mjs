@@ -1479,7 +1479,9 @@ test("backend integration runs strict execution inside both emulators with a bou
   const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(pkg.scripts["test:rules"], "npm run build && node scripts/run-tests.cjs --require-emulators");
   const listed = JSON.parse(fs.readFileSync(new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
-  assert.ok(listed.includes("test/firestore.rules.test.cjs"));
+  assert.ok(listed.includes("test/rules/organizers.rules.test.cjs"));
+  // Rules specs are one file per collection so shards balance and selection can narrow.
+  assert.equal(listed.includes("test/firestore.rules.test.cjs"), false);
   assert.ok(listed.includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 

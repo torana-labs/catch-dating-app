@@ -790,7 +790,7 @@ Functions unit tests use `node:test` beside the source:
 - `publicRegistration/policy` additions: the member-price quote and the refusal
   of a 0 price.
 
-Rules tests in `functions/test/firestore.rules.test.cjs`, each named in
+Rules tests in `functions/test/rules/`, each named in
 `tool/contracts/firestore_contract.json`:
 
 - an owner reads their membership, checkout and benefit uses, and other users
