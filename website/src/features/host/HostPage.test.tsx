@@ -34,19 +34,16 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(screen.getByText(copy.footer.tagline)).toBeTruthy();
   });
 
-  it("states the trial terms in the hero and links Catch Host's App Store listing, with Google Play coming soon", () => {
+  it("states the trial terms in the hero and links Catch Host's App Store and Google Play listings", () => {
     renderPage();
     expect(screen.getByText(copy.hero.terms)).toBeTruthy();
     const apple = screen.getAllByRole("link", {name: "Download on the App Store"});
     expect(apple).toHaveLength(2);
     expect(apple.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.ios, brand.stores.host.ios]);
     expect(within(apple[0]).getByRole("img").getAttribute("src")).toBe("/assets/store-badges/app-store-download-on-the.svg");
-    if (brand.stores.host.android) {
-      expect(screen.getAllByRole("link", {name: "Get it on Google Play"})).toHaveLength(2);
-    } else {
-      expect(screen.getAllByRole("button", {name: "Coming soon on Google Play"})).toHaveLength(2);
-      expect(screen.queryByRole("img", {name: "Get it on Google Play"})).toBeNull();
-    }
+    const play = screen.getAllByRole("link", {name: "Get it on Google Play"});
+    expect(play.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.android, brand.stores.host.android]);
+    expect(screen.queryByRole("button", {name: "Coming soon on Google Play"})).toBeNull();
   });
 
   it("keeps the retired host routes' anchors on the bands that carry their content", () => {
