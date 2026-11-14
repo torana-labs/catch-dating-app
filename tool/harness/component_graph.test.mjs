@@ -367,8 +367,9 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.deepEqual(tools.fullReasons, []);
       // Workflow edits can add environment-conditional `vars.*` reads, so
       // the environment difference policy guard owns them too.
+      // Every CI configuration edit reruns the caller-closure proof.
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", ...toolsManifest.ciImpact.mandatoryCheckIds,
+        "ci:web-hosting-freshness", "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
         ...(file.startsWith(".github/workflows/") ? ["firebase:environment-parity"] : [])].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");

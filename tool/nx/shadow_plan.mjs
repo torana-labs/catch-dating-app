@@ -9,6 +9,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {callerLanes, isSelector, workflowCallers} from "./workflow_callers.mjs";
 
 export const targets = ["analyze", "test", "lint", "build", "typecheck", "check", "conformance", "lane"];
 
@@ -54,13 +55,16 @@ const laneByProject = {
   "lane-visual": "visual_integration",
 };
 
-// Edits to these decide how every lane runs, so they select all of them.
-const controlPlaneFiles = [".github/workflows/ci.yml", ".github/workflows/contracts-ci.yml",
-  ".github/workflows/flutter-ci.yml", ".github/workflows/functions-ci.yml", ".github/workflows/operations-ci.yml",
-  ".github/workflows/react-surface-validation.yml", "tool/ci/toolchain.env", "nx.json", "firebase.json"];
-const controlPlanePrefixes = [".github/actions/", "tool/nx/"];
-export const isControlPlane = (file) =>
-  controlPlaneFiles.includes(file) || controlPlanePrefixes.some((prefix) => file.startsWith(prefix));
+// A file CI executes or reads selects the lanes whose jobs reach it, and a
+// file that decides selection selects every lane (workflow_callers.mjs).
+let defaultGraph = null;
+export const callerGraph = () => (defaultGraph ??= workflowCallers({lanes: comparedLanes}));
+// The graph is built only when a changed file needs it: the website release
+// train calls compare() with no changed files and without npm ci, and building
+// the graph loads the YAML parser.
+export const isControlPlane = (file, graph) => isSelector(file, graph ?? callerGraph());
+export const workflowLanes = (changedFiles, graph) => changedFiles.length === 0 ? new Set()
+  : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes});
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
@@ -109,9 +113,6 @@ export const explanationRules = [
   {id: "planner-contracts-source", side: "planner",
     why: "The planner runs nine lanes for any contract file; Nx runs only the consumers of the changed contract family.",
     matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "contracts.source")},
-  {id: "nx-control-plane", side: "nx",
-    why: "An edit to how CI or Nx runs selects every lane in Nx.",
-    matches: ({changedFiles}) => changedFiles.some(isControlPlane)},
   {id: "docs-reads-every-markdown", side: "nx", lanes: ["docs"],
     why: "lane-docs reads every Markdown file; the planner leaves doc-contract files (READMEs it classifies as terminal) out of Docs.",
     matches: ({changedFiles}) => changedFiles.some((file) => file.endsWith(".md"))},
@@ -131,19 +132,23 @@ export const explanationRules = [
   {id: "brand-guard-in-functions", side: "nx", lanes: ["functions", "firestore_rules"],
     why: "functions/src/shared/brand.test.ts re-runs the brand guard, so brand changes run Functions (and the rules lane that depends on it); the planner misses that.",
     matches: ({changedFiles}) => changedFiles.some((file) => file.startsWith("packages/brand/"))},
+  // Last: the more specific Nx rules above name the cause when they apply.
+  {id: "nx-control-plane", side: "nx",
+    why: "A file CI executes or reads selects every lane that runs it, and a selector file selects every lane; the planner narrows some of them by hand.",
+    matches: ({lane, changedFiles, graph}) => workflowLanes(changedFiles, graph).has(lane)},
 ];
 
 /** The rule that explains one disagreeing lane, or null. */
-export function explain({lane, side, sources = [], nxTasks = [], changedFiles = []}) {
+export function explain({lane, side, sources = [], nxTasks = [], changedFiles = [], graph}) {
   const rule = explanationRules.find((candidate) => candidate.side === side &&
     (!candidate.lanes || candidate.lanes.includes(lane)) &&
-    candidate.matches({lane, sources: sources.filter((source) => source.value === lane), nxTasks, changedFiles}));
+    candidate.matches({lane, sources: sources.filter((source) => source.value === lane), nxTasks, changedFiles, graph}));
   return rule?.id ?? null;
 }
 
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
-  changedFiles = [], plannerSources = []}) {
-  const nxLanes = new Set(changedFiles.some(isControlPlane) ? comparedLanes : []);
+  changedFiles = [], plannerSources = [], graph}) {
+  const nxLanes = workflowLanes(changedFiles, graph);
   const unmappedTasks = [];
   for (const task of nxTasks) {
     const project = task.slice(0, task.lastIndexOf(":"));
@@ -157,7 +162,7 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
   const explained = [
     ...plannerOnly.map((lane) => ({lane, side: "planner"})),
     ...nxOnly.map((lane) => ({lane, side: "nx"})),
-  ].map((entry) => ({...entry, rule: explain({...entry, sources: plannerSources, nxTasks, changedFiles})}));
+  ].map((entry) => ({...entry, rule: explain({...entry, sources: plannerSources, nxTasks, changedFiles, graph})}));
   const unexplained = (side) => explained.filter((entry) => entry.side === side && !entry.rule).map((entry) => entry.lane);
   return {
     agree: plannerOnly.length === 0 && nxOnly.length === 0,
