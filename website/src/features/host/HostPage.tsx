@@ -23,7 +23,7 @@ import {
   CatchText,
   type CatchAppCaptureImageProps,
 } from "@catch/web-ui";
-import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
+import {hostLandingCopy as copy, hostNightCaptureScreen, hostNightFocus, hostNightFormats} from "@content/hostLanding";
 import {interpolateContent as fill} from "@content/interpolate";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
@@ -134,7 +134,7 @@ function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
       </CatchStack>
       <CatchNightScene
         formats={hostNightFormats.map((item) => ({format: item.format, title: item.title}))}
-        frame="none"
+        frame="capture"
         journey={{
           accent: night.accent,
           event: night.event,
@@ -147,7 +147,8 @@ function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
               title: moment.title,
               body: moment.body,
               badge: night.badges[moment.property],
-              screen: screen ? <CatchAppCaptureImage {...screen} caption={undefined} /> : null,
+              capture: screen ? {src: screen.src, alt: screen.alt, width: screen.width, height: screen.height,
+                screen: hostNightCaptureScreen, focus: hostNightFocus[moment.slot]} : null,
             };
           }),
         }}

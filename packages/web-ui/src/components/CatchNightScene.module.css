@@ -40,6 +40,15 @@
   padding: var(--catch-space-s7) 0;
 }
 
+/*
+ * The pinned scene follows the visible viewport (100dvh), so it fills the
+ * screen once a phone browser's toolbars collapse. The track keeps the small
+ * viewport (100svh), so its height, and everything below it, never moves.
+ */
+@supports (height: 100dvh) {
+  .scene { height: clamp(560px, 100dvh, 900px); }
+}
+
 /* The wide arrangement's left column: chips, the event, then the timeline. */
 .story {
   display: flex;
@@ -226,6 +235,10 @@
 @container catch-page (width < 840px) {
   .track { --catch-night-scene-height: clamp(560px, 100svh, 860px); }
 
+  @supports (height: 100dvh) {
+    .scene { height: clamp(560px, 100dvh, 860px); }
+  }
+
   .scene {
     display: flex;
     flex-direction: column;
@@ -295,8 +308,117 @@
   .nowBody { font-size: var(--catch-typography-role-body-small-size); }
 }
 
+/*
+ * frame="capture" (proposal night-framing). A framed app capture: on a wide
+ * band the device runs large off the scene's bottom edge (option A, a partial
+ * device), and on a phone-width band only the moment's focus box shows, as a
+ * frameless card at the band's width (option C). Each layer carries its
+ * capture's size and focus box as unitless pixel numbers; the card takes the
+ * focused moment's.
+ */
+.track[data-frame="capture"] .scene {
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.track[data-frame="capture"] .phone {
+  align-self: stretch;
+  width: min(calc(var(--catch-night-scene-height) * 0.645), 49cqw, 600px);
+  margin-bottom: calc(-1 * var(--catch-space-s7));
+  padding-top: var(--catch-space-s11, 44px);
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--catch-night-capture-w) / var(--catch-night-capture-h);
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--catch-duration-standard) var(--catch-motion-standard-curve);
+}
+
+.layer[data-active] { opacity: 1; }
+
+.capture {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+}
+
+@container catch-page (width < 840px) {
+  .track[data-frame="capture"] .scene { overflow: visible; }
+
+  .track[data-frame="capture"] .phone {
+    container-type: size;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 0;
+    padding-top: 0;
+  }
+
+  .track[data-frame="capture"] .phone > * { width: auto; }
+
+  /* The crop keeps the band's width, so the app's text keeps its size; a short screen trims the bottom of the box instead of shrinking it. */
+  .card {
+    --catch-night-card-w: min(100cqw, 420px);
+    flex: none;
+    width: var(--catch-night-card-w);
+    height: min(calc(var(--catch-night-card-w) * var(--catch-night-focus-h) / var(--catch-night-focus-w)), 100cqh);
+    margin: auto 0;
+    aspect-ratio: auto;
+    overflow: hidden;
+    border-radius: var(--catch-radius-lg, 20px);
+    background: var(--catch-theme-tile, transparent);
+  }
+
+  .capture {
+    width: calc(var(--catch-night-capture-w) / var(--catch-night-focus-w) * 100%);
+    transform: translate(
+      calc(var(--catch-night-focus-x) / var(--catch-night-capture-w) * -100%),
+      calc(var(--catch-night-focus-y) / var(--catch-night-capture-h) * -100%)
+    );
+  }
+}
+
+/* A phone held sideways: the copy on the left, the crop on the right at the screen's full height. */
+@media (orientation: landscape) and (max-height: 560px) {
+  @container catch-page (width < 840px) {
+    .track[data-frame="capture"] {
+      --catch-night-scene-height: clamp(320px, 100svh, 560px);
+    }
+
+    .track[data-frame="capture"] .scene {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(240px, 44%, 360px);
+      grid-template-rows: minmax(0, 1fr) auto auto auto minmax(0, 1fr);
+      column-gap: var(--catch-space-s10, 40px);
+      row-gap: var(--catch-space-micro14);
+      height: var(--catch-night-scene-height);
+      padding: var(--catch-space-s4) 0;
+    }
+
+    .track[data-frame="capture"] .picker { grid-area: 2 / 1; margin: 0; padding: 0; }
+    .track[data-frame="capture"] .segments { grid-area: 3 / 1; }
+    .track[data-frame="capture"] .now { grid-area: 4 / 1; min-height: 0; }
+    .track[data-frame="capture"] .phone { grid-area: 1 / 2 / -1 / 3; height: 100%; }
+  }
+
+  @supports (height: 100dvh) {
+    @container catch-page (width < 840px) {
+      .track[data-frame="capture"] .scene { height: clamp(320px, 100dvh, 560px); }
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .moment,
   .screen,
+  .layer,
   .segments > span { transition: none; }
 }
