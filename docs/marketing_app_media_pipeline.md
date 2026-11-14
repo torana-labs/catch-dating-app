@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.18.0
+version: 1.19.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -245,12 +245,16 @@ or font bytes are distributed.
 
 Capture production starts on Linux. The plan job (`export_hosted_captures.mjs
 --plan`) asks the source's own exporter which captures are stale, then looks
-for earlier renders of the same inputs in the newest capture bundles that
-main-line CI uploaded: main's push and nightly runs and main's merge-queue
-runs, from `ci.yml` in this repository, at most five bundles. A bundle PNG
-becomes a seed only when the source's `--plan --inputs-only` accepts it, its
-render revision is an ancestor of the source, and every seed shares one native
-font. If nothing is stale, the Linux reuse job packages those PNGs with no
+for earlier renders of the same inputs in the newest capture bundles that this
+repository's producers uploaded: `ci.yml`, `marketing-website.yml` and
+`marketing-captures.yml` runs from any event (same-repository pull requests,
+merge queue, main, nightly, manual), at most 20 bundles. Fork pull requests
+and runs whose workflow id does not match their path are refused. A bundle
+PNG becomes a seed only when the source's `--plan --inputs-only` accepts it
+and every seed shares one native font. The render commit need not be an
+ancestor of the source (owner decision, 12 Nov 2026): the exact input
+fingerprint replaces the ancestry rule, so a render from a squash-merged pull
+request is reused on main and in the merge queue. If nothing is stale, the Linux reuse job packages those PNGs with no
 Flutter, no font and no macOS runner. Otherwise the macOS render job renders
 what is stale and reuses the rest, checking each seed's font against its own.
 The nightly run always renders everything, which re-checks the macOS font
@@ -463,8 +467,8 @@ their light marketing exports, regenerates design context, syncs website
 copies, then runs the existing provenance, input freshness, framing and
 copy-byte checks. A per-capture plan reuses only byte-verified PNGs whose full
 render-input fingerprint and native font match. Reused PNGs keep their original
-render SHA, which must be an ancestor of the selected source; they are never
-restamped. Only invalidated outputs are removed before rendering. A render/check
+render SHA, which need not be an ancestor of the selected source; they are
+never restamped. Only invalidated outputs are removed before rendering. A render/check
 failure prevents artifact upload; there is no stale image fallback. Older source
 exporters without this protocol retain the full-render behavior.
 
@@ -475,7 +479,8 @@ review. Source dependency changes, new assets, font changes, missing or corrupt
 PNGs all invalidate reuse. Reusing a valid source can repair a missing or stale
 website copy without rerendering.
 
-The seven-day immutable artifact is named
+The 30-day immutable artifact (kept that long so later plans can reuse its
+PNGs) is named
 `canonical-marketing-<source-sha>-<run-id>-<attempt>`. It contains exactly the
 manifest's framed source PNGs, their website copies, the authored capture manifest,
 website manifest, design context, and `capture-receipt.json`. The receipt

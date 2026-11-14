@@ -82,8 +82,6 @@ jobs:
         with:
           ref: ${{ env.CAPTURE_SOURCE_SHA }}
           path: capture-source
-          # Reused PNGs must prove their original render is an ancestor.
-          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/generate-contracts
         with:
@@ -215,8 +213,6 @@ jobs:
         with:
           ref: ${{ env.CAPTURE_SOURCE_SHA }}
           path: capture-source
-          # Reused PNGs must prove their original render is an ancestor.
-          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/generate-contracts
         with:
@@ -286,7 +282,8 @@ jobs:
           name: canonical-marketing-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.CAPTURE_OUTPUT_DIR }}/
           if-no-files-found: error
-          retention-days: 7
+          # Later plans reuse these PNGs by fingerprint for 30 days.
+          retention-days: 30
       - name: Record exact artifact identity
         id: identity
         env:
@@ -367,8 +364,6 @@ jobs:
         with:
           ref: ${{ env.CAPTURE_SOURCE_SHA }}
           path: capture-source
-          # Reused PNGs must prove their original render is an ancestor.
-          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/generate-contracts
         with:
@@ -399,7 +394,8 @@ jobs:
           name: canonical-marketing-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.CAPTURE_OUTPUT_DIR }}/
           if-no-files-found: error
-          retention-days: 7
+          # Later plans reuse these PNGs by fingerprint for 30 days.
+          retention-days: 30
       - name: Record exact artifact identity
         id: identity
         env:

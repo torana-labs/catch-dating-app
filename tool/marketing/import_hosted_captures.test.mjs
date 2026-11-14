@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
-import {CAPTURE_PRODUCER_JOBS, isAdminBuildOutput, downloadCaptureArtifact, readCaptureArchive, selectCaptureProducerJob, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
+import {CAPTURE_PRODUCER_JOBS, assertReusedRenderRevision, isAdminBuildOutput, downloadCaptureArtifact, readCaptureArchive, selectCaptureProducerJob, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
 
 const hash = bytes => `sha256:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
 function identities() {
@@ -210,4 +210,13 @@ test("only Admin's declared build outputs may sit untracked beside the website b
   assert.equal(isAdminBuildOutput("admin/src/generated/contracts/x.ts"), false);
   assert.equal(isAdminBuildOutput("admin/src/app/App.tsx"), false);
   assert.equal(isAdminBuildOutput("website/src/generated/adminActionCatalog.ts"), false);
+});
+
+test("a reused capture needs a full render revision, not an ancestor of the consumer source", () => {
+  // Any well-formed SHA passes, including one this checkout has never seen
+  // (a squash-merged PR render); its fingerprint is what binds it.
+  assert.doesNotThrow(() => assertReusedRenderRevision("f".repeat(40)));
+  for (const revision of [undefined, "", "abc123", "F".repeat(40), `${"a".repeat(40)}\n`]) {
+    assert.throws(() => assertReusedRenderRevision(revision), /Invalid original render revision/);
+  }
 });
