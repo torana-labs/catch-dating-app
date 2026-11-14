@@ -138,7 +138,9 @@ jobs:
     needs: plan
     # Prepare for web renders, including native-font changes only macOS can
     # detect, without installing the website's dependencies on the Mac.
-    if: ${{ needs.plan.outputs.web_render == 'true' }}
+    # A skipped native_probe would otherwise skip this job through the implicit
+    # success() check, so it states its own status condition.
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.plan.outputs.web_render == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -347,7 +349,7 @@ jobs:
   reuse:
     name: Reuse validated canonical iPhone captures
     needs: plan
-    if: ${{ needs.plan.outputs.render == 'false' }}
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.plan.outputs.render == 'false' }}
     concurrency:
       group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false

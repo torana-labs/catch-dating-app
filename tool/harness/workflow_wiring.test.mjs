@@ -13,6 +13,7 @@ import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqu
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {extractSteps} from "./lib/workflow_steps.mjs";
+import {parse as parseYaml} from "yaml";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
@@ -1559,6 +1560,19 @@ test("the emulator lane sizes its matrix from one selection and starts nothing f
   assert.match(restore, /key: firebase-tools-\$\{\{ runner\.os \}\}-\$\{\{ steps\.toolchain\.outputs\.firebase-tools-version \}\}/u);
   assert.doesNotMatch(source, /npm install -g firebase-tools/u);
   assert.ok(source.indexOf(restore) < source.indexOf(namedStep(source, "Install the Firebase CLI")));
+});
+
+// A job whose `if` has no status function gets an implicit success(), which a
+// skipped job anywhere upstream fails. The capture plan follows a native probe
+// that only the nightly runs, so every job after it must state its own status.
+test("capture jobs after the optional native probe do not inherit its skip", () => {
+  const jobs = parseYaml(workflow("marketing-captures.yml")).jobs;
+  const needs = (id) => [jobs[id].needs ?? []].flat();
+  const after = (id, root) => needs(id).some((need) => need === root || after(need, root));
+  const downstream = Object.keys(jobs).filter((id) => after(id, "native_probe"));
+  assert.deepEqual(downstream.sort(), ["export", "plan", "reuse", "storybook"]);
+  const unguarded = downstream.filter((id) => !/!cancelled\(\)|always\(\)/u.test(String(jobs[id].if ?? "")));
+  assert.deepEqual(unguarded, [], "a job after native_probe needs !cancelled() or always() in its if");
 });
 
 test("canonical native captures reach consumers before dependency setup and builds", () => {
