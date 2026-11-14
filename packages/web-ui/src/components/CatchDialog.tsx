@@ -96,7 +96,7 @@ export function CatchDialog(props: CatchDialogProps) {
               <CatchText as="h2" id={titleId} variant="display-xs">{title}</CatchText>
               {message ? <CatchText as="p" id={messageId} tone="secondary" variant="body">{message}</CatchText> : null}
             </span>
-            <CatchIconAction icon="close" label={props.closeLabel} onPressed={onClose} size="md" variant="filled" />
+            <CatchIconAction icon="close" label={props.closeLabel} onPressed={onClose} size="md" variant="outlined" />
           </div>
           <div className={styles.content}>{props.children}</div>
           {props.actions != null ? <div className={styles.actions}>{props.actions}</div> : null}

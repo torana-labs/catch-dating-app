@@ -219,6 +219,9 @@ function Dropdown({anchor, align = "start", children, footer, onClose, subtitle,
 
   useEffect(() => {
     const element = panel.current;
+    // A dropdown open on its first render measures again here: a trigger
+    // wrapper's ref attaches after this panel's layout effect.
+    place();
     const outside = (event: PointerEvent) => {
       const target = event.target as Node;
       // The trigger toggles the dropdown itself; a press on it is not outside.
