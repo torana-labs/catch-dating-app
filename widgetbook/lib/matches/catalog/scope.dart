@@ -15,9 +15,9 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_share.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

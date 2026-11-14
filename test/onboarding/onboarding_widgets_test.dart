@@ -27,12 +27,12 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profil
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
-import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';

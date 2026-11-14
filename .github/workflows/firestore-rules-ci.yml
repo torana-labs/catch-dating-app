@@ -22,15 +22,103 @@ permissions:
   contents: read
 
 jobs:
+  # One cheap job chooses the emulator tests and the shard count, so a change
+  # no strict test can reach starts no emulator at all.
+  select:
+    name: Plan emulator shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      selection: ${{ steps.selection.outputs.selection }}
+      shards: ${{ steps.selection.outputs.shards }}
+      shard_total: ${{ steps.selection.outputs.shard_total }}
+    steps:
+      - name: Require the originating CI plan
+        id: ci-plan
+        shell: bash
+        env:
+          CI_PLAN_ATTEMPT: ${{ inputs.ci_plan_attempt }}
+          CI_PLAN_SOURCE_SHA: ${{ inputs.ci_plan_source_sha }}
+        run: |
+          set -euo pipefail
+          refuse() {
+            echo 'CI plan binding does not match this run. Use Re-run all jobs.'
+            exit 64
+          }
+          [[ "${GITHUB_REPOSITORY:-}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || refuse
+          prefix="$GITHUB_REPOSITORY/.github/workflows/"
+          [[ "${GITHUB_WORKFLOW_REF:-}" == "$prefix"* ]] || refuse
+          caller="${GITHUB_WORKFLOW_REF#"$prefix"}"
+          [[ "$caller" =~ ^[A-Za-z0-9_.-]+\.ya?ml@(refs/(heads|tags)/[^[:space:]]+|refs/pull/[1-9][0-9]*/merge)$ ]] || refuse
+          # The runner exposes the root caller, including through reusable jobs.
+          # Missing bindings are legitimate only for independent workflows.
+          if [[ "$caller" == ci.yml@* || -n "$CI_PLAN_ATTEMPT" || -n "$CI_PLAN_SOURCE_SHA" ]]; then
+            [[ "${GITHUB_RUN_ATTEMPT:-}" =~ ^[1-9][0-9]*$ && "$CI_PLAN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] || refuse
+            [[ "${GITHUB_SHA:-}" =~ ^[a-f0-9]{40}$ && "$CI_PLAN_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]] || refuse
+            printf 'CI plan: workflow=%s source=%s plan_attempt=%s current_attempt=%s\n' \
+              "$GITHUB_WORKFLOW_REF" "$GITHUB_SHA" "$CI_PLAN_ATTEMPT" "$GITHUB_RUN_ATTEMPT"
+            [[ "$CI_PLAN_ATTEMPT" == "$GITHUB_RUN_ATTEMPT" && "$CI_PLAN_SOURCE_SHA" == "$GITHUB_SHA" ]] || refuse
+          fi
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: |
+            functions/package-lock.json
+            tool/impact/package-lock.json
+
+      - uses: ./.github/actions/generate-contracts
+
+      - name: Verify Firestore contracts against rules
+        run: node tool/contracts/check_firestore_contract.mjs
+
+      - name: Verify Storage path contracts against rules
+        run: node tool/contracts/check_storage_contract.mjs
+
+      # Pull requests run only the strict emulator tests their change can reach;
+      # the merge queue, main and nightly run every listed test.
+      - name: Select the emulator tests this pull request can affect
+        id: selection
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          NARROW: ${{ inputs.mode == 'pr' && inputs.base_sha != '' }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci
+          if [[ "$NARROW" == "true" ]]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            git diff --name-only --no-renames "$BASE_SHA" HEAD > build/ci/changed-paths.txt
+            npm ci --prefix tool/impact --no-audit --no-fund
+            node tool/impact/emulator_test_selection.mjs --paths-file build/ci/changed-paths.txt \
+              --output build/ci/emulator-selection.json --github-output "$GITHUB_OUTPUT"
+          else
+            node tool/impact/emulator_test_selection.mjs --full \
+              --output build/ci/emulator-selection.json --github-output "$GITHUB_OUTPUT"
+          fi
+          echo "selection=$(jq -c . build/ci/emulator-selection.json)" >> "$GITHUB_OUTPUT"
+          jq -r '"Emulator tests: \(.tests | length) of \(.listed) (\(.mode))", (.reasons[] | "- \(.)")' \
+            build/ci/emulator-selection.json | tee -a "$GITHUB_STEP_SUMMARY"
+
   test:
+    needs: select
+    if: ${{ needs.select.outputs.shard_total != '0' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    # The strict emulator list runs sequentially. Three independent emulators
-    # each take a round-robin third; every shard must pass.
+    # The strict emulator list runs sequentially. A small selection runs in one
+    # emulator; otherwise three independent emulators each take a round-robin
+    # third. Every shard must pass.
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: ${{ fromJSON(needs.select.outputs.shards) }}
 
     steps:
       - name: Require the originating CI plan
@@ -70,6 +158,8 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
@@ -79,37 +169,40 @@ jobs:
       - run: npm --prefix functions ci
 
       - uses: ./.github/actions/generate-contracts
-      - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
-      - name: Verify Firestore contracts against rules
-        if: matrix.shard == 1
-        run: node tool/contracts/check_firestore_contract.mjs
+      # The CLI and the emulator jars it downloads depend only on its version.
+      - name: Restore the Firebase CLI and emulators
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cache/firebase-tools
+            ~/.cache/firebase/emulators
+          key: firebase-tools-${{ runner.os }}-${{ steps.toolchain.outputs.firebase-tools-version }}
 
-      - name: Verify Storage path contracts against rules
-        if: matrix.shard == 1
-        run: node tool/contracts/check_storage_contract.mjs
-
-      # Pull requests run only the strict emulator tests their change can reach;
-      # the merge queue, main and nightly run every listed test.
-      - name: Select the emulator tests this pull request can affect
-        id: selection
-        if: ${{ inputs.mode == 'pr' && inputs.base_sha != '' }}
+      - name: Install the Firebase CLI
         env:
-          BASE_SHA: ${{ inputs.base_sha }}
+          FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          prefix="$HOME/.cache/firebase-tools"
+          if [[ ! -x "$prefix/bin/firebase" ]]; then
+            npm install --global --prefix "$prefix" --no-audit --no-fund "firebase-tools@$FIREBASE_TOOLS_VERSION"
+          fi
+          echo "$prefix/bin" >> "$GITHUB_PATH"
+
+      - name: Write the emulator test selection
+        env:
+          SELECTION: ${{ needs.select.outputs.selection }}
+        run: |
+          set -euo pipefail
           mkdir -p build/ci
-          git diff --name-only --no-renames "$BASE_SHA" HEAD > build/ci/changed-paths.txt
-          npm ci --prefix tool/impact --no-audit --no-fund
-          node tool/impact/emulator_test_selection.mjs --paths-file build/ci/changed-paths.txt --output build/ci/emulator-selection.json
-          jq '{mode, selected: (.tests | length), listed, reasons}' build/ci/emulator-selection.json
+          printf '%s\n' "$SELECTION" > build/ci/emulator-selection.json
 
       - name: Execute backend Rules and integration assertions
         env:
           CATCH_TEST_EVIDENCE_PATH: ${{ github.workspace }}/build/ci/backend-integration-execution.json
-          CATCH_TEST_SELECTION: ${{ steps.selection.outcome == 'success' && format('{0}/build/ci/emulator-selection.json', github.workspace) || '' }}
-          CATCH_TEST_SHARD: ${{ matrix.shard }}/3
+          CATCH_TEST_SELECTION: ${{ github.workspace }}/build/ci/emulator-selection.json
+          CATCH_TEST_SHARD: ${{ matrix.shard }}/${{ needs.select.outputs.shard_total }}
         run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
       - name: Retain selected and executed backend tests

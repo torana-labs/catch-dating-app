@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {selectEmulatorTests, sourceForListedTest} from "./functions_test_selection.mjs";
+import {emulatorShards, selectEmulatorTests, singleShardTestLimit, sourceForListedTest} from "./functions_test_selection.mjs";
 
 const dependency = (resolved) => ({module: `./${resolved}`, resolved, coreModule: false, couldNotResolve: false});
 const listed = [
@@ -71,4 +71,42 @@ test("shared inputs and unexplained functions files run every listed test", () =
 test("docs and unrelated folders select nothing unless a test names them", () => {
   assert.deepEqual(select(["functions/README.md", "website/src/page.tsx"]),
     {mode: "selected", tests: [], reasons: []});
+});
+
+test("emulator shards: none for an empty selection, one for a small one, three otherwise", () => {
+  const tests = (count) => Array.from({length: count}, (_, index) => `test/t${index}.test.cjs`);
+  assert.deepEqual(emulatorShards(undefined), [1, 2, 3]);
+  assert.deepEqual(emulatorShards({mode: "full", tests: tests(100)}), [1, 2, 3]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: []}), []);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(1)}), [1]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(singleShardTestLimit)}), [1]);
+  assert.deepEqual(emulatorShards({mode: "selected", tests: tests(singleShardTestLimit + 1)}), [1, 2, 3]);
+  assert.throws(() => emulatorShards({mode: "partial", tests: []}), /mode full or selected/u);
+  assert.throws(() => emulatorShards({mode: "selected"}), /tests array/u);
+});
+
+test("a contract change selects its readers, dynamic readers and generated-module importers only", () => {
+  const listed = ["lib/a/reads.test.js", "lib/b/other.test.js", "lib/c/dynamic.test.js", "lib/d/validates.test.js"];
+  const modules = [
+    {source: "src/a/reads.test.ts", dependencies: [dependency("src/shared/contractFixtures.ts")]},
+    {source: "src/shared/contractFixtures.ts", dependencies: []},
+    {source: "src/b/other.test.ts", dependencies: [dependency("src/shared/contractFixtures.ts")]},
+    {source: "src/c/dynamic.test.ts", dependencies: []},
+    {source: "src/d/validates.test.ts", dependencies: [dependency("src/d/service.ts")]},
+    {source: "src/d/service.ts", dependencies: [dependency("src/shared/generated/schemas/organizerDocument.ts")]},
+    {source: "src/shared/generated/schemas/organizerDocument.ts", dependencies: []},
+  ];
+  const sources = {
+    "src/shared/contractFixtures.ts": 'const root = path.resolve(__dirname, "..", "..", "..", "contracts");',
+    "src/a/reads.test.ts": 'const doc = contractFixture("organizer_doc");',
+    "src/b/other.test.ts": 'const doc = contractFixture("event_doc");',
+    "src/c/dynamic.test.ts": 'readFileSync("../contracts/firestore/" + name + ".schema.json");',
+    "src/shared/generated/schemas/organizerDocument.ts":
+      '{"$id": "https://catch.app/contracts/firestore/organizers.schema.json"}',
+  };
+  const run = (changed) => selectEmulatorTests({changedPaths: [changed], listed, modules,
+    readSource: (file) => sources[file] ?? ""}).tests;
+  assert.deepEqual(run("contracts/fixtures/valid/organizer_doc.json"), ["lib/a/reads.test.js", "lib/c/dynamic.test.js"]);
+  assert.deepEqual(run("contracts/firestore/organizers.schema.json"), ["lib/c/dynamic.test.js", "lib/d/validates.test.js"]);
+  assert.deepEqual(run("contracts/catalogs/unrelated.json"), ["lib/c/dynamic.test.js"]);
 });

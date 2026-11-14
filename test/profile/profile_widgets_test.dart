@@ -13,7 +13,6 @@ import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
@@ -32,6 +31,7 @@ import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart'

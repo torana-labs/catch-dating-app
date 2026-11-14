@@ -53,7 +53,6 @@ export const cards = [
   {id: "default", route: "home", mark: "catch", headline: "after", body: "twitterDescription", capture: null},
   {id: "home", route: "home", mark: "catch", headline: "after", body: "twitterDescription", capture: null, chips: "homeFormats"},
   {id: "host", route: "host", mark: "host", headline: "after", body: "twitterDescription", capture: "host-live-console"},
-  {id: "apply", route: "host_apply", mark: "host", headline: "before", body: "description", capture: "host-create-basics"},
   {id: "claim", route: "claim", mark: "catch", headline: "before", body: "description", capture: null},
   {id: "organizers", route: "organizers", mark: "catch", headline: "before", body: "twitterDescription", capture: null},
   {id: "form", route: "public_form", mark: "catch", headline: "before", body: "description", capture: null},

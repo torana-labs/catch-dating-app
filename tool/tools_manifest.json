@@ -82,16 +82,17 @@
       "id": "meta:nx-project-graph",
       "category": "meta",
       "path": "tool/nx/catch_projects.mjs",
-      "command": "node --test tool/nx/catch_projects.test.mjs",
+      "command": "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs",
       "safety": "local-readonly",
       "status": "active",
       "description": "Nx plugin that turns every pubspec.yaml and independently locked npm package into an Nx project, adds path and declared cross-language edges, and gives source projects a generator check target.",
       "checks": [
         "node --check tool/nx/catch_projects.mjs",
-        "node --test tool/nx/catch_projects.test.mjs"
+        "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs"
       ],
       "impactPaths": [
         "tool/nx/catch_projects.test.mjs",
+        "tool/nx/lane_inputs.test.mjs",
         "nx.json"
       ],
       "ciRequirements": {
@@ -131,13 +132,15 @@
       "impactPaths": [
         "tool/lib/functions_test_selection.mjs",
         "tool/lib/functions_test_selection.test.mjs",
+        "tool/lib/contract_reads.mjs",
+        "tool/lib/contract_reads.test.mjs",
         "tool/lib/dependency_cruiser.mjs",
         "tool/impact/package.json",
         "tool/impact/package-lock.json"
       ],
       "checks": [
         "node --check tool/impact/emulator_test_selection.mjs",
-        "node --test tool/lib/functions_test_selection.test.mjs"
+        "node --test tool/lib/functions_test_selection.test.mjs tool/lib/contract_reads.test.mjs"
       ],
       "role": "generator"
     },
@@ -264,7 +267,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/harness/lib/flutter_contract_outputs.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -684,6 +687,55 @@
       "checks": [
         "node --check tool/ci/data_validation_workflow.test.mjs",
         "node --test tool/ci/data_validation_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:brand-config-publish-workflow",
+      "category": "ci",
+      "path": "tool/ci/brand_config_publish_workflow.test.mjs",
+      "command": "node --test tool/ci/brand_config_publish_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/brand-config-publish.yml",
+        ".github/workflows/_brand-config-publish.yml",
+        "tool/ci/brand_config_publish_workflow.test.mjs"
+      ],
+      "description": "Keeps config/brand publishing on main only, prod after dev, keyless and least-privileged, and never writing a stale brand record.",
+      "checks": [
+        "node --check tool/ci/brand_config_publish_workflow.test.mjs",
+        "node --test tool/ci/brand_config_publish_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:city-interest-backfill-workflow",
+      "category": "ci",
+      "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
+      "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/city-interest-backfill.yml",
+        "tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "description": "Keeps the city interest backfill workflow dispatch-only from main, dry-run by default, keyless and least-privileged, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/city_interest_backfill_workflow.test.mjs",
+        "node --test tool/ci/city_interest_backfill_workflow.test.mjs"
       ],
       "role": "gate"
     },
@@ -6976,6 +7028,33 @@
       "role": "gate"
     },
     {
+      "id": "ci:superseded-push-run",
+      "category": "ci",
+      "path": "tool/ci/superseded_push_run.mjs",
+      "command": "node tool/ci/superseded_push_run.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/host-website.yml",
+        "tool/ci/superseded_push_run.mjs",
+        "tool/ci/superseded_push_run.test.mjs"
+      ],
+      "description": "Skips a website push run's validation, packaging and promotion once a newer main push run of the same workflow exists; every run is still admitted, and the check fails open.",
+      "checks": [
+        "node --check tool/ci/superseded_push_run.mjs",
+        "node --test tool/ci/superseded_push_run.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",
@@ -6991,6 +7070,26 @@
       "checks": [
         "node --check tool/ci/main_push_base.mjs",
         "node --test tool/ci/main_push_base.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:main-red-alert",
+      "category": "ci",
+      "path": "tool/ci/main_red_alert.mjs",
+      "command": "node tool/ci/main_red_alert.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/main-red-alert.yml",
+        "tool/ci/main_red_alert.mjs",
+        "tool/ci/main_red_alert.test.mjs",
+        "tool/ci/required_ci_floor.mjs"
+      ],
+      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run.",
+      "checks": [
+        "node --check tool/ci/main_red_alert.mjs",
+        "node --test tool/ci/main_red_alert.test.mjs"
       ],
       "role": "gate"
     },

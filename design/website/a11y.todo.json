@@ -31,11 +31,6 @@
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {
-      "file": "website/src/stories/HostSections.stories.tsx",
-      "export": "HostApplicationFlowInitial",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
       "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
       "export": "HostPreviewShellStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."

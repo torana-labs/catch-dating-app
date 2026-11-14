@@ -33,6 +33,12 @@ const laneByProject = {
   "functions": "functions",
   "operations": "operations",
   "contracts": "contracts",
+  // The Tools lane runs meta:brand-literals: `generate.mjs --check`, the brand
+  // tests and the literal scan.
+  "brand": "tools",
+  // design:tokens and design:widget-dedupe-fingerprints run in the Tools lane.
+  "design-tokens": "tools",
+  "widget_dedupe": "tools",
   "lane-admin-design": "admin",
   "lane-marketing-design": "marketing",
   "lane-flutter-design": "flutter",
@@ -60,10 +66,17 @@ export const isControlPlane = (file) =>
 export function laneForTask(taskId, tags = []) {
   const project = taskId.slice(0, taskId.lastIndexOf(":")).replace(/^@catch\//, "");
   if (project in laneByProject) return laneByProject[project];
-  if (project === "widget_dedupe") return null;
   return tags.includes("lang:dart") ? "flutter" : null;
 }
 
+/**
+ * Compare the planner's lanes with the lanes Nx tasks stand in for.
+ *
+ * `nxTasks` are the tasks the change affects, without the tasks they depend
+ * on (`--excludeTaskDependencies`): a website-only change must not run Admin
+ * because the website build needs @catch/web-ui:build. A change that does
+ * reach web-ui selects its tasks itself.
+ */
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
   changedFiles = []}) {
   const nxLanes = new Set(changedFiles.some(isControlPlane) ? comparedLanes : []);
@@ -104,12 +117,31 @@ export function summary(result, {base, head, mode}) {
     `- Planner only: ${list(result.plannerOnly)}`,
     `- Nx only: ${list(result.nxOnly)}`,
     `- Nx tasks: ${list(result.nxTasks)}`,
+    ...(result.unmappedTasks.length ? [`- **Unmapped Nx tasks** (map them in shadow_plan.mjs): ${list(result.unmappedTasks)}`] : []),
     "",
   ].join("\n");
 }
 
+/**
+ * The shadow run's exit code. A disagreement is the report's subject, so it
+ * passes; an Nx task with no lane means the comparison itself is incomplete.
+ */
+export function shadowExitCode(result) {
+  return result.unmappedTasks.length > 0 ? 1 : 0;
+}
+
 function run(command, args) {
   return execFileSync(command, args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "inherit"]});
+}
+
+/** The tasks a change affects, without the tasks they depend on, and every project's tags. */
+export function nxAffected({base, head}) {
+  const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-affected-")), "graph.json");
+  run("npx", ["nx", "affected", "-t", ...targets, "--base", base, "--head", head, "--excludeTaskDependencies",
+    `--graph=${graphFile}`]);
+  const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
+  const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
+  return {nxTasks: Object.keys(graph.tasks.tasks), tagsByProject};
 }
 
 function main(argv) {
@@ -124,17 +156,17 @@ function main(argv) {
   if (!args.base || !args.head) throw new Error("--base and --head are required");
   const plan = JSON.parse(run(process.execPath, ["tool/harness.mjs", "plan", "--base", args.base, "--head", args.head,
     "--mode", args.mode, "--json"]));
-  const graphFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "nx-shadow-")), "graph.json");
-  run("npx", ["nx", "affected", "-t", ...targets, "--base", args.base, "--head", args.head, `--graph=${graphFile}`]);
-  const graph = JSON.parse(fs.readFileSync(graphFile, "utf8"));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
-  const tagsByProject = Object.fromEntries(Object.entries(graph.graph.nodes).map(([name, node]) => [name, node.data.tags ?? []]));
   const result = compare({plannerLanes: plan.operations.ciTargets, plannerFull: plan.full === true,
-    nxTasks: Object.keys(graph.tasks.tasks), tagsByProject, mode: args.mode, changedFiles});
+    ...nxAffected(args), mode: args.mode, changedFiles});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
   if (args.out) fs.writeFileSync(args.out, `${JSON.stringify(report, null, 2)}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(result, args));
   console.log(summary(result, args));
+  if (result.unmappedTasks.length > 0) {
+    console.error(`::error::Nx tasks with no CI lane: ${result.unmappedTasks.join(", ")}. Map them in tool/nx/shadow_plan.mjs.`);
+  }
+  process.exitCode = shadowExitCode(result);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

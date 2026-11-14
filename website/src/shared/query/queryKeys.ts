@@ -49,9 +49,6 @@ export const websiteQueryKeys = {
       [...websiteQueryKeys.all, "event-rehearsal", "action",
         publicRehearsalId] as const,
   },
-  hostApplications: {
-    submit: () => [...websiteQueryKeys.all, "host-applications", "submit"] as const,
-  },
   reviews: {
     listing: (organizerId: string) =>
       [...websiteQueryKeys.all, "reviews", "listing", organizerId] as const,

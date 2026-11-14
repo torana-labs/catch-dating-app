@@ -1223,11 +1223,19 @@ expensive jobs is never evidence that those jobs passed.
 
 Pull requests also run only the strict Firestore/Storage emulator tests their
 change can reach. `tool/impact/emulator_test_selection.mjs` follows the
-dependency-cruiser graph of `functions/src` and `functions/test`, plus contract,
-index and fixture files a test names as a string path; rules, `firebase.json`,
+dependency-cruiser graph of `functions/src` and `functions/test`, plus index and
+fixture files a test names as a string path. A contract change selects only the
+tests that read that file (`tool/lib/contract_reads.mjs`: a whole-file path, a
+join of literal segments, or `contractFixture("name")` / `contractFile("dir/x.json")`
+from `functions/src/shared/contractFixtures.ts`), tests whose sources read
+contracts dynamically, and importers of the generated modules whose schema `$id`
+names it; rules, `firebase.json`,
 Functions package, TypeScript config and script changes keep the full list.
 `functions/scripts/run-tests.cjs` honors the result through
-`CATCH_TEST_SELECTION`; the merge queue, main and nightly run every listed test.
+`CATCH_TEST_SELECTION`; the merge queue, main and nightly run every listed test
+(`--full`). With `--github-output` it also writes the emulator shards CI starts
+(`emulatorShards` in `tool/lib/functions_test_selection.mjs`): none for zero
+selected tests, one for up to 15, otherwise three.
 
 A PR result does not need to stay current with `main`. The GitHub merge queue
 validates each group's exact combined source with the same `Required CI`
