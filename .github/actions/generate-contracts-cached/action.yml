@@ -1,0 +1,100 @@
+name: Generate Contracts (cached)
+description: >-
+  Restore the schema contract outputs from a cache keyed on every generator
+  input, or generate and save them. Validation lanes only: delivery, release
+  and manually dispatched workflows use ./.github/actions/generate-contracts,
+  which has no cache, so a ref they check out can never write an entry.
+
+runs:
+  using: composite
+  steps:
+    - id: toolchain
+      uses: ./.github/actions/load-toolchain
+    # An entry may only hold outputs generated from the commit the run is for:
+    # never on a manual dispatch, and never when the checkout is not GITHUB_SHA.
+    - id: cache-scope
+      if: ${{ github.event_name != 'workflow_dispatch' }}
+      shell: bash
+      run: |
+        if [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]; then
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::notice::Checkout is not $GITHUB_SHA; regenerating contracts without the cache."
+        fi
+    # The key covers every generator input (see GENERATOR_INPUTS in
+    # tool/harness/lib/flutter_contract_outputs.mjs): contract files, the
+    # generator's own sources, the functions manifest and lockfile it resolves
+    # json-schema-to-typescript from, plus tool/lib, this action and the Node
+    # version. Bump the v-prefix to invalidate every entry.
+    - id: restore
+      if: ${{ steps.cache-scope.outputs.enabled == 'true' }}
+      uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        key: schema-contracts-v1-${{ runner.os }}-node${{ steps.toolchain.outputs.node-version }}-${{ hashFiles('contracts/**', 'tool/contracts/**', 'tool/lib/**', 'functions/package.json', 'functions/package-lock.json', '.github/actions/generate-contracts-cached/action.yml') }}
+        path: |
+          packages/platform/lib/schema_contracts/generated
+          lib/contexts/*/data/generated
+          tool/contracts/generated
+          admin/src/generated/contracts
+          website/src/shared/contracts/generated
+          functions/src/shared/generated
+          !functions/src/shared/generated/brand.ts
+          !functions/src/shared/generated/notificationCopyEn.ts
+          !functions/src/shared/generated/marketCatalog.ts
+          !functions/src/shared/generated/adminActionCatalog.ts
+    # Nightly proves the key is complete: it regenerates from scratch and fails
+    # if the restored outputs differ, which would mean a missing key input.
+    - name: Record the restored outputs for the nightly comparison
+      if: ${{ steps.restore.outputs.cache-hit == 'true' && github.event_name == 'schedule' }}
+      shell: bash
+      run: bash "${GITHUB_ACTION_PATH}/outputs_digest.sh" > "${RUNNER_TEMP}/schema-contracts-restored.sha256"
+    # Later job steps may rely on the Node version set here, so it always runs.
+    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      with:
+        node-version: ${{ steps.toolchain.outputs.node-version }}
+        cache: npm
+        cache-dependency-path: functions/package-lock.json
+    # Always installed: generated validators (tool/contracts/generated) load
+    # their runtime from functions/node_modules, and jobs rely on it being here.
+    # A cache hit skips only the generator run (about 28 s of the step).
+    - name: Install the generator's dependencies
+      shell: bash
+      run: |
+        if [[ ! -d functions/node_modules ]]; then
+          npm --prefix functions ci --ignore-scripts --no-audit --no-fund
+        fi
+    - name: Generate the schema contract outputs
+      if: ${{ steps.restore.outputs.cache-hit != 'true' || github.event_name == 'schedule' }}
+      shell: bash
+      env:
+        FROM_SCRATCH: ${{ steps.restore.outputs.cache-hit == 'true' }}
+      run: |
+        if [[ "$FROM_SCRATCH" == "true" ]]; then
+          bash "${GITHUB_ACTION_PATH}/outputs_digest.sh" --remove
+        fi
+        node tool/contracts/generate_schema_contracts.mjs
+    - name: Compare regenerated outputs with the cache
+      if: ${{ steps.restore.outputs.cache-hit == 'true' && github.event_name == 'schedule' }}
+      shell: bash
+      run: |
+        bash "${GITHUB_ACTION_PATH}/outputs_digest.sh" > "${RUNNER_TEMP}/schema-contracts-fresh.sha256"
+        if ! diff -u "${RUNNER_TEMP}/schema-contracts-restored.sha256" "${RUNNER_TEMP}/schema-contracts-fresh.sha256"; then
+          echo "::error::Cached schema contract outputs differ from a fresh generation. A generator input is missing from the cache key in .github/actions/generate-contracts-cached/action.yml."
+          exit 1
+        fi
+    - name: Save the generated outputs
+      if: ${{ steps.cache-scope.outputs.enabled == 'true' && steps.restore.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        key: ${{ steps.restore.outputs.cache-primary-key }}
+        path: |
+          packages/platform/lib/schema_contracts/generated
+          lib/contexts/*/data/generated
+          tool/contracts/generated
+          admin/src/generated/contracts
+          website/src/shared/contracts/generated
+          functions/src/shared/generated
+          !functions/src/shared/generated/brand.ts
+          !functions/src/shared/generated/notificationCopyEn.ts
+          !functions/src/shared/generated/marketCatalog.ts
+          !functions/src/shared/generated/adminActionCatalog.ts
