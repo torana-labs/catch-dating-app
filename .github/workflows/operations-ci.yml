@@ -19,6 +19,8 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
