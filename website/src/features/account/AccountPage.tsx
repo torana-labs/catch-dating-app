@@ -1,4 +1,5 @@
 import {
+  CatchAdaptiveSheet,
   CatchButton,
   CatchEmptyState,
   CatchField,
@@ -10,7 +11,6 @@ import {
   CatchQrCode,
   CatchRoot,
   CatchSection,
-  CatchSheet,
   CatchStack,
   CatchStarRating,
   CatchText,
@@ -157,8 +157,8 @@ function PlanRow({plan, openPass}: {plan: AccountPlan; openPass: AccountPageView
 function PassSheet({pass, closePass}: AccountPageViewProps) {
   const plan = pass?.plan;
   return (
-    <CatchSheet onClose={closePass} open={Boolean(pass)} recipe="standard" subtitle={plan?.organizerName}
-      title={plan?.eventName ?? copy.plans.passTitle}>
+    <CatchAdaptiveSheet closeLabel={copy.plans.passClose} onClose={closePass} open={Boolean(pass)} subtitle={plan?.organizerName}
+      title={plan?.eventName ?? copy.plans.passTitle} wide="dialog">
       {plan ? <CatchStack gap={16}>
         <CatchSection container="tile" dividers="between">
           <CatchIndexRow density="compact" title={copy.plans.when} value={whenLabel(plan.startsAt)} />
@@ -174,7 +174,7 @@ function PassSheet({pass, closePass}: AccountPageViewProps) {
         </CatchStack> : null}
         {pass?.state === "failed" ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{copy.plans.passFailed}</CatchText> : null}
       </CatchStack> : null}
-    </CatchSheet>
+    </CatchAdaptiveSheet>
   );
 }
 

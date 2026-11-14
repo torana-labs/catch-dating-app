@@ -84,6 +84,7 @@ export const accountPageCopy = {
     past: "Past",
     pass: "Pass",
     passTitle: "Your pass",
+    passClose: "Close",
     passHint: "Show this at the door",
     passLabel: "Pass code",
     passLoading: "Loading your pass…",

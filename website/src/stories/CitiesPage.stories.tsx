@@ -79,7 +79,7 @@ export const CatalogUnavailable: Story = {
   render: () => page({...mumbaiLiveCatalog, phase: "unavailable"}),
 };
 
-/** The header picker with 25 cities: a sheet grouped by country, with search. */
+/** The header picker with 25 cities: at 1440 a 340px dropdown under the city button, grouped by country, with search. */
 export const PickerTwentyFiveCities: Story = {
   name: "City picker · 25 cities · 1440",
   parameters: {catchComponent: {id: "city_picker", routeIds: ["home", "visitor_discovery", "cities"], states: ["twenty-five-cities"]}},
