@@ -3975,7 +3975,7 @@
           "twenty-five-cities"
         ]
       },
-      "notes": "The header's city picker. One country with up to eight cities opens a menu under the trigger; more countries open a sheet grouped by country that searches beyond eight cities. A country with no city open says launching soon once. Each open city shows its honest count."
+      "notes": "The header's city picker. One country with up to eight cities opens a menu under the trigger; more countries open a list grouped by country that searches beyond eight cities and ends with All cities: a sheet on phones, a 340px dropdown under the trigger at 900px and wider (CatchAdaptiveSheet). A country with no city open says launching soon once. Each open city shows its honest count."
     },
     {
       "id": "city_site_chrome",

@@ -79,7 +79,7 @@ export const CatalogUnavailable: Story = {
   render: () => page({...mumbaiLiveCatalog, phase: "unavailable"}),
 };
 
-/** The header picker with 25 cities: a sheet grouped by country, with search. */
+/** The header picker with 25 cities: at 1440 a 340px dropdown under the city button, grouped by country, with search. */
 export const PickerTwentyFiveCities: Story = {
   name: "City picker · 25 cities · 1440",
   parameters: {catchComponent: {id: "city_picker", routeIds: ["home", "visitor_discovery", "cities"], states: ["twenty-five-cities"]}},
@@ -87,7 +87,8 @@ export const PickerTwentyFiveCities: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getAllByRole("button", {name: twentyFiveCityCatalog.selected.label})[0]);
-    const sheet = within(within(canvasElement.ownerDocument.body).getByRole("dialog"));
+    // The wide dropdown is hidden until it is placed under the trigger, so wait for it.
+    const sheet = within(await within(canvasElement.ownerDocument.body).findByRole("dialog"));
     await expect(sheet.getByRole("searchbox")).toBeInTheDocument();
     await expect(sheet.getByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
   },
