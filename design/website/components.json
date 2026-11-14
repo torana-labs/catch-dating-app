@@ -4261,6 +4261,32 @@
       "notes": "Step 1 of the guided pilot (name, company, phone, date, destination, guests and current tools, then Continue), shared by the landing's pilot band and /weddings/apply/."
     },
     {
+      "id": "site_account_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "packages/web-ui/src/components/CatchAccountButton.tsx",
+      "exportName": "CatchAccountButton",
+      "comparedWith": [
+        "catch.person_avatar"
+      ],
+      "comparisonReason": "A popup button for the account menu that composes CatchAvatar (catch.person_avatar) at 32px with an open-state ring; it does not implement an avatar.",
+      "css": [
+        "packages/web-ui/src/components/CatchAccountButton.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "closed",
+          "open"
+        ]
+      },
+      "notes": "Website T4 under D18 (Website account proposal, AcctBarAvatar1440): @catch/web-ui draws the avatar button; SiteAccountProvider binds it to the account menu. Search aliases: AvatarButton, AccountAvatar, ProfileButton."
+    },
+    {
       "id": "shared_app_capture_image",
       "kind": "supporting-component",
       "routeIds": [
@@ -5676,6 +5702,31 @@
       "notes": "A button that opens the sign-in sheet and reports the signed-in user."
     },
     {
+      "id": "site_account_menu",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/SiteAccountMenu.tsx",
+      "exportName": "SiteAccountMenu",
+      "css": [
+        "packages/web-ui/src/components/CatchAccountButton.module.css",
+        "packages/web-ui/src/components/CatchAdaptiveSheet.module.css",
+        "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "avatar-open",
+          "phone-sheet"
+        ]
+      },
+      "notes": "The signed-in account menu (Website account proposal, AcctBarMenuOpen1440 and AcctBarMenuOpen390): who is signed in, the next plan with View pass (/account/?pass=<eventId>#plans), My plans, Account and Sign out. Wide pages open it from the top bar's right-end initials avatar as a 320px dropdown; phones open it as a sheet from the Menu button carrying the avatar, with the site links."
+    },
+    {
       "id": "site_account_action",
       "kind": "supporting-component",
       "routeIds": [
@@ -5694,7 +5745,7 @@
           "signed-in"
         ]
       },
-      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both; the sign-in dropdown hangs from the bar entry, and Firebase loads only for a reader this device has seen signed in."
+      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets the account menu (SiteAccountMenu). Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both; the sign-in dropdown hangs from the bar entry, and Firebase loads only for a reader this device has seen signed in."
     },
     {
       "id": "sign_in_prompt",

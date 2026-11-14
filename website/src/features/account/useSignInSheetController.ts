@@ -7,6 +7,8 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {normalizePhone, phonePattern, signedInHintKey, writeLocal} from "./signInModel";
 
 export type SignInStage = "start" | "code";
+/** Seconds before another code may be sent: the apps' CatchMotion.authOtpResendCooldown. */
+export const signInResendCooldownSeconds = 60;
 const quiet: FormStatus = {message: "", tone: ""};
 
 /**
@@ -23,6 +25,7 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<FormStatus>(quiet);
+  const [resendIn, setResendIn] = useState(0);
   const mutation = useMutation({retry: false, gcTime: 0, mutationFn: (work: () => Promise<void>) => work()});
   const pending = mutation.isPending;
   const challenge = useRef<PublicEventPhoneVerification | null>(null);
@@ -31,6 +34,12 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
     mounted.current = true;
     return () => {mounted.current = false; challenge.current?.clear(); challenge.current = null;};
   }, []);
+
+  useEffect(() => {
+    if (stage !== "code" || resendIn <= 0) return;
+    const timer = window.setTimeout(() => setResendIn((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [stage, resendIn]);
 
   async function run(work: () => Promise<void>) {
     if (pending) return;
@@ -48,7 +57,7 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
   }
   function changePhone() {
     challenge.current?.clear(); challenge.current = null;
-    setCode(""); setStage("start");
+    setCode(""); setStage("start"); setResendIn(0);
   }
   async function sendCode(event?: FormEvent) {
     event?.preventDefault();
@@ -59,7 +68,7 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
       challenge.current?.clear();
       const next = await beginWebsiteAccountPhoneVerification(number, recaptchaId);
       if (!mounted.current) {next.clear(); return;}
-      challenge.current = next; setStage("code");
+      challenge.current = next; setStage("code"); setResendIn(signInResendCooldownSeconds);
       setStatus({message: fill(signInCopy.codeSent, {phone: number}), tone: "is-success"});
     });
   }
@@ -75,7 +84,10 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
   function reset() {changePhone(); setStatus(quiet);}
 
   return {recaptchaId, stage, phone, setPhone, code, setCode: (value: string) => setCode(value.replace(/\D/gu, "").slice(0, 6)),
-    status, pending, sendCode, verify, changePhone, reset};
+    status, pending, sendCode, verify, changePhone, reset,
+    /** Seconds until "Resend code" is offered on the code step; 0 once it is. */
+    resendIn,
+    resend: () => resendIn > 0 ? Promise.resolve() : sendCode()};
 }
 export type SignInSheetController = ReturnType<typeof useSignInSheetController>;
 

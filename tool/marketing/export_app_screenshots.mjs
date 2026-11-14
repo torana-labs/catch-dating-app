@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import {captureInputHash, stampCapture, validateCapture} from "./lib/capture_provenance.mjs";
+import {executedFilesFromLcov, stampCapture, staticInputHash, validateCapture} from "./lib/capture_provenance.mjs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
@@ -206,13 +206,13 @@ async function updateExports(staleOnly = false) {
 
   const webCaptures = selectedCaptures.filter(isWebCapture);
   if (webCaptures.length > 0) {
-    const inputHashes = new Map(webCaptures.map(capture => [capture.id, captureInputHash(capture)]));
+    const inputHashes = new Map(webCaptures.map(capture => [capture.id, staticInputHash(capture)]));
     // Loaded only when rendering: Playwright is installed for this step alone.
     const {renderWebCaptures} = await import("./lib/web_capture_render.mjs");
     await renderWebCaptures(webCaptures, {storybook: valueAfter("--storybook") ?? undefined,
       playwrightDir: valueAfter("--playwright-dir") ?? undefined});
     for (const capture of webCaptures) {
-      if (captureInputHash(capture) !== inputHashes.get(capture.id)) {
+      if (staticInputHash(capture) !== inputHashes.get(capture.id)) {
         fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
       }
       stampCapture(capture, capture.story.id, sfFont);
@@ -224,7 +224,7 @@ async function updateExports(staleOnly = false) {
   const selected = appCaptures.map((capture) => ({
     capture,
     entry: findCatalogEntry(catalog, capture.fixtureKey),
-    inputHash: captureInputHash(capture),
+    inputHash: staticInputHash(capture),
   }));
   for (const item of selected) {
     if (!item.entry) {
@@ -234,38 +234,43 @@ async function updateExports(staleOnly = false) {
     }
   }
 
-  const groups = groupBy(selected, (item) => item.capture.device);
-  for (const [device, items] of groups) {
-    const captureIds = [...new Set(items.map((item) => item.entry.id))];
-    for (const id of captureIds) {
-      fs.rmSync(fromRepo(path.join(rawOutputDir, id)), {recursive: true, force: true});
-    }
-    const result = spawnSync(
+  // Each capture renders alone, with coverage, so its provenance records the
+  // files that render executed. Only a successful, complete render of that
+  // capture produces the list; any failure stops before stamping.
+  const coverageDir = fromRepo(path.join(rawOutputDir, "coverage"));
+  for (const {capture, entry, inputHash} of selected) {
+    fs.rmSync(fromRepo(path.join(rawOutputDir, entry.id)), {recursive: true, force: true});
+    const lcovPath = path.join(coverageDir, `${entry.id}.lcov`);
+    fs.rmSync(lcovPath, {force: true});
+    let result = spawnSync(
       "node",
       [
         "tool/ui_capture/run_captures.mjs",
         "--ids",
-        captureIds.join(","),
+        entry.id,
         "--output-dir",
         rawOutputDir,
         "--device",
-        device,
+        capture.device,
         "--pixel-ratio",
-        String(deviceFrameSpec(device).outputScale),
+        String(deviceFrameSpec(capture.device).outputScale),
         "--platform",
         "ios",
         "--sf-font",
         sfFont,
+        "--coverage-path",
+        lcovPath,
       ],
       {cwd: repoRoot, stdio: "inherit"}
     );
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
-  }
-
-  for (const {capture, entry, inputHash} of selected) {
+    if (!fs.existsSync(lcovPath)) {
+      fail("Marketing app screenshot export failed.", [`${capture.id}: the render wrote no coverage report.`]);
+    }
+    const executedFiles = executedFilesFromLcov(fs.readFileSync(lcovPath, "utf8"));
     const inputPath = path.join(rawOutputDir, entry.id, "light.png");
     fs.rmSync(fromRepo(capture.sourcePath), {force: true});
-    const result = spawnSync(
+    result = spawnSync(
       "dart",
       [
         "run",
@@ -280,10 +285,10 @@ async function updateExports(staleOnly = false) {
       {cwd: repoRoot, stdio: "inherit"}
     );
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
-    if (captureInputHash(capture) !== inputHash) {
+    if (staticInputHash(capture) !== inputHash) {
       fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
     }
-    stampCapture(capture, entry.id, sfFont);
+    stampCapture(capture, entry.id, sfFont, {executedFiles});
   }
 }
 
@@ -472,17 +477,6 @@ function loadContext() {
 
 function findCatalogEntry(catalog, fixtureKey) {
   return catalog.find((entry) => entry.marketingFixtureKeys.includes(fixtureKey)) ?? null;
-}
-
-function groupBy(values, keyFor) {
-  const groups = new Map();
-  for (const value of values) {
-    const key = keyFor(value);
-    const bucket = groups.get(key) ?? [];
-    bucket.push(value);
-    groups.set(key, bucket);
-  }
-  return groups;
 }
 
 function parseCaptureCatalog(files) {

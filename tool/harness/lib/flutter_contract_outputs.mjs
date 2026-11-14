@@ -93,11 +93,16 @@ export async function contractOutputs({base, head, repoRoot = process.cwd()}) {
   }
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "catch-contract-outputs-"));
   try {
-    const [after, before] = await Promise.all([
+    // Settle both renders before the scratch goes: a render left running in a
+    // deleted directory never exits (recursive mkdir loops there).
+    const [after, before] = await Promise.allSettled([
       generate(head, repoRoot, scratch),
-      same ? null : generate(base, repoRoot, scratch),
+      same ? Promise.resolve(null) : generate(base, repoRoot, scratch),
     ]);
-    return {before: before ?? after, after};
+    for (const outcome of [after, before]) {
+      if (outcome.status === "rejected") throw outcome.reason;
+    }
+    return {before: before.value ?? after.value, after: after.value};
   } finally {
     fs.rmSync(scratch, {recursive: true, force: true});
   }

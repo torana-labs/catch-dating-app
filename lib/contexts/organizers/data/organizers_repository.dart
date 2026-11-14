@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -19,6 +21,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         TransferOrganizerOwnershipCallableRequest;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'organizers_repository.g.dart';
@@ -27,6 +30,11 @@ class OrganizersRepository {
   const OrganizersRepository(this._db, this._functions);
 
   static const _collectionPath = 'organizers';
+
+  /// Server-maintained public copy of each organizer (#1221). It carries no
+  /// contact details, host defaults, provenance or claim state, so guest
+  /// reads use it and `organizers` can be limited to the organizer's team.
+  static const _publicCollectionPath = 'publicOrganizers';
 
   /// Firestore rules let a list query return only organizers the app shows
   /// (or ones the reader hosts or owns), so browse queries must filter on it.
@@ -46,12 +54,32 @@ class OrganizersRepository {
   DocumentReference<Organizer> _organizerRef([String? id]) =>
       _organizersRef.doc(id);
 
+  CollectionReference<Organizer> get _publicOrganizersRef => _db
+      .collection(_publicCollectionPath)
+      .withDocumentIdConverter<Organizer>(
+        idField: 'id',
+        fromJson: Organizer.fromJson,
+        toJson: (organizer) => organizer.toJson(),
+      );
+
+  /// The full organizer for its own team, the public copy for everyone else.
+  /// Rules decide which, so call sites never need to know whether the reader
+  /// manages the organizer.
+  Stream<Organizer?> _watchOrganizerForReader(String id) =>
+      watchWithPermissionFallback<Organizer?>(
+        primary: () => _organizerRef(
+          id,
+        ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+        fallback: () => _publicOrganizersRef
+            .doc(id)
+            .snapshots()
+            .map((doc) => doc.exists ? doc.data() : null),
+      );
+
   // ── Read ───────────────────────────────────────────────────────────────────
 
   Stream<Organizer?> watchOrganizer(String id) => withBackendErrorStream(
-    () => _organizerRef(
-      id,
-    ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    () => _watchOrganizerForReader(id),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizer',
@@ -60,10 +88,16 @@ class OrganizersRepository {
   );
 
   Future<Organizer?> fetchOrganizer(String id) => withBackendErrorContext(
-    () async {
-      final doc = await _organizerRef(id).get();
-      return doc.exists ? doc.data() : null;
-    },
+    () => fetchWithPermissionFallback<Organizer?>(
+      primary: () async {
+        final doc = await _organizerRef(id).get();
+        return doc.exists ? doc.data() : null;
+      },
+      fallback: () async {
+        final doc = await _publicOrganizersRef.doc(id).get();
+        return doc.exists ? doc.data() : null;
+      },
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'fetch organizer',
@@ -71,9 +105,10 @@ class OrganizersRepository {
     ),
   );
 
+  // firestore-index: publicOrganizers (locationMarketId:ASCENDING, appVisibility:ASCENDING, createdAt:DESCENDING)
   Stream<List<Organizer>> watchOrganizersByLocation(String location) =>
       withBackendErrorStream(
-        () => _organizersRef
+        () => _publicOrganizersRef
             .where('locationMarketId', isEqualTo: location)
             .where('appVisibility', isEqualTo: _discoverable)
             .orderBy('createdAt', descending: true)
@@ -86,14 +121,15 @@ class OrganizersRepository {
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch organizers by location',
-          resource: _collectionPath,
+          resource: _publicCollectionPath,
         ),
       );
 
+  // firestore-index: publicOrganizers (locationMarketId:ASCENDING, appVisibility:ASCENDING, rating:DESCENDING)
   Stream<List<Organizer>> watchOrganizersByLocationSortedByRating(
     String location,
   ) => withBackendErrorStream(
-    () => _organizersRef
+    () => _publicOrganizersRef
         .where('locationMarketId', isEqualTo: location)
         .where('appVisibility', isEqualTo: _discoverable)
         .orderBy('rating', descending: true)
@@ -105,7 +141,7 @@ class OrganizersRepository {
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizers by rating',
-      resource: _collectionPath,
+      resource: _publicCollectionPath,
     ),
   );
 
@@ -155,12 +191,12 @@ class OrganizersRepository {
     required List<String> organizerIds,
   }) => watchDocumentsOneByOne(
     ids: organizerIds,
-    collection: _organizersRef,
+    collection: _publicOrganizersRef,
     transform: _appDiscoverableOrganizers,
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizers by ids',
-      resource: _collectionPath,
+      resource: _publicCollectionPath,
     ),
   );
 
@@ -173,11 +209,11 @@ class OrganizersRepository {
     required List<String> organizerIds,
   }) => watchDocumentsOneByOne(
     ids: organizerIds,
-    collection: _organizersRef,
+    collection: _publicOrganizersRef,
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizers for messaging by ids',
-      resource: _collectionPath,
+      resource: _publicCollectionPath,
     ),
   );
 
@@ -516,4 +552,56 @@ class OrganizersByIdQuery {
 
   @override
   int get hashCode => _equality.hash(organizerIds);
+}
+
+bool _isPermissionDenied(Object error) =>
+    error is FirebaseException && error.code == 'permission-denied';
+
+/// Listens to [primary]; if rules deny it, switches to [fallback] once.
+/// Any other error, or an error from the fallback, is forwarded.
+@visibleForTesting
+Stream<T> watchWithPermissionFallback<T>({
+  required Stream<T> Function() primary,
+  required Stream<T> Function() fallback,
+}) {
+  StreamSubscription<T>? subscription;
+  late final StreamController<T> controller;
+  void listen(Stream<T> source, {required bool canFallBack}) {
+    subscription = source.listen(
+      controller.add,
+      onError: (Object error, StackTrace stackTrace) {
+        if (canFallBack && _isPermissionDenied(error)) {
+          unawaited(subscription?.cancel());
+          listen(fallback(), canFallBack: false);
+          return;
+        }
+        controller.addError(error, stackTrace);
+      },
+      onDone: () {
+        if (!controller.isClosed) unawaited(controller.close());
+      },
+    );
+  }
+
+  controller = StreamController<T>(
+    onListen: () => listen(primary(), canFallBack: true),
+    onPause: () => subscription?.pause(),
+    onResume: () => subscription?.resume(),
+    onCancel: () => subscription?.cancel(),
+  );
+  return controller.stream;
+}
+
+/// Reads [primary]; if rules deny it, reads [fallback] instead.
+@visibleForTesting
+Future<T> fetchWithPermissionFallback<T>({
+  required Future<T> Function() primary,
+  required Future<T> Function() fallback,
+}) async {
+  try {
+    return await primary();
+  } on FirebaseException catch (error) {
+    if (!_isPermissionDenied(error)) rethrow;
+    return fallback();
+  }
 }

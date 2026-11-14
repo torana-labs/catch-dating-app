@@ -3807,7 +3807,7 @@
           "source": "Missing invitation, missing supporting entity, signed-out identity, or a non-participant viewer fails closed through CatchErrorState.",
           "tests": [
             "test/cross_paths/cross_paths_invitation_screen_test.dart",
-            "functions/test/firestore.rules.test.cjs"
+            "functions/test/rules/relationship_documents.rules.test.cjs"
           ],
           "previewIds": [
             "CrossPathsInvitationScreen/Cross Paths invitation states"
@@ -3865,7 +3865,7 @@
           "source": "Expired, cancelled, invalidated, or otherwise inactive holds disable checkout and return the viewer to current Event Detail availability.",
           "tests": [
             "functions/src/crossPaths/invitations.test.ts",
-            "functions/test/firestore.rules.test.cjs"
+            "functions/test/rules/relationship_documents.rules.test.cjs"
           ],
           "previewIds": [
             "CrossPathsInvitationScreen/Cross Paths invitation states"

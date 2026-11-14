@@ -422,6 +422,9 @@ jobs:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/functions-ci.yml
+    with:
+      base_sha: ${{ needs.plan.outputs.base_sha }}
+      mode: ${{ needs.plan.outputs.mode }}
 
   firestore-rules:
     needs: [plan, source-preflight]

@@ -25,6 +25,9 @@ test("only untracked generated contract Dart is collected", () => {
 // proves which commit's inputs and generator produced each side.
 const generator = `
 import fs from "node:fs";
+if (fs.existsSync("contracts/fail.json")) process.exit(3);
+const slow = fs.existsSync("contracts/slow.json");
+if (slow) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 700);
 const out = "packages/platform/lib/schema_contracts/generated";
 fs.mkdirSync(out, {recursive: true});
 fs.mkdirSync("lib/contexts/events/data/generated", {recursive: true});
@@ -34,7 +37,7 @@ for (const name of fs.readdirSync("contracts")) {
   const value = JSON.parse(fs.readFileSync("contracts/" + name, "utf8")).value;
   fs.writeFileSync(out + "/" + name.replace(".json", ".g.dart"), "const v = " + value + ";");
 }
-if (fs.existsSync("contracts/fail.json")) process.exit(3);
+if (slow && process.env.CATCH_TEST_MARKERS) fs.writeFileSync(process.env.CATCH_TEST_MARKERS + "/done", "");
 `;
 
 function fixture() {
@@ -90,6 +93,25 @@ test("renders the generator's Dart at base and head", async () => {
     const failing = commit();
     await assert.rejects(contractOutputs({base: restored, head: failing, repoRoot: root}), /Generator failed/);
   } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("a failed render waits for its sibling before removing the scratch", async () => {
+  const {root, write, commit} = fixture();
+  const markers = fs.mkdtempSync(path.join(os.tmpdir(), "catch-contract-outputs-markers-"));
+  process.env.CATCH_TEST_MARKERS = markers;
+  try {
+    write("contracts/fail.json", '{"value": 0}');
+    const base = commit();
+    fs.rmSync(path.join(root, "contracts/fail.json"));
+    write("contracts/slow.json", '{"value": 1}');
+    const head = commit();
+    await assert.rejects(contractOutputs({base, head, repoRoot: root}), /Generator failed/);
+    assert.deepEqual(fs.readdirSync(markers), ["done"], "the slower head render finished before the call settled");
+  } finally {
+    delete process.env.CATCH_TEST_MARKERS;
+    fs.rmSync(markers, {recursive: true, force: true});
     fs.rmSync(root, {recursive: true, force: true});
   }
 });

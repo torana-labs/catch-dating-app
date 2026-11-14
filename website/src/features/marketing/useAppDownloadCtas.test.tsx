@@ -59,16 +59,18 @@ describe("useAppDownloadCtas", () => {
     }
   });
 
-  it("follows Catch Host's App Store listing and keeps its Play badge coming soon", () => {
+  it("follows Catch Host's App Store and Google Play listings", () => {
     const {result} = renderHook(() => useAppDownloadCtas({placement: "host_hero", app: "host"}));
     const [appStore, play] = result.current;
     expect(appStore.href).toBe(brand.stores.host.ios);
     expect(appStore.href).toMatch(/^https:\/\/apps\.apple\.com\/app\/catch-host\/id\d+$/u);
     appStore.onClick();
     expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_click", expect.objectContaining({platform: "ios", store_href: appStore.href}));
-    expect(play.href).toBe("");
+    expect(play.href).toBe(brand.stores.host.android);
+    expect(play.href).toBe("https://play.google.com/store/apps/details?id=com.catchdates.host");
     play.onClick();
-    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", {platform: "android", placement: "host_hero", page_path: "/?source=test"});
+    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_click", expect.objectContaining({platform: "android", store_href: play.href}));
+    expect(trackMarketingEvent).not.toHaveBeenCalledWith("store_cta_pending", expect.anything());
   });
 
   it("names the coming-soon chip of each store", () => {

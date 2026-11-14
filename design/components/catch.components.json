@@ -11533,7 +11533,7 @@
             "moment"
           ]
         },
-        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; Flutter's pre-redesign identity, tone, emphasis, navigation and search recipes are CatchLegacyTopBar. The Site story: variant=\"site\" is the website header: the wordmark (title) linking to homeHref, quiet page links that fold away under 600px, and actions."
+        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; Flutter's pre-redesign identity, tone, emphasis, navigation and search recipes are CatchLegacyTopBar. The Site story: variant=\"site\" is the website header: the wordmark (title) linking to homeHref, quiet page links that fold away under 600px, and actions. Site additions: account (the left group's last item), accountEnd (a signed-in account control after the actions from 600px), menuExtras for the built-in phone Menu, and siteMenu, a whole phone menu in place of it."
       },
       "system": {
         "name": "TopBar",

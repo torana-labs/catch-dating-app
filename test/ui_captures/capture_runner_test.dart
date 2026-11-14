@@ -29,7 +29,10 @@ const _outputLayoutArg = String.fromEnvironment(
 );
 
 void main() {
-  final captureIds = _captureIdsArg
+  // The environment wins over the dart-define, so solo renders of different
+  // captures share one compiled test (identical defines) instead of
+  // recompiling for each id.
+  final captureIds = (Platform.environment['CAPTURE_IDS'] ?? _captureIdsArg)
       .split(',')
       .map((id) => id.trim())
       .where((id) => id.isNotEmpty)

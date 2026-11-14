@@ -102,12 +102,45 @@
                   "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/packages/platform/lib/**/*",
                   "{workspaceRoot}/firestore.rules",
+                  "{workspaceRoot}/contracts/**/*",
                   "!{workspaceRoot}/functions/src/**/*.md",
                   "!{workspaceRoot}/lib/**/*.md",
                   "!{workspaceRoot}/packages/**/*.md"
                 ]
               }
             }
+          },
+          {
+            "name": "contracts-admin",
+            "root": "contracts/admin"
+          },
+          {
+            "name": "contracts-bigquery",
+            "root": "contracts/bigquery"
+          },
+          {
+            "name": "contracts-catalogs",
+            "root": "contracts/catalogs"
+          },
+          {
+            "name": "contracts-client-writes",
+            "root": "contracts/client_writes"
+          },
+          {
+            "name": "contracts-fixtures",
+            "root": "contracts/fixtures"
+          },
+          {
+            "name": "contracts-http",
+            "root": "contracts/http"
+          },
+          {
+            "name": "contracts-patches",
+            "root": "contracts/patches"
+          },
+          {
+            "name": "contracts-storage",
+            "root": "contracts/storage"
           },
           {
             "name": "design-tokens",
@@ -525,32 +558,50 @@
         "implicitDependencies": {
           "catch_dating_app": [
             "contracts",
+            "contracts-catalogs",
+            "contracts-fixtures",
+            "contracts-patches",
+            "contracts-storage",
             "@catch/brand"
           ],
           "catch_kernel": [
-            "contracts",
+            "contracts-catalogs",
             "@catch/brand"
           ],
           "catch_l10n": [
             "@catch/brand"
           ],
           "catch_platform": [
-            "contracts"
+            "contracts",
+            "contracts-catalogs",
+            "contracts-patches"
           ],
           "functions": [
             "contracts",
+            "contracts-admin",
+            "contracts-bigquery",
+            "contracts-catalogs",
+            "contracts-client-writes",
+            "contracts-fixtures",
+            "contracts-http",
+            "contracts-patches",
             "@catch/brand",
             "@catch/operations"
           ],
           "catch-admin": [
-            "contracts"
+            "contracts",
+            "contracts-admin",
+            "contracts-catalogs"
           ],
           "catch-marketing": [
-            "contracts"
+            "contracts",
+            "contracts-catalogs",
+            "contracts-fixtures",
+            "contracts-http"
           ],
           "@catch/operations": [
             "contracts",
-            "@catch/brand"
+            "contracts-catalogs"
           ],
           "catch_tokens": [
             "design-tokens"
@@ -560,6 +611,7 @@
           ],
           "lane-firestore-rules": [
             "contracts",
+            "contracts-catalogs",
             "functions"
           ],
           "lane-capture-freshness": [

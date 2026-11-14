@@ -89,6 +89,8 @@ for (const collection of contract.collections ?? []) {
 validateCallableAliases();
 validateDartCallableRoutes();
 
+validateRulesTestCoverage();
+
 if (errors.length > 0) {
   console.error("Firestore contract check failed:");
   for (const error of errors) {
@@ -742,4 +744,36 @@ function validateRequiredStrings(values, source, label, sourceLabel) {
 
 function hasNamedExport(functionName) {
   return functionExports.has(functionName);
+}
+
+// Every collection either names the rules test that covers it or appears in
+// collectionsWithoutRulesTests with a reason and the issue tracking its tests,
+// so a new collection cannot go untested without anyone noticing.
+function validateRulesTestCoverage() {
+  const gap = contract.collectionsWithoutRulesTests ?? {collections: []};
+  const label = "collectionsWithoutRulesTests";
+  if (!Array.isArray(gap.collections)) {
+    errors.push(`${label}.collections must be an array`);
+    return;
+  }
+  if (gap.collections.length > 0) requireString(gap.issue, `${label}.issue`);
+  const listed = new Map();
+  for (const entry of gap.collections) {
+    requireString(entry?.id, `${label} entry id`);
+    requireString(entry?.reason, `${label}.${entry?.id}.reason`);
+    if (listed.has(entry?.id)) errors.push(`${label}: duplicate entry ${entry.id}`);
+    listed.set(entry?.id, entry);
+  }
+  const ids = new Set((contract.collections ?? []).map((collection) => collection.id));
+  for (const id of listed.keys()) {
+    if (!ids.has(id)) errors.push(`${label}: ${id} is not a collection in this contract`);
+  }
+  for (const collection of contract.collections ?? []) {
+    if (collection.rulesTestFile && listed.has(collection.id)) {
+      errors.push(`${collection.id}: has a rulesTestFile, so remove it from ${label}`);
+    }
+    if (!collection.rulesTestFile && !listed.has(collection.id)) {
+      errors.push(`${collection.id}: needs a rulesTestFile, or an entry with a reason in ${label}`);
+    }
+  }
 }

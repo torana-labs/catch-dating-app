@@ -27,7 +27,10 @@ Use focused tests while iterating, then run the owning surface's full gate befor
 Functions tests are discovered recursively from compiled
 `functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
 remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
-domain test therefore requires no script edit. The `test:rules` lane runs the
+domain test therefore requires no script edit. On a pull request CI runs
+only the discovered files the change can reach (`CATCH_UNIT_TEST_SELECTION`,
+from `tool/impact/functions_unit_test_selection.mjs`); a local `npm test` and
+the merge queue run them all. The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
 redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
@@ -72,13 +75,15 @@ Flutter SDK, need no root because they follow global inputs. A computed path
 inside a declared root is trusted, so the nightly full run is the backstop for
 a declaration that misses a read.
 
-`.github/workflows/flutter-ci.yml` builds Widgetbook and runs the Catch UI,
-Kernel, Consumer and Host package suites, and publishes an LCOV plus
-feature-level Markdown coverage artifact. On a pull request each package suite
-and Widgetbook run only when the change reaches its pubspec path-dependency
-closure (`tool/ci/flutter_package_scope.mjs`); a skipped suite leaves its job
-green with a "not affected" reason in the job summary. Locally,
-`node tool/harness/verify_local.mjs` runs them all.
+`.github/workflows/flutter-ci.yml` compiles Widgetbook and runs the Catch UI,
+Kernel, Consumer and Host package suites on every relevant Flutter change. On
+a pull request each package suite and Widgetbook run only when the change
+reaches its pubspec path-dependency closure
+(`tool/ci/flutter_package_scope.mjs`); a skipped suite leaves its job green
+with a "not affected" reason in the job summary. Locally,
+`node tool/harness/verify_local.mjs` runs them all. Each test shard uploads its
+own LCOV; nightly and unverified main runs merge them into a feature-level
+Markdown coverage report.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it
