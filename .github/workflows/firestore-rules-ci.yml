@@ -76,6 +76,8 @@ jobs:
             tool/impact/package-lock.json
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
 
       - name: Verify Firestore contracts against rules
         run: node tool/contracts/check_firestore_contract.mjs
@@ -169,6 +171,8 @@ jobs:
       - run: npm --prefix functions ci
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
 
       # The CLI and the emulator jars it downloads depend only on its version.
       - name: Restore the Firebase CLI and emulators

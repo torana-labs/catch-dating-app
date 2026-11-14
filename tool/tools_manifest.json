@@ -740,6 +740,51 @@
       "role": "gate"
     },
     {
+      "id": "ci:generate-contracts-cache",
+      "category": "ci",
+      "path": "tool/ci/generate_contracts_cache.test.mjs",
+      "command": "node --test tool/ci/generate_contracts_cache.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/actions/generate-contracts/**",
+        ".github/workflows/_backend-deploy.yml",
+        ".github/workflows/_web-hosting-build.yml",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/contracts-ci.yml",
+        ".github/workflows/data-validation.yml",
+        ".github/workflows/demo-ops-ci.yml",
+        ".github/workflows/firestore-rules-ci.yml",
+        ".github/workflows/flutter-ci.yml",
+        ".github/workflows/functions-ci.yml",
+        ".github/workflows/host-website.yml",
+        ".github/workflows/marketing-captures.yml",
+        ".github/workflows/mobile-beta.yml",
+        ".github/workflows/operations-ci.yml",
+        ".github/workflows/ops-seed-environment.yml",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/release-readiness.yml",
+        ".github/workflows/tools-ci.yml",
+        ".github/workflows/visual-integration-ci.yml",
+        ".github/workflows/website-next-preview.yml",
+        ".github/workflows/widgetbook-golden-baselines.yml",
+        "tool/ci/generate_contracts_cache.test.mjs"
+      ],
+      "description": "Keeps the schema contract cache opt-in, keyed on every generator input, out of delivery, release and generator-checking workflows, and verified nightly against a from-scratch generation.",
+      "checks": [
+        "node --check tool/ci/generate_contracts_cache.test.mjs",
+        "node --test tool/ci/generate_contracts_cache.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",

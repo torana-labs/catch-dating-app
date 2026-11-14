@@ -17,6 +17,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get
       - name: Deterministic app-shell integration suites
@@ -33,6 +35,8 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
@@ -282,6 +286,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - id: toolchain
         uses: ./.github/actions/load-toolchain
       - uses: ./.github/actions/setup-flutter
