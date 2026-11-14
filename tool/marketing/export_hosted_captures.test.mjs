@@ -301,7 +301,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.doesNotMatch(storybook + render + reuse, /actions: read/u);
   // Web captures: Linux builds the Storybook when rendering may need it; the Mac
   // installs just the pinned Playwright and WebKit, and reuse installs nothing.
-  assert.match(storybook, /needs: plan\n[^]*?if: \$\{\{ needs\.plan\.outputs\.web_render == 'true' \}\}\n/u);
+  assert.match(storybook, /needs: plan\n[^]*?if: \$\{\{ !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.web_render == 'true' \}\}\n/u);
   assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
   assert.match(storybook, /run: npm ci\n[^]*?run: npm --workspace website run build:storybook\n[^]*?name: capture-storybook-/u);
   assert.match(storybook, /retention-days: 1\n/u);
@@ -313,7 +313,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
     assert.equal(steps.find(s => s.name === step)?.if, "${{ needs.plan.outputs.web_render == 'true' }}", step);
   }
   assert.doesNotMatch(reuse, /playwright|storybook/iu);
-  assert.match(reuse, /needs: plan\n    if: \$\{\{ needs\.plan\.outputs\.render == 'false' \}\}\n/u);
+  assert.match(reuse, /needs: plan\n    if: \$\{\{ !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.render == 'false' \}\}\n/u);
   assert.match(reuse, /runs-on: ubuntu-24\.04\n/u);
   assert.match(reuse, /run: node tool\/marketing\/export_hosted_captures\.mjs --reuse\n/u);
   assert.match(plan, /run: node tool\/marketing\/export_hosted_captures\.mjs --plan\n/u);
