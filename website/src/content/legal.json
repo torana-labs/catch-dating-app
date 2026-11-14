@@ -116,7 +116,7 @@
           "heading": "What {{brand.name}} does",
           "paragraphs": [
             "{{brand.name}} helps adults discover organizers and events, connect around real-world attendance, pick people they met to stay in touch with, message each other when they pick each other, and use related host and safety tools.",
-            "During the website-first pilot, many event actions lead to an organizer's site or another ticketing provider. {{brand.name}} is not the organizer, venue, ticket seller, employer, agent, or insurer for an external event unless a page expressly says otherwise."
+            "Some event actions lead to an organizer's site or another ticketing provider. {{brand.name}} is not the organizer, venue, ticket seller, employer, agent, or insurer for an external event unless a page expressly says otherwise."
           ]
         },
         {

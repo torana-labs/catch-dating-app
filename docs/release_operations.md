@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.1
+version: 3.3.2
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -286,7 +286,12 @@ commit, `main` runs every selected lane.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-Changes to the shared Harness control plane intentionally run every declared
+For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
+`nx affected` selects, and never drops a lane the planner selected until the
+`nx-shadow` comparison holds parity (#1554). Only tasks the change affects
+select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
+so a website-only change does not run Admin because the website builds
+`@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
@@ -563,7 +568,7 @@ The current workflows are:
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
-| `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
+| `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
@@ -932,6 +937,8 @@ catchdates.com's DNS already lives on Cloudflare (`byron`/`carioca.ns.cloudflare
 Verified search engines and link-preview fetchers pass. robots.txt stays ours (`website/app/robots.ts`), not Cloudflare's managed one.
 
 `tool/cloudflare/edge_policy.json` is the desired state, and `tool/cloudflare/apply_edge_policy.mjs` applies it. A run without `--apply` only reads and prints the plan. Rules whose description lacks the `catch-edge: ` prefix are kept exactly as they are.
+
+The policy's `declared` block records zone settings the owner sets in the dashboard rather than through this tool: today the "Add visitor location headers" managed transform (Rules → Settings → Managed Transforms), which the website's city guess reads. The tool checks their shape but never plans or writes them, so the token needs no extra permission. If the dashboard changes, update the block to match.
 
 Token, created by the zone owner in the Cloudflare dashboard:
 - **Scope:** zone `catchdates.com` only.
@@ -2046,13 +2053,27 @@ If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
+### Main CI alert
+
+A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
+no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
+driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
+completes. It keeps one open issue titled "Main CI is red": opened on the
+first failure, naming the failed gating jobs (Required CI) and reporting
+jobs separately; commented on each further failure; closed with a comment on
+the next green run. Opening the issue notifies repository watchers. Cancelled
+runs change nothing. Fix forward on main; never close the issue by hand
+while main is still red.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
 `website/scripts/next/releaseTrain.mjs`) releases main to `catchdates.com`
-after main CI completes, with an hourly fallback. It plans main's head. When
-that head has no website validation of its own, it first runs full CI on it
-(about an hour). It then previews the planned commit, passes the `prod` gate
+after main CI completes, with an hourly fallback. It plans the newest commit
+of main newer than live whose own CI passed with website validation, not
+main's head (owner decision, 12 Nov 2026): on a busy day the head's CI has
+rarely finished. When no such commit exists but the website changed since
+live, it first runs CI on main's head planned over every commit since live. It then previews the planned commit, passes the `prod` gate
 and promotes that exact preview. Trains queue and never cancel each other.
 `docs/web_surface_architecture.md` ("Release train") describes each step.
 

@@ -3,7 +3,7 @@ export type {EventActionCardModel} from "./actions";
 export {BadgeRow, EmptyState, LiveStatus, MarketingConsentBannerShell, ProcessStatusPanel, RouteLoadingState} from "./feedback";
 export {ClaimRequestForm, Form, FormStatus} from "./forms";
 export {SearchFormShell, StepRail} from "./forms2";
-export {OperationalNote, ProfileStrength} from "./foundation";
+export {OperationalNote} from "./foundation";
 export type {ActivityMeta, PublicSearchSuggestion} from "./foundation";
 export {HostPreviewSection, HostPreviewSectionHead} from "./host2";
 export {HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList} from "./host3";

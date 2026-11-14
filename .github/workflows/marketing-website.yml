@@ -112,6 +112,7 @@ jobs:
       actions: read
       contents: read
     outputs:
+      superseded: ${{ steps.superseded.outputs.superseded }}
       validated: ${{ steps.validation.outputs.validated }}
       capture_binding: ${{ steps.validation.outputs.capture_binding }}
     steps:
@@ -123,12 +124,19 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Skip work a newer main push run of this workflow supersedes
+        id: superseded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/superseded_push_run.mjs
       - name: Wait for successful same-source Marketing and capture jobs
+        if: ${{ steps.superseded.outputs.superseded != 'true' }}
         id: validation
         env:
           GH_TOKEN: ${{ github.token }}
         run: node tool/ci/wait_main_marketing_validation.mjs > marketing-validation.json
       - name: Save exact-source validation identity
+        if: ${{ steps.superseded.outputs.superseded != 'true' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: marketing-validation-${{ github.run_id }}-${{ github.run_attempt }}
@@ -140,7 +148,7 @@ jobs:
     name: Produce standalone marketing captures
     needs: ci-validation
     if: >-
-      ${{ !cancelled() &&
+      ${{ !cancelled() && needs.ci-validation.outputs.superseded != 'true' &&
           ((github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id == '') ||
            (github.event_name == 'push' && needs.ci-validation.result == 'success' &&
             needs.ci-validation.outputs.validated == 'false' &&
@@ -153,7 +161,7 @@ jobs:
     name: Validate marketing website
     needs: [ci-validation, captures]
     if: >-
-      ${{ !cancelled() &&
+      ${{ !cancelled() && needs.ci-validation.outputs.superseded != 'true' &&
           (needs.captures.result == 'success' ||
            (needs.captures.result == 'skipped' && needs.ci-validation.outputs.capture_binding != '')) &&
           ((github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id == '') ||
@@ -170,7 +178,7 @@ jobs:
     name: Package exact marketing Hosting bytes
     needs: [ci-validation, captures, validate]
     if: >-
-      ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      ${{ !cancelled() && needs.ci-validation.outputs.superseded != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
           needs.ci-validation.result == 'success' &&
           ((needs.ci-validation.outputs.validated == 'true' && needs.validate.result == 'skipped') ||
            (needs.ci-validation.outputs.validated == 'false' && needs.validate.result == 'success')) }}

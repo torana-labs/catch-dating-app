@@ -1486,15 +1486,43 @@ test("backend integration runs strict execution inside both emulators with a bou
 test("only pull requests narrow the strict emulator list", () => {
   const source = workflow("firestore-rules-ci.yml");
   const select = namedStep(source, "Select the emulator tests this pull request can affect");
-  assert.match(select, /if: \$\{\{ inputs\.mode == 'pr' && inputs\.base_sha != '' \}\}/u);
+  assert.match(select, /NARROW: \$\{\{ inputs\.mode == 'pr' && inputs\.base_sha != '' \}\}/u);
   assert.match(select, /git diff --name-only --no-renames "\$BASE_SHA" HEAD > build\/ci\/changed-paths\.txt/u);
-  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths-file build\/ci\/changed-paths\.txt --output build\/ci\/emulator-selection\.json/u);
-  assert.match(namedStep(source, "Execute backend Rules and integration assertions"),
-    /CATCH_TEST_SELECTION: \$\{\{ steps\.selection\.outcome == 'success' && format\('\{0\}\/build\/ci\/emulator-selection\.json', github\.workspace\) \|\| '' \}\}/u);
+  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths-file build\/ci\/changed-paths\.txt \\\n\s+--output build\/ci\/emulator-selection\.json --github-output "\$GITHUB_OUTPUT"/u);
+  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --full \\\n\s+--output build\/ci\/emulator-selection\.json --github-output "\$GITHUB_OUTPUT"/u);
+  const execute = namedStep(source, "Execute backend Rules and integration assertions");
+  assert.match(execute, /CATCH_TEST_SELECTION: \$\{\{ github\.workspace \}\}\/build\/ci\/emulator-selection\.json/u);
+  assert.match(execute, /CATCH_TEST_SHARD: \$\{\{ matrix\.shard \}\}\/\$\{\{ needs\.select\.outputs\.shard_total \}\}/u);
   const ci = workflow("ci.yml");
   const job = ci.slice(ci.indexOf("\n  firestore-rules:")).split(/\n  [a-z-]+:/u)[1];
   assert.match(job, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/u);
   assert.match(job, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/u);
+});
+
+test("the emulator lane sizes its matrix from one selection and starts nothing for zero tests", () => {
+  const source = workflow("firestore-rules-ci.yml");
+  const jobs = source.slice(source.indexOf("\njobs:\n"));
+  const select = jobs.slice(jobs.indexOf("\n  select:"), jobs.indexOf("\n  test:"));
+  const testJob = jobs.slice(jobs.indexOf("\n  test:"));
+  // Selection and the cheap contract checks run once, before any emulator.
+  for (const name of ["Require the originating CI plan", "Verify Firestore contracts against rules",
+    "Verify Storage path contracts against rules", "Select the emulator tests this pull request can affect"]) {
+    assert.ok(select.includes(`      - name: ${name}`), name);
+  }
+  assert.doesNotMatch(select, /setup-java|firebase-tools|emulators:exec/u);
+  assert.match(select, /shards: \$\{\{ steps\.selection\.outputs\.shards \}\}/u);
+  assert.match(testJob, /needs: select\n    if: \$\{\{ needs\.select\.outputs\.shard_total != '0' \}\}/u);
+  assert.match(testJob, /shard: \$\{\{ fromJSON\(needs\.select\.outputs\.shards\) \}\}/u);
+  assert.ok(testJob.includes("      - name: Require the originating CI plan"));
+  assert.doesNotMatch(testJob, /Verify (?:Firestore|Storage)/u);
+  // Dependencies, the Firebase CLI and its emulator jars come from caches.
+  assert.equal((source.match(/cache: npm/gu) ?? []).length, 2);
+  const restore = namedStep(source, "Restore the Firebase CLI and emulators");
+  assert.match(restore, /uses: actions\/cache@[0-9a-f]{40} # v5/u);
+  assert.match(restore, /~\/\.cache\/firebase-tools\n\s+~\/\.cache\/firebase\/emulators/u);
+  assert.match(restore, /key: firebase-tools-\$\{\{ runner\.os \}\}-\$\{\{ steps\.toolchain\.outputs\.firebase-tools-version \}\}/u);
+  assert.doesNotMatch(source, /npm install -g firebase-tools/u);
+  assert.ok(source.indexOf(restore) < source.indexOf(namedStep(source, "Install the Firebase CLI")));
 });
 
 test("canonical native captures reach consumers before dependency setup and builds", () => {

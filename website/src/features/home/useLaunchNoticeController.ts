@@ -9,7 +9,7 @@ import {
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 } from "../../analytics";
-import {launchNoticePhone, launchNoticeRequest, postLaunchNotice} from "./launchNoticeModel";
+import {launchNoticePhone, launchNoticeRequest, postLaunchNotice, type LaunchNoticePlace} from "./launchNoticeModel";
 
 type LaunchNoticeStatus = {phase: "idle" | "sending" | "joined"; message: string; tone: "" | "is-error" | "is-success"};
 
@@ -18,7 +18,7 @@ type LaunchNoticeStatus = {phase: "idle" | "sending" | "joined"; message: string
  * number for one message on opening day, and a separate marketing choice that
  * stays off unless the person ticks it (CAT-72). Sending is CAT-16's.
  */
-export function useLaunchNoticeController(city: string, submit = postLaunchNotice) {
+export function useLaunchNoticeController(city: string, submit = postLaunchNotice, place?: LaunchNoticePlace) {
   const [phone, setPhone] = useState("");
   const [marketing, setMarketing] = useState(false);
   const [status, setStatus] = useState<LaunchNoticeStatus>({phase: "idle", message: "", tone: ""});
@@ -34,7 +34,7 @@ export function useLaunchNoticeController(city: string, submit = postLaunchNotic
     }
     const eventId = createMarketingEventId("waitlist");
     const consent = getMarketingConsent();
-    const body = {...launchNoticeRequest(city, e164, marketing), ...waitlistAnalyticsPayload(eventId, "member")};
+    const body = {...launchNoticeRequest(city, e164, marketing, place), ...waitlistAnalyticsPayload(eventId, "member")};
     inFlight.current = true;
     setStatus({phase: "sending", message: "", tone: ""});
     trackMarketingEvent("launch_notice_submit_attempt", {city, event_id: eventId});

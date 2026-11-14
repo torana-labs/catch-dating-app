@@ -6,6 +6,9 @@ rules:
       # Its plan job runs only for main pushes, schedules and dispatches,
       # never for pull-request workflow runs.
       - website-release.yml
+      # Runs only for main's own push and nightly CI runs, checks out main,
+      # and can only write issues.
+      - main-red-alert.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy,
