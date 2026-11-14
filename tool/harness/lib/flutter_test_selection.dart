@@ -62,6 +62,17 @@ bool needsUiLintSmoke({
   }
 }
 
+/// Test files per shard. Measured on hosted runners: a shard's test step takes
+/// about 35 s plus 2.4 s per file, and each shard also pays about 85 s of setup
+/// and its own runner-queue wait, so 110 files keep the step near five minutes
+/// without paying for idle shards.
+const filesPerShard = 110;
+
+/// How many shards [files] selected test files run in: one per
+/// [filesPerShard] files, at least one when any test is selected, at most four.
+int shardCount(int files) =>
+    files <= 0 ? 0 : math.min(4, (files + filesPerShard - 1) ~/ filesPerShard);
+
 /// Only narrows root unit/widget tests. Native, package, golden, integration,
 /// analysis and contract gates retain their independent owners.
 ///
@@ -729,7 +740,7 @@ Future<void> main(List<String> arguments) async {
   plan['ordinaryDocuments'] = ordinaryDocuments.toList()..sort();
   plan['commitWindow'] = commitWindow;
   final files = plan['files']! as List<String>;
-  final count = math.min(4, files.length);
+  final count = shardCount(files.length);
   final shards = List.generate(
     count,
     (index) => {
