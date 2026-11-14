@@ -33,6 +33,12 @@ const laneByProject = {
   "functions": "functions",
   "operations": "operations",
   "contracts": "contracts",
+  // The Tools lane runs meta:brand-literals: `generate.mjs --check`, the brand
+  // tests and the literal scan.
+  "brand": "tools",
+  // design:tokens and design:widget-dedupe-fingerprints run in the Tools lane.
+  "design-tokens": "tools",
+  "widget_dedupe": "tools",
   "lane-admin-design": "admin",
   "lane-marketing-design": "marketing",
   "lane-flutter-design": "flutter",
@@ -60,7 +66,6 @@ export const isControlPlane = (file) =>
 export function laneForTask(taskId, tags = []) {
   const project = taskId.slice(0, taskId.lastIndexOf(":")).replace(/^@catch\//, "");
   if (project in laneByProject) return laneByProject[project];
-  if (project === "widget_dedupe") return null;
   return tags.includes("lang:dart") ? "flutter" : null;
 }
 
@@ -112,8 +117,17 @@ export function summary(result, {base, head, mode}) {
     `- Planner only: ${list(result.plannerOnly)}`,
     `- Nx only: ${list(result.nxOnly)}`,
     `- Nx tasks: ${list(result.nxTasks)}`,
+    ...(result.unmappedTasks.length ? [`- **Unmapped Nx tasks** (map them in shadow_plan.mjs): ${list(result.unmappedTasks)}`] : []),
     "",
   ].join("\n");
+}
+
+/**
+ * The shadow run's exit code. A disagreement is the report's subject, so it
+ * passes; an Nx task with no lane means the comparison itself is incomplete.
+ */
+export function shadowExitCode(result) {
+  return result.unmappedTasks.length > 0 ? 1 : 0;
 }
 
 function run(command, args) {
@@ -149,6 +163,10 @@ function main(argv) {
   if (args.out) fs.writeFileSync(args.out, `${JSON.stringify(report, null, 2)}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(result, args));
   console.log(summary(result, args));
+  if (result.unmappedTasks.length > 0) {
+    console.error(`::error::Nx tasks with no CI lane: ${result.unmappedTasks.join(", ")}. Map them in tool/nx/shadow_plan.mjs.`);
+  }
+  process.exitCode = shadowExitCode(result);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

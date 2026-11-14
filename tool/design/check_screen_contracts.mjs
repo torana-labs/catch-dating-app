@@ -3,11 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {readCaptureCatalogSource} from "../ui_capture/lib/capture_catalog_sources.mjs";
 
 const registryPath = fromRepo("design/screens/catch.screens.json");
 const schemaPath = fromRepo("design/screens/catch.screens.schema.json");
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
-const captureCatalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
 
 const args = process.argv.slice(2);
@@ -30,7 +30,7 @@ function checkContracts({summary = false} = {}) {
   const schema = readJson(schemaPath);
   const routeInventory = readJson(routeInventoryPath);
   const componentRegistry = readJson(componentRegistryPath);
-  const captureCatalog = parseCaptureCatalog(fs.readFileSync(captureCatalogPath, "utf8"));
+  const captureCatalog = parseCaptureCatalog(readCaptureCatalogSource());
 
   const errors = validateRegistry({
     registry,

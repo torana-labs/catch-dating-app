@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
 import test from "node:test";
+import {contractFixture} from "../../shared/contractFixtures";
 import type {Firestore} from "firebase-admin/firestore";
 import {FakeFirestore} from "../../operations/testFirestore";
 import type {RuntimeFieldId} from "../runtimeProfile";
@@ -10,8 +10,6 @@ import {EventRuntimeRequiredDataStore, RUNTIME_DATA_REQUESTS,
 const now = Date.parse("2026-05-15T12:00:00.000Z");
 const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
   _nanoseconds: at % 1000 * 1_000_000});
-const fixture = (name: string) => JSON.parse(readFileSync(
-  "../contracts/fixtures/valid/" + name + ".json", "utf8"));
 
 async function harness() {
   const fake = new FakeFirestore();
@@ -19,15 +17,16 @@ async function harness() {
     organizerId: "organizer-1"};
   const attendeeId = "attendee-1";
   const uid = "guest-1";
-  const event = {...fixture("event_doc"), organizerId: context.organizerId,
+  const event = {...contractFixture("event_doc"),
+    organizerId: context.organizerId,
     startTime: stamp(now - 60_000),
     endTime: stamp(now + 3_600_000), status: "active",
     runtimeAccess: {enabled: true,
       publicRuntimeId: "runtime_123456789012345678901234",
       walkInPolicy: "deny", termsVersion: "event-runtime-v1"}};
-  const plan = {...fixture("event_success_plan_doc"),
+  const plan = {...contractFixture("event_success_plan_doc"),
     eventId: context.eventId, organizerId: context.organizerId};
-  const attendee = {...fixture("event_attendee_doc"),
+  const attendee = {...contractFixture("event_attendee_doc"),
     eventId: context.eventId, organizerId: context.organizerId,
     status: "registered", linkedUid: uid,
     checkedInAt: null, checkedInBy: null, linkedAt: stamp(now - 60_000),

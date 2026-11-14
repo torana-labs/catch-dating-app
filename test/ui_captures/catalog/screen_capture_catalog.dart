@@ -56,7 +56,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/modules.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
@@ -67,14 +66,12 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.da
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
@@ -88,7 +85,6 @@ import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart'
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
-import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -96,9 +92,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
-import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
@@ -116,7 +110,6 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
@@ -134,7 +127,6 @@ import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
@@ -166,13 +158,11 @@ import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
-import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart'
     show HostEventsRequest, hostEventsControllerProvider;
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
-import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
@@ -207,7 +197,6 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/host_te
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -226,12 +215,10 @@ import 'package:catch_dating_app/organizers/presentation/detail/widgets/organize
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -248,11 +235,9 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_slive
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
-import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -267,12 +252,9 @@ import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
@@ -294,7 +276,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
     show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
@@ -313,38 +294,48 @@ import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
+import 'entries/event_success_companion_micro_pod_assignment.dart';
+import 'entries/guest_after_event.dart';
+import 'entries/host_door_arriving.dart';
+import 'entries/host_door_in.dart';
+import 'entries/host_formats_courts_phone.dart';
+import 'entries/host_formats_courts_setup_phone.dart';
+import 'entries/host_formats_crawl_move_phone.dart';
+import 'entries/host_formats_crawl_phone.dart';
+import 'entries/host_formats_mix_phone.dart';
+import 'entries/host_formats_pods_phone.dart';
+import 'entries/host_formats_rules_phone.dart';
+import 'entries/host_home_dashboard.dart';
+import 'entries/host_live_console.dart';
+import 'entries/host_live_needs_phone.dart';
+import 'entries/host_live_now_tablet.dart';
+import 'entries/host_live_scores_phone.dart';
+import 'entries/host_post_event_report.dart';
+import 'entries/host_programme_guests_desktop.dart';
+import 'entries/host_programme_inbox_phone.dart';
+import 'entries/host_programme_live_board_desktop.dart';
+import 'entries/host_programme_message_phone.dart';
+import 'entries/host_programme_reconcile_desktop.dart';
+import 'entries/host_programme_rooms_desktop.dart';
+import 'entries/host_staff_departures_phone.dart';
+import 'entries/host_staff_door_phone.dart';
+import 'entries/match_chat_context.dart';
+import 'entries/member_event_discovery.dart';
+import 'screen_capture_entry.dart';
+import 'shared/app_role_capture.dart';
+import 'shared/capture_fixtures.dart';
+import 'shared/capture_viewer.dart';
+import 'shared/door_capture.dart';
+import 'shared/event_success_companion_capture.dart';
+import 'shared/host_live_capture.dart';
+import 'shared/host_routed_shell_capture.dart';
+import 'shared/host_shell_capture_overrides.dart';
+import 'shared/match_chat_fixtures.dart';
+import 'shared/member_discovery_fixtures.dart';
+
+export 'screen_capture_entry.dart';
 
 part 'host_audience_capture_fixtures.dart';
-
-class ScreenCaptureEntry {
-  const ScreenCaptureEntry({
-    required this.id,
-    required this.routeIds,
-    required this.device,
-    required this.builder,
-    this.precache = const <ImageProvider<Object>>[],
-    this.marketingFixtureKeys = const <String>[],
-    this.providerOverrides = const [],
-    this.textScale = 1.0,
-    this.disableAnimations = false,
-    this.includeOverlays = false,
-    this.drive,
-    this.cleanup,
-  });
-
-  final String id;
-  final List<String> routeIds;
-  final CaptureDevice device;
-  final WidgetBuilder builder;
-  final List<ImageProvider<Object>> precache;
-  final List<String> marketingFixtureKeys;
-  final Iterable providerOverrides;
-  final double textScale;
-  final bool disableAnimations;
-  final bool includeOverlays;
-  final Future<void> Function(WidgetTester tester)? drive;
-  final Future<void> Function(WidgetTester tester)? cleanup;
-}
 
 final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
 const _organizerHeroPortraitAssetPath =
@@ -383,10 +374,6 @@ final _hostMediaCaptureImages = <ImageProvider<Object>>[
   MemoryImage(_organizerHeroPortraitBytes),
   MemoryImage(_profilePortraitBytes),
 ];
-final _captureFixtures = salesDemoSyntheticFixtures;
-final _captureAnalyticsOverride = appAnalyticsProvider.overrideWithValue(
-  AppAnalytics(reporter: _NoOpAnalyticsReporter(), shouldCollect: false),
-);
 final _eventDetailOrganizer = organizer_test.buildOrganizer(
   id: 'club-event-detail-capture',
   name: 'Bandra Dawn Club',
@@ -739,148 +726,6 @@ final _eventDetailWaitlistOfferParticipation =
     );
 final _eventDetailAttendedParticipation =
     _buildEventDetailAttendedParticipation(_eventDetailAttendedEvent);
-
-const _memberDiscoveryCities = [
-  CityData(
-    name: 'mumbai',
-    label: 'Bandra',
-    latitude: 19.076,
-    longitude: 72.8777,
-  ),
-  CityData(
-    name: 'delhi',
-    label: 'Delhi',
-    latitude: 28.7041,
-    longitude: 77.1025,
-  ),
-];
-final _memberDiscoveryOrganizers = [
-  _captureFixtures.captureOrganizer(
-    id: 'club-discovery-quizzicals',
-    name: 'The Quizzicals',
-    description: 'Pub quiz nights with teams drawn at the door.',
-    area: 'Khar',
-    hostName: 'Aarav',
-    tags: const ['pub quiz', 'teams', 'tonight'],
-    memberCount: 74,
-    reviewCount: 19,
-    nextEventAt: DateTime(2026, 6, 11, 19, 30),
-    nextEventLabel: 'Thu 7:30 PM',
-  ),
-  _captureFixtures.captureOrganizer(
-    id: 'club-discovery-table',
-    name: 'Table for Strangers',
-    description: 'Hosted dinners for people who want better first hellos.',
-    area: 'Pali Hill',
-    hostName: 'Kabir',
-    tags: const ['dinner', 'conversation', 'new'],
-    memberCount: 86,
-    rating: 4.7,
-    reviewCount: 31,
-    nextEventAt: DateTime(2026, 6, 12, 20),
-    nextEventLabel: 'Fri 8:00 PM',
-  ),
-  _captureFixtures.captureOrganizer(
-    id: 'club-discovery-pickle',
-    name: 'Pickleball Social',
-    description: 'Friendly doubles, rotating partners, and no pressure.',
-    area: 'Juhu',
-    hostName: 'Tara',
-    tags: const ['pickleball', 'mixed doubles', 'weekend'],
-    memberCount: 64,
-    rating: 4.6,
-    reviewCount: 18,
-    nextEventAt: DateTime(2026, 6, 13, 18),
-    nextEventLabel: 'Sat 6:00 PM',
-  ),
-];
-final _memberDiscoveryEvents = [
-  _captureFixtures.captureEvent(
-    id: 'event-discovery-trivia',
-    organizer: _memberDiscoveryOrganizers[0],
-    startTime: DateTime(2026, 6, 11, 19, 30),
-    meetingPoint: 'Khar Social',
-    startingPointLat: 19.0698,
-    startingPointLng: 72.8381,
-    activityKind: ActivityKind.pubQuiz,
-    distanceKm: 0,
-    bookedCount: 24,
-    capacityLimit: 30,
-    description: 'Teams drawn at the door for a no-phones trivia night.',
-  ),
-  _captureFixtures.captureEvent(
-    id: 'event-discovery-long-table',
-    organizer: _memberDiscoveryOrganizers[1],
-    startTime: DateTime(2026, 6, 12, 20),
-    meetingPoint: 'Pali Village Cafe',
-    startingPointLat: 19.0634,
-    startingPointLng: 72.8296,
-    activityKind: ActivityKind.dinner,
-    distanceKm: 0,
-    bookedCount: 10,
-    capacityLimit: 14,
-    priceInPaise: 120000,
-    description: 'A long-table dinner built around hosted prompts.',
-  ),
-  _captureFixtures.captureEvent(
-    id: 'event-discovery-pickle-open',
-    organizer: _memberDiscoveryOrganizers[2],
-    startTime: DateTime(2026, 6, 13, 18),
-    meetingPoint: 'Juhu court 2',
-    startingPointLat: 19.1075,
-    startingPointLng: 72.8263,
-    activityKind: ActivityKind.pickleball,
-    distanceKm: 0,
-    bookedCount: 11,
-    capacityLimit: 16,
-    priceInPaise: 60000,
-    description: 'Rotating mixed doubles with a host who balances teams.',
-  ),
-  _captureFixtures.captureEvent(
-    id: 'event-discovery-cocktail-round',
-    organizer: _memberDiscoveryOrganizers[0],
-    startTime: DateTime(2026, 6, 15, 20),
-    meetingPoint: 'Khar Social',
-    startingPointLat: 19.0698,
-    startingPointLng: 72.8381,
-    activityKind: ActivityKind.barCrawl,
-    distanceKm: 0,
-    bookedCount: 18,
-    capacityLimit: 24,
-    priceInPaise: 90000,
-    description:
-        'Small groups rotate through low-pressure conversation rounds.',
-  ),
-  _captureFixtures.captureEvent(
-    id: 'event-discovery-open-format',
-    organizer: _memberDiscoveryOrganizers[1],
-    startTime: DateTime(2026, 6, 17, 19),
-    meetingPoint: 'Pali Village Cafe',
-    startingPointLat: 19.0634,
-    startingPointLng: 72.8296,
-    activityKind: ActivityKind.singlesMixer,
-    distanceKm: 0,
-    bookedCount: 16,
-    capacityLimit: 22,
-    priceInPaise: 80000,
-    description: 'A hosted mixer with prompts, table moves, and easy exits.',
-  ),
-];
-final _memberDiscoveryItems = [
-  for (final event in _memberDiscoveryEvents)
-    ExploreEventItem(
-      event: event,
-      organizer: _memberDiscoveryOrganizers.firstWhere(
-        (organizer) => organizer.id == event.organizerId,
-      ),
-      distanceFromUserKm: switch (event.id) {
-        'event-discovery-long-table' => 2.4,
-        'event-discovery-pickle-open' => 4.8,
-        'event-discovery-weekend-walk' => 1.3,
-        _ => 0.8,
-      },
-    ),
-];
 final _exploreCrossPathsSuggestion = CrossPathsSuggestion(
   profile:
       buildPublicProfile(
@@ -894,12 +739,12 @@ final _exploreCrossPathsSuggestion = CrossPathsSuggestion(
         activityPreferences: const ActivityPreferences(),
       ),
   event: CrossPathsSuggestionEvent(
-    eventId: _memberDiscoveryEvents[2].id,
-    organizerId: _memberDiscoveryEvents[2].organizerId,
-    startTime: _memberDiscoveryEvents[2].startTime,
-    endTime: _memberDiscoveryEvents[2].endTime,
-    meetingPoint: _memberDiscoveryEvents[2].meetingPoint,
-    activityKind: _memberDiscoveryEvents[2].activityKind,
+    eventId: memberDiscoveryEvents[2].id,
+    organizerId: memberDiscoveryEvents[2].organizerId,
+    startTime: memberDiscoveryEvents[2].startTime,
+    endTime: memberDiscoveryEvents[2].endTime,
+    meetingPoint: memberDiscoveryEvents[2].meetingPoint,
+    activityKind: memberDiscoveryEvents[2].activityKind,
     photoUrl: null,
     viewerBookingStatus: CrossPathsViewerBookingStatus.canBookNow,
   ),
@@ -912,7 +757,7 @@ final _exploreCrossPathsSuggestion = CrossPathsSuggestion(
   suggestionToken: 'capture-cross-paths-token-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   tokenExpiresAt: DateTime(2031),
 );
-final _unclaimedDiscoveryOrganizer = _captureFixtures
+final _unclaimedDiscoveryOrganizer = captureFixtures
     .captureOrganizer(
       id: 'club-discovery-unclaimed',
       name: 'Open Table Collective',
@@ -932,7 +777,7 @@ final _unclaimedDiscoveryOrganizer = _captureFixtures
       hostUserIds: const <String>[],
       hostProfiles: const <OrganizerHostProfile>[],
     );
-final _unclaimedDiscoveryEvent = _captureFixtures.captureEvent(
+final _unclaimedDiscoveryEvent = captureFixtures.captureEvent(
   id: 'event-discovery-unclaimed-supper',
   organizer: _unclaimedDiscoveryOrganizer,
   startTime: DateTime(2026, 6, 14, 20),
@@ -959,19 +804,18 @@ List<Object> _exploreProviderOverrides({
   AsyncValue<List<Organizer>>? sourceOrganizers,
   AsyncValue<ExploreViewModel>? viewModel,
   AsyncValue<ExploreFeedViewModel>? feed,
-  String? uid = _captureViewerUid,
+  String? uid = captureViewerUid,
   Set<String> joinedOrganizerIds = const <String>{},
   List<CrossPathsSuggestion>? crossPathsSuggestions,
   DeviceLocation Function()? deviceLocationBuilder,
 }) {
   final effectiveSourceOrganizers =
-      sourceOrganizers ??
-      AsyncData<List<Organizer>>(_memberDiscoveryOrganizers);
+      sourceOrganizers ?? AsyncData<List<Organizer>>(memberDiscoveryOrganizers);
   final effectiveViewModel =
       viewModel ??
       AsyncData(
         ExploreViewModel.partition(
-          organizers: _memberDiscoveryOrganizers,
+          organizers: memberDiscoveryOrganizers,
           joinedOrganizerIds: joinedOrganizerIds,
         ),
       );
@@ -979,19 +823,19 @@ List<Object> _exploreProviderOverrides({
       feed ??
       AsyncData(
         ExploreFeedViewModel(
-          items: _memberDiscoveryItems,
-          featuredEventId: _memberDiscoveryItems.first.event.id,
+          items: memberDiscoveryItems,
+          featuredEventId: memberDiscoveryItems.first.event.id,
         ),
       );
 
   return [
-    cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
+    cityListProvider.overrideWith((ref) async => memberDiscoveryCities),
     deviceLocationProvider.overrideWith(
-      deviceLocationBuilder ?? _CaptureDeviceLocation.new,
+      deviceLocationBuilder ?? CaptureDeviceLocation.new,
     ),
     uidProvider.overrideWith((ref) => Stream.value(uid)),
     watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(uid == null ? null : _captureViewer),
+      (ref) => Stream.value(uid == null ? null : captureViewer),
     ),
     exploreSourceOrganizersProvider.overrideWithValue(
       effectiveSourceOrganizers,
@@ -1037,104 +881,10 @@ Widget _exploreCapture({
   );
 }
 
-class _CaptureDeviceLocation extends DeviceLocation {
-  @override
-  Future<LocationCoordinate?> build() async => null;
-}
-
 class _CaptureBandraDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async =>
       const LocationCoordinate(19.064, 72.835);
-}
-
-class _CaptureMatchRepository extends Fake implements MatchRepository {
-  _CaptureMatchRepository({required this.matches});
-
-  final List<Match> matches;
-
-  @override
-  Stream<Match?> watchMatch({required String matchId}) =>
-      Stream.value(_matchFor(matchId));
-
-  @override
-  Stream<List<Match>> watchMatchesForUser({required String uid}) =>
-      Stream.value([
-        for (final match in matches)
-          if (!match.isBlocked &&
-              (match.user1Id == uid || match.user2Id == uid))
-            match,
-      ]);
-
-  @override
-  Future<void> resetUnread({
-    required String matchId,
-    required String uid,
-  }) async {}
-
-  Match? _matchFor(String id) {
-    for (final match in matches) {
-      if (match.id == id) return match;
-    }
-    return null;
-  }
-}
-
-class _CaptureConversationRepository implements ConversationRepository {
-  const _CaptureConversationRepository({required this.messagesByConversation});
-
-  final Map<String, List<ChatMessage>> messagesByConversation;
-
-  @override
-  Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
-      Stream.value(messagesByConversation[conversationId] ?? const []);
-
-  @override
-  Future<String> createMessageId({required String conversationId}) async =>
-      '$conversationId-new-message';
-
-  @override
-  Future<ConversationMessagePage> fetchMessagesPage({
-    required String conversationId,
-    ConversationMessageCursor? cursor,
-  }) async => const ConversationMessagePage(messages: []);
-
-  @override
-  Future<void> sendTextMessage({
-    required String conversationId,
-    required String senderId,
-    required String text,
-    String? messageId,
-  }) async {}
-
-  @override
-  Future<void> sendImageMessage({
-    required String conversationId,
-    required String senderId,
-    required String messageId,
-    required String imageUrl,
-  }) async {}
-
-  @override
-  Future<void> markRead({
-    required String conversationId,
-    required String uid,
-  }) async {}
-}
-
-class _NoopEventSuccessLiveEffectsController
-    extends EventSuccessLiveEffectsController {
-  @override
-  Future<void> play(EventSuccessLiveEffectKind kind) async {}
-
-  @override
-  Future<void> playAmbientBed(EventSuccessAmbientBed bed) async {}
-
-  @override
-  Future<void> stopAmbientBed() async {}
-
-  @override
-  Future<void> dispose() async {}
 }
 
 class _NoopCelebrationEffectsController extends CelebrationEffectsController {
@@ -1145,84 +895,6 @@ class _NoopCelebrationEffectsController extends CelebrationEffectsController {
   Future<void> dispose() async {}
 }
 
-const _matchChatViewerUid = 'nyc_jordan_ellis_002';
-const _matchChatOtherProfile = PublicProfile(
-  uid: 'nyc_aanya_reference_001',
-  name: 'Aanya',
-  age: 29,
-  gender: Gender.woman,
-  city: 'Mumbai',
-  occupation: 'Product designer',
-  company: 'Studio Sunday',
-);
-final _matchChatEvent = buildEvent(
-  id: 'event-match-chat-context',
-  organizerId: 'club-match-chat-padel',
-  startTime: DateTime(2026, 6, 22, 18),
-  endTime: DateTime(2026, 6, 22, 20),
-  meetingPoint: 'Pali Hill Padel Club',
-  startingPointLat: 19.0644,
-  startingPointLng: 72.8295,
-  locationDetails: 'Meet beside court 2',
-  eventFormat: const EventFormatSnapshot(
-    activityKind: ActivityKind.padel,
-    interactionModel: EventInteractionModel.pairedRotations,
-    customActivityLabel: 'Doubles ladder + drinks',
-  ),
-  bookedCount: 18,
-  checkedInCount: 16,
-  capacityLimit: 22,
-  description: 'A low-pressure padel ladder with drinks after the final set.',
-);
-final _matchChatMatch = Match(
-  id: 'match-chat-context',
-  user1Id: _matchChatViewerUid,
-  user2Id: _matchChatOtherProfile.uid,
-  eventIds: [_matchChatEvent.id],
-  createdAt: DateTime(2026, 6, 22, 9, 38),
-  lastMessageAt: DateTime(2026, 6, 22, 9, 42),
-  lastMessagePreview: 'Deal. 9am, court 2.',
-  lastMessageSenderId: _matchChatOtherProfile.uid,
-  unreadCounts: const {_matchChatViewerUid: 1},
-);
-final _matchChatMessages = [
-  ChatMessage(
-    id: 'match-chat-message-1',
-    senderId: _matchChatOtherProfile.uid,
-    text: 'Loved the pace today — that last point was unreal.',
-    sentAt: DateTime(2026, 6, 22, 9, 38),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-2',
-    senderId: _matchChatOtherProfile.uid,
-    text: 'Same court next Sunday?',
-    sentAt: DateTime(2026, 6, 22, 9, 38),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-3',
-    senderId: _matchChatViewerUid,
-    text: 'Ha, you set that one up. In for Sunday.',
-    sentAt: DateTime(2026, 6, 22, 9, 41),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-4',
-    senderId: _matchChatViewerUid,
-    text: 'Bringing the good racket this time.',
-    sentAt: DateTime(2026, 6, 22, 9, 41),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-5',
-    senderId: _matchChatOtherProfile.uid,
-    text: 'Deal. 9am, court 2.',
-    sentAt: DateTime(2026, 6, 22, 9, 42),
-  ),
-];
-final _matchChatMatchRepository = _CaptureMatchRepository(
-  matches: [_matchChatMatch],
-);
-final _matchChatConversationRepository = _CaptureConversationRepository(
-  messagesByConversation: {_matchChatMatch.id: _matchChatMessages},
-);
 const _matchChatEmptyOtherProfile = PublicProfile(
   uid: 'nyc_tara_reference_001',
   name: 'Tara',
@@ -1253,35 +925,14 @@ final _matchChatEmptyEvent = buildEvent(
 );
 final _matchChatEmptyMatch = Match(
   id: 'match-chat-empty-reference',
-  user1Id: _matchChatViewerUid,
+  user1Id: matchChatViewerUid,
   user2Id: _matchChatEmptyOtherProfile.uid,
   eventIds: [_matchChatEmptyEvent.id],
   createdAt: DateTime(2026, 6, 14, 18, 45),
 );
 
 final _captureNow = DateTime(2026, 5, 31, 9);
-const _captureViewerUid = 'runner-viewer';
-final _captureViewer =
-    buildUser(
-      uid: _captureViewerUid,
-      name: 'Rohan Mehta',
-      email: 'rohan@example.com',
-      phoneNumber: '+919870000001',
-    ).copyWith(
-      city: 'in-mh-mumbai',
-      relationshipGoal: RelationshipGoal.relationship,
-      activityPreferences: const ActivityPreferences(
-        running: RunningPreferences(
-          paceMinSecsPerKm: 320,
-          paceMaxSecsPerKm: 395,
-          preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
-          runningReasons: [RunReason.community, RunReason.social],
-          preferredRunTimes: [PreferredRunTime.earlyMorning],
-          version: currentRunPreferencesVersion,
-        ),
-      ),
-    );
-final _filtersCaptureProfile = _captureViewer.copyWith(
+final _filtersCaptureProfile = captureViewer.copyWith(
   interestedInGenders: const [Gender.man],
   minAgePreference: 24,
   maxAgePreference: 36,
@@ -1391,7 +1042,7 @@ OrganizerFollow _captureMembership({
   followedAt: DateTime(2026, 1, 12),
 );
 
-final _dashboardJoinedOrganizer = _captureFixtures.captureOrganizer(
+final _dashboardJoinedOrganizer = captureFixtures.captureOrganizer(
   id: 'club-dashboard-dawn',
   name: 'Bandra Dawn Club',
   description: 'Coastal loops for people who want an easy first hello.',
@@ -1403,8 +1054,8 @@ final _dashboardJoinedOrganizer = _captureFixtures.captureOrganizer(
   nextEventAt: DateTime(2026, 6, 4, 6, 30),
   nextEventLabel: 'Thu 6:30 AM',
 );
-final _dashboardHostOrganizer = _captureFixtures.hostDemoOrganizer();
-final _dashboardSignedUpEvent = _captureFixtures.captureEvent(
+final _dashboardHostOrganizer = captureFixtures.hostDemoOrganizer();
+final _dashboardSignedUpEvent = captureFixtures.captureEvent(
   id: 'event-dashboard-next',
   organizer: _dashboardJoinedOrganizer,
   startTime: DateTime(2026, 6, 4, 6, 30),
@@ -1414,7 +1065,7 @@ final _dashboardSignedUpEvent = _captureFixtures.captureEvent(
   capacityLimit: 24,
   description: 'A conversational dawn loop with coffee after.',
 );
-final _dashboardCheckInEvent = _captureFixtures.captureEvent(
+final _dashboardCheckInEvent = captureFixtures.captureEvent(
   id: 'event-dashboard-check-in',
   organizer: _dashboardJoinedOrganizer,
   startTime: _captureNow.add(const Duration(minutes: 5)),
@@ -1424,7 +1075,7 @@ final _dashboardCheckInEvent = _captureFixtures.captureEvent(
   capacityLimit: 24,
   description: 'A conversational dawn loop with coffee after.',
 );
-final _dashboardHostEvent = _captureFixtures.hostDemoEvent(
+final _dashboardHostEvent = captureFixtures.hostDemoEvent(
   role: 'hostEventSetup',
   organizer: _dashboardHostOrganizer,
 );
@@ -1486,9 +1137,9 @@ final _dashboardCancelledHostEvent = _dashboardEditableHostEvent.copyWith(
   cancelledAt: _captureNow.subtract(const Duration(hours: 2)),
   cancellationReason: 'Capture cancellation.',
 );
-final _dashboardRecommendedEvent = _captureFixtures.captureEvent(
+final _dashboardRecommendedEvent = captureFixtures.captureEvent(
   id: 'event-dashboard-recommended',
-  organizer: _memberDiscoveryOrganizers[2],
+  organizer: memberDiscoveryOrganizers[2],
   startTime: DateTime(2026, 6, 6, 18),
   meetingPoint: 'Juhu court 2',
   activityKind: ActivityKind.pickleball,
@@ -1501,8 +1152,8 @@ final _dashboardRecommendedEvent = _captureFixtures.captureEvent(
 final _dashboardSignedUpEvents = [_dashboardSignedUpEvent];
 final _dashboardSavedEvents = [
   _dashboardRecommendedEvent,
-  _memberDiscoveryEvents[1],
-  _memberDiscoveryEvents[2],
+  memberDiscoveryEvents[1],
+  memberDiscoveryEvents[2],
 ];
 final _savedEventsPastOnlyEvents = [
   _dashboardRecommendedEvent.copyWith(
@@ -1510,14 +1161,14 @@ final _savedEventsPastOnlyEvents = [
     startTime: DateTime(2026, 5, 24, 18),
     endTime: DateTime(2026, 5, 24, 19, 30),
   ),
-  _memberDiscoveryEvents[1].copyWith(
+  memberDiscoveryEvents[1].copyWith(
     id: 'event-saved-past-dinner',
     startTime: DateTime(2026, 5, 25, 20),
     endTime: DateTime(2026, 5, 25, 22),
   ),
 ];
 final _dashboardAttendedEvents = [
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-dashboard-attended',
     organizer: _dashboardJoinedOrganizer,
     startTime: DateTime(2026, 5, 30, 7),
@@ -1529,7 +1180,7 @@ final _dashboardAttendedEvents = [
     description: 'Easy miles and a coffee line that did not feel awkward.',
   ),
 ];
-final _dashboardAfterEventFocusEvent = _captureFixtures.captureEvent(
+final _dashboardAfterEventFocusEvent = captureFixtures.captureEvent(
   id: 'event-dashboard-after-focus',
   organizer: _dashboardJoinedOrganizer,
   startTime: _captureNow.subtract(const Duration(hours: 3)),
@@ -1543,7 +1194,7 @@ final _dashboardAfterEventFocusEvent = _captureFixtures.captureEvent(
 final _dashboardNotifications = [
   ActivityNotification(
     id: 'notification-dashboard-match',
-    uid: _captureViewerUid,
+    uid: captureViewerUid,
     type: ActivityNotificationType.match,
     title: 'New connection',
     body: 'Maya picked you too after Sunday Table Club.',
@@ -1654,7 +1305,7 @@ List<Object> _selfProfileUploadFailureProviderOverrides() {
     imageUploadRepositoryProvider.overrideWithValue(
       _CaptureFailingImageUploadRepository(),
     ),
-    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+    errorLoggerProvider.overrideWithValue(CaptureSilentErrorLogger()),
   ];
 }
 
@@ -1675,7 +1326,7 @@ List<Object> _editableSelfProfileProviderOverrides(
         report: ProfileSurfaceFixtures.analyticsReport,
       ),
     ),
-    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+    errorLoggerProvider.overrideWithValue(CaptureSilentErrorLogger()),
   ];
 }
 
@@ -1805,28 +1456,6 @@ class _CaptureFailingImageUploadRepository extends Fake
       ),
     );
   }
-}
-
-class _CaptureSilentErrorLogger extends ErrorLogger {
-  _CaptureSilentErrorLogger()
-    : super(crashReporter: null, shouldReportErrors: false);
-
-  @override
-  void log({
-    required LogLevel level,
-    required String message,
-    Object? error,
-    StackTrace? stackTrace,
-    Map<String, String>? context,
-  }) {}
-}
-
-class _CaptureUnsupportedFcmService extends FcmService {
-  _CaptureUnsupportedFcmService()
-    : super(FakeFirebaseFirestore(), _CaptureSilentErrorLogger());
-
-  @override
-  bool get isSupportedPlatform => false;
 }
 
 List<Object> _publicProfileProviderOverrides({
@@ -2099,7 +1728,7 @@ List<Object> _dashboardProviderOverrides({
       [
         _captureMembership(
           organizerId: _dashboardJoinedOrganizer.id,
-          uid: _captureViewerUid,
+          uid: captureViewerUid,
         ),
       ];
   final effectiveSignedUpEvents = signedUpEvents ?? _dashboardSignedUpEvents;
@@ -2107,40 +1736,40 @@ List<Object> _dashboardProviderOverrides({
       .map((membership) => membership.organizerId)
       .toList(growable: false);
   final recommendationsQuery = ExploreRecommendationsQuery(
-    userId: _captureViewerUid,
+    userId: captureViewerUid,
     followedOrganizerIds: followedOrganizerIds,
   );
 
   return [
     dashboardNowProvider.overrideWithValue(_captureNow),
-    uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+    uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
     watchUserProfileProvider.overrideWith(
-      (ref) => profileStream ?? Stream.value(_captureViewer),
+      (ref) => profileStream ?? Stream.value(captureViewer),
     ),
-    watchActiveOrganizerFollowsForUserProvider(_captureViewerUid).overrideWith(
+    watchActiveOrganizerFollowsForUserProvider(captureViewerUid).overrideWith(
       (ref) =>
           membershipsStream ??
           Stream<List<OrganizerFollow>>.value(effectiveMemberships),
     ),
-    watchSignedUpEventsProvider(_captureViewerUid).overrideWith(
+    watchSignedUpEventsProvider(captureViewerUid).overrideWith(
       (ref) =>
           signedUpEventsStream ??
           Stream<List<Event>>.value(effectiveSignedUpEvents),
     ),
     watchAttendedEventsProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(attendedEvents ?? AsyncData(_dashboardAttendedEvents)),
     watchActivityNotificationsProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(notifications ?? AsyncData(_dashboardNotifications)),
     organizersRepositoryProvider.overrideWith(
       (ref) => _captureOrganizersRepository,
     ),
     watchOrganizersHostedByProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(AsyncData([_dashboardHostOrganizer])),
     watchOrganizersOwnedByProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(const AsyncData([])),
     watchEventsForOrganizerProvider(
       _dashboardHostOrganizer.id,
@@ -2155,15 +1784,15 @@ List<Object> _dashboardProviderOverrides({
           ),
     ),
     watchReviewsByUserProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(reviews ?? const AsyncData<List<Review>>([])),
     exploreRecommendedEventsProvider(recommendationsQuery).overrideWithValue(
       recommendations ??
           AsyncData([
             ExploreEventRecommendationCandidate(
               event: _dashboardRecommendedEvent,
-              organizerName: _memberDiscoveryOrganizers[2].name,
-              organizerLocation: _memberDiscoveryOrganizers[2].location,
+              organizerName: memberDiscoveryOrganizers[2].name,
+              organizerLocation: memberDiscoveryOrganizers[2].location,
             ),
           ]),
     ),
@@ -2229,15 +1858,15 @@ class _DashboardCheckInMutationCaptureState
 final _captureOrganizersRepository = organizer_test.FakeOrganizersRepository()
   ..organizersById[_dashboardJoinedOrganizer.id] = _dashboardJoinedOrganizer
   ..organizersById[_dashboardHostOrganizer.id] = _dashboardHostOrganizer
-  ..organizersById[_memberDiscoveryOrganizers[0].id] =
-      _memberDiscoveryOrganizers[0]
-  ..organizersById[_memberDiscoveryOrganizers[1].id] =
-      _memberDiscoveryOrganizers[1]
-  ..organizersById[_memberDiscoveryOrganizers[2].id] =
-      _memberDiscoveryOrganizers[2];
+  ..organizersById[memberDiscoveryOrganizers[0].id] =
+      memberDiscoveryOrganizers[0]
+  ..organizersById[memberDiscoveryOrganizers[1].id] =
+      memberDiscoveryOrganizers[1]
+  ..organizersById[memberDiscoveryOrganizers[2].id] =
+      memberDiscoveryOrganizers[2];
 
 List<Object> _calendarProviderOverrides({
-  AsyncValue<String?> uid = const AsyncData<String?>(_captureViewerUid),
+  AsyncValue<String?> uid = const AsyncData<String?>(captureViewerUid),
   AsyncValue<List<Event>>? signedUpEvents,
   AsyncValue<List<Event>>? savedEvents,
   AsyncValue<Map<String, String>>? organizerNames,
@@ -2255,10 +1884,10 @@ List<Object> _calendarProviderOverrides({
   return <Object>[
     uidProvider.overrideWithValue(uid),
     watchSignedUpEventsProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(effectiveSignedUpEvents),
     watchSavedEventDetailsForUserProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(effectiveSavedEvents),
     organizersRepositoryProvider.overrideWith(
       (ref) => _captureOrganizersRepository,
@@ -2278,7 +1907,7 @@ List<T> _asyncDataList<T>(AsyncValue<List<T>> value) {
 }
 
 List<Object> _savedEventsProviderOverrides({
-  AsyncValue<String?> uid = const AsyncData<String?>(_captureViewerUid),
+  AsyncValue<String?> uid = const AsyncData<String?>(captureViewerUid),
   AsyncValue<List<Event>>? savedEvents,
   AsyncValue<Map<String, String>>? organizerNames,
 }) {
@@ -2292,7 +1921,7 @@ List<Object> _savedEventsProviderOverrides({
   return <Object>[
     uidProvider.overrideWithValue(uid),
     watchSavedEventDetailsForUserProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(effectiveSavedEvents),
     organizersRepositoryProvider.overrideWith(
       (ref) => _captureOrganizersRepository,
@@ -2316,7 +1945,7 @@ Map<String, String> _organizerNamesForEvents(List<Event> events) {
   };
 }
 
-final _organizerDetailOrganizer = _captureFixtures.captureOrganizer(
+final _organizerDetailOrganizer = captureFixtures.captureOrganizer(
   id: 'club-detail-member',
   name: 'Sea Face Social',
   description:
@@ -2331,7 +1960,7 @@ final _organizerDetailOrganizer = _captureFixtures.captureOrganizer(
   nextEventLabel: 'Tue 6:45 AM',
 );
 final _organizerDetailEvents = [
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-club-detail-sunrise',
     organizer: _organizerDetailOrganizer,
     startTime: DateTime(2026, 6, 2, 6, 45),
@@ -2341,7 +1970,7 @@ final _organizerDetailEvents = [
     capacityLimit: 22,
     description: 'Morning miles with regroup points and a cafe finish.',
   ),
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-club-detail-weekend',
     organizer: _organizerDetailOrganizer,
     startTime: DateTime(2026, 6, 7, 8),
@@ -2366,7 +1995,7 @@ final _organizerDetailReviews = [
 
 OrganizerDetailViewModel _organizerDetailViewModel({
   Organizer? organizer,
-  String? uid = _captureViewerUid,
+  String? uid = captureViewerUid,
   bool isHost = false,
   bool isMember = true,
   bool isAuthenticated = true,
@@ -2381,14 +2010,14 @@ OrganizerDetailViewModel _organizerDetailViewModel({
     isMember: isMember,
     upcomingEvents: upcomingEvents ?? _organizerDetailEvents,
     reviews: reviews ?? _organizerDetailReviews,
-    userProfile: includeUserProfile ? userProfile ?? _captureViewer : null,
+    userProfile: includeUserProfile ? userProfile ?? captureViewer : null,
     uid: uid,
     isAuthenticated: isAuthenticated,
   );
 }
 
 List<Object> _organizerDetailProviderOverrides({
-  String? uid = _captureViewerUid,
+  String? uid = captureViewerUid,
   OrganizerFollow? membership,
   required AsyncValue<OrganizerDetailViewModel?> viewModel,
 }) {
@@ -2396,7 +2025,7 @@ List<Object> _organizerDetailProviderOverrides({
   return [
     uidProvider.overrideWith((ref) => Stream.value(effectiveUid)),
     watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(effectiveUid == null ? null : _captureViewer),
+      (ref) => Stream.value(effectiveUid == null ? null : captureViewer),
     ),
     if (effectiveUid != null)
       watchOrganizerFollowProvider(
@@ -2450,8 +2079,8 @@ Widget _organizerDetailMutationCapture({
               organizer: _organizerDetailOrganizer,
               upcomingEvents: _organizerDetailEvents,
               reviews: _organizerDetailReviews,
-              userProfile: isAuthenticated ? _captureViewer : null,
-              uid: isAuthenticated ? _captureViewerUid : null,
+              userProfile: isAuthenticated ? captureViewer : null,
+              uid: isAuthenticated ? captureViewerUid : null,
               isMember: isMember,
               isMutating: isMutating,
               organizerPushNotificationsEnabled: isMember,
@@ -2475,348 +2104,13 @@ Widget _organizerDetailMutationCapture({
   );
 }
 
-class _AppRoleCapture extends StatefulWidget {
-  const _AppRoleCapture({required this.role, required this.child});
-
-  final AppRole role;
-  final Widget child;
-
-  @override
-  State<_AppRoleCapture> createState() => _AppRoleCaptureState();
-}
-
-class _AppRoleCaptureState extends State<_AppRoleCapture> {
-  @override
-  void initState() {
-    super.initState();
-    AppConfig.configureEntrypointRole(widget.role);
-  }
-
-  @override
-  void didUpdateWidget(_AppRoleCapture oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.role != widget.role) {
-      AppConfig.configureEntrypointRole(widget.role);
-    }
-  }
-
-  @override
-  void dispose() {
-    AppConfig.resetEntrypointRoleOverrideForTesting();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    AppConfig.configureEntrypointRole(widget.role);
-    return widget.child;
-  }
-}
-
-class _HostRoutedShellCapture extends StatefulWidget {
-  const _HostRoutedShellCapture({
-    required this.initialLocation,
-    required this.activeIndex,
-    required this.child,
-  });
-
-  final String initialLocation;
-
-  /// Which index route shows [child]: 0 Today, 1 Events, 2 Audience and
-  /// 3 Inbox (both under People), 4 Organizer.
-  final int activeIndex;
-  final Widget child;
-
-  @override
-  State<_HostRoutedShellCapture> createState() =>
-      _HostRoutedShellCaptureState();
-}
-
-class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
-  late final GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-    AppConfig.configureEntrypointRole(AppRole.host);
-    _router = GoRouter(
-      initialLocation: widget.initialLocation,
-      routes: [
-        StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) =>
-              HostShellScreen(navigationShell: navigationShell),
-          branches: [
-            _branch([('/host/today', 0)]),
-            _branch([('/host/events', 1)]),
-            _branch([('/host/audience', 2), ('/host/inbox', 3)]),
-            _branch([('/host/organizer', 4)]),
-          ],
-        ),
-      ],
-    );
-  }
-
-  StatefulShellBranch _branch(List<(String, int)> indexes) {
-    return StatefulShellBranch(
-      routes: [
-        for (final (path, index) in indexes)
-          GoRoute(
-            path: path,
-            builder: (context, state) => index == widget.activeIndex
-                ? widget.child
-                : const SizedBox.shrink(),
-          ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    _router.dispose();
-    AppConfig.resetEntrypointRoleOverrideForTesting();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    AppConfig.configureEntrypointRole(AppRole.host);
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: Theme.of(context),
-      routerConfig: _router,
-      builder: (context, child) =>
-          CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
-    );
-  }
-}
-
-List<Object> _hostShellCaptureOverrides(String uid, {int unreadCount = 0}) {
-  return [
-    _captureAnalyticsOverride,
-    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
-    fcmServiceProvider.overrideWithValue(_CaptureUnsupportedFcmService()),
-    appConnectivityProvider.overrideWith(
-      (ref) =>
-          Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
-    ),
-    totalUnreadCountProvider(uid).overrideWithValue(unreadCount),
-  ];
-}
-
-class _ReferenceChromeSafeArea extends StatelessWidget {
-  const _ReferenceChromeSafeArea({required this.child});
-
-  static const _fallbackInsets = EdgeInsets.only(top: 44, bottom: 44);
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final padding = media.padding;
-    final resolvedPadding = EdgeInsets.only(
-      top: padding.top == 0 ? _fallbackInsets.top : padding.top,
-      bottom: padding.bottom == 0 ? _fallbackInsets.bottom : padding.bottom,
-      left: padding.left,
-      right: padding.right,
-    );
-
-    return MediaQuery(
-      data: media.copyWith(
-        padding: resolvedPadding,
-        viewPadding: resolvedPadding,
-      ),
-      child: child,
-    );
-  }
-}
-
-List<Object> _hostOperationsProviderOverrides({
-  List<OrganizerProgramListRow> programRows = const [],
-  List<Organizer>? hostedOrganizers,
-  List<Organizer>? ownedOrganizers,
-  AsyncValue<HostProfile?>? hostProfile,
-  AsyncValue<List<Organizer>>? hostedOrganizersAsync,
-  AsyncValue<List<Organizer>>? ownedOrganizersAsync,
-  Map<String, AsyncValue<List<Event>>> organizerEvents = const {},
-  AsyncValue<HostPaymentAccount?>? paymentAccountValue,
-  HostAnalyticsRepository analyticsRepository =
-      const HostFixtureAnalyticsRepository(),
-  Map<String, List<HostAttentionItem>>? attentionByOrganizer,
-}) {
-  final uid = HostOperationsFixtures.hostUid;
-  final hosted = hostedOrganizers ?? HostOperationsFixtures.organizers;
-  final owned =
-      ownedOrganizers ??
-      [
-        HostOperationsFixtures.primaryOrganizer,
-        HostOperationsFixtures.dinnerOrganizer,
-      ];
-  final eventOrganizerIds = <String>{
-    for (final organizer in HostOperationsFixtures.organizers) organizer.id,
-    for (final organizer in hosted) organizer.id,
-    for (final organizer in owned) organizer.id,
-    ...organizerEvents.keys,
-  };
-  final organizersById = <String, Organizer>{
-    for (final organizer in HostOperationsFixtures.organizers)
-      organizer.id: organizer,
-    for (final organizer in hosted) organizer.id: organizer,
-    for (final organizer in owned) organizer.id: organizer,
-  };
-  final timelineEventsByOrganizer = <String, List<Event>>{
-    for (final organizerId in eventOrganizerIds)
-      organizerId: switch (organizerEvents[organizerId]) {
-        AsyncData<List<Event>>(:final value) => value,
-        _ =>
-          HostOperationsFixtures.eventsByOrganizer[organizerId] ??
-              const <Event>[],
-      },
-  };
-
-  return [
-    programEventsControllerProvider.overrideWith((ref, request) {
-      final controller = ProgramEventsController(
-        isActorCurrent: () => true,
-        fetchPage: ({cursor, programId}) async =>
-            OrganizerProgramInventoryPage(programs: programRows),
-        mutate: (_, _) async =>
-            throw StateError('Preview inventory is read only'),
-        onMutation: (_) {},
-      );
-      ref.onDispose(controller.dispose);
-      unawaited(controller.refresh());
-      return controller;
-    }),
-    watchActiveEventsForOrganizerProvider.overrideWith(
-      (ref, query) => Stream.value(
-        timelineEventsByOrganizer[query.organizerId] ?? const <Event>[],
-      ),
-    ),
-    hostAttentionProjectionProvider.overrideWith(
-      (ref, organizerId) => Stream.value(
-        HostAttentionProjection(
-          organizerId: organizerId,
-          policyVersion: hostAttentionPolicyVersion,
-          items:
-              attentionByOrganizer?[organizerId] ??
-              _captureTodayAttentionItems(
-                timelineEventsByOrganizer[organizerId] ?? const <Event>[],
-                HostOperationsFixtures.now,
-              ),
-          coverage: hostAttentionCatalogCoverage,
-          evaluatedAt: HostOperationsFixtures.now,
-          sourceCoverage: HostAttentionSourceCoverage.complete,
-        ),
-      ),
-    ),
-    hostTodayAttendanceOutboxProvider.overrideWith(
-      (ref, accountId) async => const HostAttendanceOutboxSummary([]),
-    ),
-    hostAnalyticsDeviceTimezoneProvider.overrideWith(
-      (ref) async => 'Asia/Kolkata',
-    ),
-    hostEventsTimelineControllerProvider.overrideWith2(
-      (_) => _CaptureHostEventsTimelineController(timelineEventsByOrganizer),
-    ),
-    uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-    watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(HostOperationsFixtures.owner),
-    ),
-    if (hostProfile == null)
-      watchHostProfileProvider(
-        uid,
-      ).overrideWith((ref) => Stream.value(HostOperationsFixtures.hostProfile))
-    else
-      watchHostProfileProvider(uid).overrideWithValue(hostProfile),
-    if (hostedOrganizersAsync == null)
-      watchOrganizersHostedByProvider(
-        uid,
-      ).overrideWith((ref) => Stream.value(hosted))
-    else
-      watchOrganizersHostedByProvider(
-        uid,
-      ).overrideWithValue(hostedOrganizersAsync),
-    if (ownedOrganizersAsync == null)
-      watchOrganizersOwnedByProvider(
-        uid,
-      ).overrideWith((ref) => Stream.value(owned))
-    else
-      watchOrganizersOwnedByProvider(
-        uid,
-      ).overrideWithValue(ownedOrganizersAsync),
-    watchHostPaymentAccountsProvider(
-      uid,
-    ).overrideWithValue(switch (paymentAccountValue) {
-      AsyncData(:final value) => AsyncData(value == null ? const [] : [value]),
-      AsyncError(:final error, :final stackTrace) =>
-        AsyncError<List<HostPaymentAccount>>(error, stackTrace),
-      _ => const AsyncLoading<List<HostPaymentAccount>>(),
-    }),
-    hostOrganizerEditControllerProvider.overrideWithValue(
-      const _CaptureNoopHostOrganizerEditActions(),
-    ),
-    hostPaymentAccountControllerProvider.overrideWithValue(
-      const _CaptureNoopHostPaymentAccountActions(),
-    ),
-    hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
-    for (final organizerId in eventOrganizerIds)
-      organizerEventDraftsProvider(
-        organizerId: organizerId,
-      ).overrideWithValue(const AsyncData<List<EventDraft>>([])),
-    for (final organizer in organizersById.values)
-      organizerDetailViewModelProvider(organizer.id).overrideWithValue(
-        AsyncData<OrganizerDetailViewModel?>(
-          OrganizerDetailViewModel(
-            organizer: organizer,
-            isHost: true,
-            isMember: false,
-            upcomingEvents: switch (organizerEvents[organizer.id]) {
-              AsyncData<List<Event>>(:final value) => value,
-              _ =>
-                HostOperationsFixtures.eventsByOrganizer[organizer.id] ??
-                    const <Event>[],
-            },
-            reviews: const [],
-            userProfile: HostOperationsFixtures.owner,
-            uid: uid,
-            isAuthenticated: true,
-          ),
-        ),
-      ),
-    for (final organizerId in eventOrganizerIds)
-      if (organizerEvents.containsKey(organizerId))
-        watchEventsForOrganizerProvider(
-          organizerId,
-        ).overrideWithValue(organizerEvents[organizerId]!)
-      else
-        watchEventsForOrganizerProvider(organizerId).overrideWith(
-          (ref) => Stream.value(
-            HostOperationsFixtures.eventsByOrganizer[organizerId] ??
-                const <Event>[],
-          ),
-        ),
-  ];
-}
-
 // Today on the system: tonight, what needs the host, the week and the last
 // thirty days, on a Tuesday evening before doors.
 final _hostTodayNow = DateTime(2026, 10, 27, 17, 40);
-final _hostTodayOrganizer = HostOperationsFixtures.primaryOrganizer;
-final _hostTodayTonight = HostOperationsFixtures.event(
-  id: 'design-today-trivia',
-  organizer: _hostTodayOrganizer,
-  start: DateTime(2026, 10, 27, 19, 30),
-  bookedCount: 26,
-  waitlistedCount: 4,
-  capacityLimit: 32,
-  activityKind: ActivityKind.pubQuiz,
-  meetingPoint: 'Harbour Room, Bandra West',
-).copyWith(name: 'Tuesday Trivia Night');
 final _hostTodayWeek = [
   HostOperationsFixtures.event(
     id: 'design-today-run',
-    organizer: _hostTodayOrganizer,
+    organizer: hostTodayOrganizer,
     start: DateTime(2026, 11, 1, 6, 30),
     bookedCount: 32,
     capacityLimit: 40,
@@ -2824,7 +2118,7 @@ final _hostTodayWeek = [
   ).copyWith(name: 'Carter Road Social Run'),
   HostOperationsFixtures.event(
     id: 'design-today-supper',
-    organizer: _hostTodayOrganizer,
+    organizer: hostTodayOrganizer,
     start: DateTime(2026, 10, 29, 20),
     bookedCount: 14,
     capacityLimit: 14,
@@ -2833,7 +2127,7 @@ final _hostTodayWeek = [
   ).copyWith(name: 'Long Table Supper'),
   HostOperationsFixtures.event(
     id: 'design-today-ladder',
-    organizer: _hostTodayOrganizer,
+    organizer: hostTodayOrganizer,
     start: DateTime(2026, 11, 2, 7),
     bookedCount: 9,
     capacityLimit: 16,
@@ -2853,9 +2147,9 @@ HostAttentionItem _hostTodayAttention(
   kind: kind,
   scope: HostAttentionScope.event,
   sourceOwner: HostAttentionSourceOwner.events,
-  sourceId: _hostTodayTonight.id,
+  sourceId: hostTodayTonight.id,
   sourceRevision: 'capture-$id',
-  eventId: _hostTodayTonight.id,
+  eventId: hostTodayTonight.id,
   status: HostAttentionStatus.open,
   consequence: HostAttentionConsequence.risksGuestExperience,
   blocking: false,
@@ -2863,19 +2157,19 @@ HostAttentionItem _hostTodayAttention(
   destination: HostAttentionDestination(
     route: HostAttentionDestinationRoute.hostEventManage,
     section: 'guests',
-    eventId: _hostTodayTonight.id,
+    eventId: hostTodayTonight.id,
   ),
   context: HostAttentionContext(
-    eventName: _hostTodayTonight.title,
+    eventName: hostTodayTonight.title,
     count: count,
   ),
-  dedupeKey: '${kind.name}:${_hostTodayTonight.id}',
+  dedupeKey: '${kind.name}:${hostTodayTonight.id}',
   policyVersion: 1,
   resolutionVersion: 1,
   assignedHostUid: null,
   openedAt: _hostTodayNow.subtract(const Duration(hours: 2)),
   dueAt: dueAt,
-  expiresAt: _hostTodayTonight.endTime,
+  expiresAt: hostTodayTonight.endTime,
 );
 
 final _hostTodayAttentionItems = [
@@ -2910,8 +2204,8 @@ final _hostTodayAttendees = [
   ].indexed)
     EventAttendee(
       id: 'design-today-attendee-$index',
-      eventId: _hostTodayTonight.id,
-      organizerId: _hostTodayOrganizer.id,
+      eventId: hostTodayTonight.id,
+      organizerId: hostTodayOrganizer.id,
       displayName: name,
       searchName: name.toLowerCase(),
       source: EventAttendeeSource.catchBooking,
@@ -2922,9 +2216,9 @@ final _hostTodayAttendees = [
 ];
 
 final _hostTodayRoster = HostEventRosterInsights(
-  eventId: _hostTodayTonight.id,
-  organizerId: _hostTodayOrganizer.id,
-  cutoffAt: _hostTodayTonight.startTime,
+  eventId: hostTodayTonight.id,
+  organizerId: hostTodayOrganizer.id,
+  cutoffAt: hostTodayTonight.startTime,
   sourceCoverage: HostRosterInsightCoverage.exact,
   spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
   rows: [
@@ -2950,23 +2244,23 @@ final _hostTodayRoster = HostEventRosterInsights(
 );
 
 List<Object> _hostTodayCaptureOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ..._hostOperationsProviderOverrides(
-    hostedOrganizers: [_hostTodayOrganizer],
-    ownedOrganizers: [_hostTodayOrganizer],
+  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ...hostOperationsProviderOverrides(
+    hostedOrganizers: [hostTodayOrganizer],
+    ownedOrganizers: [hostTodayOrganizer],
     organizerEvents: {
-      _hostTodayOrganizer.id: AsyncData<List<Event>>([
-        _hostTodayTonight,
+      hostTodayOrganizer.id: AsyncData<List<Event>>([
+        hostTodayTonight,
         ..._hostTodayWeek,
       ]),
     },
-    attentionByOrganizer: {_hostTodayOrganizer.id: _hostTodayAttentionItems},
+    attentionByOrganizer: {hostTodayOrganizer.id: _hostTodayAttentionItems},
   ),
   watchEventAttendeesProvider(
-    _hostTodayTonight.id,
+    hostTodayTonight.id,
   ).overrideWith((ref) => Stream.value(_hostTodayAttendees)),
   hostEventRosterInsightsProvider(
-    _hostTodayTonight.id,
+    hostTodayTonight.id,
   ).overrideWith((ref) => Stream.value(_hostTodayRoster)),
 ];
 
@@ -2975,7 +2269,7 @@ List<Object> _hostTodayCaptureOverrides() => [
 final _createToday = DateTime(2026, 10, 27);
 final _createDraft = EventDraft(
   id: 'capture-create-draft',
-  organizerId: _hostTodayOrganizer.id,
+  organizerId: hostTodayOrganizer.id,
   savedAt: _createToday,
   name: 'Tuesday Trivia Night',
   activityKind: 'pubQuiz',
@@ -2998,7 +2292,7 @@ final _createDraft = EventDraft(
 
 CreateFlowState _createState(CreateStep step, {EventDraft? draft}) =>
     CreateFlowState(
-      organizer: _hostTodayOrganizer,
+      organizer: hostTodayOrganizer,
       draft: draft ?? _createDraft,
       step: step,
       eventId: step.index >= CreateStep.tickets.index ? 'capture-event' : null,
@@ -3044,19 +2338,19 @@ Widget _createCapture(Widget screen) => CatchRoot(child: screen);
 // The organiser tab, Your page, Payments, Team and Settings on the fixture
 // organizer, live on the web with a bill and Razorpay connected.
 List<Object> _organizerCaptureOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ..._hostOperationsProviderOverrides(
+  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ...hostOperationsProviderOverrides(
     hostedOrganizers: [organizerCaptureOrganizer],
     ownedOrganizers: [organizerCaptureOrganizer],
   ),
   ...organizerCaptureOverrides(),
 ];
 
-Widget _hostTodayCapture() => _HostRoutedShellCapture(
+Widget _hostTodayCapture() => HostRoutedShellCapture(
   initialLocation: '/host/today',
   activeIndex: 0,
   child: HostTodayScreen(
-    initialOrganizerId: _hostTodayOrganizer.id,
+    initialOrganizerId: hostTodayOrganizer.id,
     now: _hostTodayNow,
   ),
 );
@@ -3067,8 +2361,8 @@ Widget _hostTodayCapture() => _HostRoutedShellCapture(
 final _hostEventsOrganizer = HostOperationsFixtures.primaryOrganizer;
 
 List<Object> _hostEventsCaptureOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ..._hostOperationsProviderOverrides(
+  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ...hostOperationsProviderOverrides(
     hostedOrganizers: [_hostEventsOrganizer],
     ownedOrganizers: [_hostEventsOrganizer],
   ),
@@ -3080,7 +2374,7 @@ List<Object> _hostEventsCaptureOverrides() => [
   ).overrideWithValue(events_fixtures.eventsReady()),
 ];
 
-Widget _hostEventsCapture() => _HostRoutedShellCapture(
+Widget _hostEventsCapture() => HostRoutedShellCapture(
   initialLocation: '/host/events',
   activeIndex: 1,
   child: HostEventsTabScreen(
@@ -3089,189 +2383,10 @@ Widget _hostEventsCapture() => _HostRoutedShellCapture(
   ),
 );
 
-// The door on a Tuesday trivia night, doors open: nineteen of twenty-six
-// in, two asking to join and one waiting.
-final _doorNow = DateTime(2026, 10, 27, 19, 42);
-final _doorEvent = _hostTodayTonight;
-
-EventAttendee _doorAttendee(
-  String id,
-  String name, {
-  EventAttendeeStatus status = EventAttendeeStatus.registered,
-  String? uid,
-  DateTime? checkedInAt,
-  int? paidMinor,
-}) => EventAttendee(
-  id: 'design-door-$id',
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  displayName: name,
-  searchName: name.toLowerCase(),
-  source: uid == null
-      ? EventAttendeeSource.hostImport
-      : EventAttendeeSource.catchBooking,
-  status: status,
-  linkedUid: uid,
-  checkedInAt: checkedInAt,
-  revenueAmountMinor: paidMinor,
-  revenueCurrency: paidMinor == null ? null : 'INR',
-  createdAt: _doorNow.subtract(const Duration(days: 3)),
-  updatedAt: _doorNow.subtract(const Duration(days: 3)),
-);
-
-final _doorAttendees = [
-  _doorAttendee('dp', 'Dev Patel', paidMinor: 99800),
-  _doorAttendee('rk', 'Rhea Kapoor'),
-  _doorAttendee('ss', 'Sameer Shah', paidMinor: 49900),
-  _doorAttendee('tm', 'Tara Menon'),
-  _doorAttendee('ir', 'Ishita Rao'),
-  _doorAttendee('nv', 'Neel Verma', paidMinor: 99800),
-  _doorAttendee('ak', 'Arjun Kulkarni'),
-  for (final (index, name) in const [
-    'Kabir Rao',
-    'Aanya Sharma',
-    'Meera Iyer',
-    'Rohan Das',
-    'Sana Qureshi',
-    'Vikram Nair',
-    'Leela Joshi',
-    'Farhan Ali',
-    'Priya Menon',
-    'Aditya Rao',
-    'Nisha Kapoor',
-    'Karan Malhotra',
-    'Tanvi Shah',
-    'Omar Sheikh',
-    'Diya Bose',
-    'Raghav Sethi',
-    'Ira Banerjee',
-    'Zain Khan',
-    'Maya Pillai',
-  ].indexed)
-    _doorAttendee(
-      'in-$index',
-      name,
-      status: EventAttendeeStatus.checkedIn,
-      checkedInAt: _doorNow.subtract(Duration(minutes: 1 + index * 2)),
-    ),
-  _doorAttendee(
-    'zm',
-    'Zoya Merchant',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-zm',
-  ),
-  _doorAttendee(
-    'ib',
-    'Ishaan Bose',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-ib',
-  ),
-  _doorAttendee(
-    'nr',
-    'Nikhil Rao',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-nr',
-  ),
-];
-
-EventParticipation _doorParticipation(
-  String uid, {
-  EventJoinRequestStatus? request,
-  required Duration ago,
-}) => EventParticipation(
-  id: '${_doorEvent.id}_$uid',
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  uid: uid,
-  status: EventParticipationStatus.waitlisted,
-  hostApprovalStatus: request,
-  waitlistedAt: _doorNow.subtract(ago),
-  createdAt: _doorNow.subtract(ago),
-  updatedAt: _doorNow.subtract(ago),
-);
-
-final _doorParticipations = [
-  _doorParticipation(
-    'design-door-u-zm',
-    request: EventJoinRequestStatus.pending,
-    ago: const Duration(minutes: 2),
-  ),
-  _doorParticipation(
-    'design-door-u-ib',
-    request: EventJoinRequestStatus.pending,
-    ago: const Duration(minutes: 5),
-  ),
-  _doorParticipation('design-door-u-nr', ago: const Duration(days: 1)),
-];
-
-HostEventRosterInsight _doorLabel(String id, {int prior = 0}) =>
-    HostEventRosterInsight(
-      attendeeId: 'design-door-$id',
-      contactId: null,
-      availability: HostRosterInsightAvailability.ready,
-      signals: {
-        prior == 0
-            ? HostRosterInsightSignal.firstTime
-            : HostRosterInsightSignal.returning,
-      },
-      priorAttendedEventCount: prior,
-      priorExpectedEventCount: prior,
-      priorNoShowCount: 0,
-      lastAttendedAt: null,
-      attendanceRate: null,
-      catchSpend: const [],
-    );
-
-final _doorLabels = HostEventRosterInsights(
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  cutoffAt: _doorEvent.startTime,
-  sourceCoverage: HostRosterInsightCoverage.exact,
-  spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
-  rows: [
-    _doorLabel('dp'),
-    _doorLabel('rk', prior: 5),
-    _doorLabel('tm'),
-    _doorLabel('ir', prior: 2),
-    _doorLabel('zm', prior: 3),
-    _doorLabel('ib'),
-  ],
-  computedAt: _doorNow,
-);
-
-List<Object> _doorCaptureOverrides() => [
-  uidProvider.overrideWithValue(const AsyncData<String?>(_captureViewerUid)),
-  appConnectivityProvider.overrideWith(
-    (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
-  ),
-  hostAttendanceOutboxStoreProvider.overrideWithValue(
-    _CaptureHostAttendanceOutboxStore(),
-  ),
-  watchEventProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorEvent)),
-  watchEventAttendeesProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorAttendees)),
-  watchEventParticipationsForEventProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorParticipations)),
-  hostEventRosterInsightsProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorLabels)),
-];
-
-Widget _doorCapture({DoorFilter? filter}) => DoorScreen(
-  organizerId: _hostTodayOrganizer.id,
-  eventId: _doorEvent.id,
-  initialEvent: _doorEvent,
-  initialFilter: filter,
-);
-
 // The camera stands in as a plain night tile; the sheet is the scan that
 // just checked Dev Patel in.
 Widget _doorScanCapture() => DoorScanScreen(
-  eventId: _doorEvent.id,
+  eventId: doorEvent.id,
   checkedIn: 20,
   expected: 26,
   camera: const ColoredBox(color: Colors.black),
@@ -3288,16 +2403,6 @@ Widget _doorScanCapture() => DoorScanScreen(
   ),
 );
 
-// The live console is drawn for a tall phone and a landscape tablet.
-const _hostLivePhone = CaptureDevice(
-  id: 'host-live-phone-390x1240',
-  size: Size(390, 1240),
-);
-const _hostLiveTablet = CaptureDevice(
-  id: 'host-live-tablet-1194x834',
-  size: hostLiveTabletLandscapeSize,
-);
-
 // Insights on the system: the last thirty days of a busy organizer, with
 // this week still filling.
 HostAnalyticsEventRow _hostInsightsNight(
@@ -3312,7 +2417,7 @@ HostAnalyticsEventRow _hostInsightsNight(
   int matches = 0,
 }) => HostAnalyticsEventRow(
   eventId: id,
-  organizerId: _hostTodayOrganizer.id,
+  organizerId: hostTodayOrganizer.id,
   title: title,
   startTime: start,
   status: 'completed',
@@ -3423,20 +2528,20 @@ HostAnalyticsReport _hostInsightsReport({
 }
 
 List<Object> _hostInsightsCaptureOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ..._hostOperationsProviderOverrides(
-    hostedOrganizers: [_hostTodayOrganizer],
-    ownedOrganizers: [_hostTodayOrganizer],
+  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ...hostOperationsProviderOverrides(
+    hostedOrganizers: [hostTodayOrganizer],
+    ownedOrganizers: [hostTodayOrganizer],
     analyticsRepository: HostFixtureAnalyticsRepository(
       report: _hostInsightsReport(),
     ),
   ),
 ];
 
-Widget _hostInsightsCapture() => _HostRoutedShellCapture(
+Widget _hostInsightsCapture() => HostRoutedShellCapture(
   initialLocation: '/host/organizer',
   activeIndex: 4,
-  child: HostInsightsScreen(initialOrganizerId: _hostTodayOrganizer.id),
+  child: HostInsightsScreen(initialOrganizerId: hostTodayOrganizer.id),
 );
 
 // The event report the night of a trivia event: who came, what guests said
@@ -3445,7 +2550,7 @@ final _hostReportNow = DateTime(2026, 10, 27, 23, 10);
 final _hostReportEvent =
     HostOperationsFixtures.event(
       id: 'design-report-trivia',
-      organizer: _hostTodayOrganizer,
+      organizer: hostTodayOrganizer,
       start: DateTime(2026, 10, 27, 19, 30),
       bookedCount: 24,
       capacityLimit: 30,
@@ -3457,7 +2562,7 @@ final _hostReportEvent =
     );
 final _hostReportNext = HostOperationsFixtures.event(
   id: 'design-report-next',
-  organizer: _hostTodayOrganizer,
+  organizer: hostTodayOrganizer,
   start: DateTime(2026, 11, 3, 19, 30),
   bookedCount: 0,
   capacityLimit: 30,
@@ -3494,7 +2599,7 @@ final _hostReportReviews = [
   ].indexed)
     Review(
       id: 'design-report-review-$index',
-      organizerId: _hostTodayOrganizer.id,
+      organizerId: hostTodayOrganizer.id,
       eventId: _hostReportEvent.id,
       reviewerName: name,
       rating: rating,
@@ -3504,10 +2609,10 @@ final _hostReportReviews = [
 ];
 
 List<Object> _hostReportCaptureOverrides() => [
-  ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ..._hostOperationsProviderOverrides(
-    hostedOrganizers: [_hostTodayOrganizer],
-    ownedOrganizers: [_hostTodayOrganizer],
+  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+  ...hostOperationsProviderOverrides(
+    hostedOrganizers: [hostTodayOrganizer],
+    ownedOrganizers: [hostTodayOrganizer],
     analyticsRepository: HostFixtureAnalyticsRepository(
       report: _hostInsightsReport(
         topEvents: [
@@ -3539,7 +2644,7 @@ List<Object> _hostReportCaptureOverrides() => [
     (ref) => Stream.value(
       HostEventRosterInsights(
         eventId: _hostReportEvent.id,
-        organizerId: _hostTodayOrganizer.id,
+        organizerId: hostTodayOrganizer.id,
         cutoffAt: _hostReportEvent.startTime,
         sourceCoverage: HostRosterInsightCoverage.exact,
         spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
@@ -3576,7 +2681,7 @@ List<Object> _hostReportCaptureOverrides() => [
         EventAttendee(
           id: 'design-report-attendee-$index',
           eventId: _hostReportEvent.id,
-          organizerId: _hostTodayOrganizer.id,
+          organizerId: hostTodayOrganizer.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.catchBooking,
@@ -3591,7 +2696,7 @@ List<Object> _hostReportCaptureOverrides() => [
   ).overrideWith((ref) => Stream.value(_hostReportReviews)),
   watchActiveEventsForOrganizerProvider(
     ActiveOrganizerEventsQuery(
-      organizerId: _hostTodayOrganizer.id,
+      organizerId: hostTodayOrganizer.id,
       day: _hostReportNow,
     ),
   ).overrideWith((ref) => Stream.value([_hostReportNext])),
@@ -3603,7 +2708,7 @@ List<Object> _hostReportCaptureOverrides() => [
 /// Three shared photos, drawn from the capture fixture portraits.
 final _hostReportPhotoAlbum = EventHostPhotoAlbum(
   eventId: _hostReportEvent.id,
-  organizerName: _hostTodayOrganizer.name,
+  organizerName: hostTodayOrganizer.name,
   access: EventHostPhotoAccess.host,
   maxPhotos: 100,
   photos: [
@@ -3652,85 +2757,17 @@ Future<void> _driveHostReportToPhotos(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-Widget _hostReportCapture() => _AppRoleCapture(
+Widget _hostReportCapture() => AppRoleCapture(
   role: AppRole.host,
   child: HostEventReportScreen(
-    organizer: _hostTodayOrganizer,
+    organizer: hostTodayOrganizer,
     event: _hostReportEvent,
     now: _hostReportNow,
   ),
 );
 
-List<HostAttentionItem> _captureTodayAttentionItems(
-  Iterable<Event> events,
-  DateTime now,
-) => [
-  for (final event in events)
-    if (event.waitlistCount > 0 &&
-        !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired)
-      HostAttentionItem(
-        id: 'capture-attention-${event.id}',
-        kind: HostAttentionKind.eventWaitlistReview,
-        scope: HostAttentionScope.event,
-        sourceOwner: HostAttentionSourceOwner.events,
-        sourceId: event.id,
-        sourceRevision: 'capture-${event.waitlistCount}',
-        eventId: event.id,
-        status: HostAttentionStatus.open,
-        consequence: HostAttentionConsequence.risksGuestExperience,
-        blocking: false,
-        urgency: event.startTime.difference(now) <= const Duration(hours: 24)
-            ? HostAttentionUrgency.immediate
-            : event.startTime.difference(now) <= const Duration(hours: 72)
-            ? HostAttentionUrgency.soon
-            : HostAttentionUrgency.upcoming,
-        destination: HostAttentionDestination(
-          route: HostAttentionDestinationRoute.hostEventManage,
-          section: 'guests',
-          eventId: event.id,
-        ),
-        context: HostAttentionContext(
-          eventName: event.title,
-          count: event.waitlistCount,
-        ),
-        dedupeKey: 'eventWaitlistReview:${event.id}',
-        policyVersion: 1,
-        resolutionVersion: 1,
-        assignedHostUid: null,
-        openedAt: now,
-        dueAt: event.startTime.subtract(const Duration(hours: 24)),
-        expiresAt: event.endTime,
-      ),
-];
-
-class _CaptureHostEventsTimelineController
-    extends HostEventsTimelineController {
-  _CaptureHostEventsTimelineController(this.eventsByOrganizer);
-
-  final Map<String, List<Event>> eventsByOrganizer;
-
-  @override
-  Future<HostEventsTimelineData> build(
-    HostEventsTimelineRequest request,
-  ) async {
-    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
-    return HostEventsTimelineData(
-      activeEvents: events
-          .where((event) => event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
-      pastEvents: events
-          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
-      activeCursor: null,
-      pastCursor: null,
-      hasMoreActive: false,
-      hasMorePast: false,
-    );
-  }
-}
-
 Widget _hostPayoutCardCapture() {
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: AppRole.host,
     child: Scaffold(
       body: SafeArea(
@@ -3750,7 +2787,7 @@ class _HostTeamSectionCapture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AppRoleCapture(
+    return AppRoleCapture(
       role: AppRole.host,
       child: Scaffold(
         body: SafeArea(
@@ -3901,61 +2938,6 @@ class _HostOrganizersMutationCaptureState
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-final class _CaptureNoopHostOrganizerEditActions
-    implements HostOrganizerEditActions {
-  const _CaptureNoopHostOrganizerEditActions();
-
-  @override
-  Future<void> updateOrganizer({
-    required String organizerId,
-    required UpdateOrganizerPatch patch,
-  }) async {}
-
-  @override
-  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({
-    int? limit,
-  }) async => const [];
-
-  @override
-  Future<HostPickedOrganizerLogo?> pickOrganizerLogo() async => null;
-
-  @override
-  Future<HostOrganizerMediaSaveResult> updateOrganizerMedia({
-    required Organizer organizer,
-    List<HostOrganizerMediaInput>? photoInputs,
-    HostPickedOrganizerLogo? logo,
-    bool removeLogo = false,
-    ValueChanged<HostOrganizerMediaProgress>? onProgress,
-  }) async => HostOrganizerMediaSaveResult(
-    photoInputs: photoInputs,
-    logo: logo,
-    failures: const {},
-    attached: true,
-  );
-
-  @override
-  Future<void> discardOrganizerMedia({
-    required List<HostOrganizerMediaInput> photoInputs,
-    HostPickedOrganizerLogo? logo,
-  }) async {}
-}
-
-final class _CaptureNoopHostPaymentAccountActions
-    implements HostPaymentAccountActions {
-  const _CaptureNoopHostPaymentAccountActions();
-
-  @override
-  Future<void> refreshStatus(HostPaymentProvider provider) async {}
-
-  @override
-  Future<void> startOnboarding({
-    required HostPaymentProvider provider,
-    required String country,
-    required String defaultCurrency,
-    RazorpayHostOnboardingDetails? razorpayDetails,
-  }) async {}
 }
 
 List<OrderedPhotoPreview> _createHostMediaManagerPhotos() {
@@ -4151,18 +3133,16 @@ List<Object> _hostCreateEventProviderOverrides({
   Organizer? organizer,
   AsyncValue<Organizer?>? organizerValue,
   List<EventDraft> drafts = const <EventDraft>[],
-  String? uid = _captureViewerUid,
+  String? uid = captureViewerUid,
 }) {
   final resolvedOrganizer = organizer ?? _dashboardHostOrganizer;
   return [
     uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-    watchUserProfileProvider.overrideWith(
-      (ref) => Stream.value(_captureViewer),
-    ),
+    watchUserProfileProvider.overrideWith((ref) => Stream.value(captureViewer)),
     fetchOrganizerProvider(resolvedOrganizer.id).overrideWithValue(
       organizerValue ?? AsyncData<Organizer?>(resolvedOrganizer),
     ),
-    deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+    deviceLocationProvider.overrideWith(CaptureDeviceLocation.new),
     watchOrganizerEventVenuesProvider(
       resolvedOrganizer.id,
     ).overrideWith((ref) => Stream.value(const <OrganizerEventVenue>[])),
@@ -4210,7 +3190,7 @@ List<Object> _hostEditEventProviderOverrides({
       (ref) => Stream.value(
         effectiveUid == HostOperationsFixtures.hostUid
             ? HostOperationsFixtures.owner
-            : _captureViewer,
+            : captureViewer,
       ),
     ),
     fetchOrganizerProvider(_dashboardHostOrganizer.id).overrideWithValue(
@@ -4222,7 +3202,7 @@ List<Object> _hostEditEventProviderOverrides({
     watchEventPrivateAccessProvider(effectiveEvent.id).overrideWithValue(
       privateAccessValue ?? const AsyncData<EventPrivateAccess?>(null),
     ),
-    deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+    deviceLocationProvider.overrideWith(CaptureDeviceLocation.new),
     eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
   ];
 }
@@ -4531,7 +3511,7 @@ List<Object> _hostManageRouteProviderOverrides({
           Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
     ),
     hostAttendanceOutboxStoreProvider.overrideWithValue(
-      _CaptureHostAttendanceOutboxStore(),
+      CaptureHostAttendanceOutboxStore(),
     ),
     fetchOrganizerProvider(effectiveOrganizer.id).overrideWithValue(
       organizerValue ?? AsyncData<Organizer?>(effectiveOrganizer),
@@ -4595,30 +3575,6 @@ List<Object> _hostManageRouteProviderOverrides({
         eventSuccessPeerUidsKey(_hostManageWingmanProfileUids(wingmanRequests)),
       ).overrideWith((ref) async => wingmanProfiles),
   ];
-}
-
-class _CaptureHostAttendanceOutboxStore extends Fake
-    implements HostAttendanceOutboxStore {
-  List<HostAttendanceOutboxEntry> entries = [];
-  @override
-  Future<List<HostAttendanceOutboxEntry>> load(
-    String accountId, {
-    String? scope,
-    DateTime? now,
-  }) async => List.of(entries);
-
-  @override
-  Future<void> flush(
-    String accountId,
-    String scope,
-    Future<void> Function(HostAttendanceOutboxEntry) execute,
-  ) async {
-    if (entries.isNotEmpty) {
-      throw StateError(
-        'Seed an explicit replay result for pending attendance.',
-      );
-    }
-  }
 }
 
 final class _CaptureFirebaseFunctions extends Fake
@@ -4927,7 +3883,7 @@ Widget _hostManageRouteCapture({
       const Duration(minutes: 1),
     ),
   };
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: AppRole.host,
     child: HostEventManageRouteScreen(
       organizerId: effectiveOrganizer.id,
@@ -4942,7 +3898,7 @@ Widget _hostManageRouteCapture({
 
 Widget _hostManageLiveSectionCapture({Event? event}) {
   final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: AppRole.host,
     child: SingleChildScrollView(
       key: const ValueKey<String>('host_manage_live_section_capture_scroll'),
@@ -5040,11 +3996,11 @@ EventSuccessPlan _hostManageLivePlanForModule({
 }
 
 List<Object> _hostManageLiveWindowProviderOverrides() => [
-  uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+  uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
   appConnectivityProvider.overrideWith(
     (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
   ),
-  watchUserProfileProvider.overrideWith((ref) => Stream.value(_captureViewer)),
+  watchUserProfileProvider.overrideWith((ref) => Stream.value(captureViewer)),
   watchEventProvider(
     _hostLiveWindowEvent.id,
   ).overrideWith((ref) => Stream.value(_hostLiveWindowEvent)),
@@ -5897,7 +4853,7 @@ Widget _hostChatCapture({
 }) {
   final effectiveMatch = match ?? _hostInquiryMatch;
   final id = matchId ?? effectiveMatch.id;
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: AppRole.host,
     child: ChatScreen(matchId: id, initialDraftText: initialDraftText),
   );
@@ -6003,7 +4959,7 @@ class _HostChatSafetyPendingMenuCapture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AppRoleCapture(
+    return AppRoleCapture(
       role: AppRole.host,
       child: Scaffold(
         body: SafeArea(
@@ -6202,7 +5158,7 @@ Widget _matchesListCapture({
     initialScope: ConsumerChatScope.messages,
   ),
 }) {
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: role,
     child: _ChatSearchQuerySeed(query: searchQuery, child: child),
   );
@@ -6217,7 +5173,7 @@ Widget _hostInboxCapture({
   String searchQuery = '',
   bool broadcastEnabled = true,
 }) {
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: AppRole.host,
     child: _ChatSearchQuerySeed(
       query: searchQuery,
@@ -6307,7 +5263,7 @@ class _HostBroadcastComposerCaptureState
 
   @override
   Widget build(BuildContext context) {
-    return _AppRoleCapture(
+    return AppRoleCapture(
       role: AppRole.host,
       child: Scaffold(
         body: Align(
@@ -6451,7 +5407,7 @@ Widget _matchChatCapture({
   final effectiveMatch =
       match ?? MatchesChatSurfaceFixtures.activeConversationMatch();
   final id = matchId ?? effectiveMatch.id;
-  return _AppRoleCapture(
+  return AppRoleCapture(
     role: role,
     child: ChatScreen(
       matchId: id,
@@ -6632,7 +5588,7 @@ class _ChatComposerStatesCaptureState
 
   @override
   Widget build(BuildContext context) {
-    return _AppRoleCapture(
+    return AppRoleCapture(
       role: widget.role,
       child: Scaffold(
         body: SafeArea(
@@ -6675,7 +5631,7 @@ class _ChatComposerStatesCaptureState
   }
 }
 
-final _hostEvent = _captureFixtures.hostDemoEvent(
+final _hostEvent = captureFixtures.hostDemoEvent(
   role: 'hostLiveConsole',
   organizer: _dashboardHostOrganizer,
 );
@@ -6685,212 +5641,10 @@ final _hostLiveWindowEvent = _hostEvent.copyWith(
   endTime: _hostLiveWindowNow.add(const Duration(minutes: 45)),
 );
 
-final _marketingHostOrganizer = hostMarketingIndiaScenario.organizer(
-  _captureFixtures,
-);
-final _marketingHostTodayEvent = hostMarketingIndiaScenario.event(
-  _captureFixtures,
-  'hostToday',
-);
-final _marketingHostLiveEvent = hostMarketingIndiaScenario.event(
-  _captureFixtures,
-  'hostLiveConsole',
-);
-final _marketingHostReportEvent = hostMarketingIndiaScenario.event(
-  _captureFixtures,
-  'hostPostEventReport',
-);
-final _marketingHostParticipationRepository = FakeEventParticipationRepository()
-  ..eventParticipations[_marketingHostLiveEvent.id] = const [];
-final _marketingHostPublicProfileRepository = FakePublicProfileRepository();
-final _marketingHostLiveAttendees = [
-  for (final (index, guest)
-      in hostMarketingIndiaScenario.guestsAt('live').indexed)
-    EventAttendee(
-      id: 'marketing-india-attendee-$index',
-      eventId: _marketingHostLiveEvent.id,
-      organizerId: _marketingHostOrganizer.id,
-      displayName: _captureFixtures.publicProfile(guest.personaId).name,
-      searchName: _captureFixtures
-          .publicProfile(guest.personaId)
-          .name
-          .toLowerCase(),
-      source: EventAttendeeSource.catchBooking,
-      status: guest.checkedInAt != null
-          ? EventAttendeeStatus.checkedIn
-          : EventAttendeeStatus.registered,
-      createdAt: guest.bookedAt,
-      updatedAt: guest.checkedInAt ?? guest.bookedAt,
-      checkedInAt: guest.checkedInAt,
-    ),
-];
-EventSuccessPlan _marketingHostPlan(Event event, {bool complete = false}) =>
-    EventSuccessPlan.fromDraft(
-      id: event.id,
-      eventId: event.id,
-      organizerId: event.organizerId,
-      draft: hostMarketingIndiaScenario.guideDefaults.toDraft(
-        targetAttendeeCount: event.capacityLimit,
-      ),
-      createdAt: hostMarketingIndiaScenario.clock('planning'),
-      updatedAt: hostMarketingIndiaScenario.clock(
-        complete ? 'followUp' : 'live',
-      ),
-      activeStepIndex: 1,
-      status: complete
-          ? EventSuccessPlanStatus.complete
-          : EventSuccessPlanStatus.live,
-      frozenAt: hostMarketingIndiaScenario.clock('live'),
-      completedAt: complete ? event.endTime : null,
-    );
-// The guest's after-event screen in the Mumbai marketing story: the morning
-// after Evening Club's Saturday Trivia Social, picks still open.
-final _marketingAfterEventNow = hostMarketingIndiaScenario.clock('followUp');
-final _marketingAfterEventViewer = buildSocialReadyUser(
-  uid: 'marketing-after-event-viewer',
-  name: _captureFixtures
-      .publicProfile(hostMarketingIndiaScenario.scenario.viewerPersonaId)
-      .name,
-);
-final _marketingAfterEventViewerUid = _marketingAfterEventViewer.uid;
-final _marketingAfterEventProfiles = [
-  for (final guest in hostMarketingIndiaScenario.guestsAt('followUp'))
-    if (guest.checkedInAt != null &&
-        guest.personaId != hostMarketingIndiaScenario.scenario.viewerPersonaId)
-      _captureFixtures.publicProfile(guest.personaId),
-].take(6).toList(growable: false);
-final _marketingAfterEventNext = _marketingHostReportEvent.copyWith(
-  id: 'event-host-trivia-store-demo-next',
-  startTime: _marketingHostReportEvent.startTime.add(const Duration(days: 7)),
-  endTime: _marketingHostReportEvent.endTime.add(const Duration(days: 7)),
-);
-
-List<Object> _marketingAfterEventOverrides() {
-  final event = _marketingHostReportEvent;
-  final uid = _marketingAfterEventViewerUid;
-  final attendeeIds = [
-    for (final profile in _marketingAfterEventProfiles) profile.uid,
-  ];
-  return <Object>[
-    uidProvider.overrideWith((ref) => Stream.value(uid)),
-    eventHostPhotoAlbumProvider(
-      event.id,
-    ).overrideWith((ref) async => EventHostPhotoAlbum.empty(event.id)),
-    watchUserProfileProvider.overrideWith(
-      (ref) => Stream<UserProfile?>.value(_marketingAfterEventViewer),
-    ),
-    eventRecapViewModelProvider(event.id).overrideWith(
-      (ref) => AsyncData<EventRecapViewModel?>(
-        EventRecapViewModel(
-          event: event,
-          attendeeIds: attendeeIds,
-          checkedInCount: attendeeIds.length + 1,
-        ),
-      ),
-    ),
-    publicProfilesByIdsProvider(
-      PublicProfilesQuery(attendeeIds),
-    ).overrideWithValue(
-      AsyncData({
-        for (final profile in _marketingAfterEventProfiles)
-          profile.uid: profile,
-      }),
-    ),
-    watchOrganizerProvider(
-      _marketingHostOrganizer.id,
-    ).overrideWith((ref) => Stream.value(_marketingHostOrganizer)),
-    watchEventParticipationProvider(event.id, uid).overrideWith(
-      (ref) => Stream.value(
-        buildEventParticipation(
-          event: event,
-          uid: uid,
-          status: EventParticipationStatus.attended,
-          createdAt: event.startTime,
-        ),
-      ),
-    ),
-    watchUserEventSuccessFeedbackProvider(
-      eventId: event.id,
-      uid: uid,
-    ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(null)),
-    watchUserEventSuccessAssignmentProvider(
-      eventId: event.id,
-      uid: uid,
-    ).overrideWith((ref) => Stream<EventSuccessAssignment?>.value(null)),
-    eventChatAccessProvider(event.id).overrideWith(
-      (ref) async => EventChatAccess(
-        eventId: event.id,
-        title: event.title,
-        organizerId: event.organizerId,
-        roomStatus: 'open',
-        roomRevision: 1,
-        membershipStatus: 'joined',
-        membershipRevision: 1,
-        canManage: false,
-        canJoin: true,
-        canReadMessages: true,
-        closesAtMillis: event.endTime
-            .add(const Duration(days: 7))
-            .millisecondsSinceEpoch,
-        profileClaimRequired: false,
-        termsVersion: 'event-chat-v1',
-      ),
-    ),
-    watchActiveEventsForOrganizerProvider(
-      ActiveOrganizerEventsQuery(
-        organizerId: event.organizerId,
-        day: _marketingAfterEventNow,
-      ),
-    ).overrideWith((ref) => Stream.value([_marketingAfterEventNext])),
-    currentUserFollowedOrganizerIdsProvider.overrideWithValue(
-      const AsyncData(<String>{}),
-    ),
-  ];
-}
-
-List<Object> _marketingHostManageOverrides(
-  Event event, {
-  bool complete = false,
-}) => [
-  uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
-  watchUserProfileProvider.overrideWith((ref) => Stream.value(_captureViewer)),
-  watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
-  watchReviewsForEventProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(const <Review>[])),
-  eventParticipationRepositoryProvider.overrideWithValue(
-    _marketingHostParticipationRepository,
-  ),
-  watchEventAttendeesProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(_marketingHostLiveAttendees)),
-  publicProfileRepositoryProvider.overrideWithValue(
-    _marketingHostPublicProfileRepository,
-  ),
-  watchEventSuccessPlanProvider(event.id).overrideWith(
-    (ref) => Stream.value(_marketingHostPlan(event, complete: complete)),
-  ),
-  watchEventSuccessScorecardProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(null)),
-  watchEventSuccessAssignmentsProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
-  watchEventSuccessRotationAssignmentsProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
-  watchEventSuccessPreferencesProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessPreference>[])),
-  watchEventSuccessWingmanRequestsProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessWingmanRequest>[])),
-];
-
-final _hostGuestProfiles = _captureFixtures.rosterProfiles(
+final _hostGuestProfiles = captureFixtures.rosterProfiles(
   count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
 );
-final _hostParticipations = _captureFixtures.participationsForProfiles(
+final _hostParticipations = captureFixtures.participationsForProfiles(
   event: _hostEvent,
   profiles: _hostGuestProfiles,
   attendedCount:
@@ -7076,12 +5830,12 @@ final _hostLiveReferenceOrganizer = _dashboardHostOrganizer.copyWith(
   name: 'Bandra Social',
 );
 final _hostManageReferenceOrganizer = _hostLiveReferenceOrganizer.copyWith(
-  ownerUserId: _captureViewerUid,
-  hostUserId: _captureViewerUid,
-  hostUserIds: const [_captureViewerUid],
+  ownerUserId: captureViewerUid,
+  hostUserId: captureViewerUid,
+  hostUserIds: const [captureViewerUid],
   hostProfiles: const [
     OrganizerHostProfile(
-      uid: _captureViewerUid,
+      uid: captureViewerUid,
       displayName: 'Mira Shah',
       role: OrganizerHostRole.owner,
     ),
@@ -7142,8 +5896,8 @@ final _hostManageFullReferenceEvent = _hostManageReferenceEvent.copyWith(
   id: 'host-manage-reference-trivia-full',
   waitlistedCohortCounts: const {EventCohortIds.womenInterestedInMen: 6},
 );
-final _hostManageReferenceProfiles = _captureFixtures.rosterProfiles(count: 30);
-final _hostManageReferenceParticipations = _captureFixtures
+final _hostManageReferenceProfiles = captureFixtures.rosterProfiles(count: 30);
+final _hostManageReferenceParticipations = captureFixtures
     .participationsForProfiles(
       event: _hostManageReferenceEvent,
       profiles: _hostManageReferenceProfiles,
@@ -7340,7 +6094,7 @@ final _hostLiveReferenceEvent = _hostEvent.copyWith(
   waitlistedCount: 0,
   capacityLimit: 30,
 );
-final _hostLiveReferenceProfiles = _captureFixtures.rosterProfiles(count: 24);
+final _hostLiveReferenceProfiles = captureFixtures.rosterProfiles(count: 24);
 final _hostLiveReferenceOperationalAttendees = List<EventAttendee>.generate(
   24,
   (index) => EventAttendee(
@@ -7506,33 +6260,33 @@ final _hostEventSuccessProviderOverrides = [
 ];
 
 final _matchesListProfiles = [
-  _matchChatOtherProfile,
-  _captureFixtures.publicProfile('nyc_sofia_martinez_003'),
-  _captureFixtures.publicProfile('nyc_priya_desai_007'),
+  matchChatOtherProfile,
+  captureFixtures.publicProfile('nyc_sofia_martinez_003'),
+  captureFixtures.publicProfile('nyc_priya_desai_007'),
 ];
 final _matchesListMatches = [
-  _matchChatMatch,
+  matchChatMatch,
   Match(
     id: 'match-list-new-sofia',
-    user1Id: _matchChatViewerUid,
+    user1Id: matchChatViewerUid,
     user2Id: _matchesListProfiles[1].uid,
     eventIds: ['event-discovery-pickle-open'],
     createdAt: DateTime(2026, 5, 30, 19, 12),
-    unreadCounts: const {_matchChatViewerUid: 0},
+    unreadCounts: const {matchChatViewerUid: 0},
   ),
   Match(
     id: 'match-list-priya',
     user1Id: _matchesListProfiles[2].uid,
-    user2Id: _matchChatViewerUid,
+    user2Id: matchChatViewerUid,
     eventIds: ['event-dashboard-next'],
     createdAt: DateTime(2026, 5, 30, 8, 55),
     lastMessageAt: DateTime(2026, 5, 30, 10, 8),
     lastMessagePreview: 'Next dawn loop, same coffee place?',
     lastMessageSenderId: _matchesListProfiles[2].uid,
-    unreadCounts: const {_matchChatViewerUid: 2},
+    unreadCounts: const {matchChatViewerUid: 2},
   ),
 ];
-final _matchesListMatchRepository = _CaptureMatchRepository(
+final _matchesListMatchRepository = CaptureMatchRepository(
   matches: _matchesListMatches,
 );
 
@@ -7554,12 +6308,12 @@ final _eventSuccessCompanionPlan = EventSuccessPlan.defaultForEvent(
 );
 final _eventSuccessCompanionParticipation = buildEventParticipation(
   event: _eventSuccessCompanionEvent,
-  uid: _captureViewerUid,
+  uid: captureViewerUid,
   createdAt: DateTime(2026, 5, 29, 9),
 );
 
 List<Object> _eventSuccessCompanionRouteProviderOverrides({
-  AsyncValue<String?> uidValue = const AsyncData<String?>(_captureViewerUid),
+  AsyncValue<String?> uidValue = const AsyncData<String?>(captureViewerUid),
   AsyncValue<Event?>? eventValue,
   AsyncValue<UserProfile?>? profileValue,
   AsyncValue<EventParticipation?>? participationValue,
@@ -7571,11 +6325,11 @@ List<Object> _eventSuccessCompanionRouteProviderOverrides({
       eventValue ?? AsyncData<Event?>(_eventSuccessCompanionEvent),
     ),
     watchUserProfileProvider.overrideWithValue(
-      profileValue ?? AsyncData<UserProfile?>(_captureViewer),
+      profileValue ?? AsyncData<UserProfile?>(captureViewer),
     ),
     watchEventParticipationProvider(
       _eventSuccessCompanionEvent.id,
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWithValue(
       participationValue ??
           AsyncData<EventParticipation?>(_eventSuccessCompanionParticipation),
@@ -7589,90 +6343,9 @@ List<Object> _eventSuccessCompanionRouteProviderOverrides({
       AsyncData<DateTime>(_captureNow),
     ),
     eventSuccessLiveEffectsControllerProvider.overrideWith(
-      (ref) => _NoopEventSuccessLiveEffectsController(),
+      (ref) => NoopEventSuccessLiveEffectsController(),
     ),
   ];
-}
-
-List<Object> _eventSuccessCompanionProviderOverrides() => [
-  uidProvider.overrideWithValue(
-    const AsyncData<String?>(EventSuccessCompanionFixtures.viewerUid),
-  ),
-  eventSuccessLiveEffectsControllerProvider.overrideWith(
-    (ref) => _NoopEventSuccessLiveEffectsController(),
-  ),
-];
-
-enum _EventSuccessCompanionMutationCaptureMode {
-  selfCheckInPending,
-  firstHelloStartPending,
-  firstHelloCompletePending,
-  compatibilityPending,
-  microPodsOptOutPending,
-  guidedRotationsOptOutPending,
-  wingmanRequestPending,
-  feedbackPending,
-}
-
-Widget _eventSuccessCompanionCapture({
-  Event? event,
-  EventSuccessPlan? plan,
-  EventParticipation? participation,
-  List<PublicProfile> wingmanRequestCandidates = const [],
-  EventSuccessWingmanRequest? wingmanRequest,
-  EventSuccessCompatibilityResponse? compatibilityResponse,
-  EventSuccessFeedback? existingFeedback,
-  EventSuccessAssignment? assignment,
-  List<PublicProfile> assignmentPeerProfiles = const [],
-  bool assignmentPeersLoading = false,
-  bool microPodsOptedOut = false,
-  EventSuccessAssignment? rotationAssignment,
-  List<PublicProfile> rotationPeerProfiles = const [],
-  bool rotationPeersLoading = false,
-  bool guidedRotationsOptedOut = false,
-  EventSuccessArrivalMission? arrivalMission,
-  DateTime? now,
-  Future<void> Function(List<String> answerIds)? onSaveCompatibilityAnswers,
-  Future<void> Function()? onStartArrivalMission,
-  Future<void> Function(EventSuccessArrivalMission mission, String answerId)?
-  onCompleteArrivalMission,
-  VoidCallback? onSkipArrivalMission,
-  _EventSuccessCompanionMutationCaptureMode? mutationMode,
-}) {
-  final resolvedEvent = event ?? EventSuccessCompanionFixtures.socialEvent;
-  final screen = EventSuccessCompanionScreen(
-    event: resolvedEvent,
-    plan: plan ?? EventSuccessCompanionFixtures.basePlan,
-    userProfile: EventSuccessCompanionFixtures.viewer,
-    participation:
-        participation ??
-        EventSuccessCompanionFixtures.signedUpParticipation(
-          event: resolvedEvent,
-        ),
-    wingmanRequestCandidates: wingmanRequestCandidates,
-    wingmanRequest: wingmanRequest,
-    compatibilityResponse: compatibilityResponse,
-    existingFeedback: existingFeedback,
-    assignment: assignment,
-    assignmentPeerProfiles: assignmentPeerProfiles,
-    assignmentPeersLoading: assignmentPeersLoading,
-    microPodsOptedOut: microPodsOptedOut,
-    rotationAssignment: rotationAssignment,
-    rotationPeerProfiles: rotationPeerProfiles,
-    rotationPeersLoading: rotationPeersLoading,
-    guidedRotationsOptedOut: guidedRotationsOptedOut,
-    arrivalMission: arrivalMission,
-    now: now,
-    onSaveCompatibilityAnswers: onSaveCompatibilityAnswers,
-    onStartArrivalMission: onStartArrivalMission,
-    onCompleteArrivalMission: onCompleteArrivalMission,
-    onSkipArrivalMission: onSkipArrivalMission,
-  );
-  if (mutationMode == null) return screen;
-  return _EventSuccessCompanionMutationCapture(
-    mode: mutationMode,
-    child: screen,
-  );
 }
 
 final _eventSuccessMotionParityAnchor = DateTime.fromMillisecondsSinceEpoch(
@@ -7696,85 +6369,6 @@ final _eventSuccessMotionParityPlan = EventSuccessCompanionFixtures
       revealStartedAt: _eventSuccessMotionParityAnchor,
     );
 
-class _EventSuccessCompanionMutationCapture extends ConsumerStatefulWidget {
-  const _EventSuccessCompanionMutationCapture({
-    required this.mode,
-    required this.child,
-  });
-
-  final _EventSuccessCompanionMutationCaptureMode mode;
-  final Widget child;
-
-  @override
-  ConsumerState<_EventSuccessCompanionMutationCapture> createState() =>
-      _EventSuccessCompanionMutationCaptureState();
-}
-
-class _EventSuccessCompanionMutationCaptureState
-    extends ConsumerState<_EventSuccessCompanionMutationCapture> {
-  @override
-  void initState() {
-    super.initState();
-    _resetMutations();
-    _seed();
-  }
-
-  @override
-  void dispose() {
-    _resetMutations();
-    super.dispose();
-  }
-
-  void _resetMutations() {
-    EventBookingController.selfCheckInMutation.reset(ref);
-    EventSuccessController.firstHelloStartMutation.reset(ref);
-    EventSuccessController.firstHelloCompleteMutation.reset(ref);
-    EventSuccessController.compatibilityResponseMutation.reset(ref);
-    EventSuccessController.microPodsOptOutMutation.reset(ref);
-    EventSuccessController.guidedRotationsOptOutMutation.reset(ref);
-    EventSuccessController.wingmanRequestMutation.reset(ref);
-    EventSuccessController.feedbackMutation.reset(ref);
-  }
-
-  void _seed() {
-    switch (widget.mode) {
-      case _EventSuccessCompanionMutationCaptureMode.selfCheckInPending:
-        _runPending(EventBookingController.selfCheckInMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.firstHelloStartPending:
-        _runPending(EventSuccessController.firstHelloStartMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.firstHelloCompletePending:
-        _runPending(EventSuccessController.firstHelloCompleteMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.compatibilityPending:
-        _runPending(EventSuccessController.compatibilityResponseMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.microPodsOptOutPending:
-        _runPending(EventSuccessController.microPodsOptOutMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode
-          .guidedRotationsOptOutPending:
-        _runPending(EventSuccessController.guidedRotationsOptOutMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.wingmanRequestPending:
-        _runPending(EventSuccessController.wingmanRequestMutation);
-        break;
-      case _EventSuccessCompanionMutationCaptureMode.feedbackPending:
-        _runPending(EventSuccessController.feedbackMutation);
-        break;
-    }
-  }
-
-  void _runPending<T>(Mutation<T> mutation) {
-    final completer = Completer<T>();
-    unawaited(mutation.run(ref, (_) => completer.future));
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
-}
-
 NetworkException _eventSuccessCompanionOfflineException({
   required String action,
 }) {
@@ -7788,7 +6382,7 @@ NetworkException _eventSuccessCompanionOfflineException({
 }
 
 final _reviewHistoryEvents = [
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-review-history-dawn',
     organizer: _dashboardJoinedOrganizer,
     startTime: DateTime(2026, 5, 24, 7),
@@ -7799,7 +6393,7 @@ final _reviewHistoryEvents = [
     capacityLimit: 22,
     description: 'A completed social run with a warm review.',
   ),
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-review-history-table',
     organizer: _dashboardHostOrganizer,
     startTime: DateTime(2026, 5, 18, 20),
@@ -7812,7 +6406,7 @@ final _reviewHistoryEvents = [
     priceInPaise: 120000,
     description: 'A hosted table with structured prompts and warm exits.',
   ),
-  _captureFixtures.captureEvent(
+  captureFixtures.captureEvent(
     id: 'event-review-history-walk',
     organizer: _dashboardJoinedOrganizer,
     startTime: DateTime(2026, 5, 11, 8),
@@ -7826,10 +6420,10 @@ final _reviewHistoryEvents = [
     description: 'A low-pressure walk with a coffee handoff after.',
   ),
 ];
-final _reviewHistoryReviews = _captureFixtures.reviewsByViewer(
+final _reviewHistoryReviews = captureFixtures.reviewsByViewer(
   events: _reviewHistoryEvents,
-  reviewerUserId: _captureViewerUid,
-  reviewerName: _captureViewer.name,
+  reviewerUserId: captureViewerUid,
+  reviewerName: captureViewer.name,
   firstCreatedAt: DateTime(2026, 5, 25),
 );
 final _reviewHistoryMissingContextReviews = [
@@ -7837,8 +6431,8 @@ final _reviewHistoryMissingContextReviews = [
     id: 'review-history-missing-event',
     organizerId: _dashboardJoinedOrganizer.id,
     eventId: 'event-review-history-missing',
-    reviewerUserId: _captureViewerUid,
-    reviewerName: _captureViewer.name,
+    reviewerUserId: captureViewerUid,
+    reviewerName: captureViewer.name,
     rating: 4,
     comment: 'Still worth remembering, even without event context.',
     createdAt: DateTime(2026, 5, 12),
@@ -7846,8 +6440,8 @@ final _reviewHistoryMissingContextReviews = [
   Review(
     id: 'review-history-legacy-club',
     organizerId: _dashboardJoinedOrganizer.id,
-    reviewerUserId: _captureViewerUid,
-    reviewerName: _captureViewer.name,
+    reviewerUserId: captureViewerUid,
+    reviewerName: captureViewer.name,
     rating: 5,
     comment: 'A legacy club review with no event attached.',
     createdAt: DateTime(2026, 5, 5),
@@ -7855,7 +6449,7 @@ final _reviewHistoryMissingContextReviews = [
 ];
 
 List<Object> _reviewsHistoryProviderOverrides({
-  AsyncValue<String?> uid = const AsyncData(_captureViewerUid),
+  AsyncValue<String?> uid = const AsyncData(captureViewerUid),
   Stream<UserProfile?>? profileStream,
   AsyncValue<List<Review>>? reviews,
   AsyncValue<List<Event>>? events,
@@ -7864,7 +6458,7 @@ List<Object> _reviewsHistoryProviderOverrides({
   final overrides = <Object>[
     uidProvider.overrideWithValue(uid),
     watchUserProfileProvider.overrideWith(
-      (ref) => profileStream ?? Stream.value(_captureViewer),
+      (ref) => profileStream ?? Stream.value(captureViewer),
     ),
   ];
   final viewerUid = switch (uid) {
@@ -7901,7 +6495,7 @@ List<Object> _reviewsHistoryProviderOverrides({
   return overrides;
 }
 
-final _eventRecapEvent = _captureFixtures.captureEvent(
+final _eventRecapEvent = captureFixtures.captureEvent(
   id: 'event-recap-capture',
   organizer: _dashboardJoinedOrganizer,
   startTime: DateTime.now().subtract(const Duration(hours: 11)),
@@ -7914,7 +6508,7 @@ final _eventRecapEvent = _captureFixtures.captureEvent(
 );
 final _eventRecapProfiles = [
   ..._matchesListProfiles,
-  ..._captureFixtures.publicProfiles(const [
+  ...captureFixtures.publicProfiles(const [
     'nyc_aisha_williams_005',
     'nyc_marcus_chen_008',
   ]),
@@ -7922,7 +6516,7 @@ final _eventRecapProfiles = [
 final _eventRecapParticipations = [
   buildEventParticipation(
     event: _eventRecapEvent,
-    uid: _captureViewerUid,
+    uid: captureViewerUid,
     status: EventParticipationStatus.attended,
     createdAt: DateTime(2026, 5, 30, 7),
   ),
@@ -7955,7 +6549,7 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
   };
 }
 
-final _eventRecapNextEvent = _captureFixtures.captureEvent(
+final _eventRecapNextEvent = captureFixtures.captureEvent(
   id: 'event-recap-next-capture',
   organizer: _dashboardJoinedOrganizer,
   // Two days out, so its weekday-based title never matches the event just
@@ -7992,7 +6586,7 @@ List<Object> _eventRecapProviderOverrides({
     ).overrideWith((ref) => resolvedRecapValue),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream<UserProfile?>.value(
-        buildSocialReadyUser(uid: _captureViewerUid, name: 'Rohan Mehta'),
+        buildSocialReadyUser(uid: captureViewerUid, name: 'Rohan Mehta'),
       ),
     ),
     watchOrganizerProvider(
@@ -8000,20 +6594,20 @@ List<Object> _eventRecapProviderOverrides({
     ).overrideWith((ref) => Stream.value(_dashboardJoinedOrganizer)),
     watchEventParticipationProvider(
       eventId,
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWith((ref) => Stream.value(_eventRecapParticipations.first)),
     watchUserEventSuccessFeedbackProvider(
       eventId: eventId,
-      uid: _captureViewerUid,
+      uid: captureViewerUid,
     ).overrideWith((ref) => Stream<EventSuccessFeedback?>.value(feedback)),
     watchUserEventSuccessAssignmentProvider(
       eventId: eventId,
-      uid: _captureViewerUid,
+      uid: captureViewerUid,
     ).overrideWith(
       (ref) => Stream<EventSuccessAssignment?>.value(
         _hostManageAssignment(
           event: _eventRecapEvent,
-          uid: _captureViewerUid,
+          uid: captureViewerUid,
           label: 'Pod 3',
           title: 'Pace pod 3',
           peerUids: [
@@ -8310,12 +6904,12 @@ List<Object> _settingsAccountProviderOverrides({
     blockedUsers.map((blocked) => blocked.uid),
   );
   return <Object>[
-    uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+    uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
     watchMyHostMembershipsProvider(
-      _captureViewerUid,
+      captureViewerUid,
     ).overrideWith((ref) => Stream.value(const [])),
     watchUserProfileProvider.overrideWith(
-      (ref) => profileStream ?? Stream.value(_captureViewer),
+      (ref) => profileStream ?? Stream.value(captureViewer),
     ),
     watchBlockedUsersProvider.overrideWith(
       (ref) => blockedUsersStream ?? Stream.value(blockedUsers),
@@ -8650,7 +7244,7 @@ List<Object> _onboardingProviderOverrides({
 }) {
   final effectiveProfile = uid == null ? null : profile;
   return [
-    _captureAnalyticsOverride,
+    captureAnalyticsOverride,
     uidProvider.overrideWithValue(AsyncData<String?>(uid)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream<UserProfile?>.value(effectiveProfile),
@@ -8684,7 +7278,7 @@ List<Object> _onboardingUploadFailureProviderOverrides() {
     imageUploadRepositoryProvider.overrideWithValue(
       _CaptureFailingImageUploadRepository(),
     ),
-    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+    errorLoggerProvider.overrideWithValue(CaptureSilentErrorLogger()),
   ];
 }
 
@@ -9230,6 +7824,41 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
   );
 }
 
+/// Marketing captures by catalog id. Each is built only when requested, so a
+/// marketing render never evaluates another capture's fixtures.
+final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
+  'host_programme_guests_desktop': () => hostProgrammeGuestsDesktopCapture,
+  'host_programme_rooms_desktop': () => hostProgrammeRoomsDesktopCapture,
+  'host_programme_message_phone': () => hostProgrammeMessagePhoneCapture,
+  'host_programme_live_board_desktop': () =>
+      hostProgrammeLiveBoardDesktopCapture,
+  'host_programme_reconcile_desktop': () =>
+      hostProgrammeReconcileDesktopCapture,
+  'host_programme_inbox_phone': () => hostProgrammeInboxPhoneCapture,
+  'host_staff_door_phone': () => hostStaffDoorPhoneCapture,
+  'host_staff_departures_phone': () => hostStaffDeparturesPhoneCapture,
+  'host_home_dashboard': () => hostHomeDashboardCapture,
+  'host_door_arriving': () => hostDoorArrivingCapture,
+  'host_door_in': () => hostDoorInCapture,
+  'host_live_now_tablet': () => hostLiveNowTabletCapture,
+  'host_live_needs_phone': () => hostLiveNeedsPhoneCapture,
+  'host_live_scores_phone': () => hostLiveScoresPhoneCapture,
+  'host_formats_courts_setup_phone': () => hostFormatsCourtsSetupPhoneCapture,
+  'host_formats_courts_phone': () => hostFormatsCourtsPhoneCapture,
+  'host_formats_mix_phone': () => hostFormatsMixPhoneCapture,
+  'host_formats_crawl_phone': () => hostFormatsCrawlPhoneCapture,
+  'host_formats_crawl_move_phone': () => hostFormatsCrawlMovePhoneCapture,
+  'host_formats_pods_phone': () => hostFormatsPodsPhoneCapture,
+  'host_formats_rules_phone': () => hostFormatsRulesPhoneCapture,
+  'member_event_discovery': () => memberEventDiscoveryCapture,
+  'host_live_console': () => hostLiveConsoleCapture,
+  'host_post_event_report': () => hostPostEventReportCapture,
+  'guest_after_event': () => guestAfterEventCapture,
+  'event_success_companion_micro_pod_assignment': () =>
+      eventSuccessCompanionMicroPodAssignmentCapture,
+  'match_chat_context': () => matchChatContextCapture,
+};
+
 final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'host_programme_phone',
@@ -9252,14 +7881,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerGuestsCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_guests_desktop',
-    routeIds: const <String>['hostProgramGuestsScreen'],
-    device: CaptureDevice.auditDesktop,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.guestsDesktop'],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerGuestsCapture(),
-  ),
+  hostProgrammeGuestsDesktopCapture,
   ScreenCaptureEntry(
     id: 'host_programme_household_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
@@ -9274,14 +7896,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerTravelCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_rooms_desktop',
-    routeIds: const <String>['hostProgramLodgingScreen'],
-    device: CaptureDevice.auditDesktop,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.roomsDesktop'],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerRoomsCapture(),
-  ),
+  hostProgrammeRoomsDesktopCapture,
   ScreenCaptureEntry(
     id: 'host_programme_trips_desktop',
     routeIds: const <String>['hostWorkTripsScreen'],
@@ -9303,14 +7918,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerMessagesCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_message_phone',
-    routeIds: const <String>['hostProgramWorkspaceScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.message'],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerMessageCapture(),
-  ),
+  hostProgrammeMessagePhoneCapture,
   ScreenCaptureEntry(
     id: 'host_programme_live_board_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
@@ -9318,14 +7926,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerLiveBoardCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_live_board_desktop',
-    routeIds: const <String>['hostProgramWorkspaceScreen'],
-    device: CaptureDevice.auditDesktop,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.liveBoard'],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerLiveBoardCapture(),
-  ),
+  hostProgrammeLiveBoardDesktopCapture,
   ScreenCaptureEntry(
     id: 'host_programme_branding_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
@@ -9340,16 +7941,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerIdTrackerCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_reconcile_desktop',
-    routeIds: const <String>['hostProgramWorkspaceScreen'],
-    device: CaptureDevice.auditDesktop,
-    marketingFixtureKeys: const <String>[
-      'weddingsPilot.planner.reconcileDesktop',
-    ],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerReconcileCapture(),
-  ),
+  hostProgrammeReconcileDesktopCapture,
   ScreenCaptureEntry(
     id: 'host_programme_photos_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
@@ -9364,14 +7956,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: plannerCaptureOverrides(),
     builder: (context) => plannerInboxCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_programme_inbox_phone',
-    routeIds: const <String>['hostProgramWorkspaceScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['weddingsPilot.planner.inbox'],
-    providerOverrides: plannerCaptureOverrides(),
-    builder: (context) => plannerInboxListCapture(),
-  ),
+  hostProgrammeInboxPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_programme_assistant_phone',
     routeIds: const <String>['hostProgramWorkspaceScreen'],
@@ -9435,17 +8020,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostStaffCaptureOverrides(),
     builder: (context) => hostStaffHotelDeskCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_staff_door_phone',
-    routeIds: const <String>['hostWorkDoorScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['weddingsPilot.staff.door'],
-    providerOverrides: hostStaffCaptureOverrides(
-      outbox: staffOfflineOutbox(),
-      offline: true,
-    ),
-    builder: (context) => hostStaffDoorCapture(),
-  ),
+  hostStaffDoorPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_staff_lead_phone',
     routeIds: const <String>['hostWorkNowScreen'],
@@ -9460,14 +8035,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostStaffCaptureOverrides(),
     builder: (context) => hostStaffAlertsCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_staff_departures_phone',
-    routeIds: const <String>['hostWorkHotelScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>['weddingsPilot.staff.departures'],
-    providerOverrides: hostStaffCaptureOverrides(),
-    builder: (context) => hostStaffDeparturesCapture(),
-  ),
+  hostStaffDeparturesPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_people_phone',
     routeIds: const <String>['hostAudienceScreen'],
@@ -9659,14 +8227,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'start_welcome',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: [_captureAnalyticsOverride],
+    providerOverrides: [captureAnalyticsOverride],
     builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_animated_reel',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: [_captureAnalyticsOverride],
+    providerOverrides: [captureAnalyticsOverride],
     builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
@@ -9674,7 +8242,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
-    providerOverrides: [_captureAnalyticsOverride],
+    providerOverrides: [captureAnalyticsOverride],
     builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
@@ -9682,7 +8250,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     textScale: 2,
-    providerOverrides: [_captureAnalyticsOverride],
+    providerOverrides: [captureAnalyticsOverride],
     builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
@@ -10212,7 +8780,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: EventDetailScreen(
         enableMapNetworkTiles: false,
@@ -10585,34 +9153,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _dashboardProviderOverrides(),
     builder: (context) => const DashboardScreen(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_home_dashboard',
-    routeIds: const <String>['hostHomeScreen', 'hostTodayScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.todayDashboard',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostOperationsProviderOverrides(
-        hostedOrganizers: [_marketingHostOrganizer],
-        ownedOrganizers: [_marketingHostOrganizer],
-        organizerEvents: {
-          _marketingHostOrganizer.id: AsyncData<List<Event>>([
-            _marketingHostTodayEvent,
-          ]),
-        },
-      ),
-    ],
-    builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/today',
-      activeIndex: 0,
-      child: HostTodayScreen(
-        initialOrganizerId: _marketingHostOrganizer.id,
-        now: hostMarketingIndiaScenario.clock('today'),
-      ),
-    ),
-  ),
+  hostHomeDashboardCapture,
   ScreenCaptureEntry(
     id: 'host_create_step_basics',
     routeIds: const <String>['hostCreateEventScreen'],
@@ -10815,227 +9356,83 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     builder: (_) => hostFormsCaptures['host_offer_phone']!(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_door_arriving',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.doorArriving',
-    ],
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_in',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.doorCheckedIn',
-    ],
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(filter: DoorFilter.checkedIn),
-  ),
+  hostDoorArrivingCapture,
+  hostDoorInCapture,
   ScreenCaptureEntry(
     id: 'host_door_asked',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(filter: DoorFilter.asked),
+    providerOverrides: doorCaptureOverrides(),
+    builder: (context) => doorCapture(filter: DoorFilter.asked),
   ),
   ScreenCaptureEntry(
     id: 'host_door_scan_checked_in',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
+    providerOverrides: doorCaptureOverrides(),
     builder: (context) => _doorScanCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_door_tablet_landscape',
     routeIds: const <String>['hostEventRosterScreen'],
     device: CaptureDevice.auditTabletLandscape,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(),
+    providerOverrides: doorCaptureOverrides(),
+    builder: (context) => doorCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_live_now_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
+    device: hostLivePhone,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
     ],
     builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveNowCapture()),
+        AppRoleCapture(role: AppRole.host, child: hostLiveNowCapture()),
   ),
-  ScreenCaptureEntry(
-    id: 'host_live_now_tablet',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLiveTablet,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.liveConsoleTablet',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostLiveCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveNowCapture()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_live_needs_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveNeeds'],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostLiveCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveNeedsCapture()),
-  ),
+  hostLiveNowTabletCapture,
+  hostLiveNeedsPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_live_needs_tablet',
     routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLiveTablet,
+    device: hostLiveTablet,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
     ],
     builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveNeedsCapture()),
+        AppRoleCapture(role: AppRole.host, child: hostLiveNeedsCapture()),
   ),
-  ScreenCaptureEntry(
-    id: 'host_live_scores_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveScores'],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostLiveCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
-  ),
+  hostLiveScoresPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_live_scores_tablet',
     routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLiveTablet,
+    device: hostLiveTablet,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostLiveCaptureOverrides(),
     ],
     builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
+        AppRoleCapture(role: AppRole.host, child: hostLiveScoresCapture()),
   ),
-  ScreenCaptureEntry(
-    id: 'host_formats_courts_setup_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.formatsCourtsSetup',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) => _AppRoleCapture(
-      role: AppRole.host,
-      child: hostFormatsCourtsSetupCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_formats_courts_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.formatsCourts',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsCourtsCapture()),
-  ),
+  hostFormatsCourtsSetupPhoneCapture,
+  hostFormatsCourtsPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_formats_courts_tablet',
     routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLiveTablet,
+    device: hostLiveTablet,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ...hostFormatsCaptureOverrides(),
     ],
     builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsCourtsCapture()),
+        AppRoleCapture(role: AppRole.host, child: hostFormatsCourtsCapture()),
   ),
-  ScreenCaptureEntry(
-    id: 'host_formats_mix_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsMix'],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsMixCapture()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_formats_crawl_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.formatsCrawl',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsCrawlCapture()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_formats_crawl_move_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.formatsCrawlMove',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) => _AppRoleCapture(
-      role: AppRole.host,
-      child: hostFormatsCrawlCapture(moving: true),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_formats_pods_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.formatsPods'],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsPodsCapture()),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_formats_rules_phone',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: _hostLivePhone,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.formatsRules',
-    ],
-    providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ...hostFormatsCaptureOverrides(),
-    ],
-    builder: (context) =>
-        _AppRoleCapture(role: AppRole.host, child: hostFormatsRulesCapture()),
-  ),
+  hostFormatsMixPhoneCapture,
+  hostFormatsCrawlPhoneCapture,
+  hostFormatsCrawlMovePhoneCapture,
+  hostFormatsPodsPhoneCapture,
+  hostFormatsRulesPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_insights_phone',
     routeIds: const <String>['hostOrganizersScreen'],
@@ -11070,7 +9467,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostOrganizerScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: _organizerCaptureOverrides(),
-    builder: (context) => _HostRoutedShellCapture(
+    builder: (context) => HostRoutedShellCapture(
       initialLocation: '/host/organizer',
       activeIndex: 4,
       child: organizerTabCapture(),
@@ -11108,14 +9505,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_home_switcher_cohost',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: HostOperationsFixtures.organizers,
       ownedOrganizers: [
         HostOperationsFixtures.primaryOrganizer,
         HostOperationsFixtures.dinnerOrganizer,
       ],
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
@@ -11124,7 +9521,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_home_long_club_names',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: [
         _hostHomeLongNameOwnerOrganizer,
         _hostHomeLongNameCoHostedOrganizer,
@@ -11137,7 +9534,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostHomeLongNameCoHostedOrganizer.id: const AsyncData<List<Event>>([]),
       },
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: HostTodayScreen(
         initialOrganizerId: _hostHomeLongNameOwnerOrganizer.id,
@@ -11152,74 +9549,74 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       uidProvider.overrideWithValue(const AsyncData<String?>(null)),
     ],
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_loading',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
       ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_error',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: AsyncError<List<Organizer>>(
         StateError('Capture host home clubs failed'),
         StackTrace.empty,
       ),
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_offline',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: AsyncError<List<Organizer>>(
         obviousOfflineException(),
         StackTrace.empty,
       ),
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_empty_clubs',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: const <Organizer>[],
       ownedOrganizers: const <Organizer>[],
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_loading',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       organizerEvents: {
         HostOperationsFixtures.primaryOrganizer.id:
             const AsyncLoading<List<Event>>(),
       },
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_error',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       organizerEvents: {
         HostOperationsFixtures.primaryOrganizer.id: AsyncError<List<Event>>(
           StateError('Capture host home events failed'),
@@ -11228,13 +9625,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       },
     ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_offline',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       organizerEvents: {
         HostOperationsFixtures.dinnerOrganizer.id: AsyncError<List<Event>>(
           obviousOfflineException(),
@@ -11242,7 +9639,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       },
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostTodayScreen(initialOrganizerId: 'design-host-table-club'),
     ),
@@ -11251,11 +9648,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_home_cohost_empty_events',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
       ownedOrganizers: const <Organizer>[],
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
@@ -11265,26 +9662,26 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_reduced_motion',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_light_dark',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
+        const AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_management',
@@ -11292,13 +9689,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     precache: _hostMediaCaptureImages,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      ..._hostOperationsProviderOverrides(
+      ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ...hostOperationsProviderOverrides(
         hostedOrganizers: [_hostMediaReviewOrganizer],
         ownedOrganizers: [_hostMediaReviewOrganizer],
       ),
     ],
-    builder: (context) => const _HostRoutedShellCapture(
+    builder: (context) => const HostRoutedShellCapture(
       initialLocation: '/host/organizer',
       activeIndex: 4,
       child: HostOrganizersScreen(initialOrganizerId: 'design-host-table-club'),
@@ -11360,76 +9757,66 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData<String?>(null)),
     ],
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_loading',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
       ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       ownedOrganizersAsync: AsyncError<List<Organizer>>(
         StateError('Capture host clubs failed'),
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       ownedOrganizersAsync: AsyncError<List<Organizer>>(
         obviousOfflineException(),
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_empty',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: const <Organizer>[],
       ownedOrganizers: const <Organizer>[],
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_cohost_edit',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
       ownedOrganizers: const <Organizer>[],
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(
         initialOrganizerId: 'design-host-cohost-club',
@@ -11440,10 +9827,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_inline_edit_pending',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlinePending,
-      child: _AppRoleCapture(
+      child: AppRoleCapture(
         role: AppRole.host,
         child: HostOrganizersScreen(initialExpandedEditField: 'name'),
       ),
@@ -11453,10 +9840,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_inline_edit_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlineError,
-      child: _AppRoleCapture(
+      child: AppRoleCapture(
         role: AppRole.host,
         child: HostOrganizersScreen(initialExpandedEditField: 'name'),
       ),
@@ -11466,10 +9853,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_inline_edit_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.inlineOffline,
-      child: _AppRoleCapture(
+      child: AppRoleCapture(
         role: AppRole.host,
         child: HostOrganizersScreen(initialExpandedEditField: 'name'),
       ),
@@ -11479,8 +9866,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_insights_report',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(
         initialOrganizerId: 'design-host-sea-face',
@@ -11492,10 +9879,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_insights_loading',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       analyticsRepository: const _CaptureLoadingAnalyticsRepository(),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(
         initialOrganizerId: 'design-host-sea-face',
@@ -11507,12 +9894,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_insights_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       analyticsRepository: HostFixtureAnalyticsRepository(
         error: StateError('Capture host analytics failed'),
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(
         initialOrganizerId: 'design-host-sea-face',
@@ -11524,12 +9911,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_insights_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       analyticsRepository: HostFixtureAnalyticsRepository(
         error: obviousOfflineException(),
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(
         initialOrganizerId: 'design-host-sea-face',
@@ -11541,8 +9928,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_preview_tab',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizersScreen(initialTab: HostOrganizerTab.preview),
     ),
@@ -11551,7 +9938,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_loading',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncLoading<HostPaymentAccount?>(),
     ),
     builder: (context) => _hostPayoutCardCapture(),
@@ -11560,7 +9947,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_ready',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncData<HostPaymentAccount?>(
         HostOperationsFixtures.readyPaymentAccount,
       ),
@@ -11571,7 +9958,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_restricted',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncData<HostPaymentAccount?>(
         HostOperationsFixtures.restrictedPaymentAccount,
       ),
@@ -11582,7 +9969,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: AsyncError<HostPaymentAccount?>(
         StateError('Capture payout status failed'),
         StackTrace.empty,
@@ -11594,7 +9981,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: AsyncError<HostPaymentAccount?>(
         obviousOfflineException(),
         StackTrace.empty,
@@ -11606,7 +9993,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_setup_pending',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.payoutSetupPending,
       child: _hostPayoutCardCapture(),
@@ -11616,7 +10003,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_setup_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.payoutSetupError,
       child: _hostPayoutCardCapture(),
@@ -11626,7 +10013,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_setup_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.payoutSetupOffline,
       child: _hostPayoutCardCapture(),
@@ -11636,7 +10023,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_refresh_pending',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncData<HostPaymentAccount?>(
         HostOperationsFixtures.readyPaymentAccount,
       ),
@@ -11650,7 +10037,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_refresh_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncData<HostPaymentAccount?>(
         HostOperationsFixtures.readyPaymentAccount,
       ),
@@ -11664,7 +10051,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_payout_refresh_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       paymentAccountValue: const AsyncData<HostPaymentAccount?>(
         HostOperationsFixtures.readyPaymentAccount,
       ),
@@ -11678,7 +10065,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_team_pending',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamPending,
       child: _HostTeamSectionCapture(),
@@ -11688,7 +10075,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_team_error',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamError,
       child: _HostTeamSectionCapture(),
@@ -11698,7 +10085,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_team_offline',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostOperationsProviderOverrides(),
+    providerOverrides: hostOperationsProviderOverrides(),
     builder: (context) => const _HostOrganizersMutationCapture(
       mode: _HostOrganizersMutationCaptureMode.teamOffline,
       child: _HostTeamSectionCapture(),
@@ -11709,39 +10096,33 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_reduced_motion',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_light_dark',
     routeIds: const <String>['hostOrganizersScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOrganizersScreen(),
-    ),
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) =>
+        const AppRoleCapture(role: AppRole.host, child: HostOrganizersScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_team_active_profile',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11751,8 +10132,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
     textScale: 2,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11762,8 +10143,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11772,10 +10153,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_fallback_profile',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostProfile: const AsyncData<HostProfile?>(null),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11784,11 +10165,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_clubs_loading',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
       ownedOrganizersAsync: const AsyncLoading<List<Organizer>>(),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11797,13 +10178,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_clubs_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: AsyncError<List<Organizer>>(
         StateError('Capture hosted clubs failed'),
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11812,13 +10193,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_clubs_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
+    providerOverrides: hostOperationsProviderOverrides(
       hostedOrganizersAsync: AsyncError<List<Organizer>>(
         obviousOfflineException(),
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11827,8 +10208,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_inline_profile_edit',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
     ),
@@ -11837,8 +10218,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_save_profile_pending',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.savePending,
@@ -11850,8 +10231,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_save_profile_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveError,
@@ -11863,8 +10244,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_save_profile_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.saveOffline,
@@ -11876,8 +10257,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_sign_out_error',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.signOutError,
@@ -11889,8 +10270,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_team_sign_out_offline',
     routeIds: const <String>['hostOrganizerTeamScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
+    providerOverrides: hostOperationsProviderOverrides(),
+    builder: (context) => const AppRoleCapture(
       role: AppRole.host,
       child: _HostProfileMutationCapture(
         mode: _HostProfileMutationCaptureMode.signOutOffline,
@@ -11905,7 +10286,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerDetailProviderOverrides(
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
       ),
       viewModel: AsyncData(_organizerDetailViewModel()),
     ),
@@ -11954,7 +10335,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: _organizerDetailScreenCapture(),
     ),
@@ -11976,7 +10357,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerDetailProviderOverrides(
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
       ),
       viewModel: const AsyncLoading<OrganizerDetailViewModel?>(),
     ),
@@ -11989,7 +10370,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerDetailProviderOverrides(
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
       ),
       viewModel: AsyncData(
         _organizerDetailViewModel(upcomingEvents: const <Event>[]),
@@ -12003,7 +10384,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     precache: const <ImageProvider<Object>>[_organizerHeroPortraitAssetImage],
     providerOverrides: _hostOrganizerDetailProviderOverrides(),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12019,7 +10400,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostOrganizerDetailProviderOverrides(
       viewModel: const AsyncLoading<OrganizerDetailViewModel?>(),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12034,7 +10415,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostOrganizerDetailProviderOverrides(
       viewModel: const AsyncLoading<OrganizerDetailViewModel?>(),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12051,7 +10432,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12068,7 +10449,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12082,7 +10463,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostOrganizerDetailProviderOverrides(
       viewModel: const AsyncData<OrganizerDetailViewModel?>(null),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12100,7 +10481,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostOrganizerDetailViewModel(uid: null, isHost: false),
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12122,7 +10503,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12140,7 +10521,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostOrganizerDetailViewModel(upcomingEvents: const <Event>[]),
       ),
     ),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12155,7 +10536,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     textScale: 2,
     precache: const <ImageProvider<Object>>[_organizerHeroPortraitAssetImage],
     providerOverrides: _hostOrganizerDetailProviderOverrides(),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12170,7 +10551,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     disableAnimations: true,
     precache: const <ImageProvider<Object>>[_organizerHeroPortraitAssetImage],
     providerOverrides: _hostOrganizerDetailProviderOverrides(),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12184,7 +10565,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     precache: const <ImageProvider<Object>>[_organizerHeroPortraitAssetImage],
     providerOverrides: _hostOrganizerDetailProviderOverrides(),
-    builder: (context) => _AppRoleCapture(
+    builder: (context) => AppRoleCapture(
       role: AppRole.host,
       child: OrganizerDetailScreen(
         organizerId: _hostOrganizerDetailReferenceOrganizer.id,
@@ -12256,7 +10637,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerDetailProviderOverrides(
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
       ),
       viewModel: AsyncData(_organizerDetailViewModel()),
     ),
@@ -12270,7 +10651,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerDetailProviderOverrides(
       membership: _captureMembership(
         organizerId: _organizerDetailOrganizer.id,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
       ),
       viewModel: AsyncData(_organizerDetailViewModel()),
     ),
@@ -12687,54 +11068,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       enableNetworkTiles: false,
     ),
   ),
-  ScreenCaptureEntry(
-    id: 'member_event_discovery',
-    routeIds: const <String>['exploreScreen'],
-    device: CaptureDevice.reviewTall,
-    marketingFixtureKeys: const <String>['salesDemo.member.eventDiscovery'],
-    providerOverrides: [
-      cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
-      selectedExploreCityProvider.overrideWithValue(
-        _memberDiscoveryCities.first,
-      ),
-      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
-      exploreDiscoveryReferenceNowProvider.overrideWithValue(
-        DateTime(2026, 6, 11, 10),
-      ),
-      uidProvider.overrideWith((ref) => Stream.value(null)),
-      watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-      exploreSourceOrganizersProvider.overrideWithValue(
-        AsyncData(_memberDiscoveryOrganizers),
-      ),
-      exploreOrganizersViewModelProvider.overrideWithValue(
-        AsyncData(
-          ExploreViewModel.partition(
-            organizers: _memberDiscoveryOrganizers,
-            joinedOrganizerIds: const <String>{},
-          ),
-        ),
-      ),
-      exploreFeedViewModelProvider.overrideWithValue(
-        AsyncData(
-          ExploreFeedViewModel(
-            items: [_memberDiscoveryItems.first],
-            featuredEventId: _memberDiscoveryItems.first.event.id,
-            dateSupplyCounts: {
-              ExploreTimeFilter.tonight: 1,
-              ExploreTimeFilter.tomorrow: 1,
-              ExploreTimeFilter.dayTwo: 1,
-              ExploreTimeFilter.dayThree: 0,
-              ExploreTimeFilter.dayFour: 1,
-              ExploreTimeFilter.dayFive: 0,
-              ExploreTimeFilter.daySix: 1,
-              ExploreTimeFilter.anytime: _memberDiscoveryItems.length,
-            },
-          ),
-        ),
-      ),
-    ],
-    builder: (context) => const ExploreScreen(),
-  ),
+  memberEventDiscoveryCapture,
   ScreenCaptureEntry(
     id: 'explore_cover_contrast_floor',
     routeIds: const <String>['exploreScreen'],
@@ -12761,7 +11095,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['exploreScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _exploreProviderOverrides(
-      joinedOrganizerIds: {_memberDiscoveryOrganizers.first.id},
+      joinedOrganizerIds: {memberDiscoveryOrganizers.first.id},
     ),
     builder: (context) => _exploreCapture(),
   ),
@@ -12784,7 +11118,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         alignment: Alignment.bottomCenter,
         child: CrossPathsProfilePreviewSheet(
           suggestion: _exploreCrossPathsSuggestion,
-          event: _memberDiscoveryItems[2].event,
+          event: memberDiscoveryItems[2].event,
           onEventSelected: () {},
         ),
       ),
@@ -12954,9 +11288,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['exploreMapScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      deviceLocationProvider.overrideWith(CaptureDeviceLocation.new),
       exploreFeedViewModelProvider.overrideWithValue(
-        AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems)),
+        AsyncData(ExploreFeedViewModel(items: memberDiscoveryItems)),
       ),
     ],
     builder: (context) => const ExploreMapScreen(enableNetworkTiles: false),
@@ -12969,7 +11303,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _exploreCapture(
       child: ExploreMapScreen(
         enableNetworkTiles: false,
-        initialSelectedEventId: _memberDiscoveryEvents.first.id,
+        initialSelectedEventId: memberDiscoveryEvents.first.id,
       ),
     ),
   ),
@@ -13814,7 +12148,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostManageRouteProviderOverrides(
-      uid: _captureViewerUid,
+      uid: captureViewerUid,
       organizer: _hostManageReferenceOrganizer,
       event: _hostManageReferenceEvent,
       participations: _hostManageReferenceParticipations,
@@ -13829,7 +12163,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostManageRouteProviderOverrides(
-      uid: _captureViewerUid,
+      uid: captureViewerUid,
       organizer: _hostManageReferenceOrganizer,
       event: _hostManageFullReferenceEvent,
       participations: _hostManageFullReferenceParticipations,
@@ -13876,22 +12210,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
-      uidProvider.overrideWithValue(
-        const AsyncData<String?>(_captureViewerUid),
-      ),
+      uidProvider.overrideWithValue(const AsyncData<String?>(captureViewerUid)),
       appConnectivityProvider.overrideWith(
         (ref) =>
             Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
       ),
       hostAttendanceOutboxStoreProvider.overrideWithValue(
-        _CaptureHostAttendanceOutboxStore(),
+        CaptureHostAttendanceOutboxStore(),
       ),
       firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
       firebaseFunctionsProvider.overrideWithValue(
         _CaptureFirebaseFunctions(const <String, Object?>{}),
       ),
       watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
+        (ref) => Stream.value(captureViewer),
       ),
       watchEventProvider(
         _hostEvent.id,
@@ -13909,7 +12241,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         (ref) => Stream.value(
           HostEventRosterInsights(
             eventId: _hostEvent.id,
-            organizerId: _captureViewerUid,
+            organizerId: captureViewerUid,
             cutoffAt: _hostEvent.startTime,
             sourceCoverage: HostRosterInsightCoverage.exact,
             spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
@@ -14147,28 +12479,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       find.text('Timed partner rotations'),
     ),
   ),
-  ScreenCaptureEntry(
-    id: 'host_live_console',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.host.liveConsole'],
-    providerOverrides: _marketingHostManageOverrides(_marketingHostLiveEvent),
-    builder: (context) => HostEventManageScreen(
-      organizer: _marketingHostOrganizer,
-      event: _marketingHostLiveEvent,
-      onBackToSuccess: () {},
-      initialSection: HostEventManageSection.live,
-      referenceNow: hostMarketingIndiaScenario.clock('live'),
-    ),
-  ),
+  hostLiveConsoleCapture,
   ScreenCaptureEntry(
     id: 'host_live_console_wide',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.auditTablet,
     providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
       watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
+        (ref) => Stream.value(captureViewer),
       ),
       watchEventProvider(
         _hostLiveReferenceEvent.id,
@@ -14205,9 +12524,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
       watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
+        (ref) => Stream.value(captureViewer),
       ),
       watchEventProvider(
         _hostLiveRoomReferenceEvent.id,
@@ -14314,25 +12633,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       await pumpFeatureUi(tester);
     },
   ),
-  ScreenCaptureEntry(
-    id: 'host_post_event_report',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>[
-      'hostMarketingIndia.host.postEventReport',
-    ],
-    providerOverrides: _marketingHostManageOverrides(
-      _marketingHostReportEvent,
-      complete: true,
-    ),
-    builder: (context) => HostEventManageScreen(
-      organizer: _marketingHostOrganizer,
-      event: _marketingHostReportEvent,
-      onBackToSuccess: () {},
-      initialSection: HostEventManageSection.report,
-      referenceNow: hostMarketingIndiaScenario.clock('followUp'),
-    ),
-  ),
+  hostPostEventReportCapture,
   ScreenCaptureEntry(
     id: 'host_manage_report_scorecard_loading',
     routeIds: const <String>['hostAppEventManageScreen'],
@@ -14396,12 +12697,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
       watchSignedUpEventsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
     ],
     builder: (context) => const ActivityScreen(),
@@ -14411,12 +12712,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
       watchSignedUpEventsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
     ],
     builder: (context) => const _ActivityMarkAllReadCapture(
@@ -14428,12 +12729,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
       watchSignedUpEventsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
     ],
     builder: (context) => const _ActivityMarkAllReadCapture(
@@ -14445,12 +12746,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
       watchSignedUpEventsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
     ],
     builder: (context) => const _ActivityDeepLinkErrorCapture(),
@@ -14488,9 +12789,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(const AsyncLoading()),
     ],
     builder: (context) => const ActivityScreen(),
@@ -14500,8 +12801,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchActivityNotificationsProvider(_captureViewerUid).overrideWithValue(
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
+      watchActivityNotificationsProvider(captureViewerUid).overrideWithValue(
         AsyncError<List<ActivityNotification>>(
           StateError('Activity unavailable'),
           StackTrace.empty,
@@ -14515,9 +12816,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(const AsyncData(<ActivityNotification>[])),
     ],
     builder: (context) => const ActivityScreen(),
@@ -14528,9 +12829,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     textScale: 2,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
     ],
     builder: (context) => const ActivityScreen(),
@@ -14541,9 +12842,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchActivityNotificationsProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
     ],
     builder: (context) => const ActivityScreen(),
@@ -14660,18 +12961,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
-  ScreenCaptureEntry(
-    id: 'guest_after_event',
-    routeIds: const <String>['eventRecapScreen'],
-    device: CaptureDevice.genericPhone,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.afterEvent'],
-    disableAnimations: true,
-    providerOverrides: _marketingAfterEventOverrides(),
-    builder: (context) => EventRecapScreen(
-      eventId: _marketingHostReportEvent.id,
-      now: _marketingAfterEventNow,
-    ),
-  ),
+  guestAfterEventCapture,
   ScreenCaptureEntry(
     id: 'event_recap_rated_following',
     routeIds: const <String>['eventRecapScreen'],
@@ -14681,7 +12971,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         id: 'event-recap-capture_runner-viewer',
         eventId: _eventRecapEvent.id,
         organizerId: _eventRecapEvent.organizerId,
-        uid: _captureViewerUid,
+        uid: captureViewerUid,
         welcomeRating: 4,
         structureRating: 4,
         metNewPeopleCount: 3,
@@ -14888,15 +13178,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
       eventSuccessLiveEffectsControllerProvider.overrideWith(
-        (ref) => _NoopEventSuccessLiveEffectsController(),
+        (ref) => NoopEventSuccessLiveEffectsController(),
       ),
     ],
     builder: (context) => EventSuccessCompanionScreen(
       event: _eventSuccessCompanionEvent,
       plan: _eventSuccessCompanionPlan,
-      userProfile: _captureViewer,
+      userProfile: captureViewer,
       participation: _eventSuccessCompanionParticipation,
       wingmanRequestCandidates: _matchesListProfiles,
       now: _captureNow,
@@ -14906,8 +13196,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_self_check_in',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       now: EventSuccessCompanionFixtures.socialStart.subtract(
         const Duration(minutes: 5),
       ),
@@ -14917,21 +13207,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_self_check_in_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       now: EventSuccessCompanionFixtures.socialStart.subtract(
         const Duration(minutes: 5),
       ),
-      mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.selfCheckInPending,
+      mutationMode: EventSuccessCompanionMutationCaptureMode.selfCheckInPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_pre_arrival_planning',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.revealUnlockedPlan,
       participation: EventSuccessCompanionFixtures.signedUpParticipation(
@@ -14946,8 +13235,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_first_hello_start',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.firstHelloPlan,
       now: EventSuccessCompanionFixtures.socialStart.subtract(
         const Duration(minutes: 5),
@@ -14960,8 +13249,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_first_hello_start_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.firstHelloPlan,
       now: EventSuccessCompanionFixtures.socialStart.subtract(
         const Duration(minutes: 5),
@@ -14969,15 +13258,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       onStartArrivalMission: () async {},
       onSkipArrivalMission: () {},
       mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.firstHelloStartPending,
+          EventSuccessCompanionMutationCaptureMode.firstHelloStartPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_first_hello_assigned',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.firstHelloPlan,
       arrivalMission: EventSuccessCompanionFixtures.arrivalMission,
       now: EventSuccessCompanionFixtures.socialStart.subtract(
@@ -14990,8 +13279,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_first_hello_complete_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.firstHelloPlan,
       arrivalMission: EventSuccessCompanionFixtures.arrivalMission,
       now: EventSuccessCompanionFixtures.socialStart.subtract(
@@ -14999,15 +13288,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
       onCompleteArrivalMission: (_, _) async {},
       mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.firstHelloCompletePending,
+          EventSuccessCompanionMutationCaptureMode.firstHelloCompletePending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_compatibility_questionnaire',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.questionnairePlan,
       now: EventSuccessCompanionFixtures.socialStart.add(
         const Duration(minutes: 30),
@@ -15019,23 +13308,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_compatibility_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.questionnairePlan,
       now: EventSuccessCompanionFixtures.socialStart.add(
         const Duration(minutes: 30),
       ),
       onSaveCompatibilityAnswers: (_) async {},
       mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.compatibilityPending,
+          EventSuccessCompanionMutationCaptureMode.compatibilityPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_compatibility_saved',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.questionnairePlan,
       compatibilityResponse:
           EventSuccessCompanionFixtures.compatibilityResponse,
@@ -15048,8 +13337,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_live_step_context',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.liveStepContextPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15066,8 +13355,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_social_prompt',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.socialPromptPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       now: EventSuccessCompanionFixtures.socialStart.add(
@@ -15079,8 +13368,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_conversation_cues',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.conversationCuesPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       now: EventSuccessCompanionFixtures.socialStart.add(
@@ -15088,27 +13377,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ),
   ),
-  ScreenCaptureEntry(
-    id: 'event_success_companion_micro_pod_assignment',
-    routeIds: const <String>['eventSuccessCompanionScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['hostMarketingIndia.guest.checkedIn'],
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
-      participation: EventSuccessCompanionFixtures.attendedParticipation(),
-      assignment: EventSuccessCompanionFixtures.microPodAssignment,
-      assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
-      now: EventSuccessCompanionFixtures.socialStart.subtract(
-        const Duration(hours: 1),
-      ),
-    ),
-  ),
+  eventSuccessCompanionMicroPodAssignmentCapture,
   ScreenCaptureEntry(
     id: 'event_success_companion_micro_pod_loading_peers',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       assignment: EventSuccessCompanionFixtures.microPodAssignment,
       assignmentPeersLoading: true,
@@ -15121,8 +13396,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_micro_pod_opted_out',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       microPodsOptedOut: true,
       now: EventSuccessCompanionFixtures.socialStart.subtract(
@@ -15134,8 +13409,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_micro_pod_opt_out_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       assignment: EventSuccessCompanionFixtures.microPodAssignment,
       assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
@@ -15143,15 +13418,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const Duration(hours: 1),
       ),
       mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.microPodsOptOutPending,
+          EventSuccessCompanionMutationCaptureMode.microPodsOptOutPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_table_group_rotations',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       assignment: EventSuccessCompanionFixtures.tableAssignment,
       assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
@@ -15164,8 +13439,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_rotation_schedule',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.rotationSchedulePlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15182,8 +13457,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_rotation_loading_peers',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.rotationSchedulePlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15200,8 +13475,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_rotation_opted_out',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.rotationSchedulePlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15217,8 +13492,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_rotation_opt_out_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.rotationSchedulePlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15229,16 +13504,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       now: EventSuccessCompanionFixtures.racketStart.subtract(
         const Duration(hours: 1),
       ),
-      mutationMode: _EventSuccessCompanionMutationCaptureMode
-          .guidedRotationsOptOutPending,
+      mutationMode:
+          EventSuccessCompanionMutationCaptureMode.guidedRotationsOptOutPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_live_reveal_countdown',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.revealCountingDownPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15255,8 +13530,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_motion_parity',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: _eventSuccessMotionParityEvent,
       plan: _eventSuccessMotionParityPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15269,8 +13544,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_live_reveal_unlocked',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.revealUnlockedPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15287,8 +13562,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_wingman_request',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.wingmanPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       wingmanRequestCandidates: EventSuccessCompanionFixtures.peers,
@@ -15301,8 +13576,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_wingman_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.wingmanPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       wingmanRequestCandidates: EventSuccessCompanionFixtures.peers,
@@ -15310,15 +13585,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const Duration(hours: 1),
       ),
       mutationMode:
-          _EventSuccessCompanionMutationCaptureMode.wingmanRequestPending,
+          EventSuccessCompanionMutationCaptureMode.wingmanRequestPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_wingman_submitted',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       plan: EventSuccessCompanionFixtures.wingmanPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       wingmanRequestCandidates: EventSuccessCompanionFixtures.peers,
@@ -15332,8 +13607,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_afterglow_feedback',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       existingFeedback: EventSuccessCompanionFixtures.feedback,
       now: EventSuccessCompanionFixtures.socialEvent.endTime.add(
@@ -15345,23 +13620,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_feedback_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       existingFeedback: EventSuccessCompanionFixtures.feedback,
       now: EventSuccessCompanionFixtures.socialEvent.endTime.add(
         const Duration(hours: 2),
       ),
-      mutationMode: _EventSuccessCompanionMutationCaptureMode.feedbackPending,
+      mutationMode: EventSuccessCompanionMutationCaptureMode.feedbackPending,
     ),
   ),
   ScreenCaptureEntry(
     id: 'event_success_companion_text_scale_2',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
     textScale: 2,
-    builder: (context) => _eventSuccessCompanionCapture(
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       assignment: EventSuccessCompanionFixtures.microPodAssignment,
       assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
@@ -15374,9 +13649,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_reduced_motion',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
     disableAnimations: true,
-    builder: (context) => _eventSuccessCompanionCapture(
+    builder: (context) => eventSuccessCompanionCapture(
       event: EventSuccessCompanionFixtures.racketEvent,
       plan: EventSuccessCompanionFixtures.revealUnlockedPlan,
       participation: EventSuccessCompanionFixtures.attendedParticipation(
@@ -15393,8 +13668,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_success_companion_light_dark',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _eventSuccessCompanionProviderOverrides(),
-    builder: (context) => _eventSuccessCompanionCapture(
+    providerOverrides: eventSuccessCompanionProviderOverrides(),
+    builder: (context) => eventSuccessCompanionCapture(
       participation: EventSuccessCompanionFixtures.attendedParticipation(),
       assignment: EventSuccessCompanionFixtures.microPodAssignment,
       assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
@@ -15514,31 +13789,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _matchesListProviderOverrides(),
     builder: (context) => _matchesListCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'match_chat_context',
-    routeIds: const <String>['chatScreen'],
-    device: CaptureDevice.iphone17Pro,
-    marketingFixtureKeys: const <String>['salesDemo.member.matchChatContext'],
-    providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_matchChatViewerUid)),
-      matchRepositoryProvider.overrideWithValue(_matchChatMatchRepository),
-      conversationRepositoryProvider.overrideWithValue(
-        _matchChatConversationRepository,
-      ),
-      watchEventProvider(
-        _matchChatEvent.id,
-      ).overrideWith((ref) => Stream.value(_matchChatEvent)),
-      watchPublicProfileProvider(
-        _matchChatOtherProfile.uid,
-      ).overrideWith((ref) => Stream.value(_matchChatOtherProfile)),
-    ],
-    builder: (context) => _ReferenceChromeSafeArea(
-      child: ChatScreen(
-        matchId: _matchChatMatch.id,
-        otherProfile: _matchChatOtherProfile,
-      ),
-    ),
-  ),
+  matchChatContextCapture,
   ScreenCaptureEntry(
     id: 'match_chat_messages_loading',
     routeIds: const <String>['chatScreen'],
@@ -15576,7 +13827,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _matchChatEmptyEvent,
       publicProfiles: const <PublicProfile>[_matchChatEmptyOtherProfile],
     ),
-    builder: (context) => _ReferenceChromeSafeArea(
+    builder: (context) => ReferenceChromeSafeArea(
       child: _matchChatCapture(
         match: _matchChatEmptyMatch,
         initialProfile: _matchChatEmptyOtherProfile,
@@ -15721,7 +13972,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['matchesListScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(_matchChatViewerUid)),
+      uidProvider.overrideWith((ref) => Stream.value(matchChatViewerUid)),
       matchRepositoryProvider.overrideWithValue(_matchesListMatchRepository),
       for (final profile in _matchesListProfiles)
         watchPublicProfileProvider(
@@ -15831,7 +14082,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_customer_add',
     routeIds: const <String>['hostAddCustomerScreen'],
     device: CaptureDevice.claudePhone390,
-    providerOverrides: _hostShellCaptureOverrides(
+    providerOverrides: hostShellCaptureOverrides(
       HostOperationsFixtures.hostUid,
     ),
     builder: (context) => HostAddCustomerScreen(
@@ -15865,13 +14116,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(
+      ...hostShellCaptureOverrides(
         HostInboxSurfaceFixtures.hostUid,
         unreadCount: 1,
       ),
       ..._hostInboxProviderOverrides(),
     ],
-    builder: (context) => _HostRoutedShellCapture(
+    builder: (context) => HostRoutedShellCapture(
       initialLocation: '/host/inbox',
       activeIndex: 3,
       child: HostInboxScreen(
@@ -15889,14 +14140,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.auditTablet,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
       ..._hostInboxSelectedThreadOverrides(),
       // The sidebar footer shows who is signed in.
       watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
+        (ref) => Stream.value(captureViewer),
       ),
     ],
-    builder: (context) => _HostRoutedShellCapture(
+    builder: (context) => HostRoutedShellCapture(
       initialLocation:
           '/host/inbox?eventId=${HostInboxSurfaceFixtures.eventId}'
           '&threadId=${_hostInboxSelectedPreview.matchId}',
@@ -15917,10 +14168,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
-      ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
+      ...hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
       ..._hostInboxProviderOverrides(),
     ],
-    builder: (context) => _HostRoutedShellCapture(
+    builder: (context) => HostRoutedShellCapture(
       initialLocation: '/host/inbox',
       activeIndex: 3,
       child: HostInboxScreen(
@@ -16487,9 +14738,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchLaunchAccessApplicationProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWith((ref) => Stream.value(null)),
     ],
     builder: (context) => const LaunchAccessApplicationScreen(),
@@ -16499,9 +14750,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchLaunchAccessApplicationProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWith((ref) => _captureLoadingStream()),
     ],
     builder: (context) => const LaunchAccessApplicationScreen(),
@@ -16511,9 +14762,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchLaunchAccessApplicationProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWith((ref) => Stream.value(null)),
     ],
     builder: (context) => const _LaunchAccessSubmitPendingCapture(
@@ -16532,8 +14783,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
+      watchLaunchAccessApplicationProvider(captureViewerUid).overrideWith(
         (ref) => _captureErrorStream<LaunchAccessApplication?>(
           'Capture launch access application failed',
         ),
@@ -16546,8 +14797,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
+      watchLaunchAccessApplicationProvider(captureViewerUid).overrideWith(
         (ref) => Stream<LaunchAccessApplication?>.error(
           obviousOfflineException(),
           StackTrace.empty,
@@ -16561,11 +14812,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['launchAccessScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
+      watchLaunchAccessApplicationProvider(captureViewerUid).overrideWith(
         (ref) => Stream.value(
           const LaunchAccessApplication(
-            uid: _captureViewerUid,
+            uid: captureViewerUid,
             status: LaunchAccessApplicationStatus.approvedForProfile,
             city: 'in-mh-mumbai',
           ),
@@ -16580,9 +14831,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     textScale: 2,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchLaunchAccessApplicationProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWith((ref) => Stream.value(null)),
     ],
     builder: (context) => const LaunchAccessApplicationScreen(),
@@ -16593,9 +14844,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
     providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      uidProvider.overrideWithValue(const AsyncData(captureViewerUid)),
       watchLaunchAccessApplicationProvider(
-        _captureViewerUid,
+        captureViewerUid,
       ).overrideWith((ref) => Stream.value(null)),
     ],
     builder: (context) => const LaunchAccessApplicationScreen(),
@@ -17020,6 +15271,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
 ];
 
 ScreenCaptureEntry findScreenCapture(String id) {
+  final marketing = marketingScreenCaptures[id];
+  if (marketing != null) return marketing();
   for (final entry in screenCaptureCatalog) {
     if (entry.id == id) return entry;
   }
@@ -17051,7 +15304,7 @@ class _ExploreCaptureStateSeedState
       if (!mounted) return;
       ref
           .read(selectedExploreCityProvider.notifier)
-          .setCity(_memberDiscoveryCities.first);
+          .setCity(memberDiscoveryCities.first);
       final query = widget.searchQuery;
       if (query != null) {
         ref.read(exploreSearchQueryProvider.notifier).setQuery(query);
@@ -17086,23 +15339,6 @@ class _ExploreCaptureFilterSeed {
     if (activityValue != null) notifier.toggleActivityTag(activityValue.name);
     if (highRatedOnly) notifier.toggleHighRatedOnly();
   }
-}
-
-final class _NoOpAnalyticsReporter implements AnalyticsReporter {
-  @override
-  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
-
-  @override
-  Future<void> logScreenView({
-    required String screenName,
-    String? screenClass,
-  }) async {}
-
-  @override
-  Future<void> setCollectionEnabled(bool enabled) async {}
-
-  @override
-  Future<void> setUserId(String? userId) async {}
 }
 
 ProfileReactionTarget _target(

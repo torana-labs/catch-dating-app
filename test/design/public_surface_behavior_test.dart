@@ -18,6 +18,7 @@ import 'package:catch_dating_app/explore/presentation/explore_organizer_display_
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
