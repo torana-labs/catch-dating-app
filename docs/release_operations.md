@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.3.3
-updated: 2026-11-12
+version: 3.3.4
+updated: 2026-11-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -449,13 +449,17 @@ Selector safety tests run before any selective job can proceed; planner failure
 fails the aggregate. The selected inventory and reasons are CI artifacts, not
 a tracked registry.
 
-Each selected test shard collects line coverage during its single test run.
-The coverage job requires all planned shard artifacts and merges their observed
-lines without rerunning tests or counting shared source files twice. Coverage
-is visibility-only; compare nightly reports for full-suite trends. A shard
+Each selected test shard collects line coverage during its single test run
+and fails unless it uploads that LCOV. The coverage job requires all planned
+shard artifacts and merges their observed lines without rerunning tests or
+counting shared source files twice. Coverage is visibility-only, so the merge
+runs only outside pull requests and queue groups (nightly and unverified main
+runs); a pull request does not wait a runner turn for it. Compare nightly
+reports for full-suite trends. A shard
 containing only repository probes can legitimately observe no product lines.
 The matrix contains at most four nonempty shards and the required aggregate
-rejects missing planner, test or coverage results.
+rejects missing planner or test results, and a missing coverage result outside
+pull requests and queue groups.
 
 The orchestrator also owns cancellation. Reusable fanout workflows must not
 derive a concurrency group from `github.workflow`: inside a called workflow

@@ -50,7 +50,8 @@ for a change locally, install the contract generator's dependencies once with
 Without those dependencies, a `contracts/**` change selects every test.
 
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
-change and publishes an LCOV plus feature-level Markdown coverage artifact.
+change. Each test shard uploads its own LCOV; nightly and unverified main runs
+merge them into a feature-level Markdown coverage report.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it

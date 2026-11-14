@@ -445,9 +445,13 @@ jobs:
           overwrite: true
           retention-days: 14
 
+  # Coverage is visibility-only, so pull requests and queue groups don't wait
+  # a runner turn for it: every shard already fails unless it uploads its own
+  # LCOV. Nightly and unverified main runs merge the shards into the report.
   flutter-coverage:
     name: Flutter coverage visibility
     needs: [test-plan, flutter-test-shards]
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -585,12 +589,19 @@ jobs:
           COVERAGE_RESULT: ${{ needs['flutter-coverage'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
           WIDGETBOOK_RESULT: ${{ needs.widgetbook.result }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          # Coverage is visibility-only and skipped for pull requests and queue groups.
+          coverage_ok=false
+          if [[ "${COVERAGE_RESULT}" == "success" ]] ||
+            [[ "${COVERAGE_RESULT}" == "skipped" && ( "${EVENT_NAME}" == "pull_request" || "${EVENT_NAME}" == "merge_group" ) ]]; then
+            coverage_ok=true
+          fi
           echo "analysis gates: ${GATES_RESULT}"
           echo "app package tests: ${APP_PACKAGES_RESULT}"
           echo "coverage visibility: ${COVERAGE_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
           echo "widgetbook: ${WIDGETBOOK_RESULT}"
-          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${COVERAGE_RESULT}" != "success" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
+          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
             exit 1
           fi
