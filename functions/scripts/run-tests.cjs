@@ -28,7 +28,8 @@ function listedStrictTests(root = functionsRoot) {
 }
 
 async function run(argv = process.argv.slice(2), {root = functionsRoot,
-  selectionPath = process.env.CATCH_UNIT_TEST_SELECTION} = {}) {
+  selectionPath = process.env.CATCH_UNIT_TEST_SELECTION,
+  junitPath = process.env.CATCH_UNIT_TEST_JUNIT_PATH} = {}) {
   if (argv[0] === "--require-emulators") {
     const files = argv.slice(1);
     return runStrictFiles(files.length ? files : listedStrictTests());
@@ -54,7 +55,16 @@ async function run(argv = process.argv.slice(2), {root = functionsRoot,
   console.log(selection?.mode === "selected" ?
     `Running ${testFiles.length} of ${discovered.length} discovered Functions test files this change can reach.` :
     `Running ${testFiles.length} discovered Functions test files.`);
-  const result = spawnSync(process.execPath, ["--test", ...testFiles], {
+  // Main and nightly CI also keep a JUnit report, whose testcases name the
+  // file of every failure, for tool/ci/selection_miss_report.mjs.
+  const reporters = [];
+  if (junitPath) {
+    const output = path.resolve(junitPath);
+    fs.mkdirSync(path.dirname(output), {recursive: true});
+    reporters.push("--test-reporter=spec", "--test-reporter-destination=stdout",
+      "--test-reporter=junit", `--test-reporter-destination=${output}`);
+  }
+  const result = spawnSync(process.execPath, ["--test", ...reporters, ...testFiles], {
     cwd: root,
     stdio: "inherit",
   });

@@ -501,3 +501,29 @@ test("npm test runs only a pull request's selected Functions tests", () => {
     fs.rmSync(root, {recursive: true, force: true});
   }
 });
+
+test("npm test keeps a JUnit report naming each failing file when asked", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-unit-junit-"));
+  try {
+    fs.mkdirSync(path.join(root, "lib"), {recursive: true});
+    fs.writeFileSync(path.join(root, "lib/pass.test.js"), "require(\"node:test\").test(\"passes\", () => {});\n");
+    fs.writeFileSync(path.join(root, "lib/fail.test.js"),
+      "require(\"node:test\").test(\"fails\", () => { throw new Error(\"boom\"); });\n");
+    const env = {...process.env};
+    delete env.NODE_TEST_CONTEXT;
+    delete env.CATCH_UNIT_TEST_SELECTION;
+    env.CATCH_UNIT_TEST_JUNIT_PATH = path.join(root, "build/junit.xml");
+    const launcher = path.join(root, "launcher.cjs");
+    fs.writeFileSync(launcher, `require(${JSON.stringify(runner)}).run([], {root: ${JSON.stringify(root)}})` +
+      ".then(code => process.exitCode = code).catch(error => {console.error(error); process.exitCode = 1;});");
+    const result = spawnSync(process.execPath, [launcher], {env, encoding: "utf8", timeout: 15000});
+    assert.equal(result.status, 1, result.stderr);
+    // The console keeps the usual spec output.
+    assert.match(result.stdout, /fails/u);
+    const report = fs.readFileSync(env.CATCH_UNIT_TEST_JUNIT_PATH, "utf8");
+    assert.match(report, /<testcase name="fails"[^>]*file="[^"]*lib\/fail\.test\.js"[^>]*failure=/u);
+    assert.match(report, /<testcase name="passes"[^>]*file="[^"]*lib\/pass\.test\.js"\/>/u);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
