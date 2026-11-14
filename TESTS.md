@@ -90,9 +90,15 @@ Flutter SDK, need no root because they follow global inputs. A computed path
 inside a declared root is trusted, so the nightly full run is the backstop for
 a declaration that misses a read.
 
-`.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
-change. Each test shard uploads its own LCOV; nightly and unverified main runs
-merge them into a feature-level Markdown coverage report.
+`.github/workflows/flutter-ci.yml` compiles Widgetbook and runs the Catch UI,
+Kernel, Consumer and Host package suites on every relevant Flutter change. On
+a pull request each package suite and Widgetbook run only when the change
+reaches its pubspec path-dependency closure
+(`tool/ci/flutter_package_scope.mjs`); a skipped suite leaves its job green
+with a "not affected" reason in the job summary. Locally,
+`node tool/harness/verify_local.mjs` runs them all. Each test shard uploads its
+own LCOV; nightly and unverified main runs merge them into a feature-level
+Markdown coverage report.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it
