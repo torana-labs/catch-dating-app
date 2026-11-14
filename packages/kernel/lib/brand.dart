@@ -28,7 +28,9 @@ final class Brand {
   // ignore: unnecessary_nullable_for_final_variable_declarations
   static const String? storesHostIos =
       'https://apps.apple.com/app/catch-host/id6778927317';
-  static const String? storesHostAndroid = null;
+  // ignore: unnecessary_nullable_for_final_variable_declarations
+  static const String? storesHostAndroid =
+      'https://play.google.com/store/apps/details?id=com.catchdates.host';
   static const adminName = 'Catch Admin';
   static const sendersEmailDomain = 'notify.catchdates.com';
   static const sendersEmailDisplayName = 'Catch';
