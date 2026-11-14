@@ -48,6 +48,19 @@ export const signInCopy = {
   privacy: "Signing in does not subscribe you to marketing messages.",
   headerSignIn: "Sign in",
   headerAccount: "Account",
+  /** The signed-in top bar's account menu (an avatar on wide pages, the Menu sheet on phones). */
+  menu: {
+    avatarLabel: "Account, {name}",
+    phoneLabel: "Menu, signed in as {name}",
+    fallbackName: "Your account",
+    nextPlan: "Next plan",
+    viewPass: "View pass",
+    myPlans: "My plans",
+    upcoming: "{count} upcoming",
+    account: "Account",
+    signOut: "Sign out",
+    label: "Account",
+  },
   reviewPrompt: "Sign in to keep this review in your account.",
   reviewSignedIn: "This review will appear in your account.",
 } as const;

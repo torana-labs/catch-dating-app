@@ -4295,6 +4295,28 @@
       "notes": "Step 1 of the guided pilot (name, company, phone, date, destination, guests and current tools, then Continue), shared by the landing's pilot band and /weddings/apply/."
     },
     {
+      "id": "site_account_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "packages/web-ui/src/components/CatchAccountButton.tsx",
+      "exportName": "CatchAccountButton",
+      "css": [
+        "packages/web-ui/src/components/CatchAccountButton.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "closed",
+          "open"
+        ]
+      },
+      "notes": "Website T4 under D18 (Website account proposal, AcctBarAvatar1440): @catch/web-ui draws the avatar button; SiteAccountProvider binds it to the account menu. Search aliases: AvatarButton, AccountAvatar, ProfileButton."
+    },
+    {
       "id": "shared_app_capture_image",
       "kind": "supporting-component",
       "routeIds": [
