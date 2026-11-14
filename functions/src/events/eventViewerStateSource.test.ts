@@ -2,6 +2,7 @@ import {publicCapturedFixture, uid as paidUid, eventId as paidEventId,
   now as paidNow} from "./publicRegistration/testFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import {Timestamp} from "firebase-admin/firestore";
 import {Store, type Row} from "../organizerFormAdmission/admissionTestFixture";
 import {communityMembershipRows} from
@@ -60,14 +61,18 @@ function fixture() {
   store.put(`users/${uid}`, user);
   const readSource = () => read({db: store.db(), uid, eventId, nowMillis: now,
     loadCurrentAuthPhone: async () => "+919000000001"});
-  const participation = (overrides: Row = {}) => store.put(
-    `eventParticipations/${eventParticipationId(eventId, uid)}`, {
-      eventId, organizerId, uid, status: "waitlisted",
-      createdAt: stamp(now - 1000), updatedAt: stamp(now - 1000),
-      signedUpAt: null, waitlistedAt: stamp(now - 1000), attendedAt: null,
-      cancelledAt: null, deletedAt: null, genderAtSignup: "man",
-      paymentId: null,
-      ...overrides});
+  // A seeded booking carries its roster row and pointer, as writers keep them.
+  const participation = (overrides: Row = {}) => {
+    const rows = withCatchBookingRows({
+      [`eventParticipations/${eventParticipationId(eventId, uid)}`]: {
+        eventId, organizerId, uid, status: "waitlisted",
+        createdAt: stamp(now - 1000), updatedAt: stamp(now - 1000),
+        signedUpAt: null, waitlistedAt: stamp(now - 1000), attendedAt: null,
+        cancelledAt: null, deletedAt: null, genderAtSignup: "man",
+        paymentId: null,
+        ...overrides}});
+    for (const [path, row] of Object.entries(rows)) store.put(path, row!);
+  };
   const gated = () => {
     const policy = eventPolicyFromEvent(event as unknown as EventDocument);
     policy.admission.membershipRequired = true;
@@ -180,13 +185,13 @@ test("holds consume capacity until their owner releases them", async () => {
 
 test("blocking and schedule facts restrict booking", async () => {
   const h = fixture();
-  h.store.put("eventParticipations/peer", {eventId, uid: "peer",
+  putBooking(h.store, "eventParticipations/peer", {eventId, uid: "peer",
     status: "signedUp"});
   h.store.put("blocks/peer__person", {});
   assert.equal((await h.readSource())?.futureBooking.reason,
     "eventUnavailable");
   h.store.rows.delete("blocks/peer__person");
-  h.store.put("eventParticipations/other", {eventId: "other", uid,
+  putBooking(h.store, "eventParticipations/other", {eventId: "other", uid,
     status: "signedUp"});
   h.store.put("events/other", {...h.event});
   assert.equal((await h.readSource())?.futureBooking.reason,
@@ -223,7 +228,7 @@ test("a bounded incomplete participant or offer set is unavailable",
     for (const kind of ["peers", "offers", "schedule"]) {
       const h = fixture();
       for (let i = 0; i < 101; i++) {
-        h.store.put(
+        putBooking(h.store,
           kind === "offers" ? `eventWaitlistOffers/offer${i}` :
             `eventParticipations/row${i}`, {eventId: kind === "schedule" ?
             `other${i}` : eventId, uid: kind === "schedule" ? uid : `peer${i}`,
@@ -309,3 +314,12 @@ test("live offer acceptance still needs current membership",
     h.store.get("eventWaitlistOffers/event1_person")!.uid = "foreign";
     assert.equal(await h.readSource(), null);
   });
+
+/** Seeds a document; a booking also gets the roster row its writers keep. */
+function putBooking(store: {put: (path: string, row: Row) => void},
+  path: string, row: Row): void {
+  for (const [key, value] of Object.entries(withCatchBookingRows(
+    {[path]: row}))) {
+    store.put(key, value!);
+  }
+}

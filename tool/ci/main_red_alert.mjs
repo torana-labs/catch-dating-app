@@ -16,6 +16,9 @@ import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
 
 export const ISSUE_TITLE = "Main CI is red";
+export const FLOOR_EXIT_TITLE = "Main CI green for 7 days: reporting lanes can block again";
+const DAY = 24 * 60 * 60 * 1000;
+export const FLOOR_EXIT_DAYS = 7;
 const FAILED = new Set(["failure", "timed_out", "startup_failure", "action_required"]);
 const FOOTER = "\n\n---\n_Posted by the Main CI alert workflow (tool/ci/main_red_alert.mjs)._";
 
@@ -54,6 +57,44 @@ export function decideAlert({run, jobs, openIssue}) {
   return openIssue ? {action: "comment", issue: openIssue.number, body} : {action: "open", title: ISSUE_TITLE, body};
 }
 
+/**
+ * Whether the sprint floor can end. Owner decision, 14 Nov 2026: the reporting
+ * lanes (REPORTING_LANES) block merges again once main stays green for a week.
+ * Green means every completed main push and nightly CI run concluded success,
+ * reporting lanes included; cancelled and skipped runs neither break nor make
+ * the streak. Pure, so every case is testable.
+ *
+ * @param {object} input
+ * @param {Array<{created_at:string, conclusion:string|null, status:string, event:string}>} input.runs
+ *   Main's push and nightly CI runs, reaching back at least FLOOR_EXIT_DAYS + 1 days.
+ * @param {number} input.now Milliseconds since the epoch.
+ * @param {{number:number}|null} input.openIssue The open floor-exit issue, if any.
+ * @param {readonly string[]} [input.reportingLanes]
+ */
+export function decideFloorExit({runs, now, openIssue, reportingLanes = REPORTING_LANES}) {
+  if (reportingLanes.length === 0 || openIssue) return {action: "none"};
+  const since = now - FLOOR_EXIT_DAYS * DAY;
+  const counted = runs.filter((run) => ["push", "schedule"].includes(run.event) && run.status === "completed" &&
+    !["cancelled", "skipped", "neutral", null].includes(run.conclusion));
+  // The history must reach past the window, or a red run just before it could hide.
+  if (!counted.some((run) => Date.parse(run.created_at) < since)) return {action: "none", reason: "history_too_short"};
+  const lastRed = counted.filter((run) => run.conclusion !== "success")
+    .reduce((latest, run) => Math.max(latest, Date.parse(run.created_at)), -Infinity);
+  if (lastRed >= since) return {action: "none", reason: "red_within_window"};
+  const nightlies = counted.filter((run) => run.event === "schedule" && Date.parse(run.created_at) >= since).length;
+  if (nightlies < FLOOR_EXIT_DAYS - 1) return {action: "none", reason: "too_few_nightlies"};
+  const body = [
+    `Every main push and nightly CI run for the last ${FLOOR_EXIT_DAYS} days succeeded, reporting lanes included ` +
+      `(${nightlies} nightly runs). Owner decision, 14 Nov 2026: the reporting lanes now block merges again.`,
+    "", `Reporting lanes: ${reportingLanes.map((lane) => `\`${lane}\``).join(", ")}.`,
+    "", "To end the sprint floor, in one pull request:",
+    "- add the lanes back to the `Required CI` job's `needs` in `.github/workflows/ci.yml` and empty its `$reporting` list;",
+    "- empty `REPORTING_LANES` in `tool/ci/required_ci_floor.mjs` (the release gate then requires the whole run to succeed);",
+    "- update the sprint floor paragraph in `docs/release_operations.md`.",
+  ].join("\n") + FOOTER;
+  return {action: "open", title: FLOOR_EXIT_TITLE, body};
+}
+
 function gh(args, input) {
   const result = spawnSync("gh", args, {encoding: "utf8", input, maxBuffer: 32 * 1024 * 1024});
   assert.equal(result.status, 0, result.stderr || `gh ${args.join(" ")} failed`);
@@ -80,6 +121,21 @@ function main() {
     }
   }
   console.log(`Main CI alert: ${decision.action} (run ${runId}, ${run.conclusion})`);
+  if (run.conclusion === "success") floorExit(repository, issues);
+}
+
+function floorExit(repository, issues) {
+  const now = Date.now();
+  const from = new Date(now - (FLOOR_EXIT_DAYS + 1) * DAY).toISOString().slice(0, 10);
+  const runs = JSON.parse(gh(["api", "--paginate", "--slurp",
+    `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
+    .flatMap((page) => page.workflow_runs ?? []);
+  const openIssue = issues.find((issue) => issue.title === FLOOR_EXIT_TITLE && !issue.pull_request) ?? null;
+  const decision = decideFloorExit({runs, now, openIssue});
+  if (decision.action === "open") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
+  }
+  console.log(`Sprint floor exit: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();
