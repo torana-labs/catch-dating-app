@@ -2141,7 +2141,16 @@ The source's CI therefore counts as successful when the run succeeded, or when
 its `Required CI` job succeeded and every job that did not succeed belongs to
 one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
 validation, exact-source captures, the main lineage and the live-release order
-are checked exactly as before. Revisit this when the floor ends.
+are checked exactly as before.
+
+The floor ends once main stays green for a week (owner decision, 14 Nov 2026):
+every completed main push and nightly CI run for 7 days concluded success,
+reporting lanes included, with at least 6 nightly runs in that window. The
+Main CI alert workflow checks this after each green main run
+(`decideFloorExit` in `tool/ci/main_red_alert.mjs`) and opens one issue,
+"Main CI green for 7 days: reporting lanes can block again", listing the
+restore steps: put the lanes back in `Required CI`'s needs, empty its
+`$reporting` list and `REPORTING_LANES`, and update this paragraph.
 
 Recovery:
 
