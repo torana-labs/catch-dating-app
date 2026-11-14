@@ -11,6 +11,7 @@ const row = read("../../../catch_ui/lib/src/components/catch_menu_row.dart");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
 const css = read("./CatchMenu.module.css");
 const ts = read("./CatchMenu.tsx");
+const placement = read("./catchAnchoredPlacement.ts");
 
 const layoutNumber = (name: string) => Number(layout.match(new RegExp(`${name} = ([\\d.]+);`))?.[1]);
 
@@ -46,7 +47,8 @@ describe("CatchMenu parity", () => {
     expect(menu).toContain("radius: CatchRadius.md,\n      borderRole: CatchBorderRole.boundary,");
     expect(css).toContain("border-radius: var(--catch-radius-md);");
     expect(layout).toContain("menuViewportInset = CatchSpacing.s4");
-    expect(ts).toContain("const viewportInset = 16;");
+    expect(placement).toContain("export const catchAnchoredViewportInset = 16;");
+    expect(ts).toContain("catchAnchoredPlacement(rect,");
     expect(css).toContain("max-height: calc(100dvh - 32px);");
   });
 });

@@ -1,0 +1,55 @@
+/*
+ * CatchAdaptiveSheet at 900px and wider. The dropdown is a floating surface
+ * at radius md with a boundary hairline and the overlay elevation, in the top
+ * layer at the place the component measures under its anchor. A title-bar title
+ * with a body-small ink2 line 4px under it, 18px insets and 12px between blocks; a
+ * bodyS ink2 footnote sits under a hairline. It scrolls inside itself.
+ * The dialog's footer is the same quiet footnote under its content. A
+ * trigger is drawn in place, in an inline wrapper the dropdown measures.
+ */
+.anchor { display: inline-flex; }
+
+.dropdown {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-surface);
+  box-shadow: var(--catch-elevation-overlay);
+  color: var(--catch-theme-ink);
+  z-index: var(--catch-layer-overlay);
+}
+
+/* Unmeasured, it stays invisible so it never flashes at the corner. */
+.dropdown:not([data-placed]) { visibility: hidden; }
+.dropdown:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); }
+
+.pad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  padding: var(--catch-space-micro18) var(--catch-space-micro18) var(--catch-space-s4);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+}
+
+.heading > * { margin: 0; }
+
+.footnote {
+  padding: var(--catch-space-s3) var(--catch-space-micro18) var(--catch-space-micro14);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  color: var(--catch-theme-ink2);
+}
+
+.dialogFooter {
+  margin-top: var(--catch-space-s4);
+  color: var(--catch-theme-ink2);
+}
