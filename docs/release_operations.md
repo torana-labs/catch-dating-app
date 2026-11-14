@@ -398,6 +398,22 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
+On a pull request, the "Catch UI, Consumer & Host package tests" and
+"Widgetbook analyze & build" jobs run each package suite and the Widgetbook
+build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
+A suite's closure is its package directory and those of its transitive pubspec
+path dependencies (only `lib/` and `assets/` of the root package), plus what
+those manifests bundle from outside their directories, read from the head
+commit at run time. A `contracts/**` or `tool/contracts/**` change reaches
+`packages/platform` and the root package, where the generated contract Dart
+lives. These keep every suite running: a workspace input (any `pubspec.lock`,
+`analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,
+`.metadata`, `tool/ci/toolchain.env`, `tool/harness/**`, the scope script, the
+Flutter CI workflow or its setup actions); any path no rule classifies; and a
+manifest the script cannot read. A skipped suite leaves its job green with a
+"not affected: <reason>" summary, so the Required CI names are unchanged.
+Merge queue, main, nightly, manual and full runs execute every suite.
+
 ### Selected Check Contracts
 
 The graph selects obligations; selection is not execution evidence. Selector-control
