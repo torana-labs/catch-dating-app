@@ -16,13 +16,13 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
