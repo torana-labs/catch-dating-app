@@ -87,16 +87,23 @@ export function UnsplitOnly({children}: {children: ReactNode}) {
   return useCatchPane().split ? null : <>{children}</>;
 }
 
-/** Help for finding, disputing or starting a page, beside the search and the link states. */
+/**
+ * How claiming works and the questions about it, beside the search and the
+ * link states: the three steps as ranked rows, then the questions.
+ */
 export function ClaimGuidance() {
   return (
-    <CatchStack aria-labelledby="claim-guidance-title" as="section" gap={16}>
-      <CatchText as="h2" id="claim-guidance-title" variant="section-title">{claimGuidance.title}</CatchText>
-      <CatchText tone="secondary" variant="body-small">{claimGuidance.body}</CatchText>
-      <CatchAccordion items={claimGuidance.items.map((item) => ({title: item.question, body: item.answer}))} size="md" />
-      <CatchStack direction="row" gap={8} wrap>
+    <CatchStack aria-label={claimGuidance.title} as="section" gap={32}>
+      <CatchSection title={claimGuidance.title}>
+        {claimGuidance.steps.map((step, index) => (
+          <CatchIndexRow density="compact" key={step.title} rank={index + 1} subtitle={step.subtitle} title={step.title} wrap />
+        ))}
+      </CatchSection>
+      <CatchSection dividers="none" title={claimGuidance.questionsTitle}>
+        <CatchAccordion items={claimGuidance.items.map((item) => ({title: item.question, body: item.answer}))} size="md" />
+      </CatchSection>
+      <CatchStack align="start">
         <CatchButton href="/help/" label={claimGuidance.help} size="sm" variant="secondary" />
-        <CatchButton href="/host/#start" label={claimGuidance.trial} size="sm" variant="quiet" />
       </CatchStack>
     </CatchStack>
   );

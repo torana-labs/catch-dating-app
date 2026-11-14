@@ -42,6 +42,13 @@ Functions tests read repository contracts through `contractFixture("name")`
 request selection then runs only the tests that read a changed contract; a path
 built from a variable makes that test run for every contract change.
 
+Flutter CI runs only the root unit and widget tests a change can reach;
+`docs/release_operations.md` owns the selection rules. To see the selection
+for a change locally, install the contract generator's dependencies once with
+`npm --prefix functions ci --ignore-scripts`, then run
+`dart run tool/harness/lib/flutter_test_selection.dart --base <sha> --head <sha> --output build/ci/flutter-test-plan.json`.
+Without those dependencies, a `contracts/**` change selects every test.
+
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
