@@ -452,7 +452,10 @@ lives. These keep every suite running: a workspace input (any `pubspec.lock`,
 `analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,
 `.metadata`, `tool/ci/toolchain.env`, `tool/harness/**`, the scope script, the
 Flutter CI workflow or its setup actions); any path no rule classifies; and a
-manifest the script cannot read. A skipped suite leaves its job green with a
+manifest the script cannot read. A `packages/*` directory with a
+`package.json` and no `pubspec.yaml` (the React and web packages, found in the
+head tree at run time) is classified as web-only, so a change there skips
+every suite unless a closure bundles or imports one of its files. A skipped suite leaves its job green with a
 "not affected: <reason>" summary, so the Required CI names are unchanged.
 Merge queue, main, nightly, manual and full runs execute every suite.
 
@@ -531,7 +534,10 @@ runs only outside pull requests and queue groups (nightly and unverified main
 runs); a pull request does not wait a runner turn for it. Compare nightly
 reports for full-suite trends. A shard
 containing only repository probes can legitimately observe no product lines.
-The matrix contains at most four nonempty shards and the required aggregate
+The planner sizes the matrix to the selection: one shard per 110 selected
+files, rounded up, between one and four (`shardCount` in
+`tool/harness/lib/flutter_test_selection.dart`), so a small selection doesn't
+pay the setup and runner wait of four shards. The matrix contains at most four nonempty shards and the required aggregate
 rejects missing planner or test results, and a missing coverage result outside
 pull requests and queue groups.
 

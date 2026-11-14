@@ -3,7 +3,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import {decide, markdownCell, packageClosure, readManifest, relativeTargets, workspaceInput} from "./flutter_package_scope.mjs";
+import {decide, markdownCell, packageClosure, readManifest, relativeTargets, webOnlyPackages, workspaceInput} from "./flutter_package_scope.mjs";
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 const readRepo = (name) => {
@@ -185,4 +185,65 @@ test("Widgetbook and Consumer reach the root test helpers their tests import", (
     readFile: readRepo,
   });
   assert.equal(decisions.widgetbook.run, true);
+});
+
+test("web-only packages are derived from the tree and skip every job no closure reaches", () => {
+  const tree = {
+    ...fixture,
+    "packages/web/package.json": "{}",
+    "packages/web/src/button.css": "",
+    "packages/both/package.json": "{}",
+    "packages/both/pubspec.yaml": "name: both\n",
+    "packages/bundled/package.json": "{}",
+    "packages/bundled/dist/tokens.json": "",
+    "packages/bundled/lib/shared.dart": "",
+    "gallery/pubspec.yaml": `${fixture["gallery/pubspec.yaml"]}    - ../packages/bundled/dist/tokens.json\n`,
+    "gallery/lib/a.dart": "import '../../packages/bundled/lib/shared.dart';\n",
+  };
+  const manifests = Object.keys(tree).filter((name) => name.endsWith("pubspec.yaml"));
+  const files = Object.keys(tree);
+  assert.deepEqual(webOnlyPackages(files, manifests).sort(), ["packages/bundled", "packages/web"]);
+  const decisionsFor = (changed) => decide({
+    packages: ["packages/ui", "apps/app", "gallery", "packages/other"],
+    changed,
+    event: "pull_request",
+    manifests,
+    files,
+    readFile: (name) => tree[name] ?? null,
+  });
+  const skipped = decisionsFor(["packages/web/src/button.css", "packages/web/package.json"]);
+  assert.deepEqual(runs(skipped), []);
+  assert.match(skipped.gallery.reason, /^not affected: /u);
+  // A closure that bundles or imports from a web package still runs.
+  assert.deepEqual(runs(decisionsFor(["packages/bundled/dist/tokens.json"])), ["gallery"]);
+  assert.deepEqual(runs(decisionsFor(["packages/bundled/lib/shared.dart"])), ["gallery"]);
+  // A directory with a pubspec is a Dart package even with a package.json:
+  // no job here depends on it. An unknown sibling stays unclassified.
+  assert.deepEqual(webOnlyPackages(files, manifests).includes("packages/both"), false);
+  assert.deepEqual(runs(decisionsFor(["packages/both/lib/b.dart"])), []);
+  assert.deepEqual(runs(decisionsFor(["packages/unknown/x.txt"])), ["apps/app", "gallery", "packages/other", "packages/ui"]);
+});
+
+test("the repository's React packages are web-only and no job's closure reaches them", () => {
+  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8"}).split("\n").filter(Boolean);
+  const web = webOnlyPackages(files, repoManifests);
+  for (const directory of ["packages/web-ui", "packages/web-ui-react18", "packages/web-config", "packages/brand"]) {
+    assert.ok(web.includes(directory), directory);
+  }
+  const listFiles = (entry) => files.filter((name) => name.startsWith(entry));
+  for (const job of JOBS) {
+    const owned = packageClosure(job, readRepo, listFiles).owned;
+    for (const directory of web) {
+      assert.ok(!owned.some((entry) => entry.startsWith(`${directory}/`) || entry === directory), `${job} reaches ${directory}`);
+    }
+  }
+  const decisions = decide({
+    packages: JOBS,
+    changed: ["packages/web-ui/src/styles.css"],
+    event: "pull_request",
+    manifests: repoManifests,
+    files,
+    readFile: readRepo,
+  });
+  assert.deepEqual(runs(decisions), []);
 });
