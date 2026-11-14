@@ -5637,6 +5637,8 @@
       "exportName": "SignInSheetView",
       "css": [
         "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchAdaptiveSheet.module.css",
+        "packages/web-ui/src/components/CatchDialog.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
@@ -5647,11 +5649,10 @@
         "states": [
           "start",
           "code",
-          "link-sent",
-          "confirm-email"
+          "dropdown"
         ]
       },
-      "notes": "The one sign-in sheet: phone code first, then Google and an email link. Opens from the header and inline at the moment of need, never as a gate before browsing."
+      "notes": "The one sign-in sheet, as in the apps: a phone number, then a six-digit code (no Google or email link). A bottom sheet on phones and a 380px dropdown under the control that opened it at 900px and wider (CatchAdaptiveSheet). Opens from the header and inline at the moment of need, never as a gate before browsing."
     },
     {
       "id": "sign_in_button",
@@ -5692,7 +5693,7 @@
           "signed-in"
         ]
       },
-      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both, and Firebase loads only for a reader this device has seen signed in or one returning from an email link."
+      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both; the sign-in dropdown hangs from the bar entry, and Firebase loads only for a reader this device has seen signed in."
     },
     {
       "id": "sign_in_prompt",
