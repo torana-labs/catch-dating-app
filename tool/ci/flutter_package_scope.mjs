@@ -205,6 +205,10 @@ export function decide({packages, changed, event, full = false, commitWindow = f
   return decisions;
 }
 
+/** Text safe inside one Markdown table cell: backslashes first, then pipes. */
+export const markdownCell = (text) =>
+  String(text).replace(/\\/gu, "\\\\").replace(/\|/gu, "\\|").replace(/\r?\n/gu, " ");
+
 export const outputKey = (name) => (name.split("/").pop() || "root").replace(/[^a-z0-9]+/giu, "_");
 
 function git(args) {
@@ -262,7 +266,7 @@ function main(argv) {
       "| Package | Runs | Reason |",
       "|---|---|---|",
       ...Object.entries(decisions).map(([name, decision]) =>
-        `| \`${name}\` | ${decision.run ? "yes" : "no"} | ${decision.reason.replace(/\|/gu, "\\|")} |`),
+        `| ${markdownCell(name)} | ${decision.run ? "yes" : "no"} | ${markdownCell(decision.reason)} |`),
       "",
     ].join("\n"));
   }

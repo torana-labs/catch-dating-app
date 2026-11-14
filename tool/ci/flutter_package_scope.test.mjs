@@ -3,7 +3,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import {decide, packageClosure, readManifest, workspaceInput} from "./flutter_package_scope.mjs";
+import {decide, markdownCell, packageClosure, readManifest, workspaceInput} from "./flutter_package_scope.mjs";
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 const readRepo = (name) => {
@@ -133,4 +133,10 @@ test("manifests with YAML the reader does not follow are unreadable", () => {
     assert.equal(readManifest(source), null, source);
   }
   assert.deepEqual(readManifest("name: a\ndependencies:\n  b:\n    path: '../b' # local\n"), {dependencies: ["../b"], bundled: []});
+});
+
+test("summary cells escape backslashes before pipes and fold newlines", () => {
+  assert.equal(markdownCell("a|b"), "a\\|b");
+  assert.equal(markdownCell("a\\|b"), "a\\\\\\|b");
+  assert.equal(markdownCell("one\ntwo"), "one two");
 });
