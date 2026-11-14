@@ -1,4 +1,5 @@
-import {CatchAdaptiveSheet, CatchButton, CatchField, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {CatchAdaptiveSheet, CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {interpolateContent as fill} from "@content/interpolate";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {useEffect, useMemo, useState, type ReactNode, type RefObject} from "react";
 import {signInCopy as copy} from "../../content/account";
@@ -10,6 +11,8 @@ import {useSignInSheetController, type SignInSheetController} from "./useSignInS
 import {useSiteAccountMenuController} from "./useSiteAccountMenuController";
 
 const noop = () => undefined;
+/** 0:28: minutes and two-digit seconds, as the apps count down. */
+const countdown = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
 /**
  * The one sign-in sheet, as in the apps: a phone number, then a six-digit
@@ -58,11 +61,21 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
     return (
       <Form noValidate onSubmit={sheet.verify} pending={sheet.pending}>
         <CatchStack gap={12}>
-          <CatchField inputMode="inactive" keyboardType="phone" onChanged={noop} recipe="input" title={copy.phone} value={sheet.phone} />
+          <CatchSection container="tile">
+            <CatchIndexRow density="compact" subtitle={sheet.phone} title={copy.phone}
+              trailing={<CatchButton label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone}
+                semanticsLabel={copy.changePhoneLabel} size="sm" variant="quiet" />} />
+          </CatchSection>
           <CatchField autoComplete="one-time-code" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="number"
             onChanged={sheet.setCode} recipe="input" title={copy.code} value={sheet.code} />
           <CatchButton fullWidth label={copy.verify} onPressed={noop} status={busy} type="submit" />
-          <CatchButton fullWidth label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone} variant="quiet" />
+          {sheet.resendIn > 0 ? (
+            <CatchText align="center" as="p" tone="secondary" variant="body-small">{fill(copy.resendIn, {time: countdown(sheet.resendIn)})}</CatchText>
+          ) : (
+            <CatchStack align="center">
+              <CatchButton label={copy.resend} onPressed={sheet.pending ? null : () => void sheet.resend()} size="sm" variant="quiet" />
+            </CatchStack>
+          )}
         </CatchStack>
       </Form>
     );

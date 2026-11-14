@@ -157,7 +157,8 @@ function SignInPreview({args, controller}: {args: AccountPageViewProps; controll
 }
 const sheet = (stage: SignInStage, extra: Partial<SignInSheetController> = {}): SignInSheetController => ({
   recaptchaId: "preview-sign-in", stage, phone: stage === "start" ? "" : "+91 98765 43210", setPhone: noop, code: "", setCode: noop,
-  status: quiet, pending: false, sendCode: asyncNoop, verify: asyncNoop, changePhone: noop, reset: noop, ...extra,
+  status: quiet, pending: false, sendCode: asyncNoop, verify: asyncNoop, changePhone: noop, reset: noop, resendIn: 28, resend: asyncNoop,
+  ...extra,
 });
 const sheetStory = (controller: SignInSheetController, wide = false): Story => ({
   ...(wide ? desktop : {}),
