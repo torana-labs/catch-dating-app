@@ -1282,8 +1282,27 @@ test("only capture tooling and images select capture production; app inputs leav
     "tool/marketing/lib/capture_provenance.mjs",
     "artifacts/marketing/app-screenshots/README.md",
   ];
+  // App render inputs select capture production in the merge queue only
+  // (owner decision, 12 Nov 2026), so main can reuse the queue's captures.
+  const queueInputs = new Set([
+    "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
+    "lib/main_consumer.dart", "packages/l10n/lib/app_en.arb",
+    "packages/l10n/lib/generated/app_localizations.dart",
+    "packages/platform/lib/schema_contracts/generated/schema_paths.dart",
+    "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
+    "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",
+    "assets/images/sample.png", "assets/fonts/sample.ttf", "pubspec.yaml", "pubspec.lock",
+    "packages/catch_tokens/pubspec.yaml", "packages/catch_tokens/lib/example.dart",
+    "packages/catch_ui/lib/example.dart", "packages/catch_ui/assets/example.png",
+  ]);
   for (const file of ["lib/main_consumer.dart", "test/example_test.dart", "assets/images/sample.png"]) {
-    assert.ok(!plan(file).operations.ciTargets.includes("capture_freshness"), file);
+    for (const mode of ["pr", "main", "nightly"]) {
+      assert.ok(!plan(file, mode).operations.ciTargets.includes("capture_freshness"), `${file} ${mode}`);
+    }
+    assert.ok(plan(file, "merge_group").operations.ciTargets.includes("capture_freshness"), file);
+  }
+  for (const file of ["lib/README.md", "packages/catch_ui_lints/lib/example.dart"]) {
+    assert.ok(!plan(file, "merge_group").operations.ciTargets.includes("capture_freshness"), file);
   }
   for (const file of [...appInputs, ...captureInputs]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
@@ -1291,7 +1310,8 @@ test("only capture tooling and images select capture production; app inputs leav
       const after = plan(file, mode);
       assert.equal(after.complete, true, `${file} ${mode}`);
       // A website build imports its images, so a path that selects Marketing keeps them.
-      assert.deepEqual(after.operations.ciTargets, captureInputs.includes(file) || before.operations.ciTargets.includes("marketing")
+      assert.deepEqual(after.operations.ciTargets, captureInputs.includes(file) || before.operations.ciTargets.includes("marketing") ||
+        (mode === "merge_group" && queueInputs.has(file))
         ? [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort()
         : before.operations.ciTargets, `${file} ${mode}`);
       for (const key of ["checkIds", "codegenIds", "buildTargets"]) {
@@ -1317,7 +1337,8 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
     const result = planAffected({graph, mode, changedPaths: [
       "lib/auth/presentation/phone_step.dart", "functions/src/payments/razorpay.ts"]});
     assert.ok(result.operations.ciTargets.includes("functions"));
-    assert.ok(!result.operations.ciTargets.includes("capture_freshness"));
+    // App render inputs produce captures in the merge queue only.
+    assert.equal(result.operations.ciTargets.includes("capture_freshness"), mode === "merge_group", mode);
     const nativeOnly = plan("lib/auth/presentation/phone_step.dart", mode);
     assert.deepEqual(result.operations.buildTargets, nativeOnly.operations.buildTargets);
     assert.deepEqual(deriveAppRoles(result), deriveAppRoles(nativeOnly));
