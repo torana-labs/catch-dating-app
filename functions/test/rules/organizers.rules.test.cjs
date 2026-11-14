@@ -39,7 +39,7 @@ describe("firestore.rules", () => {
   });
 
   describe("organizers", () => {
-    it("exposes organizer profiles but keeps profile writes callable-owned", async () => {
+    it("keeps organizer records team-only and profile writes callable-owned", async () => {
       await seed(["organizers", "organizer-1"], organizer({
         ownerUserId: "owner-1",
         hostUserIds: ["owner-1", "manager-1"],
@@ -48,13 +48,16 @@ describe("firestore.rules", () => {
         followerCount: 0,
       }));
 
-      await assertSucceeds(
+      await assertFails(
         getDoc(doc(
           testEnv.unauthenticatedContext().firestore(),
           "organizers",
           "organizer-1",
         )),
       );
+      await assertFails(getDoc(doc(authedDb("guest-1"), "organizers", "organizer-1")));
+      await assertSucceeds(getDoc(doc(authedDb("owner-1"), "organizers", "organizer-1")));
+      await assertSucceeds(getDoc(doc(authedDb("manager-1"), "organizers", "organizer-1")));
       await assertFails(
         updateDoc(doc(authedDb("owner-1"), "organizers", "organizer-1"), {
           organizerType: "venue",
@@ -70,7 +73,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("lists only organizers the app shows, or ones the reader hosts or owns", async () => {
+    it("lists only organizers the reader hosts or owns; guests browse publicOrganizers", async () => {
       await seed(["organizers", "shown"], organizer({appVisibility: "discoverable", locationMarketId: "mumbai",
         hostUserIds: ["host-1"]}));
       await seed(["organizers", "draft"], organizer({appVisibility: "hidden", locationMarketId: "mumbai",
@@ -79,10 +82,11 @@ describe("firestore.rules", () => {
         hostUserId: "host-2", ownerUserId: "host-2", hostUserIds: ["host-2"]}));
       const anonymous = testEnv.unauthenticatedContext().firestore();
 
-      // Browse lists must ask for discoverable organizers.
-      const shown = await assertSucceeds(getDocs(query(collection(anonymous, "organizers"),
+      // Guests browse publicOrganizers; the canonical records never list for them.
+      await assertFails(getDocs(query(collection(anonymous, "organizers"),
         where("locationMarketId", "==", "mumbai"), where("appVisibility", "==", "discoverable"))));
-      assert.deepEqual(shown.docs.map((document) => document.id), ["shown"]);
+      await assertFails(getDocs(query(collection(authedDb("member-1"), "organizers"),
+        where("locationMarketId", "==", "mumbai"), where("appVisibility", "==", "discoverable"))));
       await assertFails(getDocs(query(collection(anonymous, "organizers"),
         where("locationMarketId", "==", "mumbai"))));
       await assertFails(getDocs(collection(authedDb("member-1"), "organizers")));
@@ -105,8 +109,28 @@ describe("firestore.rules", () => {
       await assertFails(getDocs(query(collection(authedDb("member-1"), "organizers"),
         where("hostUserIds", "array-contains", "host-2"))));
 
-      // A single organizer by id stays readable, so chats and deep links resolve.
-      await assertSucceeds(getDoc(doc(anonymous, "organizers", "draft")));
+      // Single organizers are team-only too: guests resolve chats and deep
+      // links through publicOrganizers/{id}.
+      await assertFails(getDoc(doc(anonymous, "organizers", "draft")));
+      await assertFails(getDoc(doc(authedDb("member-1"), "organizers", "shown")));
+      await assertSucceeds(getDoc(doc(authedDb("host-2"), "organizers", "mine")));
+    });
+
+    it("lets active team members get their organizer, and nobody else", async () => {
+      await seed(["organizers", "org-team"], organizer({ownerUserId: "owner-1",
+        hostUserId: "owner-1", hostUserIds: ["owner-1"]}));
+      await seed(["organizerTeamMemberships", "org-team_staff-1"],
+        {organizerId: "org-team", uid: "staff-1", role: "staff", status: "active"});
+      await seed(["organizerTeamMemberships", "org-team_former-1"],
+        {organizerId: "org-team", uid: "former-1", role: "staff", status: "removed"});
+      await seed(["organizerTeamMemberships", "org-team_spoof-1"],
+        {organizerId: "other-org", uid: "spoof-1", role: "staff", status: "active"});
+
+      await assertSucceeds(getDoc(doc(authedDb("staff-1"), "organizers", "org-team")));
+      await assertFails(getDoc(doc(authedDb("former-1"), "organizers", "org-team")));
+      await assertFails(getDoc(doc(authedDb("spoof-1"), "organizers", "org-team")));
+      await seed(["deletedUsers", "owner-1"], {});
+      await assertFails(getDoc(doc(authedDb("owner-1"), "organizers", "org-team")));
     });
 
     it("serves publicOrganizers by id, lists only shown ones and never accepts writes", async () => {

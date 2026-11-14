@@ -1,8 +1,7 @@
-const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const {before, after, describe, it} = require("node:test");
-const {initializeTestEnvironment, assertFails, assertSucceeds} =
+const {initializeTestEnvironment, assertFails} =
   require("@firebase/rules-unit-testing");
 const {doc, collection, getDoc, getDocs, setDoc} = require("firebase/firestore");
 
@@ -99,10 +98,12 @@ describe("sales records stay private behind server operations", () => {
     });
   }
 
-  it("demonstrates hidden organizer documents are still public", async () => {
-    const snapshot = await assertSucceeds(getDoc(doc(
+  it("keeps hidden organizer documents private (#1221)", async () => {
+    // organizers/{id} is readable only by the organizer's own team; guests
+    // read the public copy in publicOrganizers instead.
+    await assertFails(getDoc(doc(
       env.unauthenticatedContext().firestore(), "organizers/host-one")));
-    assert.deepEqual(snapshot.data(), {name: "Synthetic Host",
-      appVisibility: "hidden", ownership: {state: "unclaimed"}});
+    await assertFails(getDoc(doc(
+      env.authenticatedContext("someone-else").firestore(), "organizers/host-one")));
   });
 });

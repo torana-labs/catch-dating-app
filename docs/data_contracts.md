@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.195.0
-updated: 2026-11-12
+version: 1.196.0
+updated: 2026-11-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -3521,7 +3521,8 @@ to private-profile fields or another organizer's records.
 | Verified account identity | Firebase Auth plus the verified `users/{uid}.phoneNumber` mirror | Firebase Auth is authoritative for phone ownership. The private mirror is not a Host projection. |
 | Private Catch/dating profile | `users/{uid}` | Participant-authored source used to build Catch experiences. Its presence does not authorize Host access. |
 | Public dating projection | `publicProfiles/{uid}` | Server-derived, redacted feed shape only. A person-field mapping describes where a published value would land; it is not publication consent. |
-| Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it; contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
+| Canonical organizer | `organizers/{organizerId}` | Readable only by the organizer's hosts, owner and active `organizerTeamMemberships` members (#1221). Lists return only the reader's own organizers. Never a guest read path. |
+| Public organizer projection | `publicOrganizers/{organizerId}` | Server-derived allowlist of `organizers/{organizerId}` (#1221). Guest-facing reads use it: anyone may get one by id, and lists return only discoverable rows. The apps fall back to it when a canonical read is denied. Contact details, host defaults, provenance, intake, admin search, ownership and claim stay on the canonical document. |
 | Portable application prefill | `participantIntakeProfiles/{uid}` | Participant-private, reviewed values for lower-friction future applications. It neither overwrites `users` nor becomes organizer-visible merely by existing. |
 | Organizer application snapshot | `organizerApplicationResponses/{responseId}` plus `participantOrganizerDataGrants/{grantId}` | Exact questions answered for one application and the exact question/field grant receipt. This is the only application-field slice available to that organizer. |
 | Organizer CRM/customer history | `organizerContacts` and its organizer-scoped event, note, trait, campaign, and commerce projections | Facts the organizer acquired through its own events and workflows. It must not be hydrated from private `users` fields merely because an identity link exists. |
