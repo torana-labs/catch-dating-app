@@ -188,6 +188,7 @@ function finalize(ctx, files) {
   for (const file of [...inputs]) {
     if (file.endsWith('.dart')) for (const data of dataFilesNamedBy(source(ctx, file), file)) inputs.add(data);
   }
+  for (const catalog of personaCatalogsCastBy(inputs)) inputs.add(catalog);
   return [...inputs].sort();
 }
 
@@ -201,6 +202,37 @@ function addManifestInputs(ctx, inputs) {
       if (fs.existsSync(fromRepo(candidate)) && (match[0].includes('asset:') || match[1].endsWith('/') || fs.statSync(fromRepo(candidate)).isFile())) addTree(candidate, inputs);
     }
   }
+}
+
+// Scenario worlds cast people by persona id, not by path. Every catalog under
+// the persona directory that defines a cast id is an input, so a persona edit
+// stales the captures whose scenarios cast that persona even if no Dart file
+// names its catalog. An id no catalog defines fails the hash.
+const scenarioDir = 'tool/demo/demo_seed/scenarios/';
+const personaDir = 'tool/demo/demo_seed/personas';
+function personaCatalogsCastBy(inputs) {
+  const cast = new Set();
+  for (const file of inputs) {
+    if (!file.startsWith(scenarioDir) || !file.endsWith('.json')) continue;
+    for (const match of fs.readFileSync(fromRepo(file), 'utf8').matchAll(/"personaId"\s*:\s*"([^"]+)"/gu)) cast.add(match[1]);
+  }
+  if (!cast.size) return [];
+  const catalogs = new Set();
+  const defined = new Set();
+  for (const name of fs.readdirSync(fromRepo(personaDir)).filter(item => item.endsWith('.json')).sort()) {
+    const file = `${personaDir}/${name}`;
+    const personas = JSON.parse(fs.readFileSync(fromRepo(file), 'utf8')).personas;
+    if (!Array.isArray(personas)) continue;
+    for (const persona of personas) {
+      if (cast.has(persona?.id)) {
+        catalogs.add(file);
+        defined.add(persona.id);
+      }
+    }
+  }
+  const missing = [...cast].filter(id => !defined.has(id));
+  if (missing.length) throw new Error(`Capture scenario casts undefined persona ids: ${missing.sort().join(', ')}`);
+  return [...catalogs];
 }
 
 function dataFilesNamedBy(text, file) {
@@ -266,7 +298,7 @@ export function constConstructorLines(text) {
 
 // Bump when the way recorded inputs are chosen or hashed changes: every app
 // capture then renders again once, instead of being judged by an old rule.
-export const INPUT_RECIPE = 2;
+export const INPUT_RECIPE = 3;
 
 /**
  * An app capture's input hash over `files` (its recorded list), or a web

@@ -204,7 +204,11 @@ than as a define, so they share one compiled test. It holds:
 - the data files any listed Dart file names by literal repo path, such as
   `tool/demo/demo_seed/scenarios/host-marketing-india.json`. A computed data
   path (one with `$`) fails, because the hash could not see which file it
-  reads.
+  reads;
+- the persona catalogs under `tool/demo/demo_seed/personas/` that define a
+  `personaId` cast by one of those scenario files. Scenarios cast people by
+  id, not path, so the list follows each id to every catalog that defines it.
+  An id no catalog defines fails.
 
 The hash also covers the recipe version (`INPUT_RECIPE` in
 `capture_provenance.mjs`) and every declared asset/font as the tree holds it
