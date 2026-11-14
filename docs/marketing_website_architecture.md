@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.27.0
-updated: 2026-11-12
+version: 0.28.0
+updated: 2026-11-13
 owner: marketing_website
 status: active
 ---
@@ -137,7 +137,7 @@ then the wordmark with the tagline on its baseline and the operator line. The
 homepage and the city pages add their Cities column; a product page (host,
 weddings) may name itself in the wordmark and give its own line, with the same
 columns. Home, Explore and the city pages, the host landing and application,
-weddings, legal, help and 404 all end with it; its links come from
+weddings, legal, help, 404 and the claim page all end with it; its links come from
 `siteFooterCopy` in `content/site.ts`.
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
@@ -146,10 +146,9 @@ For organisers and Get the app, from `publicPageChromeCopy` in
 `content/site.ts`) and end with the boards' short footer, `PublicPageFooter`:
 the wordmark across from Privacy, Terms, For organisers and Help, closing the
 main column (the organiser page's list-detail main, the event page's reading
-lane) rather than an ink band. The claim, public form and offer pages render
-the same `PublicPageFooter` below their reading layout with the site and legal
-links and the operator line; only the claim page records footer clicks. Import
-both from `shared/site`.
+lane) rather than an ink band. The public form and offer pages render the same
+`PublicPageFooter` below their reading layout with the site and legal links and
+the operator line. Import both from `shared/site`.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -1266,7 +1265,12 @@ that starts in the app from the landing's start band; `/host/apply/`, the
 retired pilot intake, redirects permanently to `/host/#start`.
 
 `/organizers/` owns real directory search; `/claim/` and `/claim/:listing`
-own the existing claim flow and explanatory guidance in `content/claimGuidance.ts`.
+own the existing claim flow on the standard site chrome (`PublicSiteHeader`,
+`PublicSiteFooter`). Before a page is chosen, `/claim/` is the claim boards'
+reading layout: one headline, the boxed `CatchSearchField`, the claimable pages
+as one section of rows and a single "Start your free trial" tile for an
+organiser who isn't listed, with how claiming works and its questions beside
+it (`content/claimFlow.ts` `landing`, `content/claimGuidance.ts`).
 Fictional listing rows and simulated console counters are removed, not mixed
 into real discovery or offered as customer proof.
 

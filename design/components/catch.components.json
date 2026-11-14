@@ -14715,6 +14715,26 @@
           "CatchSearchField.expanding"
         ]
       },
+      "react": {
+        "symbol": "CatchSearchField",
+        "file": "packages/web-ui/src/components/CatchSearchField.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSearchField.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "empty",
+            "filled",
+            "focused",
+            "disabled",
+            "collapsed",
+            "expanded",
+            "large-text"
+          ]
+        },
+        "notes": "Flutter's three constructors map to recipe=\"field\" | \"expanded\" | \"expanding\". copy carries the localized search label, clear tooltip and close label that Flutter reads from its localizations. Explore, the claim page and the city picker use the field recipe."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
