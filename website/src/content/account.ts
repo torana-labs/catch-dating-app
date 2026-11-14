@@ -36,6 +36,7 @@ export const signInCopy = {
   sendCode: "Text me a code",
   code: "Six-digit code",
   verify: "Sign in",
+  lockedPhone: "Phone",
   changePhone: "Change",
   changePhoneLabel: "Change phone number",
   resendIn: "Didn’t get it? Resend in {time}",

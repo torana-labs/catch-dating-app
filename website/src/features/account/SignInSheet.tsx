@@ -62,7 +62,7 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
       <Form noValidate onSubmit={sheet.verify} pending={sheet.pending}>
         <CatchStack gap={12}>
           <CatchSection container="tile">
-            <CatchIndexRow density="compact" subtitle={sheet.phone} title={copy.phone}
+            <CatchIndexRow density="compact" subtitle={copy.lockedPhone} title={sheet.phone}
               trailing={<CatchButton label={copy.changePhone} onPressed={sheet.pending ? null : sheet.changePhone}
                 semanticsLabel={copy.changePhoneLabel} size="sm" variant="quiet" />} />
           </CatchSection>
