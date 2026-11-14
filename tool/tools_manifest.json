@@ -494,7 +494,8 @@
       },
       "impactPaths": [
         "tool/git/branch_hygiene.test.mjs",
-        ".github/workflows/branch-hygiene.yml"
+        ".github/workflows/branch-hygiene.yml",
+        ".github/workflows/branch-prune.yml"
       ],
       "description": "Classifies remote or local branches using ancestry, exact tree history, exact merged-PR identity, final changed-path identity, age, and open-PR state so completed refs can be pruned without hiding abandoned code.",
       "checks": [
@@ -860,6 +861,7 @@
         ]
       },
       "impactPaths": [
+        ".github/actions/find-queue-validation/**",
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/_web-hosting-promote.yml",
         ".github/workflows/admin-website.yml",
