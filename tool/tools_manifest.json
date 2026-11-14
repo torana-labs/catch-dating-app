@@ -716,6 +716,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:city-interest-backfill-workflow",
+      "category": "ci",
+      "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
+      "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/city-interest-backfill.yml",
+        "tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "description": "Keeps the city interest backfill workflow dispatch-only from main, dry-run by default, keyless and least-privileged, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/city_interest_backfill_workflow.test.mjs",
+        "node --test tool/ci/city_interest_backfill_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",

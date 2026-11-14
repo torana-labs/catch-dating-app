@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readMarketCatalog} from "../lib/market_catalog.mjs";
-import {buildCityInterestBackfillPlan, cityInterestMarkerId, cityNameIndex, matchCity} from "./backfill_city_interest.mjs";
+import {buildCityInterestBackfillPlan, cityInterestMarkerId, cityNameIndex, markdownReport, matchCity} from "./backfill_city_interest.mjs";
 
 const catalog = readMarketCatalog();
 const at = (iso) => ({toDate: () => new Date(iso)});
@@ -50,4 +50,23 @@ test("marker ids match the ones joinWaitlist writes", () => {
   // functions/src/cityInterest/adminGetCityInterest.test.ts pins the same value.
   assert.equal(cityInterestMarkerId("+919812345678", "in-mh-pune"),
     "5d81404e28394b8451e0782a3a91844097a55ade4e04ed8d14e5f90bd2814b00");
+});
+
+test("the Markdown report lists totals, people per city and unmatched cities, and never a contact", () => {
+  const report = {
+    summary: {rowsRead: 6, rowsGainingCityId: 3, peopleCounted: 3, unmatchedRows: 1},
+    counters: [{cityKey: "in-mh-pune", people: 2}, {cityKey: "in-ka-bengaluru", people: 1}],
+    unmatched: [{city: "Jai|pur\nnew line", rows: 1}],
+  };
+  const dry = markdownReport(report, {projectId: "catchdates-dev", apply: false});
+  assert.match(dry, /^## City interest backfill · catchdates-dev · dry run\n/u);
+  assert.match(dry, /\| in-mh-pune \| 2 \|/u);
+  assert.match(dry, /### Not matched to one catalog city/u);
+  assert.match(dry, /\| Jai pur new line \| 1 \|/u, "pipes and newlines cannot break the table");
+  assert.match(dry, /Dry run: nothing was written/u);
+  assert.match(markdownReport(report, {projectId: "p", apply: true}), /· apply\n[\s\S]*Applied:/u);
+  const empty = markdownReport({summary: {rowsRead: 0, rowsGainingCityId: 0, peopleCounted: 0, unmatchedRows: 0},
+    counters: [], unmatched: []}, {projectId: "p", apply: false});
+  assert.match(empty, /\| \(none\) \| 0 \|/u);
+  assert.doesNotMatch(empty, /Not matched/u);
 });
