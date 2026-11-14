@@ -70,7 +70,10 @@ void main() {
       for (final entry in fixture.entries) {
         write(entry.key, entry.value);
       }
-      write('test/probe_test.dart', "import 'dart:io'; void main() {}");
+      write(
+        'test/probe_test.dart',
+        "import 'dart:io'; void main() => File(Platform.environment['P']!);",
+      );
       write('docs/feature.md', 'Before');
       write(
         'tool/harness/component_graph.json',
@@ -269,7 +272,8 @@ void main() {
     );
     final files = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     expect(
       selected(
@@ -352,7 +356,8 @@ void main() {
   test('filesystem probes do not cover unrelated changed source', () {
     final before = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     final after = {...before, 'lib/uncovered.dart': 'const value = 1;'};
     expect(
@@ -381,7 +386,8 @@ void main() {
   test('filesystem source probes always run', () {
     final files = {
       ...fixture,
-      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+      'test/probe_test.dart':
+          "import 'dart:io'; void main() => File(Platform.environment['P']!);",
     };
     expect(selected(plan({'lib/c.dart'}, before: files, after: files)), [
       'test/c_test.dart',
@@ -420,7 +426,8 @@ void main() {
   // suite, so a missing rule shows up as an affected plan instead of full.
   final probed = {
     ...fixture,
-    'test/support/reader.dart': "import 'dart:io'; const reader = 1;",
+    'test/support/reader.dart':
+        "import 'dart:io'; final reader = File(Platform.environment['P']!);",
     'test/probe_test.dart': "import 'support/reader.dart'; void main() {}",
   };
   Map<String, Object> probedPlan(
@@ -713,6 +720,65 @@ void main() {
         ),
         throwsArgumentError,
       );
+    });
+  });
+  group('bounded file reads', () {
+    final files = {
+      ...probed,
+      'test/support/schemas.dart':
+          "// test-selection-reads: design/\n"
+          "import 'dart:io'; File schema(String s) => File('design/\$s');",
+      'test/schema_test.dart': "import 'support/schemas.dart'; void main() {}",
+      'test/support/fixture.dart':
+          "import 'dart:io'; final x = File('test/fixtures/x.json');",
+      'test/fixture_test.dart': "import 'support/fixture.dart'; void main() {}",
+    };
+    final paths = {
+      ...files.keys,
+      'design/screens/a.json',
+      'test/fixtures/x.json',
+      'test/fixtures/y.json',
+    };
+    Map<String, Object> boundedPlan(Set<String> changed) => selectFlutterTests(
+      before: files,
+      after: files,
+      beforePaths: paths,
+      afterPaths: paths,
+      changed: changed,
+    );
+
+    test('a change under a declared root selects the tests that read it', () {
+      expect(selected(boundedPlan({'design/screens/a.json'})), [
+        'test/probe_test.dart',
+        'test/schema_test.dart',
+      ]);
+    });
+    test('a change outside the reads leaves bounded readers out', () {
+      expect(selected(boundedPlan({'lib/a.dart'})), [
+        'test/a_test.dart',
+        'test/probe_test.dart',
+      ]);
+    });
+    test('a fixture its literal reader reads no longer needs the suite', () {
+      final result = boundedPlan({'test/fixtures/x.json'});
+      expect(result['mode'], 'affected');
+      expect(selected(result), [
+        'test/fixture_test.dart',
+        'test/probe_test.dart',
+      ]);
+      // A fixture nothing is known to read still keeps the full suite.
+      expect(boundedPlan({'test/fixtures/y.json'})['mode'], 'full');
+    });
+    test('a declaration whose root is not in the tree keeps a probe', () {
+      final plan = selectFlutterTests(
+        before: files,
+        after: files,
+        beforePaths: files.keys.toSet(),
+        afterPaths: files.keys.toSet(),
+        changed: {'lib/a.dart'},
+      );
+      expect(selected(plan), contains('test/schema_test.dart'));
+      expect(selected(plan), isNot(contains('test/fixture_test.dart')));
     });
   });
   test('Dart sources outside lib and test are covered by the import graph', () {
