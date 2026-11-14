@@ -5509,7 +5509,9 @@
       "id": "web_ui_catch_search_field",
       "kind": "supporting-component",
       "routeIds": [
-        "visitor_discovery"
+        "visitor_discovery",
+        "claim",
+        "cities"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchSearchField.tsx",
@@ -5523,7 +5525,7 @@
           "default"
         ]
       },
-      "notes": "Explore's search box for plans and organisers, with its clear button."
+      "notes": "Explore's search box for plans and organisers, the claim page's search for a page to claim and the city picker's search, each with its clear button."
     },
     {
       "id": "route_account",

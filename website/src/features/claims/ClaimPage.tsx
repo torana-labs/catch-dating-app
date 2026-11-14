@@ -1,9 +1,6 @@
 import {CatchPageBody, CatchPaneLayout, CatchRoot, CatchStack} from "@catch/web-ui";
 import {DemoContinuationWorkspace} from "./DemoContinuationWorkspace";
-import {claimFlowCopy} from "@content/claimFlow";
-import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
-import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {slugForTracking, trackSiteCtaClick} from "../../shared/site/siteTracking";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {ClaimGuidance} from "./sections/ClaimParts";
 import {
   ClaimHeroSection,
@@ -37,7 +34,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
     <CatchRoot theme="day">
       <PublicSiteHeader />
       <WebsitePageMain id="claim">
-        <CatchPageBody gutter={false} pb="s0" pt="s4">
+        <CatchPageBody gutter={false} pb="s8" pt="s4">
           {claimable && listing ? (
             <InstantClaim key={listing.id} listing={listing} onChangeListing={controller.listingFromLink ? undefined : controller.clearListing}
               onStart={controller.markClaimStarted} pendingReview={pendingReview} />
@@ -59,10 +56,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
           )}
         </CatchPageBody>
       </WebsitePageMain>
-      <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-        <PublicPageFooter label={claimFlowCopy.footerLabel} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator}
-          onLinkPressed={(link) => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)} />
-      </CatchPageBody>
+      <PublicSiteFooter />
     </CatchRoot>
   );
 }
