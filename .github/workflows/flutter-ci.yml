@@ -501,9 +501,12 @@ jobs:
           retention-days: 14
 
   app-package-tests:
+    # Also builds Widgetbook. Keep this job name: host-website.yml's queue
+    # validation looks it up.
     name: Catch UI, Consumer & Host package tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The package suites' 15 minutes plus Widgetbook's 20.
+    timeout-minutes: 35
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -530,8 +533,8 @@ jobs:
           node tool/ci/flutter_package_scope.mjs
           --base "$BASE_SHA" --head "$GITHUB_SHA" --event "$EVENT_NAME"
           --full "$FULL" --commit-window "$COMMIT_WINDOW"
-          --package packages/catch_ui --package packages/kernel
-          --package apps/consumer --package apps/host
+          --package packages/kernel --package packages/catch_ui
+          --package apps/consumer --package apps/host --package widgetbook
           --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
 
       - uses: ./.github/actions/generate-contracts
@@ -539,93 +542,99 @@ jobs:
       - uses: ./.github/actions/setup-flutter
         if: steps.scope.outputs.any == 'true'
 
-      - run: flutter pub get
+      # The Widgetbook golden inventory's shared font loader also reads the
+      # repository package config this writes.
+      - name: Resolve repository Flutter dependencies
+        id: pub
         if: steps.scope.outputs.any == 'true'
+        run: flutter pub get
+
+      # The suites are independent, cheapest first. Each runs after an earlier
+      # suite fails, as long as its own setup succeeded and the job wasn't
+      # cancelled; any failed step still fails the job.
+      - name: Kernel package tests
+        id: kernel
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.kernel == 'true' }}
+        working-directory: packages/kernel
+        run: dart test --concurrency=1
 
       # The library's PNG goldens are macOS-rendered; the macOS goldens lane in
       # visual-integration-ci.yml runs them (packages/catch_ui/dart_test.yaml
       # declares the tag).
       - name: Catch UI package tests
-        if: steps.scope.outputs.catch_ui == 'true'
+        id: catch_ui
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.catch_ui == 'true' }}
         working-directory: packages/catch_ui
         run: flutter test --concurrency=1 --exclude-tags=golden
 
-      - name: Kernel package tests
-        if: steps.scope.outputs.kernel == 'true'
-        working-directory: packages/kernel
-        run: dart test --concurrency=1
-
       - name: Consumer package tests
-        if: steps.scope.outputs.consumer == 'true'
+        id: consumer
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.consumer == 'true' }}
         working-directory: apps/consumer
         run: flutter test --concurrency=1
 
       - name: Host package tests
-        if: steps.scope.outputs.host == 'true'
+        id: host
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.host == 'true' }}
         working-directory: apps/host
         run: flutter test --concurrency=1
 
-  widgetbook:
-    name: Widgetbook analyze & build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      # A pull request runs only the suites whose pubspec path-dependency
-      # closure the change reaches; every other event runs them all. A
-      # skipped suite leaves this job green with a "not affected" summary.
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-      - name: Decide whether this change reaches Widgetbook
-        id: scope
-        env:
-          BASE_SHA: ${{ inputs.base_sha }}
-          FULL: ${{ inputs.full }}
-          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
-          EVENT_NAME: ${{ github.event_name }}
-        run: >-
-          node tool/ci/flutter_package_scope.mjs
-          --base "$BASE_SHA" --head "$GITHUB_SHA" --event "$EVENT_NAME"
-          --full "$FULL" --commit-window "$COMMIT_WINDOW"
-          --package widgetbook
-          --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
-
-      - uses: ./.github/actions/generate-contracts
-        if: steps.scope.outputs.any == 'true'
-      - uses: ./.github/actions/setup-flutter
-        if: steps.scope.outputs.any == 'true'
-
       - name: Resolve Widgetbook dependencies
-        if: steps.scope.outputs.widgetbook == 'true'
+        id: widgetbook_pub
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
         working-directory: widgetbook
         run: flutter pub get
 
       # The golden inventory check renders nothing, so pull requests run it
       # here on Linux instead of waiting for the merge queue's macOS goldens.
-      # The shared font loader reads the repository package config.
-      - name: Resolve repository Flutter dependencies
-        if: steps.scope.outputs.widgetbook == 'true'
-        run: flutter pub get
-
       - name: Check the Widgetbook golden inventory
-        if: steps.scope.outputs.widgetbook == 'true'
+        id: widgetbook_inventory
+        if: ${{ !cancelled() && steps.widgetbook_pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
         working-directory: widgetbook
         run: >-
           flutter test test/primitive_goldens_test.dart
           --plain-name "generator visits every registered case and every designation once"
 
       - name: Build Widgetbook web app
-        if: steps.scope.outputs.widgetbook == 'true'
+        id: widgetbook_build
+        if: ${{ !cancelled() && steps.widgetbook_pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
         working-directory: widgetbook
         run: flutter build web --release
+
+      - name: Summarize package suite outcomes
+        if: always()
+        env:
+          SCOPE_KERNEL: ${{ steps.scope.outputs.kernel }}
+          SCOPE_CATCH_UI: ${{ steps.scope.outputs.catch_ui }}
+          SCOPE_CONSUMER: ${{ steps.scope.outputs.consumer }}
+          SCOPE_HOST: ${{ steps.scope.outputs.host }}
+          SCOPE_WIDGETBOOK: ${{ steps.scope.outputs.widgetbook }}
+          KERNEL: ${{ steps.kernel.outcome }}
+          CATCH_UI: ${{ steps.catch_ui.outcome }}
+          CONSUMER: ${{ steps.consumer.outcome }}
+          HOST: ${{ steps.host.outcome }}
+          WIDGETBOOK_PUB: ${{ steps.widgetbook_pub.outcome }}
+          WIDGETBOOK_INVENTORY: ${{ steps.widgetbook_inventory.outcome }}
+          WIDGETBOOK_BUILD: ${{ steps.widgetbook_build.outcome }}
+        run: |
+          outcome() {
+            if [[ "$2" == "skipped" || -z "$2" ]]; then
+              if [[ "$1" == "false" ]]; then echo "not affected"; else echo "not run: its setup or an earlier step failed"; fi
+            else
+              echo "$2"
+            fi
+          }
+          {
+            echo "| Suite | Outcome |"
+            echo "|---|---|"
+            echo "| Kernel package tests | $(outcome "$SCOPE_KERNEL" "$KERNEL") |"
+            echo "| Catch UI package tests | $(outcome "$SCOPE_CATCH_UI" "$CATCH_UI") |"
+            echo "| Consumer package tests | $(outcome "$SCOPE_CONSUMER" "$CONSUMER") |"
+            echo "| Host package tests | $(outcome "$SCOPE_HOST" "$HOST") |"
+            echo "| Resolve Widgetbook dependencies | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_PUB") |"
+            echo "| Check the Widgetbook golden inventory | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_INVENTORY") |"
+            echo "| Build Widgetbook web app | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_BUILD") |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   analyze-and-test:
     name: Analyze & test
@@ -636,7 +645,6 @@ jobs:
       - app-package-tests
       - flutter-coverage
       - flutter-test-shards
-      - widgetbook
     if: ${{ !cancelled() }}
     timeout-minutes: 5
 
@@ -648,7 +656,6 @@ jobs:
           APP_PACKAGES_RESULT: ${{ needs['app-package-tests'].result }}
           COVERAGE_RESULT: ${{ needs['flutter-coverage'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
-          WIDGETBOOK_RESULT: ${{ needs.widgetbook.result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           # Coverage is visibility-only and skipped for pull requests and queue groups.
@@ -658,10 +665,9 @@ jobs:
             coverage_ok=true
           fi
           echo "analysis gates: ${GATES_RESULT}"
-          echo "app package tests: ${APP_PACKAGES_RESULT}"
+          echo "app package tests and Widgetbook: ${APP_PACKAGES_RESULT}"
           echo "coverage visibility: ${COVERAGE_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
-          echo "widgetbook: ${WIDGETBOOK_RESULT}"
-          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
+          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" ]]; then
             exit 1
           fi

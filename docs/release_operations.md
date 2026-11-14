@@ -438,9 +438,15 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
-On a pull request, the "Catch UI, Consumer & Host package tests" and
-"Widgetbook analyze & build" jobs run each package suite and the Widgetbook
-build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
+One job, "Catch UI, Consumer & Host package tests", runs the Kernel, Catch
+UI, Consumer and Host package suites and then the Widgetbook dependency
+resolution, golden inventory and web build, after one shared setup. The job
+keeps that name because `host-website.yml`'s queue validation looks it up. Each
+suite is its own step with `!cancelled()` and its own setup step's success in
+its condition, so a failing suite never hides an independent one; any failure
+still fails the job, and a final step lists every suite's outcome in the job
+summary. On a pull request, each package suite and the Widgetbook steps run
+only when the change reaches them (`tool/ci/flutter_package_scope.mjs`).
 A suite's closure is its package directory and those of its transitive pubspec
 path dependencies (only `lib/` and `assets/` of the root package), plus what
 those manifests bundle from outside their directories and every Dart file the
