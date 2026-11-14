@@ -1,7 +1,7 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
-import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
+import {hostLandingCopy as copy, hostNightCaptureScreen, hostNightFocus, hostNightFormats} from "@content/hostLanding";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
 import {catchFee, effectiveRate} from "./useHostLandingController";
@@ -71,6 +71,22 @@ describe("host landing", {timeout: 20_000}, () => {
     renderPage();
     const scene = within(screen.getByRole("group", {name: `${hostNightFormats[0].event}, moment by moment`}));
     expect(scene.getByRole("img", {name: marketingCaptures["host-formats-pods"].alt})).toBeTruthy();
+  });
+
+  it("crops every night moment's capture to a focus box inside the app screen, so phones read the app at about 14 px", () => {
+    const screenBox = hostNightCaptureScreen;
+    for (const format of hostNightFormats) {
+      for (const moment of format.moments) {
+        const box = hostNightFocus[moment.slot];
+        expect(box, moment.slot).toBeTruthy();
+        expect(box.x >= screenBox.x && box.y >= screenBox.y, moment.slot).toBe(true);
+        expect(box.x + box.width <= screenBox.x + screenBox.width, moment.slot).toBe(true);
+        expect(box.y + box.height <= screenBox.y + screenBox.height, moment.slot).toBe(true);
+        // At a 390 px phone (350 px of band), 15 pt body text in a 2x capture reads at 30 × 350 / width px.
+        expect(30 * 350 / box.width, moment.slot).toBeGreaterThanOrEqual(13.5);
+      }
+    }
+    expect(Object.keys(hostNightFocus).sort()).toEqual([...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))].sort());
   });
 
   it("prices the month on the slider: 5% after the trial, capped at ₹10,000", () => {

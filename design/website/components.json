@@ -5208,10 +5208,11 @@
           "first-moment",
           "badge",
           "format-picker",
-          "compact"
+          "compact",
+          "focus-crop"
         ]
       },
-      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
+      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. frame=\"capture\" (proposal night-framing, approved 14 Nov 2026): on a wide band the framed capture runs large off the scene's bottom edge (a partial device); at phone width each moment shows only its focus box as a frameless card at the band's width, beside the caption on a phone held sideways. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
     },
     {
       "id": "shared_pipeline_board",
