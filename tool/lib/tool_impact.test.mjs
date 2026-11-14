@@ -646,11 +646,11 @@ test("tool-lane classification uses the authoritative Harness mode", () => {
     componentGraph: graph,
     mode: "pr",
   });
-  // A path the PR mode ignores selects nothing of its own; it no longer
-  // escalates to the full matrix.
+  // A path the PR mode does not assign to Tools no longer escalates to the
+  // full matrix; it still selects the check that declares it.
   assert.equal(pr.mode, "affected");
   assert.deepEqual(pr.ignoredPaths, ["tool/docs/check.mjs"]);
-  assert.ok(!pr.toolIds.includes("docs-check"));
+  assert.ok(pr.toolIds.includes("docs-check"));
 });
 
 test("explicit full remains full and affected outputs stay bounded", () => {
@@ -1002,6 +1002,17 @@ test("a change no Tools-lane path owns runs the mandatory checks, not the full m
     assert.ok(plan.toolIds.includes(id), `mandatory ${id}`);
   }
   assert.ok(plan.toolIds.length < 40, `expected a narrow plan, got ${plan.toolIds.length} checks`);
+
+  // A Tools input that a check declares through a rule's appliesTo selects it;
+  // a path no check declares stays ignored instead of escalating.
+  const registry = planAffectedToolChecks({
+    changedPaths: ["design/website/components.json", "docs/marketing_website_architecture.md"],
+    manifest: productionManifest, componentGraph: productionGraph});
+  assert.equal(registry.mode, "affected");
+  assert.deepEqual(registry.unmappedPaths, []);
+  assert.ok(registry.ownersByPath["design/website/components.json"]?.length > 0);
+  assert.ok(registry.toolIds.includes("design:component-lexicon"), registry.toolIds.join(", "));
+  assert.ok(registry.ignoredPaths.includes("design/website/components.json"));
 
   // An unresolved change set is unknown and still fails closed.
   const empty = planAffectedToolChecks({changedPaths: [], manifest: productionManifest,

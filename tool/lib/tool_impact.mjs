@@ -87,6 +87,13 @@ export function planAffectedToolChecks({
   if (!full && paths.length === 0) {
     fullReasons.push("no changed paths were resolved");
   }
+  // Nx can add the Tools lane through a Tools input the per-path planner does
+  // not assign to it (design/**, a website path). Those paths still select the
+  // checks that declare them. One that no check declares stays ignored, as it
+  // was before Nx: it never selected Tools. A Tools-lane path that no check
+  // declares is an ownership gap and stays unmapped (full).
+  const toolLanePathSet = new Set(toolLanePaths);
+  const ownerCandidates = toolLanePaths.length > 0 ? toolLanePaths : paths;
   for (const changedPath of controlPlanePaths) {
     fullReasons.push(`control-plane path changed: ${changedPath}`);
   }
@@ -94,10 +101,16 @@ export function planAffectedToolChecks({
   const ownersByPath = {};
   const importOwnedPaths = [];
   const unmappedPaths = [];
-  for (const changedPath of toolLanePaths) {
+  for (const changedPath of ownerCandidates) {
+    // For a path outside the Tools lane, a rule's appliesTo also counts as a
+    // declared input. Tools-lane paths keep strict impactPaths/import ownership,
+    // so an undeclared reader there still fails closed.
+    const outsideLane = !toolLanePathSet.has(changedPath);
     const owners = new Set(activeTools.filter((tool) =>
       tool.path === changedPath ||
-      (tool.impactPaths ?? []).some((pattern) => matchesGlob(changedPath, pattern))
+      (tool.impactPaths ?? []).some((pattern) => matchesGlob(changedPath, pattern)) ||
+      (outsideLane && (tool.rules ?? []).some((rule) =>
+        (rule.appliesTo ?? []).some((pattern) => matchesGlob(changedPath, pattern))))
     ).map((tool) => tool.id));
     if (changedPath === toolsManifestPath && manifestOwners !== null) {
       for (const id of manifestOwners) owners.add(id);
@@ -109,7 +122,7 @@ export function planAffectedToolChecks({
     if (owners.size > 0) {
       ownersByPath[changedPath] = [...owners].sort();
       for (const owner of owners) selectedIds.add(owner);
-    } else if (!controlPlanePaths.has(changedPath)) {
+    } else if (toolLanePathSet.has(changedPath) && !controlPlanePaths.has(changedPath)) {
       unmappedPaths.push(changedPath);
     }
   }
