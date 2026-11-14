@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
+import {pathToFileURL} from "node:url";
 import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, laneForTask,
   shadowExitCode, summary} from "./shadow_plan.mjs";
 
@@ -155,4 +159,31 @@ test("the contracts consumer-scan prefixes are the contracts targets' inputs out
     .map((input) => input.slice("{workspaceRoot}/".length, -"**/*".length))
     .filter((prefix) => prefix !== "contracts/"));
   assert.deepEqual([...prefixes].sort(), [...contractsConsumerScanPrefixes].sort());
+});
+
+// The website release train imports select_lanes.mjs and runs without npm ci,
+// then compares with no changed files (controlPlane: false). That path must
+// never load a package; releaseScriptsImports.test.mjs checks only static
+// imports, so this runs compare() where `yaml` cannot be resolved.
+test("comparing with no changed files never loads the YAML parser", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "no-yaml-"));
+  const hook = path.join(dir, "no_yaml.mjs");
+  fs.writeFileSync(hook, `import {registerHooks} from "node:module";
+registerHooks({resolve(specifier, context, next) {
+  if (specifier === "yaml") throw new Error("yaml is not installed");
+  return next(specifier, context);
+}});
+`);
+  const shadow = new URL("./shadow_plan.mjs", import.meta.url).href;
+  const run = (changedFiles) => spawnSync(process.execPath, ["--import", pathToFileURL(hook).href, "--input-type=module", "-e",
+    `const {compare} = await import(${JSON.stringify(shadow)});
+     const result = compare({nxTasks: ["catch-marketing:build"], mode: "merge_group", changedFiles: ${JSON.stringify(changedFiles)}});
+     console.log(JSON.stringify(result.nxLanes));`], {encoding: "utf8"});
+  const clean = run([]);
+  assert.equal(clean.status, 0, clean.stderr);
+  assert.deepEqual(JSON.parse(clean.stdout), ["marketing"]);
+  // Control: a changed CI file builds the graph, so the hook is really in force.
+  const ci = run([".github/workflows/flutter-ci.yml"]);
+  assert.notEqual(ci.status, 0);
+  assert.match(ci.stderr, /yaml is not installed/u);
 });

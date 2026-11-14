@@ -59,9 +59,12 @@ const laneByProject = {
 // file that decides selection selects every lane (workflow_callers.mjs).
 let defaultGraph = null;
 export const callerGraph = () => (defaultGraph ??= workflowCallers({lanes: comparedLanes}));
-export const isControlPlane = (file, graph = callerGraph()) => isSelector(file, graph);
-export const workflowLanes = (changedFiles, graph = callerGraph()) =>
-  changedFiles.length === 0 ? new Set() : callerLanes(changedFiles, {graph, allLanes: comparedLanes});
+// The graph is built only when a changed file needs it: the website release
+// train calls compare() with no changed files and without npm ci, and building
+// the graph loads the YAML parser.
+export const isControlPlane = (file, graph) => isSelector(file, graph ?? callerGraph());
+export const workflowLanes = (changedFiles, graph) => changedFiles.length === 0 ? new Set()
+  : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes});
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
