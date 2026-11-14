@@ -299,9 +299,30 @@ unrelated clients. Files PR validation never executes run only their own Tools
 checks and policy: harness and CI tests, release, deploy and operations
 workflows, and `tool/ci` release scripts no PR workflow invokes
 (`harness-scoped-control`). Selector controls, including the planner, graph and
-`tool/tools_manifest.json`, still run every target. A harness test proves that
-no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
-narrowed. The tool planner honors the graph's terminal classifications
+`tool/tools_manifest.json`, still run every target. For CI configuration
+(`.github/**` and `tool/ci/**`), every file PR CI executes or reads still
+selects every lane that executes or reads it. `tool/nx/workflow_callers.mjs`
+derives this from `ci.yml`: from each lane job it follows reusable workflows,
+composite actions, scripts named in `run:` steps, the npm scripts and
+`tool/run.mjs check` manifest checks those steps invoke, the modules those
+scripts import and the data files they open. A command it cannot resolve
+selects every lane, never none. What the plan or source-preflight job executes
+or reads (`load-toolchain`, `setup-flutter`, `generate-contracts`) selects
+every lane, because every lane needs those jobs. Selector files select every
+lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
+and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
+`tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
+`tool/ci/toolchain.env`, `tool/tools_manifest.json` and every file the planner
+entry points import or load; tests in those directories are not selectors.
+Workflow files that checks read as text are covered by workflow policy
+(actionlint, zizmor and the wiring tests), which runs for every workflow change.
+This narrowing applies to `pr` and `merge_group` alike, with the same closure
+and selector rules; pull requests still leave the queue-only lanes to the
+queue. `main` pushes and the nightly run are not narrowed by it, and the
+nightly full run, which still runs every lane, is the backstop.
+`tool/nx/workflow_callers.test.mjs` proves the closure against both the planner
+and Nx, with a negative control for each, and pins that an
+`app-build-matrix.yml` edit still selects the iOS queue lane. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,

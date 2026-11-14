@@ -52,7 +52,37 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-workflow-callers",
+      "category": "meta",
+      "path": "tool/nx/workflow_callers.mjs",
+      "command": "node --test tool/nx/workflow_callers.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Derives from ci.yml which lanes execute or read each CI configuration file, so a workflow, composite action or tool/ci edit selects exactly those lanes and a selector file selects every lane; the test proves the closure against both the planner and Nx.",
+      "checks": [
+        "node --check tool/nx/workflow_callers.mjs",
+        "node --test tool/nx/workflow_callers.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/workflow_callers.test.mjs",
+        "tool/nx/shadow_plan.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/lib/component_graph.mjs",
+        ".github/workflows/**",
+        ".github/actions/**",
+        "tool/ci/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
         ]
       }
     },
