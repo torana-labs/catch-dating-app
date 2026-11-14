@@ -215,6 +215,8 @@ jobs:
 
       - if: ${{ needs.preflight.outputs.repository_view != 'index' }}
         uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - name: Install marketing design browser
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'playwright') }}
         run: npx playwright install chromium
@@ -361,6 +363,8 @@ jobs:
       - run: npm --prefix functions ci
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - name: Install marketing design browser
         if: matrix.name == 'marketing-design'
         run: npx playwright install chromium

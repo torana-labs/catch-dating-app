@@ -40,6 +40,8 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/generate-contracts
+        with:
+          cache: "true"
       - name: Validate requested surface
         env:
           REACT_SURFACE: ${{ inputs.surface }}
