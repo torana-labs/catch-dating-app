@@ -419,7 +419,9 @@ export function sourceReads({file, source}) {
     i = end - 1;
     if (specifier || /\s|:\/\//u.test(literal) || !/\/|\.[A-Za-z0-9]{1,8}$/u.test(literal)) continue;
     const suffix = normalize(literal.replace(/^(?:\.\.?\/)+/u, ""));
-    if (suffix) reads.add(`*/${suffix}`);
+    // One segment is a bare word ("events/" from `events/${id}`) unless it is a
+    // file name with an extension; directories need two segments.
+    if (suffix && (suffix.includes("/") || /\.[A-Za-z0-9]{1,8}$/u.test(suffix))) reads.add(`*/${suffix}`);
   }
 
   if (forbidden.length > 0) return {bounded: false, why: forbidden[0]};
@@ -474,14 +476,15 @@ function unescape(text) {
 /**
  * Whether a changed repository path is one these reads cover: an exact or
  * directory read, or a path-like literal ("*\/harness/graph.json") that the path
- * ends with or lies under.
+ * ends with, or lies under when the literal has two or more segments.
  */
 export function readsPath(reads, changed) {
   return reads.some((read) => {
     if (read.startsWith("*/")) {
       const suffix = read.slice(2);
-      return changed === suffix || changed.endsWith(`/${suffix}`) || changed.startsWith(`${suffix}/`) ||
-        changed.includes(`/${suffix}/`);
+      if (changed === suffix || changed.endsWith(`/${suffix}`)) return true;
+      // A directory literal needs two segments; one segment is only a file name.
+      return suffix.includes("/") && (changed.startsWith(`${suffix}/`) || changed.includes(`/${suffix}/`));
     }
     return read === "" || changed === read || changed.startsWith(`${read}/`);
   });

@@ -85,6 +85,7 @@ test("imports: literal specifiers are code edges; computed or path-loaded module
 });
 
 test("path-like literals add suffix reads; bare words, prose and URLs do not", () => {
+  assert.deepEqual(reads("const doc = `events/${eventId}`;\nconst dir = \"organizers/\";").reads, []);
   const result = reads("const graph = \"harness/component_graph.json\";\nconst label = \"docs\";\nconst env = \"test\";\nconst link = \"https://example.com/docs/guide.md\";\nconst text = \"and/or more\";");
   assert.deepEqual(result.reads, ["*/harness/component_graph.json"]);
   assert.ok(readsPath(result.reads, "tool/harness/component_graph.json"));
@@ -105,7 +106,10 @@ test("readsPath covers exact, directory and suffix reads", () => {
   assert.ok(!readsPath(["docs/guide.md"], "docs/guide.md.bak"));
   assert.ok(readsPath([""], "anything/at/all"));
   assert.ok(readsPath(["*/component_graph.json"], "tool/harness/component_graph.json"));
-  assert.ok(readsPath(["*/fixtures"], "test/event/fixtures/case.json"));
+  assert.ok(readsPath(["*/event/fixtures"], "test/event/fixtures/case.json"));
+  // One segment is a file name, never a directory: "events/" from `events/${id}`.
+  assert.ok(!readsPath(["*/fixtures"], "test/event/fixtures/case.json"));
+  assert.ok(readsPath(["*/case.json"], "test/event/fixtures/case.json"));
   assert.ok(!readsPath(["*/graph.json"], "tool/harness/component_graph.json"));
 });
 
