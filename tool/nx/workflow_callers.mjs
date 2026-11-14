@@ -53,8 +53,10 @@ const pathPattern = /(?:\.{1,2}\/)*[\w@.-]+(?:\/[\w@.-]+)+\.(?:mjs|cjs|js|ts|sh|
 const spawnLine = /\b(?:spawn|spawnSync|exec|execSync|execFile|execFileSync|fork|runNode|run)\s*\(|["'`](?:node|bash|sh|dart|python3)["'` ]/u;
 const dataPathPattern = /(?:\.{1,2}\/)*[\w@.-]+(?:\/[\w@.-]+)+\.(?:json|ya?ml|env|txt)\b/gu;
 const relativeImport = /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*|\bpart\s+)["'](\.{1,2}\/[^"']+)["']/gu;
-const npmCommand = /\bnpm\s+((?:--?[\w-]+(?:[ =](?!run\b|test\b|ci\b|install\b)[^\s;&|]+)?\s+)*)(run(?:-script)?\s+([\w:.-]+)|test\b|ci\b|install\b)/gu;
-const dynamicCommand = /\b(?:node|bash|sh|python3|dart\s+run)\s+(?:--?[\w-]+(?:=\S+)?\s+)*["']?\$(?!\{\{)/u;
+// A flag starts with a word character after its dashes, and a flag's value
+// never starts with a dash, so each flag matches one way (no backtracking).
+const npmCommand = /\bnpm\s+((?:-{1,2}\w[\w-]*(?:[ =](?!-|run\b|test\b|ci\b|install\b)[^\s;&|]+)?\s+)*)(run(?:-script)?\s+([\w:.-]+)|test\b|ci\b|install\b)/gu;
+const dynamicCommand = /\b(?:node|bash|sh|python3|dart\s+run)\s+(?:-{1,2}\w[\w-]*(?:=\S+)?\s+)*["']?\$(?!\{\{)/u;
 
 // `"$ROOT/tool/x.mjs"` names tool/x.mjs: drop a variable that prefixes a path.
 const stripRootVariables = (text) => text.replace(/\$\{?\w+\}?\//gu, "");
