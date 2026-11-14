@@ -370,6 +370,18 @@ export function sourceReads({file, source}) {
   const reads = new Set();
   const unbounded = [];
   const forbidden = [];
+  // Names bound to createRequire(...): their calls load modules like require.
+  const requireAliases = new Set([...callsOnly.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[\w$.<>]+)?\s*=\s*(?:\w+\.)?createRequire\s*\(/gu)]
+    .filter((match) => !/^\s*\(/u.test(callsOnly.slice(callEnd(callsOnly, match.index + match[0].length - 1))))
+    .map((match) => match[1]));
+  // A require-like load outside the graph: a package name is fine; a relative,
+  // anchored or computed path runs code whose imports nothing follows.
+  const checkRequire = (label, specifier) => {
+    const value = specifier === undefined ? computed : evaluate(specifier);
+    if (value.complete && !value.anchored && !/^(?:\.{1,2}\/|\/)/u.test(value.text) && value.text !== "") return;
+    const shown = !value.complete ? "a computed module" : value.anchored ? resolveFrom(value) ?? "a file outside the repository" : value.text || "a module";
+    unbounded.push(`${label} loads ${shown} by path`);
+  };
   const scanCalls = (scanText, argText) => {
     for (const match of scanText.matchAll(/[\w$][\w$.?]*\s*\(/gu)) {
       const open = match.index + match[0].length - 1;
@@ -379,10 +391,23 @@ export function sourceReads({file, source}) {
         forbidden.push(`child process via ${callee}()`);
         continue;
       }
-      // A require made by createRequire, or a worker, loads a module by path
-      // under another name.
-      if (/(?:^|\.)createRequire$/u.test(callee) || callee === "Worker" || /(?:^|\.)Worker$/u.test(callee)) {
+      // A worker loads a module by path.
+      if (callee === "Worker" || /(?:^|\.)Worker$/u.test(callee)) {
         unbounded.push(`${callee}() loads modules by path`);
+        continue;
+      }
+      // createRequire makes a require under another name. Assigned to a const,
+      // its calls are checked like require below; called at once, its call is.
+      if (/(?:^|\.)createRequire$/u.test(callee)) {
+        const assigned = /\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*(?::\s*[\w$.<>]+)?\s*=\s*(?:\w+\.)?$/u.test(scanText.slice(Math.max(0, match.index - 80), match.index));
+        const end = callEnd(argText, open);
+        const invoked = /^\s*\(/u.exec(argText.slice(end));
+        if (invoked) checkRequire(`${callee}()`, callArguments(argText, end + invoked[0].length - 1)[0]);
+        else if (!assigned) unbounded.push(`${callee}() loads modules by path`);
+        continue;
+      }
+      if (requireAliases.has(callee)) {
+        checkRequire(`${callee}`, callArguments(argText, open)[0]);
         continue;
       }
       if (callee === "require" || callee === "import") {

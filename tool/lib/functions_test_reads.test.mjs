@@ -121,9 +121,15 @@ test("a slash misread as a regular expression can't hide a read", () => {
   assert.equal(reads(source).bounded, false);
 });
 
-test("createRequire and worker threads load modules by path, so they are unbounded", () => {
-  assert.match(reads("import {createRequire} from \"node:module\";\nconst load = createRequire(import.meta.url);\nload(\"../../tool/x.cjs\");").why,
-    /createRequire\(\) loads modules by path/u);
+test("createRequire loading a package is fine; loading a path, or a worker, is unbounded", () => {
+  const header = "import {createRequire} from \"node:module\";\n";
+  assert.equal(reads(`${header}const requireTest = createRequire(__filename);\nconst {assertFails} = requireTest(\n  \"@firebase/rules-unit-testing\",\n);`).bounded, true);
+  assert.match(reads(`${header}const load = createRequire(import.meta.url);\nload("../../tool/x.cjs");`).why,
+    /load loads \.\.\/\.\.\/tool\/x\.cjs by path/u);
+  assert.match(reads(`${header}import path from "node:path";\nconst registry = createRequire(__filename)(path.resolve(__dirname, "../../../tool/contracts/generated/registry.mjs"));`).why,
+    /createRequire\(\) loads tool\/contracts\/generated\/registry\.mjs by path/u);
+  assert.match(reads(`${header}export const make = createRequire;`).why ?? "", /^$/u);
+  assert.match(reads(`${header}makeLoader(createRequire(__filename));`).why, /createRequire\(\) loads modules by path/u);
   assert.match(reads("import {Worker} from \"node:worker_threads\";\nnew Worker(new URL(\"./job.mjs\", import.meta.url));").why,
     /Worker\(\) loads modules by path/u);
 });
