@@ -3469,10 +3469,12 @@ health and event state before each attempt. Meta provider tokens live in Secret
 Manager. Every environment pre-provisions one
 `ORGANIZER_WHATSAPP_ACCESS_TOKENS` vault; each organizer connection is stored
 as a distinct immutable secret version containing its organizer and connection
-binding, and retired versions are disabled. The source proposal binds
-`dispatchOrganizerCampaign`, `getOrganizerMessagingSetup`,
-`sendOrganizerWhatsappReply`, `sendOrganizerWhatsappTest`, and
-`syncOrganizerWhatsappTemplates` to the project-scoped
+binding, and retired versions are disabled. Source binds
+`dispatchOrganizerCampaign`, `dispatchScheduledOrganizerCampaigns`,
+`getOrganizerMessagingSetup`, `onProgramWhatsappInboundMessageCreated`,
+`sendOrganizerWhatsappReply`, `sendOrganizerWhatsappTest`,
+`sendProgramWhatsappReply` and `syncOrganizerWhatsappTemplates` to the
+project-scoped
 `catch-whatsapp-reader@` runtime identity, with secret-level accessor access
 only to this vault and `META_WHATSAPP_APP_SECRET`. Only
 `completeOrganizerWhatsappConnection` and

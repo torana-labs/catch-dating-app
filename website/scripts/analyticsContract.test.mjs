@@ -239,7 +239,7 @@ test("event detail rendered views use the backend source vocabulary and shared p
   const allowedSources = ingestion.match(/const publicSources = new Set\(\[([\s\S]*?)\]\);/u)?.[1];
   assert.ok(allowedSources?.includes(`"${source}"`), "rendered view source must survive backend normalization");
   // The event page wears the shared public page chrome from shared/site (P4).
-  assert.match(page, /<PublicPageHeader\b/u);
-  assert.match(page, /<PublicPageFooter\b/u);
+  assert.match(page, /<PublicSiteHeader\b/u);
+  assert.match(page, /<PublicSiteFooter\b/u);
   assert.doesNotMatch(page, /<Site(?:Header|Footer)\b/u);
 });

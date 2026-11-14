@@ -360,6 +360,10 @@ export const dispatchScheduledOrganizerCampaigns = onSchedule(
     timeoutSeconds: 540,
     maxInstances: 1,
     secrets: [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    // Same reader identity as dispatchOrganizerCampaign: accessor only on the
+    // token vault, never the connection writers' version-manager.
+    serviceAccount:
+      expr`catch-whatsapp-reader@${projectID}.iam.gserviceaccount.com`,
   },
   async () => {
     const db = defaultDeps.firestore();

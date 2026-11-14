@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.2
+version: 3.3.3
 updated: 2026-11-12
 owner: recursive_audit_loop
 status: active
@@ -353,9 +353,26 @@ ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
 Tests that inspect files through `dart:io` are filesystem probes and are always
 selected. Dart files anywhere in the repository are covered by the import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, firebase configuration and
-Markdown outside test or asset directories) are probe-only. A root test can only
-read them from disk, so the probes cover them without broadening the selection.
+golden and integration suites, other packages' apps, the `packages/catch_ui`
+and `packages/kernel` test suites that the package-tests job runs, firebase
+configuration and Markdown outside test or asset directories) are probe-only.
+A root test can only read them from disk, so the probes cover them without
+broadening the selection; a root test that imports one is still selected
+through the import graph.
+The schema contract Dart under `packages/platform/lib/schema_contracts/generated`
+and `lib/contexts/*/data/generated` is not tracked, so the selector renders it:
+`tool/harness/lib/flutter_contract_outputs.mjs` runs
+`tool/contracts/generate_schema_contracts.mjs` on archives of the base and head
+commits (once when their `contracts/` and `tool/contracts/` trees match) with
+the job's installed `functions/node_modules`. The rendered files join both
+import graphs, so a change to a tracked file a generated module imports selects
+that module's importers, and a `contracts/**` or generator change selects the
+importers of each generated file whose content changed. An input that changes
+no generated Dart, such as a BigQuery, Admin or runtime-module contract, selects
+only the filesystem probes. A changed generated file with no importing test,
+a render failure, a `functions/package-lock.json` at a rendered commit that
+differs from the installed one, or a commit window that touches a generator
+input keeps the full suite.
 These inputs keep the full suite: package manifests and the lockfile, analyzer,
 runner, build and localization configuration, `.arb` sources, the Flutter SDK
 pin and the Flutter CI job, and any path that either snapshot's `flutter:`
@@ -2036,6 +2053,18 @@ If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
+### Main CI alert
+
+A red main is noticed within one run (owner decision, 12 Nov 2026: alert,
+no auto-revert). `Main CI alert` (`.github/workflows/main-red-alert.yml`,
+driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
+completes. It keeps one open issue titled "Main CI is red": opened on the
+first failure, naming the failed gating jobs (Required CI) and reporting
+jobs separately; commented on each further failure; closed with a comment on
+the next green run. Opening the issue notifies repository watchers. Cancelled
+runs change nothing. Fix forward on main; never close the issue by hand
+while main is still red.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
@@ -3372,3 +3401,12 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## City interest backfill
+
+`.github/workflows/city-interest-backfill.yml` runs `tool/data/backfill_city_interest.mjs` against one Firebase environment as that environment's deploy identity (Workload Identity, the same account the brand publish uses; it needs `roles/datastore.user`). It is dispatch-only and runs only from main.
+
+1. Dispatch with `environment` (`dev` or `prod`) and `mode: dry-run`, the default. The job summary shows the plan: rows read, rows gaining a catalog `cityId`, people to count per city key, and the free-text cities that match no single catalog city. It never shows a contact.
+2. Review the numbers with the owner.
+3. Dispatch again with `mode: apply`. That passes `--apply`, plus `--allow-prod` for prod. The GitHub environment's protection applies. Markers make a rerun count nobody twice.
+

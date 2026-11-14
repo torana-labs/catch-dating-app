@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {compare, comparedLanes, isControlPlane, laneForTask, summary} from "./shadow_plan.mjs";
+import {compare, comparedLanes, isControlPlane, laneForTask, shadowExitCode, summary} from "./shadow_plan.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
 
@@ -10,8 +10,8 @@ test("Nx tasks map onto the CI lanes they would replace", () => {
   assert.equal(laneForTask("@catch/web-ui:typecheck"), "admin");
   assert.equal(laneForTask("contracts:conformance"), "contracts");
   assert.equal(laneForTask(["@catch", "operations"].join("/") + ":test"), "operations");
-  assert.equal(laneForTask("widget_dedupe:test", ["lang:dart"]), null);
-  assert.equal(laneForTask("@catch/brand:test"), null);
+  assert.equal(laneForTask("widget_dedupe:test", ["lang:dart"]), "tools");
+  assert.equal(laneForTask("unknown-project:test"), null);
 });
 
 test("every planner lane has an Nx project to compare with", () => {
@@ -44,10 +44,12 @@ test("a lane only the planner selects is reported as Nx being narrower", () => {
 });
 
 test("a lane only Nx selects is flagged as a planner gap", () => {
-  const result = compare({plannerLanes: [], nxTasks: ["catch_dating_app:analyze", "widget_dedupe:test"], tagsByProject: dart});
+  const result = compare({plannerLanes: [], nxTasks: ["catch_dating_app:analyze", "unknown-project:test"], tagsByProject: dart});
   assert.deepEqual(result.nxOnly, ["flutter"]);
-  assert.deepEqual(result.unmappedTasks, ["widget_dedupe:test"]);
-  assert.match(summary(result, {base: "a".repeat(40), head: "b".repeat(40), mode: "pr"}), /Nx selects a lane the planner skips/u);
+  assert.deepEqual(result.unmappedTasks, ["unknown-project:test"]);
+  const text = summary(result, {base: "a".repeat(40), head: "b".repeat(40), mode: "pr"});
+  assert.match(text, /Nx selects a lane the planner skips/u);
+  assert.match(text, /Unmapped Nx tasks.*unknown-project:test/u);
 });
 
 // A website-only change (2a2f26d1, 12 Nov 2026) affects only the marketing
@@ -60,4 +62,21 @@ test("the lane plan asks Nx for affected tasks without their dependencies", () =
   const result = compare({plannerLanes: ["capture_freshness", "marketing"], mode: "pr", nxTasks});
   assert.deepEqual(result.nxLanes, ["capture_freshness", "marketing"]);
   assert.equal(result.agree, true);
+});
+
+// codex/brand-config-publish (run 43302464381, 12 Nov 2026) reported
+// @catch/brand:check and :test as unmapped. meta:brand-literals runs both in
+// the Tools lane.
+test("brand tasks select the Tools lane", () => {
+  assert.equal(laneForTask("@catch/brand:check"), "tools");
+  assert.equal(laneForTask("@catch/brand:test"), "tools");
+  const result = compare({plannerLanes: ["tools"], nxTasks: ["@catch/brand:check", "@catch/brand:test"]});
+  assert.deepEqual(result.unmappedTasks, []);
+  assert.equal(result.agree, true);
+});
+
+
+test("the shadow run fails when Nx selects a task with no lane", () => {
+  assert.equal(shadowExitCode(compare({plannerLanes: [], nxTasks: ["unknown-project:test"]})), 1);
+  assert.equal(shadowExitCode(compare({plannerLanes: ["tools"], nxTasks: ["design-tokens:check", "widget_dedupe:test"]})), 0);
 });

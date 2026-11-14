@@ -4,6 +4,7 @@ import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {FakeFirestore} from "../../operations/testFirestore";
 import type {ProgressContext} from "./groupProgressSource";
 import {EventGroupProgressStore} from "./groupProgressStore";
+import {contractFixture} from "../../shared/contractFixtures";
 
 /** The generic fake has no SDK creation metadata. Keep it explicit here. */
 export class ProgressFirestore extends FakeFirestore {
@@ -26,15 +27,14 @@ export class ProgressFirestore extends FakeFirestore {
 }
 
 export const progressFixtureManager = "host-1";
-const fixture = (name: string) => JSON.parse(readFileSync(
-  "../contracts/fixtures/valid/" + name + ".json", "utf8"));
 const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
   _nanoseconds: at % 1000 * 1_000_000});
 
 /** Canonical source and a real manager command for live boundary tests. */
 export async function seedJoiningProgress(db: Firestore,
   context: ProgressContext, now: number, endAt: number) {
-  const event = {...fixture("event_doc"), organizerId: context.organizerId,
+  const event = {...contractFixture("event_doc"),
+    organizerId: context.organizerId,
     name: "Friday social",
     startTime: stamp(now - 1000), endTime: stamp(endAt),
     eventFormat: {version: 1, activityKind: "barCrawl",
@@ -45,11 +45,11 @@ export async function seedJoiningProgress(db: Firestore,
         longitude: 75.8}}))};
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture(
+  const organizer = {...Object.fromEntries(Object.entries(contractFixture(
     "organizer_doc"))
     .filter(([key]) => key in schema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
-  const plan = {...fixture("event_success_plan_doc"),
+  const plan = {...contractFixture("event_success_plan_doc"),
     eventId: context.eventId, organizerId: context.organizerId, status: "live"};
   await db.runTransaction(async (tx) => {
     for (const [collection, id, value] of [
