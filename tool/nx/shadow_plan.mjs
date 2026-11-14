@@ -33,6 +33,9 @@ const laneByProject = {
   "functions": "functions",
   "operations": "operations",
   "contracts": "contracts",
+  // The Tools lane runs meta:brand-literals: `generate.mjs --check`, the brand
+  // tests and the literal scan.
+  "brand": "tools",
   "lane-admin-design": "admin",
   "lane-marketing-design": "marketing",
   "lane-flutter-design": "flutter",

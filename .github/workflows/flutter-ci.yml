@@ -59,8 +59,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get
+      # The selector renders the untracked schema contract Dart at base and
+      # head, so a contract change selects only the importers of what changed.
+      - name: Install the contract generator's dependencies
+        run: npm --prefix functions ci --ignore-scripts --no-audit --no-fund
       - name: Retain generated English localization for reviewed source
         env:
           SOURCE_SHA: ${{ github.sha }}
