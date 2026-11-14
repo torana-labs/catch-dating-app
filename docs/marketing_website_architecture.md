@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.29.0
+version: 0.30.0
 updated: 2026-11-14
 owner: marketing_website
 status: active
@@ -123,7 +123,11 @@ Left: the wordmark (`CatchWordmark`, the display voice at 78% width), the page
 links and the visitor's account entry ("Sign in" or "Account"). Right: only the
 page's actions, a setting such as the city picker, then the one primary action.
 Under 600px the links and the account entry move into the phone menu, and a
-sub-brand steps under the wordmark. General pages carry the main site's links
+sub-brand steps under the wordmark. The bar folds by its own width (a container
+query), so a phone-wide frame folds even inside a wider window. Beside the city
+picker, the home and city pages pass "Get the app" as the bar's
+`primary` action: under a 390px window it leaves the row for the menu, so the
+picker never runs into the wordmark. General pages carry the main site's links
 from `content/site.ts` (Explore, Organisers, For hosts) and Get the app; a
 product page passes its own name, section links and action, as the host landing
 ("Catch for hosts", its sections and Start free trial) and weddings do. The

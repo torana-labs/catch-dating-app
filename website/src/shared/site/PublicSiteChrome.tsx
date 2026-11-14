@@ -39,10 +39,15 @@ function wordmarkParts(title: string): {brand: string; subBrand?: string} {
  * own sections and action, as the host landing does ("Catch for hosts", its
  * sections and Start free trial).
  */
-export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publicSiteCopy.nav, actions = <GetTheAppButton />}: {
+export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publicSiteCopy.nav, actions = <GetTheAppButton />, primary}: {
   title?: string;
   links?: readonly SiteNavItem[];
   actions?: ReactNode;
+  /**
+   * The primary action beside a setting in `actions` (the city picker): the bar draws it last and,
+   * on a phone too narrow for both, keeps it in the menu instead.
+   */
+  primary?: SiteNavItem & {onPressed?: () => void};
 }) {
   const account = useContext(SiteAccountActionContext);
   const {brand, subBrand} = wordmarkParts(title);
@@ -55,6 +60,7 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
       linksLabel={publicSiteCopy.menu.navLabel}
       menuExtras={account ? [account.menu] : undefined}
       menuLabel={publicSiteCopy.menu.openLabel}
+      primaryAction={primary}
       subBrand={subBrand}
       title={brand}
       variant="site"

@@ -1,4 +1,3 @@
-import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName} from "@content/markets";
@@ -50,15 +49,13 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
 }) {
   return <>
     <PublicSiteHeader
-      actions={<>
-        <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
-        <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
-      </>}
+      actions={<CityPicker cities={cities} onChoose={onChooseCity} selected={city} />}
       links={[
         {href: exploreHref, label: copy.header.explore},
         {href: organisersHref, label: copy.header.organisers},
         {href: "/host/", label: copy.header.hosts},
       ]}
+      primary={{href: appHref, label: copy.header.app, onPressed: follow}}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
