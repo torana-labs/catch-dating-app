@@ -87,9 +87,10 @@ export const PickerTwentyFiveCities: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getAllByRole("button", {name: twentyFiveCityCatalog.selected.label})[0]);
-    // The wide dropdown is hidden until it is placed under the trigger, so wait for it.
+    // The wide dropdown is hidden until it is placed under the trigger, so wait
+    // for its contents themselves, not only for the dialog.
     const sheet = within(await within(canvasElement.ownerDocument.body).findByRole("dialog"));
-    await expect(sheet.getByRole("searchbox")).toBeInTheDocument();
-    await expect(sheet.getByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
+    await expect(await sheet.findByRole("searchbox")).toBeInTheDocument();
+    await expect(await sheet.findByRole("heading", {name: "Australia", level: 3})).toBeInTheDocument();
   },
 };
