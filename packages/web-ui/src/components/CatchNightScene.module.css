@@ -362,10 +362,8 @@
     padding-top: 0;
   }
 
-  .track[data-frame="capture"] .phone > * { width: auto; }
-
   /* The crop keeps the band's width, so the app's text keeps its size; a short screen trims the bottom of the box instead of shrinking it. */
-  .card {
+  .phone > .card {
     --catch-night-card-w: min(100cqw, 420px);
     flex: none;
     width: var(--catch-night-card-w);
