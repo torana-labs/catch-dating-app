@@ -162,6 +162,14 @@ function sourceFiles() {
 
 const buildListingOutputs = new Set(buildReplacedListings);
 
+// A reused PNG keeps the revision that rendered it. Its exact input
+// fingerprint and bytes, checked for every capture, make it valid for this
+// source; that revision need not be an ancestor (owner decision, 12 Nov 2026:
+// a squash-merged PR render is reused on main and in the merge queue).
+export function assertReusedRenderRevision(revision) {
+  assert.match(revision ?? "", /^[a-f0-9]{40}$/u, "Invalid original render revision.");
+}
+
 export function verifyCaptureFiles({files, binding}) {
   return verifyFiles({files, binding});
 }
@@ -270,7 +278,7 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
     assert.equal(record.verifiedSourceSha, binding.sourceSha, "Capture was not verified against consumer source.");
     assert.ok(["rendered", "reused"].includes(record.disposition), "Unknown capture disposition.");
     if (record.disposition === "rendered") assert.equal(provenance.sourceRevision, binding.sourceSha, "Wrong render source.");
-    else execute("git", ["merge-base", "--is-ancestor", provenance.sourceRevision, binding.sourceSha]);
+    else assertReusedRenderRevision(provenance.sourceRevision);
     fontHashes.add(provenance.nativeFontSha256);
     assert.ok(bytes.equals(files.get(capture.websitePath)), "Website capture differs from canonical render.");
   }

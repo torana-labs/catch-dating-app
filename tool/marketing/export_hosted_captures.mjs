@@ -233,9 +233,11 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
   for (const capture of captures) {
     if (!renderIds.has(capture.id)) {
+      // A reused PNG keeps the revision that rendered it. Its exact input
+      // fingerprint, checked above, is what makes it valid for this source;
+      // that revision need not be an ancestor (a squash-merged PR render).
       const origin = readProvenance(reusedBytes.get(capture.id)).sourceRevision;
       if (!/^[a-f0-9]{40}$/u.test(origin ?? "")) throw new Error("Invalid original render revision.");
-      git("merge-base", "--is-ancestor", origin, sourceSha);
       continue;
     }
     // A failed/no-op renderer must never fall back to an old selected output.
