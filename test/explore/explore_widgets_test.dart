@@ -43,7 +43,6 @@ import 'package:catch_dating_app/organizers/presentation/discovery/widgets/organ
 import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_transition_tags.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_data.dart';
@@ -57,6 +56,7 @@ import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/startup/startup_animation_scope.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
