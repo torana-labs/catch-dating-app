@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
-import {spawnSync} from "node:child_process";
+import {execFileSync, spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {pathToFileURL} from "node:url";
-import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, laneForTask,
+import {planAffected} from "../harness/lib/component_graph.mjs";
+import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, isQueueCaptureInput, laneForTask,
   shadowExitCode, summary} from "./shadow_plan.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
@@ -186,4 +187,32 @@ registerHooks({resolve(specifier, context, next) {
   const ci = run([".github/workflows/flutter-ci.yml"]);
   assert.notEqual(ci.status, 0);
   assert.match(ci.stderr, /yaml is not installed/u);
+});
+
+// #1767: app render inputs select capture production in the merge queue only.
+test("an app render input selects capture freshness in the merge queue, not on a pull request", () => {
+  for (const file of ["lib/app.dart", "test/app_test.dart", "packages/catch_ui/lib/catch_ui.dart", "pubspec.lock"]) {
+    const select = (mode) => compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode}).nxLanes;
+    assert.ok(select("merge_group").includes("capture_freshness"), `${file} merge_group`);
+    assert.ok(!select("pr").includes("capture_freshness"), `${file} pr`);
+  }
+  for (const file of ["lib/README.md", "apps/consumer/ios/Runner/Info.plist", "apps/host/pubspec.yaml",
+    "packages/l10n/l10n.yaml", "packages/catch_ui_lints/lib/main.dart", "functions/src/index.ts"]) {
+    const queue = compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode: "merge_group"}).nxLanes;
+    assert.ok(!queue.includes("capture_freshness"), `${file} must not select captures`);
+  }
+});
+
+test("the merge-queue capture rule matches the planner for every app render file", () => {
+  const graph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"));
+  const files = execFileSync("git", ["ls-files", "lib", "test", "integration_test", "assets", "apps", "packages", "pubspec.yaml",
+    "pubspec.lock"], {encoding: "utf8", maxBuffer: 1 << 28}).trim().split("\n");
+  const mismatches = [];
+  for (const file of files) {
+    const captures = (mode) => planAffected({changedPaths: [file], graph, mode}).operations.ciTargets.includes("capture_freshness");
+    const queueOnly = captures("merge_group") && !captures("pr");
+    if (queueOnly !== isQueueCaptureInput(file)) mismatches.push(`${file}: planner ${queueOnly}, Nx ${!queueOnly}`);
+  }
+  assert.ok(files.length > 1000, "app render inventory looks incomplete");
+  assert.deepEqual(mismatches.slice(0, 20), []);
 });

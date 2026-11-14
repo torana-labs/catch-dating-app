@@ -20,6 +20,16 @@ export const comparedLanes = ["admin", "capture_freshness", "contracts", "docs",
   "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing",
   "operations", "policy_docs", "tools", "visual_integration"];
 
+// App render inputs select capture production in the merge queue only, as the
+// planner does since #1767 (owner decision, 12 Nov): the Flutter app, its
+// packages, tests, assets and dependencies, but not docs, native platform
+// files, per-app dependency settings, the lint plugin or the l10n config.
+// shadow_plan.test.mjs checks this against the planner for
+// every tracked file under these roots.
+const queueCaptureRoots = /^(?:lib|test|integration_test|assets|apps\/(?:consumer|host)|packages\/(?:catch_ui|catch_tokens|kernel|l10n|platform))\/|^pubspec\.(?:yaml|lock)$/u;
+const queueCaptureExcluded = /\.md$|^apps\/[^/]+\/(?:android|ios|web|macos|linux|windows|assets|firebase)(?:\/|$)|^apps\/[^/]+\/(?:pubspec\.(?:yaml|lock)|\.metadata|analysis_options\.yaml)$|^packages\/l10n\/l10n\.yaml$/u;
+export const isQueueCaptureInput = (file) => queueCaptureRoots.test(file) && !queueCaptureExcluded.test(file);
+
 // Pull requests leave these slow lanes to the merge queue, as the planner does.
 const queueOnlyLanes = ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke",
   "visual_integration"];
@@ -155,6 +165,7 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
     const lane = laneForTask(task, tagsByProject[project]);
     if (lane) nxLanes.add(lane); else unmappedTasks.push(task);
   }
+  if (mode === "merge_group" && changedFiles.some(isQueueCaptureInput)) nxLanes.add("capture_freshness");
   if (mode === "pr") for (const lane of queueOnlyLanes) nxLanes.delete(lane);
   const planner = new Set(plannerLanes);
   const plannerOnly = comparedLanes.filter((lane) => planner.has(lane) && !nxLanes.has(lane));
