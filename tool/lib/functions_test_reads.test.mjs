@@ -58,14 +58,30 @@ test("method definitions and non-fs functions are not reads", () => {
   assert.equal(reads("class Vault {\n  async access(version: string): Promise<string> { return version; }\n}").bounded, true);
   // access() without an fs import is some other function.
   assert.equal(reads("const value = access(config);").bounded, true);
-  assert.equal(reads(`${fsImport}const value = access(config);`).bounded, false);
+  assert.equal(reads("import {access} from \"node:fs/promises\";\nconst value = access(config);").bounded, false);
 });
 
-test("imports: literal specifiers are code edges, computed ones are unbounded, anchored ones are reads", () => {
+test("reads through any local name for node:fs are seen", () => {
+  for (const body of [
+    "import * as filesystem from \"node:fs\";\nfilesystem.readFileSync(name);",
+    "const {readFileSync: rf} = require(\"fs\");\nrf(name);",
+    "import {readFile as load} from \"node:fs/promises\";\nawait load(name);",
+    "import fs from \"node:fs\";\nconst {readdirSync} = fs;\nreaddirSync(dir);",
+    "import fs from \"node:fs\";\nconst read = fs.readFileSync;\nread(name);",
+    "import fs from \"node:fs\";\nconst files = fs.promises;\nawait files.readFile(name);",
+    "const text = require(\"fs\").readFileSync(name);",
+  ]) assert.match(reads(body).why ?? "", /computed read path/u, body);
+});
+
+test("imports: literal specifiers are code edges; computed or path-loaded modules are unbounded", () => {
   assert.deepEqual(reads("import x from \"../lib/x\";\nconst y = require(\"./y\");\nawait import(\"./z.js\");").reads, []);
   assert.match(reads("await import(modulePath);").why, /dynamic import/u);
-  const anchored = reads("import path from \"node:path\";\nimport {pathToFileURL} from \"node:url\";\nawait import(pathToFileURL(path.resolve(__dirname, \"../../../operations/src/run.mjs\")).href);");
-  assert.ok(anchored.reads.includes("operations/src/run.mjs"), JSON.stringify(anchored));
+  // A module loaded by path runs its own imports, which nothing follows.
+  const runner = "import path from \"node:path\";\nimport {pathToFileURL} from \"node:url\";\nawait import(pathToFileURL(path.resolve(__dirname, \"../../../website/scripts/generate.mjs\")).href);";
+  assert.match(reads(runner).why, /import\(\) runs website\/scripts\/generate\.mjs, whose imports are not followed/u);
+  const declared = reads(`// test-selection-reads: website/scripts/\n${runner}`);
+  assert.equal(declared.bounded, true);
+  assert.ok(readsPath(declared.reads, "website/scripts/next/projection.mjs"));
 });
 
 test("path-like literals add suffix reads; bare words, prose and URLs do not", () => {
@@ -99,4 +115,11 @@ test("a slash misread as a regular expression can't hide a read", () => {
   const source = `${fsImport}const half = obj.return / 2; fs.readFileSync(name); const third = 1 / 3;`;
   assert.equal(maskSource(source).includes("readFileSync(name)"), false);
   assert.equal(reads(source).bounded, false);
+});
+
+test("createRequire and worker threads load modules by path, so they are unbounded", () => {
+  assert.match(reads("import {createRequire} from \"node:module\";\nconst load = createRequire(import.meta.url);\nload(\"../../tool/x.cjs\");").why,
+    /createRequire\(\) loads modules by path/u);
+  assert.match(reads("import {Worker} from \"node:worker_threads\";\nnew Worker(new URL(\"./job.mjs\", import.meta.url));").why,
+    /Worker\(\) loads modules by path/u);
 });

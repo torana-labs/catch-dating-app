@@ -227,12 +227,56 @@ function definitionAt(code, open) {
     /\bfunction\s*\*?\s*[\w$]*\s*$/u.test(code.slice(Math.max(0, open - 60), open));
 }
 
-function readCall(callee, importsFs) {
+function readCall(callee, fsNames) {
   const parts = callee.split(".");
   const name = parts.at(-1);
-  if (parts.length === 1) return importsFs && bareFsReads.has(name);
-  return (fsObjects.test(parts.slice(0, -1).join(".")) || fsObjects.test(parts.at(-2))) && fsReadMethods.test(name) ||
-    libraryRead.test(callee);
+  if (parts.length === 1) return fsNames.functions.has(name) ? bareFsReads.has(fsNames.functions.get(name)) || fsReadMethods.test(fsNames.functions.get(name)) : false;
+  const object = parts.slice(0, -1).join(".");
+  const fsObject = fsObjects.test(object) || fsObjects.test(parts.at(-2)) || fsNames.objects.has(parts[0]);
+  return fsObject && fsReadMethods.test(name) || libraryRead.test(callee);
+}
+
+const fsModule = String.raw`["'](?:node:)?fs(?:\/promises)?["']`;
+/**
+ * The local names a file binds to node:fs: objects (import fs, import * as x,
+ * const x = require("fs")) and functions with their fs names
+ * ({readFileSync: read} = require("fs"), import {readFile as load}).
+ */
+function fsBindings(code) {
+  const objects = new Set();
+  const functions = new Map();
+  const named = (list, separator) => {
+    for (const entry of list.split(",")) {
+      const [original, local = original] = entry.replace(/\btype\s+/u, "").split(separator).map((part) => part.trim());
+      if (/^[A-Za-z_$][\w$]*$/u.test(original) && /^[A-Za-z_$][\w$]*$/u.test(local)) functions.set(local, original);
+    }
+  };
+  for (const match of code.matchAll(new RegExp(String.raw`\bimport\s+([^;]*?)\s+from\s*${fsModule}`, "gu"))) {
+    const clause = match[1];
+    const braces = /\{([^}]*)\}/u.exec(clause);
+    if (braces) named(braces[1], /\s+as\s+/u);
+    for (const name of clause.replace(/\{[^}]*\}/u, "").replace(/\*\s*as\s+/u, "").split(",")) {
+      if (/^[A-Za-z_$][\w$]*$/u.test(name.trim())) objects.add(name.trim());
+    }
+  }
+  for (const match of code.matchAll(new RegExp(String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*|\{[^}]*\})\s*=\s*require\s*\(\s*${fsModule}\s*\)`, "gu"))) {
+    if (match[1].startsWith("{")) named(match[1].slice(1, -1), /\s*:\s*/u);
+    else objects.add(match[1]);
+  }
+  // Names taken from an fs object afterwards: const {readFileSync} = fs, const read = fs.readFile.
+  for (const object of [...objects]) {
+    const escaped = object.replace(/\$/gu, "\\$");
+    for (const match of code.matchAll(new RegExp(String.raw`\b(?:const|let|var)\s+\{([^}]*)\}\s*=\s*${escaped}(?:\.promises)?\b(?!\s*[.(])`, "gu"))) {
+      named(match[1], /\s*:\s*/u);
+    }
+    for (const match of code.matchAll(new RegExp(String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*${escaped}(?:\.promises)?\.([A-Za-z_$][\w$]*)\b(?!\s*\()`, "gu"))) {
+      functions.set(match[1], match[2]);
+    }
+    for (const match of code.matchAll(new RegExp(String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*${escaped}\.promises\b(?!\s*\.)`, "gu"))) {
+      objects.add(match[1]);
+    }
+  }
+  return {objects, functions};
 }
 
 function spawnCall(callee, importsChildProcess) {
@@ -265,7 +309,7 @@ export function sourceReads({file, source}) {
   const callsOnly = maskSource(source, {blankStrings: true});
   const dir = path.posix.dirname(file);
 
-  const importsFs = /(?:\bfrom\s*|\brequire\s*\(\s*)["'](?:node:)?fs(?:\/promises)?["']/u.test(code);
+  const fsNames = fsBindings(code);
   const importsChildProcess = /["'](?:node:)?child_process["']/u.test(code);
 
   // A const can't be reassigned, so its initializer is its value wherever the
@@ -335,18 +379,22 @@ export function sourceReads({file, source}) {
         forbidden.push(`child process via ${callee}()`);
         continue;
       }
+      // A require made by createRequire, or a worker, loads a module by path
+      // under another name.
+      if (/(?:^|\.)createRequire$/u.test(callee) || callee === "Worker" || /(?:^|\.)Worker$/u.test(callee)) {
+        unbounded.push(`${callee}() loads modules by path`);
+        continue;
+      }
       if (callee === "require" || callee === "import") {
         const [specifier] = callArguments(argText, open);
         const value = specifier === undefined ? computed : evaluate(specifier);
         if (!value.complete) unbounded.push(`dynamic ${callee}(${(specifier ?? "").replace(/\s+/gu, " ").slice(0, 60)})`);
-        else if (value.anchored) {
-          const resolved = resolveFrom(value);
-          if (resolved === null) unbounded.push(`dynamic ${callee}() outside the repository`);
-          else reads.add(resolved);
-        }
+        // A module loaded by path runs its own imports, which the graph does not
+        // follow: a declaration has to name what it can read.
+        else if (value.anchored) unbounded.push(`${callee}() runs ${resolveFrom(value) ?? "a file outside the repository"}, whose imports are not followed`);
         continue;
       }
-      if (!readCall(callee, importsFs)) continue;
+      if (!readCall(callee, fsNames)) continue;
       const [first] = callArguments(argText, open);
       if (first === undefined) continue;
       const value = evaluate(first);
