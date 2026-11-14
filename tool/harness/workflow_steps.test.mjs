@@ -787,6 +787,26 @@ test("target flags exclude retry metadata and quoted expression payloads", () =>
 });
 
 
+test("a change-scope condition narrows CI but still runs locally", () => {
+  const steps = extractSteps(`jobs:
+  checks:
+    steps:
+      - name: Scoped suite
+        if: steps.scope.outputs.catch_ui == 'true'
+        run: echo scoped
+      - name: Other step output
+        if: steps.other.outputs.catch_ui == 'true'
+        run: echo other
+      - name: Compound scope
+        if: steps.scope.outputs.catch_ui == 'true' || always()
+        run: echo compound
+`);
+  assert.equal(steps[0].if, "steps.scope.outputs.catch_ui == 'true'");
+  assert.equal(steps[0].runnable, true);
+  assert.equal(steps[1].runnable, false);
+  assert.equal(steps[2].runnable, false);
+});
+
 test("policy consumers retain condition metadata without granting local execution", () => {
   const steps = extractSteps(`jobs:
   checks:

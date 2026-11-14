@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {CatchButton, CatchIcon, CatchMenu, CatchNotice, CatchNoticeRegion, CatchSearchField, CatchSheet, CatchStack, CatchText,
+import {CatchAdaptiveSheet, CatchButton, CatchIcon, CatchMenu, CatchNotice, CatchNoticeRegion, CatchSearchField, CatchStack, CatchText,
   type CatchNoticeData} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
@@ -78,8 +78,9 @@ function useLocate(cities: readonly HomeCity[], choose: (slug: string, source: C
 /**
  * The header's city picker on the homepage, Explore and the city pages. One
  * country with up to eight cities opens a menu under the trigger; more
- * countries open a sheet grouped by country, which searches once there are
- * more than eight cities. A country with no city open says "launching soon"
+ * countries open a sheet grouped by country on phones and a 340px dropdown
+ * under the trigger at 900px and wider, which searches once there are more
+ * than eight cities and ends with every city. A country with no city open says "launching soon"
  * once instead of marking every city. A city picked here, or found with "Use
  * my location", is remembered (cityChoice) so the homepage opens on it.
  */
@@ -137,8 +138,9 @@ export function CityPicker({cities, follow = (href) => window.location.assign(hr
   const searching = cities.length > citySearchThreshold;
   const shown = filterCityGroups(groups, searching ? query : "");
   return <>
-    <CatchButton label={selected.label} onPressed={() => setOpen(true)} size="sm" trailingIcon="expand" variant="secondary" />
-    <CatchSheet label={copy.header.cityMenu} onClose={close} open={open} recipe="standard" title={copy.header.cityMenu}>
+    <CatchAdaptiveSheet align="end" closeLabel={locate.close} onClose={close} open={open} title={copy.header.cityMenu}
+      trigger={<CatchButton label={selected.label} onPressed={() => open ? close() : setOpen(true)} size="sm" trailingIcon="expand" variant="secondary" />}
+      wide="dropdown" width={340}>
       <CatchStack gap={16}>
         {locator.available ? (
           <CatchButton label={locateLabel} leadingIcon="nearMe" onPressed={() => void locator.run()}
@@ -163,8 +165,9 @@ export function CityPicker({cities, follow = (href) => window.location.assign(hr
           </CatchStack>
         ))}
         {shown.length === 0 ? <CatchText tone="secondary" variant="body">{fill(copy.header.citySearch.none, {query: query.trim()})}</CatchText> : null}
+        <CatchButton href={citiesHref} label={copy.header.allCities} size="sm" trailingIcon="forward" variant="quiet" />
       </CatchStack>
-    </CatchSheet>
+    </CatchAdaptiveSheet>
     {notice}
   </>;
 }

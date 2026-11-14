@@ -291,7 +291,16 @@ For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
 `nx-shadow` comparison holds parity (#1554). Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
-`@catch/web-ui`. Changes to the shared Harness control plane intentionally run every declared
+`@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
+input of code tasks; the Functions README and its rate-limit and inventory
+audits are the `functions:check` target, so a README edit runs that check
+rather than the Functions suite. Each contract family (`contracts-admin`,
+`-bigquery`, `-catalogs`, `-client-writes`, `-fixtures`, `-http`, `-patches`,
+`-storage`) is its own Nx project, and only the projects that consume it depend
+on it: for a BigQuery or HTTP contract change Nx selects Functions and its
+readers, not the Flutter app, though the planner's lanes still run until
+parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
@@ -322,7 +331,17 @@ queue. `main` pushes and the nightly run are not narrowed by it, and the
 nightly full run, which still runs every lane, is the backstop.
 `tool/nx/workflow_callers.test.mjs` proves the closure against both the planner
 and Nx, with a negative control for each, and pins that an
-`app-build-matrix.yml` edit still selects the iOS queue lane. The tool planner honors the graph's terminal classifications
+`app-build-matrix.yml` edit still selects the iOS queue lane. Every tracked
+`.github/**` and `tool/ci/**` file is a selector, reached by a `ci.yml` job, or
+listed with its reason in `notCalledByCi` in that module; Nx selects every lane
+for any other (new, renamed or deleted) CI configuration file, so a new
+workflow or script is classified on purpose. The workflows `ci.yml` never calls
+(deploy, release, maintenance and operations workflows, and those with their
+own pull request triggers) are `harness-scoped-control` in every mode,
+including `main` pushes: an edit runs policy and its own Tools checks, and
+`component_graph.test.mjs` pins the checks each deploy workflow selects.
+`website-release.yml` keeps Marketing (`website-release-control`), whose
+validation runs its release-train tests. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,
@@ -418,6 +437,24 @@ Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
+
+On a pull request, the "Catch UI, Consumer & Host package tests" and
+"Widgetbook analyze & build" jobs run each package suite and the Widgetbook
+build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
+A suite's closure is its package directory and those of its transitive pubspec
+path dependencies (only `lib/` and `assets/` of the root package), plus what
+those manifests bundle from outside their directories and every Dart file the
+closure's sources reach transitively through relative `import`, `export` or
+`part` URIs that leave those directories (Widgetbook's and Consumer's tests
+import root `test/` helpers this way), read from the head commit at run time. A `contracts/**` or `tool/contracts/**` change reaches
+`packages/platform` and the root package, where the generated contract Dart
+lives. These keep every suite running: a workspace input (any `pubspec.lock`,
+`analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,
+`.metadata`, `tool/ci/toolchain.env`, `tool/harness/**`, the scope script, the
+Flutter CI workflow or its setup actions); any path no rule classifies; and a
+manifest the script cannot read. A skipped suite leaves its job green with a
+"not affected: <reason>" summary, so the Required CI names are unchanged.
+Merge queue, main, nightly, manual and full runs execute every suite.
 
 ### Selected Check Contracts
 
@@ -2141,7 +2178,16 @@ The source's CI therefore counts as successful when the run succeeded, or when
 its `Required CI` job succeeded and every job that did not succeed belongs to
 one of those reporting lanes (`tool/ci/required_ci_floor.mjs`). Marketing
 validation, exact-source captures, the main lineage and the live-release order
-are checked exactly as before. Revisit this when the floor ends.
+are checked exactly as before.
+
+The floor ends once main stays green for a week (owner decision, 14 Nov 2026):
+every completed main push and nightly CI run for 7 days concluded success,
+reporting lanes included, with at least 6 nightly runs in that window. The
+Main CI alert workflow checks this after each green main run
+(`decideFloorExit` in `tool/ci/main_red_alert.mjs`) and opens one issue,
+"Main CI green for 7 days: reporting lanes can block again", listing the
+restore steps: put the lanes back in `Required CI`'s needs, empty its
+`$reporting` list and `REPORTING_LANES`, and update this paragraph.
 
 Recovery:
 

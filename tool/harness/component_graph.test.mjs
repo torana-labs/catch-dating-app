@@ -1465,3 +1465,53 @@ test("the planner's sparse checkout holds every module its entry points import",
   }
   assert.deepEqual([...seen].filter((file) => !listed.has(file)).sort(), []);
 });
+
+// Workflows ci.yml never calls (tool/nx/workflow_callers.mjs notCalledByCi)
+// validate with policy and their own Tools checks, not every product lane.
+// Each deploy or release workflow pins the checks an edit to it selects, so
+// narrowing never drops the tests that prove it.
+test("deploy and maintenance workflows ci.yml never calls select their own tests, not every lane", () => {
+  const ownChecks = {
+    ".github/workflows/main-red-alert.yml": ["ci:main-red-alert"],
+    ".github/workflows/brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
+    ".github/workflows/_brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
+    ".github/workflows/city-interest-backfill.yml": ["ci:city-interest-backfill-workflow"],
+    ".github/workflows/branch-prune.yml": ["git:branch-hygiene"],
+    ".github/workflows/nx-shadow.yml": ["meta:nx-shadow-plan"],
+    ".github/actions/find-queue-validation/action.yml": ["ci:web-hosting-delivery-workflow"],
+    // No test reads these; workflow policy (actionlint, zizmor, wiring) proves them.
+    ".github/workflows/infra-apply.yml": [],
+    ".github/workflows/infra-plan.yml": [],
+    ".github/workflows/infra-drift.yml": [],
+  };
+  for (const [file, checks] of Object.entries(ownChecks)) {
+    for (const mode of ["pr", "merge_group", "main"]) {
+      const result = plan(file, mode);
+      assert.equal(result.pathMatches[file].owner, "harness-scoped-control", `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, ["policy_docs", "tools"], `${file} ${mode}`);
+      const tools = planAffectedToolChecks({changedPaths: [file], manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected", `${file} ${mode}`);
+      for (const id of ["agent:harness-v2", "meta:nx-workflow-callers", ...checks]) {
+        assert.ok(tools.toolIds.includes(id), `${file} ${mode} selects ${id}`);
+      }
+    }
+  }
+  // main-red-alert's check runs its test file.
+  const redAlert = toolsManifest.tools.find((tool) => tool.id === "ci:main-red-alert");
+  assert.ok(redAlert.checks.includes("node --test tool/ci/main_red_alert.test.mjs"));
+});
+
+test("the website release workflow keeps the Marketing lane that runs its release-train tests", () => {
+  const file = ".github/workflows/website-release.yml";
+  for (const mode of ["pr", "merge_group", "main"]) {
+    const result = plan(file, mode);
+    assert.equal(result.pathMatches[file].owner, "website-release-control", `${mode}`);
+    assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
+  }
+  // Marketing validation runs website/scripts/next/*.test.mjs, releaseTrain.test.mjs among them.
+  const websitePackage = JSON.parse(fs.readFileSync(new URL("../../website/package.json", import.meta.url), "utf8"));
+  assert.match(websitePackage.scripts["test:next-policy"], /scripts\/next\/\*\.test\.mjs/u);
+  assert.match(websitePackage.scripts.pretypecheck, /npm run test:next-policy/u);
+  assert.ok(fs.readFileSync(new URL("../../website/scripts/next/releaseTrain.test.mjs", import.meta.url), "utf8")
+    .includes("website-release.yml"));
+});

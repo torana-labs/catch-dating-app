@@ -6,8 +6,8 @@ import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
-import {ALL, callerLanes, declaredTargets, isCiConfiguration, isSelector, selectorEntries, selectorFiles,
-  workflowCallers} from "./workflow_callers.mjs";
+import {ALL, callerLanes, declaredTargets, isCiConfiguration, isSelector, notCalledByCi, selectorEntries,
+  selectorFiles, trackedFiles, unclassifiedCiFiles, workflowCallers} from "./workflow_callers.mjs";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const realGraph = workflowCallers({root: repoRoot, lanes: comparedLanes});
@@ -16,6 +16,7 @@ const plannerGraph = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/harnes
 function fixtureRepo(files) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "workflow-callers-"));
   for (const [file, content] of Object.entries(files)) {
+    if (content === undefined) continue;
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.writeFileSync(path.join(root, file), content);
   }
@@ -205,4 +206,44 @@ test("pull requests and the merge queue narrow CI configuration edits the same w
   const ios = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/app-build-matrix.yml"],
     mode: "merge_group", graph: realGraph}).nxLanes;
   assert.ok(ios.includes("flutter_build_ios"));
+});
+
+test("every CI configuration file is a selector, reached by ci.yml, or listed with a reason", () => {
+  assert.deepEqual(unclassifiedCiFiles(realGraph, trackedFiles(repoRoot)), [],
+    "classify a new workflow, action or tool/ci file: reach it from ci.yml or add it to notCalledByCi with a reason");
+  for (const [file, reason] of Object.entries(notCalledByCi)) {
+    assert.ok(fs.existsSync(path.join(repoRoot, file)), `${file} is listed but no longer exists`);
+    assert.ok(reason.length > 10, `${file} needs a reason`);
+    assert.ok(!realGraph.lanes.has(file) && !realGraph.ungated.has(file) && !isSelector(file, realGraph),
+      `${file} is reached by ci.yml now; remove it from notCalledByCi`);
+  }
+});
+
+test("an unclassified CI configuration file selects every lane, never none", () => {
+  const graph = workflowCallers({root: fixtureRepo({...fixture, ".github/workflows/new.yml": "on: push\njobs: {}\n"}),
+    lanes: ["build", "web"]});
+  assert.deepEqual(unclassifiedCiFiles(graph, ["tool/ci/only_build.mjs", ".github/workflows/new.yml"]),
+    [".github/workflows/new.yml"]);
+  assert.deepEqual([...callerLanes([".github/workflows/new.yml"], {graph, allLanes: ["build", "web"]})], ["build", "web"]);
+  // A deleted or renamed file is unclassified too.
+  assert.deepEqual([...callerLanes(["tool/ci/removed.mjs"], {graph, allLanes: ["build", "web"]})], ["build", "web"]);
+});
+
+test("composite actions resolve as action.yml or action.yaml, and extensionless scripts resolve or are unresolved", () => {
+  const files = {...fixture,
+    ".github/actions/setup/action.yml": undefined,
+    ".github/actions/setup/action.yaml": "runs:\n  using: composite\n  steps:\n    - shell: bash\n      run: node tool/ci/setup\n",
+    "tool/ci/build.sh": "bash tool/ci/stage\nnode tool/ci/missing\n",
+    "tool/ci/stage.sh": "echo stage\n",
+  };
+  delete files[".github/actions/setup/action.yml"];
+  const graph = workflowCallers({root: fixtureRepo(files), lanes: ["build", "web"]});
+  // The build job's unresolved `node tool/ci/missing` makes all it reaches select every lane ("*").
+  assert.deepEqual(lanesOf(graph, ".github/actions/setup/action.yaml"), ["*", "build", "web"]);
+  assert.deepEqual(lanesOf(graph, "tool/ci/setup.mjs"), ["*", "build", "web"], "node tool/ci/setup resolves to setup.mjs");
+  assert.deepEqual(lanesOf(graph, "tool/ci/stage.sh"), ["*", "build"], "bash tool/ci/stage resolves to stage.sh");
+  assert.deepEqual(graph.unresolved.map(({from, ref}) => [from, ref]), [["tool/ci/build.sh", "node tool/ci/missing"]]);
+  const missing = workflowCallers({root: fixtureRepo({...fixture, ".github/actions/setup/action.yml": undefined}),
+    lanes: ["build", "web"]});
+  assert.ok(missing.unresolved.some(({ref}) => ref === "uses: ./.github/actions/setup"));
 });

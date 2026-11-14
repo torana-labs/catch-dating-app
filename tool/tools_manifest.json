@@ -516,7 +516,8 @@
       },
       "impactPaths": [
         "tool/git/branch_hygiene.test.mjs",
-        ".github/workflows/branch-hygiene.yml"
+        ".github/workflows/branch-hygiene.yml",
+        ".github/workflows/branch-prune.yml"
       ],
       "description": "Classifies remote or local branches using ancestry, exact tree history, exact merged-PR identity, final changed-path identity, age, and open-PR state so completed refs can be pruned without hiding abandoned code.",
       "checks": [
@@ -882,6 +883,7 @@
         ]
       },
       "impactPaths": [
+        ".github/actions/find-queue-validation/**",
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/_web-hosting-promote.yml",
         ".github/workflows/admin-website.yml",
@@ -7138,6 +7140,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:flutter-package-scope",
+      "category": "ci",
+      "path": "tool/ci/flutter_package_scope.mjs",
+      "command": "node tool/ci/flutter_package_scope.mjs",
+      "safety": "read-only",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/flutter-ci.yml",
+        "tool/ci/flutter_package_scope.mjs",
+        "tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "description": "Decides which Flutter package suites and Widgetbook a pull request's change reaches, from the pubspec path-dependency closures at the head commit; workspace inputs, unclassified paths and every non-pull-request event run them all.",
+      "checks": [
+        "node --check tool/ci/flutter_package_scope.mjs",
+        "node --test tool/ci/flutter_package_scope.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",
@@ -7169,7 +7190,7 @@
         "tool/ci/main_red_alert.test.mjs",
         "tool/ci/required_ci_floor.mjs"
       ],
-      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run.",
+      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run. After a green run it opens one issue once main has been fully green for 7 days, the owner's condition for ending the sprint floor.",
       "checks": [
         "node --check tool/ci/main_red_alert.mjs",
         "node --test tool/ci/main_red_alert.test.mjs"

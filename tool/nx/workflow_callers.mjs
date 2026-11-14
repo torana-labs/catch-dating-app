@@ -40,6 +40,53 @@ export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_select
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
   "tool/ci/required_ci_floor.mjs"];
 
+// CI configuration ci.yml never executes or reads, each with the reason. Every
+// tracked .github/** and tool/ci/** file must be a selector, be reached by a
+// ci.yml job, or be listed here, so a new workflow or script is classified on
+// purpose (workflow_callers.test.mjs). Workflow policy (actionlint, zizmor and
+// the wiring tests) still runs for every change to these.
+export const notCalledByCi = {
+  ".github/actionlint.yaml": "actionlint finds it by convention; the ungated Lint workflows job runs on every PR",
+  ".github/dependabot.yml": "GitHub Dependabot settings; no workflow runs it",
+  ".github/actions/find-queue-validation/action.yml": "used only by the Admin and Host website deploy workflows",
+  ".github/workflows/_backend-deploy.yml": "called only by backend-deploy.yml",
+  ".github/workflows/_brand-config-publish.yml": "called only by brand-config-publish.yml",
+  ".github/workflows/_web-hosting-build.yml": "called only by the Admin, Host and Marketing website deploy workflows",
+  ".github/workflows/_web-hosting-promote.yml": "called only by the Admin, Host and Marketing website deploy workflows",
+  ".github/workflows/admin-website.yml": "deploy: push to main and dispatch",
+  ".github/workflows/backend-deploy.yml": "deploy: schedule and dispatch",
+  ".github/workflows/branch-hygiene.yml": "maintenance: schedule and dispatch",
+  ".github/workflows/branch-prune.yml": "maintenance: schedule and dispatch",
+  ".github/workflows/brand-config-publish.yml": "deploy: push to main and dispatch",
+  ".github/workflows/capture-freshness-ci.yml": "reusable workflow with no caller",
+  ".github/workflows/city-interest-backfill.yml": "operations: dispatch only",
+  ".github/workflows/data-validation.yml": "operations: schedule and dispatch",
+  ".github/workflows/demo-ops-ci.yml": "its own pull_request and push triggers validate it",
+  ".github/workflows/dependabot-auto-merge.yml": "its own pull_request trigger, Dependabot PRs only",
+  ".github/workflows/host-measurement-preview.yml": "deploy: dispatch only",
+  ".github/workflows/host-website.yml": "deploy: push to main and dispatch",
+  ".github/workflows/infra-apply.yml": "deploy: push to main and dispatch",
+  ".github/workflows/infra-drift.yml": "operations: schedule and dispatch",
+  ".github/workflows/infra-plan.yml": "its own pull_request trigger validates it",
+  ".github/workflows/main-red-alert.yml": "runs after main CI (workflow_run)",
+  ".github/workflows/marketing-website.yml": "deploy: push to main and dispatch",
+  ".github/workflows/mobile-beta.yml": "release: schedule and dispatch",
+  ".github/workflows/mobile-production.yml": "release: dispatch only",
+  ".github/workflows/nx-shadow.yml": "its own pull_request and merge_group triggers run it",
+  ".github/workflows/observability-evidence.yml": "operations: dispatch only",
+  ".github/workflows/ops-seed-environment.yml": "operations: dispatch only",
+  ".github/workflows/package-golden-baselines.yml": "maintenance: dispatch only",
+  ".github/workflows/play-signing-fingerprints.yml": "operations: dispatch only",
+  ".github/workflows/pr-closed-cancel.yml": "its own pull_request (closed) trigger",
+  ".github/workflows/release-readiness.yml": "release: dispatch only",
+  ".github/workflows/ui-capture-render.yml": "maintenance: dispatch only",
+  ".github/workflows/website-next-preview.yml": "deploy: dispatch only",
+  ".github/workflows/website-next-promote.yml": "deploy: dispatch only",
+  ".github/workflows/website-production-observability.yml": "operations: schedule and dispatch",
+  ".github/workflows/website-release.yml": "deploy: after main CI (workflow_run), schedule and dispatch",
+  ".github/workflows/widgetbook-golden-baselines.yml": "maintenance: dispatch only",
+};
+
 // Variable command targets the scan cannot read, with the files they name.
 // Each entry is checked by workflow_callers.test.mjs.
 export const declaredTargets = [
@@ -63,6 +110,7 @@ const relativeImport = /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*|\bpart\
 // A flag starts with a word character after its dashes, and a flag's value
 // never starts with a dash, so each flag matches one way (no backtracking).
 const npmCommand = /\bnpm\s+((?:-{1,2}\w[\w-]*(?:[ =](?!-|run\b|test\b|ci\b|install\b)[^\s;&|]+)?\s+)*)(run(?:-script)?\s+([\w:.-]+)|test\b|ci\b|install\b)/gu;
+const extensionlessCommand = /\b(node|bash|sh|python3)\s+(?:-{1,2}\w[\w-]*(?:=\S+)?\s+)*["']?(?:\.\/)?((?:tool|scripts|\.github|functions|operations|website|admin)\/[\w@./-]+)/gu;
 const dynamicCommand = /\b(?:node|bash|sh|python3|dart\s+run)\s+(?:-{1,2}\w[\w-]*(?:=\S+)?\s+)*["']?\$(?!\{\{)/u;
 
 // `"$ROOT/tool/x.mjs"` names tool/x.mjs: drop a variable that prefixes a path.
@@ -87,7 +135,7 @@ function createScanner(root, files) {
   const resolve = (ref, baseDir) => {
     for (const candidate of [path.posix.normalize(path.posix.join(baseDir, ref)), path.posix.normalize(ref)]) {
       if (exists(candidate)) return candidate;
-      for (const suffix of [".mjs", ".js", "/index.mjs", "/index.js"]) {
+      for (const suffix of [".mjs", ".js", ".cjs", "/index.mjs", "/index.js"]) {
         if (exists(candidate + suffix)) return candidate + suffix;
       }
     }
@@ -106,8 +154,11 @@ function createScanner(root, files) {
 
   // References in shell text: run: steps, .sh files and npm scripts.
   const shellRefs = (text, baseDir, from, out) => {
+    // A composite action is action.yml or action.yaml; neither is unresolved.
     for (const [, action] of text.matchAll(/uses:\s*\.\/(\.github\/actions\/[\w.-]+)/gu)) {
-      out.refs.add(`${action}/action.yml`);
+      const file = [`${action}/action.yml`, `${action}/action.yaml`].find(exists);
+      if (file) out.refs.add(file);
+      else out.unresolved.push({from, ref: `uses: ./${action}`});
     }
     for (const [, workflow] of text.matchAll(/uses:\s*\.\/(\.github\/workflows\/[\w.-]+\.ya?ml)/gu)) {
       out.refs.add(workflow);
@@ -147,6 +198,14 @@ function createScanner(root, files) {
       const command = JSON.parse(read(manifest)).scripts?.[script];
       if (command != null) shellRefs(command, dir, `${manifest}#${script}`, out);
     }
+    // A script named without its extension (`node tool/ci/foo`) resolves as
+    // Node does, or as a shell script; otherwise it is unresolved.
+    for (const [, runner, ref] of text.matchAll(extensionlessCommand)) {
+      if (/\.[\w]+$/u.test(ref)) continue;
+      const file = resolve(ref, baseDir) ?? (runner === "node" ? null : resolve(`${ref}.sh`, baseDir));
+      if (file) out.refs.add(file);
+      else out.unresolved.push({from, ref: `${runner} ${ref}`});
+    }
     // A command whose target is a variable resolves only when the line also
     // names the file, as in `node "$ROOT/tool/x.mjs"`.
     for (const line of text.split("\n")) {
@@ -166,6 +225,13 @@ function createScanner(root, files) {
       const steps = [...Object.values(doc.jobs ?? {}).flatMap((job) => [
         ...(job.uses ? [{uses: job.uses}] : []), ...(job.steps ?? [])]), ...(doc.runs?.steps ?? [])];
       for (const step of steps) stepRefs(step, file, out);
+    } else if (selectorPrefixes.some((prefix) => file.startsWith(prefix)) && /\.(?:mjs|cjs|js)$/u.test(file)) {
+      // Selection code and its tests: follow imports only. The paths they name
+      // (allowlists, fixtures) are data about CI, not files they read.
+      for (const [, ref] of read(file).matchAll(relativeImport)) {
+        const resolved = resolve(ref, path.posix.dirname(file));
+        if (resolved) out.refs.add(resolved);
+      }
     } else if (codeFile.test(file)) {
       const text = read(file);
       const dir = path.posix.dirname(file);
@@ -246,6 +312,7 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
   const lanes = new Map();
   const jobsOf = new Map();
   const jobLanesById = new Map();
+  const ungated = new Set();
   const unresolved = [];
   const ci = parse(scanner.read(ciWorkflow));
   const jobs = Object.entries(ci.jobs ?? {});
@@ -254,12 +321,17 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
   const gateJobs = new Set(laneJobs.flatMap(([, job]) => [job.needs ?? []].flat()).filter((id) => !laneJobIds.has(id)));
   for (const [jobId, job] of jobs) {
     const jobLanes = gateJobs.has(jobId) ? new Set([ALL]) : jobLanesOf(job, laneNames);
-    if (jobLanes.size === 0) continue;
     const entry = {refs: new Set(), unresolved: []};
     for (const step of [...(job.uses ? [{uses: job.uses}] : []), ...(job.steps ?? [])]) {
       scanner.stepRefs(step, `${ciWorkflow}#${jobId}`, entry);
     }
     const reach = closure(entry.refs, refsOf);
+    // An ungated job runs on every PR: what it reaches is classified and
+    // needs no lane.
+    if (jobLanes.size === 0) {
+      for (const file of reach.files) ungated.add(file);
+      continue;
+    }
     const jobUnresolved = [...entry.unresolved, ...reach.unresolved];
     unresolved.push(...jobUnresolved.map((item) => ({...item, job: jobId})));
     jobLanesById.set(jobId, new Set(jobUnresolved.length > 0 ? [ALL, ...jobLanes] : jobLanes));
@@ -274,7 +346,7 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
 
   const selectorReach = closure(selectorEntries.filter((file) => files.has(file)), (file) => scanner.loadsOf(file));
   const selectors = new Set([...selectorFiles, ...selectorReach.files]);
-  return {lanes, jobsOf, jobLanes: jobLanesById, selectors, unresolved};
+  return {lanes, ungated, jobsOf, jobLanes: jobLanesById, selectors, unresolved};
 }
 
 /** The lanes a ci.yml job runs for; none when it is ungated. */
@@ -299,6 +371,9 @@ export function callerLanes(changedFiles, {graph, allLanes}) {
   for (const file of changedFiles) {
     if (isSelector(file, graph)) return new Set(allLanes);
     if (!isCiConfiguration(file)) continue;
+    // Unclassified CI configuration (new, renamed or deleted) selects every
+    // lane until it is reached by ci.yml or listed in notCalledByCi.
+    if (!isClassified(file, graph)) return new Set(allLanes);
     for (const lane of graph.lanes.get(file) ?? []) {
       if (lane === ALL) return new Set(allLanes);
       selected.add(lane);
@@ -306,3 +381,12 @@ export function callerLanes(changedFiles, {graph, allLanes}) {
   }
   return selected;
 }
+
+/** CI configuration that is neither a selector, reached by ci.yml, nor listed in notCalledByCi. */
+export function unclassifiedCiFiles(graph, files) {
+  return [...files].filter((file) => isCiConfiguration(file) && !isClassified(file, graph)).sort();
+}
+
+/** Whether CI configuration has a known selection: a selector, reached by ci.yml, or listed in notCalledByCi. */
+export const isClassified = (file, graph) => isSelector(file, graph) || graph.lanes.has(file)
+  || graph.ungated?.has(file) || file in notCalledByCi;

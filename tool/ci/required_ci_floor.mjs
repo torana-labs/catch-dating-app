@@ -9,7 +9,9 @@ import assert from "node:assert/strict";
  * job that did not succeed belongs to a lane the sprint took out of Required
  * CI's needs. Those lanes still run and report. Before this, a red reporting
  * lane made the whole run red, so no commit could be released during the
- * sprint. Revisit this when the sprint floor ends: restore the lanes to
+ * sprint. The floor ends once main stays green for a week (owner decision,
+ * 14 Nov 2026); the Main CI alert workflow opens an issue when it has
+ * (decideFloorExit in main_red_alert.mjs). Then restore the lanes to
  * Required CI's needs, empty REPORTING_LANES, and the rule reduces to "the
  * whole run succeeded" again.
  *

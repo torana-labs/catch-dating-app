@@ -52,6 +52,31 @@ describe("CityPicker", () => {
     expect(screen.getByText("No cities found for “zz”.")).toBeTruthy();
   });
 
+  it("drops down under the trigger at 900px and wider, ending with every city", () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) => ({matches: query.includes("min-width: 900px"),
+      addEventListener: () => undefined, removeEventListener: () => undefined})) as unknown as typeof window.matchMedia;
+    HTMLElement.prototype.showPopover = function showPopover(this: HTMLElement) {
+      this.style.display = "block";
+    };
+    try {
+      const catalog = twentyFiveCityCatalog;
+      const {container} = render(<CityPicker cities={catalog.cities} onChoose={vi.fn()} selected={catalog.selected} />);
+      const wrapper = container.firstElementChild as HTMLElement;
+      wrapper.getBoundingClientRect = () => ({bottom: 48, height: 32, left: 500, right: 600, top: 16, width: 100, x: 500, y: 16, toJSON: () => ({})});
+      fireEvent.click(screen.getByRole("button", {name: catalog.selected.label}));
+      const panel = screen.getByRole("dialog", {name: homePageCopy.header.cityMenu});
+      expect(container.querySelector("dialog")).toBeNull();
+      expect(panel.style.left).toBe(`${600 - 340}px`);
+      expect(within(panel).getByRole("searchbox")).toBeTruthy();
+      expect(within(panel).getByRole("link", {name: homePageCopy.header.allCities}).getAttribute("href")).toBe("/cities/");
+      fireEvent.keyDown(panel, {key: "Escape"});
+      expect(screen.queryByRole("dialog")).toBeNull();
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+
   it("keeps a live city's honest count in the menu", () => {
     render(<CityPicker cities={mumbaiLiveCatalog.cities} onChoose={vi.fn()} selected={mumbaiLiveCatalog.selected} />);
     fireEvent.click(screen.getByRole("button", {name: mumbaiLiveCatalog.selected.label}));

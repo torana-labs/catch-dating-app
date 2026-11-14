@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {ISSUE_TITLE, decideAlert} from "./main_red_alert.mjs";
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit} from "./main_red_alert.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -57,4 +57,41 @@ test("the workflow listens only to main's push and nightly CI and can only write
   assert.doesNotMatch(workflow, /contents: write|pull-requests: write/u);
   assert.match(workflow, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
   assert.match(workflow, /node tool\/ci\/main_red_alert\.mjs/u);
+});
+
+const NOW = Date.parse("2026-11-30T12:00:00Z");
+const daysAgo = (days) => new Date(NOW - days * 24 * 60 * 60 * 1000).toISOString();
+const ciRun = (days, conclusion = "success", event = "schedule") =>
+  ({created_at: daysAgo(days), status: "completed", conclusion, event});
+// Eight nightlies (one a day, 0.5 to 7.5 days ago) plus a push a day.
+const greenWeek = () => [...Array(8).keys()].flatMap((day) => [ciRun(day + 0.5), ciRun(day + 0.25, "success", "push")]);
+
+test("seven fully green days open one floor-exit issue with the restore steps", () => {
+  const decision = decideFloorExit({runs: greenWeek(), now: NOW, openIssue: null});
+  assert.equal(decision.action, "open");
+  assert.equal(decision.title, FLOOR_EXIT_TITLE);
+  assert.match(decision.body, /`app-builds`, `docs-policy`, `operations`, `tools`/u);
+  assert.match(decision.body, /REPORTING_LANES/u);
+  assert.match(decision.body, /Required CI/u);
+  assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: {number: 9}}), {action: "none"});
+});
+
+test("a red run inside the week, reporting lanes included, keeps the floor", () => {
+  for (const conclusion of ["failure", "timed_out", "startup_failure"]) {
+    const decision = decideFloorExit({runs: [...greenWeek(), ciRun(6.9, conclusion, "push")], now: NOW, openIssue: null});
+    assert.deepEqual(decision, {action: "none", reason: "red_within_window"}, conclusion);
+  }
+  // A red run just outside the week no longer counts.
+  assert.equal(decideFloorExit({runs: [...greenWeek(), ciRun(7.1, "failure")], now: NOW, openIssue: null}).action, "open");
+});
+
+test("cancelled runs, other events, short history and missing nightlies never end the floor", () => {
+  const runs = [...greenWeek(), ciRun(1, "cancelled", "push"), ciRun(2, "failure", "pull_request"),
+    {...ciRun(3, null, "push"), status: "in_progress"}];
+  assert.equal(decideFloorExit({runs, now: NOW, openIssue: null}).action, "open");
+  assert.deepEqual(decideFloorExit({runs: greenWeek().filter((run) => Date.parse(run.created_at) > NOW - 7 * 864e5),
+    now: NOW, openIssue: null}), {action: "none", reason: "history_too_short"});
+  assert.deepEqual(decideFloorExit({runs: greenWeek().filter((run) => run.event === "push" ||
+    Date.parse(run.created_at) < NOW - 5 * 864e5), now: NOW, openIssue: null}), {action: "none", reason: "too_few_nightlies"});
+  assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: null, reportingLanes: []}), {action: "none"});
 });

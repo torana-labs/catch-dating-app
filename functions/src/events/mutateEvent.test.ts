@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import test from "node:test";
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -117,10 +118,10 @@ class FakeFirestore {
         const data = snap.data() ?? {};
         return filters.every((filter) => {
           if (filter.operator === "==") {
-            return data[filter.field] === filter.value;
+            return fieldAt(data, filter.field) === filter.value;
           }
           if (filter.operator === "in" && Array.isArray(filter.value)) {
-            return filter.value.includes(data[filter.field]);
+            return filter.value.includes(fieldAt(data, filter.field));
           }
           throw new Error(
             `Unsupported fake query operator: ${filter.operator}`
@@ -230,7 +231,7 @@ class FakeTransaction {
 }
 
 function harness(initialDocs: Record<string, FakeData | undefined>) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(withCatchBookingRows(initialDocs));
   const rateLimitCalls: string[] = [];
   const notifications: FcmParams[] = [];
   const deletedStoragePaths: string[] = [];
@@ -2209,3 +2210,10 @@ test("createEventHandler keeps dinner phone-light by default", async () => {
     false
   );
 });
+
+/** Reads a dotted field path, as Firestore queries do. */
+function fieldAt(data: FakeData, path: string): unknown {
+  return path.split(".").reduce<unknown>((value, part) =>
+    value && typeof value === "object" ?
+      (value as FakeData)[part] : undefined, data);
+}
