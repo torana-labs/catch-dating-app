@@ -80,13 +80,15 @@ export function planAffectedToolChecks({
   }
 
   if (full) fullReasons.push("full execution was explicitly requested");
-  // A change that no Tools-lane path owns runs only the mandatory checks and
-  // the companion checks its paths name (selectedIds already holds both); the
-  // nightly full run still executes every check. Only an unresolved change set
-  // is unknown enough to fail closed.
+  // Nx can add the Tools lane for a change no path of which the per-path
+  // planner assigns to it (a Tools input such as design/** or a website path).
+  // Those paths still select the checks whose impactPaths or imports name them,
+  // plus the mandatory and companion checks; a path no check names stays
+  // unmapped and fails closed. Only an unresolved change set escalates alone.
   if (!full && paths.length === 0) {
     fullReasons.push("no changed paths were resolved");
   }
+  const ownerCandidates = toolLanePaths.length > 0 ? toolLanePaths : paths;
   for (const changedPath of controlPlanePaths) {
     fullReasons.push(`control-plane path changed: ${changedPath}`);
   }
@@ -94,7 +96,7 @@ export function planAffectedToolChecks({
   const ownersByPath = {};
   const importOwnedPaths = [];
   const unmappedPaths = [];
-  for (const changedPath of toolLanePaths) {
+  for (const changedPath of ownerCandidates) {
     const owners = new Set(activeTools.filter((tool) =>
       tool.path === changedPath ||
       (tool.impactPaths ?? []).some((pattern) => matchesGlob(changedPath, pattern))
