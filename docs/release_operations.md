@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.3.4
+version: 3.3.5
 updated: 2026-11-14
 owner: recursive_audit_loop
 status: active
@@ -415,11 +415,14 @@ successful owning job. Drafts skip planning and publish no Required CI context
 until they are marked ready. A cancelled workflow has no
 successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
 
-The required source preflight runs before validation fanout from a full checkout
+The required source preflight runs beside the validation lanes, from a full checkout
 with pinned Node/Flutter and selected generator dependencies. It checks the
 structural and generation obligations in `verify_local.mjs`, collects failures,
 and refuses unavailable checks. Sparse planning explicitly allows deferral;
 that preliminary result cannot satisfy the required complete preflight job.
+No lane waits on it or reads its result; Required CI lists it and accepts only
+its success, or its skip on a run that cites a passing queue run for the same
+source.
 
 Preserve these contracts when narrowing work:
 
