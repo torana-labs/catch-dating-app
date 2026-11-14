@@ -350,8 +350,21 @@ Root Flutter unit/widget tests are selected by
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-Tests that inspect files through `dart:io` are filesystem probes and are always
-selected. Dart files anywhere in the repository are covered by the import graph.
+A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+changed path is one that file can read, if those reads are bounded
+(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
+path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
+string literal, a constant of the same file, or an interpolation or
+conditional of those, or when the file names its roots in a
+`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+path such a test can read counts as covered, so a test fixture with a known
+reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
+probe and its tests always run, as does a declared file that uses `Process`,
+`Directory.current` or `Platform.script`, has a literal or constant-prefixed
+path outside its roots, or names a root that is not in the tree. Declared roots
+are trusted for computed paths, so the nightly full run is the backstop for a
+wrong declaration. Dart files anywhere in the repository are covered by the
+import graph.
 Paths outside the root package (backend, web, design, docs, tooling, CI,
 golden and integration suites, other packages' apps, the `packages/catch_ui`
 and `packages/kernel` test suites that the package-tests job runs, firebase
@@ -567,7 +580,7 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); the merge queue, main and nightly run every discovered test. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |

@@ -5208,10 +5208,11 @@
           "first-moment",
           "badge",
           "format-picker",
-          "compact"
+          "compact",
+          "focus-crop"
         ]
       },
-      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
+      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. frame=\"capture\" (proposal night-framing, approved 14 Nov 2026): on a wide band the framed capture runs large off the scene's bottom edge (a partial device); at phone width each moment shows only its focus box as a frameless card at the band's width, beside the caption on a phone held sideways. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
     },
     {
       "id": "shared_pipeline_board",
@@ -5637,6 +5638,8 @@
       "exportName": "SignInSheetView",
       "css": [
         "packages/web-ui/src/components/CatchSheet.module.css",
+        "packages/web-ui/src/components/CatchAdaptiveSheet.module.css",
+        "packages/web-ui/src/components/CatchDialog.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
@@ -5647,11 +5650,10 @@
         "states": [
           "start",
           "code",
-          "link-sent",
-          "confirm-email"
+          "dropdown"
         ]
       },
-      "notes": "The one sign-in sheet: phone code first, then Google and an email link. Opens from the header and inline at the moment of need, never as a gate before browsing."
+      "notes": "The one sign-in sheet, as in the apps: a phone number, then a six-digit code (no Google or email link). A bottom sheet on phones and a 380px dropdown under the control that opened it at 900px and wider (CatchAdaptiveSheet). Opens from the header and inline at the moment of need, never as a gate before browsing."
     },
     {
       "id": "sign_in_button",
@@ -5692,7 +5694,7 @@
           "signed-in"
         ]
       },
-      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both, and Firebase loads only for a reader this device has seen signed in or one returning from an email link."
+      "notes": "The header's account entry, provided to the public header: \"Sign in\" opens the sign-in sheet and a signed-in reader gets \"Account\". Wide pages draw it as the last item of the top bar's left group; under 600px it joins the phone menu. One state and one sheet serve both; the sign-in dropdown hangs from the bar entry, and Firebase loads only for a reader this device has seen signed in."
     },
     {
       "id": "sign_in_prompt",

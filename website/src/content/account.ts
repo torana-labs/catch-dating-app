@@ -27,7 +27,7 @@ export const accountCopy = {
   "otherWays": "Other ways to sign in"
 } as const;
 
-/** The one sign-in sheet: phone code first, then Google and an email link. No passwords. */
+/** The one sign-in sheet, as in the apps: a phone number, then a six-digit code. No passwords. */
 export const signInCopy = {
   title: "Sign in",
   subtitle: `One ${brand.name} account for your plans, follows and reviews.`,
@@ -37,22 +37,15 @@ export const signInCopy = {
   code: "Six-digit code",
   verify: "Sign in",
   changePhone: "Use a different number",
-  codeSent: "We sent a code. Enter it to sign in.",
-  or: "Or",
-  google: "Continue with Google",
-  email: "Email address",
-  sendLink: "Email me a sign-in link",
-  linkSent: "Check your inbox. The link signs you in on this device.",
-  confirmEmail: "Enter the email address the link was sent to.",
-  finishEmail: "Finish signing in",
+  codeSent: "We sent a code to {phone}. Enter it to sign in.",
+  noPasswords: "No passwords. We text you a code.",
   signedIn: "You are signed in.",
   invalidPhone: "Enter your phone number with country code, like +91 98765 43210.",
   invalidCode: "Enter the six-digit code.",
-  invalidEmail: "Enter a valid email address.",
   incorrectCode: "That code is incorrect. Try again.",
   expired: "That code expired. Request a new one.",
   failed: "Could not sign you in. Please try again.",
-  privacy: "We never ask for a password. Signing in does not subscribe you to marketing messages.",
+  privacy: "Signing in does not subscribe you to marketing messages.",
   headerSignIn: "Sign in",
   headerAccount: "Account",
   reviewPrompt: "Sign in to keep this review in your account.",

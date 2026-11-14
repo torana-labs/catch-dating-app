@@ -1348,7 +1348,7 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
 test("minimum safety obligations cover source, tests, lockfiles and generated outputs", () => {
   const fixtures = [
     {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
-    {paths: ["functions/test/firestore.rules.test.cjs"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/test/rules/users.rules.test.cjs"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},

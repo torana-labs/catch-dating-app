@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 
+import 'flutter_test_reads.dart';
+
 bool _testFile(String name) =>
     name.startsWith('test/') &&
     name.endsWith('_test.dart') &&
@@ -76,7 +78,12 @@ Map<String, Object> selectFlutterTests({
   Set<String> ordinaryDocuments = const {},
   Map<String, String>? generatedBefore,
   Map<String, String>? generatedAfter,
+  Set<String>? beforePaths,
+  Set<String>? afterPaths,
 }) {
+  // Every tracked path at each commit, against which declared reads resolve.
+  beforePaths ??= before.keys.toSet();
+  afterPaths ??= after.keys.toSet();
   final generated = generatedBefore != null && generatedAfter != null;
   if (generated) {
     final names = {...generatedBefore.keys, ...generatedAfter.keys};
@@ -124,8 +131,16 @@ Map<String, Object> selectFlutterTests({
     );
   }
   try {
-    final oldGraph = _Imports(before, opaqueGenerated: !generated);
-    final newGraph = _Imports(after, opaqueGenerated: !generated);
+    final oldGraph = _Imports(
+      before,
+      opaqueGenerated: !generated,
+      paths: beforePaths,
+    );
+    final newGraph = _Imports(
+      after,
+      opaqueGenerated: !generated,
+      paths: afterPaths,
+    );
     final selected = <String>[];
     final coveredChanges = <String>{
       // Removed test files cannot execute at head. Their deletion does not
@@ -136,7 +151,8 @@ Map<String, Object> selectFlutterTests({
             !after.containsKey(name))
           name,
       // Outside the root package and its bundle, a test can only read these
-      // from disk. Every such reader is a retained filesystem probe below.
+      // from disk. Every such reader is a retained filesystem probe or a test
+      // whose bounded reads select it below.
       ...sourceChanges.where(_probeOnlyInput),
     };
     for (final test in all) {
@@ -144,10 +160,16 @@ Map<String, Object> selectFlutterTests({
       final previous = before.containsKey(test)
           ? oldGraph.testClosure(test)
           : <String>{};
+      // A dart:io file with bounded reads selects the tests that reach it
+      // only when a changed path is one it can read.
+      final reads = {...newGraph.reads(current), ...oldGraph.reads(previous)};
       final impactedChanges = {
-        ...current,
-        ...previous,
-      }.intersection({...sourceChanges, ...generatedChanges});
+        ...{
+          ...current,
+          ...previous,
+        }.intersection({...sourceChanges, ...generatedChanges}),
+        ...sourceChanges.where((name) => readsPath(reads, name)),
+      };
       coveredChanges.addAll(impactedChanges);
       final impacted = !before.containsKey(test) || impactedChanges.isNotEmpty;
       if (impacted ||
@@ -170,7 +192,7 @@ Map<String, Object> selectFlutterTests({
     }
     return result(
       selected,
-      'Union of base/head transitive imports, exports, parts and test configs; filesystem probes retained'
+      'Union of base/head transitive imports, exports, parts, test configs and bounded file reads; filesystem probes retained'
       '${generatedChanges.isEmpty ? '' : '; ${generatedChanges.length} generated contract outputs changed'}',
     );
   } on Object catch (error) {
@@ -329,7 +351,8 @@ bool _possiblyBundled(String name, Map<String, String> tree) {
 }
 
 class _Imports {
-  _Imports(this.files, {this.opaqueGenerated = true}) {
+  _Imports(this.files, {this.opaqueGenerated = true, Set<String>? paths})
+    : paths = paths ?? files.keys.toSet() {
     for (final entry in files.entries) {
       if (entry.key != 'pubspec.yaml' && !entry.key.endsWith('/pubspec.yaml')) {
         continue;
@@ -359,6 +382,17 @@ class _Imports {
   final bool opaqueGenerated;
   final packages = <String, String>{};
   final edges = <String, Set<String>>{};
+
+  /// Every tracked path, against which declared reads must resolve.
+  final Set<String> paths;
+
+  /// The bounded reads of each `dart:io` file reached so far.
+  final readsOf = <String, Set<String>>{};
+
+  /// The paths the `dart:io` files in [closure] can read.
+  Set<String> reads(Set<String> closure) => {
+    for (final name in closure) ...?readsOf[name],
+  };
 
   Set<String> closure(String start) {
     final visited = <String>{};
@@ -408,7 +442,17 @@ class _Imports {
       if (uri.scheme == 'dart') {
         if (value == 'dart:io' &&
             (name.startsWith('test/') || name.startsWith('tool/'))) {
-          dependencies.add(fileSystemProbe);
+          final bounded = fileReads(
+            name: name,
+            source: source,
+            unit: parsed.unit,
+            paths: paths,
+          );
+          if (bounded == null) {
+            dependencies.add(fileSystemProbe);
+          } else {
+            readsOf[name] = bounded;
+          }
         }
         return;
       }
@@ -650,6 +694,11 @@ Future<void> main(List<String> arguments) async {
   final documents = changed.where((name) => name.endsWith('.md')).toSet();
   final before = await _tree(base, includePaths: documents);
   final after = await _tree(head, includePaths: documents);
+  Set<String> listing(String sha) =>
+      (_git(['ls-tree', '-r', '--name-only', '-z', sha]).stdout as String)
+          .split('\u0000')
+          .where((name) => name.isNotEmpty)
+          .toSet();
   final ordinaryDocuments = await _ordinaryDocuments(before, after, changed);
   // A commit window can change and restore a contract between its endpoints,
   // which endpoint renders cannot see, so such a window keeps the full suite.
@@ -661,6 +710,8 @@ Future<void> main(List<String> arguments) async {
   final plan = selectFlutterTests(
     before: before,
     after: after,
+    beforePaths: listing(base),
+    afterPaths: listing(head),
     changed: changed,
     full: args['--full'] == 'true',
     ordinaryDocuments: ordinaryDocuments,
