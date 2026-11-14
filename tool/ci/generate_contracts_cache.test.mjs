@@ -8,8 +8,9 @@ import {fileURLToPath} from "node:url";
 import {GENERATOR_INPUTS} from "../harness/lib/flutter_contract_outputs.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const actionDir = path.join(root, ".github/actions/generate-contracts");
+const actionDir = path.join(root, ".github/actions/generate-contracts-cached");
 const action = fs.readFileSync(path.join(actionDir, "action.yml"), "utf8");
+const plainAction = fs.readFileSync(path.join(root, ".github/actions/generate-contracts/action.yml"), "utf8");
 const digest = path.join(actionDir, "outputs_digest.sh");
 
 // Validation lanes that may restore generated contracts from the cache. A
@@ -32,8 +33,11 @@ const step = (name) => {
   return end < 0 ? rest : rest.slice(0, end);
 };
 
-test("the cache is opt-in and keyed on every generator input", () => {
-  assert.match(action, /\n {2}cache:\n[\s\S]*?default: "false"\n/u);
+test("the cache lives only in its own action, keyed on every generator input", () => {
+  // Delivery, release and dispatched workflows use the plain action, which
+  // has no cache step, so a ref they check out can never write an entry.
+  assert.doesNotMatch(plainAction, /actions\/cache|cache-scope|inputs\.cache/u);
+  assert.doesNotMatch(action, /\ninputs:/u, "the cached action has no root to point elsewhere");
   const key = action.match(/key: (schema-contracts-v\d+-.+)\n/u)?.[1];
   assert.ok(key, "restore step declares the content key");
   for (const input of [...GENERATOR_INPUTS, "functions/package.json", "functions/package-lock.json"]) {
@@ -41,13 +45,13 @@ test("the cache is opt-in and keyed on every generator input", () => {
     assert.ok(key.includes(`'${glob}'`), `cache key misses generator input ${glob}`);
   }
   assert.ok(key.includes("steps.toolchain.outputs.node-version"), "Node version is part of the key");
-  assert.ok(key.includes("'.github/actions/generate-contracts/action.yml'"));
+  assert.ok(key.includes("'.github/actions/generate-contracts-cached/action.yml'"));
   assert.match(action, /if: \$\{\{ steps\.cache-scope\.outputs\.enabled == 'true' \}\}\n {6}uses: actions\/cache\/restore@/u);
 });
 
 test("the cache only holds outputs of the run's own commit, never a dispatched ref", () => {
   const scope = action.slice(action.indexOf("- id: cache-scope\n"), action.indexOf("- id: restore\n"));
-  assert.match(scope, /if: \$\{\{ inputs\.cache == 'true' && inputs\.root == '\.' && github\.event_name != 'workflow_dispatch' \}\}/u);
+  assert.match(scope, /if: \$\{\{ github\.event_name != 'workflow_dispatch' \}\}/u);
   assert.match(scope, /if \[\[ "\$\(git rev-parse HEAD\)" == "\$GITHUB_SHA" \]\]; then\n {10}echo "enabled=true" >> "\$GITHUB_OUTPUT"/u);
   // Restore and save both depend on that scope; nothing else enables them.
   assert.equal(action.match(/steps\.cache-scope\.outputs\.enabled == 'true'/gu)?.length, 2);
@@ -82,18 +86,20 @@ test("nightly regenerates from scratch and fails when the cache differs", () => 
   assert.match(compare, /exit 1/u);
 });
 
-test("only validation lanes opt in; delivery and generator checks regenerate", () => {
+test("only validation lanes use the cached action; delivery and generator checks regenerate", () => {
   const dir = path.join(root, ".github/workflows");
   const optedIn = [];
   for (const name of fs.readdirSync(dir).filter((file) => /\.ya?ml$/u.test(file))) {
     const source = fs.readFileSync(path.join(dir, name), "utf8");
-    if (/uses: \.\/\.github\/actions\/generate-contracts\n\s+with:\n\s+cache: "true"/u.test(source)) {
+    assert.doesNotMatch(source, /cache: "true"/u, `${name} uses the old cache input`);
+    if (source.includes("uses: ./.github/actions/generate-contracts-cached\n")) {
       optedIn.push(name);
     }
   }
   for (const name of optedIn) assert.ok(CACHE_ALLOWED.has(name), `${name} must not restore cached contracts`);
   assert.ok(optedIn.length > 0);
-  for (const name of ["contracts-ci.yml", "_backend-deploy.yml", "_web-hosting-build.yml"]) {
+  for (const name of ["contracts-ci.yml", "_backend-deploy.yml", "_web-hosting-build.yml",
+    "widgetbook-golden-baselines.yml"]) {
     assert.ok(!optedIn.includes(name), name);
   }
 });
