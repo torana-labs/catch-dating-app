@@ -14,9 +14,10 @@ import {changedPathsSince} from "../harness/lib/git_changes.mjs";
 const {values} = parseArgs({options: {
   base: {type: "string"}, head: {type: "string", default: "HEAD"},
   paths: {type: "string"}, "paths-file": {type: "string"}, output: {type: "string"},
+  explain: {type: "boolean", default: false},
 }});
 if (!values.base && !values.paths && !values["paths-file"]) {
-  console.error("Usage: functions_unit_test_selection.mjs (--base <ref> [--head <ref>] | --paths a,b | --paths-file file) [--output file]");
+  console.error("Usage: functions_unit_test_selection.mjs (--base <ref> [--head <ref>] | --paths a,b | --paths-file file) [--output file] [--explain]");
   process.exit(64);
 }
 const changedPaths = values["paths-file"]
@@ -25,7 +26,7 @@ const changedPaths = values["paths-file"]
     changedPathsSince({base: values.base, head: values.head, committedOnly: true});
 const listed = discoverableFunctionsTests();
 const {modules, graph} = await functionsModules();
-const selection = selectEmulatorTests({changedPaths, listed, modules, readSource: readFunctionsSource});
+const selection = selectEmulatorTests({changedPaths, listed, modules, readSource: readFunctionsSource, explain: values.explain});
 const text = `${JSON.stringify({...selection, listed: listed.length, graph}, null, 2)}\n`;
 if (values.output) fs.writeFileSync(values.output, text);
 else process.stdout.write(text);
