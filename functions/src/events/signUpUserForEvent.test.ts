@@ -3,6 +3,7 @@ import {communityMembershipRows} from
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import assert from "node:assert/strict";
 import test from "node:test";
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
 import {signUpUserForEvent} from "./signUpUserForEvent";
@@ -67,9 +68,9 @@ class FakeQuery {
 
   private matches(data: FakeData): boolean {
     return this.filters.every(([field, op, value]) => {
-      if (op === "==") return data[field] === value;
+      if (op === "==") return fieldAt(data, field) === value;
       if (op === "in" && Array.isArray(value)) {
-        return value.includes(data[field]);
+        return value.includes(fieldAt(data, field));
       }
       throw new Error(`Unsupported query op ${op}`);
     });
@@ -183,7 +184,7 @@ class FakeTransaction {
 }
 
 function firestore(initialDocs: Record<string, FakeData | undefined>) {
-  return new FakeFirestore(initialDocs) as unknown as
+  return new FakeFirestore(withCatchBookingRows(initialDocs)) as unknown as
     FirebaseFirestore.Firestore;
 }
 
@@ -962,8 +963,8 @@ test("current persisted approval supplies the transactional review check",
         status: "waitlisted", hostApprovalStatus: "approved"}};
     const db = firestore(records);
     await signUpUserForEvent(db, "event-1", "runner-1");
-    assert.equal(records["eventParticipations/event-1_runner-1"].status,
-      "signedUp");
+    assert.equal((db as unknown as FakeFirestore)
+      .get("eventParticipations/event-1_runner-1")?.status, "signedUp");
   });
 
 test("unrestricted signup accepts minimal identity without inventing gender",
@@ -1043,3 +1044,10 @@ test("followers first refuses a non-follower until everyone can book",
     });
     await signUpUserForEvent(later, "event-1", "runner-1");
   });
+
+/** Reads a dotted field path, as Firestore queries do. */
+function fieldAt(data: FakeData, path: string): unknown {
+  return path.split(".").reduce<unknown>((value, part) =>
+    value && typeof value === "object" ?
+      (value as FakeData)[part] : undefined, data);
+}
