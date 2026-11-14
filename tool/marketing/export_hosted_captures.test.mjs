@@ -125,7 +125,13 @@ function fixture(t, {web = false, catalog = null} = {}) {
   };
   executable("flutter", `const fs = require('node:fs'); const args = process.argv.slice(2);
     if (args.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:${JSON.stringify(flutterVersion)}}));
-    else fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'flutter', args})+'\\n');`);
+    else {
+      // A coverage render reports the files that capture executed.
+      const coverage = args.find(a => a.startsWith('--coverage-path='));
+      if (coverage) { fs.mkdirSync(require('node:path').dirname(coverage.slice(16)), {recursive: true});
+        fs.writeFileSync(coverage.slice(16), 'SF:lib/leaf.dart\\nDA:1,1\\nend_of_record\\n'); }
+      fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'flutter', args, ids: process.env.CAPTURE_IDS})+'\\n');
+    }`);
   executable("dart", `const fs = require('node:fs'); const args = process.argv.slice(2);
     fs.writeFileSync(args[args.indexOf('--output')+1], Buffer.from(${JSON.stringify(png.toString("base64"))},'base64'));
     fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'dart', args})+'\\n');`);
@@ -162,11 +168,17 @@ test("real canonical wrappers export all 12 with exact provenance and complete b
     assert.equal(file.sha256.length, 64);
   }
   const calls = fs.readFileSync(f.calls, "utf8").trim().split("\n").map(JSON.parse);
-  assert.equal(calls.filter(c => c.command === "flutter").length, 1);
+  // Each capture renders alone with coverage, so it records its own inputs.
+  const renders = calls.filter(c => c.command === "flutter");
+  assert.equal(renders.length, 12);
   assert.equal(calls.filter(c => c.command === "dart").length, 12);
-  const render = calls[0].args;
-  assert.ok(render.includes("--dart-define=CAPTURE_PLATFORM=ios"));
-  assert.equal(render.find(a => a.startsWith("--dart-define=CAPTURE_IDS=")).slice("--dart-define=CAPTURE_IDS=".length).split(",").length, 12);
+  for (const {args, ids} of renders) {
+    assert.ok(args.includes("--dart-define=CAPTURE_PLATFORM=ios"));
+    assert.ok(args.some(a => a.startsWith("--coverage-path=")));
+    assert.equal(ids.split(",").length, 1);
+  }
+  // Identical defines let every solo render reuse one compiled test.
+  assert.equal(new Set(renders.map(({args}) => args.filter(a => a.startsWith("--dart-define=")).join(" "))).size, 1);
   assert.ok(!calls.some(c => c.args.includes("--update-goldens")));
   assert.deepEqual(fs.readFileSync(path.join(f.root, "test/goldens/baseline.png")), baseline);
   assert.deepEqual(fs.readFileSync(path.join(f.root, "tool/marketing/capture_manifest.json")), authored);

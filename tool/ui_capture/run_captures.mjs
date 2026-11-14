@@ -33,12 +33,18 @@ if (sfFont && (platform !== "ios" || !fs.existsSync(sfFont))) {
   process.exit(64);
 }
 const outputLayout = valueAfter("--output-layout") ?? profileConfig.outputLayout;
+// Coverage of one capture's render: the files it executed, which its
+// marketing provenance records. A batch would merge several captures' files.
+const coveragePath = valueAfter("--coverage-path");
+if (coveragePath && ids.split(",").filter(Boolean).length !== 1) {
+  console.error("--coverage-path requires exactly one capture id.");
+  process.exit(64);
+}
 const testPath = "test/ui_captures/capture_runner_test.dart";
 
 const flutterArgs = [
   "test",
   testPath,
-  `--dart-define=CAPTURE_IDS=${ids}`,
   `--dart-define=CAPTURE_OUTPUT_DIR=${outputDir}`,
 ];
 if (platform) flutterArgs.push(`--dart-define=CAPTURE_PLATFORM=${platform}`);
@@ -47,6 +53,7 @@ if (deviceId) flutterArgs.push(`--dart-define=CAPTURE_DEVICE_ID=${deviceId}`);
 if (textScale) flutterArgs.push(`--dart-define=CAPTURE_TEXT_SCALE=${textScale}`);
 if (pixelRatio) flutterArgs.push(`--dart-define=CAPTURE_DPR=${pixelRatio}`);
 if (outputLayout) flutterArgs.push(`--dart-define=CAPTURE_OUTPUT_LAYOUT=${outputLayout}`);
+if (coveragePath) flutterArgs.push("--coverage", `--coverage-path=${coveragePath}`);
 
 console.log(`Rendering UI captures: ${ids}`);
 console.log(`Output directory: ${outputDir}`);
@@ -56,8 +63,11 @@ if (textScale) console.log(`Text scale: ${textScale}`);
 if (pixelRatio) console.log(`Pixel ratio: ${pixelRatio}`);
 if (outputLayout) console.log(`Output layout: ${outputLayout}`);
 
+// Ids travel in the environment, not as a define, so renders of different
+// captures with the same options reuse one compiled test.
 const result = spawnSync("flutter", flutterArgs, {
   cwd: repoRoot,
+  env: {...process.env, CAPTURE_IDS: ids},
   stdio: "inherit",
 });
 
@@ -113,6 +123,7 @@ Options:
   --text-scale <scale>     MediaQuery text scale, e.g. 1.5 or 2.0.
   --pixel-ratio <scale>    PNG raster scale passed to RenderRepaintBoundary.toImage.
   --output-layout <layout> capture-first (id/theme.png) or theme-first (theme/id.png).
+  --coverage-path <file>   Write lcov coverage of a single capture's render (one id only).
   --profile <name>         Named profile. Use design-gallery for 3x theme-first PNGs in build/design_gallery.
 
 Examples:

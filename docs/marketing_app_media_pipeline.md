@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.17.0
+version: 1.18.0
 updated: 2026-11-12
 owner: marketing_website
 status: active
@@ -177,24 +177,50 @@ changed.
 The exporter embeds one `caPt` ancillary chunk in each framed PNG. For app
 captures it records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
-byte hash, and capture input hash. An app capture's inputs are the shared
-harness and its own entry:
+byte hash, and capture input hash. For an app capture it also records the
+list of files the hash covers (`inputFiles`, deflated), so a later check
+rehashes exactly those files with no Flutter. The list comes from the render
+itself: the exporter renders each app capture alone with
+`flutter test --coverage`, and only a complete, successful render of that
+capture writes it. Solo renders pass the capture id in the environment rather
+than as a define, so they share one compiled test. It holds:
 
-- Shared harness: the capture runner and test config, `ScreenCaptureEntry`,
-  the framing and export tools, declared assets/fonts, package
-  manifests/lock and pinned toolchain configuration, each with its local
-  transitive Dart imports/exports/parts.
-- The capture's entry file, `test/ui_captures/catalog/entries/<catalog id>.dart`,
-  with its local transitive Dart imports/exports/parts (production widgets,
-  fixtures, theme and tokens).
-- The data files those Dart inputs name by literal repo path, such as
+- the shared harness files: the capture runner and test config,
+  `ScreenCaptureEntry`, the framing and export tools, package manifests/lock
+  and pinned toolchain configuration;
+- every file under `packages/catch_tokens/lib` and `packages/platform/lib/theme`,
+  because tokens and the theme style every screen, mostly through constants;
+- the capture's entry file, `test/ui_captures/catalog/entries/<catalog id>.dart`;
+- every Dart file with an executed line in that render, except the catalog
+  index. Lines of a `const` constructor declaration (head, asserts,
+  initializer list) do not count: the JIT evaluates those when it compiles
+  code that names a widget (the router's route table names every screen)
+  without building it;
+- files that never execute but hold constants, enums or types that executed
+  code reads: a direct import of an executed file (or of a harness Dart file),
+  or a file it re-exports, is listed when a top-level name it declares appears
+  in that importing file. Listing every re-exported file instead would add
+  whole barrels (`catch_ui.dart` re-exports 332 files);
+- the data files any listed Dart file names by literal repo path, such as
   `tool/demo/demo_seed/scenarios/host-marketing-india.json`. A computed data
-  path (one with `$`) fails hashing, because the hash could not see which file
-  it reads.
-- The persona catalogs under `tool/demo/demo_seed/personas/` that define a
-  `personaId` cast by one of those scenario files. Scenarios cast people by id,
-  not path, so the hash follows each id to every catalog that defines it. An id
-  no catalog defines fails hashing.
+  path (one with `$`) fails, because the hash could not see which file it
+  reads;
+- the persona catalogs under `tool/demo/demo_seed/personas/` that define a
+  `personaId` cast by one of those scenario files. Scenarios cast people by
+  id, not path, so the list follows each id to every catalog that defines it.
+  An id no catalog defines fails.
+
+The hash also covers the recipe version (`INPUT_RECIPE` in
+`capture_provenance.mjs`) and every declared asset/font as the tree holds it
+now, so adding an asset stales every app capture. Checks fail closed: a PNG
+with no recorded list, an older provenance format or recipe, an unreadable or
+incomplete list (the harness roots and entry file must be in it), or a listed
+file that no longer exists is stale and renders again.
+
+Known gap: a constant read only by another constant, where neither file
+executes and the second is not named by an executed file that imports it (a
+multi-hop const chain), is not in the list, so changing it does not stale the
+capture. The weekly compare-only render reports any drift this causes.
 
 The catalog index, `screen_capture_catalog.dart`, is not an input. It lists
 the review-only captures and maps each marketing id to its entry file in
@@ -211,12 +237,11 @@ render fields enter the hash: `id`, `status`, `device`, `fixtureKey` and
 `sourcePath`. Every other field, known or new (website copy, destinations,
 pages, scenario pointers, facts, disclosure), is presentation and never
 invalidates a render; scenario data enters through its JSON files.
-Production screens import each other for navigation, and
-`lib/routing/go_router.dart` imports every screen, so most entries' import
-closures still cover much of `lib/` and a widget change can conservatively
-invalidate several slots. Adding an asset to a declared
-directory invalidates every app capture. No machine-specific font path or font
-bytes are distributed.
+Production screens import each other for navigation and
+`lib/routing/go_router.dart` imports every screen, so static import closures
+cover much of `lib/`; recording what a render executed is what keeps one
+screen's widget change from staling the others. No machine-specific font path
+or font bytes are distributed.
 
 Capture production starts on Linux. The plan job (`export_hosted_captures.mjs
 --plan`) asks the source's own exporter which captures are stale, then looks
