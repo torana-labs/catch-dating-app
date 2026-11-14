@@ -90,8 +90,10 @@ Flutter SDK, need no root because they follow global inputs. A computed path
 inside a declared root is trusted, so the nightly full run is the backstop for
 a declaration that misses a read.
 
-`.github/workflows/flutter-ci.yml` compiles Widgetbook and runs the Catch UI,
-Kernel, Consumer and Host package suites on every relevant Flutter change. On
+`.github/workflows/flutter-ci.yml` runs the Kernel, Catch UI, Consumer and Host
+package suites and compiles Widgetbook in one job, "Catch UI, Consumer & Host
+package tests", on every relevant Flutter change; a failing suite doesn't stop
+the others, and the job summary lists each outcome. On
 a pull request each package suite and Widgetbook run only when the change
 reaches its pubspec path-dependency closure
 (`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
