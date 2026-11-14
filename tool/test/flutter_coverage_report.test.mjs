@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
   buildCoverageReport,
   mergeCoverageShards,
   parseLcov,
   renderCoverageMarkdown,
+  readShardSources,
 } from "./flutter_coverage_report.mjs";
 
 const fixture = `TN:
@@ -107,4 +111,27 @@ test("missing and malformed coverage shards cannot pass", () => {
   assert.equal(buildCoverageReport(mergeCoverageShards(["SF:test/a.dart\nDA:1,1\n"], 1)).summary.files, 0);
   assert.throws(() => mergeCoverageShards(["SF:lib/a.dart\nDA:1,-1\n"], 1), /Invalid LCOV/);
   assert.throws(() => mergeCoverageShards([fixture], 0), /Expected 0/);
+});
+
+test("a lone shard artifact extracted flat is read only when one shard is expected", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-coverage-shards-"));
+  try {
+    const flat = path.join(root, "flat");
+    fs.mkdirSync(flat);
+    fs.writeFileSync(path.join(flat, "lcov.info"), "SF:lib/a.dart\nDA:1,1\nend_of_record\n");
+    assert.deepEqual(readShardSources(flat, 1), ["SF:lib/a.dart\nDA:1,1\nend_of_record\n"]);
+    assert.throws(() => readShardSources(flat, 2), /only artifact directories/u);
+    const nested = path.join(root, "nested");
+    for (const shard of ["shard-0", "shard-1"]) {
+      fs.mkdirSync(path.join(nested, shard), {recursive: true});
+      fs.writeFileSync(path.join(nested, shard, "lcov.info"), `SF:lib/${shard}.dart\nend_of_record\n`);
+    }
+    assert.equal(readShardSources(nested, 2).length, 2);
+    const empty = path.join(root, "noLcov");
+    fs.mkdirSync(empty);
+    fs.writeFileSync(path.join(empty, "other.txt"), "");
+    assert.throws(() => readShardSources(empty, 1), /no lcov\.info/u);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });

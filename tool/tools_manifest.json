@@ -52,7 +52,37 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-workflow-callers",
+      "category": "meta",
+      "path": "tool/nx/workflow_callers.mjs",
+      "command": "node --test tool/nx/workflow_callers.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Derives from ci.yml which lanes execute or read each CI configuration file, so a workflow, composite action or tool/ci edit selects exactly those lanes and a selector file selects every lane; the test proves the closure against both the planner and Nx.",
+      "checks": [
+        "node --check tool/nx/workflow_callers.mjs",
+        "node --test tool/nx/workflow_callers.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/workflow_callers.test.mjs",
+        "tool/nx/shadow_plan.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/lib/component_graph.mjs",
+        ".github/workflows/**",
+        ".github/actions/**",
+        "tool/ci/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
         ]
       }
     },
@@ -82,17 +112,18 @@
       "id": "meta:nx-project-graph",
       "category": "meta",
       "path": "tool/nx/catch_projects.mjs",
-      "command": "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs",
+      "command": "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs tool/nx/task_lanes.test.mjs",
       "safety": "local-readonly",
       "status": "active",
       "description": "Nx plugin that turns every pubspec.yaml and independently locked npm package into an Nx project, adds path and declared cross-language edges, and gives source projects a generator check target.",
       "checks": [
         "node --check tool/nx/catch_projects.mjs",
-        "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs"
+        "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs tool/nx/task_lanes.test.mjs"
       ],
       "impactPaths": [
         "tool/nx/catch_projects.test.mjs",
         "tool/nx/lane_inputs.test.mjs",
+        "tool/nx/task_lanes.test.mjs",
         "nx.json"
       ],
       "ciRequirements": {

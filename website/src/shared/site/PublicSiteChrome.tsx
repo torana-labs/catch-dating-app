@@ -11,9 +11,17 @@ import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
  */
 export interface SiteAccountEntry {
   /** The top bar's button, the last item of its left group on wide pages. */
-  bar: ReactNode;
+  bar?: ReactNode;
+  /** A signed-in control at the right end of the top bar on wide pages, after the actions. */
+  barEnd?: ReactNode;
   /** The same entry in the phone menu, where the bar has no room for it. */
   menu: {label: string; href?: string; onPressed?: () => void};
+  /**
+   * A signed-in reader's whole phone menu in place of the built-in one: the
+   * Menu button carries their avatar and opens a sheet with the account and
+   * the page's links.
+   */
+  phoneMenu?: (links: readonly SiteNavItem[], menuLabel: string) => ReactNode;
 }
 /** A page link: where it goes and what it says. */
 export interface SiteNavItem {
@@ -49,12 +57,14 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
   return (
     <CatchTopBar
       account={account?.bar}
+      accountEnd={account?.barEnd}
       actions={actions}
       homeHref="/"
       links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}
       linksLabel={publicSiteCopy.menu.navLabel}
       menuExtras={account ? [account.menu] : undefined}
       menuLabel={publicSiteCopy.menu.openLabel}
+      siteMenu={account?.phoneMenu?.(links, publicSiteCopy.menu.openLabel)}
       subBrand={subBrand}
       title={brand}
       variant="site"

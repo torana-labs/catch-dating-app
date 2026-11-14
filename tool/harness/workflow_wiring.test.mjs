@@ -286,6 +286,12 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
     flutter.indexOf("  flutter-coverage:"), flutter.indexOf("  app-package-tests:"),
   );
   assert.match(coverageJob, /needs: \[test-plan, flutter-test-shards\]/u);
+  // Visibility-only: pull requests and queue groups don't spend a runner turn on it.
+  assert.match(coverageJob, /if: \$\{\{ github.event_name != 'pull_request' && github.event_name != 'merge_group' \}\}/u);
+  // The aggregate accepts a skipped coverage job only where coverage is meant to skip.
+  const coverageAggregate = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  assert.match(coverageAggregate, /\[\[ "\$\{COVERAGE_RESULT\}" == "skipped" && \( "\$\{EVENT_NAME\}" == "pull_request" \|\| "\$\{EVENT_NAME\}" == "merge_group" \) \]\]/u);
+  assert.match(coverageAggregate, /"\$\{coverage_ok\}" != "true"/u);
   assert.doesNotMatch(coverageJob, /flutter test|setup-flutter/u);
   assert.match(flutter, /name: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\$\{\{ matrix.shard_index \}\}/u);
   assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
