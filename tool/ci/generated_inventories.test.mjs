@@ -134,8 +134,8 @@ test("edited catalog prose and sparse source roots cannot be mistaken for derive
 
 test("a newly generated route still fails the actual authored capture coverage gate", t => {
   const f = fixture(t);
-  for (const file of ["tool/ui_capture/check_capture_coverage.mjs", "tool/lib/repo_paths.mjs",
-    "tool/lib/dart_call_blocks.mjs"]) {
+  for (const file of ["tool/ui_capture/check_capture_coverage.mjs", "tool/ui_capture/lib/capture_catalog_sources.mjs",
+    "tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs"]) {
     f.write(file, fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8"));
   }
   const decisions = JSON.stringify({routes: [{routeId: "home", status: "planned", priority: "P1", reason: "Explicit authored decision"}]});

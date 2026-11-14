@@ -7,7 +7,7 @@ import {deflateSync} from 'node:zlib';
 import test from 'node:test';
 import {fromRepo} from '../lib/repo_paths.mjs';
 
-function fixture(t) {
+function fixture(t, {second = false} = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'catch-capture-'));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const write = (name, content) => {
@@ -19,7 +19,8 @@ function fixture(t) {
   for (const name of ['tool/lib/repo_paths.mjs', 'tool/lib/dart_call_blocks.mjs', 'tool/marketing/sync_website_media.mjs',
     'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/lib/capture_provenance.mjs',
     'tool/marketing/lib/capture_devices.mjs',
-    'tool/marketing/lib/web_capture_inputs.mjs', 'tool/ui_capture/run_captures.mjs']) {
+    'tool/marketing/lib/web_capture_inputs.mjs', 'tool/ui_capture/run_captures.mjs',
+    'tool/ui_capture/lib/capture_catalog_sources.mjs']) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   const capture = {
@@ -30,8 +31,12 @@ function fixture(t) {
     placeholderPath: 'website/public/assets/app-screenshots/placeholders/sample.svg',
     alt: 'Synthetic Today screen', caption: 'Today', walkthroughStep: '1',
   };
-  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', previewDisclosure: 'Fictional app preview.', captures: [capture]}));
-  write(capture.sourcePath, png());
+  const other = {...capture, id: 'other', fixtureKey: 'salesDemo.other', sourcePath: 'artifacts/other.png',
+    websitePath: 'website/public/assets/app-screenshots/other.png',
+    placeholderPath: 'website/public/assets/app-screenshots/placeholders/other.svg'};
+  const captures = second ? [capture, other] : [capture];
+  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', previewDisclosure: 'Fictional app preview.', captures}));
+  for (const entry of captures) write(entry.sourcePath, png());
   write('packages/sample/pubspec.yaml', 'name: sample\nflutter:\n  assets:\n    - assets/\n');
   write('packages/sample/assets/image.txt', 'asset fixture');
   write('pubspec.yaml', 'name: catch_dating_app\n');
@@ -44,10 +49,12 @@ function fixture(t) {
   write('lib/leaf.dart', 'const title = \'Today\';\n');
   write('test/ui_captures/flutter_test_config.dart', '');
   write('tool/marketing/frame_device_capture.dart', '');
-  write('test/ui_captures/catalog/screen_capture_catalog.dart', `
-    ScreenCaptureEntry(id: 'sample_screen', routeIds: const <String>['today'],
-      marketingFixtureKeys: const <String>['salesDemo.sample'], device: CaptureDevice.iphone17Pro)
-  `);
+  // Each marketing entry renders its own widget; both widgets share the theme.
+  write('lib/theme.dart', "const accent = 0xFF0000;\n");
+  write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\n");
+  write('lib/other_widget.dart', "import 'theme.dart';\n");
+  writeCaptureCatalog(write, captures.map(entry => ({id: `${entry.id}_screen`, fixtureKey: entry.fixtureKey,
+    imports: [`package:catch_dating_app/${entry.id}_widget.dart`]})));
   const calls = path.join(root, 'calls.jsonl');
   // Stub only external render/frame executables. The actual Node wrappers run.
   const fakeCommand = name => {
@@ -61,7 +68,7 @@ function fixture(t) {
   const git = write('bin/git', `#!${process.execPath}\nprocess.stdout.write('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n');\n`);
   fs.chmodSync(git, 0o755);
   const font = write('fonts/native.ttf', 'native font fixture');
-  write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; stampCapture(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures[0], 'sample_screen', 'fonts/native.ttf');`);
+  write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; for (const c of JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures) stampCapture(c, c.id + '_screen', 'fonts/native.ttf');`);
   write('hash.mjs', `import {captureInputHash} from './tool/marketing/lib/capture_provenance.mjs'; process.stdout.write(captureInputHash(JSON.parse(process.argv[2])));`);
   const run = (script, ...args) => spawnSync(process.execPath, [path.join(root, script), ...args], {
     encoding: 'utf8', cwd: root,
@@ -71,7 +78,31 @@ function fixture(t) {
   const stamp = () => { const result = run('stamp.mjs'); assert.equal(result.status, 0, result.stderr); };
   const hash = entry => { const result = run('hash.mjs', JSON.stringify(entry)); assert.equal(result.status, 0, result.stderr); return result.stdout; };
   stamp();
-  return {root, write, capture, run, readCalls, stamp, hash};
+  const fontPath = path.join(root, 'fonts/native.ttf');
+  // Capture id -> whether the exporter would render it now.
+  const stale = () => {
+    const result = run('tool/marketing/export_app_screenshots.mjs', '--plan', '--sf-font', fontPath);
+    assert.equal(result.status, 0, result.stderr);
+    return Object.fromEntries(JSON.parse(result.stdout).map(item => [item.id, item.render]));
+  };
+  return {root, write, capture, run, readCalls, stamp, hash, stale};
+}
+
+// The catalog as the exporter reads it: an index that resolves each marketing
+// id lazily, plus one entry file per marketing capture.
+function writeCaptureCatalog(write, entries, {index = ''} = {}) {
+  const variable = id => `${id.replace(/_([a-z0-9])/gu, (_, c) => c.toUpperCase())}Capture`;
+  for (const entry of entries) {
+    write(`test/ui_captures/catalog/entries/${entry.id}.dart`, `${(entry.imports ?? []).map(uri => `import '${uri}';\n`).join('')}
+final ${variable(entry.id)} = ScreenCaptureEntry(id: '${entry.id}', routeIds: const <String>['today'],
+  marketingFixtureKeys: const <String>['${entry.fixtureKey}'], device: CaptureDevice.iphone17Pro);
+`);
+  }
+  write('test/ui_captures/catalog/screen_capture_catalog.dart', `${entries.map(entry => `import 'entries/${entry.id}.dart';\n`).join('')}
+final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
+${entries.map(entry => `  '${entry.id}': () => ${variable(entry.id)},\n`).join('')}};
+${index}`);
+  write('test/ui_captures/catalog/screen_capture_entry.dart', 'class ScreenCaptureEntry {}\n');
 }
 
 const sync = 'tool/marketing/sync_website_media.mjs';
@@ -184,6 +215,82 @@ test('ambiguous fixture mappings fail instead of choosing the first entry', t =>
   assert.equal(result.status, 1); assert.match(result.stderr, /exactly one catalog entry/);
 });
 
+test("a screen's own widget stales only that screen; the theme stales all; the index stales none", t => {
+  const f = fixture(t, {second: true});
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+  f.write('lib/sample_widget.dart', "import 'theme.dart';\nconst sampleWorld = 'tool/demo/demo_seed/personas/sample.json';\nconst title = 'Changed';\n");
+  assert.deepEqual(f.stale(), {sample: true, other: false});
+  f.stamp();
+  f.write('test/ui_captures/catalog/entries/other_screen.dart', fs.readFileSync(path.join(f.root,
+    'test/ui_captures/catalog/entries/other_screen.dart'), 'utf8') + '// reviewed\n');
+  assert.deepEqual(f.stale(), {sample: false, other: true});
+  f.stamp();
+  f.write('lib/theme.dart', 'const accent = 0x00FF00;\n');
+  assert.deepEqual(f.stale(), {sample: true, other: true});
+  f.stamp();
+  // A review-only entry or a reordered index is not a render input.
+  const index = 'test/ui_captures/catalog/screen_capture_catalog.dart';
+  f.write(index, fs.readFileSync(path.join(f.root, index), 'utf8') +
+    "final screenCaptureCatalog = [ScreenCaptureEntry(id: 'review_only', routeIds: const <String>['today'])];\n");
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+  // Only the capture whose inputs name a data file depends on it.
+  f.write('tool/demo/demo_seed/personas/sample.json', '{"persona":"changed"}');
+  assert.deepEqual(f.stale(), {sample: true, other: false});
+  f.stamp();
+  f.write('tool/demo/demo_seed/scenarios/sample.json', '{"unnamed":"changed"}');
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+});
+
+test('a marketing entry must live alone in its entry file and be mapped by the index', t => {
+  const f = fixture(t);
+  const exporter = 'tool/marketing/export_app_screenshots.mjs';
+  const index = 'test/ui_captures/catalog/screen_capture_catalog.dart';
+  const original = fs.readFileSync(path.join(f.root, index), 'utf8');
+  f.write(index, original.replace("() => sampleScreenCapture", "() => otherCapture"));
+  let result = f.run(exporter, '--check');
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /marketingScreenCaptures must map 'sample_screen'/);
+  f.write(index, original);
+  fs.renameSync(path.join(f.root, 'test/ui_captures/catalog/entries/sample_screen.dart'),
+    path.join(f.root, 'test/ui_captures/catalog/entries/today.dart'));
+  result = f.run(exporter, '--check');
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /must be declared in test\/ui_captures\/catalog\/entries\/sample_screen\.dart/);
+});
+
+test('a persona edit stales exactly the captures whose named scenarios cast it', t => {
+  const f = fixture(t, {second: true});
+  const catalog = (id, name) => JSON.stringify({schemaVersion: 1, personas: [{id, firstName: name}]});
+  f.write('tool/demo/demo_seed/personas/cohort_a.json', catalog('persona_a', 'Asha'));
+  f.write('tool/demo/demo_seed/personas/cohort_b.json', catalog('persona_b', 'Ben'));
+  f.write('tool/demo/demo_seed/scenarios/world_a.json', JSON.stringify({people: [{personId: 'p1', personaId: 'persona_a'}]}));
+  f.write('tool/demo/demo_seed/scenarios/world_b.json', JSON.stringify({people: [{personId: 'p2', personaId: 'persona_b'}]}));
+  // Each widget names only its scenario; no Dart file names a persona catalog.
+  f.write('lib/sample_widget.dart', "import 'theme.dart';\nconst world = 'tool/demo/demo_seed/scenarios/world_a.json';\n");
+  f.write('lib/other_widget.dart', "import 'theme.dart';\nconst world = 'tool/demo/demo_seed/scenarios/world_b.json';\n");
+  f.stamp();
+  assert.deepEqual(f.stale(), {sample: false, other: false});
+  f.write('tool/demo/demo_seed/personas/cohort_a.json', catalog('persona_a', 'Asha Rao'));
+  assert.deepEqual(f.stale(), {sample: true, other: false});
+  f.stamp();
+  f.write('tool/demo/demo_seed/personas/cohort_b.json', catalog('persona_b', 'Ben Cho'));
+  assert.deepEqual(f.stale(), {sample: false, other: true});
+  f.stamp();
+  // A cast id no catalog defines fails the hash instead of hashing nothing.
+  f.write('tool/demo/demo_seed/scenarios/world_a.json', JSON.stringify({people: [{personId: 'p1', personaId: 'persona_z'}]}));
+  const result = f.run('hash.mjs', JSON.stringify(f.capture));
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /casts undefined persona ids: persona_z/);
+});
+
+test('a computed data path cannot hide which file a capture reads', t => {
+  const f = fixture(t);
+  f.write('lib/sample_widget.dart', "const world = 'tool/demo/demo_seed/personas/${name}.json';\n");
+  const result = f.run('hash.mjs', JSON.stringify(f.capture));
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Capture data path must be literal/);
+});
+
 
 test('website captions disclose synthetic previews without changing captured pixels or source copy', t => {
   const f = fixture(t);
@@ -229,7 +336,8 @@ test('unchanged render inputs reuse exact PNG bytes but font and source edits st
 });
 
 test('only render fields enter the render hash; presentation fields, known or new, never do', t => {
-  const f = fixture(t);
+  // A second entry gives the changed fixtureKey an entry file to resolve to.
+  const f = fixture(t, {second: true});
   const base = f.hash(f.capture);
   const presentation = {audience: 'member', surface: 'Explore', alt: 'Changed', caption: 'Changed', walkthroughStep: '2',
     websitePath: 'website/public/assets/app-screenshots/elsewhere.png', placeholderPath: 'elsewhere.svg',

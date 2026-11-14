@@ -4371,7 +4371,8 @@
         "tool/marketing/lib/web_capture_render.mjs",
         "tool/marketing/lib/web_capture_screen.mjs",
         "tool/marketing/lib/capture_devices.mjs",
-        "tool/marketing/web_captures.test.mjs"
+        "tool/marketing/web_captures.test.mjs",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
@@ -4416,7 +4417,8 @@
         "tool/marketing/lib/web_capture_screen.mjs",
         "tool/marketing/lib/capture_devices.mjs",
         "tool/marketing/web_captures.test.mjs",
-        "tool/ui_capture/check_capture_coverage.mjs"
+        "tool/ui_capture/check_capture_coverage.mjs",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ]
     },
     {
@@ -4595,7 +4597,9 @@
         "tool/ui_capture/route_inventory.json",
         "tool/ui_capture/capture_coverage.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "tool/marketing/capture_manifest.json"
+        "test/ui_captures/catalog/entries/**",
+        "tool/marketing/capture_manifest.json",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -5269,7 +5273,9 @@
         "design/screens/catch.screens.schema.json",
         "tool/ui_capture/route_inventory.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json"
+        "test/ui_captures/catalog/entries/**",
+        "design/components/catch.components.json",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -7197,7 +7203,8 @@
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/react-surface-validation.yml",
         ".github/workflows/tools-ci.yml",
-        ".github/workflows/marketing-captures.yml"
+        ".github/workflows/marketing-captures.yml",
+        "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "checks": [
         "node --check tool/marketing/import_hosted_captures.mjs",
