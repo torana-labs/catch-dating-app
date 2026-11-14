@@ -200,9 +200,10 @@ const signedInStory = (wide: boolean): Story => ({
     const canvas = within(canvasElement);
     const name = wide ? fill(signInCopy.menu.avatarLabel, {name: "Asha Rao"}) : fill(signInCopy.menu.phoneLabel, {name: "Asha Rao"});
     await userEvent.click(canvas.getByRole("button", {name}));
-    const menu = within(canvasElement.ownerDocument.body).getByRole("dialog", {name: "Asha Rao"});
-    await expect(within(menu).getByRole("link", {name: signInCopy.menu.viewPass})).toHaveAttribute("href", "/account/?pass=sunday-10k#plans");
-    await expect(within(menu).getByRole("button", {name: signInCopy.menu.signOut})).toBeVisible();
+    // The wide dropdown is hidden until it is placed under the avatar, so wait for it.
+    const menu = within(await within(canvasElement.ownerDocument.body).findByRole("dialog", {name: "Asha Rao"}));
+    await expect(menu.getByRole("link", {name: signInCopy.menu.viewPass})).toHaveAttribute("href", "/account/?pass=sunday-10k#plans");
+    await expect(menu.getByRole("button", {name: signInCopy.menu.signOut})).toBeVisible();
   },
 });
 /** Signed in on a wide page: the avatar's 320px account dropdown. */
