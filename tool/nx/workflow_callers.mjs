@@ -280,8 +280,9 @@ export function jobLanesOf(job, laneNames) {
 // CI configuration: the files whose selection this module decides. Other
 // files keep the selection their Nx inputs give them.
 export const isCiConfiguration = (file) => file.startsWith(".github/") || file.startsWith("tool/ci/");
-export const isSelector = (file, graph) =>
-  graph.selectors.has(file) || selectorPrefixes.some((prefix) => file.startsWith(prefix));
+// Tests under the selector directories check selection; they do not decide it.
+export const isSelector = (file, graph) => graph.selectors.has(file) ||
+  (selectorPrefixes.some((prefix) => file.startsWith(prefix)) && !/\.test\.mjs$/u.test(file));
 
 /** The lanes changed files require because CI executes or reads them. */
 export function callerLanes(changedFiles, {graph, allLanes}) {
