@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
 import {
   deriveAppRoles,
@@ -533,6 +534,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness/compare_selectors.mjs",
       "/tool/nx/select_lanes.mjs",
       "/tool/nx/shadow_plan.mjs",
+      "/tool/nx/workflow_callers.mjs",
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
       "/tool/harness/component_graph.json",
@@ -566,6 +568,37 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     fetchDepth: 0,
     timeoutMinutes: 3,
   });
+});
+
+// Main pushes plan from the sparse planner checkout alone (pull requests and
+// queue groups disable it before Nx), so every module the plan job's scripts
+// import must be in it. #1797 added an import of tool/nx/workflow_callers.mjs
+// without one, and every main push failed at "Plan affected targets".
+test("the sparse planner checkout holds every module the plan job's scripts import", () => {
+  const read = (file) => fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8");
+  const exists = (file) => fs.existsSync(new URL(`../../${file}`, import.meta.url));
+  const ci = read(".github/workflows/ci.yml");
+  const planJob = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
+  const entries = [...new Set([...planJob.matchAll(/\bnode\s+((?:tool|\.\/tool)\/[\w./-]+\.mjs)/gu)]
+    .map(([, file]) => file.replace(/^\.\//u, "")))];
+  assert.ok(entries.includes("tool/nx/select_lanes.mjs") && entries.includes("tool/harness.mjs"), entries.join(", "));
+  const specifier = /^\s*(?:import|export)\b[^"';]*?\bfrom\s*["'](\.{1,2}\/[^"']+)["']|^\s*import\s*["'](\.{1,2}\/[^"']+)["']/gmu;
+  const closure = new Set();
+  const queue = [...entries];
+  while (queue.length > 0) {
+    const file = queue.pop();
+    if (closure.has(file) || !exists(file)) continue;
+    closure.add(file);
+    for (const [, from, bare] of read(file).matchAll(specifier)) {
+      queue.push(path.posix.normalize(path.posix.join(path.posix.dirname(file), from ?? bare)));
+    }
+  }
+  const checkout = new Set(graph.ciCheckout.planner.paths.map((entry) => entry.slice(1)));
+  assert.deepEqual([...closure].filter((file) => !checkout.has(file)).sort(), [],
+    "add these to ciCheckout.planner.paths and the plan job's sparse-checkout list in ci.yml");
+  // Negative control: without workflow_callers.mjs the closure is not covered.
+  checkout.delete("tool/nx/workflow_callers.mjs");
+  assert.deepEqual([...closure].filter((file) => !checkout.has(file)), ["tool/nx/workflow_callers.mjs"]);
 });
 
 test("component graph glob semantics include dot paths and zero-depth globstars", () => {
