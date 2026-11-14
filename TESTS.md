@@ -27,7 +27,10 @@ Use focused tests while iterating, then run the owning surface's full gate befor
 Functions tests are discovered recursively from compiled
 `functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
 remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
-domain test therefore requires no script edit. The `test:rules` lane runs the
+domain test therefore requires no script edit. On a pull request CI runs
+only the discovered files the change can reach (`CATCH_UNIT_TEST_SELECTION`,
+from `tool/impact/functions_unit_test_selection.mjs`); a local `npm test` and
+the merge queue run them all. The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
 redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits

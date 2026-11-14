@@ -580,7 +580,7 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); the merge queue, main and nightly run every discovered test. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |

@@ -2,6 +2,14 @@ name: Functions CI
 
 on:
   workflow_call:
+    inputs:
+      base_sha:
+        description: Pull request base; with mode pr, runs only the Functions tests the change can reach.
+        type: string
+        required: false
+      mode:
+        type: string
+        required: false
   workflow_dispatch:
 
 permissions:
@@ -25,7 +33,9 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
-          cache-dependency-path: functions/package-lock.json
+          cache-dependency-path: |
+            functions/package-lock.json
+            tool/impact/package-lock.json
 
       - run: npm --prefix functions ci
 
@@ -48,5 +58,25 @@ jobs:
       - name: Functions lint
         run: npm --prefix functions run lint
 
+      # Pull requests run only the node --test files their change can reach;
+      # the merge queue, main and nightly run every discovered test.
+      - name: Select the Functions tests this pull request can affect
+        id: selection
+        if: ${{ inputs.mode == 'pr' && inputs.base_sha != '' }}
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          mkdir -p build/ci
+          git diff --name-only --no-renames "$BASE_SHA" HEAD > build/ci/changed-paths.txt
+          npm ci --prefix tool/impact --no-audit --no-fund
+          node tool/impact/functions_unit_test_selection.mjs --paths-file build/ci/changed-paths.txt \
+            --output build/ci/functions-test-selection.json
+          jq -r '"Functions tests: \(.tests | length) of \(.listed) (\(.mode))", (.reasons[] | "- \(.)")' \
+            build/ci/functions-test-selection.json | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Functions tests
+        env:
+          CATCH_UNIT_TEST_SELECTION: ${{ steps.selection.outcome == 'success' && format('{0}/build/ci/functions-test-selection.json', github.workspace) || '' }}
         run: npm --prefix functions test
