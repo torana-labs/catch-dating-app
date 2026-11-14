@@ -313,7 +313,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps form payment state server-only"
+        "keeps guest payment state server-only"
       ],
       "owner": "organizer form payment server operations",
       "read": "server only; owner and manager callable projections omit credentials",
@@ -336,7 +336,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps form payment state server-only"
+        "keeps guest payment state server-only"
       ],
       "owner": "organizer form payment server operations",
       "read": "server only; owner and manager callable projections omit credentials",
@@ -347,23 +347,26 @@
       ]
     },
     {
-      "id": "organizerFormPayments",
-      "path": "organizerFormPayments/{paymentId}",
-      "rulesMatch": "/organizerFormPayments/{paymentId}",
-      "typescriptInterface": "OrganizerFormPaymentDocument",
+      "id": "guestPayments",
+      "path": "guestPayments/{paymentId}",
+      "rulesMatch": "/guestPayments/{paymentId}",
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps form payment state server-only"
+        "keeps guest payment state server-only"
       ],
-      "owner": "organizer form payment server operations",
+      "owner": "guest checkout server operations; purpose names the owning flow (publicEvent, form, offer)",
       "read": "server only; owner and manager callable projections omit credentials",
       "write": "server only",
       "exportedFunctions": [
+        "managePublicEventCheckout",
         "prepareOrganizerFormPayment",
         "getOrganizerFormPayment",
         "findOrganizerFormPayment",
         "reconcileOrganizerFormPayments"
+      ],
+      "migrationNotes": [
+        "One ledger for every guest checkout since L6 (#1734); publicEventPayments, organizerFormPayments and organizerEventOfferPayments were copied forward and keep their documents under the legal hold, with no client access."
       ]
     },
     {
@@ -374,7 +377,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps form payment state server-only"
+        "keeps guest payment state server-only"
       ],
       "owner": "organizer form payment server operations",
       "read": "server only; owner and manager callable projections omit credentials",
@@ -482,7 +485,6 @@
             "prefsShowOnMap"
           ],
           "deniedFields": [
-            "fcmToken",
             "deleted",
             "deletedAt"
           ],
@@ -533,21 +535,6 @@
             "prefsOrganizerUpdates",
             "prefsWeeklyDigest",
             "prefsShowOnMap"
-          ]
-        },
-        {
-          "id": "runtime_direct_updates",
-          "type": "directUpdate",
-          "owner": "authenticated owner",
-          "allowedFields": [
-            "fcmToken"
-          ],
-          "deniedFields": [
-            "deleted",
-            "deletedAt"
-          ],
-          "rulesTestNames": [
-            "denies direct profile edits but allows runtime FCM token updates"
           ]
         }
       ],
@@ -993,6 +980,23 @@
       "migrationNotes": [
         "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic.",
         "Accountability resolution is valid only for the exact checkedInAt timestamp recorded alongside it, so a later check-in reopens the sweep without deleting audit context first."
+      ]
+    },
+    {
+      "id": "eventAttendeeIndex",
+      "path": "eventAttendeeIndex/{indexId}",
+      "rulesMatch": "/eventAttendeeIndex/{indexId}",
+      "typescriptInterface": "EventAttendeeIndexDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the roster pointer index server-only"
+      ],
+      "owner": "Catch booking callables, inside the transaction that writes the roster row",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "eventAttendeeIndex/{eventId}_{uid} points a Catch account at its one eventAttendees row (L5, #1691); catch-booking-roster copied existing bookings forward on 14 Nov 2026."
       ]
     },
     {

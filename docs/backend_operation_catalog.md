@@ -77,11 +77,7 @@ The current admin callable is a role-gated, rate-limited read projection only.
 | `operationRuns/{runId}` | Frozen scope, budgets, counters, checkpoint, and terminal state | Trusted operations worker |
 | `operationWorkItems/{workItemId}` | One exclusive primary stage plus orthogonal task/blocker flags | Trusted operations worker |
 | `operationActionReceipts/{actionId}` | Immutable idempotency and action evidence | Trusted operations worker |
-| `operationDecisions/{decisionId}` | Revision-bound proposed or accepted decision | Trusted worker or reviewed admin path |
 | `operationLeases/{leaseId}` | Fenced worker ownership and heartbeat | Trusted operations worker |
-| `operationPublicationPlans/{publicationPlanId}` | Hash-bound preflight plan; not publication authority by itself | Trusted publisher boundary |
-| `operationRuleProposals/{ruleProposalId}` | Evidence-derived extractor/rule proposal | Trusted learning worker |
-| `operationRuleEvaluations/{ruleEvaluationId}` | Replay, holdout, shadow, and canary metrics | Trusted evaluation worker |
 | `adminActionExecutions/{executionId}` | Hash-only start/terminal receipt for one agent CLI admin action | Role-gated admin execution callables |
 | `eventMessagingBudgetDecisions/{decisionId}` | Revisioned finance decision bound to exact messaging setup evidence; never a spend grant | `adminDecideEventMessagingBudget` callable |
 | `eventMessagingBudgetDecisionReceipts/{receiptId}` | Immutable request-hash replay evidence for a messaging budget decision | `adminDecideEventMessagingBudget` callable |
@@ -139,8 +135,8 @@ The portable work-item schema remains workflow-neutral; the Supply Intake
 callable rejects any work item outside its four-stage vocabulary. Local
 reconciliation creates a new immutable child run bound to the source plan and
 inventory hashes, so imported snapshots are never updated in place. The shipped
-promotion command creates only a blocked review receipt; it does not create an
-`operationPublicationPlans` record or execute a public write.
+promotion command creates only a blocked review receipt; it does not execute a
+public write.
 
 ## Current Audit Findings
 

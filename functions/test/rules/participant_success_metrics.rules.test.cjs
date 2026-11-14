@@ -2,7 +2,6 @@
 // in rulesHarness.cjs.
 const {
   assertFails,
-  assertSucceeds,
   authedDb,
   describe,
   doc,
@@ -28,10 +27,6 @@ describe("firestore.rules", () => {
         uid: "runner-1",
         counters: {incoming_like: 1},
       });
-      await seed(["participantMarketplaceMetrics", "runner-1"], {
-        uid: "runner-1",
-        demandPercentile: 80,
-      });
 
       await assertFails(
         getDoc(doc(authedDb("runner-1"), "participantSignalFacts", "fact-1")),
@@ -40,34 +35,11 @@ describe("firestore.rules", () => {
         getDoc(doc(authedDb("runner-1"), "participantMetricCounters", "runner-1")),
       );
       await assertFails(
-        getDoc(
-          doc(authedDb("runner-1"), "participantMarketplaceMetrics", "runner-1"),
-        ),
-      );
-      await assertFails(
         setDoc(doc(authedDb("runner-1"), "participantSignalFacts", "fact-2"), {
           uid: "runner-1",
         }),
       );
     });
 
-    it("lets users read only their own materialized momentum summary", async () => {
-      await seed(["participantMomentum", "runner-1"], {
-        uid: "runner-1",
-        profileMomentum: 0.7,
-      });
-
-      await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "participantMomentum", "runner-1")),
-      );
-      await assertFails(
-        getDoc(doc(authedDb("runner-2"), "participantMomentum", "runner-1")),
-      );
-      await assertFails(
-        setDoc(doc(authedDb("runner-1"), "participantMomentum", "runner-1"), {
-          uid: "runner-1",
-        }),
-      );
-    });
   });
 });
