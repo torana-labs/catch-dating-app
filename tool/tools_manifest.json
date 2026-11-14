@@ -4949,7 +4949,8 @@
         "repositoryView": "full",
         "setup": [
           "node",
-          "root-npm"
+          "root-npm",
+          "flutter"
         ]
       }
     },
