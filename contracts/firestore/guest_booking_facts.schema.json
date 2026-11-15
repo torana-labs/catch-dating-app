@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/guest_booking_facts.schema.json",
+  "title": "GuestBookingFactsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Booking facts about one guest that come from documents the guest cannot read, projected for that guest alone so the event screen can show booking state from a listener. Today: the guest's community membership state per organizer. Booking commands keep reading the authoritative documents.",
+  "x-firestore-collection": "guestBookingFacts",
+  "x-firestore-path": "guestBookingFacts/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "decideOrganizerCommunityMembership callable",
+  "required": [
+    "schemaVersion",
+    "uid",
+    "communityMemberships",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "communityMemberships": {
+      "type": "object",
+      "description": "The guest's current community membership per organizer id, copied from organizerCommunityMemberships in the decision's transaction.",
+      "maxProperties": 500,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "state",
+          "revision",
+          "decisionId",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

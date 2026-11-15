@@ -1,3 +1,5 @@
+import {communityMembershipFactPatch, guestBookingFactsCollection} from
+  "./guestBookingFacts";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
@@ -184,6 +186,8 @@ export async function decideOrganizerCommunityMembershipHandler(
     };
     tx.create(decisionRef, decision);
     tx.set(membershipRef, membership);
+    tx.set(db.collection(guestBookingFactsCollection).doc(uid),
+      communityMembershipFactPatch(membership), {merge: true});
     return {
       membershipId,
       decisionId,

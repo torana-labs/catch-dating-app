@@ -1359,19 +1359,62 @@ describe("firestore.rules", () => {
       await seed(["hostMembershipWebhookReceipts", "hmwh_1"], {
         eventType: "subscription.charged",
       });
-      await seed(["eventMembershipRules", "event-1"], {
-        organizerId: "organizer-1", membersOnly: true,
-      });
       for (const db of [testEnv.unauthenticatedContext().firestore(),
         authedDb("member-1"), authedDb("host-1")]) {
         for (const [path, id] of [["hostMembershipPrograms", "organizer-1"],
           ["hostMembershipCharges", "pay_Test0001"],
-          ["hostMembershipWebhookReceipts", "hmwh_1"],
-          ["eventMembershipRules", "event-1"]]) {
+          ["hostMembershipWebhookReceipts", "hmwh_1"]]) {
           await assertFails(getDoc(doc(db, path, id)));
           await assertFails(setDoc(doc(db, path, id), {organizerId: "x"}));
         }
       }
+    });
+
+    it("lets signed-in guests get a published event's membership rules", async () => {
+      await seed(["events", "event-1"], event({organizerId: "organizer-1"}));
+      await seed(["events", "event-private"], event({
+        organizerId: "organizer-1", publicationState: "private",
+      }));
+      for (const id of ["event-1", "event-private"]) {
+        await seed(["eventMembershipRules", id], {
+          organizerId: "organizer-1", eventId: id, membersOnly: true,
+        });
+      }
+      const guest = authedDb("member-1");
+      await assertSucceeds(getDoc(doc(guest, "eventMembershipRules", "event-1")));
+      // A published event without rules reads as an empty document.
+      await seed(["events", "event-2"], event({organizerId: "organizer-1"}));
+      await assertSucceeds(getDoc(doc(guest, "eventMembershipRules", "event-2")));
+      await assertFails(getDoc(doc(guest, "eventMembershipRules",
+        "event-private")));
+      await assertFails(getDoc(doc(guest, "eventMembershipRules", "missing")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "eventMembershipRules", "event-1")));
+      await assertFails(getDocs(collection(guest, "eventMembershipRules")));
+      for (const db of [guest, authedDb("host-1")]) {
+        await assertFails(setDoc(doc(db, "eventMembershipRules", "event-1"),
+          {organizerId: "organizer-1", membersOnly: false}));
+      }
+    });
+
+    it("lets a guest get only their own booking facts", async () => {
+      await seed(["guestBookingFacts", "member-1"], {
+        schemaVersion: 1, uid: "member-1", updatedAtMillis: 1,
+        communityMemberships: {"organizer-1": {state: "active", revision: 1,
+          decisionId: "ocmd_1", updatedAtMillis: 1}},
+      });
+      const guest = authedDb("member-1");
+      await assertSucceeds(getDoc(doc(guest, "guestBookingFacts", "member-1")));
+      // A guest with no decisions yet reads an empty document.
+      await assertSucceeds(getDoc(doc(authedDb("member-2"),
+        "guestBookingFacts", "member-2")));
+      await assertFails(getDoc(doc(authedDb("other-1"),
+        "guestBookingFacts", "member-1")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "guestBookingFacts", "member-1")));
+      await assertFails(getDocs(collection(guest, "guestBookingFacts")));
+      await assertFails(setDoc(doc(guest, "guestBookingFacts", "member-1"),
+        {uid: "member-1", communityMemberships: {}}));
     });
 
     it("keeps organizer form state server-only", async () => {

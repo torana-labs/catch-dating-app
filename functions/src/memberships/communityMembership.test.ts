@@ -29,8 +29,14 @@ test("phone-verified application grants without a profile", async () => {
     [
       `organizerCommunityMembershipDecisions/${result.decisionId}`,
       `organizerCommunityMemberships/${result.membershipId}`,
+      `guestBookingFacts/${h.uid}`,
     ].sort()
   );
+  assert.deepEqual(h.store.get(`guestBookingFacts/${h.uid}`), {
+    schemaVersion: 1, uid: h.uid, updatedAtMillis: 2000,
+    communityMemberships: {[org]: {state: "active", revision: 1,
+      decisionId: result.decisionId, updatedAtMillis: 2000}},
+  });
   assert.equal(
     (
       await h.store
@@ -77,6 +83,12 @@ test("grant replay retains revocation and historical evidence", async () => {
   assert.equal(replayed.decisionRevision, 1);
   assert.equal(replayed.currentRevision, 2);
   assert.equal(replayed.currentState, "revoked");
+  assert.deepEqual(
+    (h.store.get(`guestBookingFacts/${h.uid}`)!.communityMemberships as Row)[
+      org],
+    {state: "revoked", revision: 2, decisionId: revoked.decisionId,
+      updatedAtMillis: 2000}
+  );
   assert.ok(
     h.store.get(`organizerCommunityMembershipDecisions/${granted.decisionId}`)
   );
