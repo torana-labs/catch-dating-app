@@ -234,6 +234,9 @@ test("each Function's own hash changes only with what that Function loads and re
     "export {b, b2} from \"./beta/b\";\n");
   write("lib/alpha/c.js", "const defineSecret = (name) => name;\nexports.c = defineSecret(\"C_KEY\");\n");
   write("lib/alpha/d.js", "const name = \"./c.js\";\nexports.d = () => require(name);\n");
+  write("lib/beta/b.js", "const path = require(\"node:path\");\n" +
+    "const root = path.join(__dirname, \"../operations/src/workflows\", \"flow-one\");\n" +
+    "exports.b = () => import(require(\"node:url\").pathToFileURL(path.join(root, \"entry.mjs\")).href);\nexports.b2 = 2;\n");
   const manifest = async (out) => {
     await build(out);
     return JSON.parse(fs.readFileSync(path.join(root, `${out}.json`), "utf8")).codebases;
@@ -242,6 +245,8 @@ test("each Function's own hash changes only with what that Function loads and re
   assert.deepEqual(Object.keys(base.one.functionHashes), ["a", "c", "d"]);
   assert.deepEqual(base.one.functionSecrets, {c: ["C_KEY"]});
   assert.deepEqual(base.one.computedLoads, ["d"]);
+  // A computed import of a named workflow's file, built from __dirname, stays bounded.
+  assert.equal(base.two.computedLoads, undefined);
   assert.equal(base.one.functionHashes.d, `codebase:${base.one.hash}`);
   assert.match(base.one.functionHashes.a, /^[0-9a-f]{64}$/u);
   assert.deepEqual(await manifest("again"), base, "identical input, identical hashes");

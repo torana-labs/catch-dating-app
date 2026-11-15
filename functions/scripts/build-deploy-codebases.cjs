@@ -236,7 +236,9 @@ function directoryHash(dir) {
 }
 
 // A compiled require() or import() whose argument is not a string literal
-// loads code the trace cannot see.
+// loads code the trace cannot see. One whose file builds its path from
+// __dirname loads an Operations workflow, which the file must name and whose
+// whole tree is in the closure (see workflowsNamed), so it stays bounded.
 const computedLoad = /\b(?:require|import)\(\s*(?!["'])/u;
 const declaredSecret = /\bdefineSecret\(\s*["'`]([A-Za-z0-9_-]+)["'`]/gu;
 
@@ -349,7 +351,7 @@ async function buildFunctionCodebases({
       .map((file) => fs.readFileSync(path.join(functionsDir, file), "utf8"));
     const code = [setup, ...texts, ...runtimeCode].join("\n");
     const closure = {files: [...new Set([...files, ...runtime.files])].sort(), packages, code,
-      computed: computedLoad.test([...texts, ...runtimeCode].join("\n")),
+      computed: texts.some((text) => computedLoad.test(text) && !text.includes("__dirname")),
       secrets: [...new Set([...code.matchAll(declaredSecret)].map((match) => match[1]))].sort()};
     moduleCache.set(module, closure);
     return closure;
