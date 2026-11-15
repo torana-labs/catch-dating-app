@@ -2170,6 +2170,27 @@ the next green run. Opening the issue notifies repository watchers. Cancelled
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+### Weekly CI metrics
+
+CI efficiency is measured every week instead of reconstructed by hand (owner
+decision, 15 Nov 2026). `CI metrics` (`.github/workflows/ci-metrics.yml`,
+driven by `tool/ci/ci_metrics.mjs`) runs on Mondays at 03:17 UTC and on
+dispatch. It reads the last seven days of main CI runs and posts one comment
+to the open "Weekly CI metrics" issue:
+
+- minutes from run start to the Required CI result (p50, p90) and job minutes
+  per run (Linux and macOS, each job rounded up as GitHub bills), for pull
+  requests, the merge queue, main pushes and the nightly run;
+- merge-queue runs per merged pull request, and how many main push runs
+  reused the merge queue's result;
+- peak concurrent Linux and macOS jobs, and the Required CI failure rate;
+- flaky jobs: a job that failed and then passed on a re-run of the same run.
+
+Each comment embeds its numbers, so the next one shows the change against the
+previous week. It is report-only and needs only `actions: read` and
+`issues: write`. To preview locally:
+`GITHUB_REPOSITORY=torana-labs/catch-dating-app node tool/ci/ci_metrics.mjs --dry-run`.
+
 ### Test selection miss report
 
 Pull requests run only the Functions unit and emulator tests their change can
