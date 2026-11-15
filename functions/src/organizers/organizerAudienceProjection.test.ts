@@ -9,7 +9,8 @@ import {organizerContactTraits, organizerContactEventEdge,
   organizerIdentityClaimId, organizerIdentityHash} from
   "./organizerAudienceModel";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
-import {projectEventAttendeeToOrganizerAudience, rebuildOrganizerContact} from
+import {onEventAttendeeAudienceProjected,
+  projectEventAttendeeToOrganizerAudience, rebuildOrganizerContact} from
   "./organizerAudienceProjection";
 
 const at = Timestamp.fromMillis;
@@ -224,3 +225,33 @@ test("deletion preserves a recreated attendee and removes only absent history",
     assert.equal(store.docs["organizerContactTraits/person"]
       .expectedEventCount, 0);
   });
+
+test("roster rows retry their audience projection after contention", () => {
+  assert.equal(onEventAttendeeAudienceProjected.__endpoint.eventTrigger?.retry,
+    true);
+});
+
+test("a redelivered projection after an aborted commit lands one edge",
+  async () => {
+    const {store, deps} = harness(null);
+    const original = store.runTransaction.bind(store);
+    let calls = 0;
+    store.runTransaction = (async (body: never) => {
+      calls += 1;
+      if (calls === 1) {
+        throw Object.assign(new Error("10 ABORTED: contention"), {code: 10});
+      }
+      return original(body);
+    }) as typeof store.runTransaction;
+    await assert.rejects(projectEventAttendeeToOrganizerAudience("attendee-1",
+      undefined, attendee(), "delivery-1", deps), /ABORTED/u);
+    await projectEventAttendeeToOrganizerAudience("attendee-1", undefined,
+      attendee(), "delivery-1", deps);
+    await projectEventAttendeeToOrganizerAudience("attendee-1", undefined,
+      attendee(), "delivery-1", deps);
+    assert.equal(store.docs["organizerContactEventEdges/attendee-1"]
+      ?.attendeeId, "attendee-1");
+    assert.equal(Object.keys(store.docs).filter((path) =>
+      path.startsWith("organizerContactEventEdges/")).length, 1);
+  });
+
