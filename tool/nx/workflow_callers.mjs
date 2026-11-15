@@ -63,6 +63,7 @@ export const notCalledByCi = {
   ".github/workflows/brand-config-publish.yml": "deploy: push to main and dispatch",
   ".github/workflows/capture-freshness-ci.yml": "reusable workflow with no caller",
   ".github/workflows/ci-metrics.yml": "maintenance: weekly schedule and dispatch, report-only",
+  ".github/workflows/functions-drift.yml": "maintenance: weekly schedule and dispatch, report-only, read-only on dev",
   ".github/workflows/city-interest-backfill.yml": "operations: dispatch only",
   ".github/workflows/data-validation.yml": "operations: schedule and dispatch",
   ".github/workflows/demo-ops-ci.yml": "its own pull_request and push triggers validate it",

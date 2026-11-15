@@ -1685,6 +1685,21 @@ Index deploys never receive `--force`, so live composite indexes that are not in
 Out-of-band drift is repaired with a manual `full` run, not assumed fixed by an
 incremental one.
 
+Functions drift check: per-Function deploys skip a Function until its own
+hash changes, so they trust the delivered `deploy:backend-functions` record.
+Every Monday at 05:11 IST the `Functions drift` workflow
+(`tool/ci/functions_drift_report.mjs`) compares dev's live Functions with
+dev's newest delivered record. It is report-only and read-only: it lists
+Function metadata with dev's existing workload identity, creates no
+deployment and changes nothing on dev. Drift is a recorded Function missing
+on dev, or one updated more than 10 minutes after the record (a named
+Functions run or a manual deploy). Live Functions the record does not list
+are not drift. It keeps one issue, "Dev Functions drift from the deploy
+record": opened on the first drift, commented on while drift remains, and
+closed when dev matches again. A record from before per-Function hashes
+reports nothing. To resync, run Deploy backend for dev with `full`. Run it
+on demand from Actions → Functions drift → Run workflow.
+
 `Deploy backend` replaced several older paths, which were deleted on
 2026-10-24 after its first successful prod run (`deployed/prod` at `bd52e13cd`):
 - the artifact-cursor `Delivery` pipeline;
