@@ -284,9 +284,24 @@ commit, `main` runs every selected lane.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
-`nx affected` selects, and never drops a lane the planner selected until the
-`nx-shadow` comparison holds parity (#1554). Only tasks the change affects
+For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` runs the lanes
+`nx affected` selects, and only those (design A). The planner's selection is a
+shadow. The plan summary lists each lane the planner would also run, with the
+`shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
+unexplained lanes is the `planner_unexplained` output and is also stored in the
+uploaded plan (`laneSelection`). Every lane runs, with a warning, in four cases:
+the history cannot be read, `nx affected` fails, an Nx task maps to no lane, or
+a changed path is under a top-level entry `tool/nx/lane_coverage.mjs` does not
+list. Pull requests still leave the queue-only lanes to the queue. The kill
+switch is `nxSelectsAlone` in `select_lanes.mjs`. Emptying it restores the
+union, in which Nx may only add to the planner's lanes. A lane only Nx selects
+still gets complete inputs: a build lane without planner targets builds both
+apps. Every lane job reads only the change range, the final lanes and outputs
+pinned by `select_lanes.test.mjs`. `tool/nx/lane_coverage.test.mjs` replaces
+the planner's refusal of an unowned path. Every tracked file must be an input
+of a lane task, a selector, or listed in `noLaneReads` with why no lane reads
+it. Main, nightly, full and commit-window runs keep the planner's selection,
+and the main plan job never installs Nx. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
@@ -296,8 +311,8 @@ rather than the Functions suite. Each contract family (`contracts-admin`,
 `-bigquery`, `-catalogs`, `-client-writes`, `-fixtures`, `-http`, `-patches`,
 `-storage`) is its own Nx project, and only the projects that consume it depend
 on it: for a BigQuery or HTTP contract change Nx selects Functions and its
-readers, not the Flutter app, though the planner's lanes still run until
-parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+readers, not the Flutter app. `tool/nx/lane_inputs.test.mjs` pins these
+inputs.
 A document a check reads is an input of the lane that runs the check.
 `tool/nx/markdown_inputs.test.mjs` requires two things. First, every Markdown
 `impactPath` in the tools manifest must be a `lane-tools` input, because
@@ -310,9 +325,9 @@ capture workflow renders from the Storybook build.
 The `nx-shadow` comparison explains every disagreement by a rule in
 `tool/nx/shadow_plan.mjs`, and a fixture from the real commit pins each rule.
 In `pr` and `merge_group` it compares Nx with the planner after the manifest
-diff narrows it, which is the selection those runs use. The cut-over to Nx-only
-selection (design A) needs a replay of at least 200 main commits with no
-unexplained disagreement.
+diff narrows it, the selection those runs used before the cut-over. The
+cut-over needed a replay of at least 200 main commits with no unexplained
+disagreement (#1824: 229 commits, none).
 Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
@@ -705,7 +720,7 @@ The current workflows are:
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
 | `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging only when run by hand. See Deploy Backend. |
-| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend` deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then a new deployment records the commit. |
+| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend-functions` (else `deploy:backend`) deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, a `deploy:backend-functions` deployment once Functions pass parity, rules drift check, then a `deploy:backend` deployment records the commit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
 | `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
@@ -1477,14 +1492,32 @@ Firestore rules and Storage rules. Hosting and app releases stay separate.
 
 How a run works:
 
-- Each environment records the commit it last received as a successful GitHub
-  deployment with task `deploy:backend`. To see the newest, run
-  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
-  A run whose commit doesn't contain the recorded one deploys nothing, so a
-  re-run of an older commit never replaces a newer one. A failed run leaves the
-  record unchanged. GitHub marks a record `inactive` seconds after its
-  `success` status, so a record counts as delivered when any of its statuses
-  is `success`. The record's payload holds each codebase's content hash.
+- Each environment records what it last received as successful GitHub
+  deployments, under two tasks. Both payloads hold each codebase's content
+  hash.
+  - `deploy:backend-functions` is written as soon as the Functions are
+    deployed and pass the parity check, before the rules.
+  - `deploy:backend` is written at the end, once the rules are deployed and
+    verified too. It means the environment has everything in that commit.
+
+  To see the newest of either, run
+  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`
+  (or `task=deploy:backend-functions`). A failed step leaves every later
+  record unchanged. A run whose rules fail after its Functions deployed
+  still moves the Functions record, so the next run has no Functions left to
+  redeploy and retries the rules. GitHub marks a record `inactive` seconds
+  after its `success` status, so a record counts as delivered when any of its
+  statuses is `success`. Which record each consumer reads:
+  - **Daily pick** (`Deploy backend`, `pick` job): prod's `deploy:backend`.
+    It skips when prod already has the newest green commit, so a run whose
+    rules failed is retried the next day.
+  - **Older-commit guard** (`Skip a commit older than the deployed one`):
+    both records. A run whose commit doesn't contain the newest delivered
+    record of either task deploys nothing, so a re-run of an older commit
+    never replaces a newer one.
+  - **Functions change report** (`Report what this deploy changes`, and the
+    per-Function planner that replaces it): `deploy:backend-functions`, or
+    `deploy:backend` when the environment has no Functions record yet.
 - A run deploys its own exact commit. The job builds Functions, materializes
   non-secret parameters from the environment's GitHub variables, and packages
   Functions as Firebase codebases with
@@ -2310,8 +2343,79 @@ Recovery:
   head again. To release a specific commit by hand, dispatch
   `Next Website Preview` with `source_sha`. Then dispatch
   `Next Website Promotion` with that preview's run id.
+- **A release failed its post-deploy checks.** See the next section. The
+  promotion opens or comments on the issue "Website release failed its
+  post-deploy checks", which says whether live was rolled back.
 - **Hold releases.** Add a required reviewer to the `prod` environment. Trains
   then wait at the gate.
+
+#### Post-deploy checks and automatic rollback
+
+Owner decision, 15 Nov 2026 (audit recommendation 8, website half).
+
+`Next Website Promotion` preserves the live Hosting version before it changes
+anything (`hostingState.mjs snapshot`, `rollback.json`). It then clones the
+tested version to live and runs two checks:
+
+- **The expected release is served.** `liveOriginCheck.mjs --release` requires
+  the Firebase origin's `/api/public-catalog` to answer 200, uncached, with
+  `X-Catch-Release` naming the released commit. It also requires the origin's
+  `/` to redirect to the public domain, and the edge to answer.
+- **The key pages render.** `rollbackDecision.mjs pages` reads `/`, `/explore/`,
+  `/host/`, `/privacy/` and `/api/public-catalog` from the Cloud Run revision
+  live Hosting pins. Each must answer 200 as the released commit; pages need a
+  heading and the catalog needs a listings array. It checks no copy, so it
+  works for any release. Runners can't read live pages any other way:
+  Cloudflare answers them with 403 (#1272), and the Firebase host redirects
+  every page except `/api/`. The runtime serves public pages only for Catch
+  hosts, so the check sends the `X-Forwarded-Host` form Hosting uses for a
+  production preview channel, which gets no canonical redirect.
+
+`deployed/prod-website` moves only after both checks pass.
+
+If either check fails, or the clone step fails after it started, the
+promotion decides what to do (`decideRollback` in
+`website/scripts/next/rollbackDecision.mjs`). It rolls back only when every
+guard holds:
+
+- Live serves this promotion's candidate. If live still serves the previous
+  version, nothing changed. If it serves anything else, the promotion leaves
+  it alone and reports.
+- The target is exactly the version preserved before this promotion, and the
+  Cloud Run revision it pins is still tagged.
+- That revision serves the commit `deployed/prod-website` names. The tag moves
+  only after a release passes its live checks, so a release that failed them
+  is never a rollback target.
+- The repository variable `WEBSITE_AUTO_ROLLBACK` is `on`.
+
+The rollback re-clones the preserved version to live, inside the promotion
+run that is already releasing. It is not a new release decision and needs no
+separate approval. It runs at most once per run. It checks again that live
+still serves the failed candidate, clones once, then verifies that live serves
+the restored commit (the same two checks). A failed verification is never
+retried: the run fails and the issue says manual action is needed. A manual
+re-run of the promotion is a new attempt by a person.
+
+The promotion run fails whenever the checks fail, rolled back or not, so the
+train run fails too. The issue gives the failing check's output, the failed
+and previous releases (commit and Hosting version), and whether live was
+rolled back, would have been, or why not. It stays open for a person to close.
+
+**The switch is the owner's call.** `WEBSITE_AUTO_ROLLBACK` ships unset, which
+means report only: the checks and the decision run, the run fails, and the
+issue names the release it would have restored, but live keeps the failed
+release. To turn rollback on, set the repository variable
+`WEBSITE_AUTO_ROLLBACK` to `on` (Settings → Secrets and variables → Actions →
+Variables). Any other value reports only. There is no dev or staging train:
+the train releases only production, so the switch guards production directly.
+This adds no environment protection, reviewer or ruleset.
+
+**Known limitation: a rolled-back site starts cold.** The rollback restores
+Hosting only. The restored release's tagged revision serves again, but the
+service's one warm instance (`--min 1`) stays on the newer revision, which
+still receives the service's own traffic. The first visits after a rollback
+wait for a cold start until the next promotion. Shifting service traffic back
+too is a possible follow-up for the owner to decide.
 
 ### Website rollback to the static Vite build
 

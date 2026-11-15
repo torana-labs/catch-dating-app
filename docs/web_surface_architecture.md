@@ -178,10 +178,13 @@ The Next promotion and legacy Hosting promoter share `web-hosting-marketing`.
 The legacy promoter reads the live Hosting configuration under that lock and
 skips static mutation once `catch-website-next` owns it. Future Next releases
 use the preview/promotion pair; a later automatic Vite build cannot overwrite
-Next. A failed metadata read fails closed. No automatic rollback, retry,
-provider activation, database mutation or IAM role grant is added. A failure
-preserves source/image/service/Hosting identities and the prior version for
-operator-reviewed recovery. Production and browser/provider acceptance remain
+Next. A failed metadata read fails closed. No retry, provider activation,
+database mutation or IAM role grant is added. A failure before the clone to
+live preserves source/image/service/Hosting identities and the prior version
+for operator-reviewed recovery. After the clone, promotion checks live and,
+when the owner's `WEBSITE_AUTO_ROLLBACK` switch is `on`, re-clones the
+preserved version at most once
+([release operations](release_operations.md#post-deploy-checks-and-automatic-rollback)). Production and browser/provider acceptance remain
 unproven until those steps actually run and are inspected.
 
 Channel identity comes from the Hosting API after deployment, because the

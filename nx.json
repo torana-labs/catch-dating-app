@@ -310,6 +310,8 @@
                   "{workspaceRoot}/docs/agent_operating_model.md",
                   "{workspaceRoot}/docs/app_architecture.md",
                   "{workspaceRoot}/lib/hosts/*/README.md",
+                  "{workspaceRoot}/copy/notifications_en.json",
+                  "{workspaceRoot}/firestore.indexes.json",
                   "!{workspaceRoot}/tool/**/*.md",
                   "!{workspaceRoot}/analytics/**/*.md",
                   "!{workspaceRoot}/infra/**/*.md",
