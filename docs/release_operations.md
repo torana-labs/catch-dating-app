@@ -344,6 +344,20 @@ This narrowing applies to `pr` and `merge_group` alike, with the same closure
 and selector rules; pull requests still leave the queue-only lanes to the
 queue. `main` pushes and the nightly run are not narrowed by it, and the
 nightly full run, which still runs every lane, is the backstop.
+In the merge queue the iOS simulator builds (`flutter_build_ios`) run only
+when a change reaches an iOS build input (owner decision, 15 Nov 2026): the
+apps' native projects, any pubspec, bundled assets, the build, environment and
+Maps-key scripts, the toolchain pins in `tool/ci/toolchain.env`, and
+`app-build-matrix.yml` with the composite actions its iOS job uses. The list
+is `tool/ci/ios_build_inputs.mjs`. The planner filter (`planAffected`, which
+records `queueNarrowedCiTargets`) and Nx (`compare()` and the `lane-build-ios`
+inputs in `nx.json`) both use it, and `tool/ci/ios_build_inputs.test.mjs` pins
+`nx.json` to it and requires every tracked native iOS file to be on it. Harness,
+Nx-only and pure Dart changes, Catch UI included, no longer build iOS in the
+queue; Android, web and the package suites still compile them. Pull requests
+never build iOS, `main` pushes keep their selection, and the nightly builds iOS
+every night. The Host design reference check that rides in the Host iOS job
+also runs in Tools whenever its inputs change.
 `tool/nx/workflow_callers.test.mjs` proves the closure against both the planner
 and Nx, with a negative control for each, and pins that an
 `app-build-matrix.yml` edit still selects the iOS queue lane. Every tracked
@@ -2166,7 +2180,9 @@ driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
 completes. It keeps one open issue titled "Main CI is red": opened on the
 first failure, naming the failed gating jobs (Required CI) and reporting
 jobs separately; commented on each further failure; closed with a comment on
-the next green run. Opening the issue notifies repository watchers. Cancelled
+the next green run. A failed nightly also names its commit window: the range
+from the last green nightly's commit, with a compare link, or "unknown" when
+none of the last 30 nightly runs was green. Opening the issue notifies repository watchers. Cancelled
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 

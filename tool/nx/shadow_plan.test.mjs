@@ -33,11 +33,20 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
   // The manifest selects by semantic diff; without a readable diff it selects every lane.
   assert.equal(isControlPlane("tool/tools_manifest.json"), false);
-  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"]}).nxLanes.length,
-    comparedLanes.length);
+  // Every lane but iOS: the queue (compare's default mode) builds iOS only for
+  // a native or build input, and the manifest is not one.
+  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"]}).nxLanes,
+    comparedLanes.filter((lane) => lane !== "flutter_build_ios"));
+  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"], mode: "main"})
+    .nxLanes.length, comparedLanes.length);
   assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
-  const selector = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"]});
+  // A selector file selects every lane; in the queue (compare's default mode)
+  // iOS still needs a native or build input on both sides.
+  const queueLanes = comparedLanes.filter((lane) => lane !== "flutter_build_ios");
+  const selector = compare({plannerLanes: queueLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"]});
   assert.equal(selector.agree, true);
+  assert.equal(compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"],
+    mode: "main"}).agree, true);
   const flutter = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/flutter-ci.yml"]});
   assert.ok(flutter.nxLanes.includes("flutter"));
   assert.ok(!flutter.nxLanes.includes("functions") && !flutter.nxLanes.includes("flutter_build_ios"));

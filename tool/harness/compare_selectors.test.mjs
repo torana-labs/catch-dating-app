@@ -18,7 +18,8 @@ function fixture(t) {
     const file = path.join(cwd, name); fs.mkdirSync(path.dirname(file), {recursive: true});
     fs.writeFileSync(file, bytes);
   };
-  for (const file of ["tool/harness/component_graph.json", "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"]) {
+  for (const file of ["tool/harness/component_graph.json", "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs",
+    "tool/ci/ios_build_inputs.mjs"]) {
     write(file, fs.readFileSync(new URL(`../../${file}`, import.meta.url)));
   }
   git("init", "--quiet", "-b", "main"); git("config", "user.name", "Selector fixture");
@@ -37,6 +38,50 @@ test("selector edits execute actual base and head implementations and retain ful
   assert.deepEqual(result.after.plan.operations.ciTargets, result.requiredTargets);
   assert.equal(result.before.sourceSha, f.base); assert.equal(result.after.sourceSha, head);
   assert.ok(result.before.inputHashes["tool/harness/lib/component_graph.mjs"]);
+});
+
+test("an engine module added by the head is snapshotted at the head and absent at an older base", t => {
+  const f = fixture(t);
+  // The base predates tool/ci/ios_build_inputs.mjs: its engine does not import it.
+  f.git("rm", "--quiet", "tool/ci/ios_build_inputs.mjs");
+  f.write("tool/harness/lib/component_graph.mjs", fs.readFileSync(new URL("./lib/component_graph.mjs", import.meta.url), "utf8")
+    .replace(/^import \{iosBuildInput\} from .*\n/mu, "const iosBuildInput = () => true;\n"));
+  const base = f.commit();
+  f.write("tool/harness/lib/component_graph.mjs", fs.readFileSync(new URL("./lib/component_graph.mjs", import.meta.url)));
+  f.write("tool/ci/ios_build_inputs.mjs", fs.readFileSync(new URL("../ci/ios_build_inputs.mjs", import.meta.url)));
+  const head = f.commit();
+  const result = compareSelectors({...f, base, head});
+  assert.equal(result.before.inputHashes["tool/ci/ios_build_inputs.mjs"], undefined);
+  assert.ok(result.after.inputHashes["tool/ci/ios_build_inputs.mjs"]);
+  assert.equal(result.status, "full-validation-required");
+});
+
+test("in the merge queue a selector edit owes iOS only when an iOS build input changed", t => {
+  const f = fixture(t);
+  f.write("tool/harness/control-test.mjs", "// new controlled selector source\n");
+  const harnessOnly = f.commit();
+  const queue = compareSelectors({...f, head: harnessOnly, mode: "merge_group"});
+  assert.equal(queue.status, "full-validation-required");
+  assert.deepEqual(queue.queueNarrowedCiTargets, ["flutter_build_ios"]);
+  assert.ok(!queue.requiredTargets.includes("flutter_build_ios"));
+  assert.ok(queue.requiredTargets.includes("flutter_build_android"));
+  // Main and nightly still owe every lane.
+  assert.ok(compareSelectors({...f, head: harnessOnly, mode: "nightly"}).requiredTargets.includes("flutter_build_ios"));
+  // With an iOS build input in the change, iOS is owed again, and a head engine
+  // that drops it anyway is caught.
+  f.write("tool/ci/toolchain.env", "FLUTTER_VERSION=0.0.0\n");
+  f.write("tool/harness/control-test.mjs", "// edited controlled selector source\n");
+  const withInput = f.commit();
+  const owed = compareSelectors({...f, base: harnessOnly, head: withInput, mode: "merge_group"});
+  assert.equal(owed.status, "full-validation-required");
+  assert.deepEqual(owed.queueNarrowedCiTargets, []);
+  assert.ok(owed.requiredTargets.includes("flutter_build_ios"));
+  f.write("tool/harness/lib/component_graph.mjs", fs.readFileSync(new URL("./lib/component_graph.mjs", import.meta.url), "utf8")
+    .replace('if (mode === "merge_group" && !full && operations.ciTargets.includes("flutter_build_ios") &&',
+      'if (mode === "merge_group" && !full && operations.ciTargets.includes("flutter_build_ios") && true ||'));
+  const dropping = f.commit();
+  assert.throws(() => compareSelectors({...f, base: harnessOnly, head: dropping, mode: "merge_group"}),
+    /missing flutter_build_ios/u);
 });
 
 test("a head engine that falsely claims complete narrow coverage cannot suppress trusted-base obligations", t => {
