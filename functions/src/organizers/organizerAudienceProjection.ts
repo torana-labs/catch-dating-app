@@ -724,10 +724,16 @@ function deterministicAttendeeReceiptId(
     `${attendee.status}:${attendee.linkedUid ?? "unlinked"}`;
 }
 
+// Retried: many roster rows for one organizer written together (a roster
+// import, a copy-forward) contend on the organizer's audience documents, and
+// an aborted transaction would otherwise drop that row's contact edge. Each
+// run is idempotent: receipts are keyed by the event id and a stale write is
+// ignored by sourceUpdatedAt.
 export const onEventAttendeeAudienceProjected = onDocumentWritten(
   {
     document: "eventAttendees/{attendeeId}",
     secrets: [organizerContactIdentityKey],
+    retry: true,
   },
   async (event) => {
     const before = event.data?.before.data() as
