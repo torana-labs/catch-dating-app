@@ -1184,6 +1184,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:functions-drift-report",
+      "category": "ci",
+      "path": "tool/ci/functions_drift_report.mjs",
+      "command": "node tool/ci/functions_drift_report.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/functions-drift.yml",
+        "tool/ci/functions_drift_report.mjs",
+        "tool/ci/functions_drift_report.test.mjs"
+      ],
+      "description": "Weekly, report-only: compares dev's live Functions with the newest delivered deploy:backend-functions record and keeps one 'Dev Functions drift from the deploy record' issue in step, naming recorded Functions missing on dev or updated after the record.",
+      "checks": [
+        "node --check tool/ci/functions_drift_report.mjs",
+        "node --test tool/ci/functions_drift_report.test.mjs"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "ci:generate-contracts-cache",
       "category": "ci",
       "path": "tool/ci/generate_contracts_cache.test.mjs",
