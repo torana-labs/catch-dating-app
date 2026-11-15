@@ -5,10 +5,8 @@ import 'package:catch_dating_app/contexts/bookings/data/guest_booking_facts_repo
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_composition.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_entitlement.dart';
-import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

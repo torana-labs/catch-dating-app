@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';

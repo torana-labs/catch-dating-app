@@ -2,10 +2,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/bookings/domain/event_signup_decision.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_entitlement.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 
 /// A guest's community membership with one organizer, as the server projects

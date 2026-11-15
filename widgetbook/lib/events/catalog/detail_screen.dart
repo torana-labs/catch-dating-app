@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';

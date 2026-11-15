@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
 
 /// One guest's booking state for one event, composed on the device from the
 /// documents they can read (`composeEventViewerState`). It never grants a
