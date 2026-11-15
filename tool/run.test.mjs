@@ -535,6 +535,7 @@ function createRunnerFixture(context) {
   for (const relativePath of [
     "tool/run.mjs",
     "tool/agent/lib/context_plan.mjs",
+    "tool/ci/ios_build_inputs.mjs",
     "tool/harness/lib/component_graph.mjs",
     "tool/harness/lib/git_changes.mjs",
     "tool/lib/path_glob.mjs",
@@ -598,6 +599,16 @@ function fixtureManifest() {
         path: "tool/run.mjs",
         status: "active",
         checks: ["node --check tool/run.mjs"],
+        checkSafety: "local-readonly",
+        ciRequirements: requirements,
+      },
+      {
+        // The planner engine imports it, so the sparse fixture carries it.
+        id: "ci:ios-build-inputs",
+        category: "fixture",
+        path: "tool/ci/ios_build_inputs.mjs",
+        status: "active",
+        checks: ["node --check tool/ci/ios_build_inputs.mjs"],
         checkSafety: "local-readonly",
         ciRequirements: requirements,
       },
