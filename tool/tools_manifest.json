@@ -3849,6 +3849,30 @@
       "role": "gate"
     },
     {
+      "id": "firebase:retry-transient",
+      "category": "firebase",
+      "path": "tool/firebase/retry_transient.mjs",
+      "command": "node tool/firebase/retry_transient.mjs",
+      "safety": "remote-deploy",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/retry_transient.test.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "description": "Runs a Firebase indexes or rules deploy and retries it up to three times only on a temporary Google API error (HTTP 429, 500, 502, 503, 504 or a dropped connection), never on validation, compilation, deletion-refusal or readiness failures.",
+      "checks": [
+        "node --check tool/firebase/retry_transient.mjs",
+        "node --test tool/firebase/retry_transient.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "firebase:check-deploy-parity",
       "category": "firebase",
       "path": "tool/firebase/check_deploy_parity.mjs",
@@ -3929,10 +3953,13 @@
         "bash -n tool/deploy_firebase_targets.sh",
         "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
         "node --test tool/firebase/check_deploy_ref.test.mjs",
-        "node --test tool/firebase/check_deploy_parity.test.mjs"
+        "node --test tool/firebase/check_deploy_parity.test.mjs",
+        "node --test tool/firebase/retry_transient.test.mjs"
       ],
       "role": "generator",
       "impactPaths": [
+        "tool/firebase/retry_transient.mjs",
+        "tool/firebase/retry_transient.test.mjs",
         "tool/firebase/check_deploy_ref.mjs",
         "tool/firebase/check_deploy_ref.test.mjs",
         "tool/firebase/check_deploy_parity.mjs",

@@ -73,7 +73,15 @@ deploy_target() {
 
   echo "::group::Deploy Firebase target: $phase"
   local deploy_status=0
-  "$repo_root/tool/firebase_with_env.sh" \
+  # Indexes and rules retry temporary Google API errors (429, 5xx, dropped
+  # connections) up to three times; tool/firebase/retry_transient.mjs never
+  # retries validation or compile errors. Functions batches have their own
+  # retry loop below, so they run directly.
+  local retry=()
+  if [[ "$phase" != "functions" ]]; then
+    retry=(node "$repo_root/tool/firebase/retry_transient.mjs" --label "Firebase $phase deploy" --)
+  fi
+  "${retry[@]}" "$repo_root/tool/firebase_with_env.sh" \
     "$environment" deploy --only "$deploy_only" --non-interactive "$@" || deploy_status=$?
   echo "::endgroup::"
   return "$deploy_status"
