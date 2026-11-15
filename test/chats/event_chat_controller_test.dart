@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
+import 'event_chat_signal_fake.dart';
 
 EventChatAccess roomAccess({bool admitted = true, bool join = false}) =>
     EventChatAccess(
@@ -115,21 +118,84 @@ class Repository extends Fake implements EventChatRepository {
 void main() {
   late Repository repository;
   late ProviderContainer container;
+  late FakeEventChatSignals signals;
   late DateTime now;
   final provider = eventChatControllerProvider('event');
   setUp(() {
     repository = Repository();
+    signals = FakeEventChatSignals();
     now = DateTime.utc(2026);
     container = ProviderContainer(
       overrides: [
         eventChatNowProvider.overrideWithValue(() => now),
         uidProvider.overrideWith((ref) => Stream.value('person')),
         eventChatRepositoryProvider.overrideWithValue(repository),
+        eventChatSignalSourceProvider.overrideWithValue(signals),
       ],
     );
     container.listen(provider, (_, _) {});
   });
   tearDown(() => container.dispose());
+
+  test(
+    'a moved message signal reads the chat at once; the baseline does not',
+    () async {
+      await container.read(provider.future);
+      final opening = repository.cursors.length;
+      signals.emit(message: 4, typing: 2);
+      await flushTestEventQueue();
+      expect(repository.cursors, hasLength(opening));
+      repository.currentPage = page('After the signal', sequence: 2);
+      signals.emit(message: 5, typing: 2);
+      await flushTestEventQueue();
+      expect(repository.cursors, hasLength(opening + 1));
+      expect(
+        container.read(provider).requireValue.messages.single.text,
+        'After the signal',
+      );
+      // Access changes read again too; nothing reads without a signal.
+      signals.emit(message: 5, typing: 2, access: 1);
+      await flushTestEventQueue();
+      expect(repository.cursors, hasLength(opening + 2));
+    },
+  );
+
+  test('typing alone reads again at most every typingRefreshGap', () async {
+    await container.read(provider.future);
+    signals.emit(typing: 1);
+    await flushTestEventQueue();
+    final opening = repository.cursors.length;
+    // The opening read was just now: typing waits for the gap.
+    signals.emit(typing: 2);
+    signals.emit(typing: 3);
+    await flushTestEventQueue();
+    expect(repository.cursors, hasLength(opening));
+    container.invalidate(provider);
+    await container.read(provider.future);
+    signals.emit(typing: 4);
+    await flushTestEventQueue();
+    final reopened = repository.cursors.length;
+    // Once the gap has passed since the last read, typing reads at once.
+    now = now.add(EventChatTiming.typingRefreshGap);
+    signals.emit(typing: 5);
+    await flushTestEventQueue();
+    expect(repository.cursors, hasLength(reopened + 1));
+  });
+
+  test('a background chat ignores signals until it returns', () async {
+    await container.read(provider.future);
+    final controller = container.read(provider.notifier);
+    signals.emit(message: 1);
+    await flushTestEventQueue();
+    final before = repository.cursors.length;
+    controller.setForeground(false);
+    signals.emit(message: 2);
+    await flushTestEventQueue();
+    expect(repository.cursors, hasLength(before));
+    controller.setForeground(true);
+    await flushTestEventQueue();
+    expect(repository.cursors, hasLength(before + 1));
+  });
 
   test('lost send acknowledgement retries the exact payload ID once', () async {
     await container.read(provider.future);
@@ -323,6 +389,7 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => accounts.stream),
           eventChatRepositoryProvider.overrideWithValue(repository),
+          eventChatSignalSourceProvider.overrideWithValue(signals),
         ],
       );
       container.listen(provider, (_, _) {});

@@ -65,16 +65,34 @@ String _$eventChatNowHash() => r'd7abf2578bd7150a2dfee443b6a50d81f6286c30';
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
+///
+/// Nothing polls. The controller listens to the chat's content-free change
+/// signal and reads through the callables only when it moves: at once for
+/// messages, the room or memberships, and at most every
+/// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+/// change no write announces, a scheduled room opening or closing.
 
 @ProviderFor(EventChatController)
 final eventChatControllerProvider = EventChatControllerFamily._();
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
+///
+/// Nothing polls. The controller listens to the chat's content-free change
+/// signal and reads through the callables only when it moves: at once for
+/// messages, the room or memberships, and at most every
+/// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+/// change no write announces, a scheduled room opening or closing.
 final class EventChatControllerProvider
     extends $AsyncNotifierProvider<EventChatController, EventChatState> {
   /// All visible history is revalidated, including reply quotes. Failed reads,
   /// backgrounding and identity changes never retain an old readable snapshot.
+  ///
+  /// Nothing polls. The controller listens to the chat's content-free change
+  /// signal and reads through the callables only when it moves: at once for
+  /// messages, the room or memberships, and at most every
+  /// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+  /// change no write announces, a scheduled room opening or closing.
   EventChatControllerProvider._({
     required EventChatControllerFamily super.from,
     required String super.argument,
@@ -112,10 +130,16 @@ final class EventChatControllerProvider
 }
 
 String _$eventChatControllerHash() =>
-    r'4df8b8466d81343cd03990dafbdd56a9019533bb';
+    r'138e1c3e178f3d589f9427175ac4383c2503523e';
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
+///
+/// Nothing polls. The controller listens to the chat's content-free change
+/// signal and reads through the callables only when it moves: at once for
+/// messages, the room or memberships, and at most every
+/// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+/// change no write announces, a scheduled room opening or closing.
 
 final class EventChatControllerFamily extends $Family
     with
@@ -137,6 +161,12 @@ final class EventChatControllerFamily extends $Family
 
   /// All visible history is revalidated, including reply quotes. Failed reads,
   /// backgrounding and identity changes never retain an old readable snapshot.
+  ///
+  /// Nothing polls. The controller listens to the chat's content-free change
+  /// signal and reads through the callables only when it moves: at once for
+  /// messages, the room or memberships, and at most every
+  /// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+  /// change no write announces, a scheduled room opening or closing.
 
   EventChatControllerProvider call(String eventId) =>
       EventChatControllerProvider._(argument: eventId, from: this);
@@ -147,6 +177,12 @@ final class EventChatControllerFamily extends $Family
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
+///
+/// Nothing polls. The controller listens to the chat's content-free change
+/// signal and reads through the callables only when it moves: at once for
+/// messages, the room or memberships, and at most every
+/// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+/// change no write announces, a scheduled room opening or closing.
 
 abstract class _$EventChatController extends $AsyncNotifier<EventChatState> {
   late final _$args = ref.$arg as String;
