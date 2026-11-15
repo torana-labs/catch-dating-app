@@ -23,6 +23,7 @@ import {
   guestTravelLeadMinutes,
   type TravelEstimateContext,
 } from "./momentTravel";
+import {catchBookingsForEvent} from "../shared/relationshipDocuments";
 
 /**
  * Document <-> domain boundary for the moments collections. Documents are
@@ -497,11 +498,10 @@ export async function resolveMomentRecipients(
     if (scope.kind !== "event") {
       return {recipients: [], suppressedNoEndpoint: 0};
     }
-    const participations = await db.collection("eventParticipations")
-      .where("eventId", "==", scope.eventId).get();
+    const participations = await catchBookingsForEvent(db, scope.eventId);
     const recipients: ResolvedRecipient[] = [];
-    for (const doc of participations.docs) {
-      const data = doc.data() as Record<string, unknown>;
+    for (const booking of participations) {
+      const data = booking.data() as unknown as Record<string, unknown>;
       if (data.deletedAt != null || data.cancelledAt != null) continue;
       if (!(audience.statuses as ReadonlyArray<string>).includes(
         String(data.status))) continue;

@@ -2,6 +2,7 @@
  * Transactional test store for intake and audience joins. No production
  * export.
  */
+import {seedCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 
 type Data = Record<string, unknown>;
@@ -125,7 +126,9 @@ class Query {
 
 export class AudienceTestStore {
   constructor(readonly docs: Record<string, Data> = {},
-    readonly updateTimes: Record<string, FirebaseFirestore.Timestamp> = {}) {}
+    readonly updateTimes: Record<string, FirebaseFirestore.Timestamp> = {}) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new Query(this, path);
   }

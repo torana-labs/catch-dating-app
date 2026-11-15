@@ -1,3 +1,4 @@
+import {setCatchBookingDoc} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeFirestore} from "../shared/testing/programFirestore";
@@ -28,7 +29,7 @@ function seed(db: FakeFirestore, value: MomentDefinition): void {
   db.setDoc(`users/${value.momentId}`, {});
   db.setDoc(`users/${value.momentId}/pushInstallations/device`,
     {token: "synthetic-token", appRole: "consumer"});
-  db.setDoc(`eventParticipations/${value.momentId}`, {
+  setCatchBookingDoc(db, `eventParticipations/${value.momentId}`, {
     eventId: value.momentId, uid: value.momentId, status: "signedUp",
   });
 }
@@ -218,7 +219,7 @@ test("partial dispatch retains sent journals across the next sweep",
     const db = new FakeFirestore({});
     seed(db, moment("a_retry"));
     seed(db, moment("b_healthy"));
-    db.setDoc("eventParticipations/a_second", {
+    setCatchBookingDoc(db, "eventParticipations/a_second", {
       eventId: "a_retry", uid: "second", status: "signedUp",
     });
     db.setDoc("users/second", {});

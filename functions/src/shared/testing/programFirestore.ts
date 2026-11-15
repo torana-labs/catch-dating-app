@@ -189,7 +189,8 @@ export class FakeFirestore {
     return new FakeDocRef(this, path);
   }
   constructor(seed: Record<string, FakeData | undefined>) {
-    this.docs = new Map(Object.entries(copyDataValue(seed))
+    this.docs = new Map(Object.entries(
+      copyDataValue(withCatchBookingRows(seed)))
       .filter(([, v]) => v !== undefined) as [string, FakeData][]);
   }
   collection(path: string) {
@@ -389,4 +390,5 @@ function matchWhere(data: FakeData, where: Where): boolean {
   }
   if (where.op === "!=") return value !== where.value;
   throw new Error(`Unsupported where op: ${where.op}`);
-}
+} import {withCatchBookingRows} from "./catchBookingRows";
+

@@ -3,11 +3,11 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {PaymentDocument} from "../shared/generated/firestoreAdminTypes";
 import {validatePaymentDocument} from
   "../shared/generated/validators/paymentDocument";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {incrementInviteLinkCounterInTransaction} from "../events/inviteLinks";
 import {planLegacyCancellationRefund,
   type LegacyRazorpayRefundAuthorization} from
   "./legacyRefunds/intent";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 /** Server-verified captured payment; committed in the admission transaction. */
 export type NativePaidBooking = Omit<PaymentDocument,
@@ -85,8 +85,7 @@ export async function stageRejectedNativeBooking(input: {
   const ref = db.collection("payments").doc(booking.paymentId);
   return db.runTransaction(async (tx) => {
     const [snapshot, participation] = await Promise.all([tx.get(ref),
-      tx.get(db.collection("eventParticipations").doc(
-        eventParticipationId(booking.eventId, booking.userId)))]);
+      getCatchBooking(db, booking.eventId, booking.userId, tx)]);
     const existing = snapshot.data();
     if (existing?.status === "completed" && !existing.signUpFailed) {
       return "admitted";

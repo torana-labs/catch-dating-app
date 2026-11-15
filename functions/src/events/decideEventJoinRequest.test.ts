@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -78,7 +82,9 @@ class FakeCollectionRef {
 }
 
 class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
 
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);
@@ -122,10 +128,10 @@ class FakeFirestore {
         const data = snap.data() ?? {};
         return filters.every((filter) => {
           if (filter.operator === "==") {
-            return data[filter.field] === filter.value;
+            return fieldAt(data, filter.field) === filter.value;
           }
           if (filter.operator === "in" && Array.isArray(filter.value)) {
-            return filter.value.includes(data[filter.field]);
+            return filter.value.includes(fieldAt(data, filter.field));
           }
           throw new Error(`Unsupported fake query operator ${filter.operator}`);
         });

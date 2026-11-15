@@ -26,6 +26,7 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from
   "../events/eventPayloadNormalization";
 import {crossPathsPilotEventEnabled} from "./pilotPolicy";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 export const currentCrossPathsTermsVersion = 1;
 
@@ -86,15 +87,13 @@ export async function setCrossPathsEventConsentHandler(
   await db.runTransaction(async (tx) => {
     const userRef = db.collection("users").doc(uid);
     const eventRef = db.collection("events").doc(data.eventId);
-    const participationRef = db.collection("eventParticipations")
-      .doc(crossPathsConsentId(data.eventId, uid));
     const consentRef = db.collection("eventCrossPathsConsents")
       .doc(crossPathsConsentId(data.eventId, uid));
     const [userSnap, eventSnap, participationSnap, consentSnap] =
       await Promise.all([
         tx.get(userRef),
         tx.get(eventRef),
-        tx.get(participationRef),
+        getCatchBooking(db, data.eventId, uid, tx),
         tx.get(consentRef),
       ]);
     const invitationsSnap = data.enabled ? null : await tx.get(

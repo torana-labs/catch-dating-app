@@ -35,6 +35,10 @@ import {
   OfferAttentionSource,
   OrganizerAttentionSources,
 } from "./organizerAttentionPolicy";
+import {
+  catchBookingDocumentFromRow,
+  eventParticipationId,
+} from "../shared/relationshipDocuments";
 
 export const maxAttentionSourceRows = 400;
 const resolvedRetentionMillis = 30 * 24 * 60 * 60 * 1000;
@@ -103,8 +107,7 @@ export async function loadOrganizerAttentionSources(
     organizerSnap,
     canonicalEvents,
     compatibilityEvents,
-    canonicalJoinRequests,
-    compatibilityJoinRequests,
+    joinRequests,
     openPracticalCases,
     deliveryReviewWorkItems,
     applications,
@@ -126,13 +129,10 @@ export async function loadOrganizerAttentionSources(
       .orderBy("endTime")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1)),
-    reader.getQuery(db.collection("eventParticipations")
+    // Join requests are Catch bookings awaiting approval on roster rows.
+    reader.getQuery(db.collection("eventAttendees")
       .where("organizerId", "==", organizerId)
-      .where("hostApprovalStatus", "==", "pending")
-      .limit(maxAttentionSourceRows + 1)),
-    reader.getQuery(db.collection("eventParticipations")
-      .where("organizerId", "==", organizerId)
-      .where("hostApprovalStatus", "==", "pending")
+      .where("booking.hostApprovalStatus", "==", "pending")
       .limit(maxAttentionSourceRows + 1)),
     reader.getQuery(db.collection("eventAssistanceCases")
       .where("context.mode", "==", "live")
@@ -197,8 +197,7 @@ export async function loadOrganizerAttentionSources(
 
   assertBoundedSnapshot(canonicalEvents, "events");
   assertBoundedSnapshot(compatibilityEvents, "events");
-  assertBoundedSnapshot(canonicalJoinRequests, "eventParticipations");
-  assertBoundedSnapshot(compatibilityJoinRequests, "eventParticipations");
+  assertBoundedSnapshot(joinRequests, "eventAttendees");
   assertBoundedSnapshot(openPracticalCases, "eventAssistanceCases");
   assertBoundedSnapshot(deliveryReviewWorkItems, "operationWorkItems");
   assertBoundedSnapshot(applications, "organizerApplications");
@@ -218,16 +217,13 @@ export async function loadOrganizerAttentionSources(
     string,
     AttentionSourceRow<EventParticipationDocument>
   >();
-  for (const snapshot of [
-    canonicalJoinRequests,
-    compatibilityJoinRequests,
-  ]) {
-    for (const doc of snapshot.docs) {
-      participationRows.set(
-        doc.id,
-        sourceRow<EventParticipationDocument>(doc, "eventParticipations")
-      );
-    }
+  for (const doc of joinRequests.docs) {
+    const booking = catchBookingDocumentFromRow(doc.data());
+    if (!booking) continue;
+    // Keyed by the booking's own id so request revisions stay stable.
+    const id = eventParticipationId(booking.eventId, booking.uid);
+    participationRows.set(id, {
+      ...sourceRowFromSnapshot(doc, booking, "eventAttendees"), id});
   }
   assertBoundedAttentionRows(
     [...participationRows.values()],

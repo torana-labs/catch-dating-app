@@ -1,3 +1,9 @@
+import {
+  fieldAt,
+  fieldMatches,
+  inFilter,
+  withCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
@@ -54,10 +60,10 @@ class FakeQuery {
   }
 
   where(field: string, operator: string, value: unknown): FakeQuery {
-    assert.equal(operator, "==");
+    assert.ok(operator === "==" || operator === "in");
     return new FakeQuery(this.firestore, this.path, [
       ...this.filters,
-      {field, value},
+      {field, value: operator === "in" ? inFilter(value) : value},
     ]);
   }
 
@@ -73,7 +79,7 @@ class FakeQuery {
       .filter((path) => !path.slice(prefix.length).includes("/"))
       .map((path) => new FakeDocSnapshot(this.firestore, path))
       .filter((snapshot) => this.filters.every((filter) =>
-        snapshot.data()?.[filter.field] === filter.value
+        fieldMatches(fieldAt(snapshot.data(), filter.field), filter.value)
       ));
     return Promise.resolve({docs});
   }
@@ -143,7 +149,7 @@ test("late insertion patches only an unpublished draft", async () => {
     publishedRoundIndex: 0,
     peerUids: ["published-peer"],
   };
-  for (const [path, data] of Object.entries({
+  for (const [path, data] of Object.entries(withCatchBookingRows({
     "events/event-1": {
       organizerId: "club-1",
       status: "active",
@@ -196,7 +202,7 @@ test("late insertion patches only an unpublished draft", async () => {
         }],
       },
     },
-  })) firestore.docs.set(path, data);
+  }))) firestore.docs.set(path, data);
 
   const serverTimestamp = {server: true};
   const result = await resolveEventSuccessLateArrivalHandler({

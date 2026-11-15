@@ -6,6 +6,10 @@ import {
   EVENT_MAX_DURATION_MINUTES,
   EVENT_SCHEDULE_LOCK_SLOT_MINUTES,
 } from "../shared/businessRules";
+import {
+  catchBookingsForUser,
+  EventParticipationStatus,
+} from "../shared/relationshipDocuments";
 
 const MINUTE_MS = 60 * 1000;
 /**
@@ -14,7 +18,8 @@ const MINUTE_MS = 60 * 1000;
  * organizer id and a uid can never claim the same document.
  */
 const LOCK_COLLECTION = "scheduleLocks";
-const USER_SCHEDULE_STATUSES = ["signedUp", "waitlisted", "attended"];
+const USER_SCHEDULE_STATUSES: EventParticipationStatus[] =
+  ["signedUp", "waitlisted", "attended"];
 
 type LockOwner = "organizer" | "user";
 
@@ -267,14 +272,11 @@ export async function assertNoUserEventScheduleConflict(
     );
   }
 
-  const participationSnap = await db
-    .collection("eventParticipations")
-    .where("uid", "==", params.uid)
-    .where("status", "in", USER_SCHEDULE_STATUSES)
-    .get();
+  const bookings = await catchBookingsForUser(db, params.uid,
+    {statuses: [...USER_SCHEDULE_STATUSES]});
   const eventSnaps = await Promise.all(
-    participationSnap.docs
-      .map((doc) => doc.data().eventId)
+    bookings
+      .map((booking) => booking.data()?.eventId)
       .filter((eventId): eventId is string =>
         typeof eventId === "string" && eventId !== params.eventId
       )
@@ -385,17 +387,15 @@ export async function readUserEventScheduleConflictInTransaction(
   options: {readLimit?: number} = {}
 ): Promise<boolean | null> {
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
-  let query = db.collection("eventParticipations")
-    .where("uid", "==", params.uid)
-    .where("status", "in", USER_SCHEDULE_STATUSES);
-  if (options.readLimit !== undefined) {
-    query = query.limit(options.readLimit + 1);
-  }
-  const participationSnap = await tx.get(query);
+  const bookings = await catchBookingsForUser(db, params.uid, {
+    statuses: [...USER_SCHEDULE_STATUSES], tx,
+    ...(options.readLimit !== undefined ?
+      {limit: options.readLimit + 1} : {}),
+  });
   if (options.readLimit !== undefined &&
-      participationSnap.docs.length > options.readLimit) return null;
-  for (const participation of participationSnap.docs) {
-    const eventId = participation.data().eventId;
+      bookings.length > options.readLimit) return null;
+  for (const participation of bookings) {
+    const eventId = participation.data()?.eventId;
     if (typeof eventId !== "string" || eventId === params.eventId) continue;
     const eventSnap = await tx.get(db.collection("events").doc(eventId));
     if (!eventSnap.exists) continue;

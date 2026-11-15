@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -101,7 +105,9 @@ class FakeQuery {
 }
 
 class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
 
   collection(name: string): FakeCollectionRef {
     return new FakeCollectionRef(this, name);
@@ -124,7 +130,9 @@ class FakeFirestore {
         const docId = path.slice(prefix.length);
         if (docId.length === 0 || docId.includes("/")) return false;
         return filters.every((filter) =>
-          filter.op === "==" && data[filter.field] === filter.value
+          filter.op === "in" ? Array.isArray(filter.value) &&
+            filter.value.includes(fieldAt(data, filter.field)) :
+            filter.op === "==" && fieldAt(data, filter.field) === filter.value
         );
       })
       .map(([path]) => new FakeSnapshot(this, path));

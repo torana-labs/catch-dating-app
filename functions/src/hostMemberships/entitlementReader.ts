@@ -11,7 +11,7 @@ import {validateHostMembershipDocument} from
   "../shared/generated/validators/hostMembershipDocument";
 import {validateHostMembershipPlanDocument} from
   "../shared/generated/validators/hostMembershipPlanDocument";
-import {eventParticipationId} from "../shared/relationshipDocuments";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 import {
   evaluateHostMembershipEntitlement,
   membershipIsEntitled,
@@ -106,8 +106,7 @@ export async function readHostMembershipContext(params: {
     }).map((doc) => doc.data().eventId as string);
     // A cancelled booking no longer counts even if its use was not released.
     const participations = await Promise.all(candidates.map((id) =>
-      get(db.collection("eventParticipations")
-        .doc(eventParticipationId(id, uid)))));
+      getCatchBooking(db, id, uid, tx ?? null)));
     upcomingMemberPricedBookings = participations.filter((snap) =>
       snap.data()?.status === "signedUp").length;
   }

@@ -120,6 +120,7 @@ test("an independent native booking still owns its seat", async () => {
   const h = await catchUserFixture();
   await h.finalize();
   h.store.get(edge)!.paymentId = "pay_native";
+  h.store.syncCatchBookings();
   assert.equal(
     await cancel(h, now + 30, {uid, expectedRefundAmountPaise: 10000}),
     true,

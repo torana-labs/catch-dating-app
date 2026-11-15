@@ -20,7 +20,8 @@ const defaults: Deps = {db: () => admin.firestore(), rateLimit: checkRateLimit};
 const sources = ["memberships", "participations", "attendees"] as const;
 const collections = {
   memberships: ["eventChatMemberships", "uid"],
-  participations: ["eventParticipations", "uid"],
+  // Each Catch booking's roster pointer, keyed like the old participation.
+  participations: ["eventAttendeeIndex", "uid"],
   attendees: ["eventAttendees", "linkedUid"],
 } as const;
 

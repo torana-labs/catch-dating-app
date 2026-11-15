@@ -2,7 +2,6 @@ import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventAttendeeDocument, EventDocument} from
   "../shared/generated/firestoreAdminTypes";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {assertReadySeatState} from
   "../events/seatAuthority/seatAuthority";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAlias,
@@ -12,6 +11,7 @@ import {applyFirestoreSeatBatch, assertCurrentReadySeatSnapshot,
   deriveEventSeatPolicy, FirestoreSeatTransaction,
   prepareFirestoreSeatBatch} from
   "../events/seatAuthority/firestoreAdapter";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 const ACTIVE = new Set(["registered", "checkedIn"]);
 const MAX_READY_GUESTS = 50;
@@ -175,8 +175,8 @@ export async function prepareProviderSeatChanges(params: {
     }
     let catchActive = false;
     if (document.linkedUid) {
-      const participation = (await tx.get(db.collection("eventParticipations")
-        .doc(eventParticipationId(eventId, document.linkedUid)))).data();
+      const participation = (await getCatchBooking(db, eventId,
+        document.linkedUid, tx)).data();
       catchActive = participation?.uid === document.linkedUid &&
         participation.eventId === eventId &&
         ["signedUp", "attended"].includes(participation.status);

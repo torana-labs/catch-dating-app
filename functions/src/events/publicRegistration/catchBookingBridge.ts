@@ -6,6 +6,7 @@ import type {EventDocument, UserProfileDocument} from
 import {
   eventParticipationId,
   eventParticipationPatch,
+  getCatchBooking,
 } from "../../shared/relationshipDocuments";
 import {
   activityNotificationId,
@@ -54,7 +55,7 @@ export async function prepareCatchBookingAdmission(input: {
     .doc(eventParticipationId(eventId, uid));
   const [userSnap, participationSnap, rosterSlot] = await Promise.all([
     tx.get(db.collection("users").doc(uid)),
-    tx.get(participationRef),
+    getCatchBooking(db, eventId, uid, tx),
     readCatchBookingRoster({db, tx, eventId, uid,
       attendeeId: input.attendeeId}),
   ]);

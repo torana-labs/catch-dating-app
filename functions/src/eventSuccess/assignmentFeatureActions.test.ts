@@ -1,3 +1,4 @@
+import {seedCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -183,6 +184,7 @@ test("preview caps roster query before loading profile or answer documents",
       docs[`eventParticipations/event-1_extra-${i}`] = {
         eventId: "event-1", uid: `extra-${i}`, status: "signedUp"};
     }
+    seedCatchBookingRows(docs);
     await assert.rejects(() => previewEventAssignmentFeaturesHandler({
       auth: {uid: "host-1"}, data: {eventId: "event-1", rules: []},
     } as never, deps as never), (error: unknown) =>

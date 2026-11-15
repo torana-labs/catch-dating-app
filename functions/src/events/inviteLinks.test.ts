@@ -1,3 +1,4 @@
+import {seedCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -68,7 +69,9 @@ class FakeTransaction {
 
 class FakeFirestore {
   beforeTransaction: (() => void) | undefined;
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new FakeCollectionRef(this, path);
   }

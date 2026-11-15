@@ -1,3 +1,4 @@
+import {setCatchBookingDoc} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
@@ -154,12 +155,12 @@ for (const [user, device] of [[{prefsEventReminders: false}, true],
 test("each participant payload belongs only to its resolved UID and token",
   async () => {
     const h = setup();
-    h.db.setDoc("eventParticipations/two",
+    setCatchBookingDoc(h.db, "eventParticipations/two",
       {eventId: "evt", uid: "two", status: "signedUp"});
     h.db.setDoc("users/two", {});
     h.db.setDoc("users/two/pushInstallations/device",
       {token: "token-two", appRole: "consumer"});
-    h.db.setDoc("eventParticipations/foreign",
+    setCatchBookingDoc(h.db, "eventParticipations/foreign",
       {eventId: "other-event", uid: "foreign", status: "signedUp"});
     h.db.setDoc("users/foreign", {});
     h.db.setDoc("users/foreign/pushInstallations/device",

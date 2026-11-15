@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import type {EventParticipationDocument} from "./generated/firestoreAdminTypes";
 
 export type EventParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
@@ -122,6 +123,135 @@ export function catchBookingFromRow(
   }
   return {...booking, eventId: row.eventId, organizerId: row.organizerId,
     uid: row.linkedUid} as EventParticipationSnapshot["data"];
+}
+
+/**
+ * One account's Catch booking on one event, read from its roster row. Shaped
+ * like the participation snapshot its callers used to read: `ref` is the
+ * participation the booking writers still write in the same transaction.
+ */
+export interface CatchBookingSnapshot {
+  exists: boolean;
+  id: string;
+  ref: FirebaseFirestore.DocumentReference;
+  /** The roster row holding the booking, when there is one. */
+  rowRef: FirebaseFirestore.DocumentReference | null;
+  data(): EventParticipationDocument | undefined;
+}
+
+/**
+ * The full booking a roster row carries, in the participation shape.
+ * @param {FirebaseFirestore.DocumentData | undefined} row eventAttendees row.
+ * @return {EventParticipationDocument | undefined} Booking, if linked.
+ */
+export function catchBookingDocumentFromRow(
+  row: FirebaseFirestore.DocumentData | undefined
+): EventParticipationDocument | undefined {
+  const booking = catchBookingFromRow(row);
+  if (!booking) return undefined;
+  return {...booking, updatedAt: row?.updatedAt ?? null} as unknown as
+    EventParticipationDocument;
+}
+
+type BookingReader = Pick<FirebaseFirestore.Transaction, "get"> | null;
+
+/**
+ * Reads one account's Catch booking on an event: the account's roster pointer,
+ * then the row it names. Pass a transaction to read inside it.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} eventId Event id.
+ * @param {string} uid Account id.
+ * @param {BookingReader=} tx Optional transaction.
+ * @return {Promise<CatchBookingSnapshot>} The booking, or a missing snapshot.
+ */
+export async function getCatchBooking(
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  uid: string,
+  tx: BookingReader = null
+): Promise<CatchBookingSnapshot> {
+  const id = eventParticipationId(eventId, uid);
+  const ref = db.collection("eventParticipations").doc(id);
+  const get = (target: FirebaseFirestore.DocumentReference) =>
+    tx ? tx.get(target) : target.get();
+  const pointer = await get(db.collection("eventAttendeeIndex").doc(id));
+  const attendeeId = pointer.data()?.attendeeId;
+  if (typeof attendeeId !== "string" || !attendeeId) {
+    return {exists: false, id, ref, rowRef: null, data: () => undefined};
+  }
+  const rowRef = db.collection("eventAttendees").doc(attendeeId);
+  const row = await get(rowRef);
+  const booking = catchBookingDocumentFromRow(row.data());
+  // A pointer to a row linked to someone else is never this account's booking.
+  const data = booking && booking.uid === uid && booking.eventId === eventId ?
+    booking : undefined;
+  return {exists: data !== undefined, id, ref, rowRef, data: () => data};
+}
+
+/**
+ * Catch bookings from roster rows matching a query, keyed to the
+ * participation each still writes.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {FirebaseFirestore.QuerySnapshot} snap Roster query result.
+ * @return {CatchBookingSnapshot[]} Bookings, skipping unlinked rows.
+ */
+export function catchBookingsFromRows(
+  db: FirebaseFirestore.Firestore,
+  snap: FirebaseFirestore.QuerySnapshot
+): CatchBookingSnapshot[] {
+  return snap.docs.flatMap((doc) => {
+    const data = catchBookingDocumentFromRow(doc.data());
+    if (!data) return [];
+    const id = eventParticipationId(data.eventId, data.uid);
+    return [{exists: true, id, rowRef: doc.ref,
+      ref: db.collection("eventParticipations").doc(id), data: () => data}];
+  });
+}
+
+/**
+ * One account's Catch bookings across events, from the roster.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} uid Account id.
+ * @param {object=} options Statuses to include and a row limit.
+ * @return {Promise<CatchBookingSnapshot[]>} Bookings.
+ */
+export async function catchBookingsForUser(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  options: {statuses?: EventParticipationStatus[]; limit?: number;
+    tx?: BookingReader} = {}
+): Promise<CatchBookingSnapshot[]> {
+  let query: FirebaseFirestore.Query = db.collection("eventAttendees")
+    .where("linkedUid", "==", uid);
+  if (options.statuses) {
+    if (options.statuses.length === 0) return [];
+    query = query.where("booking.status", "in", options.statuses);
+  }
+  if (options.limit !== undefined) query = query.limit(options.limit);
+  const snap = options.tx ? await options.tx.get(query) : await query.get();
+  return catchBookingsFromRows(db, snap);
+}
+
+/**
+ * Catch bookings on one event, from the roster, outside a transaction.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} eventId Event id.
+ * @param {object=} options Statuses to include and a row limit.
+ * @return {Promise<CatchBookingSnapshot[]>} Bookings.
+ */
+export async function catchBookingsForEvent(
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  options: {statuses?: EventParticipationStatus[]; limit?: number} = {}
+): Promise<CatchBookingSnapshot[]> {
+  let query: FirebaseFirestore.Query = db.collection("eventAttendees")
+    .where("eventId", "==", eventId);
+  if (options.statuses) {
+    if (options.statuses.length === 0) return [];
+    query = query.where("booking.status", "in", options.statuses);
+  }
+  if (options.limit !== undefined) query = query.limit(options.limit);
+  return catchBookingsFromRows(db, await query.get());
 }
 
 /** Bookings from roster rows, keyed to the participation each still writes. */

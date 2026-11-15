@@ -19,6 +19,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
   eventParticipationId,
   eventParticipationPatch,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {normalizeMarkEventAttendancePayload} from "./eventPayloadNormalization";
 import {
@@ -143,7 +144,7 @@ export async function markEventAttendanceHandler(
   // transaction, conditioned on the in-transaction status, so concurrent or
   // retried check-ins cannot double-count or lose updates.
   const checkIn = await db.runTransaction(async (tx) => {
-    const participationSnap = await tx.get(participationRef);
+    const participationSnap = await getCatchBooking(db, eventId, userId, tx);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {
         status?: string;

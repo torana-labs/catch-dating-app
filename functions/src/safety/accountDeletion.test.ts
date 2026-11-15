@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "crypto";
@@ -794,6 +798,7 @@ function createAccountDeletionHarness(params: {
   const deletedStorageFiles: string[] = [];
   let commits = 0;
   const seed = params.seed;
+  seedCatchBookingRows(seed as Record<string, Record<string, unknown>>);
 
   const docFor = (
     collectionPath: string,
@@ -824,11 +829,14 @@ function createAccountDeletionHarness(params: {
     docs: FakeDocumentReference[] = allDocs(collectionPath)
   ) => ({
     where: (field: string, op: string, value: unknown) => {
-      assert.ok(op === "==" || op === "array-contains");
+      assert.ok(op === "==" || op === "in" || op === "array-contains");
       return queryFor(
         collectionPath,
         docs.filter((doc) => {
-          const fieldValue = seed[doc.path]?.[field];
+          const fieldValue = fieldAt(seed[doc.path], field);
+          if (op === "in") {
+            return Array.isArray(value) && value.includes(fieldValue);
+          }
           if (op === "array-contains") {
             return Array.isArray(fieldValue) && fieldValue.includes(value);
           }
@@ -912,6 +920,9 @@ function createAccountDeletionHarness(params: {
             setWrites.push({path: ref.path, data});
             seed[ref.path] = data;
           }),
+        delete: (ref: FakeDocumentReference) => pending.push(() => {
+          delete seed[ref.path];
+        }),
       } as unknown as FirebaseFirestore.Transaction;
       const result = await callback(tx);
       pending.forEach((write) => write());
@@ -1009,8 +1020,9 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
       uid)}`]: {eventId: "event1", organizerId: "org1", uid,
       phoneE164: null, migrationRevision: 1, state: "current"},
   };
+  // Every Catch booking has its roster row, so the row is always present.
   const source = options.host ? "hostImport" : "catchBooking";
-  if (options.host || options.catchMirror) {
+  {
     seed["eventAttendees/att1"] = {eventId: "event1",
       organizerId: "org1", source, status: "registered", linkedUid: uid,
       phoneE164: null, externalReference: null};
@@ -1194,12 +1206,15 @@ test("a participation changed after query is reread before any release",
     const h = createAccountDeletionHarness({seed,
       now: {kind: "serverTimestamp"}, beforeTransaction: () => {
         seed["eventParticipations/event1_runner1"].status = "deleted";
+        (seed["eventAttendees/att1"].booking as Record<string, unknown>)
+          .status = "deleted";
       }});
     await assert.rejects(deleteAccountEventParticipations({
       db: h.deps.firestore(),
       uid: "runner1",
       now: admin.firestore.FieldValue.serverTimestamp(),
-      nowMillis: 1000}), /still owns an active seat/u);
+      // The reread booking is deleted while its seat is still held.
+      nowMillis: 1000}), /Unaccounted active reservation/u);
     assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
     assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
       true);
@@ -1257,6 +1272,7 @@ test("account deletion preserves checkout identity before or after deletion",
 test("payment-only identity is revoked after hold release", async () => {
   const seed = readySeatSeed();
   delete seed["eventParticipations/event1_runner1"];
+  delete seed["eventAttendees/att1"];
   seed["eventSeatLedgers/event1"] = {...seed["eventSeatLedgers/event1"],
     occupied: 0, checkoutHeld: 0};
   seed[seatReservationPath("canonical_runner1")] = {
@@ -1279,6 +1295,7 @@ test("full account deletion releases its pair hold before retiring UID proof",
   async () => {
     const seed = readySeatSeed();
     delete seed["eventParticipations/event1_runner1"];
+    delete seed["eventAttendees/att1"];
     seed["users/runner1"] = {name: "Synthetic Guest", profilePhotos: []};
     seed["events/event1"] = {...seed["events/event1"], bookedCount: 0,
       crossPathsPairHeldCount: 1,

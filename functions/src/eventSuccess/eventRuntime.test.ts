@@ -1,3 +1,8 @@
+import {
+  fieldMatches,
+  inFilter,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "node:crypto";
@@ -82,11 +87,12 @@ class FakeCollectionRef {
     return new FakeDocRef(this.firestore, `${this.path}/${id}`);
   }
   where(field: string, operator: string, value: unknown): FakeCollectionRef {
-    assert.equal(operator, "==");
+    assert.ok(operator === "==" || operator === "in");
     return new FakeCollectionRef(
       this.firestore,
       this.path,
-      [...this.filters, {field, value}],
+      [...this.filters,
+        {field, value: operator === "in" ? inFilter(value) : value}],
       this.limitCount
     );
   }
@@ -146,7 +152,9 @@ class FakeTransaction {
 }
 
 class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string): FakeCollectionRef {
     return new FakeCollectionRef(this, path);
   }
@@ -182,7 +190,7 @@ class FakeFirestore {
         path.startsWith(prefix) &&
         !path.slice(prefix.length).includes("/"))
       .filter(([, data]) => filters.every(({field, value}) =>
-        nestedValue(data!, field) === value))
+        fieldMatches(nestedValue(data!, field), value)))
       .map(([path]) => new FakeSnapshot(this, path));
   }
 }

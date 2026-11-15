@@ -18,7 +18,6 @@ import {
 } from "../shared/eventBroadcasts";
 import type {
   EventDocument,
-  EventParticipationDocument,
   OrganizerBroadcastSummaryDocument,
   OrganizerContactDocument,
   UserProfileDocument,
@@ -44,6 +43,7 @@ import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {blockDocIdsForPairs} from "../safety/blocking";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {catchBookingsFromRows} from "../shared/relationshipDocuments";
 
 const maxRecipients = 500;
 const fanOutConcurrency = 20;
@@ -353,9 +353,10 @@ async function claimBroadcast(params: {
     let targetUids = existing ? parseTargetUids(existing.targetUids) : [];
     if (!existing || !Array.isArray(existing.targetUids)) {
       const participationQuery = params.db
-        .collection("eventParticipations")
+        .collection("eventAttendees")
         .where("eventId", "==", params.data.eventId)
-        .where("status", "in", statusesForAudience(params.data.audience))
+        .where("booking.status", "in",
+          statusesForAudience(params.data.audience))
         .limit(maxRecipients + 1);
       const participationSnap = await tx.get(participationQuery);
       if (participationSnap.size > maxRecipients) {
@@ -364,8 +365,9 @@ async function claimBroadcast(params: {
           `Broadcast audiences are limited to ${maxRecipients} recipients.`
         );
       }
-      targetUids = [...new Set(participationSnap.docs
-        .map((doc) => (doc.data() as EventParticipationDocument).uid)
+      targetUids = [...new Set(catchBookingsFromRows(params.db,
+        participationSnap)
+        .map((booking) => booking.data()?.uid)
         .filter((uid): uid is string =>
           typeof uid === "string" &&
           uid.length > 0 &&

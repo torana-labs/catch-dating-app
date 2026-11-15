@@ -1,3 +1,9 @@
+import {
+  fieldAt,
+  fieldMatches,
+  inFilter,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -65,10 +71,10 @@ class FakeQuery {
     private readonly path: string
   ) {}
 
-  where(field: string, op: "==", value: unknown) {
-    assert.equal(op, "==");
+  where(field: string, op: "==" | "in", value: unknown) {
+    assert.ok(op === "==" || op === "in");
     const next = this.clone();
-    next.filters.push({field, value});
+    next.filters.push({field, value: op === "in" ? inFilter(value) : value});
     return next;
   }
 
@@ -88,7 +94,7 @@ class FakeQuery {
     let docs = this.firestore
       .collectionDocs(this.path)
       .filter((doc) => this.filters.every(
-        (filter) => doc.data[filter.field] === filter.value
+        (filter) => fieldMatches(fieldAt(doc.data, filter.field), filter.value)
       ));
     if (this.order) {
       const {field, direction} = this.order;
@@ -121,7 +127,9 @@ class FakeQuery {
 class FakeFirestore {
   private autoId = 0;
 
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
 
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);

@@ -51,7 +51,7 @@ export function validateCallableWithAjv<T>(
  * @return {T} The document data cast to T.
  */
 export function requireDoc<T>(
-  snap: FirebaseFirestore.DocumentSnapshot,
+  snap: {data(): unknown},
   label: string,
 ): T {
   const data = snap.data();

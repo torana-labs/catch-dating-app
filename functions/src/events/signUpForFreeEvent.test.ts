@@ -1,3 +1,4 @@
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -179,7 +180,9 @@ test(
       deps({
         events: {"event-1": event},
         eventParticipations: {
-          "event-1_runner-1": {hostApprovalStatus: "approved"},
+          "event-1_runner-1": {eventId: "event-1", uid: "runner-1",
+            organizerId: "club-1", status: "cancelled",
+            hostApprovalStatus: "approved"},
         },
         signUpCalls,
       })
@@ -270,9 +273,14 @@ function deps({
     "users",
     "eventPrivateAccess",
     "eventParticipations",
+    "eventAttendeeIndex",
+    "eventAttendees",
     "eventWaitlistOffers",
     "hostMembershipBenefitUses",
   ];
+  const roster = withCatchBookingRows(Object.fromEntries(
+    Object.entries(eventParticipations).map(([id, data]) =>
+      [`eventParticipations/${id}`, data])));
   const firestore = {
     collection: (path: string) => {
       assert.ok(allowedCollections.includes(path), path);
@@ -301,7 +309,9 @@ function deps({
                 users[id] :
                 path === "eventPrivateAccess" ?
                   eventPrivateAccess[id] :
-                  eventParticipations[id];
+                  path === "eventParticipations" ?
+                    eventParticipations[id] :
+                    roster[`${path}/${id}`];
             return {
               exists: data !== undefined,
               data: () => data,

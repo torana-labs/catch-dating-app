@@ -52,6 +52,7 @@ import {
   eventWaitlistOfferId,
   eventParticipationsByStatusInTransaction,
   participantUids,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
@@ -212,7 +213,7 @@ export async function createEventWaitlistOffersHandler(
         .collection("eventWaitlistOffers")
         .doc(eventWaitlistOfferId(eventId, uid));
       const [participationSnap, userSnap, offerSnap] = await Promise.all([
-        tx.get(participationRef),
+        getCatchBooking(db, eventId, uid, tx),
         tx.get(db.collection("users").doc(uid)),
         tx.get(offerRef),
       ]);
@@ -411,7 +412,7 @@ export async function acceptEventWaitlistOfferHandler(
       await Promise.all([
         tx.get(offerRef),
         tx.get(db.collection("events").doc(eventId)),
-        tx.get(participationRef),
+        getCatchBooking(db, eventId, uid, tx),
         tx.get(db.collection("users").doc(uid)),
         readOfferRoster(db, tx, eventId, uid),
       ]);
@@ -573,7 +574,7 @@ export async function declineEventWaitlistOfferHandler(
       .doc(eventParticipationId(eventId, uid));
     const [offerSnap, participationSnap, rosterSlot] = await Promise.all([
       tx.get(offerRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, uid, tx),
       readOfferRoster(db, tx, eventId, uid),
     ]);
     const offer = offerSnap.data();
@@ -726,7 +727,7 @@ async function expireOfferIfCurrent(params: {
       .doc(eventParticipationId(eventId, uid));
     const [participationSnap, eventSnap, userSnap, rosterSlot] =
       await Promise.all([
-        tx.get(participationRef),
+        getCatchBooking(params.db, eventId, uid, tx),
         tx.get(params.db.collection("events").doc(eventId)),
         tx.get(params.db.collection("users").doc(uid)),
         readOfferRoster(params.db, tx, eventId, uid),

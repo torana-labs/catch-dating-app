@@ -8,7 +8,10 @@ import type {EventDocument} from
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
-import {eventParticipationId} from "../../shared/relationshipDocuments";
+import {
+  eventParticipationId,
+  getCatchBooking,
+} from "../../shared/relationshipDocuments";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
   "../../events/seatIdentityAuthority";
 import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
@@ -88,8 +91,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     if (!quote) unavailable();
     const [receipt, participationSnap] = await Promise.all([
       input.readAdmission({db, tx, payment, paymentId}),
-      tx.get(db.collection("eventParticipations")
-        .doc(eventParticipationId(eventId, recipientUid))),
+      getCatchBooking(db, eventId, recipientUid, tx),
     ]);
     if ((event.organizerId) !== organizerId ||
         payment.refundedAmountPaise !== 0 || !payment.providerPaymentId ||

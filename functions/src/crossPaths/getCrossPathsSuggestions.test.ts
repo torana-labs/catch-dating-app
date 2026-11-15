@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import test from "node:test";
+import {
+  fieldAt,
+  withCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   getCrossPathsSuggestionsHandler,
@@ -73,7 +77,7 @@ class FakeQuery {
   async get() {
     const docs = this.firestore.collectionRows(this.collectionPath)
       .filter(({value}) => this.filters.every((filter) =>
-        matches(value[filter.field], filter.op, filter.value)
+        matches(fieldAt(value, filter.field), filter.op, filter.value)
       ))
       .slice(0, this.rowLimit)
       .map(({id, value}) => new FakeSnapshot(id, value));
@@ -183,7 +187,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     };
   }
   Object.assign(docs, overrides);
-  const firestore = new FakeFirestore(docs);
+  const firestore = new FakeFirestore(withCatchBookingRows(docs));
   const rateLimitCalls: string[] = [];
   return {
     firestore,

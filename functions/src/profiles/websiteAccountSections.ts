@@ -3,6 +3,7 @@ import type {ManageWebsiteAccountCallableResponse as Account} from
   "../shared/generated/manageWebsiteAccountCallableResponse";
 import type {ManageWebsiteAccountCallablePayload as Payload} from
   "../shared/generated/manageWebsiteAccountCallablePayload";
+import {catchBookingsForUser} from "../shared/relationshipDocuments";
 
 export type AccountSection = NonNullable<
   Extract<Payload, {action: "read"}>["sections"]
@@ -34,7 +35,10 @@ export async function readAccountSections(
       })));
   const [participations, follows, reviews, preferences] = await Promise.all([
     wanted.has("plans") ?
-      own("eventParticipations", "uid", limits.plans * 2) : null,
+      catchBookingsForUser(db, uid, {limit: limits.plans * 2})
+        .then((bookings) => bookings.map((booking) => ({
+          id: booking.id, data: booking.data() as unknown as Data,
+        }))) : null,
     wanted.has("following") ?
       own("organizerFollows", "uid", limits.follows * 2) : null,
     wanted.has("reviews") ?

@@ -1,3 +1,4 @@
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {createHash} from "node:crypto";
@@ -47,7 +48,7 @@ export class Store {
         direction]),
       limit: (count: number) => ({collection: name, filters, count, order}),
     });
-    return {doc: (id: string) => ({path: `${name}/${id}`,
+    return {doc: (id: string) => ({path: `${name}/${id}`, id,
       collection: (child: string) =>
         this.collection(`${name}/${id}/${child}`)}),
     where: (field: string, op: string, value: unknown) =>
@@ -124,6 +125,16 @@ export class Store {
   }
   put(path: string, value: Row) {
     this.rows.set(path, value);
+    if (path.startsWith("eventParticipations/")) this.syncCatchBookings();
+  }
+  /** Rewrites roster rows and pointers from the stored participations. */
+  syncCatchBookings() {
+    const seeded = withCatchBookingRows(Object.fromEntries(this.rows));
+    for (const [rowPath, row] of Object.entries(seeded)) {
+      if (row && rowPath.startsWith("eventAttendee")) {
+        this.rows.set(rowPath, row as Row);
+      }
+    }
   }
   get(path: string): Row | undefined {
     return this.rows.get(path);

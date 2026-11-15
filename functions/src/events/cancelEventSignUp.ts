@@ -32,6 +32,7 @@ import {
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
   waitlistedEventParticipationsInTransaction,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
@@ -180,7 +181,7 @@ export async function cancelEventSignUpHandler(
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(userRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, userId, tx),
       eventParticipationsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
@@ -672,8 +673,8 @@ async function cancellationRefundPreflight(input: {
   const snapshot = payments.docs[0];
   if (!snapshot) return null;
   const payment = requireDoc<PaymentDocument>(snapshot, "PaymentDocument");
-  const participation = await input.db.collection("eventParticipations")
-    .doc(eventParticipationId(input.eventId, input.userId)).get();
+  const participation = await getCatchBooking(input.db, input.eventId,
+    input.userId);
   const needsAuthorization = participation.data()?.status === "signedUp" ||
     payment.cancellationRefund?.state === "pending";
   const authorization = needsAuthorization &&

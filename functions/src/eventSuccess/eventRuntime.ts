@@ -77,7 +77,6 @@ import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity,
 import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
   FirestoreSeatTransaction,
   prepareFirestoreSeat} from "../events/seatAuthority/firestoreAdapter";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireRuntimeVenueEvent,
   type RuntimeVenueEventDocument} from "../events/configuredEvent";
 import {
@@ -105,6 +104,7 @@ import {
 } from "./runtimeProfile";
 import {readRuntimeDataRequestProjection, reconcileRuntimeDataRequest} from
   "./operations/runtimeRequiredDataStore";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 export {
   completedRuntimeFieldIds,
   optionalRuntimeFieldIds,
@@ -371,9 +371,8 @@ export async function claimEventRuntimeAccessHandler(
 
     const walkInPolicy = currentEvent.runtimeAccess!.walkInPolicy;
     if (!attendee && walkInPolicy === "deny") {
-      const currentParticipation = seatMode === "ready" ? await tx.get(db
-        .collection("eventParticipations")
-        .doc(eventParticipationId(resolved.eventId, uid))) : null;
+      const currentParticipation = seatMode === "ready" ?
+        await getCatchBooking(db, resolved.eventId, uid, tx) : null;
       const current = currentParticipation?.data();
       const organizerId = currentEvent.organizerId;
       if (!current || current.eventId !== resolved.eventId ||
@@ -461,8 +460,8 @@ export async function claimEventRuntimeAccessHandler(
         };
         nextBookedCount = prepared.plan.ledger!.occupied;
       } else if (!attendee && reservation?.active) {
-        const participation = await tx.get(db.collection("eventParticipations")
-          .doc(eventParticipationId(resolved.eventId, uid)));
+        const participation =
+          await getCatchBooking(db, resolved.eventId, uid, tx);
         const current = participation.data();
         if (!current || current.eventId !== resolved.eventId ||
             current.uid !== uid ||

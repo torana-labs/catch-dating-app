@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -45,7 +49,7 @@ class FakeQuery {
     const docs = this.firestore.collectionRows(this.path)
       .filter(({value}) => {
         if (field === undefined) return true;
-        const actual = value[field];
+        const actual = fieldAt(value, field);
         return Array.isArray(actual) && actual.includes(this.expected);
       })
       .map(({id, value}) => new FakeSnapshot(
@@ -69,7 +73,9 @@ class FakeCollection extends FakeQuery {
 }
 
 class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new FakeCollection(this, path);
   }

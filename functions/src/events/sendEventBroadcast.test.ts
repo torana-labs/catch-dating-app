@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {guestInstallation} from "../shared/testing/pushInstallationFixture";
@@ -146,7 +150,9 @@ class FakeTransaction {
 
 class FakeFirestore {
   private transactionTail: Promise<unknown> = Promise.resolve();
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new FakeCollection(this, path);
   }
@@ -207,7 +213,7 @@ function parentCollection(path: string): string {
 }
 
 function matchesFilter(data: FakeData, filter: Filter): boolean {
-  const value = data[filter.field];
+  const value = fieldAt(data, filter.field);
   if (filter.op === "==") return value === filter.value;
   if (filter.op === "in") {
     return Array.isArray(filter.value) && filter.value.includes(value);

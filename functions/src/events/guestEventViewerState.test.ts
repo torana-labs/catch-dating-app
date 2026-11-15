@@ -1,3 +1,4 @@
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import {setup as offerFixture} from
   "../payments/offerPayments/offerPaymentTestFixture";
 import {approvedApplicationFixture, responseId} from
@@ -68,8 +69,10 @@ for (const {status, attendedAt, attendance} of [
       paymentId: null};
     assert.ok(validateEventParticipationDocument(participation),
       JSON.stringify(validateEventParticipationDocument.errors));
-    h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`,
-      {...participation});
+    for (const [path, doc] of Object.entries(withCatchBookingRows({
+      [`eventParticipations/${eventParticipationId(eventId, uid)}`]:
+        {...participation},
+    }))) if (doc) h.store.put(path, doc);
     const native = await readNative({db: h.store.db(), uid, eventId,
       nowMillis: now});
     const guest = await h.read();

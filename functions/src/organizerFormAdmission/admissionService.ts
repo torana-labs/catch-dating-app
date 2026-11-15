@@ -39,7 +39,7 @@ import {validateOrganizerFormAdmissionReceiptDocument} from
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
-import {eventParticipationId} from "../shared/relationshipDocuments";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
 import {readSeatMigrationWriterFence} from
@@ -495,8 +495,8 @@ async function executeAdmission(
       const uid = response.respondentUid;
       if (uid && currentAuth?.uid === uid) {
         const [participationRaw, uidIdentity] = await Promise.all([
-          read(db, tx, "eventParticipations",
-            eventParticipationId(payload.eventId, uid)),
+          getCatchBooking(db, payload.eventId, uid, tx)
+            .then((booking) => booking.data()),
           new FirestoreSeatIdentityAuthority().resolve({db, tx,
             eventId: payload.eventId, organizerId: payload.organizerId,
             subject: {kind: "verifiedUid", uid}}),

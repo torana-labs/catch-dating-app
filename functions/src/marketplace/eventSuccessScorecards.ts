@@ -19,6 +19,11 @@ import {buildFeedbackSignalFact} from "./signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "./participantSignals";
+import {
+  catchBookingsForEvent,
+  catchBookingsForUser,
+  EventParticipationStatus,
+} from "../shared/relationshipDocuments";
 
 const eventSuccessFeedbackCollection = "eventSuccessFeedback";
 const eventSuccessConversationGraphsCollection =
@@ -154,10 +159,7 @@ export async function refreshEventSuccessScorecard(
       .where("eventId", "==", eventId)
       .get(),
     db.collection("matches").where("eventIds", "array-contains", eventId).get(),
-    db
-      .collection("eventParticipations")
-      .where("eventId", "==", eventId)
-      .get(),
+    catchBookingsForEvent(db, eventId),
     db
       .collection("eventWaitlistOffers")
       .where("eventId", "==", eventId)
@@ -180,8 +182,8 @@ export async function refreshEventSuccessScorecard(
   const matches = matchesSnap.docs
     .map((doc) => doc.data() as MatchDocument)
     .filter(isDatingMatch);
-  const participations = participationsSnap.docs.map(
-    (doc) => doc.data() as EventParticipationDocument
+  const participations = participationsSnap.map(
+    (booking) => booking.data()!
   );
   const waitlistOffers = waitlistOffersSnap.docs.map(
     (doc) => doc.data() as EventWaitlistOfferDocument
@@ -482,13 +484,10 @@ async function loadRepeatAttendeeCount(params: {
   // with the club's lifetime participation volume the way a club-wide scan did.
   const repeatFlags = await Promise.all(
     activeUids.map(async (uid) => {
-      const snap = await params.db
-        .collection("eventParticipations")
-        .where("uid", "==", uid)
-        .where("status", "in", statuses)
-        .get();
-      return snap.docs.some((doc) => {
-        const participation = doc.data() as Partial<EventParticipationDocument>;
+      const bookings = await catchBookingsForUser(params.db, uid,
+        {statuses: statuses as EventParticipationStatus[]});
+      return bookings.some((booking) => {
+        const participation = booking.data()!;
         return participation.organizerId === organizerId &&
           participation.eventId !== params.eventId;
       });

@@ -18,7 +18,6 @@ import {requireCatchBookingAuthority} from "../events/eventOrigin";
 import {requirePublicConfiguredEvent} from "../events/configuredEvent";
 import {requireAuth} from "../shared/auth";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {organizerOwnerUserId} from "../shared/organizerHosts";
@@ -54,6 +53,10 @@ import {
 } from "./stripe";
 import {findHostPaymentAccount, providerAccountId} from
   "./hostPaymentAccounts";
+import {
+  getCatchBooking,
+  catchBookingsForEvent,
+} from "../shared/relationshipDocuments";
 
 interface CreateStripeCheckoutSessionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -88,17 +91,12 @@ export async function createStripeCheckoutSessionHandler(
     eventSnap,
     userSnap,
     participationSnap,
-    activeParticipationsSnap,
+    activeBookings,
   ] = await Promise.all([
     db.collection("events").doc(eventId).get(),
     db.collection("users").doc(uid).get(),
-    db.collection("eventParticipations")
-      .doc(eventParticipationId(eventId, uid))
-      .get(),
-    db.collection("eventParticipations")
-      .where("eventId", "==", eventId)
-      .where("status", "in", ["signedUp", "attended"])
-      .get(),
+    getCatchBooking(db, eventId, uid),
+    catchBookingsForEvent(db, eventId, {statuses: ["signedUp", "attended"]}),
   ]);
 
   if (!eventSnap.exists) {
@@ -138,8 +136,8 @@ export async function createStripeCheckoutSessionHandler(
     );
   }
 
-  const signedUpCount = activeParticipationsSnap.docs
-    .filter((doc) => doc.data().status === "signedUp")
+  const signedUpCount = activeBookings
+    .filter((booking) => booking.data()?.status === "signedUp")
     .length;
   if (!crossPathsPairHoldId &&
       (event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
@@ -157,8 +155,8 @@ export async function createStripeCheckoutSessionHandler(
     endTimeMillis: event.endTime.toMillis(),
   });
 
-  const activeParticipantIds = activeParticipationsSnap.docs
-    .map((doc) => doc.data().uid)
+  const activeParticipantIds = activeBookings
+    .map((booking) => booking.data()?.uid)
     .filter((participantUid) => typeof participantUid === "string");
   if (await hasBlockingRelationship(db, uid, activeParticipantIds)) {
     throw new HttpsError(

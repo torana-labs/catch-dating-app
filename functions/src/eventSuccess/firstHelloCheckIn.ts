@@ -35,6 +35,7 @@ import {blockDocId} from "../safety/blocking";
 import {
   eventParticipationId,
   eventParticipationPatch,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {
   EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
@@ -320,7 +321,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(planRef),
-      tx.get(participationRef),
+      getCatchBooking(db, data.eventId, observerUid, tx),
       tx.get(runtimeParticipantRef),
       tx.get(missionRef),
     ]);
@@ -382,9 +383,6 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       observerUid
     );
 
-    const targetParticipationRef = db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(data.eventId, mission.targetUid));
     const targetRuntimeParticipantRef = db
       .collection("eventRuntimeParticipants")
       .doc(eventRuntimeParticipantId(data.eventId, mission.targetUid));
@@ -401,7 +399,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       observerBlocksTargetSnap,
       targetBlocksObserverSnap,
     ] = await Promise.all([
-      tx.get(targetParticipationRef),
+      getCatchBooking(db, data.eventId, mission.targetUid, tx),
       tx.get(targetRuntimeParticipantRef),
       tx.get(observerBlocksTargetRef),
       tx.get(targetBlocksObserverRef),
@@ -705,7 +703,7 @@ function requireFirstHelloPlan(
  * @return {EventParticipationDocument} Participation document.
  */
 function requireSignedUpParticipant(
-  snap: FirebaseFirestore.DocumentSnapshot,
+  snap: {exists: boolean; data(): unknown},
   uid: string
 ): EventParticipationDocument {
   if (!snap.exists) {
@@ -795,7 +793,7 @@ function requireRuntimeAttendee(
  * @param {string} uid Expected target user id.
  */
 function requireAttendedTarget(
-  snap: FirebaseFirestore.DocumentSnapshot,
+  snap: {exists: boolean; data(): unknown},
   uid: string
 ) {
   if (!snap.exists) {

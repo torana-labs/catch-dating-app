@@ -37,6 +37,7 @@ import {
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
   participantUids,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {
   releaseUserEventScheduleInTransaction,
@@ -118,7 +119,7 @@ export async function decideEventJoinRequestHandler(
     const [eventSnap, participationSnap, requesterSnap, requesterPushToken,
       rosterSlot] = await Promise.all([
       tx.get(eventRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, userId, tx),
       tx.get(requesterRef),
       readConsumerPushToken(db, userId, tx),
       readCatchBookingRoster({db, tx, eventId, uid: userId,

@@ -27,6 +27,10 @@ import {isReciprocallyEligible} from
   "../shared/relationshipEligibility";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {
+  catchBookingsForEvent,
+  getCatchBooking,
+} from "../shared/relationshipDocuments";
 
 const swipeWindowDurationMs = 24 * 60 * 60 * 1000;
 const boundedCandidateLimit = 1000;
@@ -66,8 +70,7 @@ export async function fetchSwipeCandidatesHandler(
 
   const [eventSnap, viewerParticipationSnap, viewerSnap] = await Promise.all([
     db.collection("events").doc(data.eventId).get(),
-    db.collection("eventParticipations")
-      .doc(eventParticipationId(data.eventId, viewerUid)).get(),
+    getCatchBooking(db, data.eventId, viewerUid),
     db.collection("users").doc(viewerUid).get(),
   ]);
 
@@ -80,10 +83,7 @@ export async function fetchSwipeCandidatesHandler(
   }
 
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const viewerParticipation = requireDoc<EventParticipationDocument>(
-    viewerParticipationSnap,
-    "EventParticipationDocument"
-  );
+  const viewerParticipation = viewerParticipationSnap.data()!;
   const viewer = requireDoc<UserProfileDocument>(
     viewerSnap,
     "UserProfileDocument"
@@ -98,13 +98,10 @@ export async function fetchSwipeCandidatesHandler(
     return emptyResponse();
   }
 
-  const participationSnap = await db.collection("eventParticipations")
-    .where("eventId", "==", data.eventId)
-    .where("status", "==", "attended")
-    .limit(boundedCandidateLimit)
-    .get();
+  const attendedBookings = await catchBookingsForEvent(db, data.eventId,
+    {statuses: ["attended"], limit: boundedCandidateLimit});
   const orderedCandidateIds = orderedUniqueCandidateIds(
-    participationSnap.docs,
+    attendedBookings.map((booking) => booking.data()!),
     viewerUid
   );
   if (orderedCandidateIds.length === 0) return emptyResponse();
@@ -169,14 +166,10 @@ function hasOpenSwipeWindow(event: EventDocument, nowMillis: number): boolean {
 }
 
 function orderedUniqueCandidateIds(
-  docs: FirebaseFirestore.QueryDocumentSnapshot[],
+  bookings: EventParticipationDocument[],
   viewerUid: string
 ): string[] {
-  const participations = docs
-    .map((doc) => requireDoc<EventParticipationDocument>(
-      doc,
-      "EventParticipationDocument"
-    ))
+  const participations = bookings
     .filter((participation) =>
       participation.uid !== viewerUid && participation.status === "attended"
     )
@@ -202,10 +195,6 @@ function participationTimeMillis(
     participation.signedUpAt ??
     participation.createdAt
   ).toMillis();
-}
-
-function eventParticipationId(eventId: string, uid: string): string {
-  return `${eventId}_${uid}`;
 }
 
 export const fetchSwipeCandidates = onCall(

@@ -1,4 +1,4 @@
-import {eventParticipationId} from "../../shared/relationshipDocuments";
+import {getCatchBooking} from "../../shared/relationshipDocuments";
 import {Timestamp} from "firebase-admin/firestore";
 import type {EventAttendeeDocument} from
   "../../shared/generated/firestoreAdminTypes";
@@ -76,13 +76,8 @@ export async function preparePublicGuestIdentity(input: {
         currentAuthPhoneNumber: phoneE164,
       });
   if (nativeBooking) {
-    const participation = (
-      await tx.get(
-        db
-          .collection("eventParticipations")
-          .doc(eventParticipationId(eventId, uid)),
-      )
-    ).data();
+    const participation = (await getCatchBooking(db, eventId, uid, tx))
+      .data();
     const resolved = await new FirestoreSeatIdentityAuthority().resolve({
       db,
       tx,

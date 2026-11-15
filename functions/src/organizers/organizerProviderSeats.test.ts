@@ -1,3 +1,9 @@
+import {
+  fieldAt,
+  fieldMatches,
+  inFilter,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import test from "node:test";
@@ -66,7 +72,8 @@ function fixture(options: {active?: boolean; occupied?: number;
   }
   if (options.linkedUid) {
     docs[`eventParticipations/${eventParticipationId(eventId, uid)}`] = {
-      eventId, uid, status: "signedUp"};
+      eventId, organizerId, uid, status: "signedUp"};
+    seedCatchBookingRows(docs);
   }
   let writesStarted = false;
   const pending: Array<() => void> = [];
@@ -222,14 +229,16 @@ function reconcileFixture(options: {locked?: boolean; ready?: boolean;
   const query = (name: string, predicates: Array<[string, unknown]> = [],
     max = Infinity) => ({
     where: (field: string, op: string, value: unknown) => {
-      assert.equal(op, "==");
-      return query(name, [...predicates, [field, value]], max);
+      assert.ok(op === "==" || op === "in");
+      return query(name, [...predicates,
+        [field, op === "in" ? inFilter(value) : value]], max);
     },
     limit: (count: number) => query(name, predicates, count),
     get: async () => ({docs: Object.entries(docs)
       .filter(([path, value]) => path.startsWith(`${name}/`) &&
         path.slice(name.length + 1).indexOf("/") < 0 &&
-        predicates.every(([field, expected]) => value[field] === expected))
+        predicates.every(([field, expected]) =>
+          fieldMatches(fieldAt(value, field), expected)))
       .slice(0, max).map(([path, value]) => ({id: path.split("/").pop(),
         ref: {path}, data: () => value}))}),
   });

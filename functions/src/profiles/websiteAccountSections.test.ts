@@ -1,3 +1,4 @@
+import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
@@ -36,7 +37,7 @@ function fixture() {
     uid: "guest", status: "signedUp"});
   set("eventParticipations/done_guest", {eventId: "done", organizerId: "quiz",
     uid: "guest", status: "attended"});
-  set("eventParticipations/gone_guest", {eventId: "soon", organizerId: "run",
+  set("eventParticipations/gone_guest", {eventId: "gone", organizerId: "run",
     uid: "guest", status: "deleted"});
   set("eventParticipations/soon_other", {eventId: "soon", organizerId: "run",
     uid: "other", status: "signedUp"});
@@ -68,6 +69,10 @@ function fixture() {
       currentReceiptId: "receipt2"},
     sms: {status: "unknown", evidenceStatus: "notApplicable",
       currentReceiptId: null}});
+  for (const [path, data] of Object.entries(
+    withCatchBookingRows(Object.fromEntries(store.records)))) {
+    if (data) store.records.set(path, data);
+  }
   const deps = {
     db: () => store as unknown as FirebaseFirestore.Firestore,
     now: () => today,

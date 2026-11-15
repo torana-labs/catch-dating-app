@@ -15,8 +15,12 @@ import {validateEventParticipationDocument} from
   "../shared/generated/validators/eventParticipationDocument";
 import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
-import {eventParticipationId, eventParticipationsByStatusInTransaction,
-  participantUids, eventWaitlistOfferId} from "../shared/relationshipDocuments";
+import {
+  eventParticipationsByStatusInTransaction,
+  participantUids,
+  eventWaitlistOfferId,
+  getCatchBooking,
+} from "../shared/relationshipDocuments";
 import {isBookingReadyUserProfile} from "../shared/profileReadiness";
 import {eventRequiresRunPreferences, hasCurrentRunPreferences} from
   "../shared/runPreferencesReadiness";
@@ -115,8 +119,7 @@ export async function readEventViewerStateSource(params: {
         tx.get(db.collection("events").doc(eventId)),
         tx.get(db.collection("users").doc(uid)),
         tx.get(db.collection("deletedUsers").doc(uid)),
-        tx.get(db.collection("eventParticipations")
-          .doc(eventParticipationId(eventId, uid))),
+        getCatchBooking(db, eventId, uid, tx),
         tx.get(db.collection("eventWaitlistOffers")
           .doc(eventWaitlistOfferId(eventId, uid))),
       ]);

@@ -7,6 +7,7 @@ import {leaveEventWaitlistHandler, safetyLeaveWaitlistDeps} from
 import type {AccountSafetyActionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {millisOf} from "./safetyPolicy";
+import {catchBookingsForUser} from "../shared/relationshipDocuments";
 
 export type SafetyBookingOutcome = AccountSafetyActionDocument["bookings"];
 
@@ -65,12 +66,12 @@ export async function cancelFutureBookingsForSafety(
     failedEventIds: [],
   };
   const [participations, attendees] = await Promise.all([
-    db.collection("eventParticipations").where("uid", "==", uid).get(),
+    catchBookingsForUser(db, uid),
     db.collection("eventAttendees").where("linkedUid", "==", uid).get(),
   ]);
   const handled = new Set<string>();
-  for (const doc of participations.docs) {
-    const data = doc.data();
+  for (const booking of participations) {
+    const data = booking.data()!;
     const eventId = typeof data.eventId === "string" ? data.eventId : null;
     const status = data.status;
     if (!eventId || (status !== "signedUp" && status !== "waitlisted")) {

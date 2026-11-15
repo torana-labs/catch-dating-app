@@ -20,6 +20,7 @@ import {appCheckCallableOptionsWithSecrets} from
 import {
   eventParticipationId,
   eventParticipationPatch,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
@@ -97,7 +98,7 @@ export async function selfCheckInAttendanceHandler(
     const [eventSnap, participationSnap, sessionSnap, redemptionSnap,
       rosterSlot] = await Promise.all([
       tx.get(eventRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, userId, tx),
       tx.get(sessionRef),
       tx.get(redemptionRef),
       readCatchBookingRoster({db, tx, eventId, uid: userId,

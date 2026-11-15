@@ -2,7 +2,6 @@ import {onRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
   InviteAttribution,
@@ -21,6 +20,7 @@ import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import {
   syncHostPaymentAccountByStripeAccountId,
 } from "./stripeHostAccounts";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 interface StripeWebhookDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -142,10 +142,7 @@ async function fulfillStripeCheckoutSession({
       {inviteSource: inviteAttribution.inviteSource} : {}),
   };
   try {
-    const participationSnap = await db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(eventId, userId))
-      .get();
+    const participationSnap = await getCatchBooking(db, eventId, userId);
     const hasHostApproval =
       hasHostApprovedJoinRequest(participationSnap.data());
     await deps.signUpForEvent(db, eventId, userId, paymentId, {

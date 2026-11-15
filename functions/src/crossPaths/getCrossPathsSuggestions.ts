@@ -52,6 +52,10 @@ import {
   currentCrossPathsTermsVersion,
 } from "./setCrossPathsEventConsent";
 import {crossPathsPilotEventEnabled} from "./pilotPolicy";
+import {
+  catchBookingsForEvent,
+  getCatchBooking,
+} from "../shared/relationshipDocuments";
 
 export const crossPathsSuggestionSigningKey = defineSecret(
   "CROSS_PATHS_SUGGESTION_SIGNING_KEY"
@@ -339,8 +343,7 @@ async function loadEventContext(params: {
   const {db, eventId, viewerUid, viewer, nowMillis} = params;
   const [eventSnap, viewerParticipationSnap] = await Promise.all([
     db.collection("events").doc(eventId).get(),
-    db.collection("eventParticipations")
-      .doc(`${eventId}_${viewerUid}`).get(),
+    getCatchBooking(db, eventId, viewerUid),
   ]);
   if (!eventSnap.exists) return null;
   const candidate = requireDoc<EventDocument>(
@@ -436,16 +439,10 @@ async function loadEventContext(params: {
     viewerBookingStatus = "canBookNow";
   }
 
-  const participationSnap = await db.collection("eventParticipations")
-    .where("eventId", "==", eventId)
-    .where("status", "==", "signedUp")
-    .limit(maximumEventRosterCandidates)
-    .get();
-  const candidateUids = [...new Set(participationSnap.docs
-    .map((snap) => requireDoc<EventParticipationDocument>(
-      snap,
-      "EventParticipationDocument (Cross Paths roster)"
-    ))
+  const signedUpBookings = await catchBookingsForEvent(db, eventId,
+    {statuses: ["signedUp"], limit: maximumEventRosterCandidates});
+  const candidateUids = [...new Set(signedUpBookings
+    .map((booking) => booking.data()!)
     .filter((participation) =>
       participation.eventId === eventId &&
       participation.status === "signedUp" &&

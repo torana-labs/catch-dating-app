@@ -22,6 +22,7 @@ import {validateListOrganizerRequestsCallableResponse} from
   "../shared/generated/validators/listOrganizerRequestsOutput";
 import {isEventPolicyTerms} from "./configuredEvent";
 import {eventPolicyFromEvent} from "./eventPolicy";
+import {catchBookingsFromRows} from "../shared/relationshipDocuments";
 
 type Row = Result["rows"][number];
 type Db = FirebaseFirestore.Firestore;
@@ -124,14 +125,15 @@ export async function listOrganizerRequestsHandler(
   const events = new Map(eventsSnap.docs.slice(0, maxRequestEvents)
     .map((doc) => [doc.id, doc.data() as EventDocument]));
 
-  const pendingSnap = await db.collection("eventParticipations")
+  const pendingSnap = await db.collection("eventAttendees")
     .where("organizerId", "==", organizerId)
-    .where("hostApprovalStatus", "==", "pending")
+    .where("booking.hostApprovalStatus", "==", "pending")
     .limit(maxRequestRows + 1).get();
   if (pendingSnap.docs.length > maxRequestRows) complete = false;
+  const pending = catchBookingsFromRows(db, pendingSnap);
   const waiting: {participation: Participation; position: number | null}[] =
-    pendingSnap.docs.slice(0, maxRequestRows)
-      .map((doc) => doc.data() as Participation)
+    pending.slice(0, maxRequestRows)
+      .map((booking) => booking.data() as unknown as Participation)
       .filter((row) => row.status === "waitlisted" && events.has(row.eventId))
       .map((participation) => ({participation, position: null}));
 
@@ -139,15 +141,16 @@ export async function listOrganizerRequestsHandler(
     if (((event as {waitlistedCount?: number}).waitlistedCount ?? 0) === 0) {
       return;
     }
-    const snap = await db.collection("eventParticipations")
+    const snap = await db.collection("eventAttendees")
       .where("eventId", "==", eventId)
-      .where("status", "==", "waitlisted")
-      .orderBy("waitlistedAt")
+      .where("booking.status", "==", "waitlisted")
+      .orderBy("booking.waitlistedAt")
       .limit(maxWaitlistPerEvent + 1).get();
     if (snap.docs.length > maxWaitlistPerEvent) complete = false;
     let position = 0;
-    for (const doc of snap.docs.slice(0, maxWaitlistPerEvent)) {
-      const participation = doc.data() as Participation;
+    for (const booking of catchBookingsFromRows(db, snap)
+      .slice(0, maxWaitlistPerEvent)) {
+      const participation = booking.data() as unknown as Participation;
       if (!isOfferableWaitlistRow(participation, event)) continue;
       position += 1;
       waiting.push({participation, position});

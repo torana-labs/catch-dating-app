@@ -6,7 +6,6 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventDocument,
-  EventParticipationDocument,
   EventRuntimeParticipantDocument,
   EventSuccessAssignmentDocument,
   EventSuccessPlanDocument,
@@ -43,7 +42,6 @@ import {
 } from "../shared/eventOrganizers";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {assignmentConstraintPairKey} from "./assignmentConstraints";
 import {
@@ -58,6 +56,7 @@ import {
   resolveSpatialDestinations,
   spatialReassignmentPlanFields,
 } from "./spatialControl";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 interface EventSuccessLayoutDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -491,15 +490,11 @@ async function requireSpatialReader(
     if (isEventOrganizerManager(organizer, event, uid)) return;
   }
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
-      .doc(eventParticipationId(eventId, uid)).get(),
+    getCatchBooking(db, eventId, uid),
     db.collection("eventRuntimeParticipants").doc(`${eventId}_${uid}`).get(),
   ]);
   const participation = participationSnap.exists ?
-    requireDoc<EventParticipationDocument>(
-      participationSnap,
-      "EventParticipationDocument"
-    ) : null;
+    participationSnap.data()! : null;
   const runtime = runtimeSnap.exists ?
     requireDoc<EventRuntimeParticipantDocument>(
       runtimeSnap,

@@ -25,6 +25,7 @@ import {
   eventWaitlistOfferId,
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
@@ -116,7 +117,7 @@ export async function joinEventWaitlistHandler(
       await Promise.all([
         tx.get(eventRef),
         tx.get(db.collection("users").doc(userId)),
-        tx.get(participationRef),
+        getCatchBooking(db, eventId, userId, tx),
         eventParticipationsByStatusInTransaction(tx, db, eventId, [
           "signedUp",
           "attended",
@@ -306,7 +307,7 @@ export async function leaveEventWaitlistHandler(
   await db.runTransaction(async (tx) => {
     const [eventSnap, participationSnap, offerSnap] = await Promise.all([
       tx.get(eventRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, userId, tx),
       tx.get(offerRef),
     ]);
     if (!eventSnap.exists) {

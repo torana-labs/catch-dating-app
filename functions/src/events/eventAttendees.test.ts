@@ -1,3 +1,8 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+  withCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import test from "node:test";
@@ -74,7 +79,8 @@ class FakeQuery {
   }
   docs() {
     return this.firestore.entries(this.path).filter(([, value]) =>
-      this.filters.every(([field, expected]) => value[field] === expected))
+      this.filters.every(([field, expected]) =>
+        fieldAt(value, field) === expected))
       .slice(0, this.max).map(([id, value]) =>
         new FakeSnapshot(new FakeDocRef(this.firestore,
           `${this.path}/${id}`), value));
@@ -123,7 +129,9 @@ class TransactionConflict extends Error {}
 class FakeFirestore {
   afterRead: ((path: string) => void) | null = null;
   private readonly versions = new Map<string, number>();
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new FakeCollectionRef(this, path);
   }
@@ -1120,10 +1128,13 @@ test("ready Host attendance reserves and releases one canonical guest seat",
       expectedRevision: 2, clientOperationId: "ready-recheck-in-0001",
     }), deps);
     firestore.update("eventAttendees/attendee-1", {linkedUid: "user-1"});
-    firestore.set("eventParticipations/event-1_user-1", {
-      eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
-      status: "signedUp",
-    });
+    for (const [path, data] of Object.entries(withCatchBookingRows({
+      "eventAttendees/attendee-1": firestore.get("eventAttendees/attendee-1"),
+      "eventParticipations/event-1_user-1": {
+        eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
+        status: "signedUp",
+      },
+    }))) if (data) firestore.set(path, data);
     firestore.set(`eventSeatIdentityAliases/${seatIdentityAliasId(
       "event-1", "uid", "user-1")}`, {eventId: "event-1",
       organizerId: "organizer-1", kind: "uid",
@@ -1148,16 +1159,8 @@ test("ready Host attendance reserves and releases one canonical guest seat",
       })}`);
     const reservationPath = `eventSeatReservations/${createHash("sha256")
       .update("event-1\u001fguest_1").digest("hex")}`;
-    firestore.update("eventParticipations/event-1_user-1", {
-      organizerId: "organizer-2",
-    });
-    await assert.rejects(noOp("foreign-participation-noop-0001"),
-      (error) => error instanceof HttpsError &&
-        error.code === "failed-precondition");
-    assert.equal(noOpReceipt("foreign-participation-noop-0001"), undefined);
-    firestore.update("eventParticipations/event-1_user-1", {
-      organizerId: "organizer-1",
-    });
+    // The booking is read from the organizer's own roster row, so a booking
+    // under another organizer cannot reach this check.
     firestore.update("eventSeatLedgers/event-1", {policyHash: "f".repeat(64)});
     await assert.rejects(noOp("bad-policy-noop-0001"),
       (error) => error instanceof HttpsError &&

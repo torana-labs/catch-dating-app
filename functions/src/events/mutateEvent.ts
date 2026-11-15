@@ -61,6 +61,7 @@ import {
 import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
   eventParticipationsByStatusInTransaction,
+  catchBookingsForEvent,
 } from "../shared/relationshipDocuments";
 import {
   assertValidEventTimeRange,
@@ -841,8 +842,10 @@ export async function deleteEventHandler(
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventAttendees")
         .where("eventId", "==", data.eventId)
+        .where("booking.status", "in", ["signedUp", "waitlisted", "attended",
+          "cancelled", "deleted"])
         .limit(1)),
       tx.get(db.collection("payments")
         .where("eventId", "==", data.eventId)
@@ -2150,20 +2153,10 @@ async function notifyEventParticipants(params: {
   type: "eventUpdated" | "eventCancelled";
 }) {
   try {
-    const [signedUp, waitlisted] = await Promise.all([
-      params.db
-        .collection("eventParticipations")
-        .where("eventId", "==", params.eventId)
-        .where("status", "==", "signedUp")
-        .get(),
-      params.db
-        .collection("eventParticipations")
-        .where("eventId", "==", params.eventId)
-        .where("status", "==", "waitlisted")
-        .get(),
-    ]);
-    const uids = Array.from(new Set([...signedUp.docs, ...waitlisted.docs]
-      .map((doc) => doc.data().uid)
+    const bookings = await catchBookingsForEvent(params.db, params.eventId,
+      {statuses: ["signedUp", "waitlisted"]});
+    const uids = Array.from(new Set(bookings
+      .map((booking) => booking.data()?.uid)
       .filter((uid): uid is string => typeof uid === "string")));
     if (uids.length === 0) return;
 

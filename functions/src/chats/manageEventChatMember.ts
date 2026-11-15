@@ -17,6 +17,7 @@ import type {ManageEventChatMemberCallableResponse as Result} from
 import {chatHash} from "./eventChatMessageShared";
 import {eventChatMembershipId, hasEventChatAdmission,
   readEventChatAccess, requireEventChatActor} from "./eventChatAccess";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 interface Deps {
   db: () => FirebaseFirestore.Firestore;
@@ -80,8 +81,7 @@ export async function manageEventChatMemberHandler(
         throw new HttpsError("failed-precondition", "Member is not removed.");
       }
       const [participationSnap, attendeeRows] = await Promise.all([
-        tx.get(db.collection("eventParticipations")
-          .doc(`${data.eventId}_${data.targetUid}`)),
+        getCatchBooking(db, data.eventId, data.targetUid, tx),
         tx.get(db.collection("eventAttendees")
           .where("eventId", "==", data.eventId)
           .where("linkedUid", "==", data.targetUid).limit(2)),

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {seedCatchBookingRowsInMap} from "../shared/testing/catchBookingRows";
 import {CallableRequest} from "firebase-functions/v2/https";
 import {
   deriveEventSuccessPresenceState,
@@ -127,6 +128,7 @@ test("checked-in heartbeat is server-owned and returns policy", async () => {
     status: "attended",
     attendedAt,
   });
+  seedCatchBookingRowsInMap(firestore.docs);
   const serverTimestamp = {server: true};
   const result = await heartbeatEventSuccessPresenceHandler({
     auth: {uid: "guest-1"},

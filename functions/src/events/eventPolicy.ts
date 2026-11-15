@@ -3,11 +3,11 @@ import type {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
 import {requiresCommunityMembership} from
   "../memberships/communityMembershipAuthority";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 export const cohortIds = {
   unspecified: "unspecified",
@@ -555,10 +555,7 @@ export async function rosterWithReservedWaitlistOffers(
   if (offers.length === 0) return baseRoster;
 
   const participationSnaps = await Promise.all(
-    offers.map((offer) => db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))
-      .get())
+    offers.map((offer) => getCatchBooking(db, eventId, String(offer.uid ?? "")))
   );
   return rosterWithReservableOfferData({
     baseRoster,
@@ -595,9 +592,8 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
 
   const offers = offerSnap.docs.map((doc) => doc.data());
   const participationSnaps = await Promise.all(
-    offers.map((offer) => tx.get(db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))
+    offers.map((offer) =>
+      getCatchBooking(db, eventId, String(offer.uid ?? ""), tx))
   );
   return rosterWithReservableOfferData({
     baseRoster,

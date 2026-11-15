@@ -1,7 +1,6 @@
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {assertUnpartitionedAdmission} from
   "../organizerFormAdmission/admissionEligibility";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {validateEventParticipationDocument} from
   "../shared/generated/validators/eventParticipationDocument";
 import type {GetEventViewerStateCallableResponse} from
@@ -30,6 +29,7 @@ import {readCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 import type {EventViewerStateSource} from "./eventViewerStateSource";
 import {HttpsError} from "firebase-functions/v2/https";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 type Guest =
   NonNullable<GetEventViewerStateCallableResponse["viewer"]["guest"]>;
@@ -90,8 +90,7 @@ export async function readGuestEventViewerState(params: {
         .where("defaultTargetId", "==", eventId)
         .where("purpose", "==", "application")
         .where("status", "==", "published").limit(2)),
-      tx.get(db.collection("eventParticipations")
-        .doc(eventParticipationId(eventId, uid))),
+      getCatchBooking(db, eventId, uid, tx),
       tx.get(db.collection(GUEST_PAYMENTS)
         .where("purpose", "==", "offer")
         .where("eventId", "==", eventId).where("recipientUid", "==", uid)
@@ -124,8 +123,10 @@ export async function readGuestEventViewerState(params: {
         (attendee.organizerId) !== organizerId)) {
       return viewer;
     }
-    if (attendee) {
-      guest.attendeeId = attendees.docs[0].id;
+    if (attendee) guest.attendeeId = attendees.docs[0].id;
+    // A row carrying a Catch booking is the native booking read above; only
+    // a Host-owned row without one is guest roster admission.
+    if (attendee && !attendee.booking) {
       viewer.waitlisted = attendee.status === "waitlisted";
       if (["registered", "checkedIn"].includes(attendee.status)) {
         guest.action = "registered";

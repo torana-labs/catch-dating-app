@@ -14,6 +14,11 @@ import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
 import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
   deriveEventSeatPolicy, FirestoreSeatTransaction,
   prepareFirestoreSeat} from "../events/seatAuthority/firestoreAdapter";
+import {
+  catchBookingsForUser,
+  CatchBookingSnapshot,
+  getCatchBooking,
+} from "../shared/relationshipDocuments";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 
@@ -64,13 +69,12 @@ export async function deleteAccountEventParticipations(params: {
   if (!ID.test(uid) || !Number.isSafeInteger(nowMillis) || nowMillis < 0) {
     unavailable("Account deletion seat scope is invalid.");
   }
-  const participations = await db.collection("eventParticipations")
-    .where("uid", "==", uid).get();
+  const participations = await catchBookingsForUser(db, uid);
   const linkedAttendees = await db.collection("eventAttendees")
     .where("linkedUid", "==", uid).get();
-  const byEvent = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
-  for (const found of participations.docs) {
-    const eventId = found.data().eventId;
+  const byEvent = new Map<string, CatchBookingSnapshot>();
+  for (const found of participations) {
+    const eventId = found.data()!.eventId;
     if (!ID.test(eventId) || byEvent.has(eventId)) {
       unavailable("Account participation sources need reconciliation.");
     }
@@ -99,7 +103,8 @@ export async function deleteAccountEventParticipations(params: {
   for (const eventId of eventIds) {
     const found = byEvent.get(eventId);
     await db.runTransaction(async (tx) => {
-      const currentSnap = found ? await tx.get(found.ref) : null;
+      const currentSnap = found ?
+        await getCatchBooking(db, eventId, uid, tx) : null;
       const current = currentSnap?.data() as EventParticipationDocument |
         undefined;
       if (current && (current.uid !== uid || current.eventId !== eventId)) {

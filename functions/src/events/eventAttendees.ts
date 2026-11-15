@@ -65,7 +65,6 @@ import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {resolveInviteAttributionToken} from "./inviteLinks";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity,
   prepareVerifiedUidAttendeeEnrollment, seatIdentityAliasId,
   seatIdentityValueHash} from
@@ -77,6 +76,7 @@ import {applyFirestoreSeat, prepareFirestoreSeat, deriveEventSeatPolicy,
 import {assertAccountMayBook} from "../safety/accountStanding";
 import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
   "./seatAuthority/batchSeatImport";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -128,8 +128,7 @@ async function prepareAttendanceSeatChange(params: {
       "Guest seat identity requires reconciliation.");
   }
   const participation = params.linkedUid ?
-    (await tx.get(db.collection("eventParticipations")
-      .doc(eventParticipationId(eventId, params.linkedUid)))).data() : null;
+    (await getCatchBooking(db, eventId, params.linkedUid, tx)).data() : null;
   if (participation && (participation.eventId !== eventId ||
       participation.uid !== params.linkedUid ||
       (participation.organizerId) !== organizerId ||

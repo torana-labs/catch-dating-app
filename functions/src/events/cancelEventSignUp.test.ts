@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
+import {
+  seedCatchBookingRows,
+  withCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import {guestInstallation} from "../shared/testing/pushInstallationFixture";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -72,7 +75,9 @@ class FakeSnapshot {
 
 class FakeFirestore {
   retryAfterFirstAttempt: (() => void) | null = null;
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
 
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);
@@ -580,6 +585,11 @@ test("retried cancellation with committed no-op sends no stale push or refund",
     h.firestore.retryAfterFirstAttempt = () => {
       h.firestore.merge("eventParticipations/event-1_runner-1",
         {status: "cancelled"});
+      const attendeeId = String(
+        h.firestore.get("eventAttendeeIndex/event-1_runner-1")?.attendeeId);
+      const row = h.firestore.get(`eventAttendees/${attendeeId}`);
+      h.firestore.merge(`eventAttendees/${attendeeId}`, {
+        booking: {...(row?.booking as object), status: "cancelled"}});
     };
     const result = await cancelEventSignUpHandler(request("runner-1"),
       h.deps);

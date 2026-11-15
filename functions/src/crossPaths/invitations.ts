@@ -101,6 +101,7 @@ import {
   crossPathsEventWriteInvalidationMode,
   crossPathsPilotEventEnabled,
 } from "./pilotPolicy";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 export {
   crossPathsEventPlanId,
@@ -193,8 +194,8 @@ export async function sendCrossPathsInvitationHandler(
     ] = await Promise.all([
       tx.get(invitationRef),
       tx.get(refs.event),
-      tx.get(refs.senderParticipation),
-      tx.get(refs.recipientParticipation),
+      getCatchBooking(db, refs.eventId, refs.senderUid, tx),
+      getCatchBooking(db, refs.eventId, refs.recipientUid, tx),
       tx.get(refs.senderConsent),
       tx.get(refs.recipientConsent),
       tx.get(refs.senderUser),
@@ -488,8 +489,8 @@ export async function respondCrossPathsInvitationHandler(
       holdSnap,
     ] = await Promise.all([
       tx.get(refs.event),
-      tx.get(refs.senderParticipation),
-      tx.get(refs.recipientParticipation),
+      getCatchBooking(db, refs.eventId, refs.senderUid, tx),
+      getCatchBooking(db, refs.eventId, refs.recipientUid, tx),
       tx.get(refs.senderConsent),
       tx.get(refs.recipientConsent),
       tx.get(refs.senderUser),
@@ -1123,10 +1124,9 @@ function invitationRefs(
 ) {
   return {
     event: db.collection("events").doc(eventId),
-    senderParticipation: db.collection("eventParticipations")
-      .doc(`${eventId}_${senderUid}`),
-    recipientParticipation: db.collection("eventParticipations")
-      .doc(`${eventId}_${recipientUid}`),
+    eventId,
+    senderUid,
+    recipientUid,
     senderConsent: db.collection("eventCrossPathsConsents")
       .doc(`${eventId}_${senderUid}`),
     recipientConsent: db.collection("eventCrossPathsConsents")
@@ -1183,7 +1183,7 @@ function validUpcomingEvent(
 }
 
 function signedUpParticipation(
-  snap: FirebaseFirestore.DocumentSnapshot,
+  snap: {exists: boolean; data(): unknown},
   eventId: string,
   uid: string
 ): EventParticipationDocument | undefined {
@@ -1198,7 +1198,7 @@ function signedUpParticipation(
 }
 
 function missingOrCancelledParticipation(
-  snap: FirebaseFirestore.DocumentSnapshot,
+  snap: {exists: boolean; data(): unknown},
   eventId: string,
   uid: string
 ): boolean {

@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import {deriveEventSeatPolicy} from "../events/seatAuthority/firestoreAdapter";
 import {releaseCrossPathsPairHold} from "./pairHolds";
 import assert from "node:assert/strict";
@@ -66,7 +70,7 @@ class FakeQuery {
   async get() {
     const docs = this.firestore.collectionRows(this.path)
       .filter(({value}) => this.filters.every((filter) =>
-        matches(value[filter.field], filter.op, filter.value)
+        matches(fieldAt(value, filter.field), filter.op, filter.value)
       ))
       .slice(0, this.rowLimit)
       .map(({id, value}) => new FakeSnapshot(
@@ -123,7 +127,9 @@ class FakeTransaction {
 }
 
 class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
+  constructor(private readonly docs: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(docs);
+  }
   collection(path: string) {
     return new FakeCollection(this, path);
   }

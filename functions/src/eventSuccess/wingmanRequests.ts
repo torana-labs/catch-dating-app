@@ -35,6 +35,7 @@ import {
   loadEventSuccessRosterParticipant,
 } from "./eventSuccessRoster";
 import {eventRuntimeParticipantId} from "./eventRuntime";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 const WINGMAN_REQUESTS_MODULE_ID = "wingman_requests";
 
@@ -428,12 +429,10 @@ async function requireCheckedInEventSuccessParticipant(
   eventId: string,
   uid: string
 ): Promise<void> {
-  const participationRef = db.collection("eventParticipations")
-    .doc(eventParticipationId(eventId, uid));
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(eventId, uid));
   const [participationSnap, runtimeSnap] = await Promise.all([
-    tx.get(participationRef),
+    getCatchBooking(db, eventId, uid, tx),
     tx.get(runtimeRef),
   ]);
   if (participationSnap.exists) {
@@ -529,16 +528,6 @@ function wingmanPreferenceRank(
 function moduleSelected(selectedModuleIds: unknown, moduleId: string): boolean {
   return Array.isArray(selectedModuleIds) &&
     selectedModuleIds.includes(moduleId);
-}
-
-/**
- * Builds the deterministic event participation document id.
- * @param {string} eventId Event id.
- * @param {string} uid User id.
- * @return {string} Document id.
- */
-function eventParticipationId(eventId: string, uid: string): string {
-  return `${eventId}_${uid}`;
 }
 
 /**

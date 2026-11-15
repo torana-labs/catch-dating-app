@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
@@ -102,7 +106,9 @@ class FakeCollectionRef {
 class FakeFirestore {
   private sequence = 0;
 
-  constructor(readonly data: Record<string, FakeData | undefined>) {}
+  constructor(readonly data: Record<string, FakeData | undefined>) {
+    seedCatchBookingRows(data);
+  }
 
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);
@@ -150,7 +156,8 @@ class FakeFirestore {
       .filter((snap) => {
         const data = snap.data() ?? {};
         return filters.every((filter) =>
-          matchesFilter(data[filter.field], filter.operator, filter.value)
+          matchesFilter(fieldAt(data, filter.field), filter.operator,
+            filter.value)
         );
       });
   }

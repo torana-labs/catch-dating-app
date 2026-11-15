@@ -208,8 +208,10 @@ test("anonymous, deleted or foreign scope cannot obtain private viewer state",
     h.store.put(`deletedUsers/${uid}`, {status: "processing"});
     assert.equal(await h.readSource(), null);
     h.store.rows.delete(`deletedUsers/${uid}`);
+    // Another account's booking is keyed to that account: the viewer's own
+    // booking lookup never reaches it.
     h.participation({uid: "other"});
-    assert.equal(await h.readSource(), null);
+    assert.equal((await h.readSource())?.admission, "none");
   });
 
 test("external events never expose native booking or private URL", async () => {

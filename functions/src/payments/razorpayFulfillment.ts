@@ -1,6 +1,5 @@
 import * as logger from "firebase-functions/logger";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
   InviteAttribution,
@@ -12,6 +11,7 @@ import type {RazorpayOwnershipContext} from "./razorpayOrderOwnership";
 import type {LegacyRazorpayRefundAuthorization} from
   "./legacyRefunds/intent";
 import {HttpsError} from "firebase-functions/v2/https";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 export interface RazorpayFulfillmentDeps {
   signUpForEvent: typeof signUpUserForEvent;
@@ -93,10 +93,8 @@ export async function fulfillRazorpayPayment({
     ...(booking.providerFees ? {providerFees: booking.providerFees} : {}),
   };
   try {
-    const participationSnap = await db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(booking.eventId, booking.userId))
-      .get();
+    const participationSnap =
+      await getCatchBooking(db, booking.eventId, booking.userId);
     const hasHostApproval =
       hasHostApprovedJoinRequest(participationSnap.data());
     await deps.signUpForEvent(db, booking.eventId, booking.userId, paymentId, {

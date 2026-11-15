@@ -1,3 +1,7 @@
+import {
+  fieldAt,
+  seedCatchBookingRows,
+} from "../shared/testing/catchBookingRows";
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {
@@ -634,6 +638,7 @@ function fakeFirestore(
   docs: Record<string, unknown>,
   writes: Record<string, unknown>
 ): FirebaseFirestore.Firestore {
+  seedCatchBookingRows(docs as Record<string, Record<string, unknown>>);
   return {
     collection: (collectionPath: string) =>
       collectionRef(collectionPath, docs, writes),
@@ -708,13 +713,13 @@ function queryDocs(
       const row = data as Record<string, unknown>;
       return filters.every((filter) => {
         if (filter.operator === "==") {
-          return row[filter.field] === filter.value;
+          return fieldAt(row, filter.field) === filter.value;
         }
         if (filter.operator === "in" && Array.isArray(filter.value)) {
-          return filter.value.includes(row[filter.field]);
+          return filter.value.includes(fieldAt(row, filter.field));
         }
         if (filter.operator === "array-contains") {
-          const values = row[filter.field];
+          const values = fieldAt(row, filter.field);
           return Array.isArray(values) && values.includes(filter.value);
         }
         throw new Error(`Unsupported operator ${filter.operator}`);

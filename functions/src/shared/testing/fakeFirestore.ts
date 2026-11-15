@@ -1,3 +1,4 @@
+import {withCatchBookingRows} from "./catchBookingRows";
 import assert from "node:assert/strict";
 import {isDeepStrictEqual} from "node:util";
 import {FieldValue, Timestamp} from "firebase-admin/firestore";
@@ -368,7 +369,7 @@ export class FakeFirestore {
   failNextCommit = false;
 
   constructor(seed: Record<string, FakeData | undefined> = {}) {
-    for (const [path, data] of Object.entries(seed)) {
+    for (const [path, data] of Object.entries(withCatchBookingRows(seed))) {
       if (data !== undefined) this.docs.set(path, clone(data));
     }
   }

@@ -32,7 +32,6 @@ import {
   rosterFromEvent,
   rosterWithReservedWaitlistOffers,
 } from "./eventPolicy";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import {
   InviteAttribution,
   resolveInviteAttribution,
@@ -45,6 +44,7 @@ import {
   readHostMembershipContext,
   recordHostMembershipBenefitUse,
 } from "../hostMemberships/entitlementReader";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -100,9 +100,7 @@ export async function signUpForFreeEventHandler(
   const [eventSnap, userSnap, participationSnap] = await Promise.all([
     db.collection("events").doc(eventId).get(),
     db.collection("users").doc(uid).get(),
-    db.collection("eventParticipations")
-      .doc(eventParticipationId(eventId, uid))
-      .get(),
+    getCatchBooking(db, eventId, uid),
   ]);
 
   if (!eventSnap.exists) {

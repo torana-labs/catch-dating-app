@@ -62,7 +62,7 @@ import {
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {eventParticipationId} from "../shared/relationshipDocuments";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
 import {BRAND} from "../shared/generated/brand";
 
@@ -291,8 +291,6 @@ export async function createAttendeeInviteLinkHandler(
   const eventRef = db.collection("events").doc(payload.eventId);
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(`${payload.eventId}_${actorUid}`);
-  const participationRef = db.collection("eventParticipations")
-    .doc(eventParticipationId(payload.eventId, actorUid));
   const authPhone = normalizeRosterPhone(
     typeof request.auth?.token.phone_number === "string" ?
       request.auth.token.phone_number : null
@@ -304,7 +302,7 @@ export async function createAttendeeInviteLinkHandler(
       await Promise.all([
         tx.get(eventRef),
         tx.get(runtimeRef),
-        tx.get(participationRef),
+        getCatchBooking(db, payload.eventId, actorUid, tx),
       ]);
     if (!eventSnap.exists) {
       throw new HttpsError(

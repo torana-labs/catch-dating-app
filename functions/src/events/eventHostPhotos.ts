@@ -6,7 +6,6 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {isOrganizerManager} from "../shared/organizerHosts";
-import {eventParticipationId} from "../shared/relationshipDocuments";
 import type {
   EventDocument,
   EventHostPhotoDocument,
@@ -38,6 +37,7 @@ import {validateDeleteEventHostPhotoCallableResponse} from
   "../shared/generated/validators/deleteEventHostPhotoOutput";
 import {validateEventHostPhotoDocument} from
   "../shared/generated/validators/eventHostPhotoDocument";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 // Host photos for checked-in guests. The host team stages one original per
 // photo at events/{eventId}/hostPhotoUploads/{photoId}/original.{ext} (the
@@ -186,8 +186,7 @@ function startMillis(event: EventDocument): number | null {
 export async function hasCheckedIn(db: FirebaseFirestore.Firestore,
   eventId: string, uid: string): Promise<boolean> {
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
-      .doc(eventParticipationId(eventId, uid)).get(),
+    getCatchBooking(db, eventId, uid),
     db.collection("eventRuntimeParticipants").doc(`${eventId}_${uid}`).get(),
   ]);
   const participation = participationSnap.data();

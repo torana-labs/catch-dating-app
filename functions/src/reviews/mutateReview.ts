@@ -16,7 +16,7 @@ import {
   checkRateLimit as defaultCheckRateLimit,
 } from "../shared/rateLimit";
 import {
-  eventParticipationId,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import type {CreateEventReviewCallablePayload} from
   "../shared/generated/createEventReviewCallablePayload";
@@ -125,9 +125,6 @@ export async function createEventReviewHandler(
   const eventRef = db.collection("events").doc(data.eventId);
   const userRef = db.collection("users").doc(reviewerUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(reviewerUserId);
-  const participationRef = db
-    .collection("eventParticipations")
-    .doc(eventParticipationId(data.eventId, reviewerUserId));
 
   await db.runTransaction(async (tx) => {
     const [
@@ -141,7 +138,7 @@ export async function createEventReviewHandler(
       tx.get(eventRef),
       tx.get(userRef),
       tx.get(deletedUserRef),
-      tx.get(participationRef),
+      getCatchBooking(db, data.eventId, reviewerUserId, tx),
     ]);
 
     if (reviewSnap.exists) {
@@ -493,7 +490,7 @@ function assertCanWriteReview(
   eventSnap: FirebaseFirestore.DocumentSnapshot,
   userSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
-  participationSnap: FirebaseFirestore.DocumentSnapshot,
+  participationSnap: {exists: boolean; data(): unknown},
   organizerId: string
 ) {
   if (deletedUserSnap.exists) {

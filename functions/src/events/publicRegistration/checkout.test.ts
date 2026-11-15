@@ -280,5 +280,6 @@ test("native booking does not create another payment", async () => {
   assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
   h.store.get(`eventParticipations/${eventId}_${uid}`)!.status =
     "cancelled";
+  h.store.syncCatchBookings();
   await assert.rejects(h.reserve({requestId: "native_stale_booking"}));
 });

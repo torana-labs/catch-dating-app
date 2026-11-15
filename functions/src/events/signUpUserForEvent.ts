@@ -25,6 +25,7 @@ import {
   eventParticipationId,
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
+  getCatchBooking,
 } from "../shared/relationshipDocuments";
 import {
   activityNotificationId,
@@ -121,7 +122,7 @@ export async function signUpUserForEvent(
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(userRef),
-      tx.get(participationRef),
+      getCatchBooking(db, eventId, userId, tx),
       eventParticipationsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",

@@ -27,6 +27,7 @@ import {validateUpdateEventChatAccessCallablePayload} from
   "../shared/generated/validators/updateEventChatAccessInput";
 import {canPostEventChatMode, canReadEventChatMode,
   effectiveEventChatRoomMode} from "./eventChatRoomPolicy";
+import {getCatchBooking} from "../shared/relationshipDocuments";
 
 export function requireEventChatActor(uid: string, expectedUid: string) {
   if (uid !== expectedUid) {
@@ -92,7 +93,7 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
   const host = isEventOrganizerManager(organizer, event, uid);
   if (!host) {
     const [participationSnap, attendeeRows] = await Promise.all([
-      tx.get(db.collection("eventParticipations").doc(`${eventId}_${uid}`)),
+      getCatchBooking(db, eventId, uid, tx),
       tx.get(db.collection("eventAttendees").where("eventId", "==", eventId)
         .where("linkedUid", "==", uid).limit(2)),
     ]);

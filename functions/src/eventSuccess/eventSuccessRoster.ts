@@ -7,7 +7,10 @@ import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
-import {eventParticipationId} from "../shared/relationshipDocuments";
+import {
+  getCatchBooking,
+  catchBookingsFromRows,
+} from "../shared/relationshipDocuments";
 import {requireDoc} from "../shared/validation";
 import {eventRuntimeParticipantId} from "./eventRuntime";
 import {
@@ -37,8 +40,10 @@ export async function loadEventSuccessRoster(
   eventId: string,
   maxEntries?: number
 ): Promise<EventSuccessRosterParticipant[]> {
-  const participationQuery = db.collection("eventParticipations")
-    .where("eventId", "==", eventId);
+  // Only active Catch bookings join the roster preview.
+  const participationQuery = db.collection("eventAttendees")
+    .where("eventId", "==", eventId)
+    .where("booking.status", "in", ["signedUp", "attended"]);
   const runtimeQuery = db.collection("eventRuntimeParticipants")
     .where("eventId", "==", eventId);
   const [participationSnap, runtimeSnap] = await Promise.all([
@@ -52,11 +57,8 @@ export async function loadEventSuccessRoster(
     throw new HttpsError("failed-precondition",
       "Event roster exceeds supported preview cohort.");
   }
-  const consumerEdges = participationSnap.docs.map((snap) =>
-    requireDoc<EventParticipationDocument>(
-      snap,
-      "EventParticipationDocument"
-    ));
+  const consumerEdges = catchBookingsFromRows(db, participationSnap)
+    .map((booking) => booking.data()!);
   const [consumerProfiles, publicProfiles] = await Promise.all([
     Promise.all(consumerEdges.map((edge) =>
       db.collection("users").doc(edge.uid).get())),
@@ -156,8 +158,6 @@ export async function loadEventSuccessRosterParticipant(
   eventId: string,
   uid: string
 ): Promise<EventSuccessRosterParticipant | null> {
-  const participationRef = db.collection("eventParticipations")
-    .doc(eventParticipationId(eventId, uid));
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(eventId, uid));
   const [
@@ -166,7 +166,7 @@ export async function loadEventSuccessRosterParticipant(
     userSnap,
     publicProfileSnap,
   ] = await Promise.all([
-    participationRef.get(),
+    getCatchBooking(db, eventId, uid),
     runtimeRef.get(),
     db.collection("users").doc(uid).get(),
     db.collection("publicProfiles").doc(uid).get(),

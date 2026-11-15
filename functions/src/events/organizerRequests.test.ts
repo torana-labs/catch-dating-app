@@ -26,8 +26,12 @@ interface World {
 }
 
 function deps(world: World): OrganizerRequestDeps {
+  // Bookings are read from their roster rows.
   const snap = (rows: Record<string, unknown>[]) => ({
-    docs: rows.map((row, index) => ({id: String(index), data: () => row})),
+    docs: rows.map((row, index) => ({id: String(index), data: () => ({
+      eventId: row.eventId, organizerId: row.organizerId,
+      linkedUid: row.uid, booking: row,
+    })})),
   });
   const query = (name: string, filters: Record<string, unknown> = {}) => ({
     where: (field: string, _op: string, value: unknown) =>
@@ -56,7 +60,9 @@ function deps(world: World): OrganizerRequestDeps {
         const contact = world.contacts?.[filters.linkedUid as string];
         return {docs: contact ? [{id: contact.contactId}] : []};
       }
-      if (filters.hostApprovalStatus) return snap(world.pending ?? []);
+      if (filters["booking.hostApprovalStatus"]) {
+        return snap(world.pending ?? []);
+      }
       return snap(world.waitlist?.[filters.eventId as string] ?? []);
     },
   });
