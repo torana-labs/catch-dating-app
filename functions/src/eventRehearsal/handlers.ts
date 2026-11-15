@@ -16,6 +16,8 @@ import {practiceMovementReview, preparePracticeMovementCommand,
 import {rehearsalMovements, MovementScope} from "./movementRecords";
 import {rehearsalRouteDecisions} from "./routeDecisions";
 import {practiceAccountabilityProjection} from "./accountability";
+import {publishRehearsalHostView, rehearsalHostViews,
+  type RehearsalProjector, type RehearsalViewer} from "./hostView";
 import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -185,7 +187,7 @@ export async function createEventRehearsalHandler(
     actorUid: uid,
   });
   await assertActiveSessionLimit(db, uid);
-  return createSession(db, uid, data);
+  return createSession(db, requestViewer(request), data);
 }
 
 /** Returns Host-authorized state without reading live runtime data. */
@@ -205,8 +207,8 @@ export async function getEventRehearsalBootstrapHandler(
   });
   const session = await requireHostSession(db, data.sessionId, uid);
   await maybeApplyReadFault(session);
-  return hostProjection(db, data.sessionId, session, request, undefined,
-    data.practiceOperatorId);
+  return hostProjection(db, data.sessionId, session, requestViewer(request),
+    undefined, data.practiceOperatorId);
 }
 
 /** Detailed movement history is fetched on demand, with bounded pagination. */
@@ -339,12 +341,7 @@ export async function updateEventRehearsalSetupHandler(
       tx.delete(guestViewSnap.ref);
     }
   });
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request
-  );
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Applies lifecycle, playbook-step, and virtual-clock actions atomically. */
@@ -378,8 +375,7 @@ export async function controlEventRehearsalHandler(
       ["assistance", "movement", "staff", "settings", "requiredData",
         "outcome", "reveal", "allocation", "roster"]
         .includes(data.action));
-    return hostProjection(db, data.sessionId,
-      await requireHostSession(db, data.sessionId, uid), request,
+    return hostResponse(db, data.sessionId, request,
       data.movement ? practiceMovementScope(data.movement) : undefined,
       data.practiceOperatorId);
   }
@@ -735,14 +731,9 @@ export async function controlEventRehearsalHandler(
       createdAt: now,
     }));
   });
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request,
+  return hostResponse(db, data.sessionId, request,
     data.movement ? practiceMovementScope(data.movement) : undefined,
-    data.practiceOperatorId
-  );
+    data.practiceOperatorId);
 }
 
 /** Injects a behavior or a privileged QA fault into the isolated domain. */
@@ -850,12 +841,7 @@ export async function injectEventRehearsalBehaviorHandler(
       createdAt: now,
     }));
   });
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request
-  );
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Persists a revision-fenced Room placement for one synthetic actor. */
@@ -944,12 +930,7 @@ export async function controlEventRehearsalSpatialHandler(
       createdAt: now,
     }));
   });
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request
-  );
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Resets the current run or forks the frozen setup to a new session. */
@@ -971,7 +952,7 @@ export async function resetEventRehearsalHandler(
   const session = await requireHostSession(db, data.sessionId, uid);
   if (data.fork) {
     await assertActiveSessionLimit(db, uid);
-    return createSession(db, uid, {
+    return createSession(db, requestViewer(request), {
       organizerId: session.organizerId,
       sourceEventId: session.sourceEventId,
       scenarioId: session.scenarioId,
@@ -1020,12 +1001,7 @@ export async function resetEventRehearsalHandler(
     data.sessionId,
     nextActors
   );
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request
-  );
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Rotates the public id and secret, revoking existing guest slots. */
@@ -1050,8 +1026,7 @@ export async function rotateEventRehearsalGuestLinkHandler(
     viewerTokenHash: sha256(publicRehearsalId),
     updatedAt: admin.firestore.Timestamp.now(),
   });
-  const next = await requireHostSession(db, data.sessionId, uid);
-  return hostProjection(db, data.sessionId, next, request);
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Redeems a share secret into a short-lived anonymous synthetic guest slot. */
@@ -1204,6 +1179,8 @@ export async function submitEventRehearsalGuestActionHandler(
       createdAt: now,
     }));
   });
+  await publishRehearsalHostView(db, resolved.id,
+    projectFor(db, resolved.id));
   const latest = await requirePublicSessionById(db, resolved.id);
   if (!actorId) {
     const existingAction = requireDoc<EventRehearsalActionDocument>(
@@ -1296,12 +1273,7 @@ export async function completeEventRehearsalHandler(
       createdAt: now,
     }));
   });
-  return hostProjection(
-    db,
-    data.sessionId,
-    await requireHostSession(db, data.sessionId, uid),
-    request
-  );
+  return hostResponse(db, data.sessionId, request);
 }
 
 /** Exports deterministic setup and action history without personal data. */
@@ -1360,6 +1332,7 @@ export async function expireEventRehearsalsHandler(
     .where("expiresAt", "<=", now).limit(200).get();
   for (const session of expired.docs) {
     await deleteSessionChildren(db, session.id);
+    await db.collection(rehearsalHostViews).doc(session.id).delete();
     await session.ref.delete();
   }
   return expired.size;
@@ -1367,10 +1340,11 @@ export async function expireEventRehearsalsHandler(
 
 async function createSession(
   db: Firestore,
-  uid: string,
+  owner: RehearsalViewer,
   data: CreateEventRehearsalCallablePayload,
   overrides: CreateOverrides = {}
 ): Promise<CreateEventRehearsalCallableResponse> {
+  const uid = owner.uid;
   const now = admin.firestore.Timestamp.now();
   const sessionId = randomToken(18);
   const publicRehearsalId = randomToken(24);
@@ -1441,6 +1415,8 @@ async function createSession(
     );
   }
   await batch.commit();
+  await publishRehearsalHostView(db, sessionId, projectFor(db, sessionId),
+    owner.canUseInternalFaults);
   return {
     sessionId,
     guestUrl: guestUrl(publicRehearsalId),
@@ -1646,11 +1622,41 @@ function requireSession(
   return requireDoc<EventRehearsalDocument>(snap, "EventRehearsalDocument");
 }
 
+/** Publishes the owner's listener view, then answers the caller. */
+async function hostResponse(
+  db: Firestore,
+  sessionId: string,
+  request: CallableRequest<unknown>,
+  movementScope?: MovementScope,
+  practiceOperatorId?: string,
+): Promise<EventRehearsalBootstrapCallableResponse> {
+  const viewer = requestViewer(request);
+  const session = await requireHostSession(db, sessionId, viewer.uid);
+  const isOwner = session.ownerUid === viewer.uid;
+  const published = await publishRehearsalHostView(db, sessionId,
+    projectFor(db, sessionId),
+    isOwner ? viewer.canUseInternalFaults : undefined);
+  if (published && isOwner && !movementScope && !practiceOperatorId) {
+    return published;
+  }
+  return hostProjection(db, sessionId, session, viewer, movementScope,
+    practiceOperatorId);
+}
+
+function projectFor(db: Firestore, sessionId: string): RehearsalProjector {
+  return (session, owner) => hostProjection(db, sessionId, session, owner);
+}
+
+function requestViewer(request: CallableRequest<unknown>): RehearsalViewer {
+  return {uid: requireAuth(request),
+    canUseInternalFaults: canUseInternalFaults(request)};
+}
+
 async function hostProjection(
   db: Firestore,
   sessionId: string,
   session: EventRehearsalDocument,
-  request: CallableRequest<unknown>,
+  viewer: RehearsalViewer,
   movementScope?: MovementScope,
   practiceOperatorId?: string,
 ): Promise<EventRehearsalBootstrapCallableResponse> {
@@ -1672,11 +1678,11 @@ async function hostProjection(
   const messageValues = new Map(messageSnaps.map((snap) => [snap.id,
     snap.data()]));
   const helpRequests = await practiceHelpProjection(db, sessionId, session,
-    actorValues, requireAuth(request));
+    actorValues, viewer.uid);
   const organizer = requireDoc<OrganizerDocument>(await db.collection(
     "organizers").doc(session.organizerId).get(), "OrganizerDocument");
   const roleAuthority = practiceRoleAuthority(sessionId, session,
-    {organizer, actorUid: requireAuth(request)}, practiceOperatorId);
+    {organizer, actorUid: viewer.uid}, practiceOperatorId);
   const currentMessages = actorValues.flatMap((actor) => {
     const id = actor.assistance?.latestMessageId;
     return id ? [readPracticeMessage(messageValues.get(
@@ -1685,9 +1691,9 @@ async function hostProjection(
   const departures = await projectionDepartures(db, sessionId, session,
     currentMessages.map((m) => m.plan));
   const deliveryReviews = practiceDeliveryReviews(sessionId, session,
-    actorValues, currentMessages, organizer, requireAuth(request));
+    actorValues, currentMessages, organizer, viewer.uid);
   const movementReview = movementScope ? await hostMovementReview(db,
-    requireAuth(request), {sessionId,
+    viewer.uid, {sessionId,
       expectedSetupRevision: session.setupRevision,
       scope: movementScope, ...(practiceOperatorId ?
         {practiceOperatorId} : {})}) : undefined;
@@ -1781,7 +1787,7 @@ async function hostProjection(
       };
     }).sort((a, b) => a.runtimeRevision - b.runtimeRevision),
     guestUrl: guestUrl(session.publicRehearsalId),
-    canUseInternalFaults: canUseInternalFaults(request),
+    canUseInternalFaults: viewer.canUseInternalFaults,
   };
 }
 

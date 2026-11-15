@@ -2091,10 +2091,18 @@ service cloud.firestore {
     // Dress rehearsal is a separate callable-only product domain. Hosts and
     // anonymous guests receive bounded projections from Functions; no client
     // can use rehearsal state as a path into live event or attendee data.
-    // The one exception is an organizer's completion milestone, which its
-    // current managers get (a missing document is "not yet").
+    // Two exceptions: an organizer's completion milestone, which its
+    // current managers get (a missing document is "not yet"), and each
+    // session's server-written Host projection, which only the Host who
+    // owns the session gets while they still manage its organizer.
     match /eventRehearsalMilestones/{organizerId} {
       allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+
+    match /eventRehearsalHostViews/{sessionId} {
+      allow get: if isHostSummaryManager(resource.data.organizerId)
+        && resource.data.ownerUid == request.auth.uid;
       allow list, write: if false;
     }
 

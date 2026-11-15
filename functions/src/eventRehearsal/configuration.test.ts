@@ -255,13 +255,18 @@ test("creation freezes setup and roster without live writes", async () => {
   assert.equal(session.setup.successDefaults?.layoutId, null);
   assert.equal(session.setup.successDefaults?.structureConfig?.unitSize, 6);
   assert.equal(session.setup.title, "My practice");
-  const actors = Object.values(db.docs).filter(
-    (d) => d.sessionId === created.sessionId,
-  ) as unknown as EventRehearsalActorDocument[];
+  const actors = Object.entries(db.docs).filter(([path, d]) =>
+    path.startsWith("eventRehearsalActors/") &&
+      d.sessionId === created.sessionId,
+  ).map(([, d]) => d) as unknown as EventRehearsalActorDocument[];
   assert.deepEqual(
     actors.map((a) => a.displayName),
     ["Actual guest 0", "Actual guest 1"],
   );
+  // Creation publishes the owner's listener view before it returns.
+  const hostView = db.docs[`eventRehearsalHostViews/${created.sessionId}`];
+  assert.equal(hostView?.ownerUid, "host-1");
+  assert.equal(hostView?.runtimeRevision, session.runtimeRevision);
   assert.deepEqual(
     actors.map((a) => a.status),
     ["present", "expected"],

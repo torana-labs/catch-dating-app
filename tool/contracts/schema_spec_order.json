@@ -352,6 +352,7 @@
   "OrganizerEventSetupDefaultsDocument",
   "OrganizerEventSetupDefaultReceiptDocument",
   "EventRehearsalMilestoneDocument",
+  "EventRehearsalHostViewDocument",
   "GetEventAssistanceParticipantContextCallablePayload",
   "EventAssistanceParticipantContextCallableResponse",
   "ListEventSmsPreferencesCallablePayload",

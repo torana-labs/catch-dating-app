@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_host_views.schema.json",
+  "title": "EventRehearsalHostViewDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "The dress rehearsal screen's listener document: the owning Host's projection of one session, rewritten by every command and guest action before it returns, and removed when the session expires.",
+  "x-firestore-collection": "eventRehearsalHostViews",
+  "x-firestore-path": "eventRehearsalHostViews/{sessionId}",
+  "x-document-id-field": "sessionId",
+  "x-owner": "event rehearsal commands",
+  "required": [
+    "sessionId",
+    "organizerId",
+    "ownerUid",
+    "setupRevision",
+    "runtimeRevision",
+    "sourceUpdatedAt",
+    "view",
+    "expiresAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "sessionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "ownerUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "runtimeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceUpdatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "$ref": "../callable_responses/event_rehearsal_bootstrap_response.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
