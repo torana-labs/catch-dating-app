@@ -1,20 +1,25 @@
 #!/usr/bin/env node
-// Nx chooses which CI lanes run for pull requests and queue groups (#1306,
-// stage 2). The planner still reads the change for everything else: the check
-// ids, generators and unowned-file refusal in its plan. If Nx cannot answer,
-// its selection stands and the run says so, because running more is safe.
+// Nx chooses which CI lanes run for pull requests and queue groups (design A,
+// signed off 15 Nov 2026). The planner still reads the change for everything
+// else: build targets, the docs checkout, Flutter test selection and its
+// refusal of an unowned file. Its lanes are a shadow line in the summary.
 //
-// Until the shadow comparison is clean (#1554), Nx may only add lanes: a lane
-// the planner selected still runs when Nx misses it. On 12 Nov 2026, 15 of 30
-// shadow runs disagreed, and in two Nx skipped lanes the planner selected
-// (run 43244338235 dropped nine), so those PRs never ran them.
+// Nx selects alone in the modes listed in nxSelectsAlone. Emptying that list
+// is the kill switch: every mode returns to the union, where Nx may only add
+// lanes to the planner's. Whenever Nx cannot answer completely, every lane
+// runs, because running more is safe.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
+import {queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {describeChange, manifestFile} from "./manifest_diff.mjs";
-import {callerGraph, compare, comparedLanes, nxAffected, plannerManifestLanes, readManifestChange} from "./shadow_plan.mjs";
+import {callerGraph, compare, comparedLanes, narrowedPlanner, nxAffected, plannerManifestLanes, readManifestChange}
+  from "./shadow_plan.mjs";
+
+/** The modes in which Nx alone chooses the lanes. Empty it to restore the union everywhere. */
+export const nxSelectsAlone = ["pr", "merge_group"];
 
 const buildPlatforms = {
   flutter_build_android: "-android",
@@ -53,10 +58,63 @@ export function applyLanes(plan, lanes) {
   const built = Object.entries(buildPlatforms).filter(([lane]) => selected.includes(lane)).map(([, suffix]) => suffix);
   const buildTargets = (plan.operations.buildTargets ?? []).filter((target) =>
     built.some((suffix) => target.endsWith(suffix)));
-  return {...plan, plannerCiTargets: plan.operations.ciTargets, operations: {...plan.operations, ciTargets: selected, buildTargets}};
+  // A build lane the planner did not select has no planner targets: it builds
+  // both apps, the broadest value, rather than nothing.
+  for (const suffix of built) {
+    if (!buildTargets.some((target) => target.endsWith(suffix))) buildTargets.push(`consumer${suffix}`, `host${suffix}`);
+  }
+  return {...plan, plannerCiTargets: plan.operations.ciTargets,
+    operations: {...plan.operations, ciTargets: selected, buildTargets: buildTargets.sort()}};
 }
 
-/** Whether Nx may choose for this plan: nightly, full and main runs keep the planner's selection. */
+/** The app roles the builds need: those the build targets name. */
+export const appRolesOf = (plan) => [...new Set(plan.operations.buildTargets.map((target) => target.split("-")[0]))].sort();
+
+/** Every lane a run can execute in this mode: pull requests leave the queue-only lanes to the queue. */
+export const everyLane = (mode) => comparedLanes.filter((lane) => mode !== "pr" || !queueOnlyCiTargets.includes(lane));
+
+/**
+ * The lanes Nx selects alone, or every lane with the reason when Nx could
+ * not answer completely: the history or Nx failed, a task maps to no lane, or
+ * a path sits under a top-level entry nothing declares yet.
+ */
+export function selectAlone({mode, nxSelected, failure = null, unmappedTasks = [], unknownPaths = []}) {
+  const reason = failure ? `Nx could not choose lanes: ${failure}` :
+    unmappedTasks.length > 0 ? `Nx tasks with no lane: ${unmappedTasks.join(", ")}` :
+    unknownPaths.length > 0 ? `paths under a top-level entry no lane declares: ${unknownPaths.join(", ")}` : null;
+  if (reason) return {lanes: everyLane(mode), reason};
+  return {lanes: nxSelected.filter((lane) => everyLane(mode).includes(lane)).sort(), reason: null};
+}
+
+/**
+ * The lanes a run executes. Where Nx selects alone, its lanes, or every lane
+ * when it could not answer completely. Elsewhere (the kill switch), the
+ * union: Nx may only add to the planner, whose selection stands when Nx fails.
+ */
+export function chooseLanes({mode, alone, plannerLanes, result, nxError = null, unknownPaths = []}) {
+  if (alone) {
+    const decided = selectAlone({mode, nxSelected: result?.nxLanes ?? [], failure: nxError,
+      unmappedTasks: result?.unmappedTasks ?? [], unknownPaths});
+    return {lanes: decided.lanes, selection: decided.reason ? "every-lane" : "nx",
+      warning: decided.reason ? `Every lane runs: ${decided.reason}` : null};
+  }
+  if (nxError) {
+    return {lanes: plannerLanes.filter((lane) => comparedLanes.includes(lane)).sort(), selection: "planner",
+      warning: `Nx could not choose lanes, so the planner's selection stands: ${nxError}`};
+  }
+  const union = unionLanes({operations: {ciTargets: plannerLanes}}, result.nxLanes);
+  return {lanes: union.selected, selection: "union", warning: union.restored.length > 0
+    ? `Nx missed lanes the planner selected, so they still run: ${union.restored.join(", ")}` : null};
+}
+
+/** The planner's lanes Nx did not select, each with the rule that explains it or UNEXPLAINED. */
+export function plannerShadow(result) {
+  const rules = new Map(result.explained.filter((entry) => entry.side === "planner").map((entry) => [entry.lane, entry.rule]));
+  const lanes = result.plannerOnly.map((lane) => ({lane, rule: rules.get(lane) ?? "UNEXPLAINED"}));
+  return {lanes, unexplained: lanes.filter((entry) => entry.rule === "UNEXPLAINED").length};
+}
+
+/** Whether Nx may choose for this plan: nightly, full, main and commit-window runs keep the planner's selection. */
 export function nxChooses(plan) {
   return ["pr", "merge_group"].includes(plan.mode) && plan.full !== true && plan.commitWindow !== true;
 }
@@ -92,15 +150,16 @@ function reportMainShadow(input) {
   }
 }
 
-function main(argv) {
+async function main(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 2) args[argv[index].slice(2)] = argv[index + 1];
   const plan = JSON.parse(fs.readFileSync(args.plan, "utf8"));
   let changedFiles = null;
+  let historyError = null;
   try {
     changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n").filter(Boolean);
-  } catch {
-    // Nx and the manifest rule both need the changed files; without them the planner's selection stands.
+  } catch (error) {
+    historyError = `the history could not be read (${error.message.split("\n")[0]})`;
   }
   const change = changedFiles?.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
   if (!nxChooses(plan)) {
@@ -109,40 +168,56 @@ function main(argv) {
     }
     return;
   }
-  let nxSelected;
-  try {
-    nxSelected = nxLanes({base: args.base, head: args.head, mode: plan.mode, changedFiles: changedFiles ?? undefined, change});
-  } catch (error) {
-    console.log(`::warning::Nx could not choose lanes, so the planner's selection stands: ${error.message}`);
-    return;
-  }
-  // A manifest-only edit no longer runs every lane: the planner's lanes come
-  // from the manifest diff plus the other files (release-engineering, 14 Nov).
+  const alone = nxSelectsAlone.includes(plan.mode);
+  // The planner's lanes under the manifest diff rule (#1818), with provenance.
   const manifestPlanner = changedFiles
     ? plannerManifestLanes({mode: plan.mode, changedFiles, change, componentGraph: readComponentGraph()}) : null;
   if (changedFiles?.includes(manifestFile)) {
     console.log(`Manifest diff: ${describeChange(change)}; planner lanes ${manifestPlanner
       ? manifestPlanner.join(", ") : "unchanged (every lane)"}.`);
   }
-  const plannerPlan = manifestPlanner ? {...plan, operations: {...plan.operations, ciTargets: manifestPlanner}} : plan;
-  const {selected: lanes, restored} = unionLanes(plannerPlan, nxSelected);
-  if (restored.length > 0) {
-    console.log(`::warning::Nx missed lanes the planner selected, so they still run: ${restored.join(", ")}`);
+  const planner = manifestPlanner ? narrowedPlanner({plannerLanes: manifestPlanner, changedFiles, mode: plan.mode})
+    : {lanes: plan.operations.ciTargets ?? [], sources: plan.operationSources?.ciTargets ?? []};
+  let result = null;
+  let nxError = historyError;
+  if (!nxError) {
+    try {
+      result = compare({plannerLanes: planner.lanes, plannerSources: planner.sources, ...nxAffected({base: args.base, head: args.head}),
+        mode: plan.mode, changedFiles, manifestChange: change});
+    } catch (error) {
+      nxError = error.message.split("\n")[0];
+    }
   }
-  const next = applyLanes(plan, lanes);
+  // Loaded only here: the main-push plan job's sparse checkout never reads it.
+  const {unknownTopLevel} = alone ? await import("./lane_coverage.mjs") : {unknownTopLevel: () => []};
+  const {lanes, selection, warning} = chooseLanes({mode: plan.mode, alone, plannerLanes: planner.lanes, result, nxError,
+    unknownPaths: changedFiles ? unknownTopLevel(changedFiles) : []});
+  if (warning) console.log(`::warning::${warning}`);
+  const shadow = result ? plannerShadow(result) : {lanes: [], unexplained: 0};
+  // Recorded in the uploaded plan artifact too, for the weekly metrics (#1819).
+  const next = {...applyLanes(plan, lanes), laneSelection: {selection, nxLanes: result?.nxLanes ?? null,
+    plannerOnly: shadow.lanes, plannerUnexplained: shadow.unexplained}};
   fs.writeFileSync(args.plan, `${JSON.stringify(next, null, 2)}\n`);
-  const roles = [...new Set(next.operations.buildTargets.map((target) => target.split("-")[0]))];
-  const buildsSelected = lanes.some((lane) => lane in buildPlatforms);
-  const appRoles = roles.length === 0 && buildsSelected ? ["consumer", "host"] : roles.sort();
   const outputs = [
     ...comparedLanes.map((lane) => `${lane}=${lanes.includes(lane)}`),
-    `app_roles=${JSON.stringify(appRoles)}`,
+    `app_roles=${JSON.stringify(appRolesOf(next))}`,
     `build_targets=${JSON.stringify(next.operations.buildTargets)}`,
+    `lane_selection=${selection}`,
+    `planner_unexplained=${shadow.unexplained}`,
   ];
   fs.appendFileSync(args["github-output"], `${outputs.join("\n")}\n`);
-  console.log(`Lanes: ${lanes.join(", ") || "none"} (Nx: ${nxSelected.join(", ") || "none"}; planner: ${plan.operations.ciTargets.join(", ") || "none"})`);
+  const extra = shadow.lanes.map((entry) => `${entry.lane} (${entry.rule})`);
+  const text = `### Lane selection (${plan.mode}: ${selection})\n\n- Lanes: ${lanes.join(", ") || "none"}\n` +
+    `- Nx: ${result ? result.nxLanes.join(", ") || "none" : "unavailable"}\n` +
+    `- Planner would also run: ${extra.join(", ") || "nothing"}\n- Unexplained planner-only lanes: ${shadow.unexplained}\n`;
+  console.log(text);
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${text}\n`);
+  if (alone && shadow.unexplained > 0) {
+    console.log(`::notice::The planner would also run ${shadow.lanes.filter((entry) => entry.rule === "UNEXPLAINED")
+      .map((entry) => entry.lane).join(", ")}, which no rule explains (tool/nx/shadow_plan.mjs).`);
+  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }
+  main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });
 }

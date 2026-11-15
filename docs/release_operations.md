@@ -284,9 +284,24 @@ commit, `main` runs every selected lane.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` adds the lanes
-`nx affected` selects, and never drops a lane the planner selected until the
-`nx-shadow` comparison holds parity (#1554). Only tasks the change affects
+For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` runs the lanes
+`nx affected` selects, and only those (design A). The planner's selection is a
+shadow. The plan summary lists each lane the planner would also run, with the
+`shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
+unexplained lanes is the `planner_unexplained` output and is also stored in the
+uploaded plan (`laneSelection`). Every lane runs, with a warning, in four cases:
+the history cannot be read, `nx affected` fails, an Nx task maps to no lane, or
+a changed path is under a top-level entry `tool/nx/lane_coverage.mjs` does not
+list. Pull requests still leave the queue-only lanes to the queue. The kill
+switch is `nxSelectsAlone` in `select_lanes.mjs`. Emptying it restores the
+union, in which Nx may only add to the planner's lanes. A lane only Nx selects
+still gets complete inputs: a build lane without planner targets builds both
+apps. Every lane job reads only the change range, the final lanes and outputs
+pinned by `select_lanes.test.mjs`. `tool/nx/lane_coverage.test.mjs` replaces
+the planner's refusal of an unowned path. Every tracked file must be an input
+of a lane task, a selector, or listed in `noLaneReads` with why no lane reads
+it. Main, nightly, full and commit-window runs keep the planner's selection,
+and the main plan job never installs Nx. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
@@ -296,8 +311,8 @@ rather than the Functions suite. Each contract family (`contracts-admin`,
 `-bigquery`, `-catalogs`, `-client-writes`, `-fixtures`, `-http`, `-patches`,
 `-storage`) is its own Nx project, and only the projects that consume it depend
 on it: for a BigQuery or HTTP contract change Nx selects Functions and its
-readers, not the Flutter app, though the planner's lanes still run until
-parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+readers, not the Flutter app. `tool/nx/lane_inputs.test.mjs` pins these
+inputs.
 A document a check reads is an input of the lane that runs the check.
 `tool/nx/markdown_inputs.test.mjs` requires two things. First, every Markdown
 `impactPath` in the tools manifest must be a `lane-tools` input, because
@@ -310,9 +325,9 @@ capture workflow renders from the Storybook build.
 The `nx-shadow` comparison explains every disagreement by a rule in
 `tool/nx/shadow_plan.mjs`, and a fixture from the real commit pins each rule.
 In `pr` and `merge_group` it compares Nx with the planner after the manifest
-diff narrows it, which is the selection those runs use. The cut-over to Nx-only
-selection (design A) needs a replay of at least 200 main commits with no
-unexplained disagreement.
+diff narrows it, the selection those runs used before the cut-over. The
+cut-over needed a replay of at least 200 main commits with no unexplained
+disagreement (#1824: 229 commits, none).
 Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
