@@ -206,6 +206,29 @@ test("guest-booking-facts writes one document per person with every organizer", 
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("event-chat-directory creates each row once from its first source", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-chat-directory");
+  const db = fakeDb({
+    "eventChatMemberships/m1": {eventId: "e1", uid: "a"},
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventParticipations/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
+    "eventParticipations/e3_a": {eventId: "e3", uid: "a", status: "cancelled"},
+    "eventAttendees/r1": {eventId: "e2", linkedUid: "a"},
+    "eventAttendees/r2": {eventId: "e4", linkedUid: "b"},
+    "eventAttendees/r3": {eventId: "e5", linkedUid: null},
+  });
+  const targets = [];
+  for (const step of migration.steps) {
+    for (const [key, data] of Object.entries(db.data)) {
+      const [collection, id] = key.split("/");
+      if (collection !== step.source) continue;
+      const target = await step.targetId(id, data, db);
+      if (target) targets.push(target);
+    }
+  }
+  assert.deepEqual(targets.sort(), ["e1_a", "e2_a", "e4_b"]);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);

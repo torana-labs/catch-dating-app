@@ -1751,6 +1751,15 @@ service cloud.firestore {
     match /eventChatMemberships/{membershipId} {
       allow read, write: if false;
     }
+    // One row per event chat a person may see in their chat list, rebuilt by
+    // triggers from current admission, the event, the room and the chat
+    // membership. A person lists only their own rows; opening a chat still
+    // goes through the access and message callables.
+    match /eventChatDirectoryEntries/{entryId} {
+      allow read: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
     match /eventChatAccessReceipts/{receiptId} {
       allow read, write: if false;
     }

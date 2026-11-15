@@ -378,6 +378,7 @@ async function queueParticipantPrivateStateCleanup(
     "eventApprovalNotificationPreferences",
     "eventApprovalNotificationReceipts", "hostMemberships",
     "hostMembershipCheckouts", "hostMembershipBenefitUses",
+    "eventChatDirectoryEntries",
     "guestBookingFacts"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();

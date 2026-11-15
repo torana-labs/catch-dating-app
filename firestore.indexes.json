@@ -7301,6 +7301,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "eventChatDirectoryEntries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventStartAtMillis",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

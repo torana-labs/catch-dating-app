@@ -15,11 +15,13 @@ const {
   getDocs,
   it,
   match,
+  query,
   seed,
   serverTimestamp,
   setDoc,
   updateDoc,
   useRulesEnvironment,
+  where,
 } = require("./rulesHarness.cjs");
 
 describe("firestore.rules", () => {
@@ -202,6 +204,38 @@ describe("firestore.rules", () => {
       await assertFails(deleteDoc(doc(db, "eventChatSignals", "event-1")));
       await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
       await assertFails(getDoc(doc(db, "eventChatSignals", "event-1")));
+    });
+
+    it("lets a person list only their own event chat directory rows", async () => {
+      const row = (uid) => ({schemaVersion: 1, uid, eventId: "event-1",
+        organizerId: "club-1", title: "Run", role: "attendee",
+        eventStartAtMillis: 1, room: {status: "open", revision: 1,
+          opensAtMillis: null, closesAtMillis: null},
+        membership: {status: "joined", revision: 1, notificationsMuted: false},
+        profileClaimed: true, termsVersion: "event-chat-v1",
+        updatedAtMillis: 1});
+      await seed(["eventChatDirectoryEntries", "event-1_runner-1"],
+        row("runner-1"));
+      await seed(["eventChatDirectoryEntries", "event-1_runner-2"],
+        row("runner-2"));
+      const db = authedDb("runner-1");
+      const own = await assertSucceeds(getDocs(query(
+        collection(db, "eventChatDirectoryEntries"),
+        where("uid", "==", "runner-1"))));
+      assert.equal(own.size, 1);
+      await assertSucceeds(getDoc(doc(db, "eventChatDirectoryEntries",
+        "event-1_runner-1")));
+      await assertFails(getDoc(doc(db, "eventChatDirectoryEntries",
+        "event-1_runner-2")));
+      await assertFails(getDocs(collection(db, "eventChatDirectoryEntries")));
+      await assertFails(setDoc(doc(db, "eventChatDirectoryEntries",
+        "event-1_runner-1"), row("runner-1")));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-2"), "eventChatDirectoryEntries"),
+        where("uid", "==", "runner-1"))));
+      await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(db, "eventChatDirectoryEntries",
+        "event-1_runner-1")));
     });
 
     it("allows participants to reset only their own unread count", async () => {
