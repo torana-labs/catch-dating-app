@@ -238,7 +238,7 @@ empty, the rules gate with no list.
 |---|---|---|---|
 | `lib/hosts/today/personalization` | 2 | 2 | P3.1 Today |
 | `lib/event_success/presentation` (departure controller, attendance disposition editor) | 3 | 3 | P3.4 Live |
-| `lib/event_rehearsal/presentation` | 2 | 10 | P5 events workspace |
+| `lib/event_rehearsal/presentation` (start screen source refresh) | 1 | 1 | P5 events workspace |
 | `lib/hosts/presentation/widgets/host_event_participants_section.dart` | 1 | 1 | P5 events workspace |
 | `lib/hosts/presentation/customers` | 22 | 23 | P5 people |
 | `lib/hosts/presentation/inbox` | 10 | 10 | P5 people |
@@ -248,7 +248,7 @@ empty, the rules gate with no list.
 | `lib/explore/presentation` | 7 | 7 | P6 explore |
 | `lib/chats/presentation/chat_retry_controller.dart`, `lib/swipes/presentation` | 5 | 5 | P6 after and chats |
 | `lib/user_profile/presentation` | 2 | 2 | P6 you |
-| Total | 82 | 94 | |
+| Total | 81 | 85 | |
 
 ## Code map
 
