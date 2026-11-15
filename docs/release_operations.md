@@ -2343,8 +2343,79 @@ Recovery:
   head again. To release a specific commit by hand, dispatch
   `Next Website Preview` with `source_sha`. Then dispatch
   `Next Website Promotion` with that preview's run id.
+- **A release failed its post-deploy checks.** See the next section. The
+  promotion opens or comments on the issue "Website release failed its
+  post-deploy checks", which says whether live was rolled back.
 - **Hold releases.** Add a required reviewer to the `prod` environment. Trains
   then wait at the gate.
+
+#### Post-deploy checks and automatic rollback
+
+Owner decision, 15 Nov 2026 (audit recommendation 8, website half).
+
+`Next Website Promotion` preserves the live Hosting version before it changes
+anything (`hostingState.mjs snapshot`, `rollback.json`). It then clones the
+tested version to live and runs two checks:
+
+- **The expected release is served.** `liveOriginCheck.mjs --release` requires
+  the Firebase origin's `/api/public-catalog` to answer 200, uncached, with
+  `X-Catch-Release` naming the released commit. It also requires the origin's
+  `/` to redirect to the public domain, and the edge to answer.
+- **The key pages render.** `rollbackDecision.mjs pages` reads `/`, `/explore/`,
+  `/host/`, `/privacy/` and `/api/public-catalog` from the Cloud Run revision
+  live Hosting pins. Each must answer 200 as the released commit; pages need a
+  heading and the catalog needs a listings array. It checks no copy, so it
+  works for any release. Runners can't read live pages any other way:
+  Cloudflare answers them with 403 (#1272), and the Firebase host redirects
+  every page except `/api/`. The runtime serves public pages only for Catch
+  hosts, so the check sends the `X-Forwarded-Host` form Hosting uses for a
+  production preview channel, which gets no canonical redirect.
+
+`deployed/prod-website` moves only after both checks pass.
+
+If either check fails, or the clone step fails after it started, the
+promotion decides what to do (`decideRollback` in
+`website/scripts/next/rollbackDecision.mjs`). It rolls back only when every
+guard holds:
+
+- Live serves this promotion's candidate. If live still serves the previous
+  version, nothing changed. If it serves anything else, the promotion leaves
+  it alone and reports.
+- The target is exactly the version preserved before this promotion, and the
+  Cloud Run revision it pins is still tagged.
+- That revision serves the commit `deployed/prod-website` names. The tag moves
+  only after a release passes its live checks, so a release that failed them
+  is never a rollback target.
+- The repository variable `WEBSITE_AUTO_ROLLBACK` is `on`.
+
+The rollback re-clones the preserved version to live, inside the promotion
+run that is already releasing. It is not a new release decision and needs no
+separate approval. It runs at most once per run. It checks again that live
+still serves the failed candidate, clones once, then verifies that live serves
+the restored commit (the same two checks). A failed verification is never
+retried: the run fails and the issue says manual action is needed. A manual
+re-run of the promotion is a new attempt by a person.
+
+The promotion run fails whenever the checks fail, rolled back or not, so the
+train run fails too. The issue gives the failing check's output, the failed
+and previous releases (commit and Hosting version), and whether live was
+rolled back, would have been, or why not. It stays open for a person to close.
+
+**The switch is the owner's call.** `WEBSITE_AUTO_ROLLBACK` ships unset, which
+means report only: the checks and the decision run, the run fails, and the
+issue names the release it would have restored, but live keeps the failed
+release. To turn rollback on, set the repository variable
+`WEBSITE_AUTO_ROLLBACK` to `on` (Settings → Secrets and variables → Actions →
+Variables). Any other value reports only. There is no dev or staging train:
+the train releases only production, so the switch guards production directly.
+This adds no environment protection, reviewer or ruleset.
+
+**Known limitation: a rolled-back site starts cold.** The rollback restores
+Hosting only. The restored release's tagged revision serves again, but the
+service's one warm instance (`--min 1`) stays on the newer revision, which
+still receives the service's own traffic. The first visits after a rollback
+wait for a cold start until the next promotion. Shifting service traffic back
+too is a possible follow-up for the owner to decide.
 
 ### Website rollback to the static Vite build
 

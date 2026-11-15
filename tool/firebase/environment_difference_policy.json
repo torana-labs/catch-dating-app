@@ -80,6 +80,7 @@
     "VITE_FIREBASE_STORAGE_BUCKET": {"class": "identity"},
     "VITE_GTM_ID": {"class": "identity"},
     "VITE_WEBSITE_APPCHECK_SITE_KEY": {"class": "identity"},
+    "WEBSITE_AUTO_ROLLBACK": {"class": "feature-gate"},
     "catch_whatsapp_support_enabled": {"class": "feature-gate"},
     "consumer_min_build_android": {"class": "release-state"},
     "consumer_min_build_ios": {"class": "release-state"},

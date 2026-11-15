@@ -28,6 +28,8 @@ jobs:
       # Moves the deployed/prod-website tag after a verified promotion.
       contents: write
       id-token: write
+      # Opens or comments on the issue when a release fails its post-deploy checks.
+      issues: write
     env:
       PREVIEW_RUN_ID: ${{ inputs.preview_run_id }}
       GH_TOKEN: ${{ github.token }}
@@ -135,6 +137,7 @@ jobs:
           url="$(jq -er .url ../../next-promote/candidate-channel.json)"
           node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json
       - name: Promote only the exact tested Hosting version
+        id: clone
         run: |
           set -euo pipefail
           node website/scripts/next/promoteRelease.mjs recheck
@@ -145,13 +148,60 @@ jobs:
           firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
           EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
+      - name: Check the live release after promotion
+        id: live-checks
+        run: |
+          set -euo pipefail
           # The pages passed on the next-release channel with this exact Hosting
           # version. Cloudflare challenges runners on the public domain (#1272),
           # so main's live check reads the release from the Firebase host and
           # only checks that the edge answers.
-          node website/scripts/next/liveOriginCheck.mjs --release "$RELEASE_SHA" --attempts 18 > build/next-promote/live-checks.json
+          node website/scripts/next/liveOriginCheck.mjs --release "$RELEASE_SHA" --attempts 18 > build/next-promote/live-checks.json \
+            2> >(tee -a build/next-promote/live-checks.log >&2)
+          # Live pages answer runners only with Cloudflare's 403 or the Firebase
+          # host's redirect, so the key pages are read from the revision live
+          # Hosting pins, as Hosting forwards them.
+          node website/scripts/next/rollbackDecision.mjs pages "$RELEASE_SHA" build/next-promote/production-hosting.json \
+            > build/next-promote/live-pages.json 2> >(tee -a build/next-promote/live-checks.log >&2)
       - name: Record the released commit
         run: node website/scripts/next/promoteRelease.mjs record
+      # Post-deploy failure handling (docs/release_operations.md, "Post-deploy
+      # checks and automatic rollback"). These run only when the clone step or
+      # the live checks themselves failed: a failure before the clone leaves
+      # live alone, and a failed record after passing checks must never roll a
+      # healthy release back. The decision reads what live actually serves, so
+      # a clone or verify-next that failed partway is handled too.
+      - name: Decide whether to roll back
+        id: decide
+        if: ${{ failure() && (steps.clone.outcome == 'failure' || steps.live-checks.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Only "on" rolls back; unset or anything else reports only. The
+          # owner turns it on.
+          WEBSITE_AUTO_ROLLBACK: ${{ vars.WEBSITE_AUTO_ROLLBACK }}
+        run: node website/scripts/next/rollbackDecision.mjs decide
+      - name: Roll back live to the preserved release
+        id: rollback
+        # One attempt per run: this step has no retry, and nothing re-enters
+        # the decision after it.
+        if: ${{ failure() && steps.decide.outputs.action == 'rollback' }}
+        env:
+          TARGET_VERSION: ${{ steps.decide.outputs.target_version }}
+          TARGET_SHA: ${{ steps.decide.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$TARGET_VERSION" =~ ^[a-z0-9]+$ ]]
+          [[ "$TARGET_SHA" =~ ^[a-f0-9]{40}$ ]]
+          node website/scripts/next/rollbackDecision.mjs assert-live-candidate
+          firebase hosting:clone "catch-dating-app-64e51@$TARGET_VERSION" catch-dating-app-64e51:live \
+            --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/rollback-clone.json
+          node website/scripts/next/rollbackDecision.mjs verify-rollback 2> >(tee -a build/next-promote/rollback-checks.log >&2)
+      - name: Report the failed release
+        if: ${{ failure() && (steps.clone.outcome == 'failure' || steps.live-checks.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROLLBACK_OUTCOME: ${{ steps.rollback.outcome }}
+        run: node website/scripts/next/rollbackDecision.mjs report
       - name: Retain exact release and rollback identities
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -168,6 +218,12 @@ jobs:
             build/next-promote/candidate-checks.json
             build/next-promote/promotion.json
             build/next-promote/production-hosting.json
+            build/next-promote/live-pages.json
+            build/next-promote/live-checks.log
+            build/next-promote/rollback-decision.json
+            build/next-promote/rollback-clone.json
+            build/next-promote/rollback-checks.json
+            build/next-promote/rollback-checks.log
             build/next-promote/live-checks.json
           if-no-files-found: warn
           retention-days: 30

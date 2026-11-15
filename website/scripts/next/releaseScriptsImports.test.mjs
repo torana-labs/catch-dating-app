@@ -10,7 +10,7 @@ import {fileURLToPath} from "node:url";
  * "Decide whether main's head should be released" (run 41134465583).
  */
 const noInstall = ["releaseTrain.mjs", "previewRelease.mjs", "promoteRelease.mjs", "hostingState.mjs",
-  "channelState.mjs", "liveOriginCheck.mjs"];
+  "channelState.mjs", "liveOriginCheck.mjs", "rollbackDecision.mjs"];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const specifiers = source => [...source.matchAll(/^\s*(?:import|export)\b[^"']*?\bfrom\s*["']([^"']+)["']|^\s*import\s*["']([^"']+)["']/gmu)]
   .map(match => match[1] ?? match[2]);
