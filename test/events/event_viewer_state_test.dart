@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +18,6 @@ void main() {
     expect(v.hasAdmission, isTrue);
     expect(v.canBook, isFalse);
     expect(v.membership, EventViewerMembership.revoked);
-    expect(v.payment, EventViewerPayment.notRead);
     expect(v.attendance, EventViewerAttendance.notRecorded);
   });
 
@@ -29,36 +28,43 @@ void main() {
     expect(v.hasAdmission, isFalse);
   });
 
-  test('malformed and contradictory facts never produce a booking DTO', () {
-    final mutations = <void Function(Map<String, Object?>)>[
-      (v) => v['phoneNumber'] = '+919000000001',
-      (v) => v.remove('membership'),
-      (v) => v['review'] = 'unknown',
-      (v) => v['observedAtMillis'] = -1,
-      (v) => v['quotedPriceInPaise'] = 0.5,
-      (v) => v['futureBooking'] = {
-        'allowed': true,
-        'reason': 'membershipRequired',
-      },
-      (v) => v['futureBooking'] = {'allowed': false, 'reason': null},
-      (v) => v['route'] = null,
-      (v) => v['route'] = 'externalPrivateLink',
-      (v) => v['route'] = 'catchCheckout',
-    ];
-    for (final mutate in mutations) {
-      final response = viewerResponse();
-      mutate(response['viewer']! as Map<String, Object?>);
-      expect(
-        () => EventViewerState.fromResponse(response),
-        throwsFormatException,
-      );
-    }
+  test('contradictory facts never produce a booking state', () {
+    EventViewerState build({
+      EventViewerRestriction? restriction,
+      EventViewerRoute? route,
+      int? price,
+    }) => EventViewerState(
+      eventId: 'event-1',
+      organizerId: 'club-1',
+      membership: EventViewerMembership.notRequired,
+      review: EventViewerReview.none,
+      admission: EventViewerAdmission.none,
+      attendance: EventViewerAttendance.notRecorded,
+      waitlisted: false,
+      restriction: restriction,
+      route: route,
+      quotedPriceInPaise: price,
+    );
     expect(
-      () => EventViewerState.fromResponse({
-        'viewer': viewerResponse()['viewer'],
-        'uid': 'other',
-      }),
-      throwsFormatException,
+      () => build(
+        restriction: EventViewerRestriction.full,
+        route: EventViewerRoute.catchCheckout,
+        price: 100,
+      ),
+      throwsStateError,
+    );
+    expect(() => build(), throwsStateError);
+    expect(
+      () => build(route: EventViewerRoute.catchCheckout, price: 0),
+      throwsStateError,
+    );
+    expect(
+      () => build(route: EventViewerRoute.catchFreeBooking, price: 100),
+      throwsStateError,
+    );
+    expect(
+      build(route: EventViewerRoute.catchFreeBooking, price: 0).canBook,
+      isTrue,
     );
   });
 
@@ -127,18 +133,6 @@ void main() {
         confirmed: true,
       );
       expect(state.primaryAction, EventDetailBookingDockAction.cancelBooking);
-      expect(state.leadingKind, EventDetailBookingDockLeadingKind.booked);
-    });
-
-    test('public paid admission does not invent a native cancellation', () {
-      final state = dock(
-        viewerFixture(
-          reason: 'membershipRequired',
-          membership: 'revoked',
-          admission: 'publicPaidRoster',
-        ),
-      );
-      expect(state.primaryAction, EventDetailBookingDockAction.none);
       expect(state.leadingKind, EventDetailBookingDockLeadingKind.booked);
     });
 

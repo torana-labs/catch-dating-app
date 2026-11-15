@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_checkout.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_entitlement.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -21,6 +22,7 @@ class HostMembershipRepository {
   static const _memberships = 'hostMemberships';
   static const _plans = 'hostMembershipPlans';
   static const _benefitUses = 'hostMembershipBenefitUses';
+  static const _eventRules = 'eventMembershipRules';
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -96,6 +98,20 @@ class HostMembershipRepository {
     ),
   );
 
+  /// A published event's paid-membership rules; null when it has none.
+  Stream<EventMembershipRules?> watchEventRules(String eventId) =>
+      withBackendErrorStream(
+        () => _db.collection(_eventRules).doc(eventId).snapshots().map((snap) {
+          final data = snap.data();
+          return data == null ? null : EventMembershipRules.fromMap(data);
+        }),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch event membership rules',
+          resource: _eventRules,
+        ),
+      );
+
   Future<HostMembershipCheckout> prepareCheckout({
     required String organizerId,
     required String planId,
@@ -170,3 +186,9 @@ Stream<List<HostMembershipPlan>> watchPublishedHostMembershipPlans(
 ) => ref
     .watch(hostMembershipRepositoryProvider)
     .watchPublishedPlans(organizerId);
+
+@riverpod
+Stream<EventMembershipRules?> watchEventMembershipRules(
+  Ref ref,
+  String eventId,
+) => ref.watch(hostMembershipRepositoryProvider).watchEventRules(eventId);

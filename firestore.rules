@@ -2212,6 +2212,14 @@ service cloud.firestore {
     match /organizerCommunityMemberships/{membershipId} {
       allow read, write: if false;
     }
+    // One guest's booking facts from documents they cannot read, projected
+    // for them alone (today: community membership state per organizer). A
+    // guest with no facts reads an empty document.
+    match /guestBookingFacts/{uid} {
+      allow get: if isAuthed() && request.auth.uid == uid
+        && !isDeletedUser(uid);
+      allow list, write: if false;
+    }
     match /organizerCommunityMembershipDecisions/{decisionId} {
       allow read, write: if false;
     }
@@ -3203,8 +3211,13 @@ service cloud.firestore {
     match /hostMembershipWebhookReceipts/{receiptId} {
       allow read, write: if false;
     }
+    // A published event's paid-membership rules: member prices, early
+    // access and members-only. Guests see their outcome on the event screen
+    // anyway; booking commands recompute it. A missing document reads empty.
     match /eventMembershipRules/{eventId} {
-      allow read, write: if false;
+      allow get: if isAuthed()
+        && isPublicEventData(get(/databases/$(database)/documents/events/$(eventId)).data);
+      allow list, write: if false;
     }
 
     // ── Reviews ───────────────────────────────────────────────────────────────

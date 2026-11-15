@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';

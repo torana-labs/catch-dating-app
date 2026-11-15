@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_tags.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
-import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -222,49 +221,6 @@ void main() {
     );
   });
 
-  testWidgets('completed cancellation refreshes current authority', (
-    tester,
-  ) async {
-    final repository = FakeEventRepository();
-    final event = buildEvent();
-    var reads = 0;
-    await pumpEventsTestApp(
-      tester,
-      Scaffold(
-        bottomNavigationBar: EventDetailDock(
-          event: event,
-          userProfile: buildUser(),
-          organizerId: 'club-1',
-          participation: buildEventParticipation(event: event, uid: 'runner-1'),
-        ),
-      ),
-      overrides: [
-        eventRepositoryProvider.overrideWithValue(repository),
-        eventPaidBookingSupportProvider('INR').overrideWithValue(true),
-        eventViewerStateProvider('event-1', 'runner-1').overrideWith((
-          ref,
-        ) async {
-          // As the read owner does: booking writes declare this tag stale.
-          ref.providesTags({EventTags.viewer('event-1')});
-          reads++;
-          return reads == 1
-              ? viewerFixture(admission: 'nativeParticipation')
-              : viewerFixture(
-                  reason: 'membershipRequired',
-                  membership: 'revoked',
-                );
-        }),
-      ],
-    );
-    await pumpUntilFound(tester, find.text('Cancel booking'));
-    await tester.tap(find.text('Cancel booking'));
-    await pumpUntilFound(tester, find.text('Members only'));
-    expect(repository.cancelledEventId, event.id);
-    expect(reads, 2);
-    expect(find.text('Cancel booking'), findsNothing);
-    expect(find.text('Members only'), findsOneWidget);
-  });
-
   testWidgets('unclaimed supply does not start a private viewer read', (
     tester,
   ) async {
@@ -295,13 +251,16 @@ void main() {
   });
 
   test(
-    'a foreign local account key fails before reading the repository',
+    'a foreign local account key fails before any listener starts',
     () async {
-      final repository = _ViewerRepository();
+      var eventReads = 0;
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-2')),
-          eventRepositoryProvider.overrideWithValue(repository),
+          watchEventProvider('event-1').overrideWith((ref) {
+            eventReads++;
+            return Stream.value(buildEvent());
+          }),
         ],
         retry: (count, error) => null,
       );
@@ -313,20 +272,7 @@ void main() {
       final subscription = container.listen(viewer, (_, _) {});
       addTearDown(subscription.close);
       await expectLater(container.read(viewer.future), throwsStateError);
-      expect(repository.reads, 0);
+      expect(eventReads, 0);
     },
   );
-}
-
-class _ViewerRepository extends FakeEventRepository {
-  int reads = 0;
-  @override
-  Future<EventViewerState> fetchViewerState({
-    required String eventId,
-    String? inviteCode,
-    String? publicPaymentId,
-  }) async {
-    reads++;
-    return viewerFixture(eventId: eventId);
-  }
 }

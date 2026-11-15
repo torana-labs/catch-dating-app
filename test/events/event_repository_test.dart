@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/events/data/event_callable_responses.d
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
-import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -14,7 +13,6 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
 part 'event_repository_fixtures.dart';
@@ -29,67 +27,6 @@ void main() {
       firestore = FakeFirebaseFirestore();
       functions = TestFirebaseFunctions();
       repository = EventRepository(firestore, functions);
-    });
-
-    test(
-      'viewer read sends event, source-bound hints and the membership opt-in',
-      () async {
-        final callable =
-            functions.httpsCallable('getEventViewerState') as TestHttpsCallable;
-        callable.resultData = viewerResponse();
-        final viewer = await repository.fetchViewerState(
-          eventId: 'event-1',
-          inviteCode: 'confirmed-invite',
-          publicPaymentId: 'owned-payment',
-        );
-        expect(viewer.eventId, 'event-1');
-        expect(callable.calls, [
-          {
-            'eventId': 'event-1',
-            'inviteCode': 'confirmed-invite',
-            'publicPaymentId': 'owned-payment',
-            'includeHostMembership': true,
-          },
-        ]);
-        expect((await firestore.collection('events').get()).docs, isEmpty);
-      },
-    );
-
-    test(
-      'a foreign event response cannot authorize the requested event',
-      () async {
-        final callable =
-            functions.httpsCallable('getEventViewerState') as TestHttpsCallable;
-        callable.resultData = viewerResponse(eventId: 'foreign-event');
-        await expectLater(
-          repository.fetchViewerState(eventId: 'event-1'),
-          throwsA(
-            isA<AppException>().having(
-              (error) => error.cause,
-              'cause',
-              isA<FormatException>(),
-            ),
-          ),
-        );
-      },
-    );
-
-    test('private extra fields fail the callable response boundary', () async {
-      final callable =
-          functions.httpsCallable('getEventViewerState') as TestHttpsCallable;
-      final response = viewerResponse();
-      (response['viewer']! as Map<String, Object?>)['phoneNumber'] = 'private';
-      callable.resultData = response;
-      await expectLater(
-        repository.fetchViewerState(eventId: 'event-1'),
-        throwsA(
-          isA<AppException>().having(
-            (error) => error.cause,
-            'cause',
-            isA<FormatException>(),
-          ),
-        ),
-      );
     });
 
     test('generateId uses an auto-generated document reference', () async {

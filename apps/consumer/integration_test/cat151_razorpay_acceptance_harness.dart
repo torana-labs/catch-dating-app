@@ -5,11 +5,11 @@ import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
@@ -142,6 +142,25 @@ class _Cat151AcceptanceScreenState
     });
   });
 
+  /// The guest's composed booking state, read once from its listeners.
+  Future<EventViewerState> _readViewer({
+    required String eventId,
+    required String uid,
+    required String inviteCode,
+  }) async {
+    final provider = eventViewerStateProvider(
+      eventId,
+      uid,
+      inviteCode: inviteCode,
+    );
+    final keepAlive = ref.listenManual(provider, (_, _) {});
+    try {
+      return await ref.read(provider.future);
+    } finally {
+      keepAlive.close();
+    }
+  }
+
   Future<_PreflightResult> _readPreflight() async {
     final inputs = _HarnessInputs(
       expectedUid: _expectedUid.text.trim(),
@@ -160,7 +179,6 @@ class _Cat151AcceptanceScreenState
     final db = ref.read(firebaseFirestoreProvider);
     final projectId = Firebase.app().options.projectId;
     final repositories = (
-      event: ref.read(eventRepositoryProvider),
       participation: ref.read(eventParticipationRepositoryProvider),
     );
     final values = await Future.wait<Object?>([
@@ -210,10 +228,7 @@ class _Cat151AcceptanceScreenState
           .collection('organizers')
           .doc(event.organizerId)
           .get(const GetOptions(source: Source.server)),
-      repositories.event.fetchViewerState(
-        eventId: event.id,
-        inviteCode: inviteCode,
-      ),
+      _readViewer(eventId: event.id, uid: signedInUid, inviteCode: inviteCode),
       repositories.participation
           .watchParticipation(eventId: event.id, uid: signedInUid)
           .first,
@@ -266,7 +281,6 @@ class _Cat151AcceptanceScreenState
       viewerRoute: viewer.route,
       viewerQuoteInPaise: viewer.quotedPriceInPaise,
       viewerAdmission: viewer.admission,
-      viewerPayment: viewer.payment,
       viewerWaitlisted: viewer.waitlisted,
       hasParticipation: rawParticipation.exists || participation != null,
       hasSuccessfulPayment: payment != null,
@@ -601,9 +615,11 @@ class _Cat151AcceptanceScreenState
         .collection('users')
         .doc(widget.uid)
         .get(const GetOptions(source: Source.server));
-    final viewer = await ref
-        .read(eventRepositoryProvider)
-        .fetchViewerState(eventId: event.id, inviteCode: inviteCode);
+    final viewer = await _readViewer(
+      eventId: event.id,
+      uid: widget.uid,
+      inviteCode: inviteCode,
+    );
     final seed = ledgerState.seedPrefix;
     if (currentEvent == null ||
         currentPayment == null ||
@@ -628,7 +644,6 @@ class _Cat151AcceptanceScreenState
         currentParticipation.paymentId != currentPayment.paymentId ||
         viewer.eventId != currentEvent.id ||
         viewer.admission != EventViewerAdmission.nativeParticipation ||
-        viewer.payment != EventViewerPayment.notRead ||
         !currentEvent.synthetic ||
         currentEvent.seedPrefix != seed ||
         currentEvent.currency.toUpperCase() != 'INR' ||
@@ -659,9 +674,7 @@ class _Cat151AcceptanceScreenState
     timeout: timeout,
     read: () async {
       final values = await Future.wait<Object?>([
-        ref
-            .read(eventRepositoryProvider)
-            .fetchViewerState(eventId: eventId, inviteCode: inviteCode),
+        _readViewer(eventId: eventId, uid: uid, inviteCode: inviteCode),
         ref
             .read(eventParticipationRepositoryProvider)
             .watchParticipation(eventId: eventId, uid: uid)
@@ -675,11 +688,9 @@ class _Cat151AcceptanceScreenState
       final participation = values[1] as EventParticipation?;
       final payment = values[2] as Payment?;
       // Native participation owns payment evidence in the private payments
-      // document. The canonical viewer deliberately reports `notRead` unless
-      // a public-checkout payment id was supplied.
+      // document; the viewer proves only the admission.
       if (viewer.eventId != eventId ||
           viewer.admission != EventViewerAdmission.nativeParticipation ||
-          viewer.payment != EventViewerPayment.notRead ||
           participation == null ||
           participation.uid != uid ||
           participation.eventId != eventId ||
@@ -711,9 +722,7 @@ class _Cat151AcceptanceScreenState
     timeout: timeout,
     read: () async {
       final values = await Future.wait<Object?>([
-        ref
-            .read(eventRepositoryProvider)
-            .fetchViewerState(eventId: eventId, inviteCode: inviteCode),
+        _readViewer(eventId: eventId, uid: uid, inviteCode: inviteCode),
         ref
             .read(eventParticipationRepositoryProvider)
             .watchParticipation(eventId: eventId, uid: uid)
@@ -731,7 +740,6 @@ class _Cat151AcceptanceScreenState
       // payment document; the viewer proves only that admission was removed.
       if (viewer.eventId != eventId ||
           viewer.admission != EventViewerAdmission.none ||
-          viewer.payment != EventViewerPayment.notRead ||
           participation == null ||
           participation.uid != uid ||
           participation.eventId != eventId ||

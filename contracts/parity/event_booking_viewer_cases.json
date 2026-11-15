@@ -1,0 +1,2415 @@
+{
+  "description": "Shared cases for the booking rules the Consumer app mirrors to show booking state from direct reads. Functions owns signupPolicyDecision, quotePriceInPaise and evaluateHostMembershipEntitlement; lib/contexts/bookings/domain/event_signup_decision.dart and lib/contexts/payments/domain/host_membership_entitlement.dart must return the same expected values. Change a rule in Functions, regenerate these values from it, and make the Dart test pass.",
+  "signup": [
+    {
+      "name": "open event with room",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "open",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 3
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 3,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "open event at capacity",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "open",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 10
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 10,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "full",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "members only without membership",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "membersOnly",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": true,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {},
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 0,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "membershipRequired",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "members only with membership",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "membersOnly",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": true,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {},
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 0,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": true,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "invite only without invite",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "inviteOnly",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": true,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {},
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 0,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "inviteRequired",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "invite only with invite",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "inviteOnly",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": true,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {},
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 0,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": true,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "review before capacity",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "manualApproval",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": true,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 10
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 10,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "reviewRequired",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "host approval admits",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "manualApproval",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": true,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 2
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 2,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": true,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "approved members skip review",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "manualApproval",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": true,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          },
+          "approvedMembersSkipReview": true
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {},
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 0,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": true,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "general capacity held for pairs",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "open",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": true,
+            "reservedPairCapacity": 4,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 6
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 7,
+        "crossPathsPairHeldCount": 1,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "generalCapacityUnavailable",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "cohort cap reached",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "fixedCohortCaps",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {
+            "menInterestedInWomen": 3
+          },
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 3
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 3,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "cohortCapacityUnavailable",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "other cohort under its cap",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "fixedCohortCaps",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {
+            "menInterestedInWomen": 3
+          },
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "womenInterestedInMen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 3
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 3,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "ratio opening buffer",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "balancedRatio",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": {
+            "leftCohortId": "menInterestedInWomen",
+            "rightCohortId": "womenInterestedInMen",
+            "maxSkew": 1,
+            "openingBufferPerCohort": 2,
+            "outOfRatioCohortPolicy": "manualReview"
+          },
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 1
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 1,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "ratio within skew",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "balancedRatio",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": {
+            "leftCohortId": "menInterestedInWomen",
+            "rightCohortId": "womenInterestedInMen",
+            "maxSkew": 1,
+            "openingBufferPerCohort": 2,
+            "outOfRatioCohortPolicy": "manualReview"
+          },
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 3,
+          "womenInterestedInMen": 3
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 6,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "ratio beyond skew",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "balancedRatio",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": {
+            "leftCohortId": "menInterestedInWomen",
+            "rightCohortId": "womenInterestedInMen",
+            "maxSkew": 1,
+            "openingBufferPerCohort": 2,
+            "outOfRatioCohortPolicy": "manualReview"
+          },
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 4,
+          "womenInterestedInMen": 3
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 7,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "balanceUnavailable",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "out of ratio needs review",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "balancedRatio",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": {
+            "leftCohortId": "menInterestedInWomen",
+            "rightCohortId": "womenInterestedInMen",
+            "maxSkew": 1,
+            "openingBufferPerCohort": 2,
+            "outOfRatioCohortPolicy": "manualReview"
+          },
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "queerOrOpen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 1
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 1,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": "outOfRatioReviewRequired",
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "out of ratio admitted within capacity",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "balancedRatio",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": {
+            "leftCohortId": "menInterestedInWomen",
+            "rightCohortId": "womenInterestedInMen",
+            "maxSkew": 1,
+            "openingBufferPerCohort": 2,
+            "outOfRatioCohortPolicy": "admitWithinGeneralCapacity"
+          },
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": []
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "queerOrOpen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 1
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 1,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    },
+    {
+      "name": "cohort adjustment and demand pricing",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "open",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {
+            "menInterestedInWomen": 10000
+          },
+          "demandPricingRules": [
+            {
+              "pricedCohortId": "menInterestedInWomen",
+              "balancingCohortId": "womenInterestedInMen",
+              "freeSkew": 1,
+              "demandStep": 2,
+              "stepAdjustmentInPaise": 5000,
+              "maxAdjustmentInPaise": 12000
+            }
+          ]
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "menInterestedInWomen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 5,
+          "womenInterestedInMen": 1
+        },
+        "waitlistedCountsByCohort": {
+          "menInterestedInWomen": 2
+        },
+        "totalBooked": 6,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 72000
+      }
+    },
+    {
+      "name": "demand pricing ignores other cohorts",
+      "policy": {
+        "version": 2,
+        "admission": {
+          "format": "open",
+          "capacityLimit": 10,
+          "waitlistPolicy": {
+            "mode": "rankedOffer",
+            "offerWindowMinutes": 20
+          },
+          "inviteRequired": false,
+          "membershipRequired": false,
+          "manualApprovalRequired": false,
+          "privateAccessPolicy": {
+            "mode": "none",
+            "inviteCodeHint": null,
+            "privateLinkEnabled": false
+          },
+          "cohortCapacityLimits": {},
+          "balancedRatioPolicy": null,
+          "crossPathsPairInventory": {
+            "enabled": false,
+            "reservedPairCapacity": 0,
+            "holdDurationMinutes": 15
+          }
+        },
+        "pricing": {
+          "basePriceInPaise": 50000,
+          "cohortAdjustmentsInPaise": {},
+          "demandPricingRules": [
+            {
+              "pricedCohortId": "menInterestedInWomen",
+              "balancingCohortId": "womenInterestedInMen",
+              "freeSkew": 0,
+              "demandStep": 1,
+              "stepAdjustmentInPaise": 1000,
+              "maxAdjustmentInPaise": 50000
+            }
+          ]
+        },
+        "cancellation": {
+          "policyId": "standard"
+        },
+        "settlement": {
+          "hostPayoutTiming": "afterEventCompletion"
+        }
+      },
+      "cohortId": "womenInterestedInMen",
+      "roster": {
+        "bookedCountsByCohort": {
+          "menInterestedInWomen": 5
+        },
+        "waitlistedCountsByCohort": {},
+        "totalBooked": 5,
+        "crossPathsPairHeldCount": 0,
+        "crossPathsPairConfirmedCount": 0
+      },
+      "hasValidInvite": false,
+      "hasHostApproval": false,
+      "hasActiveCommunityMembership": false,
+      "expected": {
+        "restriction": null,
+        "quoteInPaise": 50000
+      }
+    }
+  ],
+  "entitlement": [
+    {
+      "name": "no plans, no rules",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": null,
+      "plans": [],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": null,
+        "offer": null
+      }
+    },
+    {
+      "name": "active member gets plan discount",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "active",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 40000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": true,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "event override wins over plan discount",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [
+          {
+            "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+            "priceInPaise": 0
+          }
+        ],
+        "earlyAccess": null,
+        "membersOnly": false,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "active",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 0,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": true,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "percent override keeps the minimum charge",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 10000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [
+          {
+            "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+            "percentOff": 99
+          }
+        ],
+        "earlyAccess": null,
+        "membersOnly": false,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "active",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 100,
+        "listPriceInPaise": 10000,
+        "memberPriceApplied": true,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "booking cap falls back to list price",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "active",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": 2
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 2,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": "bookingCapReached",
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "member paused by themselves is not entitled",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "paused",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": {
+          "initiator": "member",
+          "pausedAtMillis": 1799913600000
+        },
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": false,
+        "offer": null
+      }
+    },
+    {
+      "name": "host pause keeps entitlement",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "paused",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": {
+          "initiator": "host",
+          "pausedAtMillis": 1799913600000
+        },
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 40000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": true,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "past due within grace stays entitled",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "past_due",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1799913600000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 40000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": true,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "past due beyond grace loses entitlement",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "past_due",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1799654400000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": false,
+        "offer": null
+      }
+    },
+    {
+      "name": "members only blocks non-members and offers access",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [],
+        "earlyAccess": null,
+        "membersOnly": true,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": null,
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "membersOnlyAccess"
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": "paidMembershipRequired",
+        "memberEntitled": null,
+        "offer": {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "planName": "Sunday Runners",
+          "interval": "monthly",
+          "planPriceInPaise": 49900,
+          "memberPriceInPaise": 50000,
+          "savingsInPaise": 0,
+          "unlocksAccess": true
+        }
+      }
+    },
+    {
+      "name": "members only admits a member with access",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [],
+        "earlyAccess": null,
+        "membersOnly": true,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "active",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "membersOnlyAccess"
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": true,
+        "offer": null
+      }
+    },
+    {
+      "name": "early access blocks before general sale",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [],
+        "earlyAccess": {
+          "hours": 48,
+          "anchorMillis": 1799913600000,
+          "generalSaleOpensAtMillis": 1800086400000
+        },
+        "membersOnly": false,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": null,
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "earlyAccess"
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": "memberEarlyAccess",
+        "memberEntitled": null,
+        "offer": {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "planName": "Sunday Runners",
+          "interval": "monthly",
+          "planPriceInPaise": 49900,
+          "memberPriceInPaise": 50000,
+          "savingsInPaise": 0,
+          "unlocksAccess": true
+        }
+      }
+    },
+    {
+      "name": "early access opens after general sale",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "eventId": "event-1",
+        "memberPriceOverrides": [],
+        "earlyAccess": {
+          "hours": 48,
+          "anchorMillis": 1799740800000,
+          "generalSaleOpensAtMillis": 1799913600000
+        },
+        "membersOnly": false,
+        "revision": 1,
+        "updatedAtMillis": 1799913600000,
+        "updatedBy": "host-1"
+      },
+      "membership": null,
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "earlyAccess"
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": null,
+        "offer": null
+      }
+    },
+    {
+      "name": "cheapest member price wins the offer",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": null,
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        },
+        {
+          "planId": "hmp_BBBBBBBBBBBBBBBBBBBB",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "All in",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "annual": {
+                "amountPaise": 999900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 100
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": null,
+        "offer": {
+          "planId": "hmp_BBBBBBBBBBBBBBBBBBBB",
+          "planName": "All in",
+          "interval": "annual",
+          "planPriceInPaise": 999900,
+          "memberPriceInPaise": 0,
+          "savingsInPaise": 50000,
+          "unlocksAccess": false
+        }
+      }
+    },
+    {
+      "name": "full plans are not offered",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": null,
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": 3,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": null,
+        "offer": null
+      }
+    },
+    {
+      "name": "expired member sees an offer",
+      "nowMillis": 1800000000000,
+      "listPriceInPaise": 50000,
+      "rules": null,
+      "membership": {
+        "schemaVersion": 1,
+        "organizerId": "organizer-1",
+        "uid": "member-1",
+        "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+        "planName": "Sunday Runners",
+        "interval": "monthly",
+        "status": "expired",
+        "statusReason": null,
+        "priceInPaise": 49900,
+        "currency": "INR",
+        "currentPeriodStartMillis": 1799136000000,
+        "currentPeriodEndMillis": 1801728000000,
+        "trialEndsAtMillis": null,
+        "cancelAtPeriodEnd": false,
+        "pause": null,
+        "pastDueSinceMillis": null,
+        "memberSinceMillis": 1799136000000,
+        "tenure": {
+          "accumulatedMillis": 0,
+          "stretchStartedAtMillis": 1799136000000
+        },
+        "provider": "razorpay",
+        "providerSubscriptionId": "sub_1",
+        "providerPlanId": "plan_1",
+        "providerEventAtMillis": 1799136000000,
+        "lastCheckoutId": "hmc_AAAAAAAAAAAAAAAAAAAA",
+        "revision": 1,
+        "createdAtMillis": 1799136000000,
+        "updatedAtMillis": 1799136000000
+      },
+      "plans": [
+        {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "doc": {
+            "schemaVersion": 1,
+            "organizerId": "organizer-1",
+            "name": "Sunday Runners",
+            "description": "Every Sunday.",
+            "status": "published",
+            "prices": {
+              "monthly": {
+                "amountPaise": 49900,
+                "providerPriceIds": {},
+                "revision": 1
+              }
+            },
+            "memberCap": null,
+            "trialDays": 0,
+            "benefits": [
+              {
+                "type": "eventDiscount",
+                "percentOff": 20
+              }
+            ],
+            "perks": [],
+            "limits": {
+              "maxUpcomingMemberPricedBookings": null
+            },
+            "activeMemberCount": 3,
+            "sortOrder": 0,
+            "revision": 1,
+            "createdAtMillis": 1797408000000,
+            "updatedAtMillis": 1797408000000,
+            "publishedAtMillis": 1797408000000
+          }
+        }
+      ],
+      "upcomingMemberPricedBookings": 0,
+      "expected": {
+        "priceInPaise": 50000,
+        "listPriceInPaise": 50000,
+        "memberPriceApplied": false,
+        "memberPriceBlockedReason": null,
+        "admission": null,
+        "memberEntitled": false,
+        "offer": {
+          "planId": "hmp_AAAAAAAAAAAAAAAAAAAA",
+          "planName": "Sunday Runners",
+          "interval": "monthly",
+          "planPriceInPaise": 49900,
+          "memberPriceInPaise": 40000,
+          "savingsInPaise": 10000,
+          "unlocksAccess": false
+        }
+      }
+    }
+  ]
+}

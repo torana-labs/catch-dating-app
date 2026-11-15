@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -102,29 +102,17 @@ EventViewerState widgetbookEventViewerSnapshot(
   Event event, {
   required EventViewerAdmission admission,
   EventViewerAttendance attendance = EventViewerAttendance.notRecorded,
-}) => EventViewerState.fromResponse({
-  'viewer': {
-    'eventId': event.id,
-    'organizerId': event.organizerId,
-    'observedAtMillis': widgetbookEventsNow.millisecondsSinceEpoch,
-    'membership': {
-      'state': 'notRequired',
-      'revision': null,
-      'decisionId': null,
-    },
-    'review': 'none',
-    'admission': admission.name,
-    'attendance': attendance.name,
-    'waitlisted': false,
-    'payment': 'notRead',
-    'futureBooking': {'allowed': true, 'reason': null},
-    'route': event.priceInPaise == 0 ? 'catchFreeBooking' : 'catchCheckout',
-    'quotedPriceInPaise': event.priceInPaise,
-    'basis': {
-      'policyHash': null,
-      'inventoryRevision': null,
-      'capacityRevision': null,
-      'migrationRevision': null,
-    },
-  },
-});
+}) => EventViewerState(
+  eventId: event.id,
+  organizerId: event.organizerId,
+  membership: EventViewerMembership.notRequired,
+  review: EventViewerReview.none,
+  admission: admission,
+  attendance: attendance,
+  waitlisted: false,
+  restriction: null,
+  route: event.priceInPaise == 0
+      ? EventViewerRoute.catchFreeBooking
+      : EventViewerRoute.catchCheckout,
+  quotedPriceInPaise: event.priceInPaise,
+);

@@ -5,6 +5,7 @@ export 'data/generated/update_user_profile_patch.g.dart';
 export 'data/image_upload_repository.dart';
 export 'data/public_profile_callable_response.dart';
 export 'data/public_profile_repository.dart';
+export 'data/user_profile_repository.dart';
 export 'domain/form_profile.dart';
 export 'domain/form_profile_photo_preview.dart';
 export 'domain/image_upload_job.dart';

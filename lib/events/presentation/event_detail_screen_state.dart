@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
@@ -230,7 +230,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     currentViewer: currentViewer,
     mutationState: mutationState,
   );
-  final facts = _membershipFacts(currentViewer?.hostMembership);
+  final facts = currentViewer?.hostMembership;
   if (!state.visible ||
       facts == null ||
       currentViewer!.hasAdmission ||
@@ -331,14 +331,6 @@ EventDetailBookingDockState _baseBookingDockState({
     return EventDetailBookingDockState(
       label: l10n.eventsEventDetailScreenStateLabelEventInProgress,
       primaryAction: EventDetailBookingDockAction.none,
-      error: mutationState.error,
-    );
-  }
-  if (currentViewer?.admission == EventViewerAdmission.publicPaidRoster) {
-    return EventDetailBookingDockState(
-      label: l10n.eventsEventDetailCtaLabelYouReIn,
-      primaryAction: EventDetailBookingDockAction.none,
-      leadingKind: EventDetailBookingDockLeadingKind.booked,
       error: mutationState.error,
     );
   }
@@ -750,15 +742,4 @@ String? _hostMeta(Organizer organizer, AppLocalizations l10n) {
     );
   }
   return parts.isEmpty ? null : parts.join(' · ');
-}
-
-/// Parses the viewer's membership facts. Malformed facts show no membership
-/// offer; the server rechecks entitlement on every booking.
-EventHostMembershipFacts? _membershipFacts(Map<Object?, Object?>? raw) {
-  if (raw == null) return null;
-  try {
-    return EventHostMembershipFacts.fromMap(raw);
-  } on FormatException {
-    return null;
-  }
 }

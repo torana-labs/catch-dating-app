@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,11 +50,11 @@ EventViewerState _viewer(
   Map<String, Object?> facts, {
   String? reason,
   int price = 50000,
-}) {
-  final response = viewerResponse(reason: reason, price: price);
-  (response['viewer']! as Map<String, Object?>)['hostMembership'] = facts;
-  return EventViewerState.fromResponse(response);
-}
+}) => viewerFixture(
+  reason: reason,
+  price: price,
+  hostMembership: EventHostMembershipFacts.fromMap(facts),
+);
 
 void main() {
   final now = DateTime(2026, 10, 2, 12);
@@ -75,10 +76,6 @@ void main() {
         hasInviteCode: false,
         supportsPaidBookings: true,
       );
-
-  test('older responses without membership facts still parse', () {
-    expect(viewerFixture().hostMembership, isNull);
-  });
 
   test('an included member books free with an included note', () {
     final state = dock(

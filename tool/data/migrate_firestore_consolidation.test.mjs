@@ -182,6 +182,30 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("guest-booking-facts writes one document per person with every organizer", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-booking-facts");
+  const membership = (organizerId, uid, state, revision, updatedAtMillis) => ({
+    schemaVersion: 1, organizerId, uid, state, revision,
+    lastDecisionId: `ocmd_${organizerId}_${revision}`, activatedAtMillis: 1,
+    updatedAtMillis, source: {}});
+  const db = fakeDb({
+    "organizerCommunityMemberships/ocm_a": membership("o1", "guest", "active", 1, 10),
+    "organizerCommunityMemberships/ocm_b": membership("o2", "guest", "revoked", 2, 20),
+    "organizerCommunityMemberships/ocm_c": membership("o1", "other", "active", 1, 5),
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 2, alreadyCopied: 0, conflicts: 0, skipped: 1});
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["guestBookingFacts/guest"], {schemaVersion: 1, uid: "guest",
+    updatedAtMillis: 20, communityMemberships: {
+      o1: {state: "active", revision: 1, decisionId: "ocmd_o1_1", updatedAtMillis: 10},
+      o2: {state: "revoked", revision: 2, decisionId: "ocmd_o2_2", updatedAtMillis: 20},
+    }});
+  assert.equal(db.data["guestBookingFacts/other"].communityMemberships.o1.state, "active");
+  assert.equal(db.data["organizerCommunityMemberships/ocm_a"].state, "active");
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);

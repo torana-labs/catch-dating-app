@@ -7,7 +7,9 @@ import 'package:catch_dating_app/contexts/account/data/force_update_provider.dar
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
@@ -19,7 +21,6 @@ import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dar
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
