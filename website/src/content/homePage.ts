@@ -5,7 +5,7 @@
 import type {CatchFormat} from "@catch/web-ui";
 
 export const homePageCopy = {
-  header: {nav: "Main", explore: "Explore", organisers: "Organisers", hosts: "For hosts", app: "Get the app",
+  header: {nav: "Main", app: "Get the app",
     cityMenu: "Choose your city", allCities: "All cities", liveStatus: "{count} plans this week", liveStatusOne: "1 plan this week",
     /** A live city with no plans this week yet. */
     newStatus: "New", soonStatus: "Launching soon",

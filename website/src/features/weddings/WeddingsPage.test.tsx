@@ -38,18 +38,19 @@ function fillStepOne(scope: ReturnType<typeof within>) {
 }
 
 describe("Catch for weddings", {timeout: 20_000}, () => {
-  it("renders the board's bands in order under the site top bar naming the product", () => {
+  it("renders the board's bands in order under the site top bar, with the page's sections in their own bar", () => {
     const {container} = render(<WeddingsPage captures={captures} />);
     const banner = within(screen.getByRole("banner"));
-    expect(banner.getByRole("link", {name: copy.header.title}).getAttribute("href")).toBe("/");
-    expect(banner.getAllByRole("link", {name: copy.header.apply})[0].getAttribute("href")).toBe("#apply");
+    expect(banner.getByRole("link", {name: "Catch"}).getAttribute("href")).toBe("/");
+    const sections = within(screen.getByRole("navigation", {name: copy.sections.label, hidden: true}));
+    expect(sections.getByRole("link", {name: copy.sections.apply, hidden: true}).getAttribute("href")).toBe("#apply");
     // The short headline is the phone layout's; the test renderer reports a compact window.
     expect([copy.hero.title, copy.hero.titleShort]).toContain(screen.getByRole("heading", {level: 1}).textContent);
     const bands: string[] = [copy.order.title, copy.problem.title, copy.follow.title, copy.team.title, copy.messages.title, copy.family.title, copy.pricing.title,
       copy.pilot.title, copy.faq.title];
     const headings = screen.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent ?? "");
     expect(headings.filter((heading) => bands.includes(heading))).toEqual(bands);
-    for (const link of copy.header.nav) expect(container.querySelector(link.href), link.href).toBeTruthy();
+    for (const section of copy.sections.items) expect(container.querySelector(`#${section.id}`), section.id).toBeTruthy();
     expect(screen.getByText(copy.foot.body)).toBeTruthy();
     expect(screen.getByText(copy.order.illustrative)).toBeTruthy();
   });

@@ -19,8 +19,15 @@ export const siteFooterLegalLinks = [
 export const publicSiteCopy = {
   wordmark: brand.name,
   menu: {openLabel: "Menu", navLabel: "Primary"},
-  /** The main site's links, the same on every general page as on the homepage. */
-  nav: [{href: "/explore/", label: "Explore"}, {href: "/explore/?show=organisers", label: "Organisers"}, {href: "/host/", label: "For hosts"}],
+  /**
+   * The main bar's links, the same on every page: each opens a page, never a
+   * section of the current one (navigation proposal, 15 Nov). Explore holds
+   * plans and organisers as tabs, so it is one link. A city's pages point
+   * What's on at that city's Explore.
+   */
+  whatsOn: {href: "/explore/", label: "What’s on"},
+  forHosts: {href: "/host/", label: "For hosts"},
+  nav: [{href: "/explore/", label: "What’s on"}, {href: "/host/", label: "For hosts"}],
   /** The general pages' one primary action, the homepage's own. */
   getApp: {label: "Get the app", href: "/#app"},
   footerOperator: publishedLegalContent.ui.footerBody,

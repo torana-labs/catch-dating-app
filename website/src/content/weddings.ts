@@ -20,11 +20,15 @@ export interface WeddingsScreen {
 export const weddingsCopy = {
   header: {
     title: `${brand.name} for weddings`,
-    nav: [
-      {label: "Follow one wedding", href: "#follow"},
-      {label: "Your team", href: "#team"},
-      {label: "Pricing", href: "#pricing"},
-      {label: "Questions", href: "#questions"},
+  },
+  /** The page's sections, in the bar that takes the site top bar's place once it scrolls away. */
+  sections: {
+    label: "On this page",
+    items: [
+      {id: "follow", label: "Follow one wedding"},
+      {id: "team", label: "Your team"},
+      {id: "pricing", label: "Pricing"},
+      {id: "questions", label: "Questions"},
     ],
     apply: "Apply for the pilot",
   },

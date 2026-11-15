@@ -19,13 +19,18 @@ const marketingCaptures: CaptureSlots = Object.fromEntries(slotIds.map((id) => [
 const renderPage = () => render(<HostPage captures={marketingCaptures} />);
 
 describe("host landing", {timeout: 20_000}, () => {
-  it("renders the board's bands in order, with the header naming the product, its sections and the free trial", () => {
-    renderPage();
+  it("renders the board's bands in order, under the site top bar and the page's own sections bar with the free trial", () => {
+    const {container} = renderPage();
     const banner = within(screen.getByRole("banner"));
-    expect(banner.getByRole("link", {name: copy.header.title}).getAttribute("href")).toBe("/");
+    expect(banner.getByRole("link", {name: "Catch"}).getAttribute("href")).toBe("/");
+    // The site top bar only opens pages; the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["#night", "#ways", "#pricing"]);
-    expect(banner.getAllByRole("link", {name: copy.header.start})[0].getAttribute("href")).toBe("#start");
+    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/"]);
+    const sections = within(screen.getByRole("navigation", {name: copy.sections.label, hidden: true}));
+    const sectionLinks = sections.getAllByRole("link", {hidden: true}).map((link) => link.getAttribute("href"));
+    expect(sectionLinks).toEqual(["#night", "#ways", "#pricing", "#faq", "#start"]);
+    for (const href of sectionLinks) expect(container.querySelector(href!), href!).toBeTruthy();
+    expect(sections.getByRole("link", {name: copy.sections.start, hidden: true}).getAttribute("href")).toBe("#start");
     const bands: string[] = [copy.kinds.title, copy.night.title, copy.tablet.title, copy.pipeline.title, copy.guests.title, copy.growth.title,
       copy.layers.title, copy.pricing.rate, copy.faq.title, copy.start.title];
     const headings = screen.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent ?? "");

@@ -163,7 +163,7 @@ describe("EventDetailPage", () => {
   it("sits between the site header and the full site footer", () => {
     render(<EventDetailPage listing={listing} page={importedEventPage} />);
     const primary = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "Organisers", "For hosts"]);
+    expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "For hosts"]);
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
     expect(footer.getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");

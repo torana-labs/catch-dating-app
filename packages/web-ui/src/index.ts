@@ -266,6 +266,8 @@ export type {
   CatchSectionListEmptyPolicy,
   CatchSectionListProps,
 } from "./components/CatchSectionList";
+export {CatchSectionTopBar} from "./components/CatchSectionTopBar";
+export type {CatchSectionTopBarProps, CatchSectionTopBarSection} from "./components/CatchSectionTopBar";
 export {CatchSplit} from "./components/CatchSplit";
 export type {
   CatchSplitAlignment,

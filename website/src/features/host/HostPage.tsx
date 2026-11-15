@@ -16,6 +16,7 @@ import {
   CatchRoot,
   CatchScroller,
   CatchSection,
+  CatchSectionTopBar,
   CatchStack,
   CatchStepList,
   CatchStoreButton,
@@ -381,15 +382,16 @@ function HostLandingBands({captures, host}: {captures: CaptureSlots; host: Host}
 
 /**
  * The host landing (the RbWebHostV2 board) on the white ground: the site
- * header naming the product and its sections with Start free trial, the
- * board's bands, and the short footer. `captures` are the marketing capture
+ * header, then the page's sections with Start free trial in the bar that
+ * takes its place once you scroll, the board's bands, and the short footer. `captures` are the marketing capture
  * slots (src/app/marketingCaptures.ts).
  */
 export function HostPage({captures}: {captures: CaptureSlots}) {
   const host = useHostLandingController();
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader actions={<CatchButton href="#start" label={copy.header.start} size="sm" />} links={copy.header.nav} title={copy.header.title} />
+      <PublicSiteHeader />
+      <CatchSectionTopBar action={<CatchButton href="#start" label={copy.sections.start} size="sm" />} label={copy.sections.label} sections={copy.sections.items} />
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
