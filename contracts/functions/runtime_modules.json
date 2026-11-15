@@ -280,7 +280,6 @@
     "EventAttendanceDispositionReceiptDocument",
     "EventAttendanceReportCallableResponse",
     "EventAttendeeDocument",
-    "EventAttendeeIndexDocument",
     "EventBookingCallablePayload",
     "EventCloseOutDocument",
     "EventDocument",
