@@ -171,6 +171,24 @@ new run. Other existing lifecycle controls retain their previous payload;
 this additional required field applies to assistance and movement. Native typed
 commands serialize the reviewed generation and also verify it in the result.
 
+### Event Chat Signals
+
+`eventChatSignals/{eventId}` (`event_chat_signals.schema.json`) holds three
+revision counters and nothing else: `messageRevision` (sends, removals and
+reaction counts, which all write the message), `typingRevision` (typing
+presence) and `accessRevision` (a new room revision or any membership write).
+The send, reaction, removal and typing commands increment the first two in
+their own transactions, so other members hear about a message without a
+trigger in between; two triggers increment `accessRevision`, where a replay
+at worst asks the app to read once more. The event chat and its participant roster listen to the
+document and call `getEventChatAccess`, `listEventChatMessages` and
+`listEventChatParticipants` only when a counter moves: at once for messages
+and access, at most every three seconds for typing, and once just after a
+scheduled room opening or closing. Messages stay behind the callables, which
+re-check admission and hide blocked senders per viewer. Rules let any
+signed-in, non-deleted person get one event's document; a missing document
+means no activity yet.
+
 ### Rehearsal Host View
 
 The rehearsal screen listens to `eventRehearsalHostViews/{sessionId}`

@@ -4509,6 +4509,31 @@
       ]
     },
     {
+      "id": "eventChatSignals",
+      "path": "eventChatSignals/{eventId}",
+      "rulesMatch": "/eventChatSignals/{eventId}",
+      "typescriptInterface": "EventChatSignalDocument",
+      "dartModel": "lib/contexts/messaging/data/event_chat_signals.dart",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+      "rulesTestNames": [
+        "lets signed-in people get an event chat signal and nothing else"
+      ],
+      "owner": "event chat signal triggers",
+      "read": "any signed-in, non-deleted person gets one event's document; it holds only revision counters, no text, names or membership; nobody lists the collection",
+      "write": "server only; sendEventChatMessage, setEventChatReaction and actOnEventChatMessage (removal) move messageRevision and setEventChatTyping moves typingRevision in their own transactions; triggers on eventChatRooms (revision changes) and eventChatMemberships move accessRevision",
+      "exportedFunctions": [
+        "sendEventChatMessage",
+        "setEventChatReaction",
+        "actOnEventChatMessage",
+        "setEventChatTyping",
+        "onEventChatSignalRoomWritten",
+        "onEventChatSignalMembershipWritten"
+      ],
+      "migrationNotes": [
+        "Replaces the event chat's 3-second listEventChatMessages poll and the participant roster's 15-second poll (#1337). Messages stay behind the callables."
+      ]
+    },
+    {
       "id": "eventChatProfileShares",
       "path": "eventChatProfileShares/{shareId}",
       "rulesMatch": "/eventChatProfileShares/{shareId}",

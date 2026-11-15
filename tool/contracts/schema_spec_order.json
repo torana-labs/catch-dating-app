@@ -353,6 +353,7 @@
   "OrganizerEventSetupDefaultReceiptDocument",
   "EventRehearsalMilestoneDocument",
   "EventRehearsalHostViewDocument",
+  "EventChatSignalDocument",
   "GetEventAssistanceParticipantContextCallablePayload",
   "EventAssistanceParticipantContextCallableResponse",
   "ListEventSmsPreferencesCallablePayload",

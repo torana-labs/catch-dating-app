@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
+import 'event_chat_signal_fake.dart';
 
 EventChatParticipantPage page(String name, {bool more = false}) =>
     EventChatParticipantPage(
@@ -54,14 +56,17 @@ void main() {
   final provider = eventChatParticipantsControllerProvider('event');
   late ParticipantsRepository repo;
   late ProviderContainer container;
+  late FakeEventChatSignals signals;
   ProviderContainer create({Stream<String?>? accounts}) => ProviderContainer(
     overrides: [
       uidProvider.overrideWith((_) => accounts ?? Stream.value('me')),
       eventChatRepositoryProvider.overrideWithValue(repo),
+      eventChatSignalSourceProvider.overrideWithValue(signals),
     ],
   );
   setUp(() {
     repo = ParticipantsRepository();
+    signals = FakeEventChatSignals();
     container = create();
   });
   tearDown(() => container.dispose());
@@ -87,6 +92,24 @@ void main() {
       );
     },
   );
+  test('a membership change reads the roster again; messages do not', () async {
+    container.listen(provider, (_, _) {});
+    await container.read(provider.future);
+    signals.emit();
+    await flushTestEventQueue();
+    final opening = repo.reads.length;
+    signals.emit(message: 3, typing: 1);
+    await flushTestEventQueue();
+    expect(repo.reads, hasLength(opening));
+    repo.read = (_, _) async => page('Joined');
+    signals.emit(message: 3, typing: 1, access: 1);
+    await flushTestEventQueue();
+    expect(repo.reads, hasLength(opening + 1));
+    expect(
+      container.read(provider).requireValue.page.items.single.displayName,
+      'Joined',
+    );
+  });
   test('authority failure removes all loaded names', () async {
     container.listen(provider, (_, _) {});
     await container.read(provider.future);

@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
 import 'event_chat_controller_test.dart' as fixtures;
+import 'event_chat_signal_fake.dart';
 
 class ActionRepository extends fixtures.Repository {
   final actions =
@@ -72,6 +74,7 @@ EventChatPage messagePage({String sender = 'other', bool available = true}) =>
 void main() {
   late ActionRepository repository;
   late ProviderContainer container;
+  final signals = FakeEventChatSignals();
   final provider = eventChatControllerProvider('event');
   setUp(() {
     repository = ActionRepository()..currentPage = messagePage();
@@ -79,6 +82,7 @@ void main() {
       overrides: [
         uidProvider.overrideWith((_) => Stream.value('person')),
         eventChatRepositoryProvider.overrideWithValue(repository),
+        eventChatSignalSourceProvider.overrideWithValue(signals),
       ],
     );
     container.listen(provider, (_, _) {});
@@ -226,6 +230,7 @@ void main() {
         overrides: [
           uidProvider.overrideWith((_) => accounts.stream),
           eventChatRepositoryProvider.overrideWithValue(repository),
+          eventChatSignalSourceProvider.overrideWithValue(signals),
         ],
       );
       container.listen(provider, (_, _) {});

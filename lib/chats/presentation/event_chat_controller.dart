@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -67,6 +68,12 @@ class EventChatState {
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
+///
+/// Nothing polls. The controller listens to the chat's content-free change
+/// signal and reads through the callables only when it moves: at once for
+/// messages, the room or memberships, and at most every
+/// [EventChatTiming.typingRefreshGap] for typing. A timer covers the one
+/// change no write announces, a scheduled room opening or closing.
 @riverpod
 class EventChatController extends _$EventChatController {
   int _generation = 0;
@@ -75,6 +82,12 @@ class EventChatController extends _$EventChatController {
   bool _foreground = true;
   bool _loadingEarlier = false;
   Timer? _timer;
+  Timer? _typingRefresh;
+  StreamSubscription<EventChatSignal>? _signals;
+  EventChatSignal? _seenSignal;
+  bool _signalReadRunning = false;
+  bool _signalReadAgain = false;
+  DateTime? _lastReadAt;
   final _requests = <String, String>{};
   bool _typingWanted = false;
   bool _typingBusy = false;
@@ -98,17 +111,84 @@ class EventChatController extends _$EventChatController {
     _typingRevision = 0;
     _lastTypingWrite = null;
     _lastDraftActivity = null;
-    ref.onDispose(() => _timer?.cancel());
+    _typingRefresh?.cancel();
+    unawaited(_signals?.cancel());
+    _signals = null;
+    _seenSignal = null;
+    _signalReadAgain = false;
+    _lastReadAt = null;
+    ref.onDispose(() {
+      _timer?.cancel();
+      _typingRefresh?.cancel();
+      unawaited(_signals?.cancel());
+    });
     final uid = await ref.watch(uidProvider.future);
     if (uid == null) throw const SignInRequiredException('open event chat');
     final generation = _generation;
     final repository = ref.watch(eventChatRepositoryProvider);
+    // Listen before the first read so a change made during it is not lost.
+    _signals = ref
+        .read(eventChatSignalSourceProvider)
+        .watch(eventId)
+        .listen(
+          (signal) => _onSignal(uid, generation, signal),
+          // The next foreground return or write reads again; a failed
+          // signal never clears a readable chat.
+          onError: (Object _, StackTrace _) {},
+        );
     final result = await _read(repository, uid, eventId);
     if (_current(uid, generation)) {
       _rememberTypingRevision(result.ownTypingRevision);
-      _schedule();
+      _scheduleRoomBoundary(result);
     }
     return result;
+  }
+
+  /// The first snapshot is the baseline the opening read already covers;
+  /// later ones read again only for what moved.
+  void _onSignal(String uid, int generation, EventChatSignal signal) {
+    if (!_current(uid, generation)) return;
+    final seen = _seenSignal;
+    _seenSignal = signal;
+    if (seen == null || !_foreground) return;
+    if (signal.contentChangedSince(seen)) {
+      _typingRefresh?.cancel();
+      unawaited(_readForSignal());
+    } else if (signal.typingChangedSince(seen)) {
+      _paceTypingRead();
+    }
+  }
+
+  void _paceTypingRead() {
+    if (_typingRefresh?.isActive ?? false) return;
+    final last = _lastReadAt;
+    final wait = last == null
+        ? Duration.zero
+        : EventChatTiming.typingRefreshGap - _now().difference(last);
+    if (wait <= Duration.zero) {
+      unawaited(_readForSignal());
+      return;
+    }
+    _typingRefresh = Timer(wait, () => unawaited(_readForSignal()));
+  }
+
+  /// Signal reads never overlap: one more runs after the current one when
+  /// the signal moved meanwhile.
+  Future<void> _readForSignal() async {
+    if (_signalReadRunning) {
+      _signalReadAgain = true;
+      return;
+    }
+    _signalReadRunning = true;
+    try {
+      await refresh();
+    } finally {
+      _signalReadRunning = false;
+      if (_signalReadAgain && ref.mounted) {
+        _signalReadAgain = false;
+        unawaited(_readForSignal());
+      }
+    }
   }
 
   bool _current(String uid, int generation) =>
@@ -141,6 +221,7 @@ class EventChatController extends _$EventChatController {
     }
     final ordered = messages.values.toList()
       ..sort((a, b) => b.sequence.compareTo(a.sequence));
+    _lastReadAt = _now();
     return EventChatState(
       uid: uid,
       access: access,
@@ -154,13 +235,24 @@ class EventChatController extends _$EventChatController {
     );
   }
 
-  void _schedule() {
+  /// A scheduled room opens or closes without a write; read again just
+  /// after the next boundary, estimated on the server's clock.
+  void _scheduleRoomBoundary(EventChatState? current) {
     _timer?.cancel();
-    if (!_foreground || !ref.mounted) return;
-    // Keep request volume bounded as the person expands older history.
-    _timer = Timer(EventChatTiming.refreshPerHistoryPage * _pageCount, () {
-      unawaited(refresh());
-    });
+    if (current == null || !_foreground || !ref.mounted) return;
+    final serverNow =
+        current.serverTimeMillis +
+        _now().difference(current.receivedAt).inMilliseconds;
+    final boundaries = [
+      current.access.opensAtMillis,
+      current.access.closesAtMillis,
+    ].whereType<int>().where((at) => at > serverNow);
+    if (boundaries.isEmpty) return;
+    final next = boundaries.reduce(min);
+    _timer = Timer(
+      EventChatTiming.untilRoomBoundary(next - serverNow),
+      () => unawaited(refresh()),
+    );
   }
 
   Future<void> refresh() async {
@@ -189,7 +281,9 @@ class EventChatController extends _$EventChatController {
         state = AsyncError(error, stack);
       }
     } finally {
-      if (_current(uid, generation) && epoch == _readEpoch) _schedule();
+      if (_current(uid, generation) && epoch == _readEpoch) {
+        _scheduleRoomBoundary(state.asData?.value);
+      }
     }
   }
 
@@ -214,6 +308,7 @@ class EventChatController extends _$EventChatController {
     if (_foreground == value) return;
     _foreground = value;
     _timer?.cancel();
+    _typingRefresh?.cancel();
     _readEpoch++;
     if (!value) {
       _typingWanted = false;
@@ -306,8 +401,8 @@ class EventChatController extends _$EventChatController {
       return true;
     } on Object catch (error, stack) {
       if (_current(uid, generation)) {
+        _scheduleRoomBoundary(current);
         state = AsyncError(error, stack);
-        _schedule();
       }
       return false;
     }

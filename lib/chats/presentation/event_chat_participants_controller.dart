@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,13 +23,16 @@ class EventChatParticipantsState {
 }
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
-/// and hide names on backgrounding or account changes.
+/// and hide names on backgrounding or account changes. The roster reads
+/// again when the chat's change signal says the room or a membership moved;
+/// nothing polls.
 @riverpod
 class EventChatParticipantsController
     extends _$EventChatParticipantsController {
   int _generation = 0, _epoch = 0, _pages = 1;
   bool _foreground = true, _loading = false;
-  Timer? _timer;
+  StreamSubscription<EventChatSignal>? _signals;
+  EventChatSignal? _seenSignal;
   final _requests = <String, String>{};
 
   @override
@@ -38,18 +41,38 @@ class EventChatParticipantsController
     _epoch++;
     _pages = 1;
     _loading = false;
-    _timer?.cancel();
     _requests.clear();
-    ref.onDispose(() => _timer?.cancel());
+    unawaited(_signals?.cancel());
+    _signals = null;
+    _seenSignal = null;
+    ref.onDispose(() => unawaited(_signals?.cancel()));
     final uid = await ref.watch(uidProvider.future);
     if (uid == null) throw const SignInRequiredException('view participants');
     final generation = _generation, epoch = _epoch;
+    _signals = ref
+        .read(eventChatSignalSourceProvider)
+        .watch(eventId)
+        .listen(
+          (signal) => _onSignal(generation, signal),
+          // A failed signal never clears a readable roster.
+          onError: (Object _, StackTrace _) {},
+        );
     final result = await _read(uid);
     if (!_current(uid, generation, epoch)) {
       throw StateError('Participant list read superseded');
     }
-    _schedule();
     return result;
+  }
+
+  void _onSignal(int generation, EventChatSignal signal) {
+    if (!ref.mounted || generation != _generation) return;
+    final seen = _seenSignal;
+    _seenSignal = signal;
+    if (seen != null &&
+        _foreground &&
+        signal.accessRevision != seen.accessRevision) {
+      unawaited(refresh());
+    }
   }
 
   bool _current(String uid, int generation, int epoch) =>
@@ -112,7 +135,6 @@ class EventChatParticipantsController
         List.generate(24, (_) => Random.secure().nextInt(256)),
       ),
     );
-    _timer?.cancel();
     state = const AsyncLoading();
     try {
       await ref
@@ -136,22 +158,11 @@ class EventChatParticipantsController
     }
   }
 
-  void _schedule() {
-    _timer?.cancel();
-    if (_foreground && ref.mounted) {
-      _timer = Timer(
-        EventChatTiming.participantProfileRefresh * _pages,
-        () => unawaited(refresh()),
-      );
-    }
-  }
-
   Future<void> refresh() async {
     if (!_foreground || _loading) return;
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return;
     final generation = _generation, epoch = ++_epoch;
-    _timer?.cancel();
     _loading = true;
     state = const AsyncLoading();
     try {
@@ -162,7 +173,6 @@ class EventChatParticipantsController
     } finally {
       if (ref.mounted && generation == _generation && epoch == _epoch) {
         _loading = false;
-        _schedule();
       }
     }
   }
@@ -178,7 +188,6 @@ class EventChatParticipantsController
     _foreground = value;
     _epoch++;
     _loading = false;
-    _timer?.cancel();
     if (!value) {
       state = const AsyncLoading();
     } else {

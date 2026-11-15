@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_signals.schema.json",
+  "title": "EventChatSignalDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "A content-free change signal per event chat: counters that triggers move when messages, typing presence, the room or memberships change. The app listens and reads the chat through its callables only when a counter moves.",
+  "x-firestore-collection": "eventChatSignals",
+  "x-firestore-path": "eventChatSignals/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "event chat signal triggers",
+  "required": [
+    "eventId",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "messageRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "typingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "accessRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    }
+  }
+}
