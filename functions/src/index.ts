@@ -1121,8 +1121,7 @@ export {onHostEventSetupViewEventChanged,
 export {onHostEventSetupDefaultViewDefaultsChanged,
   onHostEventSetupDefaultViewOrganizerChanged} from
   "./hostReadModels/eventSetupDefaultViewTriggers";
-export {onEventChatSignalMessageWritten, onEventChatSignalPresenceWritten,
-  onEventChatSignalRoomWritten, onEventChatSignalMembershipWritten} from
+export {onEventChatSignalRoomWritten, onEventChatSignalMembershipWritten} from
   "./chatSignals/eventChatSignals";
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from

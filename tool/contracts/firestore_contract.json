@@ -4520,10 +4520,12 @@
       ],
       "owner": "event chat signal triggers",
       "read": "any signed-in, non-deleted person gets one event's document; it holds only revision counters, no text, names or membership; nobody lists the collection",
-      "write": "server only; triggers on eventChatMessages, eventChatPresence, eventChatRooms (revision changes) and eventChatMemberships increment one counter each",
+      "write": "server only; sendEventChatMessage, setEventChatReaction and actOnEventChatMessage (removal) move messageRevision and setEventChatTyping moves typingRevision in their own transactions; triggers on eventChatRooms (revision changes) and eventChatMemberships move accessRevision",
       "exportedFunctions": [
-        "onEventChatSignalMessageWritten",
-        "onEventChatSignalPresenceWritten",
+        "sendEventChatMessage",
+        "setEventChatReaction",
+        "actOnEventChatMessage",
+        "setEventChatTyping",
         "onEventChatSignalRoomWritten",
         "onEventChatSignalMembershipWritten"
       ],

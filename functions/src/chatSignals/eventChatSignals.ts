@@ -12,25 +12,14 @@ type SourceData = FirebaseFirestore.DocumentData | undefined;
 export const eventChatSignals = "eventChatSignals";
 
 /**
- * Which counter a source write moves. Messages (sends, removals and reaction
- * counts all write the message document) refresh the message list at once;
- * typing presence is paced by the app; room and membership changes refresh
- * access.
+ * Which counter moves. Sends, removals and reactions move the message
+ * revision and typing moves the typing revision, both in the command's own
+ * transaction so other members hear about it without a trigger in between;
+ * room and membership changes move the access revision through triggers.
  */
 export type EventChatSignalKind = "message" | "typing" | "access";
 
-export type EventChatSignalSource =
-  | "eventChatMessages"
-  | "eventChatPresence"
-  | "eventChatRooms"
-  | "eventChatMemberships";
-
-const kindBySource: Record<EventChatSignalSource, EventChatSignalKind> = {
-  eventChatMessages: "message",
-  eventChatPresence: "typing",
-  eventChatRooms: "access",
-  eventChatMemberships: "access",
-};
+export type EventChatSignalSource = "eventChatRooms" | "eventChatMemberships";
 
 const fieldByKind: Record<EventChatSignalKind, string> = {
   message: "messageRevision",
@@ -77,11 +66,33 @@ export async function bumpEventChatSignal(
   eventId: string,
   kind: EventChatSignalKind,
 ): Promise<void> {
-  await db.collection(eventChatSignals).doc(eventId).set({
+  await db.collection(eventChatSignals).doc(eventId)
+    .set(signalPatch(eventId, kind), {merge: true});
+}
+
+/**
+ * The same move inside a command's transaction, committed with its write.
+ * @param {FirebaseFirestore.Transaction} tx The command's transaction.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} eventId The event chat.
+ * @param {EventChatSignalKind} kind Which counter moves.
+ */
+export function bumpEventChatSignalIn(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  kind: EventChatSignalKind,
+): void {
+  tx.set(db.collection(eventChatSignals).doc(eventId),
+    signalPatch(eventId, kind), {merge: true});
+}
+
+function signalPatch(eventId: string, kind: EventChatSignalKind) {
+  return {
     eventId,
     [fieldByKind[kind]]: admin.firestore.FieldValue.increment(1),
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-  }, {merge: true});
+  };
 }
 
 async function signalForWrite(
@@ -93,18 +104,12 @@ async function signalForWrite(
   const eventIds = eventChatSignalEventIds(source, event.params.documentId,
     event.data?.before.data(), event.data?.after.data());
   for (const eventId of eventIds) {
-    await bumpEventChatSignal(db, eventId, kindBySource[source]);
+    await bumpEventChatSignal(db, eventId, "access");
   }
 }
 
 const options = {retry: true, memory: "256MiB" as const};
 
-export const onEventChatSignalMessageWritten = onDocumentWritten({
-  ...options, document: "eventChatMessages/{documentId}",
-}, (event) => signalForWrite("eventChatMessages", event));
-export const onEventChatSignalPresenceWritten = onDocumentWritten({
-  ...options, document: "eventChatPresence/{documentId}",
-}, (event) => signalForWrite("eventChatPresence", event));
 export const onEventChatSignalRoomWritten = onDocumentWritten({
   ...options, document: "eventChatRooms/{documentId}",
 }, (event) => signalForWrite("eventChatRooms", event));

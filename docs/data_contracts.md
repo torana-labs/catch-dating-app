@@ -177,8 +177,10 @@ commands serialize the reviewed generation and also verify it in the result.
 revision counters and nothing else: `messageRevision` (sends, removals and
 reaction counts, which all write the message), `typingRevision` (typing
 presence) and `accessRevision` (a new room revision or any membership write).
-Four triggers increment them; a replayed trigger at worst asks the app to
-read once more. The event chat and its participant roster listen to the
+The send, reaction, removal and typing commands increment the first two in
+their own transactions, so other members hear about a message without a
+trigger in between; two triggers increment `accessRevision`, where a replay
+at worst asks the app to read once more. The event chat and its participant roster listen to the
 document and call `getEventChatAccess`, `listEventChatMessages` and
 `listEventChatParticipants` only when a counter moves: at once for messages
 and access, at most every three seconds for typing, and once just after a

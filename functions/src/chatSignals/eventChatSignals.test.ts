@@ -3,17 +3,12 @@ import test from "node:test";
 import {bumpEventChatSignal, eventChatSignalEventIds} from
   "./eventChatSignals";
 
-test("message, presence and membership writes signal their event chat",
-  () => {
-    assert.deepEqual(eventChatSignalEventIds("eventChatMessages", "m1",
-      undefined, {eventId: "event-1", text: "hi"}), ["event-1"]);
-    assert.deepEqual(eventChatSignalEventIds("eventChatPresence", "p1",
-      {eventId: "event-1"}, undefined), ["event-1"]);
-    assert.deepEqual(eventChatSignalEventIds("eventChatMemberships", "x",
-      {eventId: "event-1"}, {eventId: "event-2"}), ["event-1", "event-2"]);
-    assert.deepEqual(eventChatSignalEventIds("eventChatMessages", "m1",
-      undefined, {text: "no event"}), []);
-  });
+test("membership writes signal their event chats", () => {
+  assert.deepEqual(eventChatSignalEventIds("eventChatMemberships", "x",
+    {eventId: "event-1"}, {eventId: "event-2"}), ["event-1", "event-2"]);
+  assert.deepEqual(eventChatSignalEventIds("eventChatMemberships", "x",
+    undefined, {uid: "no event"}), []);
+});
 
 test("a room signals access only when its revision moves", () => {
   assert.deepEqual(eventChatSignalEventIds("eventChatRooms", "event-1",

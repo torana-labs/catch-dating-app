@@ -1,3 +1,4 @@
+import {bumpEventChatSignalIn} from "../chatSignals/eventChatSignals";
 import {HttpsError, onCall, type CallableRequest} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -86,6 +87,7 @@ export async function actOnEventChatMessageHandler(
       // Retain server-only evidence for safety review; every participant reader
       // and reply resolver redacts it. Account deletion later anonymizes it.
       tx.update(messageRef, {status: "removed", removedAt: now});
+      bumpEventChatSignalIn(tx, db, data.eventId, "message");
     }
     tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision: 1,
       createdAt: now} satisfies Receipt);

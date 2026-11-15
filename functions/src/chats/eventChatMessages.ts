@@ -27,6 +27,7 @@ import type {SendEventChatMessageCallableResponse} from
   "../shared/generated/sendEventChatMessageCallableResponse";
 import type {SetEventChatReactionCallableResponse} from
   "../shared/generated/setEventChatReactionCallableResponse";
+import {bumpEventChatSignalIn} from "../chatSignals/eventChatSignals";
 import type {SetEventChatTypingCallableResponse} from
   "../shared/generated/setEventChatTypingCallableResponse";
 
@@ -96,6 +97,7 @@ export async function sendEventChatMessageHandler(
     tx.update(db.collection("eventChatRooms").doc(data.eventId), {
       lastMessageSequence: sequence,
     });
+    bumpEventChatSignalIn(tx, db, data.eventId, "message");
     if (moderation.action === "flag") {
       tx.create(db.collection("moderationFlags").doc(), {
         targetUserId: uid, flagType: "banned_text", source: "chat_message",
@@ -175,6 +177,7 @@ export async function setEventChatReactionHandler(
     tx.set(reactionRef, {eventId: data.eventId, messageId: data.messageId, uid,
       reaction: data.reaction, revision, updatedAt: now} satisfies Reaction);
     tx.update(messageRef, {reactionCounts: counts});
+    bumpEventChatSignalIn(tx, db, data.eventId, "message");
     tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision,
       createdAt: now} satisfies Receipt);
     return {revision, replayed: false};
@@ -221,6 +224,7 @@ export async function setEventChatTypingHandler(
     tx.set(presenceRef, {eventId: data.eventId, uid, revision,
       expiresAt: Timestamp.fromMillis(expiresAtMillis), updatedAt: now,
     } satisfies Presence);
+    bumpEventChatSignalIn(tx, db, data.eventId, "typing");
     return {revision, expiresAtMillis};
   });
 }
