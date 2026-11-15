@@ -7,6 +7,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {queueOnlyCiTargets} from "./lib/component_graph.mjs";
+import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
 const snapshotPaths = ["tool/harness/component_graph.json",
   "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"];
@@ -73,7 +74,12 @@ export function compareSelectors({cwd = process.cwd(), base, head = "HEAD", mode
   const before = runSnapshot(cwd, baseSha, input);
   const after = runSnapshot(cwd, headSha, input);
   assert.equal(after.plan.complete, true, "Edited selector must retain complete, unambiguous path coverage.");
-  const requiredTargets = [...new Set([...before.targets, ...after.targets])].sort();
+  // Full validation, except that the merge queue builds iOS only for a change
+  // to an iOS build input (tool/ci/ios_build_inputs.mjs), as both selectors do.
+  const queueNarrowedCiTargets = mode === "merge_group" && !changedPaths.some(iosBuildInput) ?
+    ["flutter_build_ios"] : [];
+  const requiredTargets = [...new Set([...before.targets, ...after.targets])]
+    .filter(target => !queueNarrowedCiTargets.includes(target)).sort();
   const missingTargets = requiredTargets.filter(target => !after.plan.operations.ciTargets.includes(target));
   assert.deepEqual(missingTargets, [], `Selector-control edits require full validation; missing ${missingTargets.join(", ")}. Restore fail-closed selection.`);
   const changes = {};
@@ -82,7 +88,7 @@ export function compareSelectors({cwd = process.cwd(), base, head = "HEAD", mode
     changes[key] = {removed: oldIds.filter(id => !newIds.includes(id)), added: newIds.filter(id => !oldIds.includes(id))};
   }
   return {baseSha, headSha, mode, node: process.version, platform: process.platform,
-    status: "full-validation-required", changedPaths, controls, requiredTargets,
+    status: "full-validation-required", changedPaths, controls, requiredTargets, queueNarrowedCiTargets,
     before, after, changes};
 }
 
