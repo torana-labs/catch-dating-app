@@ -41,7 +41,10 @@ test("a record is read only when it is this version's hashes", () => {
   assert.deepEqual(recordedHashes(record({admin: {hash: "a1"}})), {admin: "a1"});
   // GitHub may hand the payload back as a JSON string.
   assert.deepEqual(recordedHashes(JSON.stringify(record({admin: {hash: "a1"}}))), {admin: "a1"});
-  for (const text of ["", "{}", "null", "not json", "\"\"", JSON.stringify({version: 2, codebases: {}}),
+  // A version 2 payload adds per-Function hashes; the codebase hashes read the same.
+  assert.deepEqual(recordedHashes(JSON.stringify({version: 2, toolchain: {}, codebases: {admin: {hash: "a1",
+    functions: {adminA: "f1"}}}})), {admin: "a1"});
+  for (const text of ["", "{}", "null", "not json", "\"\"", JSON.stringify({version: 3, codebases: {}}),
     record({admin: {}}), record(null)]) {
     assert.equal(recordedHashes(text), null, text);
   }

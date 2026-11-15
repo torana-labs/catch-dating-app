@@ -26,6 +26,9 @@ test("temporary Google API errors and dropped connections are retried", () => {
     ["had HTTP Error: 504, Deadline exceeded", "HTTP 504"],
     ["Error: Failed to make request: read ECONNRESET", "ECONNRESET"],
     ["Error: socket hang up", "socket hang up"],
+    // gh, for the deploy-record writes.
+    ["gh: Server Error (HTTP 502)", "HTTP 502"],
+    ["HTTP 503: Service Unavailable (https://api.github.com/repos/o/r/deployments)", "HTTP 503"],
   ]) assert.deepEqual(classifyFailure(output), {retry: true, reason}, output);
 });
 
@@ -34,6 +37,7 @@ test("validation, compilation, deletion and readiness failures are never retried
     ["Error: Request to https://firestore.googleapis.com/v1/x had HTTP Error: 400, Invalid index", "a 4xx error other than 429"],
     ["had HTTP Error: 403, The caller does not have permission", "a 4xx error other than 429"],
     ["had HTTP Error: 409, index already exists", "a 4xx error other than 429"],
+    ["HTTP 422: Validation Failed (https://api.github.com/repos/o/r/deployments)", "a 4xx error other than 429"],
     ["i  cloud.firestore: checking firestore.rules for compilation errors...\n" +
       "✘ [E] 12:3 - Unexpected 'allow'.\nError: Compilation errors in firestore.rules.", "a rules compilation error"],
     ["Aborting because deletion cannot proceed in non-interactive mode.", "a refused Function deletion"],
@@ -74,8 +78,8 @@ test("a temporary failure is retried with backoff, logging each retry", (t) => {
   const result = run();
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(result.calls, ["call", "sleep 30", "call", "sleep 60", "call"]);
-  assert.match(result.stdout, /::warning::Firestore rules attempt 1 of 3 failed with HTTP 503, a temporary error; retrying in 30s\./u);
-  assert.match(result.stdout, /attempt 2 of 3 failed with HTTP 503/u);
+  assert.match(result.stderr, /::warning::Firestore rules attempt 1 of 3 failed with HTTP 503, a temporary error; retrying in 30s\./u);
+  assert.match(result.stderr, /attempt 2 of 3 failed with HTTP 503/u);
 });
 
 test("retries stop at the cap and keep the command's exit status", (t) => {
@@ -91,7 +95,7 @@ test("a permanent failure runs once and exits with its status", (t) => {
   const result = run();
   assert.equal(result.status, 1);
   assert.deepEqual(result.calls, ["call"]);
-  assert.doesNotMatch(result.stdout, /::warning::/u);
+  assert.doesNotMatch(result.stderr, /::warning::/u);
   const success = fixture(t, "echo deployed")();
   assert.equal(success.status, 0);
   assert.deepEqual(success.calls, ["call"]);

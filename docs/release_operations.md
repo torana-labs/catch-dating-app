@@ -1543,14 +1543,47 @@ How a run works:
   it. A dependency bump redeploys the codebases that import the package. A
   changed variable redeploys the codebases that read it. The CLI runs up to 40
   updates at once and retries Google's rate limits itself.
+- **Each Function deploys only when its own inputs changed.** A codebase holds
+  about 80 Functions, so one shared module change used to redeploy almost all
+  of them. On 15 Nov 2026 one store link in the generated brand module updated
+  785 of 824 Functions.
+  - The packaging script also hashes each Function on its own: the setup, its
+    export, the compiled files its module loads (and the Operations workflow
+    files those read), the packages they import, the `.env` lines they read
+    and the shared Functions config.
+  - `Read the declared secrets' newest versions` reads, for each secret a
+    Function declares with `defineSecret`, `versions/latest` (metadata only,
+    the same read the CLI makes). So rotating a secret still redeploys exactly
+    the Functions that declare it.
+  - `Plan the Functions to deploy` (`tool/firebase/plan_function_deploy.mjs`)
+    compares those hashes with the delivered Functions record and deploys
+    `functions:<codebase>:<name>` for each Function that changed or is new.
+    The run summary lists every Function it deploys and why. On the
+    15 Nov delta it plans 399 Functions instead of 785.
+  - When nothing changed, the Functions deploy step is skipped; parity and
+    both records still run.
+  - It falls back to plain `--only functions` (the CLI's codebase skip) when
+    it cannot prove a Function unchanged: no delivered record, a record from
+    before per-Function hashes (payload version 1), another Firebase CLI or
+    Node version, a Function that moved codebase, a secret whose newest
+    version could not be read, or a recorded Function that is gone from the
+    code but not in `functions/retired-functions.json`. That last fallback
+    keeps the CLI's stop on a Function missing from source, which an
+    exact-name deploy would never reach, so a removed Function cannot
+    silently stay live. An unread secret is named in a warning and in
+    the summary, so a missing permission cannot quietly make every run full.
+    A Function whose module loads a computed path that is not an Operations
+    workflow follows its codebase's hash.
+  - `full` still redeploys every codebase. Named Functions are unchanged.
 - Order: readiness check, Firestore indexes (then wait until `READY`),
   Functions, callable-invoker sync and the parity check
   (`tool/deploy_firebase_targets.sh --functions-postconditions-only`),
   Firestore and Storage rules, then the rules drift check. Indexes and rules
   deploy every run; the CLI leaves them unchanged when they match.
-- If the Functions deploy fails, the job retries once with plain `functions`.
-  Everything that deployed the first time now matches its hash and is skipped,
-  so only the failed Functions rebuild.
+- If the Functions deploy fails, the job retries once. A planned run retries
+  the same exact Functions. A fallback run retries plain `functions`:
+  everything that deployed the first time now matches its hash and is
+  skipped, so only the failed Functions rebuild.
 - The indexes and rules deploys (including the CLI's rules compile check,
   firebaserules `:test`) retry a temporary Google API error up to three times,
   30 then 60 seconds apart, with a warning per retry
@@ -1562,9 +1595,14 @@ How a run works:
   43617790051 after its Functions had deployed, so it never recorded the commit.
 - Firebase predeploy test hooks are skipped because required CI already ran
   them on that commit.
-- Before any change, the run summary lists the codebases this deploy changes
-  against the recorded hashes, with the number of Functions in each. Nothing
+- Before any change, the run summary lists the codebases whose hash changed
+  against the recorded hashes, with the number of Functions in each (what the
+  CLI rebuilds when the plan falls back), then the per-Function plan. Nothing
   is refused for size.
+- Both deploy records hold the plan's payload (version 2): each codebase's
+  hash, each Function's hash with its secret versions, and the Firebase CLI
+  and Node versions. A temporary GitHub API error while writing a record
+  retries up to three times.
 
 What a deploy costs (measured 13 Nov 2026):
 

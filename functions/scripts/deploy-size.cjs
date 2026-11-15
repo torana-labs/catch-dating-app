@@ -1,5 +1,6 @@
 // Reports, before a backend deploy touches the environment, which Functions
-// codebases it changes: each one is one Cloud Build (the Functions of a
+// codebases changed (the per-Function plan, tool/firebase/plan_function_deploy.mjs,
+// decides what deploys; this is what the CLI rebuilds when it falls back): each one is one Cloud Build (the Functions of a
 // codebase share its build) and an update of every Function it holds. The
 // Firebase CLI skips a codebase whose content hash is unchanged, so this
 // compares each codebase's hash (functions/scripts/build-deploy-codebases.cjs)
@@ -22,7 +23,9 @@ function recordedHashes(text) {
     return null;
   }
   if (typeof record === "string") return recordedHashes(record);
-  if (record?.version !== 1 || !record.codebases || typeof record.codebases !== "object") return null;
+  // Version 2 (tool/firebase/plan_function_deploy.mjs) adds per-Function
+  // hashes beside each codebase's; this report reads only the codebase's.
+  if (![1, 2].includes(record?.version) || !record.codebases || typeof record.codebases !== "object") return null;
   const hashes = {};
   for (const [codebase, entry] of Object.entries(record.codebases)) {
     if (typeof entry?.hash !== "string") return null;

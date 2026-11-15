@@ -256,6 +256,54 @@ jobs:
             --previous build/deployed-codebases.json \
             --environment "$DEPLOY_ENVIRONMENT" --full "$FULL" --summary "$GITHUB_STEP_SUMMARY"
 
+      # Each Function's hash includes the newest version of every secret it
+      # declares with defineSecret, as the Firebase CLI's does, so rotating a
+      # secret still redeploys exactly the Functions that declare it. This is
+      # the same metadata read the CLI makes on every deploy (versions/latest,
+      # never the value). A secret that cannot be read is named loudly, and the
+      # planner falls back to every changed codebase for this run.
+      - name: Read the declared secrets' newest versions
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          project_id="$(jq -er --arg env "$DEPLOY_ENVIRONMENT" '.projects[$env]' .firebaserc)"
+          secrets="$(jq -r '[.codebases[].functionSecrets // {} | .[][]] | unique | .[]' build/functions-codebases.json)"
+          versions='{}'
+          failures='[]'
+          for secret in $secrets; do
+            if version="$(gcloud secrets versions describe latest --secret="$secret" --project="$project_id" \
+                --format='value(name)' --quiet 2> build/secret-version-error.txt)" && [[ -n "$version" ]]; then
+              versions="$(jq -c --arg s "$secret" --arg v "$version" '. + {($s): $v}' <<< "$versions")"
+            else
+              failures="$(jq -c --arg s "$secret" '. + [$s]' <<< "$failures")"
+              echo "::warning::Could not read the newest version of secret $secret: $(head -c 300 build/secret-version-error.txt | tr '\n' ' ')"
+              echo "- Could not read the newest version of secret \`$secret\`; this run deploys every changed codebase." >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          jq -n --argjson versions "$versions" --argjson failures "$failures" \
+            '{versions: $versions, failures: $failures}' > build/secret-versions.json
+
+      # Deploy exactly the Functions whose own hash changed since the
+      # delivered Functions record (tool/firebase/plan_function_deploy.mjs),
+      # or fall back to the CLI's codebase skip when that cannot be proven.
+      # The plan, with each Function and why, goes to the run summary; it also
+      # writes the payload both records store.
+      - id: plan
+        name: Plan the Functions to deploy
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          FULL: ${{ inputs.full }}
+          TOOLCHAIN: ${{ format('{{"firebaseTools":"{0}","node":"{1}"}}', steps.toolchain.outputs.firebase-tools-version, steps.toolchain.outputs.node-version) }}
+        run: >-
+          node tool/firebase/plan_function_deploy.mjs --current build/functions-codebases.json
+          --previous build/deployed-codebases.json --secrets build/secret-versions.json
+          --retired functions/retired-functions.json --toolchain "$TOOLCHAIN" --full "$FULL" --environment "$DEPLOY_ENVIRONMENT"
+          --plan-out build/function-plan.json --record-out build/functions-record.json
+          --summary "$GITHUB_STEP_SUMMARY" --github-output "$GITHUB_OUTPUT"
+
       - name: Check this environment is ready
         if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
         env:
@@ -334,12 +382,16 @@ jobs:
       # A broad deploy that adds a Function retrying on failure is refused
       # before any change, with those Functions listed; they deploy by name
       # with --force (which then deletes nothing), and the retry does the rest.
+      # A planned run deploys exactly the Functions the plan names, and skips
+      # this step when it names none; a retry then repeats those exact targets
+      # (plain `functions` would rebuild every codebase whose hash moved).
       - name: Deploy Functions
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && !(steps.plan.outputs.mode == 'planned' && steps.plan.outputs.count == '0') }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          DEPLOY_ONLY: ${{ steps.choose.outputs.only }}
+          DEPLOY_ONLY: ${{ (steps.choose.outputs.mode == 'named' || inputs.full) && steps.choose.outputs.only || steps.plan.outputs.only || steps.choose.outputs.only }}
           NAMED: ${{ steps.choose.outputs.mode == 'named' }}
+          PLANNED: ${{ steps.plan.outputs.mode == 'planned' }}
         run: |
           set -euo pipefail
           mkdir -p build
@@ -362,7 +414,7 @@ jobs:
                 echo "::warning::Deploying the newly retrying Functions failed."
             fi
             echo "::warning::Functions deploy attempt $attempt failed; retrying only what did not deploy."
-            if [[ "$NAMED" != "true" ]]; then only=functions; fi
+            if [[ "$NAMED" != "true" && "$PLANNED" != "true" ]]; then only=functions; fi
             sleep 60
           done
           exit "$status"
@@ -388,14 +440,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          id="$(jq -n --arg ref "$DEPLOY_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
-            --slurpfile codebases build/functions-codebases.json \
+          jq -n --arg ref "$DEPLOY_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
+            --slurpfile payload build/functions-record.json \
             '{ref: $ref, environment: $environment, task: "deploy:backend-functions", auto_merge: false,
-              required_contexts: [], description: "Firebase Functions deployed",
-              payload: {version: $codebases[0].version,
-                codebases: ($codebases[0].codebases | map_values({hash}))}}' |
-            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - -q .id)"
-          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
+              required_contexts: [], description: "Firebase Functions deployed", payload: $payload[0]}' > build/functions-deployment.json
+          # A temporary GitHub API error retries (tool/firebase/retry_transient.mjs).
+          id="$(node tool/firebase/retry_transient.mjs --label "Recording deploy:backend-functions" -- \
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input build/functions-deployment.json -q .id)"
+          node tool/firebase/retry_transient.mjs --label "Marking deploy:backend-functions delivered" -- \
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
             -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
           echo "$DEPLOY_ENVIRONMENT deploy:backend-functions -> $DEPLOY_SHA (deployment $id)" >> "$GITHUB_STEP_SUMMARY"
 
@@ -429,13 +482,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          id="$(jq -n --arg ref "$DEPLOY_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
-            --slurpfile codebases build/functions-codebases.json \
+          jq -n --arg ref "$DEPLOY_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
+            --slurpfile payload build/functions-record.json \
             '{ref: $ref, environment: $environment, task: "deploy:backend", auto_merge: false,
-              required_contexts: [], description: "Firebase backend deployed",
-              payload: {version: $codebases[0].version,
-                codebases: ($codebases[0].codebases | map_values({hash}))}}' |
-            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - -q .id)"
-          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
+              required_contexts: [], description: "Firebase backend deployed", payload: $payload[0]}' > build/backend-deployment.json
+          # A temporary GitHub API error retries (tool/firebase/retry_transient.mjs).
+          id="$(node tool/firebase/retry_transient.mjs --label "Recording deploy:backend" -- \
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input build/backend-deployment.json -q .id)"
+          node tool/firebase/retry_transient.mjs --label "Marking deploy:backend delivered" -- \
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
             -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
           echo "$DEPLOY_ENVIRONMENT deploy:backend -> $DEPLOY_SHA (deployment $id)" >> "$GITHUB_STEP_SUMMARY"

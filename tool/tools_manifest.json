@@ -5104,6 +5104,33 @@
       "role": "gate"
     },
     {
+      "id": "firebase:plan-function-deploy",
+      "category": "firebase",
+      "path": "tool/firebase/plan_function_deploy.mjs",
+      "command": "node tool/firebase/plan_function_deploy.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_backend-deploy.yml",
+        "functions/scripts/build-deploy-codebases.cjs",
+        "functions/scripts/build-deploy-codebases.test.cjs",
+        "tool/firebase/plan_function_deploy.test.mjs"
+      ],
+      "description": "Chooses the Functions a backend deploy updates: each Function whose own hash (what it loads and reads, plus its declared secrets' newest versions) differs from the delivered Functions record, deployed by exact name; falls back to the CLI's codebase skip when a Function cannot be proven unchanged.",
+      "checks": [
+        "node --check tool/firebase/plan_function_deploy.mjs",
+        "node --test tool/firebase/plan_function_deploy.test.mjs",
+        "node --test functions/scripts/build-deploy-codebases.test.cjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "firebase:platform-availability",
       "category": "firebase",
       "path": "tool/firebase/check_platform_availability.mjs",
