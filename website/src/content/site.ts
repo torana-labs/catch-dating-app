@@ -47,7 +47,6 @@ export const siteFooterCopy = {
   groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
   explore: [
     {href: "/explore/", label: "What’s on"},
-    {href: "/explore/?show=organisers", label: "Organisers"},
     {href: "/#app", label: "Get the app"},
   ],
   hosts: [
