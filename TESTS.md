@@ -45,7 +45,11 @@ top of the file, as Flutter tests do:
 Without that comment, a computed read, a child process or a dynamic import
 keeps every test that reaches the file on the broad rule: it runs whenever the
 change's top-level folder is named anywhere in its tree. `--explain` on the
-selector shows why each test was picked. The `test:rules` lane runs the
+selector shows why each test was picked. After a failed nightly, the
+`selection-miss` job of the `Main CI alert` workflow checks each failing Functions test against the
+pull request selection of every commit since the last green nightly, and opens
+or comments on a "Test selection missed a failing test" issue for any test no
+commit selected (`tool/ci/selection_miss_report.mjs`). The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
 redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits

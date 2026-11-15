@@ -7270,6 +7270,29 @@
       "role": "gate"
     },
     {
+      "id": "ci:selection-miss-report",
+      "category": "ci",
+      "path": "tool/ci/selection_miss_report.mjs",
+      "command": "node tool/ci/selection_miss_report.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/functions-ci.yml",
+        ".github/workflows/main-red-alert.yml",
+        "functions/scripts/run-tests.cjs",
+        "tool/ci/selection_miss_report.mjs",
+        "tool/ci/selection_miss_report.test.mjs",
+        "tool/lib/functions_module_graph.mjs",
+        "tool/lib/functions_test_selection.mjs"
+      ],
+      "description": "After a failed nightly, checks each failing Functions unit and emulator test against the pull request selection of every commit since the last green nightly, and opens or comments on one 'Test selection missed a failing test' issue for any test none selected. Report-only.",
+      "checks": [
+        "node --check tool/ci/selection_miss_report.mjs",
+        "node --test tool/ci/selection_miss_report.test.mjs"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",

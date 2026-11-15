@@ -1253,7 +1253,10 @@ folder. `--explain` on `functions_unit_test_selection.mjs` says why each
 selected test runs. `tool/impact/selection_replay.mjs --baseline <old
 functions_test_selection.mjs>` replays recent `main` commits through two
 selectors and lists every test the new one drops, with the reads that show it
-can't read the change.
+can't read the change. `tool/ci/selection_miss_report.mjs` (the
+`selection-miss` job of `Main CI alert`) checks failed nightly Functions tests against
+the selection of the commits since the last green nightly and reports any that
+none selected.
 `functions/scripts/run-tests.cjs` honors the result through
 `CATCH_TEST_SELECTION`; the merge queue, main and nightly run every listed test
 (`--full`). With `--github-output` it also writes the emulator shards CI starts
