@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
-import 'event_chat_signal_fake.dart';
 import 'event_chat_controller_test.dart' as fixtures;
+import 'event_chat_signal_fake.dart';
 
 class ActionRepository extends fixtures.Repository {
   final actions =
