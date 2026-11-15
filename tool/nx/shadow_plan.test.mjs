@@ -30,7 +30,10 @@ test("every planner lane has an Nx project to compare with", () => {
 test("a selector file selects every lane; a workflow selects the lanes that run it", () => {
   assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
-  assert.equal(isControlPlane("tool/tools_manifest.json"), true);
+  // The manifest selects by semantic diff; without a readable diff it selects every lane.
+  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
+  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"]}).nxLanes.length,
+    comparedLanes.length);
   assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
   const selector = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: ["tool/harness/component_graph.json"]});
   assert.equal(selector.agree, true);

@@ -32,9 +32,12 @@ export const ciWorkflow = ".github/workflows/ci.yml";
 // Files that decide which lanes run. A change to one of them, or to a file
 // the selector entry points import or load, selects every lane.
 export const selectorFiles = [ciWorkflow, "nx.json", "firebase.json", "tool/ci/toolchain.env",
-  "tool/harness.mjs", "tool/harness/component_graph.json", "tool/tools_manifest.json",
+  "tool/harness.mjs", "tool/harness/component_graph.json",
   "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/required_ci_floor.mjs"];
 export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
+// tool/tools_manifest.json is data the planner loads, but it selects by
+// semantic diff (manifest_diff.mjs), not every lane.
+export const manifestFile = "tool/tools_manifest.json";
 // The scripts the plan job selects with.
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
@@ -168,7 +171,10 @@ function createScanner(root, files) {
     // affected-tools or variable arguments it can run any of them.
     for (const [, args] of text.matchAll(/\bnode\s+(?:\.\/)?tool\/run\.mjs\s+([^\n;&|]*)/gu)) {
       const ids = args.trim().split(/\s+/u).slice(1);
-      const any = !/^check\b/u.test(args.trim()) || ids.some((id) => id.includes("$"));
+      const any = !/^check\b/u.test(args.trim()) || ids.some((id) => id.includes("$") || id === "--all");
+      // Which manifest entries this command runs: named ones, or any.
+      if (any) out.anyIds = true;
+      else for (const id of ids.filter((value) => value.includes(":"))) (out.ids ??= new Set()).add(id);
       for (const tool of manifestTools()) {
         if (!any && !ids.includes(tool.id)) continue;
         if (tool.path && exists(tool.path)) out.refs.add(tool.path);
@@ -284,6 +290,8 @@ function createScanner(root, files) {
 function closure(entries, next) {
   const seen = new Set();
   const unresolved = [];
+  const ids = new Set();
+  let anyIds = false;
   const queue = [...entries];
   while (queue.length > 0) {
     const file = queue.pop();
@@ -291,9 +299,11 @@ function closure(entries, next) {
     seen.add(file);
     const out = next(file);
     unresolved.push(...out.unresolved);
+    for (const id of out.ids ?? []) ids.add(id);
+    anyIds ||= out.anyIds === true;
     queue.push(...out.refs);
   }
-  return {files: seen, unresolved};
+  return {files: seen, unresolved, ids, anyIds};
 }
 
 /**
@@ -312,6 +322,8 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
   const lanes = new Map();
   const jobsOf = new Map();
   const jobLanesById = new Map();
+  const idLanes = new Map();
+  const anyIdLanes = new Set();
   const ungated = new Set();
   const unresolved = [];
   const ci = parse(scanner.read(ciWorkflow));
@@ -335,6 +347,11 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
     const jobUnresolved = [...entry.unresolved, ...reach.unresolved];
     unresolved.push(...jobUnresolved.map((item) => ({...item, job: jobId})));
     jobLanesById.set(jobId, new Set(jobUnresolved.length > 0 ? [ALL, ...jobLanes] : jobLanes));
+    // The manifest entries this job runs: by name, or any of them.
+    for (const id of [...(entry.ids ?? []), ...reach.ids]) {
+      idLanes.set(id, new Set([...(idLanes.get(id) ?? []), ...jobLanesById.get(jobId)]));
+    }
+    if (entry.anyIds || reach.anyIds) for (const lane of jobLanesById.get(jobId)) anyIdLanes.add(lane);
     for (const file of reach.files) {
       jobsOf.set(file, (jobsOf.get(file) ?? new Set()).add(jobId));
       const current = lanes.get(file) ?? new Set();
@@ -346,7 +363,8 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
 
   const selectorReach = closure(selectorEntries.filter((file) => files.has(file)), (file) => scanner.loadsOf(file));
   const selectors = new Set([...selectorFiles, ...selectorReach.files]);
-  return {lanes, ungated, jobsOf, jobLanes: jobLanesById, selectors, unresolved};
+  selectors.delete(manifestFile);
+  return {lanes, ungated, jobsOf, jobLanes: jobLanesById, idLanes, anyIdLanes, selectors, unresolved};
 }
 
 /** The lanes a ci.yml job runs for; none when it is ungated. */
@@ -366,10 +384,16 @@ export const isSelector = (file, graph) => graph.selectors.has(file) ||
   (selectorPrefixes.some((prefix) => file.startsWith(prefix)) && !/\.test\.mjs$/u.test(file));
 
 /** The lanes changed files require because CI executes or reads them. */
-export function callerLanes(changedFiles, {graph, allLanes}) {
+export function callerLanes(changedFiles, {graph, allLanes, manifestChange}) {
   const selected = new Set();
   for (const file of changedFiles) {
     if (isSelector(file, graph)) return new Set(allLanes);
+    if (file === manifestFile) {
+      const lanes = manifestLanes(manifestChange, {graph, allLanes});
+      if (lanes.size === allLanes.length) return lanes;
+      for (const lane of lanes) selected.add(lane);
+      continue;
+    }
     if (!isCiConfiguration(file)) continue;
     // Unclassified CI configuration (new, renamed or deleted) selects every
     // lane until it is reached by ci.yml or listed in notCalledByCi.
@@ -390,3 +414,22 @@ export function unclassifiedCiFiles(graph, files) {
 /** Whether CI configuration has a known selection: a selector, reached by ci.yml, or listed in notCalledByCi. */
 export const isClassified = (file, graph) => isSelector(file, graph) || graph.lanes.has(file)
   || graph.ungated?.has(file) || file in notCalledByCi;
+
+/**
+ * The lanes a tools_manifest.json edit selects: Tools and policy, which run
+ * the changed checks and validate the manifest, plus every lane whose jobs run
+ * a changed or removed entry by name, or run any entry. A change the diff does
+ * not recognise, or a missing diff (history unreadable), selects every lane.
+ */
+export function manifestLanes(change, {graph, allLanes}) {
+  if (!change || change.all) return new Set(allLanes);
+  const selected = new Set(["tools", "policy_docs"].filter((lane) => allLanes.includes(lane)));
+  for (const lane of graph.anyIdLanes ?? []) selected.add(lane);
+  for (const id of [...change.ids, ...change.removed]) {
+    for (const lane of graph.idLanes?.get(id) ?? []) {
+      if (lane === ALL) return new Set(allLanes);
+      selected.add(lane);
+    }
+  }
+  return selected;
+}

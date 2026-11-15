@@ -118,7 +118,7 @@ test("a reference that cannot be resolved selects every lane, never none", () =>
 
 test("the planner's entry points, and every file they import or load, are selectors", () => {
   const graph = workflowCallers({root: fixtureRepo(fixture), lanes: ["build", "web"]});
-  for (const file of ["tool/harness.mjs", "tool/harness/lib/graph.mjs", "tool/harness/graph.json", "tool/tools_manifest.json"]) {
+  for (const file of ["tool/harness.mjs", "tool/harness/lib/graph.mjs", "tool/harness/graph.json"]) {
     assert.ok(isSelector(file, graph), file);
     assert.deepEqual([...callerLanes([file], {graph, allLanes: ["build", "web"]})], ["build", "web"], file);
   }
@@ -128,7 +128,7 @@ test("every selector file selects every lane in the real repository", () => {
   const named = [".github/workflows/ci.yml", "tool/harness.mjs", "tool/harness/component_graph.json",
     "tool/harness/lib/component_graph.mjs", "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs",
     "tool/nx/shadow_plan.mjs", "tool/nx/workflow_callers.mjs", "tool/ci/main_push_base.mjs",
-    "tool/ci/required_ci_floor.mjs", "tool/tools_manifest.json", "tool/ci/toolchain.env", "nx.json"];
+    "tool/ci/required_ci_floor.mjs", "tool/ci/toolchain.env", "nx.json"];
   for (const file of [...named, ...realGraph.selectors]) {
     assert.ok(fs.existsSync(path.join(repoRoot, file)), `${file} exists`);
     assert.deepEqual([...workflowLanes([file], realGraph)].sort(), [...comparedLanes].sort(), file);

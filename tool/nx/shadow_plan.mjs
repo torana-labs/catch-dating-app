@@ -63,8 +63,8 @@ export const callerGraph = () => (defaultGraph ??= workflowCallers({lanes: compa
 // train calls compare() with no changed files and without npm ci, and building
 // the graph loads the YAML parser.
 export const isControlPlane = (file, graph) => isSelector(file, graph ?? callerGraph());
-export const workflowLanes = (changedFiles, graph) => changedFiles.length === 0 ? new Set()
-  : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes});
+export const workflowLanes = (changedFiles, graph, manifestChange) => changedFiles.length === 0 ? new Set()
+  : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes, manifestChange});
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
@@ -147,8 +147,8 @@ export function explain({lane, side, sources = [], nxTasks = [], changedFiles = 
 }
 
 export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProject = {}, mode = "merge_group",
-  changedFiles = [], plannerSources = [], graph}) {
-  const nxLanes = workflowLanes(changedFiles, graph);
+  changedFiles = [], plannerSources = [], graph, manifestChange}) {
+  const nxLanes = workflowLanes(changedFiles, graph, manifestChange);
   const unmappedTasks = [];
   for (const task of nxTasks) {
     const project = task.slice(0, task.lastIndexOf(":"));
