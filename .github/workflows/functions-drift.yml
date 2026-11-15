@@ -1,0 +1,59 @@
+name: Functions drift
+
+# Weekly, report-only: compares dev's live Functions with the newest delivered
+# deploy:backend-functions record, which per-Function deploys trust. A
+# recorded Function missing from dev, or one updated after the record, opens
+# or updates one issue; a clean check closes it. Read-only: gcloud metadata
+# and the GitHub deployments API, with dev's existing credentials.
+# Logic and tests: tool/ci/functions_drift_report.mjs. Operator guide:
+# docs/release_operations.md, "Deploy backend".
+
+on:
+  schedule:
+    - cron: "41 23 * * 0" # Monday 05:11 IST
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: functions-drift
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    name: Compare dev's Functions with the deploy record
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # dev's existing workload identity; no deployment record is created.
+    environment:
+      name: dev
+      deployment: false
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+            .firebaserc
+          sparse-checkout-cone-mode: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+      - name: Compare and update the drift issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/functions_drift_report.mjs
