@@ -10,8 +10,6 @@ import type {EventRehearsalHostViewDocument} from
 import type {EventRehearsalBootstrapCallableResponse as Bootstrap} from
   "../shared/generated/eventRehearsalBootstrapCallableResponse";
 
-const emulator = {skip: !process.env.FIRESTORE_EMULATOR_HOST};
-
 async function seeded() {
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
   const db = getEmulatorFirestore();
@@ -40,7 +38,9 @@ async function storedView(db: FirebaseFirestore.Firestore, id: string) {
 }
 
 test("every rehearsal command leaves the owner's listener view current " +
-  "before it returns", emulator, async () => {
+  "before it returns", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST,
+}, async () => {
   const {rotateEventRehearsalGuestLinkHandler: rotate,
     getEventRehearsalBootstrapHandler: bootstrap,
     expireEventRehearsalsHandler: expire} = await import("./handlers.js");
@@ -80,40 +80,42 @@ test("every rehearsal command leaves the owner's listener view current " +
   assert.equal(await storedView(db, h.id), undefined);
 });
 
-test("a publish computed from an older session version never lands",
-  emulator, async () => {
-    const {db, h} = await seeded();
-    const sessionRef = db.collection("eventRehearsals").doc(h.id);
-    const project = async (session: {runtimeRevision: number}) =>
+test("a publish computed from an older session version never lands", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST,
+}, async () => {
+  const {db, h} = await seeded();
+  const sessionRef = db.collection("eventRehearsals").doc(h.id);
+  const project = async (session: {runtimeRevision: number}) =>
       ({session: {id: h.id, runtimeRevision: session.runtimeRevision}}) as
         unknown as Bootstrap;
-    let nested = false;
-    await publishRehearsalHostView(db, h.id, async (session, owner) => {
-      if (!nested) {
-        nested = true;
-        // A concurrent command commits and publishes while this slower
-        // projection of the older version is still being built.
-        await sessionRef.update({runtimeRevision: 7,
-          updatedAt: Timestamp.now()});
-        await publishRehearsalHostView(db, h.id, (s) => project(s));
-      }
-      assert.equal(owner.uid, "host-1");
-      return project(session);
-    });
-    const stored = await storedView(db, h.id);
-    assert.equal(stored?.runtimeRevision, 7);
-    assert.equal(stored?.view.session.runtimeRevision, 7);
-    // The same version republishes; an older one does not.
-    await sessionRef.update({updatedAt: Timestamp.now()});
-    await publishRehearsalHostView(db, h.id, (s) => project(s));
-    assert.equal((await storedView(db, h.id))?.runtimeRevision, 7);
+  let nested = false;
+  await publishRehearsalHostView(db, h.id, async (session, owner) => {
+    if (!nested) {
+      nested = true;
+      // A concurrent command commits and publishes while this slower
+      // projection of the older version is still being built.
+      await sessionRef.update({runtimeRevision: 7,
+        updatedAt: Timestamp.now()});
+      await publishRehearsalHostView(db, h.id, (s) => project(s));
+    }
+    assert.equal(owner.uid, "host-1");
+    return project(session);
   });
+  const stored = await storedView(db, h.id);
+  assert.equal(stored?.runtimeRevision, 7);
+  assert.equal(stored?.view.session.runtimeRevision, 7);
+  // The same version republishes; an older one does not.
+  await sessionRef.update({updatedAt: Timestamp.now()});
+  await publishRehearsalHostView(db, h.id, (s) => project(s));
+  assert.equal((await storedView(db, h.id))?.runtimeRevision, 7);
+});
 
-test("the view goes away when its owner loses Host authority",
-  emulator, async () => {
-    const {rotateEventRehearsalGuestLinkHandler: rotate} =
+test("the view goes away when its owner loses Host authority", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST,
+}, async () => {
+  const {rotateEventRehearsalGuestLinkHandler: rotate} =
       await import("./handlers.js");
-    const {db, h} = await seeded();
+  const {db, h} = await seeded();
     type Rotate = Parameters<typeof rotate>[0];
     await rotate(request<Rotate>({sessionId: h.id}, "host-1"));
     assert.ok(await storedView(db, h.id));
@@ -122,4 +124,4 @@ test("the view goes away when its owner loses Host authority",
     });
     await rotate(request<Rotate>({sessionId: h.id}, "host-2"));
     assert.equal(await storedView(db, h.id), undefined);
-  });
+});
