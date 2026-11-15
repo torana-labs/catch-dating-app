@@ -24,10 +24,63 @@ export const eventChatDirectoryEntryId = (eventId: string, uid: string) =>
 const pageSize = 300;
 
 /**
- * Rebuilds one person's row for one event chat. Admission, the event, the
- * room and the membership decide it exactly as getEventChatAccess does; a
- * person without access, or an event that is no longer active, has no row.
- * Every call reads current state, so out-of-order triggers converge.
+ * One person's row for one event chat from current authority, or null when
+ * they have no access or the event is no longer active. Admission, the
+ * event, the room and the membership decide it exactly as getEventChatAccess
+ * does.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {FirebaseFirestore.Transaction} tx The reading transaction.
+ * @param {string} eventId The event chat.
+ * @param {string} uid The person.
+ * @param {number} nowMillis The clock.
+ * @return {Promise<Record<string, unknown> | null>} The row, if any.
+ */
+export async function eventChatDirectoryEntry(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  eventId: string,
+  uid: string,
+  nowMillis: number,
+): Promise<Record<string, unknown> | null> {
+  let access: Awaited<ReturnType<typeof readEventChatAccess>>;
+  try {
+    access = await readEventChatAccess(db, tx, eventId, uid, nowMillis);
+  } catch (error) {
+    if (error instanceof HttpsError &&
+        ["permission-denied", "not-found"].includes(error.code)) return null;
+    throw error;
+  }
+  if (access.event.status !== "active") return null;
+  const {view, room, member, event} = access;
+  return {
+    schemaVersion: 1,
+    uid,
+    eventId,
+    organizerId: view.organizerId,
+    title: view.title,
+    role: view.role,
+    eventStartAtMillis: typeof event.startTime?.toMillis === "function" ?
+      event.startTime.toMillis() : null,
+    room: {
+      status: room?.status ?? "notCreated",
+      revision: room?.revision ?? 0,
+      opensAtMillis: room?.opensAtMillis ?? null,
+      closesAtMillis: room?.closesAtMillis ?? null,
+    },
+    membership: {
+      status: member?.status ?? "notJoined",
+      revision: member?.revision ?? 0,
+      notificationsMuted: member?.notificationsMuted === true,
+    },
+    profileClaimed: !view.profileClaimRequired,
+    termsVersion: view.termsVersion,
+    updatedAtMillis: nowMillis,
+  };
+}
+
+/**
+ * Rebuilds one person's row for one event chat; a person without access has
+ * no row. Every call reads current state, so out-of-order triggers converge.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} eventId The event chat.
  * @param {string} uid The person.
@@ -42,49 +95,16 @@ export async function refreshEventChatDirectoryEntry(
 ): Promise<"written" | "removed"> {
   const ref = db.collection(eventChatDirectoryEntries)
     .doc(eventChatDirectoryEntryId(eventId, uid));
-  try {
-    return await db.runTransaction(async (tx) => {
-      const access = await readEventChatAccess(db, tx, eventId, uid,
-        nowMillis);
-      if (access.event.status !== "active") {
-        tx.delete(ref);
-        return "removed" as const;
-      }
-      const {view, room, member, event} = access;
-      tx.set(ref, {
-        schemaVersion: 1,
-        uid,
-        eventId,
-        organizerId: view.organizerId,
-        title: view.title,
-        role: view.role,
-        eventStartAtMillis: typeof event.startTime?.toMillis === "function" ?
-          event.startTime.toMillis() : null,
-        room: {
-          status: room?.status ?? "notCreated",
-          revision: room?.revision ?? 0,
-          opensAtMillis: room?.opensAtMillis ?? null,
-          closesAtMillis: room?.closesAtMillis ?? null,
-        },
-        membership: {
-          status: member?.status ?? "notJoined",
-          revision: member?.revision ?? 0,
-          notificationsMuted: member?.notificationsMuted === true,
-        },
-        profileClaimed: !view.profileClaimRequired,
-        termsVersion: view.termsVersion,
-        updatedAtMillis: nowMillis,
-      });
-      return "written" as const;
-    });
-  } catch (error) {
-    if (error instanceof HttpsError &&
-        ["permission-denied", "not-found"].includes(error.code)) {
-      await ref.delete();
-      return "removed";
+  return db.runTransaction(async (tx) => {
+    const entry = await eventChatDirectoryEntry(db, tx, eventId, uid,
+      nowMillis);
+    if (entry === null) {
+      tx.delete(ref);
+      return "removed" as const;
     }
-    throw error;
-  }
+    tx.set(ref, entry);
+    return "written" as const;
+  });
 }
 
 /**

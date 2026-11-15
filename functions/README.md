@@ -527,6 +527,12 @@ enter previews.
 | `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |
 | `listProgramWhatsappThreads` | `src/programs/programWhatsapp/callables.ts` | The programme guest inbox: threads by Needs you, Handled or All with counts and the wedding's number. |
 | `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
+| `onEventChatDirectoryAttendeeWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the linked person's chat directory row when a roster row's link or status changes |
+| `onEventChatDirectoryEventWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds every chat directory row of an event when its name, status, organizer or start changes |
+| `onEventChatDirectoryMembershipWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the person's `eventChatDirectoryEntries` row when their chat membership changes |
+| `onEventChatDirectoryParticipationWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the guest's chat directory row when their booking status changes |
+| `onEventChatDirectoryRoomWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds every chat directory row of an event when its room revision moves |
+| `onEventChatDirectoryUserWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds a person's chat directory rows when their profile claim or deletion changes |
 | `onEventChatSignalMembershipWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventChatSignalRoomWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
