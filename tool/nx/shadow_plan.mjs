@@ -12,7 +12,8 @@ import {fileURLToPath} from "node:url";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 import {describeChange, manifestChange, manifestFile, manifestPlannerLanes} from "./manifest_diff.mjs";
-import {callerLanes, isSelector, manifestLanes, workflowCallers} from "./workflow_callers.mjs";
+import {callerLanes, isCiConfiguration, isClassified, isSelector, manifestLanes, notCalledByCi, workflowCallers}
+  from "./workflow_callers.mjs";
 
 export const targets = ["analyze", "test", "lint", "build", "typecheck", "check", "conformance", "lane"];
 
@@ -99,6 +100,22 @@ export function plannerManifestLanes({mode, changedFiles, change, graph = caller
     lanes.filter((lane) => lane !== "flutter_build_ios") : lanes;
 }
 
+/**
+ * The planner's lanes and provenance for a manifest edit the diff narrows:
+ * the planner on the other files, plus the diff's lanes (source
+ * "tools.manifest-diff"), which Nx selects by the same rule.
+ */
+export function narrowedPlanner({plannerLanes, changedFiles, mode,
+  componentGraph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"))}) {
+  const others = changedFiles.filter((file) => file !== manifestFile);
+  const plan = others.length > 0 ? planAffected({changedPaths: others, graph: componentGraph, mode}) : null;
+  const sources = [...(plan?.operationSources?.ciTargets ?? []).filter((source) => plannerLanes.includes(source.value))];
+  for (const lane of plannerLanes) {
+    if (!sources.some((source) => source.value === lane)) sources.push({component: "tools.manifest-diff", relationship: "direct", value: lane});
+  }
+  return {lanes: plannerLanes, sources};
+}
+
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
   const project = taskId.slice(0, taskId.lastIndexOf(":")).replace(/^@catch\//, "");
@@ -120,6 +137,27 @@ const projectOf = (task) => task.slice(0, task.lastIndexOf(":"));
 export const contractsConsumerScanPrefixes = ["functions/src/", "lib/", "packages/kernel/lib/", "packages/platform/lib/",
   "tool/contracts/"];
 
+// Design files the planner's app.design component owns that a lane reads
+// nothing of (grep of integration_test, test/goldens and the lane workflows).
+const appDesignUnread = {
+  flutter: ["design/source_packs/", "design/visual_baselines/website/", "design/visual_baselines/webui/", "artifacts/marketing/"],
+  visual_integration: ["design/screens/", "design/features/", "design/source_packs/", "design/visual_baselines/website/",
+    "design/visual_baselines/webui/", "artifacts/marketing/"],
+};
+// The planner chose the lane only through CI components, and every changed CI
+// file is classified by the caller graph (no selector, nothing unclassified).
+const ciOnlySources = ({sources, changedFiles, graph}, isCiComponent) => {
+  if (sources.length === 0 || !sources.every((source) => isCiComponent(source.component))) return false;
+  const files = changedFiles.filter(isCiConfiguration);
+  const callers = graph ?? callerGraph();
+  return files.length > 0 && files.every((file) => !isSelector(file, callers) && isClassified(file, callers));
+};
+const classifiedCiFiles = ({changedFiles}) => changedFiles.filter(isCiConfiguration);
+// No pull-request or queue job beyond Tools (which runs the tests of every
+// tool file) and policy reaches the file.
+const reachedOnlyByTools = (file, graph) => [...((graph ?? callerGraph()).lanes.get(file) ?? [])]
+  .every((lane) => ["tools", "policy_docs"].includes(lane));
+
 /**
  * Known reasons the planner and Nx disagree on a lane. A disagreement that
  * matches one is explained; anything else is unexplained and counts against
@@ -129,13 +167,49 @@ export const contractsConsumerScanPrefixes = ["functions/src/", "lib/", "package
  * (plan.operationSources.ciTargets entries whose value is the lane).
  */
 export const explanationRules = [
-  {id: "planner-full-selection", side: "planner",
-    why: "The planner runs every lane for its own control plane (repo.harness: tools_manifest.json, the graph, tool/ci) and retired root shells.",
-    matches: ({sources}) => sources.some((source) => ["repo.harness", "app.native.retired"].includes(source.component))},
+  // The planner runs every lane for its own control plane (repo.harness) and
+  // for any CI file; Nx runs the lanes whose jobs reach the file (#1797, #1808).
+  // These three rules explain a lane the planner chose only for CI files the
+  // caller graph classifies; a lane the planner also chose for another
+  // component, or an unclassified CI file, stays unexplained.
+  {id: "planner-non-pr-workflow", side: "planner",
+    why: "The planner runs lanes for deploy and post-CI workflows; no pull-request or queue job runs them (notCalledByCi), so Nx runs only Tools and policy.",
+    matches: (context) => ciOnlySources(context, (component) => component.startsWith("ci.")) &&
+      classifiedCiFiles(context).every((file) => file in notCalledByCi)},
+  {id: "harness-script-outside-pr-ci", side: "planner",
+    why: "The planner runs every lane for a tool/ci script; scripts only main-red-alert or a deploy workflow runs select Tools, which runs their tests.",
+    matches: (context) => ciOnlySources(context, (component) => component === "repo.harness" || component.startsWith("ci.")) &&
+      classifiedCiFiles(context).every((file) => reachedOnlyByTools(file, context.graph))},
+  {id: "caller-closure-narrower", side: "planner",
+    why: "The planner runs every lane for a CI file; Nx runs the lanes whose jobs execute or read it.",
+    matches: (context) => ciOnlySources(context, (component) => component === "repo.harness" || component.startsWith("ci.")) &&
+      classifiedCiFiles(context).some((file) => !reachedOnlyByTools(file, context.graph))},
+  {id: "planner-tests-not-build-input", side: "planner",
+    lanes: ["flutter_build_android", "flutter_build_web", "flutter_web_smoke"],
+    why: "The planner counts Flutter tests and goldens as app-build input; the builds compile production code only (Nx production inputs).",
+    matches: ({sources, changedFiles}) => sources.length > 0 &&
+      sources.every((source) => ["app.ui", "app.consumer", "app.host"].includes(source.component)) &&
+      changedFiles.every((file) => /(?:^|\/)test\/|_test\.dart$|\.md$/u.test(file))},
+  {id: "planner-app-design-coarse", side: "planner", lanes: ["flutter", "visual_integration"],
+    why: "The planner's app.design component runs Flutter and visual integration for design files neither reads: screen contracts and source packs (visual), website and web-ui baselines and marketing captures (both).",
+    matches: ({lane, sources, changedFiles}) => sources.length > 0 &&
+      sources.every((source) => ["app.design", "marketing.capture-artifacts"].includes(source.component)) &&
+      // design/website, design/admin and design/components belong to other components.
+      changedFiles.filter((file) => /^(?:design|artifacts|widgetbook|design_context_pack)\//u.test(file) &&
+        !/^design\/(?:website|admin|components)\//u.test(file))
+        .every((file) => appDesignUnread[lane].some((prefix) => file.startsWith(prefix)))},
   {id: "planner-functions-implies-contracts", side: "planner", lanes: ["contracts"],
-    why: "The planner adds Contracts for any Functions or backend-deploy file; the contracts scans read only functions/src and the lockfile, so Nx skips it.",
-    matches: ({sources}) => sources.length > 0 &&
-      sources.every((source) => ["backend.functions", "ci.backend-delivery"].includes(source.component))},
+    why: "The planner adds Contracts for any Functions or backend-deploy file; the contracts scans read only functions/src and the lockfile, so Nx skips it. CI files in the same change count only when the caller graph classifies them and no contracts job reaches them.",
+    matches: (context) => {
+      const functionsFamily = (component) => ["backend.functions", "ci.backend-delivery"].includes(component);
+      const ci = (component) => component === "repo.harness" || component.startsWith("ci.");
+      const {sources} = context;
+      if (!sources.some((source) => functionsFamily(source.component))) return false;
+      if (!sources.every((source) => functionsFamily(source.component) || ci(source.component))) return false;
+      const ciSources = sources.filter((source) => !functionsFamily(source.component));
+      return ciSources.length === 0 || (ciOnlySources({...context, sources: ciSources}, ci) &&
+        !classifiedCiFiles(context).some((file) => (context.graph ?? callerGraph()).lanes.get(file)?.has("contracts")));
+    }},
   {id: "planner-propagates-to-captures", side: "planner", lanes: ["capture_freshness"],
     why: "The planner reaches capture freshness through an affected component; Nx runs it only when the website itself changes.",
     matches: ({sources, nxTasks}) => sources.length > 0 && sources.every((source) => source.relationship === "affected") &&
@@ -165,6 +239,24 @@ export const explanationRules = [
   {id: "brand-guard-in-functions", side: "nx", lanes: ["functions", "firestore_rules"],
     why: "functions/src/shared/brand.test.ts re-runs the brand guard, so brand changes run Functions (and the rules lane that depends on it); the planner misses that.",
     matches: ({changedFiles}) => changedFiles.some((file) => file.startsWith("packages/brand/"))},
+  // Lanes Nx adds that the planner misses. pr and merge_group already run
+  // both selections, so these run today; each names the declared input.
+  {id: "nx-contracts-app-consumers", side: "nx", lanes: ["flutter_web_smoke", "visual_integration"],
+    why: "The Flutter apps build packages/platform's generated schema contracts from contracts/ (^production); the planner keeps contracts out of the app lanes.",
+    matches: ({changedFiles}) => changedFiles.some((file) => file.startsWith("contracts/"))},
+  {id: "nx-root-lockfile", side: "nx",
+    why: "Every lane's inputs include the root package-lock.json; the planner selects only the npm lanes.",
+    matches: ({changedFiles}) => changedFiles.includes("package-lock.json")},
+  {id: "nx-design-sources", side: "nx",
+    lanes: ["flutter", "visual_integration", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"],
+    why: "Design tokens generate catch_tokens, and lane-flutter-design and lane-visual read design/components and tool/design; the planner keeps these in the design lanes.",
+    matches: ({changedFiles}) => changedFiles.some((file) => /^(?:design\/(?:tokens|components)|tool\/design)\//u.test(file))},
+  {id: "nx-brand-apps", side: "nx", lanes: ["flutter_web_smoke", "visual_integration"],
+    why: "Brand literals reach the Flutter apps (^production); the planner keeps brand changes in Tools and Functions.",
+    matches: ({changedFiles}) => changedFiles.some((file) => file.startsWith("packages/brand/"))},
+  {id: "nx-app-manifest", side: "nx", lanes: ["flutter_web_smoke"],
+    why: "An app's pubspec.yaml (its version) is a web-smoke input; the planner leaves per-app settings to the builds.",
+    matches: ({changedFiles}) => changedFiles.some((file) => /^apps\/[^/]+\/pubspec\.yaml$/u.test(file))},
   // Last: the more specific Nx rules above name the cause when they apply.
   {id: "nx-control-plane", side: "nx",
     why: "A file CI executes or reads selects every lane that runs it, and a selector file selects every lane; the planner narrows some of them by hand.",
@@ -281,14 +373,18 @@ function main(argv) {
     "--mode", args.mode, "--json"]));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
   const manifest = changedFiles.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
-  const result = compare({plannerLanes: plan.operations.ciTargets, plannerFull: plan.full === true,
-    ...nxAffected(args), mode: args.mode, changedFiles, plannerSources: plan.operationSources?.ciTargets ?? [],
-    manifestChange: manifest});
+  // What the manifest diff rule selects on the planner side. Pull requests and
+  // the queue run that selection (select_lanes.mjs), so compare with it; on
+  // main it is report-only until the cut-over: main still runs every lane.
+  const plannerLanes = changedFiles.includes(manifestFile)
+    ? plannerManifestLanes({mode: args.mode, changedFiles, change: manifest}) : null;
+  const narrowed = plannerLanes && args.mode !== "main"
+    ? narrowedPlanner({plannerLanes, changedFiles, mode: args.mode}) : null;
+  const result = compare({plannerLanes: narrowed?.lanes ?? plan.operations.ciTargets,
+    plannerFull: !narrowed && plan.full === true, ...nxAffected(args), mode: args.mode, changedFiles,
+    plannerSources: narrowed?.sources ?? plan.operationSources?.ciTargets ?? [], manifestChange: manifest});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
-  // What the manifest diff rule selects on the planner side. On main it is
-  // report-only until the cut-over: main still runs every lane.
   if (changedFiles.includes(manifestFile)) {
-    const plannerLanes = plannerManifestLanes({mode: args.mode, changedFiles, change: manifest});
     report.manifestDiff = {reason: describeChange(manifest), all: !manifest || manifest.all,
       ids: manifest?.ids ?? [], removed: manifest?.removed ?? [],
       plannerWouldSelect: plannerLanes ?? [...comparedLanes], reportOnly: args.mode === "main"};

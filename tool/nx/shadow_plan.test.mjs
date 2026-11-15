@@ -7,7 +7,7 @@ import test from "node:test";
 import {pathToFileURL} from "node:url";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, isQueueCaptureInput, laneForTask,
-  shadowExitCode, summary} from "./shadow_plan.mjs";
+  narrowedPlanner, shadowExitCode, summary} from "./shadow_plan.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
 
@@ -50,6 +50,19 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
   const flutter = compare({plannerLanes: [], nxTasks: [], changedFiles: [".github/workflows/flutter-ci.yml"]});
   assert.ok(flutter.nxLanes.includes("flutter"));
   assert.ok(!flutter.nxLanes.includes("functions") && !flutter.nxLanes.includes("flutter_build_ios"));
+});
+
+// Pull requests and the queue run the manifest-narrowed planner (#1818), so
+// the shadow compares with it: 18 of the 21 "planner full" commits in the
+// 229-commit replay were manifest edits the diff already narrows.
+test("a narrowed manifest edit compares with the planner's narrowed lanes and provenance", () => {
+  const {lanes, sources} = narrowedPlanner({plannerLanes: ["docs", "policy_docs", "tools"], mode: "merge_group",
+    changedFiles: ["tool/tools_manifest.json", "docs/data_contracts.md"]});
+  assert.deepEqual(lanes, ["docs", "policy_docs", "tools"]);
+  assert.ok(sources.some((entry) => entry.value === "docs" && entry.component !== "tools.manifest-diff"),
+    "the other files keep the planner's own provenance");
+  assert.ok(sources.some((entry) => entry.value === "tools" && entry.component === "tools.manifest-diff"));
+  assert.ok(!sources.some((entry) => entry.component === "repo.harness"), "the manifest no longer reads as the planner's control plane");
 });
 
 test("pull requests leave the queue-only lanes to the merge queue", () => {
@@ -107,8 +120,47 @@ test("the shadow run fails when Nx selects a task with no lane", () => {
 // the shadow runs over the 30 PRs merged before c6f3e11c (12 Nov 2026).
 const source = (component, value, relationship = "direct") => ({component, relationship, value});
 const explanationFixtures = [
-  {rule: "planner-full-selection", commit: "885a608e", lane: "flutter", side: "planner",
-    sources: [source("repo.harness", "flutter")], changedFiles: ["tool/tools_manifest.json", "website/app/[[...path]]/page.tsx"]},
+  // From the 229-commit replay (8 to 15 Nov 2026) that design A rests on.
+  {rule: "planner-non-pr-workflow", commit: "1af04cb6", lane: "admin", side: "planner",
+    sources: [source("ci.workflow.react", "admin")], changedFiles: [".github/workflows/website-release.yml"]},
+  {rule: "harness-script-outside-pr-ci", commit: "9180bc5f", lane: "flutter", side: "planner",
+    sources: [source("repo.harness", "flutter")],
+    changedFiles: [".github/workflows/main-red-alert.yml", ".github/zizmor.yml", "docs/release_operations.md",
+      "tool/ci/main_red_alert.mjs", "tool/ci/main_red_alert.test.mjs", "tool/tools_manifest.json"]},
+  {rule: "caller-closure-narrower", commit: "06b715db", lane: "functions", side: "planner",
+    sources: [source("repo.harness", "functions")],
+    changedFiles: ["TESTS.md", "docs/release_operations.md", "tool/ci/flutter_package_scope.mjs",
+      "tool/ci/flutter_package_scope.test.mjs"]},
+  {rule: "planner-tests-not-build-input", commit: "af1b528b", lane: "flutter_build_android", side: "planner",
+    sources: [source("app.ui", "flutter_build_android")],
+    changedFiles: ["TESTS.md", "packages/catch_ui/test/core/catch_badge_contrast_test.dart"]},
+  {rule: "planner-app-design-coarse", commit: "70cc7f1c", lane: "visual_integration", side: "planner",
+    sources: [source("app.design", "visual_integration")],
+    changedFiles: ["design/screens/catch.screens.json", "functions/test/rules/clubs.rules.test.cjs"]},
+  {rule: "planner-app-design-coarse", commit: "c20f2462", lane: "flutter", side: "planner",
+    sources: [source("app.design", "flutter")],
+    changedFiles: ["design/source_packs/host-v2/source-pack.json", "tool/tools_manifest.json"]},
+  {rule: "planner-app-design-coarse", commit: "b438618a", lane: "flutter", side: "planner",
+    sources: [source("app.design", "flutter"), source("marketing.capture-artifacts", "flutter")],
+    changedFiles: ["artifacts/marketing/app-screenshots/host-live-console.png",
+      "design/visual_baselines/website/darwin/marketing-website-cities--cities.desktop.png",
+      "design/website/components.json", "website/src/shared/site/SiteHeader.tsx"]},
+  {rule: "planner-functions-implies-contracts", commit: "9dc69983", lane: "contracts", side: "planner",
+    sources: [source("backend.functions", "contracts"), source("repo.harness", "contracts")],
+    changedFiles: [".github/workflows/functions-ci.yml", ".github/workflows/main-red-alert.yml", "TESTS.md",
+      "docs/release_operations.md", "functions/scripts/run-tests.cjs", "functions/scripts/run-tests.test.cjs",
+      "tool/README.md", "tool/ci/selection_miss_report.mjs", "tool/ci/selection_miss_report.test.mjs",
+      "tool/tools_manifest.json"]},
+  {rule: "nx-contracts-app-consumers", commit: "2fec192d", lane: "flutter_web_smoke", side: "nx",
+    nxTasks: ["lane-web-smoke:lane"], changedFiles: ["contracts/firestore/event_seat_ledgers.schema.json"]},
+  {rule: "nx-root-lockfile", commit: "c2ae163a", lane: "flutter_build_ios", side: "nx",
+    nxTasks: ["lane-build-ios:lane"], changedFiles: ["package-lock.json"]},
+  {rule: "nx-design-sources", commit: "e61bc5a6", lane: "visual_integration", side: "nx",
+    nxTasks: ["lane-visual:lane"], changedFiles: ["design/components/catch.components.json"]},
+  {rule: "nx-brand-apps", commit: "29479d8a", lane: "visual_integration", side: "nx",
+    nxTasks: ["lane-visual:lane"], changedFiles: ["packages/brand/literal_allowlist.json"]},
+  {rule: "nx-app-manifest", commit: "b5a679b4", lane: "flutter_web_smoke", side: "nx",
+    nxTasks: ["lane-web-smoke:lane"], changedFiles: ["apps/host/pubspec.yaml"]},
   {rule: "planner-functions-implies-contracts", commit: "e15166a5", lane: "contracts", side: "planner",
     sources: [source("backend.functions", "contracts"), source("ci.backend-delivery", "contracts")],
     changedFiles: [".github/workflows/backend-deploy.yml", "functions/scripts/deploy-size.cjs"]},
@@ -134,8 +186,8 @@ const explanationFixtures = [
 ];
 
 test("every explanation rule is pinned by the disagreement that motivated it", () => {
-  assert.deepEqual(explanationFixtures.map((fixture) => fixture.rule).sort(),
-    explanationRules.map((rule) => rule.id).sort(), "one fixture per rule");
+  assert.deepEqual([...new Set(explanationFixtures.map((fixture) => fixture.rule))].sort(),
+    explanationRules.map((rule) => rule.id).sort(), "at least one fixture per rule");
   for (const {rule, commit, ...fixture} of explanationFixtures) {
     assert.equal(explain(fixture), rule, `${commit} ${fixture.side} only ${fixture.lane}`);
   }
@@ -154,6 +206,26 @@ test("a disagreement with no known cause stays unexplained", () => {
   // lane-tools-coarse does not cover a tool change, here one no lane job runs.
   assert.equal(explain({lane: "tools", side: "nx", nxTasks: ["lane-tools:lane"],
     changedFiles: ["tool/agent/context_pack.mjs"], graph: {lanes: new Map(), selectors: new Set()}}), null);
+
+  // The CI rules need CI-only provenance and classified CI files: a lane the
+  // planner also chose for an app file, or an unclassified workflow, stays a gap.
+  assert.equal(explain({lane: "flutter", side: "planner",
+    sources: [source("repo.harness", "flutter"), source("app.source", "flutter")],
+    changedFiles: ["tool/ci/main_red_alert.mjs", "lib/main.dart"]}), null);
+  assert.equal(explain({lane: "flutter", side: "planner", sources: [source("repo.harness", "flutter")],
+    changedFiles: [".github/workflows/brand-new.yml"]}), null);
+  // Contracts for Functions plus a CI file stays a gap when the CI file is unclassified.
+  assert.equal(explain({lane: "contracts", side: "planner",
+    sources: [source("backend.functions", "contracts"), source("repo.harness", "contracts")],
+    changedFiles: ["functions/scripts/run-tests.cjs", ".github/workflows/brand-new.yml"]}), null);
+  // Flutter reads screen contracts (test/tool/ui_composition_contracts_test.dart).
+  assert.equal(explain({lane: "flutter", side: "planner", sources: [source("app.design", "flutter")],
+    changedFiles: ["design/screens/catch.screens.json"]}), null);
+  // A Dart source change is build input; the iOS build is left to its own rule.
+  assert.equal(explain({lane: "flutter_build_web", side: "planner", sources: [source("app.ui", "flutter_build_web")],
+    changedFiles: ["packages/catch_ui/lib/src/a.dart", "packages/catch_ui/test/a_test.dart"]}), null);
+  assert.equal(explain({lane: "flutter_build_ios", side: "planner", sources: [source("app.ui", "flutter_build_ios")],
+    changedFiles: ["packages/catch_ui/test/a_test.dart"]}), null);
 
   const result = compare({plannerLanes: ["flutter"], nxTasks: ["lane-docs:lane"], changedFiles: ["README.md"],
     plannerSources: [source("app.source", "flutter")]});

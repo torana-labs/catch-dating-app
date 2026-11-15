@@ -45,6 +45,17 @@ const affectedTasks = (file) => affectedGraph(file).nxTasks;
 // The lanes a pull request runs for one changed file.
 const lanesFor = (file) => compare({plannerLanes: [], mode: "pr", ...affectedGraph(file)}).nxLanes;
 
+// 3c2d0499 (#1803) edited a website story and the planner ran capture
+// freshness; Nx did not. marketing-captures.yml renders captures from the
+// Storybook build, whose stories (website/src and packages/web-ui/src) and
+// config the catch-marketing production input leaves out.
+test("a Storybook story or its config selects capture freshness", () => {
+  for (const file of ["website/src/stories/Account.stories.tsx", "packages/web-ui/src/components/CatchMenu.stories.tsx",
+    "website/.storybook/main.ts"]) {
+    assert.ok(affectedTasks(file).includes("lane-capture-freshness:lane"), file);
+  }
+});
+
 // functions/README.md alone ran ~15 min of backend jobs (32e79379), and a
 // README under lib/ or functions/src/ ran Flutter, Functions, Firestore rules
 // and contracts. Markdown is not a project input; a check that reads one
