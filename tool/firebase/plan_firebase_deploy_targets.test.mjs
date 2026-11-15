@@ -315,6 +315,7 @@ function executorFixture(t) {
     "tool/firebase/function_binding_intent.mjs",
     "tool/firebase/form_upload_identity.mjs",
     "tool/firebase/storage_rules_firestore_iam.mjs",
+    "tool/firebase/retry_transient.mjs",
     "tool/lib/repo_paths.mjs",
     "tool/lib/firebase_project.mjs",
   ]) {
@@ -384,6 +385,48 @@ test("executor preflights packaged Functions before indexes and preserves legacy
         (version === 1 ? " --targets functions:alpha,functions:beta" : ""),
     ], "Only the post-deploy step may invoke the permission-writing npm command.");
   }
+});
+
+test("executor retries a temporary rules or index error but never a Functions batch or a compile error", (t) => {
+  const fixture = executorFixture(t);
+  // Rules fail once with the 503 that cost prod run 43617790051 its record;
+  // indexes fail once with a dropped connection.
+  fixture.write("bin/firebase", '#!/bin/sh\n' +
+    'if [ "$1" = functions:list ]; then\n' +
+    '  printf \'{"status":"success","result":[{"id":"alpha"},{"id":"beta"}]}\\n\'\n  exit 0\nfi\n' +
+    'printf \'deploy:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n' +
+    'case "$*" in\n' +
+    '  *firestore:rules*) [ -n "$RULES_ERROR" ] && [ "$(grep -c firestore:rules "$EXECUTOR_EVENTS")" -le "${RULES_FAILURES:-1}" ] && ' +
+    '{ echo "$RULES_ERROR" >&2; exit 2; } ;;\n' +
+    '  *firestore:indexes*) [ "$(grep -c firestore:indexes "$EXECUTOR_EVENTS")" -lt 2 ] && ' +
+    '{ echo "Error: Failed to make request: read ECONNRESET" >&2; exit 2; } ;;\n' +
+    'esac\nexit 0\n', 0o755);
+  const run = (error, failures) => {
+    process.env.RULES_ERROR = error;
+    process.env.RULES_FAILURES = String(failures);
+    try { return fixture.run(); } finally { delete process.env.RULES_ERROR; delete process.env.RULES_FAILURES; }
+  };
+  const recovered = run("Error: Request to https://firebaserules.googleapis.com/v1/projects/demo-project:test " +
+    "had HTTP Error: 503, The service is currently unavailable.", 1);
+  assert.equal(recovered.status, 0, recovered.stderr);
+  const deploys = recovered.events.filter((event) => event.startsWith("deploy:"));
+  assert.deepEqual(deploys, [
+    "deploy:--project dev deploy --only firestore:indexes --non-interactive",
+    "deploy:--project dev deploy --only firestore:indexes --non-interactive",
+    "deploy:--project dev deploy --only functions:alpha,functions:beta --non-interactive",
+    "deploy:--project dev deploy --only firestore:rules --non-interactive",
+    "deploy:--project dev deploy --only firestore:rules --non-interactive",
+  ]);
+  assert.match(recovered.stdout, /::warning::Firebase firestore:rules deploy attempt 1 of 3 failed with HTTP 503/u);
+  assert.match(recovered.stdout, /::warning::Firebase firestore:indexes deploy attempt 1 of 3 failed with ECONNRESET/u);
+  // A compile error stops at once, and so does a 503 that outlasts three attempts.
+  const compile = run("Error: Compilation errors in firestore.rules.", 9);
+  assert.notEqual(compile.status, 0);
+  assert.equal(compile.events.filter((event) => event.includes("firestore:rules")).length, 1);
+  const outage = run("had HTTP Error: 503, The service is currently unavailable.", 9);
+  assert.notEqual(outage.status, 0);
+  assert.equal(outage.events.filter((event) => event.includes("firestore:rules")).length, 3);
+  assert.match(outage.stderr, /still failed with HTTP 503 after 3 attempts/u);
 });
 
 test("executor exposes a preflight-only boundary for the whole ordered Delivery plan", (t) => {

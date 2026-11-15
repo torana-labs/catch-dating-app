@@ -1505,6 +1505,15 @@ How a run works:
 - If the Functions deploy fails, the job retries once with plain `functions`.
   Everything that deployed the first time now matches its hash and is skipped,
   so only the failed Functions rebuild.
+- The indexes and rules deploys (including the CLI's rules compile check,
+  firebaserules `:test`) retry a temporary Google API error up to three times,
+  30 then 60 seconds apart, with a warning per retry
+  (`tool/firebase/retry_transient.mjs`). Temporary means HTTP 429, 500, 502,
+  503 or 504, or a dropped connection. Any other 4xx, a rules compilation
+  error, a refused Function deletion and a readiness failure are never retried.
+  Both deploys are idempotent, so a retry after a part-way failure applies the
+  same result. On 14 Nov 2026 one 503 from `:test` failed prod run
+  43617790051 after its Functions had deployed, so it never recorded the commit.
 - Firebase predeploy test hooks are skipped because required CI already ran
   them on that commit.
 - Before any change, the run summary lists the codebases this deploy changes
