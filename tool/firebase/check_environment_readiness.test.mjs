@@ -754,8 +754,8 @@ test("Deploy backend checks readiness before any mutation", () => {
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
     "Choose the Functions to deploy", "Check the platform is serving before touching it",
     "Report what this deploy changes", "Check this environment is ready", "Deploy Firestore indexes",
-    "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
-    "Verify the active rules match this commit", "Record the deployed commit"].map(step);
+    "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Record the delivered Functions",
+    "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
   assert.match(block("Check this environment is ready"), /check_environment_readiness\.mjs/u);
   for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
@@ -774,7 +774,8 @@ test("Deploy backend checks readiness before any mutation", () => {
   }
   // A named run deploys those Functions only and leaves the record alone.
   for (const name of ["Report what this deploy changes", "Deploy Firestore indexes",
-    "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"]) {
+    "Record the delivered Functions", "Deploy Firestore and Storage rules", "Verify the active rules match this commit",
+    "Record the deployed commit"]) {
     assert.match(block(name),
       /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
   }
@@ -810,11 +811,15 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
   const script = workflowStepShell(backendDeployWorkflow(), "Skip a commit older than the deployed one");
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-guard-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
-  const list = (page) => `repos/o/r/deployments?environment=dev&task=deploy:backend&per_page=100&page=${page}`;
+  const list = (page, task = "deploy:backend") =>
+    `repos/o/r/deployments?environment=dev&task=${task}&per_page=100&page=${page}`;
+  const flist = (page) => list(page, "deploy:backend-functions");
   const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=100`;
   const record = (id) => `repos/o/r/deployments/${id}`;
   const base = "b".repeat(40);
   const success = [[list(1), "7"], [status(7), "success"], [record(7), base]];
+  const functionsBase = "f".repeat(40);
+  const functionsSuccess = [[flist(1), "6"], [status(6), "success"], [record(6), functionsBase]];
   const scenarios = [
     {label: "newer commit", calls: success},
     {label: "same commit", calls: success, source: base},
@@ -838,6 +843,16 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
     {label: "verified exhaustion after partial pages", calls: [
       [list(1), "9"], [status(9), "failure"], [list(2), "8"], [status(8), "pending"], [list(3), ""],
     ]},
+    // The Functions record, written before the rules, is checked the same way.
+    {label: "functions record contained", calls: success, functions: functionsSuccess},
+    {label: "functions record newer and not contained", calls: success, functions: functionsSuccess,
+      functionsAncestor: 1, skipped: true},
+    {label: "functions record without a deploy:backend record", calls: [[list(1), ""]], functions: functionsSuccess},
+    {label: "functions lookup error", calls: success, functions: [[flist(1), "", 48]], exit: 48},
+    {label: "functions status error", calls: success, functions: [[flist(1), "6"], [status(6), "", 49]], exit: 49},
+    {label: "functions record beyond page one", calls: success, functions: [
+      [flist(1), "5"], [status(5), "failure"], [flist(2), "6"], [status(6), "success"], [record(6), functionsBase],
+    ]},
   ];
   for (const scenario of scenarios) {
     await t.test(scenario.label, () => {
@@ -847,7 +862,11 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
       fs.writeFileSync(callsLog, "");
       // Only these exact mocked endpoints are allowed. Unexpected calls fail
       // closed, and the call log proves short pages are not treated as exhaustion.
-      const cases = scenario.calls.map(([endpoint, response, exit = 0]) =>
+      // A deploy:backend lookup that fails stops before the Functions lookup;
+      // otherwise the Functions record (none by default) is looked up next.
+      const backendFailed = scenario.calls.some(([, , exit]) => exit !== undefined);
+      const calls = [...scenario.calls, ...(backendFailed ? [] : scenario.functions ?? [[flist(1), ""]])];
+      const cases = calls.map(([endpoint, response, exit = 0]) =>
         `'${endpoint}') printf '%s\\n' '${response}'; return ${exit};;`).join("\n");
       const result = spawnSync("bash", ["-c", `
         gh() {
@@ -858,25 +877,33 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
           esac
         }
         git() {
-          [[ "$*" == "merge-base --is-ancestor ${base} $DEPLOY_SHA" ]] || return 98
-          return "$ANCESTOR"
+          [[ "$*" == "merge-base --is-ancestor ${base} $DEPLOY_SHA" ]] && return "$ANCESTOR"
+          [[ "$*" == "merge-base --is-ancestor ${"f".repeat(40)} $DEPLOY_SHA" ]] && return "$FUNCTIONS_ANCESTOR"
+          return 98
         }
         ${script}
       `], {
         cwd, encoding: "utf8", timeout: 5000,
         env: {...process.env, GITHUB_OUTPUT: output, CALLS_LOG: callsLog,
           GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "dev",
-          DEPLOY_SHA: scenario.source ?? "a".repeat(40), ANCESTOR: String(scenario.ancestor ?? 0)},
+          DEPLOY_SHA: scenario.source ?? "a".repeat(40), ANCESTOR: String(scenario.ancestor ?? 0),
+          FUNCTIONS_ANCESTOR: String(scenario.functionsAncestor ?? 0)},
       });
       assert.equal(result.error, undefined);
       assert.equal(result.status, scenario.exit ?? 0, result.stderr);
       // The deployment found is passed on, so the size count reads its hashes.
-      const found = scenario.calls.some(([endpoint, response]) => endpoint === status(7) && response === "success") &&
-        scenario.exit === undefined;
-      assert.equal(fs.readFileSync(output, "utf8"),
-        `${found ? "deployment=7\n" : ""}${scenario.skipped ? "skip=true\n" : ""}`);
+      const succeeded = (id) => calls.some(([endpoint, response, exit]) =>
+        endpoint === status(id) && response === "success" && exit === undefined);
+      const recorded = (id) => calls.some(([endpoint, , exit]) => endpoint === record(id) && exit === undefined);
+      const found = succeeded(7) && recorded(7);
+      const foundFunctions = succeeded(6) && recorded(6);
+      if (scenario.exit === undefined) {
+        assert.equal(fs.readFileSync(output, "utf8"),
+          `${found ? "deployment=7\n" : ""}${foundFunctions ? "functions_deployment=6\n" : ""}` +
+          `${scenario.skipped ? "skip=true\n" : ""}`);
+      }
       assert.deepEqual(fs.readFileSync(callsLog, "utf8").trim().split("\n"),
-        scenario.calls.map(([endpoint]) => endpoint));
+        calls.map(([endpoint]) => endpoint));
     });
   }
 });
@@ -885,6 +912,27 @@ test("Deploy backend counts a record as delivered when any of its statuses succe
   const script = workflowStepShell(backendDeployWorkflow(), "Skip a commit older than the deployed one");
   // GitHub marks a record inactive seconds after its success status.
   assert.match(script, /statuses\?per_page=100"[\s\\]+-q 'if any\(\.\[\]; \.state == "success"\) then "success"/u);
+});
+
+test("Deploy backend records the delivered Functions before the rules, and plans from that record first", () => {
+  const workflow = backendDeployWorkflow();
+  const step = (name) => workflow.slice(workflow.indexOf(`name: ${name}`), workflow.indexOf("\n      - ", workflow.indexOf(`name: ${name}`)));
+  const functions = step("Record the delivered Functions");
+  const full = step("Record the deployed commit");
+  assert.match(functions, /task: "deploy:backend-functions"/u);
+  assert.match(full, /task: "deploy:backend"/u);
+  // Both records carry the same payload, so either can be the planning base.
+  const payload = /--slurpfile codebases build\/functions-codebases\.json[\s\S]*payload: \{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}/u;
+  assert.match(functions, payload);
+  assert.match(full, payload);
+  assert.match(functions, /deployments\/\$id\/statuses" -f state=success/u);
+  assert.match(step("Report what this deploy changes"),
+    /DEPLOYED_ID: \$\{\{ steps\.guard\.outputs\.functions_deployment \|\| steps\.guard\.outputs\.deployment \}\}/u);
+  // The guard checks both tasks; the daily pick keeps reading the full record.
+  assert.match(workflowStepShell(workflow, "Skip a commit older than the deployed one"),
+    /for task in deploy:backend deploy:backend-functions; do/u);
+  const caller = fs.readFileSync(path.join(repoRoot, ".github/workflows/backend-deploy.yml"), "utf8");
+  assert.match(caller, /deployments\?environment=prod&task=deploy:backend&per_page=30/u);
 });
 
 test("Deploy backend reports the codebases it changes against the recorded hashes and refuses nothing", (t) => {

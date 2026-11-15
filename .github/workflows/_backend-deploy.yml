@@ -6,9 +6,11 @@ name: Backend deploy (one environment)
 # codebase's code, parameters and secrets and skips every Function whose hash
 # matches what is live, so a deploy rebuilds only what changed, and a retry
 # rebuilds only what failed. Indexes and rules deploy every time; the CLI
-# leaves them alone when they match. A GitHub deployment then records this
-# commit and each codebase's hash. Before any change, a run reports the
-# codebases it changes against that record: each is one Cloud Build (its
+# leaves them alone when they match. Two GitHub deployments record this
+# commit and each codebase's hash: deploy:backend-functions once the Functions
+# pass parity, and deploy:backend once the rules are verified too. Before any
+# change, a run reports the codebases it changes against the newer of the
+# two: each is one Cloud Build (its
 # Functions share the build) and an update of every Function in it. Updates
 # are free and a build is about a minute, so the size is reported, not
 # limited. A run given named Functions deploys only those, for a configuration
@@ -62,9 +64,14 @@ jobs:
           fetch-depth: 0
 
       # A rerun of an older commit must not replace a newer deployed one.
-      # GitHub marks a record inactive seconds after its success status (a
-      # newer deployment in the environment supersedes it), so a record counts
-      # as delivered when any of its statuses is success, not only the newest.
+      # Two records say what an environment has: deploy:backend (everything,
+      # with verified rules) and deploy:backend-functions (written as soon as
+      # the Functions are deployed and pass parity, so a later rules failure
+      # does not make the next run redeploy every Function). This commit must
+      # contain the newest delivered record of each. GitHub marks a record
+      # inactive seconds after its success status (a newer deployment in the
+      # environment supersedes it), so a record counts as delivered when any
+      # of its statuses is success, not only the newest.
       - id: guard
         name: Skip a commit older than the deployed one
         env:
@@ -72,27 +79,35 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          page=1
-          while true; do
-            # Assign separately: failures in a for substitution or an if
-            # condition do not stop Bash even with errexit enabled.
-            ids="$(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=100&page=$page" -q '.[].id')"
-            if [[ -z "$ids" ]]; then break; fi
-            for id in $ids; do
-              state="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=100" \
-                -q 'if any(.[]; .state == "success") then "success" else (.[0].state // "") end')"
-              if [[ "$state" == "success" ]]; then
-                base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
-                echo "deployment=$id" >> "$GITHUB_OUTPUT"
-                if ! git merge-base --is-ancestor "$base" "$DEPLOY_SHA"; then
-                  echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $DEPLOY_SHA does not contain; nothing to deploy."
-                  echo "skip=true" >> "$GITHUB_OUTPUT"
+          skip=false
+          for task in deploy:backend deploy:backend-functions; do
+            key=deployment
+            if [[ "$task" == "deploy:backend-functions" ]]; then key=functions_deployment; fi
+            page=1
+            found=""
+            while [[ -z "$found" ]]; do
+              # Assign separately: failures in a for substitution or an if
+              # condition do not stop Bash even with errexit enabled.
+              ids="$(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=$task&per_page=100&page=$page" -q '.[].id')"
+              if [[ -z "$ids" ]]; then break; fi
+              for id in $ids; do
+                state="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=100" \
+                  -q 'if any(.[]; .state == "success") then "success" else (.[0].state // "") end')"
+                if [[ "$state" == "success" ]]; then
+                  base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
+                  echo "$key=$id" >> "$GITHUB_OUTPUT"
+                  if ! git merge-base --is-ancestor "$base" "$DEPLOY_SHA"; then
+                    echo "::notice::$DEPLOY_ENVIRONMENT already has $base ($task), which $DEPLOY_SHA does not contain; nothing to deploy."
+                    skip=true
+                  fi
+                  found="$id"
+                  break
                 fi
-                exit 0
-              fi
+              done
+              page=$((page + 1))
             done
-            page=$((page + 1))
           done
+          if [[ "$skip" == "true" ]]; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
 
       - id: toolchain
         if: ${{ steps.guard.outputs.skip != 'true' }}
@@ -227,7 +242,8 @@ jobs:
         if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          DEPLOYED_ID: ${{ steps.guard.outputs.deployment }}
+          # The Functions record is the newer of the two when a run's rules failed.
+          DEPLOYED_ID: ${{ steps.guard.outputs.functions_deployment || steps.guard.outputs.deployment }}
           FULL: ${{ inputs.full }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -359,6 +375,29 @@ jobs:
           CATCH_DEPLOY_ALLOW_BEHIND: "1"
           TARGETS: ${{ steps.choose.outputs.postconditions }}
         run: ./tool/deploy_firebase_targets.sh --functions-postconditions-only "$DEPLOY_ENVIRONMENT" "$TARGETS"
+
+      # The Functions are live and match this commit (the parity check above),
+      # so record that now: a later rules or verify failure then leaves the
+      # next run nothing to redeploy for Functions. The full deploy:backend
+      # record below still waits for the rules. Its payload holds each
+      # codebase's hash, which the next run's report compares with.
+      - name: Record the delivered Functions
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          id="$(jq -n --arg ref "$DEPLOY_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
+            --slurpfile codebases build/functions-codebases.json \
+            '{ref: $ref, environment: $environment, task: "deploy:backend-functions", auto_merge: false,
+              required_contexts: [], description: "Firebase Functions deployed",
+              payload: {version: $codebases[0].version,
+                codebases: ($codebases[0].codebases | map_values({hash}))}}' |
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - -q .id)"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
+            -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
+          echo "$DEPLOY_ENVIRONMENT deploy:backend-functions -> $DEPLOY_SHA (deployment $id)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Deploy Firestore and Storage rules
         if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}

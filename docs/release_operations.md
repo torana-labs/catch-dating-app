@@ -705,7 +705,7 @@ The current workflows are:
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
 | `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging only when run by hand. See Deploy Backend. |
-| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend` deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then a new deployment records the commit. |
+| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend-functions` (else `deploy:backend`) deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, a `deploy:backend-functions` deployment once Functions pass parity, rules drift check, then a `deploy:backend` deployment records the commit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
 | `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
@@ -1477,14 +1477,32 @@ Firestore rules and Storage rules. Hosting and app releases stay separate.
 
 How a run works:
 
-- Each environment records the commit it last received as a successful GitHub
-  deployment with task `deploy:backend`. To see the newest, run
-  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
-  A run whose commit doesn't contain the recorded one deploys nothing, so a
-  re-run of an older commit never replaces a newer one. A failed run leaves the
-  record unchanged. GitHub marks a record `inactive` seconds after its
-  `success` status, so a record counts as delivered when any of its statuses
-  is `success`. The record's payload holds each codebase's content hash.
+- Each environment records what it last received as successful GitHub
+  deployments, under two tasks. Both payloads hold each codebase's content
+  hash.
+  - `deploy:backend-functions` is written as soon as the Functions are
+    deployed and pass the parity check, before the rules.
+  - `deploy:backend` is written at the end, once the rules are deployed and
+    verified too. It means the environment has everything in that commit.
+
+  To see the newest of either, run
+  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`
+  (or `task=deploy:backend-functions`). A failed step leaves every later
+  record unchanged. A run whose rules fail after its Functions deployed
+  still moves the Functions record, so the next run has no Functions left to
+  redeploy and retries the rules. GitHub marks a record `inactive` seconds
+  after its `success` status, so a record counts as delivered when any of its
+  statuses is `success`. Which record each consumer reads:
+  - **Daily pick** (`Deploy backend`, `pick` job): prod's `deploy:backend`.
+    It skips when prod already has the newest green commit, so a run whose
+    rules failed is retried the next day.
+  - **Older-commit guard** (`Skip a commit older than the deployed one`):
+    both records. A run whose commit doesn't contain the newest delivered
+    record of either task deploys nothing, so a re-run of an older commit
+    never replaces a newer one.
+  - **Functions change report** (`Report what this deploy changes`, and the
+    per-Function planner that replaces it): `deploy:backend-functions`, or
+    `deploy:backend` when the environment has no Functions record yet.
 - A run deploys its own exact commit. The job builds Functions, materializes
   non-secret parameters from the environment's GitHub variables, and packages
   Functions as Firebase codebases with
