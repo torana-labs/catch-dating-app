@@ -21,6 +21,7 @@ part 'event_viewer_state_provider.g.dart';
 /// published plans and their server-projected booking facts. Each listener
 /// delivers its own writes, so a booking command needs no invalidation. The
 /// UID isolates the account generation; it is never sent as authority.
+// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 @Riverpod(retry: _noViewerReadRetry)
 Future<EventViewerState> eventViewerState(
   Ref ref,
