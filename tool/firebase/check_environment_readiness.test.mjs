@@ -949,7 +949,7 @@ test("Deploy backend deploys exactly the planned Functions, and retries those, n
   const workflow = backendDeployWorkflow();
   const step = (name) => workflow.slice(workflow.indexOf(`name: ${name}`), workflow.indexOf("\n      - ", workflow.indexOf(`name: ${name}`)));
   const plan = step("Plan the Functions to deploy");
-  assert.match(plan, /plan_function_deploy\.mjs --current build\/functions-codebases\.json\s+--previous build\/deployed-codebases\.json --secrets build\/secret-versions\.json/u);
+  assert.match(plan, /plan_function_deploy\.mjs --current build\/functions-codebases\.json\s+--previous build\/deployed-codebases\.json --secrets build\/secret-versions\.json\s+--retired functions\/retired-functions\.json/u);
   assert.match(plan, /--record-out build\/functions-record\.json\s+--summary "\$GITHUB_STEP_SUMMARY" --github-output "\$GITHUB_OUTPUT"/u);
   assert.match(plan, /TOOLCHAIN: .*steps\.toolchain\.outputs\.firebase-tools-version.*steps\.toolchain\.outputs\.node-version/u);
   const secrets = step("Read the declared secrets' newest versions");

@@ -300,7 +300,7 @@ jobs:
         run: >-
           node tool/firebase/plan_function_deploy.mjs --current build/functions-codebases.json
           --previous build/deployed-codebases.json --secrets build/secret-versions.json
-          --toolchain "$TOOLCHAIN" --full "$FULL" --environment "$DEPLOY_ENVIRONMENT"
+          --retired functions/retired-functions.json --toolchain "$TOOLCHAIN" --full "$FULL" --environment "$DEPLOY_ENVIRONMENT"
           --plan-out build/function-plan.json --record-out build/functions-record.json
           --summary "$GITHUB_STEP_SUMMARY" --github-output "$GITHUB_OUTPUT"
 

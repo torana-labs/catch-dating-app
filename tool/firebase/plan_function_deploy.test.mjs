@@ -46,6 +46,22 @@ test("a new Function deploys, and a Function that loads a computed path follows 
     [["adminA", "its codebase changed (it loads a computed path)"]]);
 });
 
+test("a recorded Function gone from the code falls back unless it is retired", () => {
+  // The record has adminB; this commit removed it from the code.
+  const removed = current({admin: {hash: "A3", functions: ["adminA"], functionHashes: {adminA: "a1"}}});
+  const unlisted = plan(removed, recordOf(current()));
+  assert.equal(unlisted.mode, "all", "a broad deploy then makes the CLI stop on the missing Function, as today");
+  assert.match(unlisted.reason, /adminB is recorded but no longer in the code \(list it in functions\/retired-functions\.json/u);
+  // Listed as retired: the Retire step deletes it, so the plan proceeds.
+  const retired = plan(removed, recordOf(current()), {retired: ["adminB"]});
+  assert.equal(retired.mode, "planned");
+  assert.deepEqual(retired.deploy, []);
+  assert.equal(retired.skipped, 2);
+  // Several at once are all named.
+  const both = plan(current({admin: {hash: "A3", functions: [], functionHashes: {}}}), recordOf(current()));
+  assert.match(both.reason, /adminA, adminB are recorded but no longer in the code/u);
+});
+
 test("anything it cannot prove falls back to the plain codebase deploy", () => {
   const record = recordOf(current());
   for (const [previous, options, reason] of [
@@ -112,7 +128,8 @@ test("the CLI writes the plan, the record payload, the summary and the step outp
   const before = current({admin: {hash: "A1", functions: ["adminA", "adminB"], functionHashes: {adminA: "a1", adminB: "b1"}}});
   const run = (secrets) => spawnSync(process.execPath, [fileURLToPath(new URL("./plan_function_deploy.mjs", import.meta.url)),
     "--current", file("current.json", JSON.stringify(current())), "--previous", file("previous.json", recordOf(before)),
-    "--secrets", file("secrets.json", JSON.stringify(secrets)), "--toolchain", JSON.stringify(toolchain),
+    "--secrets", file("secrets.json", JSON.stringify(secrets)), "--retired", file("retired.json", "[]"),
+    "--toolchain", JSON.stringify(toolchain),
     "--environment", "dev", "--plan-out", file("plan.json"), "--record-out", file("record.json"),
     "--summary", file("summary.md", ""), "--github-output", file("output.txt", "")], {encoding: "utf8"});
   const planned = run({versions, failures: []});

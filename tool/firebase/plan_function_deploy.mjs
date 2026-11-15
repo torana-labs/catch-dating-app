@@ -11,7 +11,12 @@
 // It falls back to today's plain `--only functions` (the CLI's codebase skip)
 // whenever it cannot prove a Function unchanged: no record, a record from
 // before per-Function hashes, a record from another toolchain, a secret whose
-// newest version could not be read, or a Function that moved codebase. A
+// newest version could not be read, a Function that moved codebase, or a
+// recorded Function that is gone from the code but not listed in
+// functions/retired-functions.json. That last one matters: a broad deploy
+// makes the CLI stop on a deployed Function missing from source, which is
+// what makes someone retire it; an exact-name deploy never looks, so the
+// planner must, or a removed Function would silently stay live. A
 // secret lookup failure is loud: a missing permission must not quietly make
 // every run a full deploy. `full` still redeploys everything.
 //
@@ -20,6 +25,7 @@
 //
 // Usage: plan_function_deploy.mjs --current build/functions-codebases.json
 //   [--previous <record payload>] [--secrets <versions.json>]
+//   [--retired functions/retired-functions.json]
 //   --toolchain '<json>' [--full true|false] [--environment dev]
 //   --plan-out build/function-plan.json --record-out build/functions-record.json
 //   [--summary $GITHUB_STEP_SUMMARY] [--github-output $GITHUB_OUTPUT]
@@ -71,8 +77,10 @@ export function readRecord(text) {
  * @param {string[]} [input.secretFailures] Secrets whose version could not be read.
  * @param {object} input.toolchain What the deploy runs with (Firebase CLI, Node).
  * @param {boolean} [input.full]
+ * @param {string[]} [input.retired] functions/retired-functions.json: removed Functions the deploy deletes.
  */
-export function planFunctionDeploy({current, previous, secretVersions, secretFailures = [], toolchain, full = false}) {
+export function planFunctionDeploy({current, previous, secretVersions, secretFailures = [], toolchain, full = false,
+  retired = []}) {
   if (current?.version !== 2) throw new Error("The packaging manifest must be version 2 (per-Function hashes).");
   const needed = new Set(Object.values(current.codebases)
     .flatMap(({functionSecrets = {}}) => Object.values(functionSecrets).flat()));
@@ -95,6 +103,13 @@ export function planFunctionDeploy({current, previous, secretVersions, secretFai
   }
   const recordedCodebase = new Map(Object.entries(record.codebases)
     .flatMap(([codebase, {functions}]) => Object.keys(functions).map((name) => [name, codebase])));
+  const inCode = new Set(Object.values(current.codebases).flatMap(({functions}) => functions));
+  const retiredNames = new Set(retired);
+  const removed = [...recordedCodebase.keys()].filter((name) => !inCode.has(name) && !retiredNames.has(name)).sort();
+  if (removed.length) {
+    return all(`${removed.join(", ")} ${removed.length === 1 ? "is" : "are"} recorded but no longer in the code ` +
+      "(list it in functions/retired-functions.json to delete it)");
+  }
   const deploy = [];
   let skipped = 0;
   for (const [codebase, entry] of Object.entries(current.codebases)) {
@@ -132,7 +147,7 @@ export function planMarkdown(plan, environment = "this environment") {
 
 function main() {
   const {values} = parseArgs({options: {
-    current: {type: "string"}, previous: {type: "string"}, secrets: {type: "string"},
+    current: {type: "string"}, previous: {type: "string"}, secrets: {type: "string"}, retired: {type: "string"},
     toolchain: {type: "string"}, full: {type: "string", default: "false"},
     environment: {type: "string", default: "this environment"},
     "plan-out": {type: "string"}, "record-out": {type: "string"},
@@ -147,7 +162,8 @@ function main() {
   const secrets = read(values.secrets) ? JSON.parse(read(values.secrets)) : {versions: null, failures: []};
   const plan = planFunctionDeploy({current: JSON.parse(read(values.current)), previous: read(values.previous),
     secretVersions: secrets.versions, secretFailures: secrets.failures ?? [],
-    toolchain: JSON.parse(values.toolchain), full: values.full === "true"});
+    toolchain: JSON.parse(values.toolchain), full: values.full === "true",
+    retired: read(values.retired) ? JSON.parse(read(values.retired)) : []});
   fs.writeFileSync(values["plan-out"], `${JSON.stringify(plan, null, 2)}\n`);
   fs.writeFileSync(values["record-out"], `${JSON.stringify(plan.payload)}\n`);
   for (const secret of plan.unreadSecrets) {

@@ -1565,8 +1565,12 @@ How a run works:
   - It falls back to plain `--only functions` (the CLI's codebase skip) when
     it cannot prove a Function unchanged: no delivered record, a record from
     before per-Function hashes (payload version 1), another Firebase CLI or
-    Node version, a Function that moved codebase, or a secret whose newest
-    version could not be read. An unread secret is named in a warning and in
+    Node version, a Function that moved codebase, a secret whose newest
+    version could not be read, or a recorded Function that is gone from the
+    code but not in `functions/retired-functions.json`. That last fallback
+    keeps the CLI's stop on a Function missing from source, which an
+    exact-name deploy would never reach, so a removed Function cannot
+    silently stay live. An unread secret is named in a warning and in
     the summary, so a missing permission cannot quietly make every run full.
     A Function whose module loads a computed path that is not an Operations
     workflow follows its codebase's hash.
