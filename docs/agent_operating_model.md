@@ -386,6 +386,9 @@ Every pull request targets `main` and can merge on its own.
 - Parent-owned by default: `AGENTS.md`, this document, canonical architecture
   docs, authored design contracts, shared manifests, and integration changes.
 - Children avoid generated output unless generation is their explicit task.
+- In a shared test file, add a new test beside the related tests rather than
+  at the end of the file (TESTS.md, "Test and debug habits"), so parallel PRs
+  do not all edit the same final lines.
 - Flutter tests, Flutter analysis, emulator checks, and native builds run
   sequentially unless one isolated verification owner is assigned.
 

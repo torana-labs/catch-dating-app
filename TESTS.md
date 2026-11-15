@@ -39,6 +39,10 @@ guide that owns its area, not to this file.
 
 ## Test and debug habits
 
+- Put a new test next to the tests for the same behaviour, inside their
+  `group` or `describe` block, never at the end of a shared test file. Parallel
+  PRs that each append at the end of the same file conflict even when their
+  tests are unrelated; tests placed beside their neighbours do not.
 - Use `flushTestEventQueue` rather than a raw `Future<void>.delayed(Duration.zero)`
   when a test needs queued provider, stream or callback delivery.
 - Give a custom tap target stable semantics, a label, a tooltip or a key that
