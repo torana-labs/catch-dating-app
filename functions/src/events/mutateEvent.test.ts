@@ -2041,7 +2041,9 @@ test("host cancellation replay retries staging without false refund success",
   async () => {
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": event(),
-      "payments/payment-1": {status: "completed", eventId: "event-1"}});
+      "guestPayments/payment-1": {
+        purpose: "booking", status: "completed", eventId: "event-1",
+      }});
     let calls = 0;
     const deps = {...h.deps, prepareCancellationRefunds: async () => {
       calls++;
@@ -2050,10 +2052,12 @@ test("host cancellation replay retries staging without false refund success",
     const command = request("host-1", {eventId: "event-1"});
     await cancelEventHandler(command, deps);
     assert.equal(h.firestore.get("events/event-1")?.status, "cancelled");
-    assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
+    assert.equal(
+      h.firestore.get("guestPayments/payment-1")?.status, "completed");
     await cancelEventHandler(command, deps);
     assert.equal(calls, 2);
-    assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
+    assert.equal(
+      h.firestore.get("guestPayments/payment-1")?.status, "completed");
   });
 
 

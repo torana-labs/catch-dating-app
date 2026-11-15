@@ -853,7 +853,7 @@ test("native paid signup commits atomically and rejects re-entry",
     await signUpUserForEvent(db, "event-1", "runner-1", "pay_one",
       {paidBooking});
     const fake = db as unknown as FakeFirestore;
-    assert.equal(fake.get("payments/pay_one")?.status, "completed");
+    assert.equal(fake.get("guestPayments/pay_one")?.status, "completed");
     assert.equal(fake.get("eventParticipations/event-1_runner-1")?.paymentId,
       "pay_one");
     await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
@@ -867,7 +867,7 @@ test("another paid booking cannot claim an existing seat", async () => {
       uid: "runner-1", status: "signedUp", paymentId: "pay_other"}});
   await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
     "pay_one", {paidBooking}), /Another booking/);
-  assert.equal((db as unknown as FakeFirestore).get("payments/pay_one"),
+  assert.equal((db as unknown as FakeFirestore).get("guestPayments/pay_one"),
     undefined);
 });
 

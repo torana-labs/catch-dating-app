@@ -1,3 +1,5 @@
+import {isBookingPaymentData} from "../payments/bookingPayments";
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {
   Change,
@@ -127,9 +129,11 @@ export const onHostEventSetupViewWaitlistOfferChanged = onDocumentWritten({
 export const onHostEventSetupViewEventOfferChanged = onDocumentWritten({
   ...options, document: "organizerEventOffers/{documentId}",
 }, (event) => reconcileForWrite("organizerEventOffers", event));
-export const onHostEventSetupViewPaymentChanged = onDocumentWritten({
-  ...options, document: "payments/{documentId}",
-}, (event) => reconcileForWrite("payments", event));
+export const onHostEventSetupViewBookingPaymentChanged = onDocumentWritten({
+  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
+}, (event) => isBookingPaymentData(event.data?.after.data() ??
+  event.data?.before.data()) ? reconcileForWrite("payments", event) :
+  undefined);
 export const onHostEventSetupViewPendingOrderChanged = onDocumentWritten({
   ...options, document: "razorpayPendingOrders/{documentId}",
 }, (event) => reconcileForWrite("razorpayPendingOrders", event));

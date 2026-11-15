@@ -14,7 +14,7 @@ test(
   "razorpayWebhookHandler signs up and completes a captured payment",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/pay_123": {status: "pending",
+      "guestPayments/pay_123": {purpose: "booking", status: "pending",
         createdAt: Timestamp.fromMillis(1)},
       "razorpayPendingOrders/order_123": {
         status: "pending",
@@ -43,7 +43,7 @@ test(
     );
 
     assert.deepEqual(signUps, [{eventId: "trusted-event", userId: "runner-1"}]);
-    const payment = firestore.data["payments/pay_123"] as
+    const payment = firestore.data["guestPayments/pay_123"] as
       Record<string, unknown>;
     assert.equal(payment.status, "completed");
     assert.equal(payment.signUpFailed, false);
@@ -66,7 +66,7 @@ test(
       razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
       createdAt: Timestamp.fromMillis(1)};
     const firestore = new FakeFirestore({
-      "payments/pay_123": completed,
+      "guestPayments/pay_123": completed,
       "razorpayPendingOrders/order_123": {
         status: "pending",
         orderId: "order_123",
@@ -90,7 +90,7 @@ test(
 
     assert.equal(signUpCalled, false);
     // The already-completed payment doc is left untouched.
-    assert.deepEqual(firestore.data["payments/pay_123"], completed);
+    assert.deepEqual(firestore.data["guestPayments/pay_123"], completed);
     // The leftover pending-order doc is cleaned up.
     assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);
   }
@@ -429,7 +429,7 @@ test("ownership: terminal foreign clone cannot trigger pending cleanup",
       provider: "razorpay", amount: 25000, currency: "INR",
       createdAt: Timestamp.fromMillis(1)};
     const pending = {status: "pending", orderId: "order_123"};
-    const initial = {"payments/pay_123": payment,
+    const initial = {"guestPayments/pay_123": payment,
       "razorpayPendingOrders/order_123": pending};
     const db = new FakeFirestore({...initial});
     const body = capturedEventPayload();
@@ -473,7 +473,8 @@ for (const status of ["refunded", "refundFailed"]) {
   test(`ownership compatibility: own terminal ${status} replay tolerates ` +
     "refunded readback",
   async () => inReviewProject(async () => {
-    const initial = {"payments/pay_123": {status, orderId: "order_123",
+    const initial = {"guestPayments/pay_123": {
+      purpose: "booking", status, orderId: "order_123",
       paymentId: "pay_123", eventId: "trusted-event", userId: "runner-1",
       provider: "razorpay", amount: 25000, currency: "INR",
       createdAt: Timestamp.fromMillis(1)}};
@@ -524,7 +525,7 @@ test("ownership compatibility: own new order recovers despite missing pending",
       },
     });
     assert.equal(signUps, 1);
-    const payment = db.data["payments/pay_123"] as Record<string, unknown>;
+    const payment = db.data["guestPayments/pay_123"] as Record<string, unknown>;
     assert.equal(payment.status, "completed");
     assert.equal(payment.orderId, "order_123");
     assert.equal(db.data["razorpayPendingOrders/order_123"], undefined);

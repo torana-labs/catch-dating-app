@@ -51,7 +51,7 @@ test("validate report surfaces demo readiness gaps", async () => {
     matches: {},
     eventParticipations: {},
     savedEvents: {},
-    payments: {},
+    guestPayments: {},
     profileDecisions: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {}}},
   });
@@ -96,8 +96,8 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
     savedEvents: {
       saved_1: {uid: "uid_a"},
     },
-    payments: {
-      payment_1: {userId: "uid_a"},
+    guestPayments: {
+      payment_1: {purpose: "booking", userId: "uid_a"},
     },
     profileDecisions: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {n1: {}}}},
@@ -253,8 +253,8 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
     savedEvents: {
       saved: {eventId: "demo_past"},
     },
-    payments: {
-      payment: {eventId: "demo_past"},
+    guestPayments: {
+      payment: {purpose: "booking", eventId: "demo_past"},
     },
     reviews: {
       review: {eventId: "demo_past"},
@@ -307,7 +307,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
     "matches/match_1/messages/m1",
     "notifications/uid_a/items/match_note",
     "notifications/uid_a/items/run_note",
-    "payments/payment",
+    "guestPayments/payment",
     "reviews/review",
     "savedEvents/saved",
     "profileDecisions/uid_a/outgoing/uid_b",

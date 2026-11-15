@@ -60,7 +60,7 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
       }
     );
 
-    assert.equal(capturedInput?.paymentId, "payment_1");
+    assert.equal(capturedInput?.paymentId, "guestPayment_1");
     assert.equal(capturedInput?.eventId, "event-1");
     assert.equal(capturedInput?.organizerId, "organizer-1");
     assert.equal(capturedInput?.userId, "runner-1");
@@ -73,16 +73,17 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
 
     assert.deepEqual(response, {
       sessionId: "cs_test_123",
-      paymentId: "payment_1",
+      paymentId: "guestPayment_1",
       amountMinor: 3500,
       currency: "USD",
       checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_123",
       provider: "stripe",
     });
-    assert.deepEqual(firestore.data["payments/payment_1"], {
+    assert.deepEqual(firestore.data["guestPayments/guestPayment_1"], {
+      purpose: "booking",
       userId: "runner-1",
       orderId: "cs_test_123",
-      paymentId: "payment_1",
+      paymentId: "guestPayment_1",
       eventId: "event-1",
       amount: 3500,
       amountMinor: 3500,

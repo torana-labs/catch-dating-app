@@ -1,3 +1,4 @@
+import {bookingPaymentRef, bookingPayments} from "./bookingPayments";
 import {onRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -117,7 +118,7 @@ async function fulfillStripeCheckoutSession({
     throw new Error("Stripe Checkout Session amount or currency mismatch.");
   }
 
-  const paymentRef = db.collection("payments").doc(paymentId);
+  const paymentRef = bookingPaymentRef(db, paymentId);
   const paymentSnap = await paymentRef.get();
   const existingStatus = paymentSnap.exists ?
     paymentSnap.data()?.status :
@@ -190,8 +191,7 @@ async function markStripeCheckoutFailed({
   sessionId: string;
   serverTimestamp: unknown;
 }) {
-  const snap = await db
-    .collection("payments")
+  const snap = await bookingPayments(db)
     .where("checkoutSessionId", "==", sessionId)
     .limit(1)
     .get();

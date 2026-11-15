@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -204,7 +205,7 @@ export async function deleteOrganizerHandler(
         .where("organizerId", "==", data.organizerId).limit(1)),
       tx.get(db.collection("reviews")
         .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("payments")
+      tx.get(bookingPayments(db)
         .where("organizerId", "==", data.organizerId).limit(1)),
       tx.get(db.collection("organizerTeamMemberships")
         .where("organizerId", "==", data.organizerId).limit(2)),

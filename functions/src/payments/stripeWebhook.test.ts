@@ -13,7 +13,7 @@ import {
 test("stripeWebhookHandler signs up and completes trusted checkout sessions",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/payment_1": {
+      "guestPayments/payment_1": {purpose: "booking",
         status: "pending",
         createdAt: Timestamp.fromMillis(1),
       },
@@ -56,7 +56,7 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
       paymentId: "payment_1",
       options: {hasValidInvite: false},
     }]);
-    const result = firestore.data["payments/payment_1"] as
+    const result = firestore.data["guestPayments/payment_1"] as
       Record<string, unknown>;
     assert.equal(result.status, "completed");
     assert.equal(result.amount, 3500);
@@ -67,7 +67,7 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
 test("stripeWebhookHandler queues a refund when admission rejects a capture",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/payment_1": {
+      "guestPayments/payment_1": {purpose: "booking",
         status: "pending",
         createdAt: Timestamp.fromMillis(1),
       },
@@ -94,11 +94,12 @@ test("stripeWebhookHandler queues a refund when admission rejects a capture",
 
     assert.deepEqual(refunds, []);
     assert.equal(
-      (firestore.data["payments/payment_1"] as Record<string, unknown>).status,
+      (firestore.data["guestPayments/payment_1"] as
+        Record<string, unknown>).status,
       "refundFailed"
     );
     assert.equal(
-      (firestore.data["payments/payment_1"] as Record<string, unknown>)
+      (firestore.data["guestPayments/payment_1"] as Record<string, unknown>)
         .signUpFailed,
       true
     );
@@ -107,7 +108,7 @@ test("stripeWebhookHandler queues a refund when admission rejects a capture",
 test("Stripe webhook records refund intent before provider work",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/payment_1": {
+      "guestPayments/payment_1": {purpose: "booking",
         status: "pending",
         createdAt: Timestamp.fromMillis(1),
       },
@@ -131,7 +132,7 @@ test("Stripe webhook records refund intent before provider work",
       isHttpsError("failed-precondition", "This event is full.")
     );
 
-    const record = firestore.data["payments/payment_1"] as
+    const record = firestore.data["guestPayments/payment_1"] as
       Record<string, unknown>;
     assert.equal(record.status, "refundFailed");
     assert.equal(record.signUpFailed, true);
@@ -142,7 +143,7 @@ test("Stripe webhook records refund intent before provider work",
 test("stripeWebhookHandler marks expired checkout sessions as failed",
   async () => {
     const firestore = new FakeFirestore({
-      "payments/payment_1": {
+      "guestPayments/payment_1": {purpose: "booking",
         status: "pending",
         checkoutSessionId: "cs_test_123",
         createdAt: Timestamp.fromMillis(1),
@@ -164,7 +165,8 @@ test("stripeWebhookHandler marks expired checkout sessions as failed",
       }
     );
 
-    assert.deepEqual(firestore.data["payments/payment_1"], {
+    assert.deepEqual(firestore.data["guestPayments/payment_1"], {
+      purpose: "booking",
       status: "failed",
       checkoutSessionId: "cs_test_123",
       createdAt: Timestamp.fromMillis(1),
@@ -176,10 +178,11 @@ test("late Stripe failure preserves paid and refund records", async () => {
   for (const type of ["checkout.session.expired",
     "checkout.session.async_payment_failed"]) {
     for (const status of ["completed", "refunded", "refundFailed"]) {
-      const before = {status, checkoutSessionId: "cs_test_123",
+      const before = {purpose: "booking", status,
+        checkoutSessionId: "cs_test_123",
         provider: "stripe", providerPaymentId: "pi_test123"};
       const firestore = new FakeFirestore({
-        "payments/payment_1": before,
+        "guestPayments/payment_1": before,
       });
       const payload = checkoutEventPayload(type);
       await stripeWebhookHandler(payload, stripeSignature(payload),
@@ -187,7 +190,7 @@ test("late Stripe failure preserves paid and refund records", async () => {
           FirebaseFirestore.Firestore, stripe: () => stripeClient({}),
         serverTimestamp: () => "server-now",
         signUpForEvent: async () => undefined});
-      assert.deepEqual(firestore.data["payments/payment_1"], before);
+      assert.deepEqual(firestore.data["guestPayments/payment_1"], before);
     }
   }
 });
@@ -196,13 +199,13 @@ test("Stripe failure rechecks current payment authority",
   async () => {
     for (const change of [{status: "completed"},
       {checkoutSessionId: "cs_new"}, {provider: "razorpay"}]) {
-      const before = {status: "pending", checkoutSessionId: "cs_test_123",
-        provider: "stripe"};
+      const before = {purpose: "booking", status: "pending",
+        checkoutSessionId: "cs_test_123", provider: "stripe"};
       const firestore = new FakeFirestore({
-        "payments/payment_1": before,
+        "guestPayments/payment_1": before,
       });
       firestore.beforeTransaction = () => {
-        firestore.data["payments/payment_1"] = {...before, ...change};
+        firestore.data["guestPayments/payment_1"] = {...before, ...change};
       };
       const payload = checkoutEventPayload("checkout.session.expired");
       await stripeWebhookHandler(payload, stripeSignature(payload),
@@ -210,7 +213,7 @@ test("Stripe failure rechecks current payment authority",
           FirebaseFirestore.Firestore, stripe: () => stripeClient({}),
         serverTimestamp: () => "server-now",
         signUpForEvent: async () => undefined});
-      assert.deepEqual(firestore.data["payments/payment_1"],
+      assert.deepEqual(firestore.data["guestPayments/payment_1"],
         {...before, ...change});
     }
   });
@@ -361,6 +364,15 @@ class FakeQuery {
     private readonly filters: QueryFilter[],
     private readonly limitCount?: number
   ) {}
+
+  where(
+    field: string,
+    op: FirebaseFirestore.WhereFilterOp,
+    value: unknown
+  ) {
+    return new FakeQuery(this.firestore, this.collectionPath,
+      [...this.filters, {field, op, value}], this.limitCount);
+  }
 
   limit(limitCount: number) {
     return new FakeQuery(

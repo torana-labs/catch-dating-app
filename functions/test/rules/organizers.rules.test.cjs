@@ -1681,6 +1681,35 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("lets a guest read only their own booking payments", async () => {
+      await seed(["guestPayments", "pay_own"], {
+        purpose: "booking", userId: "guest-1", eventId: "event-1",
+        status: "completed",
+      });
+      await seed(["guestPayments", "pp_web"], {
+        purpose: "publicEvent", userId: "guest-1", recipientUid: "guest-1",
+        eventId: "event-1", status: "captured",
+      });
+      const guest = authedDb("guest-1");
+      await assertSucceeds(getDoc(doc(guest, "guestPayments", "pay_own")));
+      await assertSucceeds(getDocs(query(collection(guest, "guestPayments"),
+        where("purpose", "==", "booking"), where("userId", "==", "guest-1"))));
+      await assertFails(getDoc(doc(guest, "guestPayments", "pp_web")));
+      await assertFails(getDocs(query(collection(guest, "guestPayments"),
+        where("userId", "==", "guest-1"))));
+      await assertFails(updateDoc(doc(guest, "guestPayments", "pay_own"),
+        {status: "refunded"}));
+      await assertFails(setDoc(doc(guest, "guestPayments", "pay_forged"), {
+        purpose: "booking", userId: "guest-1", status: "completed",
+      }));
+      const other = authedDb("guest-2");
+      await assertFails(getDoc(doc(other, "guestPayments", "pay_own")));
+      await assertFails(getDocs(query(collection(other, "guestPayments"),
+        where("purpose", "==", "booking"), where("userId", "==", "guest-1"))));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "guestPayments", "pay_own")));
+    });
+
     it("keeps commercial terms and their history server-only", async () => {
       for (const collectionName of ["commercialTerms",
         "commercialTermsRevisions"]) {

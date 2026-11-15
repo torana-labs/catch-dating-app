@@ -1,3 +1,4 @@
+import {bookingPaymentRef} from "../bookingPayments";
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
 import {LegacyRefundReviewRequired} from "./errors";
 import {requireDoc} from "../../shared/validation";
@@ -32,7 +33,7 @@ export async function processLegacyCancellationRefund(input: {
 }): Promise<void> {
   const {db, paymentId, provider} = input;
   const clock = input.clock ?? Date.now;
-  const ref = db.collection("payments").doc(paymentId);
+  const ref = bookingPaymentRef(db, paymentId);
   // Provider ownership and payment truth are read-only preflight. A foreign,
   // unknown or unavailable order must not create a lease, attempt or review
   // write merely because it occupied the due queue.

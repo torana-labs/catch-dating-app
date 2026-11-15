@@ -50,10 +50,6 @@
         "reason": "Client access (club host only) has no rules test yet."
       },
       {
-        "id": "payments",
-        "reason": "Client access (payment owner only) has no rules test yet."
-      },
-      {
         "id": "moderationFlags",
         "reason": "Server-only collection; no test yet proves client reads and writes are denied."
       },
@@ -350,23 +346,29 @@
       "id": "guestPayments",
       "path": "guestPayments/{paymentId}",
       "rulesMatch": "/guestPayments/{paymentId}",
-      "dartModel": null,
+      "dartModel": "lib/contexts/payments/domain/payment.dart",
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps guest payment state server-only"
+        "keeps guest payment state server-only",
+        "lets a guest read only their own booking payments"
       ],
-      "owner": "guest checkout server operations; purpose names the owning flow (publicEvent, form, offer)",
-      "read": "server only; owner and manager callable projections omit credentials",
+      "owner": "guest checkout server operations; purpose names the owning flow (publicEvent, form, offer, booking)",
+      "read": "website, form and offer payments server only, through owner and manager callable projections; a guest reads their own in-app booking payments (purpose booking)",
       "write": "server only",
       "exportedFunctions": [
         "managePublicEventCheckout",
         "prepareOrganizerFormPayment",
         "getOrganizerFormPayment",
         "findOrganizerFormPayment",
-        "reconcileOrganizerFormPayments"
+        "reconcileOrganizerFormPayments",
+        "createRazorpayOrder",
+        "verifyRazorpayPayment",
+        "createStripeCheckoutSession",
+        "onHostRosterInsightBookingPaymentChanged"
       ],
       "migrationNotes": [
-        "One ledger for every guest checkout since L6 (#1734); publicEventPayments, organizerFormPayments and organizerEventOfferPayments were copied forward and keep their documents under the legal hold, with no client access."
+        "One ledger for every guest checkout since L6 (#1734); publicEventPayments, organizerFormPayments and organizerEventOfferPayments were copied forward and keep their documents under the legal hold, with no client access.",
+        "In-app Catch booking payments joined as purpose booking (L6b, 16 Nov 2026); payments was copied forward by the booking-payments migration and keeps its documents under the legal hold, with no client access."
       ]
     },
     {
@@ -1279,7 +1281,7 @@
         "onHostEventSetupViewParticipationChanged",
         "onHostEventSetupViewWaitlistOfferChanged",
         "onHostEventSetupViewEventOfferChanged",
-        "onHostEventSetupViewPaymentChanged",
+        "onHostEventSetupViewBookingPaymentChanged",
         "onHostEventSetupViewPendingOrderChanged",
         "onHostEventSetupViewMomentChanged"
       ],
@@ -1349,7 +1351,7 @@
         "onHostRosterInsightEdgeChanged",
         "onHostRosterInsightContactChanged",
         "onHostRosterInsightTraitsChanged",
-        "onHostRosterInsightPaymentChanged"
+        "onHostRosterInsightBookingPaymentChanged"
       ],
       "migrationNotes": [
         "Rows are the retired getEventRosterInsights rows except that top_catch_spender is left to the phone (from hostOrganizerSpendProjections) and member is always stored.",
@@ -1370,7 +1372,7 @@
       "read": "current organizer managers get their organizer's document; nobody lists the collection",
       "write": "server only; written in the same transaction as organizerSpendTotals when the thresholds change",
       "exportedFunctions": [
-        "onHostRosterInsightPaymentChanged"
+        "onHostRosterInsightBookingPaymentChanged"
       ],
       "migrationNotes": [
         "Thresholds only, never an account or a per-guest amount. A missing document means the organizer has no counted Catch payment yet."
@@ -1390,7 +1392,7 @@
       "read": "server only; never client-readable",
       "write": "server only; one transaction per payment change, idempotent by trigger event id",
       "exportedFunctions": [
-        "onHostRosterInsightPaymentChanged"
+        "onHostRosterInsightBookingPaymentChanged"
       ],
       "migrationNotes": [
         "At most 4,000 accounts keep the document under Firestore's 1 MiB limit; another account, or an uncomputable amount, makes coverage partial until a rebuild."
@@ -2547,7 +2549,7 @@
         "onOrganizerContactEventEdgeInviteAttributed",
         "onEventInviteLinkWritten",
         "onEventParticipationWritten",
-        "onPaymentWritten",
+        "onBookingPaymentWritten",
         "onEventWaitlistOfferWritten",
         "onSwipeCreated",
         "onMessageCreated"
@@ -2657,21 +2659,6 @@
       ],
       "migrationNotes": [
         "Owns saved-event state; users documents do not keep a saved-event projection. Current unsave is a hard delete."
-      ]
-    },
-    {
-      "id": "payments",
-      "path": "payments/{paymentId}",
-      "rulesMatch": "/payments/{paymentId}",
-      "typescriptInterface": "PaymentDocument",
-      "dartModel": "lib/contexts/payments/domain/payment.dart",
-      "owner": "payments callables",
-      "read": "payment owner only",
-      "write": "server only",
-      "exportedFunctions": [
-        "createRazorpayOrder",
-        "verifyRazorpayPayment",
-        "onHostRosterInsightPaymentChanged"
       ]
     },
     {

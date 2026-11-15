@@ -1,3 +1,8 @@
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
+import {
+  bookingPayments,
+  isBookingPaymentData,
+} from "../payments/bookingPayments";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import type {
@@ -162,7 +167,7 @@ export async function refreshEventSuccessScorecard(
       .collection("eventWaitlistOffers")
       .where("eventId", "==", eventId)
       .get(),
-    db.collection("payments").where("eventId", "==", eventId).get(),
+    bookingPayments(db).where("eventId", "==", eventId).get(),
     db.collection("eventInviteLinks").where("eventId", "==", eventId).get(),
   ]);
 
@@ -609,11 +614,12 @@ export async function onPaymentWrittenHandler(
   await refreshScorecardsForEventIds(eventIdsFromDocs(before, after), deps);
 }
 
-export const onPaymentWritten = onDocumentWritten(
-  "payments/{paymentId}",
+export const onBookingPaymentWritten = onDocumentWritten(
+  `${GUEST_PAYMENTS}/{paymentId}`,
   async (event) => {
     const before = event.data?.before.data() as PaymentDocument | undefined;
     const after = event.data?.after.data() as PaymentDocument | undefined;
+    if (!isBookingPaymentData(after ?? before)) return;
     await onPaymentWrittenHandler(before, after);
   }
 );

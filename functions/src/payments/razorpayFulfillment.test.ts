@@ -203,7 +203,7 @@ function createFulfillmentFirestore(options: {
   const db = {
     collection: (path: string) => ({
       doc: (docId: string) => {
-        if (path === "payments") return paymentRef;
+        if (path === "guestPayments") return paymentRef;
         if (path === "eventInviteLinks") {
           return {
             set: async (data: Record<string, unknown>) => {

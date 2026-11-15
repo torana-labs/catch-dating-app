@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {isBookingReadyUserProfile} from "../shared/profileReadiness";
 import {eventAgeEligibility} from "../profiles/eventProfileRequirements";
 import {hasEventCommunityMembership} from
@@ -186,7 +187,7 @@ export async function cancelEventSignUpHandler(
         "attended",
       ]),
       waitlistedEventParticipationsInTransaction(tx, db, eventId),
-      tx.get(db.collection("payments").where("userId", "==", userId)
+      tx.get(bookingPayments(db).where("userId", "==", userId)
         .where("eventId", "==", eventId).where("status", "==", "completed")
         .limit(2)),
     ]);
@@ -660,7 +661,7 @@ async function cancellationRefundPreflight(input: {
   authorizeRazorpayRefund: (payment: PaymentDocument) =>
     Promise<LegacyRazorpayRefundAuthorization>;
 }): Promise<CancellationRefundPreflight | null> {
-  const payments = await input.db.collection("payments")
+  const payments = await bookingPayments(input.db)
     .where("userId", "==", input.userId)
     .where("eventId", "==", input.eventId)
     .where("status", "==", "completed")

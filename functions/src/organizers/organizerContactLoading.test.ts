@@ -140,7 +140,8 @@ function linkedHarness(includeHistory?: boolean) {
     ...edge, attendeeId: "attendee-2",
   };
   h.store.docs["events/event-1"] = {organizerId: "org-1", name: "Morning Run"};
-  h.store.docs["payments/payment-1"] = {userId: "guest-1", eventId: "event-1",
+  h.store.docs["guestPayments/payment-1"] = {purpose: "booking",
+    userId: "guest-1", eventId: "event-1",
     status: "completed", amountMinor: 5000, currency: "INR"};
   const preferencePath = "organizerCommunicationPreferences/" +
     organizerCommunicationPreferenceId("org-1", "guest-1");
@@ -175,7 +176,7 @@ for (const includeHistory of [false, true, undefined]) {
           throw new Error("Contact completed without event hydration");
         })]);
         assert.ok(reads.some((read) => read.kind === "query" &&
-          read.path === "payments"), "payment query did not start");
+          read.path === "guestPayments"), "payment query did not start");
         assert.ok(reads.some((read) => read.kind === "document" &&
           read.path === h.preferencePath), "preference read did not start");
       } finally {
@@ -220,8 +221,8 @@ test("contact enrichment retains bounded queries and truncation markers",
   async () => {
     const h = linkedHarness(false);
     for (let index = 0; index < 501; index++) {
-      h.store.docs[`payments/payment-${index}`] = {
-        ...h.store.docs["payments/payment-1"],
+      h.store.docs[`guestPayments/payment-${index}`] = {
+        ...h.store.docs["guestPayments/payment-1"],
       };
       if (index < 101) {
         h.store.docs[`organizerContactEventEdges/edge-${index}`] = h.edge;
@@ -242,9 +243,10 @@ test("contact enrichment retains bounded queries and truncation markers",
     const result = await getOrganizerContactDetailHandler(h.request, h.deps);
     assert.deepEqual(reads.flatMap((read) => read.kind === "query" ?
       [[read.path, read.cap, read.returned]] : []).sort(), [
+      ["guestPayments", 501, 501],
       ["organizerContactEventEdges", 101, 101],
       ["organizerContactNotes", 101, 101],
-      ["organizerContactOrigins", 51, 51], ["payments", 501, 501],
+      ["organizerContactOrigins", 51, 51],
     ]);
     assert.equal(reads.length, 11);
     assert.deepEqual(reads.filter((read) => read.kind === "getAll"),
@@ -280,7 +282,8 @@ test("authorization and inactive or foreign contacts cannot start enrichment",
           error.code === (failure === "auth" ? "unauthenticated" :
             failure === "manager" ? "permission-denied" : "not-found"));
       assert.equal(reads.some((read) => read.kind === "getAll" ||
-        read.path === "payments" || read.path === h.preferencePath), false);
+        read.path === "guestPayments" ||
+        read.path === h.preferencePath), false);
       if (failure === "auth") assert.deepEqual(reads, []);
       if (failure === "manager") {
         assert.deepEqual(reads, [{kind: "document", path: "organizers/org-1"}]);
@@ -305,7 +308,7 @@ test("optional permission failure preserves detail; payment failure is fatal",
     const fatal = linkedHarness(false);
     const paymentError = new Error("payment unavailable");
     observeReads(fatal.store, (read) => {
-      if (read.kind === "query" && read.path === "payments") {
+      if (read.kind === "query" && read.path === "guestPayments") {
         return Promise.reject(paymentError);
       }
       return undefined;

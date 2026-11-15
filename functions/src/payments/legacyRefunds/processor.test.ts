@@ -28,8 +28,9 @@ function setup(targetAmountMinor = 1000, provider: "razorpay" | "stripe" =
 "razorpay") {
   const store = new Store();
   let now = 1_000_000;
-  const path = "payments/payment1";
-  const initial: PaymentDocument = {userId: "user1", eventId: "event1",
+  const path = "guestPayments/payment1";
+  const initial: PaymentDocument = {purpose: "booking", userId: "user1",
+    eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", amount: 1000, currency: "INR",
     provider, ...(provider === "stripe" ? {providerPaymentId: "pi_one",
       stripeAccountId: "acct_one"} : {razorpayOwnership: {

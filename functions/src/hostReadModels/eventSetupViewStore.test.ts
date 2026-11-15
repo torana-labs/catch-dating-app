@@ -9,8 +9,7 @@ import {normalizePrivateEventBasics} from
 import {
   backfillEventSetupViews,
   reconcileEventSetupView,
-} from "./eventSetupViewStore";
-import {projectEventSetupFacts} from "./eventSetupViewStore";
+  projectEventSetupFacts} from "./eventSetupViewStore";
 
 type Data = Record<string, unknown>;
 
@@ -143,7 +142,7 @@ test("a commitment witness locks basics until it is gone", async () => {
   assert.equal(summary(db).canEditBasics, false);
   assert.equal(summary(db).canChangeCity, false);
   delete db.docs["organizerEventOffers/offer"];
-  db.docs["payments/other"] = {eventId: "other-event"};
+  db.docs["guestPayments/other"] = {eventId: "other-event"};
   await reconcileEventSetupView(db.asFirestore(), "event-1", clock());
   assert.equal(summary(db).canEditBasics, true);
 });

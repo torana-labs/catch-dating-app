@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -172,9 +173,9 @@ export async function openIssues(db: FirebaseFirestore.Firestore,
         ["captured", "refundPending", "reviewRequired"]).limit(300).get())
       .docs.map((doc) => checkoutIssue(source, doc.id, doc.data(),
         nowMillis)))),
-    db.collection("payments").where("signUpFailed", "==", true).limit(100)
+    bookingPayments(db).where("signUpFailed", "==", true).limit(100)
       .get(),
-    db.collection("payments").where("status", "==", "refundFailed")
+    bookingPayments(db).where("status", "==", "refundFailed")
       .limit(100).get(),
     db.collection(organizerBillsCollection).where("status", "==", "sent")
       .limit(1000).get(),

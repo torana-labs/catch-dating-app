@@ -1,3 +1,4 @@
+import {BOOKING_PAYMENT_PURPOSE, bookingPaymentRef} from "./bookingPayments";
 import {hasEventCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 import {
@@ -269,7 +270,7 @@ export async function createStripeCheckoutSessionHandler(
     );
   }
 
-  const paymentRef = db.collection("payments").doc();
+  const paymentRef = bookingPaymentRef(db);
   const applicationFeeAmount = stripeFeeAmountMinor(amountMinor);
   const inviteAttribution = await resolveInviteAttribution({
     db,
@@ -303,6 +304,7 @@ export async function createStripeCheckoutSessionHandler(
   }
 
   await paymentRef.set({
+    purpose: BOOKING_PAYMENT_PURPOSE,
     userId: uid,
     orderId: session.id,
     paymentId: paymentRef.id,

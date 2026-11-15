@@ -4599,9 +4599,13 @@
       ]
     },
     {
-      "collectionGroup": "payments",
+      "collectionGroup": "guestPayments",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "purpose",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "userId",
           "mode": "ASCENDING"
@@ -4613,9 +4617,13 @@
       ]
     },
     {
-      "collectionGroup": "payments",
+      "collectionGroup": "guestPayments",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "purpose",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "userId",
           "mode": "ASCENDING"
@@ -4635,9 +4643,13 @@
       ]
     },
     {
-      "collectionGroup": "payments",
+      "collectionGroup": "guestPayments",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "purpose",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "userId",
           "mode": "ASCENDING"
@@ -4661,9 +4673,13 @@
       ]
     },
     {
-      "collectionGroup": "payments",
+      "collectionGroup": "guestPayments",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "purpose",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "userId",
           "mode": "ASCENDING"
@@ -5661,9 +5677,13 @@
       ]
     },
     {
-      "collectionGroup": "payments",
+      "collectionGroup": "guestPayments",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "purpose",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "cancellationRefund.state",
           "order": "ASCENDING"

@@ -1,3 +1,4 @@
+import {bookingPaymentRef} from "./bookingPayments";
 import {
   CallableRequest,
   HttpsError,
@@ -83,7 +84,7 @@ export async function verifyRazorpayPaymentHandler(
   }
 
   const razorpay = deps.createClient();
-  const paymentRef = db.collection("payments").doc(paymentId);
+  const paymentRef = bookingPaymentRef(db, paymentId);
   const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
   const [order, payment, localPayment, pendingOrder] = await Promise.all([
     razorpay.orders.fetch(orderId),

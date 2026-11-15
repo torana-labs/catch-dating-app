@@ -1,3 +1,5 @@
+import {BOOKING_PAYMENT_PURPOSE, bookingPaymentRef, isBookingPaymentData} from
+  "./bookingPayments";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PaymentDocument} from "../shared/generated/firestoreAdminTypes";
@@ -11,13 +13,18 @@ import {planLegacyCancellationRefund,
 
 /** Server-verified captured payment; committed in the admission transaction. */
 export type NativePaidBooking = Omit<PaymentDocument,
-  "createdAt" | "completedAt" | "updatedAt" | "status" | "signUpFailed" |
-  "cancellationRefund">;
+  "purpose" | "createdAt" | "completedAt" | "updatedAt" | "status" |
+  "signUpFailed" | "cancellationRefund">;
 
 function paymentRecord(booking: NativePaidBooking,
   existing: FirebaseFirestore.DocumentData | undefined): PaymentDocument {
+  if (existing !== undefined && !isBookingPaymentData(existing)) {
+    throw new HttpsError("failed-precondition",
+      "Payment id belongs to another checkout.");
+  }
   const now = Timestamp.now();
-  const payment = {...existing, ...booking, status: "completed" as const,
+  const payment = {...existing, ...booking,
+    purpose: BOOKING_PAYMENT_PURPOSE, status: "completed" as const,
     signUpFailed: false, createdAt: existing?.createdAt ?? now,
     completedAt: now, updatedAt: now};
   if (!validatePaymentDocument(payment)) {
@@ -52,7 +59,7 @@ export async function prepareNativePaidBooking(input: {
     throw new HttpsError("failed-precondition",
       "Payment does not match admission.");
   }
-  const ref = db.collection("payments").doc(booking.paymentId);
+  const ref = bookingPaymentRef(db, booking.paymentId);
   const existing = (await tx.get(ref)).data();
   if (existing?.cancellationRefund || existing?.signUpFailed ||
       ["refunded", "refundFailed"].includes(existing?.status)) {
@@ -82,7 +89,7 @@ export async function stageRejectedNativeBooking(input: {
   razorpayAuthorization?: LegacyRazorpayRefundAuthorization;
 }): Promise<"admitted" | "refund"> {
   const {db, booking} = input;
-  const ref = db.collection("payments").doc(booking.paymentId);
+  const ref = bookingPaymentRef(db, booking.paymentId);
   return db.runTransaction(async (tx) => {
     const [snapshot, participation] = await Promise.all([tx.get(ref),
       tx.get(db.collection("eventParticipations").doc(

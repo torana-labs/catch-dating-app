@@ -1,3 +1,4 @@
+import {isBookingPaymentData} from "../payments/bookingPayments";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
@@ -189,11 +190,15 @@ export const onOrganizerGrowthGuestPaymentWritten = onDocumentWritten({
     after);
 });
 
-export const onOrganizerGrowthNativePaymentWritten = onDocumentWritten({
-  document: "payments/{paymentId}",
+// In-app Catch booking payments live in the guest-payment ledger with
+// purpose `booking`.
+export const onOrganizerGrowthBookingPaymentWritten = onDocumentWritten({
+  document: `${GUEST_PAYMENTS}/{paymentId}`,
 }, async (event) => {
-  const facts = nativePaymentFacts(event.params.paymentId,
-    event.data?.before.data(), event.data?.after.data());
+  const before = event.data?.before.data();
+  const after = event.data?.after.data();
+  if (!isBookingPaymentData(after ?? before)) return;
+  const facts = nativePaymentFacts(event.params.paymentId, before, after);
   if (!facts.length) return;
   const growth = deps();
   const target = (await growth.db.collection("events")

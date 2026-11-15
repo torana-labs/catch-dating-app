@@ -207,7 +207,10 @@ class _LifecyclePaymentHistoryRepository extends Fake
 }
 
 Future<void> _seedPayment(FakeFirebaseFirestore firestore, Payment payment) {
-  return firestore.collection('payments').doc(payment.id).set(payment.toJson());
+  return firestore.collection('guestPayments').doc(payment.id).set({
+    ...payment.toJson(),
+    'purpose': 'booking',
+  });
 }
 
 Payment buildPayment({

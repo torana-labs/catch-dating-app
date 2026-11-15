@@ -1,3 +1,5 @@
+import {isBookingPaymentData} from "../payments/bookingPayments";
+import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
@@ -236,9 +238,11 @@ export const onHostRosterInsightContactChanged = onDocumentWritten({
 export const onHostRosterInsightTraitsChanged = onDocumentWritten({
   ...options, document: "organizerContactTraits/{documentId}",
 }, (event) => reconcileForWrite("organizerContactTraits", event));
-export const onHostRosterInsightPaymentChanged = onDocumentWritten({
-  ...options, document: "payments/{documentId}",
+export const onHostRosterInsightBookingPaymentChanged = onDocumentWritten({
+  ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
 }, async (event) => {
+  if (!isBookingPaymentData(event.data?.after.data() ??
+    event.data?.before.data())) return;
   await onPaymentWrite(admin.firestore(), {
     changeId: event.id,
     before: event.data?.before.data(),

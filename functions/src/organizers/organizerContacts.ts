@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {organizerContactVisibleFields} from "./organizerContactFields";
 import {retainedNativePaymentAmount} from "../payments/paymentAmounts";
 import {
@@ -1505,7 +1506,7 @@ async function contactRevenue(params: {
         params.eventHistoryTruncated ? "partial" : "exact",
     });
   }
-  const paymentsSnap = await params.db.collection("payments")
+  const paymentsSnap = await bookingPayments(params.db)
     .where("userId", "==", params.contact.linkedUid)
     .limit(maxContactPayments + 1)
     .get();

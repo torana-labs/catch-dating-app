@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {onCall, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -569,8 +570,7 @@ async function queuePaymentCleanup(
   now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
-  const payments = await db
-    .collection("payments")
+  const payments = await bookingPayments(db)
     .where("userId", "==", uid)
     .get();
   payments.forEach((doc) => writer.set(doc.ref, {

@@ -950,7 +950,9 @@ function buildSeed({
     ...swipes.map((swipe) => ({path: `profileDecisions/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
     ...matches.map((match) => ({path: `matches/${match.id}`, data: match.doc})),
     ...messages.map((message) => ({path: `matches/${message.matchId}/messages/${message.id}`, data: message.doc})),
-    ...payments.map((payment) => ({path: `payments/${payment.id}`, data: payment.doc})),
+    // In-app booking payments live in the guest-payment ledger.
+    ...payments.map((payment) => ({path: `guestPayments/${payment.id}`,
+      data: {...payment.doc, purpose: "booking"}})),
     ...reviews.map((review) => ({path: `reviews/${review.id}`, data: review.doc})),
     ...notifications.map((notification) => ({
       path: `notifications/${notification.uid}/items/${notification.id}`,
@@ -2829,7 +2831,7 @@ function isSavedEventPath(docPath) {
 }
 
 function isPaymentPath(docPath) {
-  return /^payments\/[^/]+$/.test(docPath);
+  return /^guestPayments\/[^/]+$/.test(docPath);
 }
 
 function isSwipePath(docPath) {
@@ -3045,7 +3047,7 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   if (doc.path.startsWith("demoSelfServiceAccess/")) {
     return newAnchorSet.has(doc.data.uid);
   }
-  if (doc.path.startsWith("payments/")) {
+  if (doc.path.startsWith("guestPayments/") && doc.data.purpose === "booking") {
     return newAnchorSet.has(doc.data.userId);
   }
   if (doc.path.startsWith("profileDecisions/")) {
@@ -3186,7 +3188,7 @@ export async function normalizeAppendParticipationsForCapacity(firestore, docs) 
 
   if (removedPaymentIds.size === 0) return docs;
   return docs.filter((doc) =>
-    !doc.path.startsWith("payments/") ||
+    !doc.path.startsWith("guestPayments/") ||
     !removedPaymentIds.has(doc.path.split("/")[1])
   );
 }
