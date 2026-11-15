@@ -41,6 +41,18 @@ class BookedEventsRepository {
         statuses: const {EventParticipationStatus.signedUp},
       );
 
+  /// Events the user holds a place at (booked, waitlisted or attended), for
+  /// the overlapping-schedule check the booking command also runs.
+  Stream<List<Event>> watchScheduledEvents({required String uid}) =>
+      _watchEventsForParticipationStatuses(
+        uid: uid,
+        statuses: const {
+          EventParticipationStatus.signedUp,
+          EventParticipationStatus.waitlisted,
+          EventParticipationStatus.attended,
+        },
+      );
+
   Stream<List<Event>> _watchEventsForParticipationStatuses({
     required String uid,
     required Set<EventParticipationStatus> statuses,
@@ -94,3 +106,7 @@ Stream<List<Event>> watchAttendedEvents(Ref ref, String uid) =>
 @riverpod
 Stream<List<Event>> watchSignedUpEvents(Ref ref, String uid) =>
     ref.watch(bookedEventsRepositoryProvider).watchSignedUpEvents(uid: uid);
+
+@riverpod
+Stream<List<Event>> watchScheduledEvents(Ref ref, String uid) =>
+    ref.watch(bookedEventsRepositoryProvider).watchScheduledEvents(uid: uid);

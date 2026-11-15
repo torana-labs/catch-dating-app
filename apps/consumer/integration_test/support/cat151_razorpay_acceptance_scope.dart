@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 
 /// Immutable inputs to the destructive boundary of the CAT-151 native
 /// checkout acceptance harness.
@@ -38,7 +38,6 @@ final class Cat151AcceptanceScope {
     required this.viewerRoute,
     required this.viewerQuoteInPaise,
     required this.viewerAdmission,
-    required this.viewerPayment,
     required this.viewerWaitlisted,
     required this.hasParticipation,
     required this.hasSuccessfulPayment,
@@ -79,7 +78,6 @@ final class Cat151AcceptanceScope {
   final EventViewerRoute? viewerRoute;
   final int? viewerQuoteInPaise;
   final EventViewerAdmission viewerAdmission;
-  final EventViewerPayment viewerPayment;
   final bool viewerWaitlisted;
   final bool hasParticipation;
   final bool hasSuccessfulPayment;
@@ -140,16 +138,15 @@ final class Cat151AcceptanceScope {
       );
     }
     if (viewerEventId != eventId || viewerOrganizerId != organizerId) {
-      reasons.add('The canonical viewer response has a different scope.');
+      reasons.add('The viewer state has a different scope.');
     }
     if (!viewerAllowed || viewerRoute != EventViewerRoute.catchCheckout) {
-      reasons.add('The canonical viewer did not authorize Catch checkout.');
+      reasons.add('The viewer state does not offer Catch checkout.');
     }
     if (viewerQuoteInPaise != expectedAmountInPaise) {
       reasons.add('The canonical quote is not exactly ₹10 TEST scope.');
     }
     if (viewerAdmission != EventViewerAdmission.none ||
-        viewerPayment != EventViewerPayment.notRead ||
         viewerWaitlisted ||
         hasParticipation ||
         hasSuccessfulPayment) {

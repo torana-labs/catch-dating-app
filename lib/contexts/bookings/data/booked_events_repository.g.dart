@@ -208,3 +208,79 @@ final class WatchSignedUpEventsFamily extends $Family
   @override
   String toString() => r'watchSignedUpEventsProvider';
 }
+
+@ProviderFor(watchScheduledEvents)
+final watchScheduledEventsProvider = WatchScheduledEventsFamily._();
+
+final class WatchScheduledEventsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Event>>,
+          List<Event>,
+          Stream<List<Event>>
+        >
+    with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
+  WatchScheduledEventsProvider._({
+    required WatchScheduledEventsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchScheduledEventsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchScheduledEventsHash();
+
+  @override
+  String toString() {
+    return r'watchScheduledEventsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Event>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Event>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchScheduledEvents(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchScheduledEventsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchScheduledEventsHash() =>
+    r'a3d9fb017061e3c34ce0e1459c3e2c1594859cdf';
+
+final class WatchScheduledEventsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Event>>, String> {
+  WatchScheduledEventsFamily._()
+    : super(
+        retry: null,
+        name: r'watchScheduledEventsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchScheduledEventsProvider call(String uid) =>
+      WatchScheduledEventsProvider._(argument: uid, from: this);
+
+  @override
+  String toString() => r'watchScheduledEventsProvider';
+}

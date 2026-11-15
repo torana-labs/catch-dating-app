@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 

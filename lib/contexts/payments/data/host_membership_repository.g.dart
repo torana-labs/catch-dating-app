@@ -303,3 +303,82 @@ final class WatchPublishedHostMembershipPlansFamily extends $Family
   @override
   String toString() => r'watchPublishedHostMembershipPlansProvider';
 }
+
+@ProviderFor(watchEventMembershipRules)
+final watchEventMembershipRulesProvider = WatchEventMembershipRulesFamily._();
+
+final class WatchEventMembershipRulesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventMembershipRules?>,
+          EventMembershipRules?,
+          Stream<EventMembershipRules?>
+        >
+    with
+        $FutureModifier<EventMembershipRules?>,
+        $StreamProvider<EventMembershipRules?> {
+  WatchEventMembershipRulesProvider._({
+    required WatchEventMembershipRulesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventMembershipRulesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventMembershipRulesHash();
+
+  @override
+  String toString() {
+    return r'watchEventMembershipRulesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventMembershipRules?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventMembershipRules?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventMembershipRules(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventMembershipRulesProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventMembershipRulesHash() =>
+    r'482682dedf473e4b4e7b8d9eb662b88a5d429506';
+
+final class WatchEventMembershipRulesFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<EventMembershipRules?>, String> {
+  WatchEventMembershipRulesFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventMembershipRulesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventMembershipRulesProvider call(String eventId) =>
+      WatchEventMembershipRulesProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventMembershipRulesProvider';
+}

@@ -1,41 +1,10 @@
-import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 
-Map<String, Object?> viewerResponse({
-  String eventId = 'event-1',
-  String organizerId = 'club-1',
-  String membership = 'notRequired',
-  String review = 'none',
-  String admission = 'none',
-  String attendance = 'notRecorded',
-  String? reason,
-  String? route,
-  bool waitlisted = false,
-  int price = 0,
-}) => {
-  'viewer': {
-    'eventId': eventId,
-    'organizerId': organizerId,
-    'observedAtMillis': 1000,
-    'membership': {'state': membership, 'revision': null, 'decisionId': null},
-    'review': review,
-    'admission': admission,
-    'attendance': attendance,
-    'waitlisted': waitlisted,
-    'payment': 'notRead',
-    'futureBooking': {'allowed': reason == null, 'reason': reason},
-    'route': reason != null
-        ? null
-        : route ?? (price == 0 ? 'catchFreeBooking' : 'catchCheckout'),
-    'quotedPriceInPaise': price,
-    'basis': {
-      'policyHash': null,
-      'inventoryRevision': null,
-      'capacityRevision': null,
-      'migrationRevision': null,
-    },
-  },
-};
+T _named<T extends Enum>(List<T> values, String name) =>
+    values.firstWhere((value) => value.name == name);
 
+/// A composed viewer state; [reason] names an [EventViewerRestriction].
 EventViewerState viewerFixture({
   String? reason,
   String membership = 'notRequired',
@@ -47,17 +16,24 @@ EventViewerState viewerFixture({
   int price = 0,
   String eventId = 'event-1',
   String organizerId = 'club-1',
-}) => EventViewerState.fromResponse(
-  viewerResponse(
-    eventId: eventId,
-    organizerId: organizerId,
-    reason: reason,
-    membership: membership,
-    review: review,
-    admission: admission,
-    attendance: attendance,
-    route: route,
-    waitlisted: waitlisted,
-    price: price,
-  ),
+  EventHostMembershipFacts? hostMembership,
+}) => EventViewerState(
+  eventId: eventId,
+  organizerId: organizerId,
+  membership: _named(EventViewerMembership.values, membership),
+  review: _named(EventViewerReview.values, review),
+  admission: _named(EventViewerAdmission.values, admission),
+  attendance: _named(EventViewerAttendance.values, attendance),
+  waitlisted: waitlisted,
+  restriction: reason == null
+      ? null
+      : _named(EventViewerRestriction.values, reason),
+  route: reason != null
+      ? null
+      : _named(
+          EventViewerRoute.values,
+          route ?? (price == 0 ? 'catchFreeBooking' : 'catchCheckout'),
+        ),
+  quotedPriceInPaise: price,
+  hostMembership: hostMembership,
 );
