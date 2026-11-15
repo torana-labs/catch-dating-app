@@ -21,28 +21,31 @@ const countdown = (seconds: number) => `${Math.floor(seconds / 60)}:${String(sec
  * is a bottom sheet; at 900px and wider it drops down, 380px, under the
  * control that opened it. The number stays until sign-in finishes.
  */
-function SignInSheet({open, onClose, onSignedIn, anchor, trigger}: {
+function SignInSheet({open, onClose, onSignedIn, anchor, align, trigger}: {
   open: boolean;
   onClose: () => void;
   onSignedIn?: () => void;
   /** The control the wide dropdown hangs from, when it is drawn elsewhere. */
   anchor?: RefObject<HTMLElement | null>;
+  /** Which edge of that control the dropdown lines up with: end for the header's right-hand Sign in. */
+  align?: "start" | "end";
   /** The control that opens it, drawn in place. */
   trigger?: ReactNode;
 }) {
   const sheet = useSignInSheetController({onSignedIn: () => {onSignedIn?.(); onClose();}});
-  return <SignInSheetView anchor={anchor} onClose={() => {sheet.reset(); onClose();}} open={open} sheet={sheet} trigger={trigger} />;
+  return <SignInSheetView align={align} anchor={anchor} onClose={() => {sheet.reset(); onClose();}} open={open} sheet={sheet} trigger={trigger} />;
 }
 
-export function SignInSheetView({open, onClose, sheet, anchor, trigger}: {
+export function SignInSheetView({open, onClose, sheet, anchor, align, trigger}: {
   open: boolean;
   onClose: () => void;
   sheet: SignInSheetController;
   anchor?: RefObject<HTMLElement | null>;
+  align?: "start" | "end";
   trigger?: ReactNode;
 }) {
   return (
-    <CatchAdaptiveSheet anchor={anchor} closeLabel={copy.close} onClose={onClose} open={open} subtitle={copy.subtitle} title={copy.title}
+    <CatchAdaptiveSheet align={align} anchor={anchor} closeLabel={copy.close} onClose={onClose} open={open} subtitle={copy.subtitle} title={copy.title}
       footer={<CatchText as="p" tone="secondary" variant="body-small">{copy.privacy}</CatchText>} trigger={trigger} wide="dropdown" width={380}>
       <CatchStack gap={12}>
         <SignInSteps sheet={sheet} />
@@ -108,10 +111,19 @@ export function SignInButton({label = copy.headerSignIn, onSignedIn, size = "sm"
 }
 
 /**
- * The header's account entry, provided to the public header. Signed out,
- * "Sign in" opens the sheet: wide pages draw it as the last item of the top
- * bar's left group, and the sign-in dropdown hangs from it; under 600px it
- * joins the phone menu. Signed in, wide pages draw the initials avatar that
+ * The header's signed-out control: an outlined "Sign in" with a person icon,
+ * last on the right where the avatar goes once signed in (approved 15 Nov).
+ */
+export function HeaderSignInButton({onPressed}: {onPressed: () => void}) {
+  return <CatchButton label={copy.headerSignIn} leadingIcon="person" onPressed={onPressed} size="sm" variant="secondary" />;
+}
+
+/**
+ * The header's account entry, provided to the public header. Wide pages draw
+ * it last on the right of the top bar, after the page's actions, in one slot
+ * for both states. Signed out, "Sign in" opens the sheet, and the sign-in
+ * dropdown hangs from it, lined up with its right edge; under 600px it joins
+ * the phone menu. Signed in, wide pages draw the initials avatar that
  * opens the account menu, and phones get a Menu button carrying the avatar
  * that opens the same menu, with the links, as a sheet.
  * One state and one sheet serve both, and the sheet stays mounted while
@@ -144,17 +156,17 @@ export function SiteAccountProvider({children}: {children: ReactNode}) {
   const entry = useMemo<SiteAccountEntry | null>(() => {
     if (!claimFirebaseConfigured || state === "pending") return null;
     if (state === "signedIn") {
-      return {barEnd: <SiteAccountMenu controller={menu} />,
+      return {bar: <SiteAccountMenu controller={menu} />,
         menu: {label: copy.headerAccount, href: "/account/"},
         phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menu} links={links} menuLabel={menuLabel} phone />};
     }
-    return {bar: wrap(<CatchButton label={copy.headerSignIn} onPressed={() => setOpen((value) => !value)} size="sm" variant="quiet" />),
+    return {bar: wrap(<HeaderSignInButton onPressed={() => setOpen((value) => !value)} />),
       menu: {label: copy.headerSignIn, onPressed: () => setOpen(true)}};
   }, [state, wrap, menu]);
   return (
     <SiteAccountActionProvider value={entry}>
       {children}
-      {entry && state === "signedOut" ? <SignInSheet anchor={anchor} onClose={() => setOpen(false)}
+      {entry && state === "signedOut" ? <SignInSheet align="end" anchor={anchor} onClose={() => setOpen(false)}
         onSignedIn={() => setWatch(true)} open={open} /> : null}
     </SiteAccountActionProvider>
   );

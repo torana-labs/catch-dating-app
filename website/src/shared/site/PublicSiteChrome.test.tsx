@@ -21,7 +21,7 @@ describe("canonical public chrome", () => {
     expect(banner.queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
-  it("keeps the account entry last on the left and only the page's actions on the right", () => {
+  it("puts the account entry last on the right, after the page's actions", () => {
     const signIn = vi.fn();
     render(
       <SiteAccountActionProvider value={{bar: <button onClick={signIn} type="button">Sign in</button>, menu: {label: "Sign in", onPressed: signIn}}}>
@@ -31,11 +31,11 @@ describe("canonical public chrome", () => {
     const banner = screen.getByRole("banner");
     const order = [...banner.querySelectorAll("a, button")].map((element) => element.textContent?.trim())
       .filter((label) => label !== publicSiteCopy.menu.openLabel);
-    // Wordmark, links, account, then the primary action: the account belongs to the left group.
-    expect(order).toEqual(["Catch for hosts", "On the night", "Sign in", "Start free trial"]);
+    // Wordmark and links on the left; the primary action, then the account, on the right.
+    expect(order).toEqual(["Catch for hosts", "On the night", "Start free trial", "Sign in"]);
     const signInButton = within(banner).getByRole("button", {name: "Sign in"});
     const leftGroup = within(banner).getByRole("navigation", {name: "Primary"}).parentElement!;
-    expect(leftGroup.contains(signInButton)).toBe(true);
+    expect(leftGroup.contains(signInButton)).toBe(false);
     expect(leftGroup.contains(within(banner).getByRole("link", {name: "Start free trial"}))).toBe(false);
   });
 

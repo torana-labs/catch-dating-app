@@ -5,11 +5,11 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {AccountPageView, type AccountPageViewProps} from "../features/account/AccountPage";
 import {renderAccountForm} from "../features/account/accountForm";
 import type {WebsiteAccountController} from "../features/account/useWebsiteAccountController";
-import {SignInSheetView} from "../features/account/SignInSheet";
+import {HeaderSignInButton, SignInSheetView} from "../features/account/SignInSheet";
 import {SiteAccountMenu} from "../features/account/SiteAccountMenu";
 import type {SiteAccountMenuController} from "../features/account/useSiteAccountMenuController";
 import {SiteAccountActionProvider} from "../shared/site";
-import {CatchButton, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import type {SignInSheetController, SignInStage} from "../features/account/useSignInSheetController";
 import type {AccountTab} from "../features/account/accountPageModel";
 import type {WebsiteAccount} from "../firebase";
@@ -148,10 +148,10 @@ export const Unavailable: Story = {args: {phase: "failed", account: undefined}};
 function SignInPreview({args, controller}: {args: AccountPageViewProps; controller: SignInSheetController}) {
   const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
   return (
-    <SiteAccountActionProvider value={{bar: wrap(<CatchButton label={signInCopy.headerSignIn} onPressed={noop} size="sm" variant="quiet" />),
+    <SiteAccountActionProvider value={{bar: wrap(<HeaderSignInButton onPressed={noop} />),
       menu: {label: signInCopy.headerSignIn, onPressed: noop}}}>
       <AccountPageView {...args} />
-      <SignInSheetView anchor={anchor} onClose={noop} open sheet={controller} />
+      <SignInSheetView align="end" anchor={anchor} onClose={noop} open sheet={controller} />
     </SiteAccountActionProvider>
   );
 }
@@ -186,7 +186,7 @@ const menuController: SiteAccountMenuController = {
 /** The plans page under a signed-in top bar: the right-end avatar on wide pages, the Menu button with the avatar on phones. */
 function SignedInPreview({args}: {args: AccountPageViewProps}) {
   return (
-    <SiteAccountActionProvider value={{barEnd: <SiteAccountMenu controller={menuController} />,
+    <SiteAccountActionProvider value={{bar: <SiteAccountMenu controller={menuController} />,
       menu: {label: signInCopy.headerAccount, href: "/account/"},
       phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menuController} links={links} menuLabel={menuLabel} phone />}}>
       <AccountPageView {...args} />
