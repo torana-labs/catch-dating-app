@@ -307,8 +307,8 @@ contracts, rules, policy and the affected Tools check closure without compiling
 unrelated clients. Files PR validation never executes run only their own Tools
 checks and policy: harness and CI tests, release, deploy and operations
 workflows, and `tool/ci` release scripts no PR workflow invokes
-(`harness-scoped-control`). Selector controls, including the planner, graph and
-`tool/tools_manifest.json`, still run every target. For CI configuration
+(`harness-scoped-control`). Selector controls, including the planner and the
+graph, still run every target. For CI configuration
 (`.github/**` and `tool/ci/**`), every file PR CI executes or reads still
 selects every lane that executes or reads it. `tool/nx/workflow_callers.mjs`
 derives this from `ci.yml`: from each lane job it follows reusable workflows,
@@ -321,8 +321,23 @@ every lane, because every lane needs those jobs. Selector files select every
 lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
 and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
 `tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
-`tool/ci/toolchain.env`, `tool/tools_manifest.json` and every file the planner
-entry points import or load; tests in those directories are not selectors.
+`tool/ci/toolchain.env` and every file the planner entry points import or
+load; tests in those directories are not selectors.
+`tool/tools_manifest.json` selects by semantic diff (`tool/nx/manifest_diff.mjs`)
+in `pr` and `merge_group`, in both the planner and Nx: an edit runs Tools and
+policy, which run the changed checks and validate the manifest, plus every lane
+whose `ci.yml` jobs run a changed or removed entry by name (through reusable
+workflows, composite actions, scripts and npm scripts) or run any entry
+(`affected-tools`, variable ids, `--all`). Entries compare after
+canonicalisation, so reordering and whitespace are no change; an entry that
+runs a changed one through `alsoCheckIds` changes too. It selects every lane
+when either version fails to parse, anything outside `tools[]` changes
+(`version` and `updated` aside), an id is duplicated, an entry has a field the
+diff does not know, a selector file changes in the same commit, the other
+files do not plan completely, or the history cannot be read. `main` pushes
+still run every lane for a manifest edit; the plan job summary and the
+`nx-shadow` run on each main push report what the rule would have selected,
+until release engineering reviews a week of that data.
 Workflow files that checks read as text are covered by workflow policy
 (actionlint, zizmor and the wiring tests), which runs for every workflow change.
 This narrowing applies to `pr` and `merge_group` alike, with the same closure

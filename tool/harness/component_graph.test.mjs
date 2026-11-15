@@ -535,6 +535,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/nx/select_lanes.mjs",
       "/tool/nx/shadow_plan.mjs",
       "/tool/nx/workflow_callers.mjs",
+      "/tool/nx/manifest_diff.mjs",
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
       "/tool/harness/component_graph.json",
