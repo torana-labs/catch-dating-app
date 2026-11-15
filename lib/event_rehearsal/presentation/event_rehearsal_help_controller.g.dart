@@ -68,7 +68,7 @@ final class EventRehearsalHelpControllerProvider
 }
 
 String _$eventRehearsalHelpControllerHash() =>
-    r'58e790de8f48fad6ed09e54800cbe80abc2bfca8';
+    r'b5eb6c9715eafdf7f368ddc5e7b26b035f2a6b18';
 
 /// One case owns one pending decision across page refresh and sheet closure.
 

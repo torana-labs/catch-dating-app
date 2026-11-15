@@ -22,6 +22,7 @@ class EventRehearsalRepository {
   const EventRehearsalRepository(this._functions, {this.firestore});
 
   static const _milestonesPath = 'eventRehearsalMilestones';
+  static const _hostViewsPath = 'eventRehearsalHostViews';
 
   final FirebaseFunctions _functions;
 
@@ -79,15 +80,20 @@ class EventRehearsalRepository {
     parse: EventRehearsalCreated.fromCallableData,
   );
 
-  Future<EventRehearsalBootstrap> fetch(String sessionId) => _call(
-    name: 'getEventRehearsalBootstrap',
-    payload: GetEventRehearsalBootstrapCallableRequest(
-      sessionId: sessionId,
-    ).toJson(),
-    action: 'load an event dress rehearsal',
-    parse: EventRehearsalBootstrap.fromCallableData,
-  );
+  /// One read of the owner's view, for reviews that must describe a single
+  /// runtime revision rather than follow the listener.
+  Future<EventRehearsalBootstrap> fetch(String sessionId) =>
+      withBackendErrorContext(
+        () async => _hostView(await _hostViewRef(sessionId).get(), sessionId),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'load an event dress rehearsal',
+          resource: _hostViewsPath,
+        ),
+      );
 
+  /// A practice staff role's projection is computed per role on demand, so
+  /// it stays a callable step inside the review that asks for it.
   Future<EventRehearsalBootstrap> fetchPracticeRole({
     required String sessionId,
     required String practiceOperatorId,
@@ -137,11 +143,43 @@ class EventRehearsalRepository {
     },
   );
 
-  Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
-    while (true) {
-      yield await fetch(sessionId);
-      await Future<void>.delayed(const Duration(milliseconds: 1200));
+  /// The rehearsal as its owning Host sees it: a listener on the
+  /// server-written `eventRehearsalHostViews/{sessionId}`, which every
+  /// command and guest action rewrites before it returns. It renders from
+  /// the on-device cache on re-open and needs no polling.
+  Stream<EventRehearsalBootstrap> watch(String sessionId) =>
+      withBackendErrorStream(
+        () => _hostViewRef(
+          sessionId,
+        ).snapshots().map((snapshot) => _hostView(snapshot, sessionId)),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch an event dress rehearsal',
+          resource: _hostViewsPath,
+        ),
+      );
+
+  DocumentReference<Map<String, dynamic>> _hostViewRef(String sessionId) {
+    final db = firestore;
+    if (db == null) {
+      throw StateError('Rehearsal reads need Firestore.');
     }
+    return db.collection(_hostViewsPath).doc(sessionId);
+  }
+
+  static EventRehearsalBootstrap _hostView(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    String sessionId,
+  ) {
+    final data = snapshot.data();
+    if (data == null) {
+      throw const DocumentNotFoundException('this dress rehearsal');
+    }
+    final result = EventRehearsalBootstrap.fromCallableData(data['view']);
+    if (result.session.id != sessionId) {
+      throw const FormatException('Rehearsal view names another session.');
+    }
+    return result;
   }
 
   Future<EventRehearsalBootstrap> updateSetup({
@@ -381,7 +419,7 @@ final class EventRehearsalOperationCommands {
       _repository.applyOperation(change);
 }
 
-// keepalive: One callable client owns the isolated rehearsal domain.
+// keepalive: One client owns the isolated rehearsal domain.
 @Riverpod(keepAlive: true)
 EventRehearsalRepository eventRehearsalRepository(Ref ref) =>
     EventRehearsalRepository(

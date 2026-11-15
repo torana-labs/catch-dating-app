@@ -1538,14 +1538,36 @@ test("headless journeys start independently of macOS rendering and native smoke"
   assert.match(native, /actions\/checkout@[0-9a-f]{40} # v6/u);
   assert.doesNotMatch(goldens, /macos smoke/u);
   assert.doesNotMatch(native, /flutter test.*goldens/u);
+  assert.doesNotMatch(goldens, /^    (?:needs:|if:|continue-on-error:)/mu,
+    "goldens must execute independently and remain required wherever the lane runs");
   for (const job of [goldens, native]) {
-    assert.doesNotMatch(job, /^    (?:needs:|if:|continue-on-error:)/mu,
-      "both jobs must execute independently and remain required");
+    assert.doesNotMatch(job, /^    (?:needs:|continue-on-error:)/mu);
     assert.doesNotMatch(job, /continue-on-error/u);
   }
   const ci = workflow("ci.yml");
   assert.match(ci, /uses: \.\/\.github\/workflows\/visual-integration-ci.yml/u);
   assert.match(ci.slice(ci.indexOf("\n  required:")), /- visual-integration/u);
+});
+
+test("native app-shell smoke runs only on the nightly schedule and manual dispatch", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const native = source.split("  native-smoke:\n")[1];
+  const condition = /^    if: \$\{\{ (.+) \}\}$/mu.exec(native)?.[1];
+  assert.ok(condition, "native-smoke needs a job-level event condition");
+  // The caller's event is what a called workflow sees.
+  const runsOn = (event) => condition.split("||").some((term) =>
+    term.trim() === `github.event_name == '${event}'`);
+  for (const event of ["schedule", "workflow_dispatch"]) assert.equal(runsOn(event), true, event);
+  for (const event of ["merge_group", "pull_request", "push"]) assert.equal(runsOn(event), false, event);
+  assert.doesNotMatch(condition, /!=|!|&&/u, "an allowlist of events, not a denylist");
+  // Goldens and the Linux headless journeys keep running wherever the lane does.
+  for (const name of ["headless-journeys", "goldens"]) {
+    const job = source.split(`  ${name}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0];
+    assert.doesNotMatch(job, /^    if:/mu, name);
+  }
+  // Both schedule and dispatch still reach the called workflow.
+  assert.match(workflow("ci.yml"), /^  schedule:\n/mu);
+  assert.match(source, /^  workflow_dispatch:\n/mu);
 });
 
 test("backend integration runs strict execution inside both emulators with a bounded job", () => {

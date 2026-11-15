@@ -65,7 +65,6 @@ class EventRehearsalController extends _$EventRehearsalController {
           scenario: scenario,
           actorCount: actorCount,
         );
-    ref.invalidate(eventRehearsalProvider(session.id));
   }
 
   Future<void> control({
@@ -81,30 +80,17 @@ class EventRehearsalController extends _$EventRehearsalController {
           clientActionId: _clientActionId(),
           minutes: minutes,
         );
-    ref.invalidate(eventRehearsalProvider(session.id));
   }
 
+  // The screen's listener delivers every command's result; no write here
+  // refetches it.
   Future<EventRehearsalBootstrap> applyAssistance(
     RehearsalAssistanceChange change,
-  ) async {
-    final result = await ref
-        .read(eventRehearsalRepositoryProvider)
-        .applyAssistance(change);
-    if (ref.mounted) ref.invalidate(eventRehearsalProvider(change.session.id));
-    return result;
-  }
+  ) => ref.read(eventRehearsalRepositoryProvider).applyAssistance(change);
 
   Future<EventRehearsalBootstrap> applyOperation(
     RehearsalOperationChange change,
-  ) async {
-    final result = await ref
-        .read(eventRehearsalRepositoryProvider)
-        .applyOperation(change);
-    if (ref.mounted) {
-      ref.invalidate(eventRehearsalProvider(change.snapshot.session.id));
-    }
-    return result;
-  }
+  ) => ref.read(eventRehearsalRepositoryProvider).applyOperation(change);
 
   Future<void> inject({
     required EventRehearsalSession session,
@@ -121,7 +107,6 @@ class EventRehearsalController extends _$EventRehearsalController {
           behavior: behavior,
           fault: fault,
         );
-    ref.invalidate(eventRehearsalProvider(session.id));
   }
 
   Future<void> controlSpatial({
@@ -141,28 +126,19 @@ class EventRehearsalController extends _$EventRehearsalController {
           destinationUnitId: destinationUnitId,
           scope: scope,
         );
-    ref.invalidate(eventRehearsalProvider(session.id));
   }
 
-  Future<void> reset(String sessionId) async {
-    await ref
-        .read(eventRehearsalRepositoryProvider)
-        .reset(sessionId: sessionId);
-    ref.invalidate(eventRehearsalProvider(sessionId));
-  }
+  Future<void> reset(String sessionId) =>
+      ref.read(eventRehearsalRepositoryProvider).reset(sessionId: sessionId);
 
   Future<EventRehearsalCreated> fork(String sessionId) =>
       ref.read(eventRehearsalRepositoryProvider).fork(sessionId: sessionId);
 
-  Future<void> rotateGuestLink(String sessionId) async {
-    await ref.read(eventRehearsalRepositoryProvider).rotateGuestLink(sessionId);
-    ref.invalidate(eventRehearsalProvider(sessionId));
-  }
+  Future<void> rotateGuestLink(String sessionId) =>
+      ref.read(eventRehearsalRepositoryProvider).rotateGuestLink(sessionId);
 
-  Future<void> complete(String sessionId) async {
-    await ref.read(eventRehearsalRepositoryProvider).complete(sessionId);
-    ref.invalidate(eventRehearsalProvider(sessionId));
-  }
+  Future<void> complete(String sessionId) =>
+      ref.read(eventRehearsalRepositoryProvider).complete(sessionId);
 
   Future<void> copyGuestLink(String guestUrl) =>
       ref.read(clipboardControllerProvider).copyText(guestUrl);

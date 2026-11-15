@@ -741,6 +741,51 @@ describe("firestore.rules", () => {
         assert.equal(missing.exists(), false);
         await assertDeletedUserDenied("eventRehearsalMilestones", "org");
       });
+
+      it("lets the owning host get their rehearsal view and nothing else", async () => {
+        await seedOrganizers();
+        const hostView = (organizerId, ownerUid) => ({sessionId: "practice",
+          organizerId, ownerUid, setupRevision: 0, runtimeRevision: 3,
+          sourceUpdatedAt: evaluatedAt, view: {session: {id: "practice"}},
+          expiresAt: evaluatedAt,
+          updatedAt: evaluatedAt});
+        await seed(["eventRehearsalHostViews", "own"],
+          hostView("org", "host-1"));
+        await seed(["eventRehearsalHostViews", "foreign"],
+          hostView("other", "other-host"));
+        const db = authedDb("host-1");
+        const own = await assertSucceeds(getDoc(doc(db,
+          "eventRehearsalHostViews", "own")));
+        assert.equal(own.data().runtimeRevision, 3);
+        await assertFails(getDoc(doc(db, "eventRehearsalHostViews",
+          "foreign")));
+        await assertFails(getDocs(collection(db, "eventRehearsalHostViews")));
+        await assertFails(getDocs(query(collection(db,
+          "eventRehearsalHostViews"), where("ownerUid", "==", "host-1"))));
+        await assertFails(setDoc(doc(db, "eventRehearsalHostViews", "own"),
+          hostView("org", "host-1")));
+        await assertFails(updateDoc(doc(db, "eventRehearsalHostViews", "own"),
+          {runtimeRevision: 9}));
+        await assertFails(deleteDoc(doc(db, "eventRehearsalHostViews",
+          "own")));
+        await assertFails(setDoc(doc(db, "eventRehearsalHostViews", "forged"),
+          hostView("org", "host-1")));
+        // Another manager of the same organizer is not the session's Host.
+        await assertFails(getDoc(doc(authedDb("manager"),
+          "eventRehearsalHostViews", "own")));
+        await assertFails(getDoc(doc(authedDb("other-host"),
+          "eventRehearsalHostViews", "own")));
+        await assertFails(getDoc(doc(testEnv.unauthenticatedContext()
+          .firestore(), "eventRehearsalHostViews", "own")));
+        // Before its first publish the screen gets nothing, not an empty view.
+        await assertFails(getDoc(doc(db, "eventRehearsalHostViews", "fresh")));
+        // The owner loses the read with their Host authority.
+        await seed(["eventRehearsalHostViews", "handedOver"],
+          hostView("other", "host-1"));
+        await assertFails(getDoc(doc(db, "eventRehearsalHostViews",
+          "handedOver")));
+        await assertDeletedUserDenied("eventRehearsalHostViews", "own");
+      });
     });
 
     it("lets managers get their door read models and nothing else", async () => {

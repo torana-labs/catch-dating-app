@@ -4379,6 +4379,35 @@
       ]
     },
     {
+      "id": "eventRehearsalHostViews",
+      "path": "eventRehearsalHostViews/{sessionId}",
+      "rulesMatch": "/eventRehearsalHostViews/{sessionId}",
+      "typescriptInterface": "EventRehearsalHostViewDocument",
+      "dartModel": "lib/contexts/live/data/event_rehearsal_repository.dart",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "rulesTestNames": [
+        "lets the owning host get their rehearsal view and nothing else"
+      ],
+      "owner": "event rehearsal commands",
+      "read": "the session's owning Host gets it while they still manage its organizer; nobody lists the collection",
+      "write": "server only; every rehearsal command and guest action rewrites it before returning, and the hourly expiry removes it",
+      "exportedFunctions": [
+        "createEventRehearsal",
+        "updateEventRehearsalSetup",
+        "controlEventRehearsal",
+        "injectEventRehearsalBehavior",
+        "controlEventRehearsalSpatial",
+        "resetEventRehearsal",
+        "rotateEventRehearsalGuestLink",
+        "submitEventRehearsalGuestAction",
+        "completeEventRehearsal",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "Replaces the screen's 1.2-second getEventRehearsalBootstrap poll (#1337). The callable stays only for the on-demand practice-role review."
+      ]
+    },
+    {
       "id": "catchCommunicationPreferences",
       "path": "catchCommunicationPreferences/{uid}",
       "rulesMatch": "/catchCommunicationPreferences/{uid}",

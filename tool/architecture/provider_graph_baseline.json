@@ -35,13 +35,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_rehearsal/presentation/event_rehearsal_controller.dart",
-      "symbol": "eventRehearsalControllerProvider",
-      "detail": "invalidate:eventRehearsalProvider",
-      "count": 9
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "symbol": "_HostEventRehearsalStartScreenState._chooseSource",
       "detail": "refresh:eventRehearsalSourcePlanProvider"

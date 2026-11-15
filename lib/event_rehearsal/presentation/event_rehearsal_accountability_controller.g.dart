@@ -72,7 +72,7 @@ final class EventRehearsalAccountabilityControllerProvider
 }
 
 String _$eventRehearsalAccountabilityControllerHash() =>
-    r'0d21d10c8481e9b069024d39d48d1f2ca2379f05';
+    r'd559858722b3f1c3b391bc85829e97a693ce251e';
 
 /// One synthetic guest owns one pending decision across refresh and closure.
 
