@@ -155,10 +155,10 @@ export function PublicSiteFooter({appHref, cities, exploreHref, navLabel = siteF
   wordmark?: string;
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
-  const [whatsOn, organisers, app] = siteFooterCopy.explore;
+  const [whatsOn, app] = siteFooterCopy.explore;
   const help = siteFooterCopy.helpOrder.map((href) => siteFooterLegalLinks.find((link) => link.href === href)!);
   const groups: CatchSiteFooterGroup[] = [
-    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, organisers, {...app, href: appHref ?? app.href}]},
+    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, {...app, href: appHref ?? app.href}]},
     ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
     {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
     {title: siteFooterCopy.groups.help, links: help, trailing: <PrivacyChoicesButton tone="link" />},

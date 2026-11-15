@@ -81,7 +81,7 @@ describe("canonical public chrome", () => {
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
     expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Hosts", "Help and legal"]);
     expect(nav.getAllByRole("link").map((link) => link.textContent)).toEqual([
-      "What’s on", "Organisers", "Get the app",
+      "What’s on", "Get the app",
       "Catch for hosts", "Pricing", "Weddings", "Claim your page",
       "Help", "Privacy", "Terms", "Refunds", "Contact",
     ]);
