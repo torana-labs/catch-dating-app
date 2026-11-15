@@ -2,27 +2,24 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import type {
   EventAttendeeDocument,
-  EventAttendeeIndexDocument,
   EventParticipationDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
-import {
-  EVENT_ATTENDEE_INDEX,
-  catchBookingAttendeeDocument,
-  catchBookingFacts,
-  eventAttendeeIndexDocument,
-  eventAttendeeIndexId,
-} from "./eventAttendeeProjection";
+import {catchBookingAttendeeDocument} from "./eventAttendeeProjection";
 
 /**
- * In-transaction roster writer for Catch bookings. A booking callable reads
- * the account's roster slot with its other reads, then writes the roster row
- * and index pointer beside the booking it already writes, so the roster never
- * lags the booking.
+ * In-transaction roster writer for Catch bookings. The booking
+ * (eventParticipations) is the one record of a guest's booking; its roster
+ * row is the Host's view of that guest. A booking callable reads the
+ * account's roster slot with its other reads, then writes the roster row and
+ * the booking's link to it beside the booking it already writes, so the
+ * roster never lags the booking.
  */
 export interface CatchBookingRosterSlot {
-  indexRef: FirebaseFirestore.DocumentReference;
-  indexed: EventAttendeeIndexDocument | undefined;
+  bookingRef: FirebaseFirestore.DocumentReference;
+  /** The roster row the stored booking already links to, if any. */
+  linkedAttendeeId: string | null;
   attendeeRef: FirebaseFirestore.DocumentReference;
   existing: EventAttendeeDocument | undefined;
   displayName: string | undefined;
@@ -31,9 +28,10 @@ export interface CatchBookingRosterSlot {
 }
 
 /**
- * Reads the account's roster slot. Order: the index pointer, then a row the
- * caller already identified, then a row already linked to the account, then a
- * phone-keyed row the organizer supplied, then the account's own key.
+ * Reads the account's roster slot. Order: the row the booking links to, then
+ * a row the caller already identified, then a row already linked to the
+ * account (a Host row the guest booked into), then a phone-keyed row the
+ * organizer supplied, then the account's own key.
  * @param {object} params Transaction, event, account and optional hints.
  * @return {Promise<CatchBookingRosterSlot>} Slot to write later.
  */
@@ -47,17 +45,18 @@ export async function readCatchBookingRoster(params: {
   verifiedPhone?: () => Promise<string | null>;
 }): Promise<CatchBookingRosterSlot> {
   const {db, tx, eventId, uid} = params;
-  const indexRef = db.collection(EVENT_ATTENDEE_INDEX)
-    .doc(eventAttendeeIndexId(eventId, uid));
-  const indexed = (await tx.get(indexRef)).data() as
-    EventAttendeeIndexDocument | undefined;
-  let attendeeId = indexed?.attendeeId ?? params.attendeeId ?? null;
+  const bookingRef = db.collection("eventParticipations")
+    .doc(eventParticipationId(eventId, uid));
+  const stored = (await tx.get(bookingRef)).data()?.attendeeId;
+  const linkedAttendeeId = typeof stored === "string" && stored ?
+    stored : null;
+  let attendeeId = linkedAttendeeId ?? params.attendeeId ?? null;
   if (!attendeeId) {
     // A row already linked to this account (Host link, earlier projection).
     const linked = await tx.get(db.collection("eventAttendees")
       .where("eventId", "==", eventId).where("linkedUid", "==", uid).limit(2));
     if (linked.docs.length > 1) {
-      return {indexRef, indexed, attendeeRef: linked.docs[0].ref,
+      return {bookingRef, linkedAttendeeId, attendeeRef: linked.docs[0].ref,
         existing: undefined, displayName: undefined, ambiguous: true};
     }
     attendeeId = linked.docs[0]?.id ?? null;
@@ -73,7 +72,7 @@ export async function readCatchBookingRoster(params: {
     tx.get(db.collection("publicProfiles").doc(uid)),
   ]);
   const name = profileSnap.data()?.name;
-  return {indexRef, indexed, attendeeRef,
+  return {bookingRef, linkedAttendeeId, attendeeRef,
     existing: attendeeSnap.data() as EventAttendeeDocument | undefined,
     displayName: typeof name === "string" && name.trim() ?
       name.trim() : undefined};
@@ -103,11 +102,11 @@ export function participationAfterPatch(
 }
 
 /**
- * Writes the roster row (merged, so Host-only fields survive) and, the first
- * time, the index pointer. Call after every transaction read. Under ready
- * seat authority a Host-supplied row keeps its Host-owned status, and a row
- * the caller writes itself (factsOnly) is left to the caller; both only gain
- * the booking facts and pointer.
+ * Writes the roster row (merged, so Host-only fields survive) and links the
+ * booking to it. Call after every transaction read. Under ready seat
+ * authority a Host-supplied row keeps its Host-owned fields, and a row the
+ * caller writes itself (factsOnly) is left to the caller; both only gain the
+ * booking's link.
  * @param {object} params Transaction, slot, booking after this write, time.
  */
 export function writeCatchBookingRoster(params: {
@@ -129,17 +128,17 @@ export function writeCatchBookingRoster(params: {
   const hostOwned = params.factsOnly === true ||
     params.seatReady === true && slot.existing !== undefined &&
     slot.existing.source !== "catchBooking";
-  const row = hostOwned ? {
-    booking: catchBookingFacts(booking, true, now), updatedAt: now,
-  } : catchBookingAttendeeDocument({source: booking,
-    sourceExists: true, existing: slot.existing,
-    organizerId: booking.organizerId,
-    displayName: slot.displayName ?? slot.existing?.displayName ?? booking.uid,
-    now});
-  tx.set(slot.attendeeRef, row, {merge: true});
-  if (!slot.indexed) {
-    tx.set(slot.indexRef, eventAttendeeIndexDocument({source: booking,
-      attendeeId: slot.attendeeRef.id, organizerId: booking.organizerId, now}));
+  if (!hostOwned) {
+    tx.set(slot.attendeeRef, catchBookingAttendeeDocument({source: booking,
+      sourceExists: true, existing: slot.existing,
+      organizerId: booking.organizerId,
+      displayName: slot.displayName ?? slot.existing?.displayName ??
+        booking.uid,
+      now}), {merge: true});
+  }
+  if (slot.linkedAttendeeId !== slot.attendeeRef.id) {
+    tx.set(slot.bookingRef, {attendeeId: slot.attendeeRef.id},
+      {merge: true});
   }
 }
 

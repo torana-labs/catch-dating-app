@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_participations.schema.json",
   "title": "EventParticipationDocument",
-  "description": "Canonical event roster edge stored at eventParticipations/{participationId}.",
+  "description": "A guest's one Catch booking for an event, stored at eventParticipations/{eventId}_{uid}: its lifecycle, payment, host approval, waitlist offer and signup cohort. Readable by the guest and the event's hosts; written only by booking callables. Its roster row (attendeeId) is the Host's view of the same guest.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventParticipations",
@@ -97,6 +97,13 @@
       ],
       "minLength": 1,
       "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeeId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The eventAttendees row that shows this booking on the Host roster. Written by the booking callable in the booking's own transaction.",
       "x-catch-ownership": "callable-owned"
     },
     "hostApprovalStatus": {

@@ -184,17 +184,18 @@ export const MIGRATIONS = [
   {
     name: "catch-booking-roster",
     description:
-      "Every eventParticipations booking gets one eventAttendees row carrying " +
-      "its booking facts, and an eventAttendeeIndex pointer from the account " +
-      "to that row. Existing linked rows are filled, never replaced; " +
-      "participations stay in place.",
+      "Every eventParticipations booking gets one eventAttendees roster row " +
+      "and links to it (attendeeId). The booking stays the one record of the " +
+      "guest's booking; the row is the Host's view of that guest. Existing " +
+      "linked rows are reused, never replaced; nothing is deleted.",
     steps: [
       {
         source: "eventParticipations",
         target: "eventAttendees",
-        skipReason: "already has a roster row (filled by the next step)",
+        skipReason: "already has a roster row",
         targetId: async (id, data, db) => {
           if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
+          if (typeof data.attendeeId === "string" && data.attendeeId) return null;
           const linked = await linkedAttendeeId(db, data.eventId, data.uid);
           if (linked.ambiguous || linked.id) return null;
           return uidAttendeeId(data.eventId, data.uid);
@@ -211,31 +212,19 @@ export const MIGRATIONS = [
       },
       {
         kind: "fill",
-        collection: "eventAttendees",
+        collection: "eventParticipations",
         fill: async (data, id, db) => {
-          if (data.booking || typeof data.linkedUid !== "string") return null;
-          const booking = await db.collection("eventParticipations")
-            .doc(`${data.eventId}_${data.linkedUid}`).get();
-          if (!booking.exists) return null;
-          const {projection, admin} = functionsRoster();
-          return {booking: projection.catchBookingFacts(booking.data(), true,
-            admin.firestore.Timestamp.now())};
-        },
-      },
-      {
-        source: "eventParticipations",
-        target: "eventAttendeeIndex",
-        skipReason: "more than one roster row is linked to this account",
-        targetId: async (id, data, db) => {
+          if (typeof data.attendeeId === "string" && data.attendeeId) return null;
           if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
+          // The retired eventAttendeeIndex pointer, where one was written.
+          const pointer = (await db.collection("eventAttendeeIndex")
+            .doc(`${data.eventId}_${data.uid}`).get()).data();
+          if (typeof pointer?.attendeeId === "string" && pointer.attendeeId) {
+            return {attendeeId: pointer.attendeeId};
+          }
           const linked = await linkedAttendeeId(db, data.eventId, data.uid);
-          return linked.ambiguous ? null : `${data.eventId}_${data.uid}`;
-        },
-        transform: async (data, id, db) => {
-          const linked = await linkedAttendeeId(db, data.eventId, data.uid);
-          return {eventId: data.eventId, organizerId: data.organizerId, uid: data.uid,
-            attendeeId: linked.id ?? uidAttendeeId(data.eventId, data.uid),
-            createdAt: data.createdAt};
+          if (linked.ambiguous) return null;
+          return {attendeeId: linked.id ?? uidAttendeeId(data.eventId, data.uid)};
         },
       },
     ],

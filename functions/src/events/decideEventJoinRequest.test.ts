@@ -183,8 +183,7 @@ test(
         ?.hostApprovalStatus,
       "approved"
     );
-    assert.equal(rosterRow(h, "runner-2")?.booking?.hostApprovalStatus,
-      "approved");
+    assert.equal(rosterRow(h, "runner-2")?.booking, undefined);
     assert.equal(rosterRow(h, "runner-2")?.status, "waitlisted");
     assert.equal(
       h.firestore.get(
@@ -249,14 +248,13 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
     "declined"
   );
   assert.equal(rosterRow(h, "runner-2")?.status, "cancelled");
-  assert.equal(rosterRow(h, "runner-2")?.booking?.hostApprovalStatus,
-    "declined");
+  assert.equal(rosterRow(h, "runner-2")?.booking, undefined);
 });
 
-/** The account's roster row, found through its index pointer. */
+/** The account's roster row, found through its booking's link. */
 function rosterRow(h: {firestore: {get: (path: string) => unknown}},
   uid: string) {
-  const pointer = h.firestore.get(`eventAttendeeIndex/event-1_${uid}`) as
+  const pointer = h.firestore.get(`eventParticipations/event-1_${uid}`) as
     {attendeeId?: string} | undefined;
   return h.firestore.get(`eventAttendees/${pointer?.attendeeId}`) as
     {status?: string; booking?: {hostApprovalStatus?: unknown}} | undefined;

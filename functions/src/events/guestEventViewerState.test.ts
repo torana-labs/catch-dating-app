@@ -12,13 +12,14 @@ import {validateEventParticipationDocument} from
   "../shared/generated/validators/eventParticipationDocument";
 import {readEventViewerStateSource as readNative} from
   "./eventViewerStateSource";
-import type {EventDocument} from
+import type {EventDocument, EventParticipationDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {eventPolicyFromEvent, initialPolicyFromTerms} from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {publicFixture, publicCapturedFixture, uid, phone, now, eventId} from
   "./publicRegistration/testFixture";
 import {readGuestEventViewerState as read} from "./guestEventViewerState";
+import {catchBookingAttendeeDocument} from "./eventAttendeeProjection";
 import {validateGetEventViewerStateCallableResponse as validate} from
   "../shared/generated/validators/getEventViewerStateOutput";
 
@@ -69,7 +70,15 @@ for (const {status, attendedAt, attendance} of [
     assert.ok(validateEventParticipationDocument(participation),
       JSON.stringify(validateEventParticipationDocument.errors));
     h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`,
-      {...participation});
+      {...participation, attendeeId: "row_native"});
+    // Its roster row, as the booking callable writes it, is the Host's view
+    // of the same booking, not guest roster admission.
+    h.store.put("eventAttendees/row_native", catchBookingAttendeeDocument({
+      source: participation as unknown as EventParticipationDocument,
+      sourceExists: true, existing: undefined,
+      organizerId: h.event.organizerId as string, displayName: "Guest",
+      now: Timestamp.fromMillis(now - 1000)}) as unknown as
+      Record<string, unknown>);
     const native = await readNative({db: h.store.db(), uid, eventId,
       nowMillis: now});
     const guest = await h.read();

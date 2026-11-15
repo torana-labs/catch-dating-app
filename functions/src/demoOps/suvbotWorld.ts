@@ -6,8 +6,8 @@
 // reset deletes it.
 import {createHash} from "node:crypto";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
-import {catchBookingAttendeeDocument, eventAttendeeIndexDocument,
-  eventAttendeeIndexId} from "../events/eventAttendeeProjection";
+import {catchBookingAttendeeDocument} from
+  "../events/eventAttendeeProjection";
 import {eventAttendeeId} from "../events/eventAttendees";
 import {cohortIdForUser, normalizePolicy} from "../events/eventPolicy";
 import {publishedEventBasics} from "../events/progressiveSetup/basics";
@@ -326,25 +326,20 @@ export function buildSuvbotWorldPlan(
       });
     }
     for (const row of participations) {
-      docs.push({
-        path: `eventParticipations/${eventDocId}_${row.uid}`,
-        data: row.doc,
-      });
-      // The booking's roster row and pointer, as a booking callable writes.
+      // The booking links to its roster row, as a booking callable writes.
       const booking = row.doc as unknown as EventParticipationDocument;
       const attendeeId = eventAttendeeId(eventDocId, `uid:${row.uid}`);
       const rosterNow = booking.updatedAt as FirebaseFirestore.Timestamp;
+      docs.push({
+        path: `eventParticipations/${eventDocId}_${row.uid}`,
+        data: {...row.doc, attendeeId},
+      });
       docs.push({
         path: `eventAttendees/${attendeeId}`,
         data: catchBookingAttendeeDocument({source: booking,
           sourceExists: true, existing: undefined,
           organizerId: ids.organizer,
           displayName: rosterDisplayName(row.user, row.uid), now: rosterNow}),
-      });
-      docs.push({
-        path: `eventAttendeeIndex/${eventAttendeeIndexId(eventDocId, row.uid)}`,
-        data: eventAttendeeIndexDocument({source: booking,
-          attendeeId, organizerId: ids.organizer, now: rosterNow}),
       });
     }
     const eventDoc = worldEventDoc({
