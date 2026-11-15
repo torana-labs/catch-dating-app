@@ -381,7 +381,7 @@ test("same-run React sharing preserves standalone checks and exact command bound
   const siteBuild = "npm --prefix website run build";
   const storybookBuild = "npm --workspace catch-marketing run build:storybook";
   mutateFixtureManifest(fixture, (manifest) => {
-    const template = manifest.tools[0];
+    const template = fixtureCheck(manifest);
     manifest.tools.push(
       {...template, id: "marketing:website-storybook-a11y", checks: [a11y]},
       {...template, id: "web:storybook-visuals", path: "tool/web/check_storybook_visuals.mjs",
@@ -398,21 +398,22 @@ test("same-run React sharing preserves standalone checks and exact command bound
   const receipt = path.join(fixture, "browser-runs.txt");
   const standalone = run(args, {cwd: fixture, env});
   assert.equal(standalone.status, 0, standalone.stderr);
+  // Tools run in manifest order, which is id order.
   assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n"), [
-    "--workspace catch-marketing run test:storybook:a11y",
-    "visual --self-test",
-    "--workspace catch-marketing run build:storybook",
-    "visual --surface website --report",
     "contract postbuild",
     "--prefix website run build",
     "contract storybook-config",
     "--workspace catch-marketing run build:storybook",
+    "--workspace catch-marketing run test:storybook:a11y",
+    "visual --self-test",
+    "--workspace catch-marketing run build:storybook",
+    "visual --surface website --report",
   ]);
   fs.unlinkSync(receipt);
   const shared = run([...args, "--marketing-checks-in-react"], {cwd: fixture, env});
   assert.equal(shared.status, 0, shared.stderr);
   assert.equal(fs.readFileSync(receipt, "utf8"),
-    "visual --self-test\ncontract postbuild\ncontract storybook-config\n");
+    "contract postbuild\ncontract storybook-config\nvisual --self-test\n");
   assert.equal(shared.stdout.match(/provided by the required same-run React marketing lane/g)?.length, 4);
   const failedContract = run([...args, "--marketing-checks-in-react"], {
     cwd: fixture, env: {...env, FAIL_BUILD_CONTRACT: "true"},
@@ -450,7 +451,7 @@ test("same-run React sharing preserves standalone checks and exact command bound
 test("multiple categories keep order, deduplicate commands and reject any unknown category before execution", (context) => {
   const fixture = createRunnerFixture(context);
   mutateFixtureManifest(fixture, (manifest) => {
-    const template = manifest.tools[0];
+    const template = fixtureCheck(manifest);
     manifest.tools.push({...template, id: "second:check", category: "second",
       checks: ["node tool/check.mjs", "node tool/check.mjs second"]});
   });
@@ -474,8 +475,8 @@ test("the manifest-only check also holds tools to their role and rules", (contex
   const fixture = createRunnerFixture(context);
   assert.equal(run(["check", "fixture:check"], {cwd: fixture}).status, 0);
   mutateFixtureManifest(fixture, (manifest) => {
-    delete manifest.tools[0].role;
-    manifest.tools[0].alsoEnforces = ["RULE-404"];
+    delete fixtureCheck(manifest).role;
+    fixtureCheck(manifest).alsoEnforces = ["RULE-404"];
   });
   const result = run(["check", "--manifest-only"], {cwd: fixture});
   assert.equal(result.status, 1);
@@ -521,7 +522,7 @@ test("manifest validation rejects unregistered scripts and duplicate ids", (cont
   const fixture = createRunnerFixture(context);
   fs.writeFileSync(path.join(fixture, "tool/unregistered.mjs"), "export {};\n");
   mutateFixtureManifest(fixture, (manifest) => {
-    manifest.tools.push({...manifest.tools[0]});
+    manifest.tools.push({...fixtureCheck(manifest)});
   });
   const result = run(["check", "--manifest-only"], {cwd: fixture});
   assert.equal(result.status, 1);
@@ -555,7 +556,7 @@ function createRunnerFixture(context) {
   );
   fs.writeFileSync(
     path.join(root, "tool/tools_manifest.json"),
-    `${JSON.stringify(fixtureManifest(), null, 2)}\n`,
+    `${JSON.stringify(sortedTools(fixtureManifest()), null, 2)}\n`,
   );
   fs.writeFileSync(
     path.join(root, "tool/harness/component_graph.json"),
@@ -572,6 +573,17 @@ function createRunnerFixture(context) {
   runGit(root, ["add", "."]);
   runGit(root, ["commit", "-m", "runner fixture"]);
   return root;
+}
+
+/** The fixture's ordinary check, used as the template for added tools. */
+function fixtureCheck(manifest) {
+  return manifest.tools.find((tool) => tool.id === "fixture:check");
+}
+
+// The manifest keeps its tools sorted by id (validateToolOrder).
+function sortedTools(manifest) {
+  manifest.tools.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return manifest;
 }
 
 function fixtureManifest() {
@@ -627,7 +639,7 @@ function mutateFixtureManifest(root, callback) {
   const manifestPath = path.join(root, "tool/tools_manifest.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   callback(manifest);
-  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(sortedTools(manifest), null, 2)}\n`);
 }
 
 function runGit(cwd, args) {
@@ -819,7 +831,7 @@ test("materialized inventories replace only exact drift commands with checked cu
     doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal", path: "tool/ci/generated_inventories.mjs"});
     for (const id of ids) {
       const file = id === "design:widget-catalog" ? catalog : routes;
-      doc.tools.push({...doc.tools[0], id, path: file, checks: [
+      doc.tools.push({...fixtureCheck(doc), id, path: file, checks: [
         `node --check ${file}`, "node tool/check.mjs authored-coverage-sentinel", `node ${file} --check`,
       ]});
     }
@@ -848,7 +860,7 @@ test("materialized inventories replace only exact drift commands with checked cu
   assert.doesNotMatch(refused.stdout, /==>/u);
   fs.unlinkSync(path.join(root, "invalid-proof"));
   mutateFixtureManifest(root, doc => {
-    doc.tools.push({...doc.tools[0], id: "fixture:other-owner", path: routes, checks: [`node ${routes} --check`]});
+    doc.tools.push({...fixtureCheck(doc), id: "fixture:other-owner", path: routes, checks: [`node ${routes} --check`]});
     doc.tools.find(t => t.id === "design:widget-catalog").checks.push(`node ${catalog} --check --changed`);
   });
   const other = run(["check", "fixture:other-owner", flag], {cwd: root, env});
@@ -891,8 +903,8 @@ test("verified generated inventories cannot expand the affected execution plan",
     if ((dirty && dirty !== '${generated}') || fs.readFileSync('${generated}', 'utf8') !== 'materialized\\n')
       throw new Error('inventory proof refused');`);
   mutateFixtureManifest(root, doc => {
-    doc.tools[0].impactPaths = [source];
-    doc.tools.push({...doc.tools[0], id: "fixture:extra", path: "tool/extra.mjs",
+    fixtureCheck(doc).impactPaths = [source];
+    doc.tools.push({...fixtureCheck(doc), id: "fixture:extra", path: "tool/extra.mjs",
       impactPaths: [generated], checks: ["node tool/extra.mjs"],
       ciRequirements: {repositoryView: "full", setup: ["node", "root-npm"]}});
     doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal",
