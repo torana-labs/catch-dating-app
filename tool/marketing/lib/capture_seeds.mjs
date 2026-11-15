@@ -51,7 +51,14 @@ export function seedArtifact({artifacts, run}) {
   return matches.length === 1 ? matches[0] : null;
 }
 
-export async function planHostedCaptures({sourceDir, sourceSha, repository, eventName, request = githubRequest}) {
+/**
+ * `nativeProbe` is `{fontSha256, runnerImage}` from a macOS probe job: the
+ * native font and runner image a render would use now. The nightly run
+ * renders everything only when a reused PNG was made with another font or
+ * image (or either is unknown); otherwise it plans like any other run.
+ */
+export async function planHostedCaptures({sourceDir, sourceSha, repository, eventName, request = githubRequest,
+  nativeProbe = null}) {
   assert.match(sourceSha ?? "", /^[0-9a-f]{40}$/u, "Full source SHA required.");
   const root = fs.realpathSync(sourceDir);
   const run = (command, args) => spawnSync(command, args, {cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
@@ -70,9 +77,7 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   const seeds = new Map();
   const sources = [];
-  // The nightly run renders everything, which re-checks the macOS font that a
-  // Linux reuse cannot see.
-  if (eventName !== "schedule") {
+  {
     const repositoryId = (await request(`repos/${repository}`)).id;
     const workflowIds = new Map();
     const listed = [];
@@ -120,12 +125,23 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
       }
     }
   }
-  const renderIds = eventName === "schedule" ? captures.map(capture => capture.id) : [...stale()];
+  let renderIds = [...stale()];
+  let nativeChanged = false;
+  if (eventName === "schedule") {
+    // Linux cannot see the macOS font or image, so the nightly asks the probe.
+    // Unknown counts as changed: fail closed and render everything.
+    const reused = captures.filter(capture => !renderIds.includes(capture.id)).map(capture => {
+      try { return readProvenance(fs.readFileSync(path.join(root, capture.sourcePath))); } catch { return null; }
+    });
+    nativeChanged = !nativeProbe?.fontSha256 || !nativeProbe?.runnerImage || reused.some(provenance =>
+      !provenance || provenance.nativeFontSha256 !== nativeProbe.fontSha256 || provenance.runnerImage !== nativeProbe.runnerImage);
+    if (nativeChanged) renderIds = captures.map(capture => capture.id);
+  }
   // Linux cannot judge the macOS font. Any render job can therefore discover
   // a stale web capture even when only app inputs changed here. Prepare the
   // Storybook and WebKit whenever that job may need them; reuse needs neither.
   const webRender = renderIds.length > 0 && captures.some(capture => capture.kind === "web-capture");
-  return {sourceSha, render: renderIds.length > 0, renderIds, webRender,
+  return {sourceSha, render: renderIds.length > 0, renderIds, webRender, nativeChanged,
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }
 
@@ -141,8 +157,10 @@ function githubRequest(endpoint, {binary = false} = {}) {
  * reports the plan to the job (`render`, `seeded`) and its summary.
  */
 export async function planHostedCapturesForJob({request, env = process.env}) {
+  const nativeProbe = env.CAPTURE_NATIVE_FONT_SHA256 || env.CAPTURE_NATIVE_RUNNER_IMAGE
+    ? {fontSha256: env.CAPTURE_NATIVE_FONT_SHA256 || null, runnerImage: env.CAPTURE_NATIVE_RUNNER_IMAGE || null} : null;
   const plan = await planHostedCaptures({sourceDir: env.CAPTURE_SOURCE_DIR, sourceSha: request.sourceSha,
-    repository: env.GITHUB_REPOSITORY, eventName: env.GITHUB_EVENT_NAME});
+    repository: env.GITHUB_REPOSITORY, eventName: env.GITHUB_EVENT_NAME, nativeProbe});
   const manifest = JSON.parse(fs.readFileSync(path.join(env.CAPTURE_SOURCE_DIR, manifestPath), "utf8"));
   for (const [id, png] of plan.seeds) {
     const capture = manifest.captures.find(entry => entry.id === id);
@@ -151,7 +169,8 @@ export async function planHostedCapturesForJob({request, env = process.env}) {
     fs.writeFileSync(destination, png, {flag: "wx"});
   }
   fs.appendFileSync(env.GITHUB_OUTPUT, `render=${plan.render}\nweb_render=${plan.webRender}\nseeded=${plan.seedIds.length > 0}\n`);
-  fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `Render: ${plan.renderIds.join(", ") || "none"}\n\n` +
+  fs.appendFileSync(env.GITHUB_STEP_SUMMARY, (plan.nativeChanged ? "Native font or macOS runner image changed or unknown: rendering everything.\n\n" : "") +
+    `Render: ${plan.renderIds.join(", ") || "none"}\n\n` +
     `Reused from earlier CI bundles: ${plan.seedIds.join(", ") || "none"}\n`);
   const {seeds: _seeds, ...summary} = plan;
   return summary;
