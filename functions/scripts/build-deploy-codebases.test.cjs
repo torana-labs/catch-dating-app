@@ -193,7 +193,7 @@ test("each codebase's hash changes only with what it deploys", async (t) => {
   const hashes = async (out) => {
     await build(out);
     const {version, codebases} = JSON.parse(fs.readFileSync(path.join(root, `${out}.json`), "utf8"));
-    assert.equal(version, 1);
+    assert.equal(version, 2);
     return Object.fromEntries(Object.entries(codebases).map(([name, {hash}]) => [name, hash]));
   };
   const base = await hashes("base");
@@ -223,4 +223,43 @@ test("each codebase's hash changes only with what it deploys", async (t) => {
 test("a module that reads files beside itself must name the workflow it loads", async (t) => {
   const {build} = codebaseFixture(t, {betaSource: "exports.b = require(\"node:path\").join(__dirname, \"x\");\nexports.b2 = 2;\n"});
   await assert.rejects(build(), /lib\/beta\/b\.js reads files beside itself but names no Operations workflow/u);
+});
+
+test("each Function's own hash changes only with what that Function loads and reads", async (t) => {
+  const {root, functionsDir, write, build} = codebaseFixture(t);
+  // A second alpha module that shares nothing with a, declares a secret, and
+  // a third that loads a computed path.
+  write("src/index.ts", "import * as admin from \"firebase-admin\";\nadmin.initializeApp();\n" +
+    "export {a} from \"./alpha/a\";\nexport {c} from \"./alpha/c\";\nexport {d} from \"./alpha/d\";\n" +
+    "export {b, b2} from \"./beta/b\";\n");
+  write("lib/alpha/c.js", "const defineSecret = (name) => name;\nexports.c = defineSecret(\"C_KEY\");\n");
+  write("lib/alpha/d.js", "const name = \"./c.js\";\nexports.d = () => require(name);\n");
+  const manifest = async (out) => {
+    await build(out);
+    return JSON.parse(fs.readFileSync(path.join(root, `${out}.json`), "utf8")).codebases;
+  };
+  const base = await manifest("base");
+  assert.deepEqual(Object.keys(base.one.functionHashes), ["a", "c", "d"]);
+  assert.deepEqual(base.one.functionSecrets, {c: ["C_KEY"]});
+  assert.deepEqual(base.one.computedLoads, ["d"]);
+  assert.equal(base.one.functionHashes.d, `codebase:${base.one.hash}`);
+  assert.match(base.one.functionHashes.a, /^[0-9a-f]{64}$/u);
+  assert.deepEqual(await manifest("again"), base, "identical input, identical hashes");
+  const changed = async (file, change, label) => {
+    const before = fs.readFileSync(path.join(functionsDir, file), "utf8");
+    write(file, change(before));
+    const next = await manifest(`edit-${label}`);
+    write(file, before);
+    return Object.entries(next).flatMap(([codebase, {functionHashes}]) => Object.keys(functionHashes)
+      .filter((name) => functionHashes[name] !== base[codebase].functionHashes[name])).sort();
+  };
+  // a's shared file moves a, and d, which may load anything in its codebase; never c.
+  assert.deepEqual(await changed("lib/shared/s.js", (text) => `${text}//\n`, "shared"), ["a", "d"]);
+  assert.deepEqual(await changed("lib/alpha/c.js", (text) => `${text}//\n`, "c"), ["c", "d"]);
+  // A parameter moves only the Functions that read it, across both modules of beta.
+  assert.deepEqual(await changed(".env.catchdates-dev", (text) => text.replace("\"2\"", "\"9\""), "env"), ["b", "b2"]);
+  assert.deepEqual(await changed(".env.catchdates-dev", (text) => text.replace("\"1\"", "\"9\""), "env-a"), ["a", "d"]);
+  // The setup every Function runs moves every Function.
+  assert.deepEqual(await changed("src/index.ts", (text) => text.replace("initializeApp()", "initializeApp({})"), "setup"),
+    ["a", "b", "b2", "c", "d"]);
 });
