@@ -18,7 +18,8 @@ function fixture(t) {
     const file = path.join(cwd, name); fs.mkdirSync(path.dirname(file), {recursive: true});
     fs.writeFileSync(file, bytes);
   };
-  for (const file of ["tool/harness/component_graph.json", "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"]) {
+  for (const file of ["tool/harness/component_graph.json", "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs",
+    "tool/ci/ios_build_inputs.mjs"]) {
     write(file, fs.readFileSync(new URL(`../../${file}`, import.meta.url)));
   }
   git("init", "--quiet", "-b", "main"); git("config", "user.name", "Selector fixture");
@@ -37,6 +38,22 @@ test("selector edits execute actual base and head implementations and retain ful
   assert.deepEqual(result.after.plan.operations.ciTargets, result.requiredTargets);
   assert.equal(result.before.sourceSha, f.base); assert.equal(result.after.sourceSha, head);
   assert.ok(result.before.inputHashes["tool/harness/lib/component_graph.mjs"]);
+});
+
+test("an engine module added by the head is snapshotted at the head and absent at an older base", t => {
+  const f = fixture(t);
+  // The base predates tool/ci/ios_build_inputs.mjs: its engine does not import it.
+  f.git("rm", "--quiet", "tool/ci/ios_build_inputs.mjs");
+  f.write("tool/harness/lib/component_graph.mjs", fs.readFileSync(new URL("./lib/component_graph.mjs", import.meta.url), "utf8")
+    .replace(/^import \{iosBuildInput\} from .*\n/mu, "const iosBuildInput = () => true;\n"));
+  const base = f.commit();
+  f.write("tool/harness/lib/component_graph.mjs", fs.readFileSync(new URL("./lib/component_graph.mjs", import.meta.url)));
+  f.write("tool/ci/ios_build_inputs.mjs", fs.readFileSync(new URL("../ci/ios_build_inputs.mjs", import.meta.url)));
+  const head = f.commit();
+  const result = compareSelectors({...f, base, head});
+  assert.equal(result.before.inputHashes["tool/ci/ios_build_inputs.mjs"], undefined);
+  assert.ok(result.after.inputHashes["tool/ci/ios_build_inputs.mjs"]);
+  assert.equal(result.status, "full-validation-required");
 });
 
 test("a head engine that falsely claims complete narrow coverage cannot suppress trusted-base obligations", t => {

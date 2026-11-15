@@ -56,6 +56,8 @@ export const iosBuildInputGlobs = Object.freeze([
   "tool/write_ios_maps_key_xcconfig.sh",
   // Toolchain pins: Flutter, CocoaPods, minimum Xcode and the macOS runner.
   "tool/ci/toolchain.env",
+  // This list: a change to it builds iOS once in the queue.
+  "tool/ci/ios_build_inputs.mjs",
   // The workflow and the composite actions its iOS job uses.
   ".github/workflows/app-build-matrix.yml",
   ".github/actions/cache-cocoapods/**/*",

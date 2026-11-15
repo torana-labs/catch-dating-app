@@ -387,6 +387,7 @@
                   "{workspaceRoot}/tool/firebase/validate_google_maps_config.mjs",
                   "{workspaceRoot}/tool/write_ios_maps_key_xcconfig.sh",
                   "{workspaceRoot}/tool/ci/toolchain.env",
+                  "{workspaceRoot}/tool/ci/ios_build_inputs.mjs",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
                   "{workspaceRoot}/.github/actions/cache-cocoapods/**/*",
                   "{workspaceRoot}/.github/actions/setup-flutter/**/*",

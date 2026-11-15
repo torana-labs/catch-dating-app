@@ -10,8 +10,11 @@ import {queueOnlyCiTargets} from "./lib/component_graph.mjs";
 
 const snapshotPaths = ["tool/harness/component_graph.json",
   "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"];
+// Engine modules a revision has only from the change that added them: copied
+// when present, so an older base still runs its own engine.
+const optionalSnapshotPaths = ["tool/ci/ios_build_inputs.mjs"];
 // Harness tests assert selector behaviour but never feed the snapshot engine.
-const selectorControl = /^(?:tool\/harness(?:\.mjs|\/(?!.*\.test\.mjs$))|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|\.github\/workflows\/ci\.yml$)/u;
+const selectorControl = /^(?:tool\/harness(?:\.mjs|\/(?!.*\.test\.mjs$))|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|tool\/ci\/ios_build_inputs\.mjs$|\.github\/workflows\/ci\.yml$)/u;
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
 function git(cwd, args) {
   const result = spawnSync("git", args, {cwd, encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
@@ -28,7 +31,8 @@ function runSnapshot(cwd, sha, input) {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "catch-selector-snapshot-"));
   try {
     const hashes = {};
-    for (const file of snapshotPaths) {
+    const present = (file) => spawnSync("git", ["cat-file", "-e", `${sha}:${file}`], {cwd}).status === 0;
+    for (const file of [...snapshotPaths, ...optionalSnapshotPaths.filter(present)]) {
       const bytes = git(cwd, ["show", `${sha}:${file}`]);
       const output = path.join(temporary, file);
       fs.mkdirSync(path.dirname(output), {recursive: true});
