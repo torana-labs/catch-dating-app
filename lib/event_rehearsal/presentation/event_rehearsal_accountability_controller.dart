@@ -320,7 +320,6 @@ class EventRehearsalAccountabilityController
   }
 
   void _refresh(AuthenticatedSession account) {
-    ref.invalidate(eventRehearsalProvider(scope.sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

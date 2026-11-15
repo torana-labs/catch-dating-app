@@ -349,7 +349,6 @@ class EventRehearsalStaffController extends _$EventRehearsalStaffController {
   }
 
   void _refresh() {
-    ref.invalidate(eventRehearsalProvider(sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

@@ -340,7 +340,6 @@ class EventRehearsalHelpController extends _$EventRehearsalHelpController {
   }
 
   void _refresh() {
-    ref.invalidate(eventRehearsalProvider(scope.sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

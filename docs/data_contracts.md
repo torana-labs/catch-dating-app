@@ -171,6 +171,25 @@ new run. Other existing lifecycle controls retain their previous payload;
 this additional required field applies to assistance and movement. Native typed
 commands serialize the reviewed generation and also verify it in the result.
 
+### Rehearsal Host View
+
+The rehearsal screen listens to `eventRehearsalHostViews/{sessionId}`
+(`event_rehearsal_host_views.schema.json`): the Host bootstrap projection
+under `view`, computed for the session's `ownerUid`, plus the session's
+`setupRevision`, `runtimeRevision` and `updatedAt` (as `sourceUpdatedAt`).
+Every rehearsal command and guest action writes its session, then rewrites
+this document before it returns, so the listener holds the committed state by
+the time the caller hears back; nothing polls. The write is fenced on
+(setupRevision, runtimeRevision, sourceUpdatedAt) in the view document alone,
+so a slower concurrent publish never replaces a newer view. Rules let only
+the owning Host get it, and only while they still manage the organizer; a
+lost authority or expiry removes it. `canUseInternalFaults` is the owner's
+capability from their last command. Reviews that must describe one revision
+read the same document once. `getEventRehearsalBootstrap` remains only for a
+practice staff role's projection, computed per role on demand, and
+`getEventRehearsalMovement` for paged movement history; both are steps inside
+a review, not screen reads.
+
 Host rehearsal bootstrap also exposes the stored `virtualStartedAtMillis`.
 Native practice instruction assembly uses that anchor plus the configured
 duration to bound expiry; advancing the virtual clock cannot extend the event
