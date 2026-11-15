@@ -250,8 +250,7 @@ class EventChatController extends _$EventChatController {
     if (boundaries.isEmpty) return;
     final next = boundaries.reduce(min);
     _timer = Timer(
-      Duration(milliseconds: next - serverNow) +
-          EventChatTiming.roomBoundaryGrace,
+      EventChatTiming.untilRoomBoundary(next - serverNow),
       () => unawaited(refresh()),
     );
   }
