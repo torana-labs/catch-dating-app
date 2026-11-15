@@ -532,7 +532,7 @@ version permissions on that vault. `infra/firebase/form_payments.tf` creates
 both secrets (`FORM_RAZORPAY_PARTNER_CONFIG` and
 `FORM_RAZORPAY_MERCHANT_CREDENTIALS`) and these grants in dev and prod, and
 `infra/scripts/store_razorpay_partner_secret.sh <dev|prod>` stores the partner
-config; see
+config, including the partner webhook secret (schema v2); see
 [`infrastructure_as_code.md`](infrastructure_as_code.md#forms-payment-secrets).
 The runtime derives the callback and webhook URLs from
 `https://asia-south1-<project>.cloudfunctions.net`, using

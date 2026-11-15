@@ -246,10 +246,16 @@ bash infra/scripts/store_razorpay_partner_secret.sh dev
 bash infra/scripts/store_razorpay_partner_secret.sh prod --live
 ```
 
-The script prompts for the OAuth client ID and secret with hidden input. It
-builds exactly `{"schema":"catch.form-razorpay-partner/v1","clientId":…,
-"clientSecret":…,"mode":…,"credentialSecretId":"FORM_RAZORPAY_MERCHANT_CREDENTIALS"}`,
-where `mode` is `test` in dev and `live` in prod. Prod refuses to run without
+First set the webhook on the partner application ("Manage Test Webhook" for
+dev, "Manage Live Webhook" for prod): URL
+`https://asia-south1-<project>.cloudfunctions.net/organizerRazorpayPartnerWebhook`,
+event `account.app.authorization_revoked`. The script prompts with hidden input
+for the OAuth client ID, the client secret and that webhook secret. It builds
+exactly `{"schema":"catch.form-razorpay-partner/v2","clientId":…,
+"clientSecret":…,"mode":…,"credentialSecretId":"FORM_RAZORPAY_MERCHANT_CREDENTIALS",
+"webhookSecret":…}`, where `mode` is `test` in dev and `live` in prod. The
+runtime still loads an older v1 version (no `webhookSecret`), but the
+revocation webhook then answers 503. Prod refuses to run without
 `--live` and a typed confirmation. The script sends the JSON to `gcloud
 secrets versions add` on stdin, with no temporary file and nothing in a
 process list or on screen, and prints only the new version's name in

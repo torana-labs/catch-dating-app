@@ -2831,17 +2831,21 @@ the evidence in the release ticket.
 - [ ] In Razorpay → Partners → Applications → the Catch application, switch
   to **live** credentials once Razorpay approves the Technology Partnership
   (#1039, #1125).
-- [ ] Store a new version of the `FORM_RAZORPAY_PARTNER_CONFIG` secret with
-  schema `catch.form-razorpay-partner/v2`:
-  `{schema, clientId, clientSecret, mode: "live", credentialSecretId,
-  webhookSecret}`. The newest version is read at runtime (60 s cache); no
-  deploy is needed. A v1 version (no `webhookSecret`) still works for OAuth and
-  checkout, but the revocation webhook then answers 503.
-- [ ] On the same application, "Manage Live Webhook": URL
+- [ ] On the same application, "Manage Live Webhook" ("Manage Test Webhook"
+  for dev): URL
   `https://asia-south1-<project>.cloudfunctions.net/organizerRazorpayPartnerWebhook`,
-  event `account.app.authorization_revoked`, secret = the `webhookSecret` above
-  (#1255). Enter the secret only in Razorpay and Secret Manager, never in chat
-  or a ticket.
+  event `account.app.authorization_revoked`, and a webhook secret (#1255).
+  Enter the secret only in Razorpay and the script below, never in chat or a
+  ticket.
+- [ ] Store a new `FORM_RAZORPAY_PARTNER_CONFIG` version with
+  `bash infra/scripts/store_razorpay_partner_secret.sh prod --live` (`dev`
+  without `--live`). It asks for the client ID, client secret and the webhook
+  secret above with hidden input and writes schema
+  `catch.form-razorpay-partner/v2`
+  (`docs/infrastructure_as_code.md#forms-payment-secrets`). The newest version
+  is read at runtime (60 s cache); no deploy is needed. A v1 version (no
+  `webhookSecret`) still works for OAuth and checkout, but the revocation
+  webhook then answers 503.
 - [ ] Confirm the OAuth redirect URI registered on the application is
   `https://asia-south1-<project>.cloudfunctions.net/organizerFormPaymentOauthCallback`.
 

@@ -475,46 +475,63 @@ function storePartner(t, args, input) {
 }
 
 const clientSecret = 'sEcReT-"quoted"\\back-9f8e7d';
+const webhookSecret = 'wHoOkSeCrEt-"q"\\b-42';
 
 test("partner secret for dev is test mode, sent on stdin, and needs no deploy setting", (t) => {
-  const {result, calls, payload} = storePartner(t, ["dev"], `rzp_client_123\n${clientSecret}\n`);
+  const {result, calls, payload} = storePartner(t, ["dev"], `rzp_client_123\n${clientSecret}\n${webhookSecret}\n`);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "projects/catchdates-dev/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
-  assert.deepEqual(JSON.parse(payload), {schema: "catch.form-razorpay-partner/v1", clientId: "rzp_client_123",
-    clientSecret, mode: "test", credentialSecretId: "FORM_RAZORPAY_MERCHANT_CREDENTIALS"});
-  assert.deepEqual(Object.keys(JSON.parse(payload)), ["schema", "clientId", "clientSecret", "mode", "credentialSecretId"]);
+  assert.deepEqual(JSON.parse(payload), {schema: "catch.form-razorpay-partner/v2", clientId: "rzp_client_123",
+    clientSecret, mode: "test", credentialSecretId: "FORM_RAZORPAY_MERCHANT_CREDENTIALS", webhookSecret});
+  assert.deepEqual(Object.keys(JSON.parse(payload)),
+    ["schema", "clientId", "clientSecret", "mode", "credentialSecretId", "webhookSecret"]);
+  assert.match(result.stderr, /Manage Test Webhook/u);
   assert.match(calls, /secrets versions add FORM_RAZORPAY_PARTNER_CONFIG --project=catchdates-dev --data-file=-/u);
   assert.doesNotMatch(calls, /^gh /mu);
   assert.match(result.stderr, /no deploy is needed/u);
-  for (const output of [calls, result.stdout, result.stderr]) assert.ok(!output.includes("sEcReT"), "secret leaked");
+  for (const output of [calls, result.stdout, result.stderr]) {
+    assert.ok(!output.includes("sEcReT"), "secret leaked");
+    assert.ok(!output.includes("wHoOkSeCrEt"), "webhook secret leaked");
+  }
 });
 
 test("partner secret for prod refuses without --live", (t) => {
-  const {result, payload} = storePartner(t, ["prod"], `id\n${clientSecret}\n`);
+  const {result, payload} = storePartner(t, ["prod"], `id\n${clientSecret}\n${webhookSecret}\n`);
   assert.equal(result.status, 2);
   assert.equal(payload, null);
 });
 
 test("partner secret for prod refuses a wrong confirmation", (t) => {
-  const {result, payload} = storePartner(t, ["prod", "--live"], `yes\nid\n${clientSecret}\n`);
+  const {result, payload} = storePartner(t, ["prod", "--live"], `yes\nid\n${clientSecret}\n${webhookSecret}\n`);
   assert.equal(result.status, 1);
   assert.equal(payload, null);
 });
 
 test("partner secret for prod is live mode after confirmation", (t) => {
   const {result, calls, payload} = storePartner(t, ["prod", "--live"],
-    `live catch-dating-app-64e51\nrzp_live_client\n${clientSecret}\n`);
+    `live catch-dating-app-64e51\nrzp_live_client\n${clientSecret}\n${webhookSecret}\n`);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "projects/catch-dating-app-64e51/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
   assert.equal(JSON.parse(payload).mode, "live");
+  assert.equal(JSON.parse(payload).webhookSecret, webhookSecret);
+  assert.match(result.stderr, /Manage Live Webhook/u);
   assert.match(calls, /secrets versions add FORM_RAZORPAY_PARTNER_CONFIG --project=catch-dating-app-64e51 /u);
 });
 
 test("partner secret refuses --live in dev and values with spaces", (t) => {
-  assert.equal(storePartner(t, ["dev", "--live"], "id\nsecret\n").result.status, 2);
-  const spaced = storePartner(t, ["dev"], "id\nhas space\n");
+  assert.equal(storePartner(t, ["dev", "--live"], "id\nsecret\nhook\n").result.status, 2);
+  const spaced = storePartner(t, ["dev"], "id\nhas space\nhook\n");
   assert.equal(spaced.result.status, 1);
   assert.equal(spaced.payload, null);
+});
+
+test("partner secret refuses an empty or spaced webhook secret", (t) => {
+  for (const hook of ["", "has space"]) {
+    const {result, payload} = storePartner(t, ["dev"], `id\nsecret\n${hook}\n`);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /webhook secret is empty or has spaces/u);
+    assert.equal(payload, null);
+  }
 });
 
 test("bootstrap scopes platform secret access to FORM_RAZORPAY_ secrets and never to versions", (t) => {
