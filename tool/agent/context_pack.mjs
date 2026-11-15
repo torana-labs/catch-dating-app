@@ -115,6 +115,15 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
     addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.");
     addDoc(docs, "lib/README.md", "Feature map for lib/.");
     addDoc(docs, "TESTS.md", "Test commands and test-writing rules.");
+    addDoc(docs, "docs/testing/flutter_selection.md", "Which Flutter tests CI runs for a change.");
+    addDoc(docs, "docs/testing/flutter_suites.md", "Flutter package, golden and native suites.");
+  }
+  if (matchesScopePatterns(selectionPaths, ["functions/**"])) {
+    addDoc(docs, "TESTS.md", "Test commands and test-writing rules.");
+    addDoc(docs, "docs/testing/functions.md", "Functions unit, emulator and contract-fixture tests.");
+  }
+  if (matchesScopePatterns(selectionPaths, ["packages/catch_ui/**", "lib/**/presentation/**"])) {
+    addDoc(docs, "docs/testing/catch_ui.md", "Catch UI analyzer enforcement.");
   }
   if (matchesScopePatterns(selectionPaths, [
     "docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md",

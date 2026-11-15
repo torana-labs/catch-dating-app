@@ -24,173 +24,18 @@ For Admin work, run `npm run check:admin` before pushing. It runs CI's Admin lan
 
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
 
-Functions tests are discovered recursively from compiled
-`functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
-remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
-domain test therefore requires no script edit. On a pull request CI runs
-only the discovered files the change can reach (`CATCH_UNIT_TEST_SELECTION`,
-from `tool/impact/functions_unit_test_selection.mjs`); a local `npm test` and
-the merge queue run them all. For a change outside `functions/` and
-`contracts/`, a Functions test runs only when its import tree can read the
-changed path. Literal reads need nothing: `readFileSync(path.join(__dirname,
-"../../../docs/guide.md"))` or a same-file `const root = path.resolve(__dirname,
-"../../..")` joined with literals both count. A helper that reads a computed
-path (a parameter, a directory listing) names the roots it stays within at the
-top of the file, as Flutter tests do:
+## Area guides
 
-```ts
-// test-selection-reads: contracts/
-```
+Each guide owns one area's testing commands and policy. Add new guidance to the
+guide that owns its area, not to this file.
 
-Without that comment, a computed read, a child process or a dynamic import
-keeps every test that reaches the file on the broad rule: it runs whenever the
-change's top-level folder is named anywhere in its tree. `--explain` on the
-selector shows why each test was picked. After a failed nightly, the
-`selection-miss` job of the `Main CI alert` workflow checks each failing Functions test against the
-pull request selection of every commit since the last green nightly, and opens
-or comments on a "Test selection missed a failing test" issue for any test no
-commit selected (`tool/ci/selection_miss_report.mjs`). The `test:rules` lane runs the
-strict list in `functions/test/emulator-tests.json`: add each new
-emulator-dependent test there, never to `functions/package.json`, whose edits
-redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
-them across emulator jobs with `CATCH_TEST_SHARD=<index>/<total>`: no job when a
-pull request reaches no strict test, one job for up to 15 tests, otherwise
-three. The merge queue, main and nightly always run the whole list in three.
-A local run without that variable executes the whole list.
-
-Functions tests read repository contracts through `contractFixture("name")`
-(`contracts/fixtures/valid/<name>.json`) and `contractFile("dir/x.json")` in
-`functions/src/shared/contractFixtures.ts`, each with one string literal. Pull
-request selection then runs only the tests that read a changed contract; a path
-built from a variable makes that test run for every contract change.
-
-Flutter CI runs only the root unit and widget tests a change can reach;
-`docs/release_operations.md` owns the selection rules. To see the selection
-for a change locally, install the contract generator's dependencies once with
-`npm --prefix functions ci --ignore-scripts`, then run
-`dart run tool/harness/lib/flutter_test_selection.dart --base <sha> --head <sha> --output build/ci/flutter-test-plan.json`.
-Without those dependencies, a `contracts/**` change selects every test.
-
-### Filesystem reads
-
-A test or helper that reads files through `dart:io` runs only when a path it
-can read changes, if the selector can bound its reads. Literal paths need
-nothing: `File('test/my_feature/fixtures/case.json')`, a same-file constant
-such as `const _root = 'test/my_feature/fixtures';`, or a conditional between
-literals all count. When a path is computed (from a parameter, the
-environment or a package root), name the repository roots it stays within at
-the top of the file:
-
-```dart
-// test-selection-reads: contracts/, packages/catch_ui/assets/fonts/
-```
-
-Keep the comment current when you change what the file reads. The selector
-keeps the file a probe that always runs when it uses `Process`,
-`Directory.current` or `Platform.script`, when a literal or constant-prefixed
-path falls outside the declared roots, or when a declared root is not in the
-tree. Paths under `.dart_tool/` and files outside the repository, such as the
-Flutter SDK, need no root because they follow global inputs. A computed path
-inside a declared root is trusted, so the nightly full run is the backstop for
-a declaration that misses a read.
-
-`.github/workflows/flutter-ci.yml` runs the Kernel, Catch UI, Consumer and Host
-package suites and compiles Widgetbook in one job, "Catch UI, Consumer & Host
-package tests", on every relevant Flutter change; a failing suite doesn't stop
-the others, and the job summary lists each outcome. On
-a pull request each package suite and Widgetbook run only when the change
-reaches its pubspec path-dependency closure
-(`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
-reach none unless a closure bundles or imports them); a skipped suite leaves its job green
-with a "not affected" reason in the job summary. Locally,
-`node tool/harness/verify_local.mjs` runs them all. A test of `catch_ui` (or
-`catch_tokens`) alone that needs no root test helper belongs in
-`packages/catch_ui/test`, where its suite already runs on every change that
-reaches it; `no_root_test_imports_test.dart` keeps that tree from importing
-root `test/` files. Each test shard uploads its
-own LCOV; nightly and unverified main runs merge them into a feature-level
-Markdown coverage report. The iOS simulator builds in
-`.github/workflows/app-build-matrix.yml` run in the merge queue only for a
-change to an iOS build input, and every night;
-`node --test tool/ci/ios_build_inputs.test.mjs` pins that list against
-`nx.json` and the tracked native files.
-`.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
-checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
-and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it
-for relevant changes, in the daily scheduled run, and on manual dispatch. CI sets `CATCH_GOLDEN_REPORT`, so golden
-pixel changes and missing baselines are listed in the job summary with their
-images retained as CI artifacts instead of failing; render errors and
-non-golden expectations still fail. Local `flutter test test/goldens` without
-that variable stays strict.
-
-The library's own goldens live with the library: every golden family that
-renders only `package:catch_ui` and `package:catch_tokens` is in
-`packages/catch_ui/test/goldens`, with its baselines, its own
-`flutter_test_config.dart` and font loader, and the `golden` tag declared in
-`packages/catch_ui/dart_test.yaml`. The Linux "Catch UI package tests" job runs
-`flutter test --concurrency=1 --exclude-tags=golden` there; the macOS goldens
-job runs `(cd packages/catch_ui && flutter test --concurrency=1 --tags=golden)`
-after `test/goldens`, with the same `CATCH_GOLDEN_REPORT`, and keeps both
-failure folders. `test/goldens` holds only the goldens that import the app or
-the platform. Locally, `(cd packages/catch_ui && flutter test --concurrency=1)`
-runs the package's tests and goldens together. The macOS runner lives in `apps/consumer`, so run native passes
-from there with a device id and scope—for example,
-`(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
-or `... macos all`. Each native suite has a thin entrypoint in
-`apps/consumer/integration_test/` that delegates to the shared suite, because
-Flutter runs device tests only from the current project's `integration_test/`
-directory; add one when adding a native suite. Live Firebase/device evidence remains a release-runbook lane rather than
-being implied by repository integration tests.
-
-Catch Host journeys (`integration_test/host_app_shell_journeys_test.dart`) boot
-the Host entrypoint's router against `HostShellBackend`: real Host repositories
-over an in-memory Firestore and a recording callable surface whose responses
-follow the callable contracts. A screen that calls a callable without a fixture
-fails the journey by name, so a new Host read needs a fixture in
-`integration_test/support/host_app_shell_test_harness.dart`.
-
-## Coverage and test maintainability
-
-Coverage is an evidence surface, not a global percentage gate:
-
-```sh
-flutter test --concurrency=1 --exclude-tags=golden --coverage
-node tool/test/flutter_coverage_report.mjs \
-  --lcov coverage/lcov.info \
-  --format markdown \
-  --output coverage/flutter-coverage-summary.md
-```
-
-The report separates handwritten code from generated/config code and groups
-observed lines by top-level Flutter feature. LCOV does not include files the
-test process never loads, so the report says "observed" rather than implying
-repository-wide completeness. Use the feature rows to choose focused additions;
-do not introduce an aggregate pass/fail threshold without reviewed product-risk
-evidence.
-
-New or split Flutter test specs stay at or below 1,200 lines. Existing oversized
-specs are recorded exactly and cannot grow:
-
-```sh
-node tool/test/check_flutter_test_size.mjs --check
-# Only after a reviewed split or reduction:
-node tool/test/check_flutter_test_size.mjs --write-baseline
-```
-
-`test/dashboard/dashboard_screen_test.dart` is the reference decomposition: its
-full-home-shell group lives in the same Dart test library through
-`dashboard_full_home_shell_tests.dart`, preserving private fixtures while making
-the focused spec independently navigable in failures.
-
-Explore, Event Success, core primitives, Host operations, and Profile use the
-same library-part pattern, organized by behavioral area. Their former five
-oversized entrypoints are now below the ceiling; each behavior part is also
-below the ceiling.
-
-Expected-error tests and deterministic captures should inject
-`ErrorLogger.silent(...)` or a recording `consoleSink`. Production defaults
-still print and report unexpected failures; never make the global logger silent
-to quiet a test.
+| Area | Guide |
+|---|---|
+| Functions unit, emulator and contract-fixture tests; pull request selection | [docs/testing/functions.md](docs/testing/functions.md) |
+| Flutter root test selection, including "Filesystem reads" and `// test-selection-reads:` | [docs/testing/flutter_selection.md](docs/testing/flutter_selection.md) |
+| Flutter package suites, iOS builds, goldens, native app-shell suites and Host journeys | [docs/testing/flutter_suites.md](docs/testing/flutter_suites.md) |
+| Coverage reports and the Flutter test-size ceiling | [docs/testing/coverage.md](docs/testing/coverage.md) |
+| Catch UI analyzer enforcement and the local CI gate list | [docs/testing/catch_ui.md](docs/testing/catch_ui.md) |
 
 ## Test and debug habits
 
@@ -204,50 +49,6 @@ to quiet a test.
 - When someone is clicking through the app on a physical phone, run an interactive
   `flutter run` through `tool/flutter_with_env.sh`, keep stdin open for reload and
   restart, and read the fresh logs as your feedback.
-
-## Catch UI enforcement
-
-`flutter analyze` remains the generic Flutter/Dart analysis gate, but it does
-not load the local Catch UI analyzer plugin in this workspace, and it does not
-promote info-level diagnostics to failures the way CI does. A targeted
-`dart analyze lib` also skips the plugin.
-
-**To check whether your own code passes**, run the gate CI runs:
-
-```sh
-node tool/ci/check_flutter_workspace_analysis.mjs
-```
-
-It analyses every Dart and Flutter package with `--fatal-infos`, which is what
-turns Catch lints such as `CATCH_NO_WIDGET_RETURNING_METHOD` into failures. A
-clean `flutter analyze` is not evidence that this will pass.
-
-**To check whether the enforcement machinery itself is intact**, run the
-wrappers below. These verify the rules, the drift baseline, and cross-file
-conformance — they are not a substitute for the command above:
-
-```sh
-bash tool/check_catch_ui_lints.sh
-bash tool/check_catch_ui_lint_drift.sh --check
-node tool/design/check_component_enforcement_coverage.mjs
-dart run tool/architecture/check_ui_composition_contracts.dart --check
-```
-
-`check_catch_ui_lints.sh` rebuilds and seeds the plugin, then asserts each rule
-fires against deliberately-violating probe fixtures; **it never analyses `lib/`,
-so it passes regardless of whether your code is clean.** The drift gate rejects
-analyzer-plugin setup errors and every remaining Catch diagnostic; the resolved
-checker owns cross-file screen/shell conformance.
-
-To see every gate CI will run for the change you are about to push, without
-maintaining a list by hand:
-
-```sh
-node tool/harness/verify_local.mjs --base origin/main --list
-```
-
-Drop `--list` to execute them. The gates are read out of `.github/workflows/`,
-so this cannot drift from CI.
 
 ## Generated Contract Outputs
 
