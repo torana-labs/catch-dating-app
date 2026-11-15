@@ -1,4 +1,5 @@
 import {matchesGlobPath} from "../../lib/path_glob.mjs";
+import {iosBuildInput} from "../../ci/ios_build_inputs.mjs";
 
 const operationKeys = [
   "ciTargets",
@@ -346,6 +347,20 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
       path: matchedPath,
     });
   }
+  // The merge queue builds iOS only for a change that reaches a native or
+  // build input (tool/ci/ios_build_inputs.mjs); nightly still builds it every
+  // night (owner decision, 15 Nov 2026). Nx applies the same filter.
+  const queueNarrowedCiTargets = [];
+  if (mode === "merge_group" && !full && operations.ciTargets.includes("flutter_build_ios") &&
+      !normalizedChangedPaths.some(iosBuildInput)) {
+    queueNarrowedCiTargets.push("flutter_build_ios");
+    const ios = (key, value) => key === "ciTargets" ? value === "flutter_build_ios" :
+      key === "buildTargets" && value.endsWith("-ios");
+    for (const key of ["ciTargets", "buildTargets"]) {
+      operations[key] = operations[key].filter((value) => !ios(key, value));
+      operationSources[key] = operationSources[key].filter((source) => !ios(key, source.value));
+    }
+  }
   for (const values of Object.values(operations)) values.sort();
   for (const values of Object.values(operationSources)) {
     values.sort((left, right) =>
@@ -372,6 +387,7 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
     operations,
     operationSources,
     highRiskDirectComponents,
+    queueNarrowedCiTargets,
     unknownPaths: classification.unknownPaths,
     ambiguousPaths: classification.ambiguousPaths,
     complete: classification.unknownPaths.length === 0 &&

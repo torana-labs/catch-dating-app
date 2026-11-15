@@ -13,10 +13,15 @@ import {
 } from "./lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
 import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
+import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
 );
+// Every lane, except that the merge queue builds iOS only when a native or
+// build input changed (tool/ci/ios_build_inputs.mjs, owner decision 15 Nov).
+const everyTarget = (mode, paths) => [...graph.targets].sort().filter((target) =>
+  target !== "flutter_build_ios" || mode !== "merge_group" || paths.some(iosBuildInput));
 const graphSchema = JSON.parse(
   fs.readFileSync(new URL("./component_graph.schema.json", import.meta.url), "utf8"),
 );
@@ -428,7 +433,7 @@ test("Hosting promotion exceptions leave shared and unknown controls full", () =
       for (const mode of ["pr", "merge_group", "main", "nightly"]) {
         const changedPaths = [control, companion];
         const result = planAffected({changedPaths, graph, mode});
-        assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), companion);
+        assert.deepEqual(result.operations.ciTargets, everyTarget(mode, changedPaths), companion);
         const tools = planAffectedToolChecks({changedPaths,
           manifest: toolsManifest, componentGraph: graph, mode});
         assert.equal(tools.mode, "full", companion);
@@ -538,6 +543,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/nx/manifest_diff.mjs",
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
+      "/tool/ci/ios_build_inputs.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
       "/tool/harness/lib/git_changes.mjs",
@@ -766,7 +772,7 @@ test("retired native shell paths retain validation for deletions", () => {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, everyTarget(mode, [file]), `${file} ${mode}`);
     }
   }
 });
@@ -1384,7 +1390,7 @@ test("every selector control input routes to full validation before comparison",
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, everyTarget(mode, [file]), `${file} ${mode}`);
     }
   }
 });

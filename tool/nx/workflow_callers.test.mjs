@@ -8,6 +8,7 @@ import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
 import {ALL, callerLanes, declaredTargets, isCiConfiguration, isSelector, notCalledByCi, selectorEntries,
   selectorFiles, trackedFiles, unclassifiedCiFiles, workflowCallers} from "./workflow_callers.mjs";
+import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const realGraph = workflowCallers({root: repoRoot, lanes: comparedLanes});
@@ -157,7 +158,10 @@ function closureViolations(graph, {planner = plannerGraph} = {}) {
     for (const job of jobs) {
       // A job lanes need, or one with an unresolved command, needs every lane.
       const every = graph.jobLanes.get(job).has(ALL);
-      const lanes = every ? comparedLanes : [...graph.jobLanes.get(job)];
+      // The merge queue builds iOS only for a native or build input
+      // (tool/ci/ios_build_inputs.mjs); every other lane is still required.
+      const lanes = (every ? comparedLanes : [...graph.jobLanes.get(job)])
+        .filter((lane) => lane !== "flutter_build_ios" || iosBuildInput(file));
       if (!lanes.every((lane) => nx.has(lane))) violations.push({selector: "nx", file, job});
       const planned = every ? lanes.every((lane) => plannerLanes.has(lane)) : lanes.some((lane) => plannerLanes.has(lane));
       if (!planned) violations.push({selector: "planner", file, job});

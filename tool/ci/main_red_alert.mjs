@@ -29,8 +29,10 @@ const FOOTER = "\n\n---\n_Posted by the Main CI alert workflow (tool/ci/main_red
  * @param {{id:number, html_url:string, head_sha:string, conclusion:string, event:string, display_title?:string}} input.run
  * @param {Array<{name:string, conclusion:string|null, html_url?:string}>} input.jobs The run's jobs (latest attempt).
  * @param {{number:number}|null} input.openIssue The open alert issue, if any.
+ * @param {Array<{id:number, event:string, conclusion:string|null, head_sha:string, created_at:string}>|null} [input.nightlies]
+ *   Recent nightly runs, read only when a nightly failed; null if they could not be read.
  */
-export function decideAlert({run, jobs, openIssue}) {
+export function decideAlert({run, jobs, openIssue, nightlies = null}) {
   assert.match(String(run?.head_sha ?? ""), /^[0-9a-f]{40}$/u, "A main CI run names its commit");
   if (run.conclusion === "success") {
     return openIssue ?
@@ -48,6 +50,7 @@ export function decideAlert({run, jobs, openIssue}) {
     "Required CI passed; only reporting lanes failed.";
   const body = [
     `Main CI (${run.event}) failed at ${run.head_sha.slice(0, 8)} (${run.display_title ?? "CI"}): ${run.html_url}`,
+    ...(run.event === "schedule" ? [nightlyWindow({run, nightlies})] : []),
     "", severity,
     ...(gating.length ? ["", "Gating jobs:", ...gating.map(line)] : []),
     ...(reporting.length ? ["", "Reporting jobs:", ...reporting.map(line)] : []),
@@ -95,6 +98,27 @@ export function decideFloorExit({runs, now, openIssue, reportingLanes = REPORTIN
   return {action: "open", title: FLOOR_EXIT_TITLE, body};
 }
 
+/**
+ * The commits a failed nightly covers: everything since the last green
+ * nightly, as a compare link. "unknown" when the runs read hold no earlier
+ * green nightly, rather than a guess.
+ */
+export function nightlyWindow({run, nightlies}) {
+  const before = (candidate) => Date.parse(candidate.created_at) < Date.parse(run.created_at);
+  const green = (nightlies ?? [])
+    .filter((candidate) => candidate.event === "schedule" && candidate.conclusion === "success" &&
+      candidate.id !== run.id && before(candidate) && /^[0-9a-f]{40}$/u.test(String(candidate.head_sha)))
+    .sort((left, right) => Date.parse(right.created_at) - Date.parse(left.created_at))[0];
+  if (!green) return "Commits since the last green nightly: unknown (none in the runs read).";
+  if (green.head_sha === run.head_sha) {
+    return `Commits since the last green nightly: none; it passed at this same commit.`;
+  }
+  const repository = /^(https:\/\/github\.com\/[^/]+\/[^/]+)\/actions\//u.exec(run.html_url)?.[1];
+  const range = `${green.head_sha.slice(0, 8)}..${run.head_sha.slice(0, 8)}`;
+  return `Commits since the last green nightly: ${range}` +
+    (repository ? ` (${repository}/compare/${green.head_sha}...${run.head_sha})` : "");
+}
+
 function gh(args, input) {
   const result = spawnSync("gh", args, {encoding: "utf8", input, maxBuffer: 32 * 1024 * 1024});
   assert.equal(result.status, 0, result.stderr || `gh ${args.join(" ")} failed`);
@@ -111,7 +135,16 @@ function main() {
     .flatMap((page) => page.jobs ?? []);
   const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
   const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
-  const decision = decideAlert({run, jobs, openIssue});
+  let nightlies = null;
+  if (run.event === "schedule" && FAILED.has(run.conclusion)) {
+    try {
+      nightlies = JSON.parse(gh(["api", `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=schedule&per_page=30`]))
+        .workflow_runs ?? null;
+    } catch {
+      nightlies = null; // The alert still posts; the window reads "unknown".
+    }
+  }
+  const decision = decideAlert({run, jobs, openIssue, nightlies});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   } else if (decision.action === "comment" || decision.action === "close") {

@@ -101,6 +101,7 @@ jobs:
             /tool/nx/manifest_diff.mjs
             /tool/ci/toolchain.env
             /tool/ci/main_push_base.mjs
+            /tool/ci/ios_build_inputs.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
             /tool/harness/lib/git_changes.mjs

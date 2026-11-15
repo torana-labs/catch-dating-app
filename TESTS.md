@@ -109,7 +109,11 @@ with a "not affected" reason in the job summary. Locally,
 reaches it; `no_root_test_imports_test.dart` keeps that tree from importing
 root `test/` files. Each test shard uploads its
 own LCOV; nightly and unverified main runs merge them into a feature-level
-Markdown coverage report.
+Markdown coverage report. The iOS simulator builds in
+`.github/workflows/app-build-matrix.yml` run in the merge queue only for a
+change to an iOS build input, and every night;
+`node --test tool/ci/ios_build_inputs.test.mjs` pins that list against
+`nx.json` and the tracked native files.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it

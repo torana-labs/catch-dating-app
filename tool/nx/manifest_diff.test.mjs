@@ -164,7 +164,11 @@ test("pull requests and the queue narrow a manifest-only edit; main still runs e
   const files = [manifestFile];
   assert.deepEqual(plannerManifestLanes({mode: "pr", changedFiles: files, change: description}), ["policy_docs", "tools"]);
   const queue = plannerManifestLanes({mode: "merge_group", changedFiles: files, change: appTargets});
-  assert.ok(queue.includes("flutter_build_ios"), "the queue keeps the iOS build an app-build check needs");
+  // The queue keeps the app builds an app-build check needs; their app-targets
+  // job runs it. iOS itself builds only for a native or build input, which the
+  // manifest is not (tool/ci/ios_build_inputs.mjs).
+  assert.ok(queue.includes("flutter_build_android") && queue.includes("flutter_build_web"));
+  assert.ok(!queue.includes("flutter_build_ios"), "the queue builds iOS only for a native or build input");
   assert.ok(!plannerManifestLanes({mode: "pr", changedFiles: files, change: appTargets}).some((lane) => queueOnly.includes(lane)),
     "pull requests leave the queue-only lanes to the queue");
   // Nx applies the same rule.
@@ -184,7 +188,9 @@ test("a manifest edit with a selector file, or with files that do not plan, keep
   const description = manifestChange(baseText, edit((manifest) => { tool(manifest, "meta:nx-shadow-plan").description += "."; }));
   assert.equal(plannerManifestLanes({mode: "pr", changedFiles: [manifestFile, "tool/harness.mjs"], change: description}), null);
   assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
-    manifestChange: description}).nxLanes, everyLane);
+    manifestChange: description}).nxLanes, everyLane.filter((lane) => lane !== "flutter_build_ios"));
+  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [manifestFile, "tool/harness.mjs"],
+    manifestChange: description, mode: "main"}).nxLanes, everyLane);
   assert.equal(plannerManifestLanes({mode: "pr", changedFiles: [manifestFile], change: null}), null);
   // Other files plan with the planner as usual.
   const withDocs = plannerManifestLanes({mode: "pr", changedFiles: [manifestFile, "docs/README.md"], change: description});

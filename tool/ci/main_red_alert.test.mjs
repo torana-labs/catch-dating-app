@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit} from "./main_red_alert.mjs";
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, nightlyWindow} from "./main_red_alert.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -45,6 +45,32 @@ test("cancelled, skipped and neutral runs never change the alert", () => {
     assert.deepEqual(decideAlert({run: run(conclusion), openIssue: {number: 3}, jobs: []}), {action: "none"}, String(conclusion));
   }
   assert.throws(() => decideAlert({run: run("failure", {head_sha: "main"}), openIssue: null, jobs: []}), /names its commit/u);
+});
+
+test("a failed nightly names the commits since the last green nightly", () => {
+  const nightly = (id, conclusion, sha, day) => ({id, event: "schedule", conclusion, head_sha: sha.repeat(40),
+    created_at: `2026-11-${day}T02:23:00Z`});
+  const failed = run("failure", {id: 9, event: "schedule", head_sha: "c".repeat(40), created_at: "2026-11-15T02:23:00Z",
+    html_url: "https://github.com/owner/repo/actions/runs/9"});
+  const nightlies = [nightly(9, "failure", "c", 15), nightly(8, "failure", "b", 14), nightly(6, "success", "a", 13),
+    nightly(5, "success", "9", 12), {...nightly(4, "success", "8", 14), event: "push"}];
+  const decision = decideAlert({run: failed, openIssue: null, jobs: [job("app-builds / iOS host simulator build", "failure")],
+    nightlies});
+  assert.match(decision.body, new RegExp(`Commits since the last green nightly: aaaaaaaa\\.\\.cccccccc ` +
+    `\\(https://github\\.com/owner/repo/compare/${"a".repeat(40)}\\.\\.\\.${"c".repeat(40)}\\)`, "u"));
+  assert.match(decision.body, /iOS host simulator build/u);
+  // No earlier green nightly, or the runs could not be read: say so, never guess.
+  assert.equal(nightlyWindow({run: failed, nightlies: [nightly(8, "failure", "b", 14)]}),
+    "Commits since the last green nightly: unknown (none in the runs read).");
+  assert.equal(nightlyWindow({run: failed, nightlies: null}),
+    "Commits since the last green nightly: unknown (none in the runs read).");
+  // A later green nightly or one at the same commit is not the window's start.
+  assert.match(nightlyWindow({run: failed, nightlies: [nightly(10, "success", "d", 16), nightly(6, "success", "a", 13)]}),
+    /aaaaaaaa\.\.cccccccc/u);
+  assert.equal(nightlyWindow({run: failed, nightlies: [nightly(6, "success", "c", 13)]}),
+    "Commits since the last green nightly: none; it passed at this same commit.");
+  // Push failures keep their existing body.
+  assert.doesNotMatch(decideAlert({run: run("failure"), openIssue: null, jobs: [], nightlies}).body, /last green nightly/u);
 });
 
 test("the workflow listens only to main's push and nightly CI and can only write issues", () => {

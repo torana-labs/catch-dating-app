@@ -10,6 +10,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
+import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 import {describeChange, manifestChange, manifestFile, manifestPlannerLanes} from "./manifest_diff.mjs";
 import {callerLanes, isSelector, manifestLanes, workflowCallers} from "./workflow_callers.mjs";
 
@@ -90,9 +91,12 @@ export function readManifestChange(base, head, show = (rev) => run("git", ["show
 /** The planner's lanes under the manifest diff rule, or null to keep its own selection. */
 export function plannerManifestLanes({mode, changedFiles, change, graph = callerGraph(),
   componentGraph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"))}) {
-  return manifestPlannerLanes({mode, changedFiles, change, graph, allLanes: comparedLanes, queueOnly: queueOnlyCiTargets,
-    isSelector: isControlPlane, manifestLanes,
+  const lanes = manifestPlannerLanes({mode, changedFiles, change, graph, allLanes: comparedLanes,
+    queueOnly: queueOnlyCiTargets, isSelector: isControlPlane, manifestLanes,
     planOthers: (paths, planMode) => planAffected({changedPaths: paths, graph: componentGraph, mode: planMode})});
+  // The queue builds iOS only for a native or build input, as planAffected does.
+  return lanes && mode === "merge_group" && !changedFiles.some(iosBuildInput) ?
+    lanes.filter((lane) => lane !== "flutter_build_ios") : lanes;
 }
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
@@ -185,6 +189,11 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
     if (lane) nxLanes.add(lane); else unmappedTasks.push(task);
   }
   if (mode === "merge_group" && changedFiles.some(isQueueCaptureInput)) nxLanes.add("capture_freshness");
+  // iOS builds in the merge queue only for a native or build input, as the
+  // planner does (owner decision, 15 Nov 2026). An unknown file list keeps it.
+  if (mode === "merge_group" && changedFiles.length > 0 && !changedFiles.some(iosBuildInput)) {
+    nxLanes.delete("flutter_build_ios");
+  }
   if (mode === "pr") for (const lane of queueOnlyLanes) nxLanes.delete(lane);
   const planner = new Set(plannerLanes);
   const plannerOnly = comparedLanes.filter((lane) => planner.has(lane) && !nxLanes.has(lane));
