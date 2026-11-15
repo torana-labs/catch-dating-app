@@ -165,10 +165,10 @@
 
 /*
  * site: the website header (the system's .c-topbar[data-variant="site"]): the
- * wordmark (catch.wordmark), quiet page links 16px apart that fold away on
- * phones and the account entry on the left; only the page's actions (a
- * setting such as the city, then the primary action) sit on the right; and a
- * hairline under the bar.
+ * wordmark (catch.wordmark) and quiet page links 16px apart that fold away on
+ * phones on the left; on the right the page's actions (a setting such as the
+ * city, then the primary action) and last the account control, "Sign in" or
+ * the avatar; and a hairline under the bar.
  */
 /*
  * The site bar takes its gutter from the window, on the size classes'

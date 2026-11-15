@@ -39,12 +39,14 @@ export interface HostNightFormat {
 const startTrial = "Start free trial";
 
 export const hostLandingCopy = {
-  header: {
-    title: `${brand.name} for hosts`,
-    nav: [
-      {label: "On the night", href: "#night"},
-      {label: `Ways to use ${brand.name}`, href: "#ways"},
-      {label: "Pricing", href: "#pricing"},
+  /** The page's sections, in the bar that takes the site top bar's place once it scrolls away. */
+  sections: {
+    label: "On this page",
+    items: [
+      {id: "night", label: "On the night"},
+      {id: "ways", label: `Ways to use ${brand.name}`},
+      {id: "pricing", label: "Pricing"},
+      {id: "faq", label: "Questions"},
     ],
     start: startTrial,
   },

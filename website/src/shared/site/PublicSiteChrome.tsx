@@ -10,10 +10,11 @@ import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
  * story or test without the provider draws the header without it.
  */
 export interface SiteAccountEntry {
-  /** The top bar's button, the last item of its left group on wide pages. */
+  /**
+   * The top bar's account control on wide pages, at the right end after the
+   * actions: "Sign in" signed out, the avatar signed in, in the same place.
+   */
   bar?: ReactNode;
-  /** A signed-in control at the right end of the top bar on wide pages, after the actions. */
-  barEnd?: ReactNode;
   /** The same entry in the phone menu, where the bar has no room for it. */
   menu: {label: string; href?: string; onPressed?: () => void};
   /**
@@ -40,9 +41,9 @@ function wordmarkParts(title: string): {brand: string; subBrand?: string} {
 
 /**
  * The one public header, the system's site top bar, on every public route:
- * the wordmark (catch.wordmark), the page links and the visitor's account
- * entry on the left; on the right only the page's actions, a setting such as
- * the city and then the one primary action. General pages carry the main
+ * the wordmark (catch.wordmark) and the page links on the left; on the right
+ * the page's actions, a setting such as the city and then the one primary
+ * action, and last the visitor's account control. General pages carry the main
  * site's links and "Get the app"; a product page names itself and passes its
  * own sections and action, as the host landing does ("Catch for hosts", its
  * sections and Start free trial).
@@ -57,7 +58,6 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
   return (
     <CatchTopBar
       account={account?.bar}
-      accountEnd={account?.barEnd}
       actions={actions}
       homeHref="/"
       links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}

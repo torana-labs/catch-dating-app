@@ -50,12 +50,11 @@ export interface CatchTopBarProps {
   /** site: a product line after the wordmark, such as "for hosts". */
   subBrand?: ReactNode;
   /**
-   * site: the visitor's account entry ("Sign in" or "Account"), the last item
-   * of the left group after the links. Only the page's actions sit on the right.
+   * site: the visitor's account control, "Sign in" or the signed-in avatar,
+   * at the right end after the actions from 600px. Both states share this one
+   * slot, so signing in swaps the control without moving anything.
    */
   account?: ReactNode;
-  /** site: the signed-in account control at the right end, after the actions, from 600px (Website account proposal). */
-  accountEnd?: ReactNode;
   /** site: entries the phone menu adds after the links, such as the account entry the bar drops under 600px. */
   menuExtras?: readonly CatchTopBarAction[];
   /**
@@ -85,7 +84,7 @@ function TextAction({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, accountEnd, menuExtras = [], siteMenu}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, menuExtras = [], siteMenu}: CatchTopBarProps) {
   const menuItems = [...(links ?? []), ...menuExtras];
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
@@ -99,11 +98,10 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
                 {links.map((link) => <CatchButton href={link.href} key={link.label} label={link.label} onPressed={link.onPressed} size="sm" variant="quiet" />)}
               </nav>
             ) : null}
-            {account ? <span className={styles.account}>{account}</span> : null}
           </span>
           <span className={styles.actions}>
             {actions}
-            {accountEnd ? <span className={styles.account}>{accountEnd}</span> : null}
+            {account ? <span className={styles.account}>{account}</span> : null}
             {siteMenu != null ? <span className={styles.siteMenu}>{siteMenu}</span> : menuItems.length > 0 ? (
               <span className={styles.siteMenu}>
                 <CatchMenu

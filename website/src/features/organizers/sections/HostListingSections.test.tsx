@@ -47,7 +47,7 @@ describe("HostListingSections", () => {
     expect(screen.getByRole("img", {name: "Verified organiser"})).toBeTruthy();
     // Every organiser page carries the one site header, with the main site's links.
     const primary = screen.getByRole("navigation", {name: "Primary"});
-    expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "Organisers", "For hosts"]);
+    expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "For hosts"]);
     expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
     // ...and the one site footer: Explore, Hosts and Help and legal.
     const footer = within(screen.getByRole("contentinfo"));

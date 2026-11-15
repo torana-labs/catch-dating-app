@@ -2,7 +2,7 @@ import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName} from "@content/markets";
-import {siteFooterCopy} from "@content/site";
+import {publicSiteCopy, siteFooterCopy} from "@content/site";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity} from "../../../shared/site";
 import {citiesHref, cityFooterNote, cityGroups} from "../homeModel";
@@ -16,7 +16,6 @@ const follow = () => undefined;
 
 /** Where a city's pages live: its city page for Explore and the footer, the homepage for the picker. */
 export const cityPagePath = (slug: string) => ["", encodeURIComponent(slug), ""].join("/");
-export const organisersHref = "/explore/?show=organisers";
 
 /**
  * The footer's Cities column: open cities with their honest note, one
@@ -54,11 +53,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
         <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
         <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
       </>}
-      links={[
-        {href: exploreHref, label: copy.header.explore},
-        {href: organisersHref, label: copy.header.organisers},
-        {href: "/host/", label: copy.header.hosts},
-      ]}
+      links={[{...publicSiteCopy.whatsOn, href: exploreHref}, publicSiteCopy.forHosts]}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}

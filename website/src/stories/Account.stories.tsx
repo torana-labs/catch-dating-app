@@ -148,10 +148,10 @@ export const Unavailable: Story = {args: {phase: "failed", account: undefined}};
 function SignInPreview({args, controller}: {args: AccountPageViewProps; controller: SignInSheetController}) {
   const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
   return (
-    <SiteAccountActionProvider value={{bar: wrap(<CatchButton label={signInCopy.headerSignIn} onPressed={noop} size="sm" variant="quiet" />),
+    <SiteAccountActionProvider value={{bar: wrap(<CatchButton label={signInCopy.headerSignIn} leadingIcon="person" onPressed={noop} size="sm" variant="secondary" />),
       menu: {label: signInCopy.headerSignIn, onPressed: noop}}}>
       <AccountPageView {...args} />
-      <SignInSheetView anchor={anchor} onClose={noop} open sheet={controller} />
+      <SignInSheetView align="end" anchor={anchor} onClose={noop} open sheet={controller} />
     </SiteAccountActionProvider>
   );
 }
@@ -186,7 +186,7 @@ const menuController: SiteAccountMenuController = {
 /** The plans page under a signed-in top bar: the right-end avatar on wide pages, the Menu button with the avatar on phones. */
 function SignedInPreview({args}: {args: AccountPageViewProps}) {
   return (
-    <SiteAccountActionProvider value={{barEnd: <SiteAccountMenu controller={menuController} />,
+    <SiteAccountActionProvider value={{bar: <SiteAccountMenu controller={menuController} />,
       menu: {label: signInCopy.headerAccount, href: "/account/"},
       phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menuController} links={links} menuLabel={menuLabel} phone />}}>
       <AccountPageView {...args} />

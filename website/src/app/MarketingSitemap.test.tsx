@@ -23,7 +23,7 @@ describe("consolidated public sitemap", () => {
     const {container} = renderPage(<HostPage captures={marketingCaptures} />);
     for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing", "apply", "start"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
     expect(container.querySelector("form")).toBeNull();
-    const starts = screen.getAllByRole("link", {name: hostLandingCopy.header.start});
+    const starts = screen.getAllByRole("link", {name: hostLandingCopy.sections.start});
     expect(starts.length).toBeGreaterThan(0);
     for (const link of starts) expect(link.getAttribute("href")).toBe("#start");
   });

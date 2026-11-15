@@ -1,0 +1,115 @@
+/*
+ * The section top bar: the page's own sections in a bar that takes the site
+ * top bar's place once that bar has scrolled away. The same ground as the
+ * site bar with a hairline under it (no second colour, no wordmark), on the
+ * site bar's gutters. Hidden, it sits above the window and cannot take focus;
+ * shown, it slides down. Reduced motion swaps without sliding.
+ */
+.marker {
+  display: block;
+  height: 0;
+}
+
+.bar {
+  --catch-site-gutter: var(--catch-layout-gutter-compact);
+  position: fixed;
+  z-index: var(--catch-layer-overlay);
+  top: 0;
+  right: 0;
+  left: 0;
+  padding-inline: max(var(--catch-site-gutter), calc((100% - var(--catch-website-content-max)) / 2));
+  background: var(--catch-theme-ground);
+  box-shadow: 0 var(--catch-stroke-hairline) 0 var(--catch-theme-line);
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition:
+    transform var(--catch-duration-standard) var(--catch-motion-standard-curve),
+    visibility 0s linear var(--catch-duration-standard);
+}
+
+.bar[data-shown] {
+  transform: none;
+  visibility: visible;
+  transition: transform var(--catch-duration-standard) var(--catch-motion-standard-curve);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  min-height: var(--catch-size-control-md);
+}
+
+.links {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+  margin-inline-start: calc(-1 * var(--catch-space-s3));
+}
+
+/* Each link is a full-height target with the underline at the bar's foot. */
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--catch-space-s3);
+  border-radius: var(--catch-radius-xs);
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-web-context-size);
+  font-weight: 500;
+  line-height: var(--catch-typography-web-context-line-height);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover { color: var(--catch-theme-ink); }
+
+.link:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-focus);
+  outline-offset: calc(-1 * var(--catch-stroke-focus-ring));
+}
+
+.link[aria-current] {
+  color: var(--catch-theme-ink);
+  font-weight: 600;
+}
+
+.link[aria-current]::after {
+  position: absolute;
+  right: var(--catch-space-s3);
+  bottom: 0;
+  left: var(--catch-space-s3);
+  height: var(--catch-stroke-emphasis);
+  background: var(--catch-theme-ink);
+  content: "";
+}
+
+.menu { display: none; }
+
+.action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+
+@media (min-width: 600px) {
+  .bar { --catch-site-gutter: var(--catch-layout-gutter-medium); }
+}
+
+@media (min-width: 840px) {
+  .bar { --catch-site-gutter: var(--catch-layout-gutter-expanded); }
+}
+
+/* Phones: one menu named after the section you are in. */
+@media (max-width: 599px) {
+  .links { display: none; }
+  .menu { display: inline-flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .bar[data-shown] { transition: none; }
+}

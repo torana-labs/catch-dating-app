@@ -40,9 +40,18 @@ describe("CatchTopBar site", () => {
     expect(screen.getByRole("link", {name: "Get the app"})).toBeTruthy();
   });
 
+  it("puts the account control last on the right, after the actions", () => {
+    render(<CatchTopBar account={<button type="button">Sign in</button>} actions={<a href="/app">Get the app</a>} links={[{label: "Explore", href: "/explore/"}]}
+      title="Catch" variant="site" />);
+    const order = [...screen.getByRole("banner").querySelectorAll("a, button")].map((element) => element.textContent?.trim())
+      .filter((label) => label !== "Menu");
+    expect(order).toEqual(["Catch", "Explore", "Get the app", "Sign in"]);
+    expect(screen.getByRole("navigation", {name: "Site"}).parentElement!.contains(screen.getByRole("button", {name: "Sign in"}))).toBe(false);
+  });
+
   it("draws a whole phone menu in place of the built-in one when the site passes it", () => {
     render(<CatchTopBar links={[{href: "/explore/", label: "Explore"}]} menuExtras={[{label: "Sign in", onPressed: () => undefined}]}
-      accountEnd={<button type="button">Account, Asha</button>} siteMenu={<button type="button">Menu, signed in as Asha</button>} title="Catch" variant="site" />);
+      account={<button type="button">Account, Asha</button>} siteMenu={<button type="button">Menu, signed in as Asha</button>} title="Catch" variant="site" />);
     expect(screen.getByRole("button", {name: "Account, Asha"})).toBeTruthy();
     expect(screen.getByRole("button", {name: "Menu, signed in as Asha"})).toBeTruthy();
     expect(screen.queryByRole("button", {name: "Menu"})).toBeNull();

@@ -151,6 +151,38 @@
       "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row."
     },
     {
+      "id": "shared_section_top_bar",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "weddings"
+      ],
+      "owner": "shared/site",
+      "source": "packages/web-ui/src/components/CatchSectionTopBar.tsx",
+      "exportName": "CatchSectionTopBar",
+      "comparedWith": [
+        "catch.top_bar",
+        "catch.button",
+        "catch.menu"
+      ],
+      "comparisonReason": "A long page's own sections in a bar that takes the site top bar's place once it scrolls away, underlining the section in view; it composes CatchButton for the page's action and CatchMenu for the phone list, implementing neither, and unlike the site top bar it never opens another page.",
+      "css": [
+        "packages/web-ui/src/components/CatchSectionTopBar.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSectionTopBar.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "hidden-until-scrolled",
+          "shown",
+          "current-section",
+          "night"
+        ]
+      },
+      "notes": "Website T4 under D18 (Navigation proposal, 15 Nov: the site top bar opens pages only; a long single page's sections slide in once it scrolls away, as on Apple's product pages). The host landing and Catch for weddings place it right after PublicSiteHeader. Search aliases: SectionNav, StickySubnav, LocalNav, JumpNav, InPageNav."
+    },
+    {
       "id": "shared_public_page_footer",
       "kind": "supporting-component",
       "routeIds": [
