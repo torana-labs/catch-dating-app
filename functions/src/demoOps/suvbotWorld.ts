@@ -286,9 +286,10 @@ export function buildSuvbotWorldPlan(
       if (event.priceInPaise > 0) {
         testerPaymentId = `${prefix}_payment_${event.id}`;
         docs.push({
-          path: `payments/${testerPaymentId}`,
+          path: `guestPayments/${testerPaymentId}`,
           data: {
             ...marker,
+            purpose: "booking",
             userId: uid,
             // Not an "order_…" id: the native refund trigger then stops before
             // it would ask Razorpay about an order that never existed.

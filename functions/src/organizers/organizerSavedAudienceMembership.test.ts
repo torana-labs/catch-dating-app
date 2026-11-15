@@ -19,7 +19,8 @@ const contact = (uid: string) => ({organizerId: "org", linkedUid: uid,
   hiddenAt: null, mergedIntoContactId: null, displayName: "Ada",
   displayNameOverride: null});
 const payment = (overrides: Record<string, unknown> = {}) => ({
-  eventId: "event", userId: "uid", currency: "INR", amountMinor: 10000,
+  purpose: "booking", eventId: "event", userId: "uid", currency: "INR",
+  amountMinor: 10000,
   amount: 10000, status: "completed", signUpFailed: false,
   createdAt: Timestamp.fromMillis(now - 100 * day),
   completedAt: Timestamp.fromMillis(now - day), ...overrides,
@@ -36,7 +37,7 @@ function store() {
     "organizerContacts/no-spend": contact("no-spend"),
     "organizerContacts/unverified": {...contact("unverified"),
       identityState: "unverified", identityConfidence: "unverified"},
-    "payments/completed": payment(),
+    "guestPayments/completed": payment(),
   });
 }
 async function matching(db: AudienceTestStore, predicate = spend()) {
@@ -54,13 +55,13 @@ test("spend uses completion time, current refunds, currency and ownership",
         Timestamp.fromMillis(now + 1)},
       old: {completedAt: Timestamp.fromMillis(now - 31 * day)},
       dollars: {currency: "USD"}, foreign: {eventId: "foreign"},
-    })) db.docs[`payments/${id}`] = payment(values);
+    })) db.docs[`guestPayments/${id}`] = payment(values);
     assert.deepEqual(await matching(db, spend({amountMinor: 10001})), []);
     assert.deepEqual(await matching(db), ["person"]);
     assert.deepEqual(await matching(db, spend({currency: "USD"})), ["person"]);
     assert.deepEqual(await matching(db, spend({withinDays: null,
       amountMinor: 20000})), ["person"]);
-    db.docs["payments/completed"].status = "refunded";
+    db.docs["guestPayments/completed"].status = "refunded";
     assert.deepEqual(await matching(db), []);
   });
 
@@ -76,14 +77,16 @@ test("zero spend is known only for unique verified identities", async () => {
 test("window boundary and legacy organizer ownership are included exactly",
   async () => {
     const db = store();
-    db.docs["payments/completed"] = payment({eventId: "legacy",
+    db.docs["guestPayments/completed"] = payment({eventId: "legacy",
       completedAt: Timestamp.fromMillis(now - 30 * day)});
     assert.deepEqual(await matching(db), ["person"]);
   });
 
 test("over-limit payments never produce an exact spend audience", async () => {
   const db = store();
-  for (let i = 0; i < 5001; i++) db.docs[`payments/extra-${i}`] = payment();
+  for (let i = 0; i < 5001; i++) {
+    db.docs[`guestPayments/extra-${i}`] = payment();
+  }
   await assert.rejects(matching(db), {code: "resource-exhausted"});
 });
 

@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {normalizeEventItinerary, assertValidEventItinerary} from
   "./event_itinerary";
 import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
@@ -844,7 +845,7 @@ export async function deleteEventHandler(
       tx.get(db.collection("eventParticipations")
         .where("eventId", "==", data.eventId)
         .limit(1)),
-      tx.get(db.collection("payments")
+      tx.get(bookingPayments(db)
         .where("eventId", "==", data.eventId)
         .limit(1)),
       tx.get(db.collection("reviews")

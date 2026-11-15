@@ -13,7 +13,10 @@ part 'payment_history_repository.g.dart';
 class PaymentHistoryRepository {
   const PaymentHistoryRepository(this._db);
 
-  static const _collectionPath = 'payments';
+  /// In-app booking payments live in the guest-payment ledger with purpose
+  /// `booking`; the rules let a guest read only their own.
+  static const _collectionPath = 'guestPayments';
+  static const _bookingPurpose = 'booking';
 
   final FirebaseFirestore _db;
 
@@ -27,21 +30,23 @@ class PaymentHistoryRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Payment>> watchPaymentsForUser(String userId) =>
-      withBackendErrorStream(
-        // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
-        () => _paymentsRef
-            .where('userId', isEqualTo: userId)
-            .orderBy('createdAt', descending: true)
-            .limit(ReadLimitPolicy.historyPage)
-            .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch payment history',
-          resource: _collectionPath,
-        ),
-      );
+  Stream<List<Payment>> watchPaymentsForUser(
+    String userId,
+  ) => withBackendErrorStream(
+    // firestore-index: guestPayments (purpose:ASCENDING,userId:ASCENDING,createdAt:DESCENDING)
+    () => _paymentsRef
+        .where('purpose', isEqualTo: _bookingPurpose)
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .limit(ReadLimitPolicy.historyPage)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch payment history',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<List<Payment>> fetchPaymentsForUser(String userId) async =>
       (await fetchPaymentsForUserPage(userId: userId)).items;
@@ -53,8 +58,9 @@ class PaymentHistoryRepository {
     int limit = ReadLimitPolicy.historyPage,
   }) => withBackendErrorContext(
     () async {
-      // firestore-index: payments (userId:ASCENDING,createdAt:DESCENDING)
+      // firestore-index: guestPayments (purpose:ASCENDING,userId:ASCENDING,createdAt:DESCENDING)
       final page = await _paymentsRef
+          .where('purpose', isEqualTo: _bookingPurpose)
           .where('userId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .fetchDocumentCursorPage(
@@ -97,8 +103,9 @@ class PaymentHistoryRepository {
     required String eventId,
   }) => withBackendErrorContext(
     () async {
-      // firestore-index: payments (userId:ASCENDING,eventId:ASCENDING,status:ASCENDING,signUpFailed:ASCENDING,createdAt:DESCENDING)
+      // firestore-index: guestPayments (purpose:ASCENDING,userId:ASCENDING,eventId:ASCENDING,status:ASCENDING,signUpFailed:ASCENDING,createdAt:DESCENDING)
       final snap = await _paymentsRef
+          .where('purpose', isEqualTo: _bookingPurpose)
           .where('userId', isEqualTo: userId)
           .where('eventId', isEqualTo: eventId)
           .where('status', isEqualTo: PaymentStatus.completed.name)

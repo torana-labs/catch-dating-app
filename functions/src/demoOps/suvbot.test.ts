@@ -446,7 +446,7 @@ function assertConsistentWorld({
     moment === "live" || moment === "after" ? "attended" : "signedUp");
   if (primary.priceInPaise > 0) {
     const payment = store.getDoc(String(tester?.paymentId) ?
-      `payments/${tester?.paymentId}` : "");
+      `guestPayments/${tester?.paymentId}` : "");
     assert.equal(payment?.status, "completed");
     assert.equal(payment?.amount, primary.priceInPaise);
     assert.doesNotMatch(String(payment?.orderId), /^order_/u);
@@ -657,7 +657,9 @@ test("clearDemoState covers the retired CLI reset fixture", async () => {
         "demoSelfServiceAccess/uid_a",
       ],
     },
-    "payments/demo_payment": {userId: uid, seedPrefix: "demo_ops_2026"},
+    "guestPayments/demo_payment": {
+      purpose: "booking", userId: uid, seedPrefix: "demo_ops_2026",
+    },
     "matches/match_1": {participantIds: [uid, "uid_b"], demoOps: true},
     "matches/match_1/messages/demo_message": {demoOps: true},
     "matches/match_1/messages/dogfood_message": {text: "real message"},

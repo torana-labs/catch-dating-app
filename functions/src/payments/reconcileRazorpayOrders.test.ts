@@ -54,7 +54,7 @@ test("reconcileRazorpayOrdersHandler fulfills a stale captured order",
 
     assert.deepEqual(summary, {processed: 1, fulfilled: 1, expired: 0});
     assert.deepEqual(signUps, [{eventId: "trusted-event", userId: "runner-1"}]);
-    const payment = firestore.data["payments/pay_stale"] as
+    const payment = firestore.data["guestPayments/pay_stale"] as
       Record<string, unknown>;
     assert.equal(payment.status, "completed");
     assert.equal(payment.orderId, "order_stale");
@@ -165,7 +165,7 @@ test(
 
     assert.deepEqual(summary, {processed: 1, fulfilled: 1, expired: 0});
     assert.deepEqual(signUps, [{eventId: "trusted-event", userId: "runner-1"}]);
-    const payment = firestore.data["payments/pay_recaptured"] as
+    const payment = firestore.data["guestPayments/pay_recaptured"] as
       Record<string, unknown>;
     assert.equal(payment.status, "completed");
     // Fulfillment removes the tracking doc once the booking succeeds.
@@ -253,7 +253,7 @@ test("ownership control: exact completed recovery deletes only pending state",
     assert.equal(result.signUps, 0);
     assert.equal(result.firestore.data["razorpayPendingOrders/order_case"],
       undefined);
-    assert.deepEqual(result.firestore.data[`payments/${paymentId}`],
+    assert.deepEqual(result.firestore.data[`guestPayments/${paymentId}`],
       result.existingPayment);
   });
 
@@ -640,7 +640,7 @@ async function runOwnershipCase(input: {
   };
   const paymentId = String(input.payments?.[0]?.id ?? "pay_case");
   if (input.existingPayment) {
-    data[`payments/${paymentId}`] = input.existingPayment;
+    data[`guestPayments/${paymentId}`] = input.existingPayment;
   }
   const firestore = new FakeFirestore(data, input.failPendingGet ?
     new Set([`razorpayPendingOrders/${orderId}`]) : new Set());

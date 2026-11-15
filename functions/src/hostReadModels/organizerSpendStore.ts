@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
@@ -341,7 +342,7 @@ export async function accountSpendAtCutoff(
   reader: SpendReader,
   params: {organizerId: string; uid: string; cutoffAtMillis: number}
 ): Promise<AccountSpendResult> {
-  const snapshot = await reader.get(db.collection("payments")
+  const snapshot = await reader.get(bookingPayments(db)
     .where("userId", "==", params.uid)
     .limit(maxAccountPayments + 1));
   if (snapshot.size > maxAccountPayments) return {kind: "overCap"};
@@ -410,7 +411,7 @@ export async function rebuildOrganizerSpend(
     events++;
     let cursor: FirebaseFirestore.QueryDocumentSnapshot | undefined;
     do {
-      let query = db.collection("payments")
+      let query = bookingPayments(db)
         .where("eventId", "==", event.id)
         .orderBy(admin.firestore.FieldPath.documentId())
         .limit(paymentPageSize);

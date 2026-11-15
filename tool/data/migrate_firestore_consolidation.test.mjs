@@ -229,6 +229,24 @@ test("event-chat-directory creates each row once from its first source", async (
   assert.deepEqual(targets.sort(), ["e1_a", "e2_a", "e4_b"]);
 });
 
+test("booking-payments copies in-app payments into the ledger once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "booking-payments");
+  const db = fakeDb({
+    "payments/pay_1": {userId: "u1", eventId: "e1", orderId: "order_1",
+      paymentId: "pay_1", amount: 25000, currency: "INR", status: "completed",
+      signUpFailed: false},
+    "guestPayments/pp_web": {purpose: "publicEvent", eventId: "e1"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 1);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["guestPayments/pay_1"].purpose, "booking");
+  assert.equal(db.data["guestPayments/pay_1"].amount, 25000);
+  assert.ok(db.data["payments/pay_1"]);
+  assert.equal(db.data["guestPayments/pp_web"].purpose, "publicEvent");
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);

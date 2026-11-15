@@ -334,6 +334,21 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "booking-payments",
+    description:
+      "In-app Catch booking payments move from payments into the guest-payment " +
+      "ledger with purpose booking, keeping their ids so bookings still point " +
+      "at them. Old documents stay in place.",
+    steps: [
+      {
+        source: "payments",
+        target: "guestPayments",
+        targetId: (id) => id,
+        transform: (data) => ({...data, purpose: "booking"}),
+      },
+    ],
+  },
 ];
 
 /**

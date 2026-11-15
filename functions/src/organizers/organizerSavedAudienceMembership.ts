@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
   EventDocument, OrganizerContactDocument, OrganizerSavedAudienceDocument,
@@ -121,7 +122,7 @@ export async function savedAudienceSpendMatches(params: {
     (event.organizerId) === organizerId).map(([id]) => id);
   const payments: PaymentDocument[] = [];
   for (let offset = 0; offset < eventIds.length; offset += 30) {
-    const snap = await db.collection("payments")
+    const snap = await bookingPayments(db)
       .where("eventId", "in", eventIds.slice(offset, offset + 30))
       .limit(maxPayments - payments.length + 1).get();
     payments.push(...snap.docs.map((doc) => doc.data() as PaymentDocument));

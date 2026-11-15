@@ -274,7 +274,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         user2Id: "runner-2",
       },
       "reviews/event-1~runner-1": {reviewerUserId: "runner-1"},
-      "payments/payment-1": {userId: "runner-1"},
+      "guestPayments/payment-1": {purpose: "booking", userId: "runner-1"},
       "notifications/runner-1/items/item-1": {uid: "runner-1"},
       "eventBroadcasts/authored": {
         actorUid: "runner-1",
@@ -546,7 +546,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "payments/payment-1" &&
+      write.path === "guestPayments/payment-1" &&
       write.data.userDeleted === true
     )
   );

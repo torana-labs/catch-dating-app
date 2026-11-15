@@ -261,7 +261,7 @@ for (const rsvp of [true, false]) {
     assert.equal(Object.keys(h.store.docs).filter((p) =>
       p.startsWith("organizerContacts/")).length, 1);
     assert.equal(Object.keys(h.store.docs).some((p) =>
-      p.startsWith("payments/")), false);
+      p.startsWith("guestPayments/")), false);
   });
 }
 

@@ -1,3 +1,4 @@
+import {bookingPaymentRef} from "./bookingPayments";
 import {onRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -168,7 +169,7 @@ async function handlePaymentCaptured({
   // Re-fetch from Razorpay rather than trusting the webhook body, and discover
   // the booking owner from the order notes (the user id lives there, set at
   // order-creation time).
-  const paymentRef = db.collection("payments").doc(paymentId);
+  const paymentRef = bookingPaymentRef(db, paymentId);
   const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
   const [order, payment, localPayment, pendingOrder] = await Promise.all([
     razorpay.orders.fetch(orderId),
@@ -242,7 +243,7 @@ async function handlePaymentFailed({
   const razorpay = deps.createClient();
   const [order, localPayment, pendingOrder] = await Promise.all([
     razorpay.orders.fetch(orderId),
-    db.collection("payments").doc(payment.id).get(),
+    bookingPaymentRef(db, payment.id).get(),
     db.collection("razorpayPendingOrders").doc(orderId).get(),
   ]);
   const runtimeProjectId =

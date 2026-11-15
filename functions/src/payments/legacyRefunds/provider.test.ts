@@ -24,7 +24,8 @@ function ownedAuthorization(payment: PaymentDocument):
 }
 
 function setup(provider: "stripe" | "razorpay" = "stripe") {
-  const payment: PaymentDocument = {userId: "user1", eventId: "event1",
+  const payment: PaymentDocument = {purpose: "booking", userId: "user1",
+    eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", providerPaymentId: "pi_one",
     provider, stripeAccountId: "acct_original", applicationFeeAmount: 100,
     amount: 1000, currency: "INR", status: "completed", signUpFailed: false,

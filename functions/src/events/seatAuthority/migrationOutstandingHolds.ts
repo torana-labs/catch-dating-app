@@ -6,11 +6,12 @@ const terminalStatuses: Record<string, readonly string[]> = {
   eventWaitlistOffers: ["declined", "expired", "cancelled"],
   crossPathsPairHolds: ["confirmed", "expired", "cancelled", "invalidated"],
   razorpayPendingOrders: ["failed", "expired"],
-  payments: ["completed", "failed", "refunded"],
-  // Website and offer checkouts; paid forms carry no event.
+  // Website and offer checkouts; paid forms carry no event. In-app booking
+  // payments in the same ledger use bookingTerminalStatuses.
   [GUEST_PAYMENTS]: ["admitted", "expired", "refunded", "failed",
     "cancelled"],
 };
+const bookingTerminalStatuses = ["completed", "failed", "refunded"];
 
 /** The historical roster planner does not migrate outstanding checkout or
  * waitlist holds. Prove those sources are settled before locking writers and
@@ -32,8 +33,8 @@ export async function assertNoOutstandingMigrationHolds(params: {
         collection === GUEST_PAYMENTS ? 2 : 1);
     const snap = await tx.get(db.collection(collection)
       .where("eventId", "==", eventId)
-      .select("status", "signUpFailed", "checkoutHold", "temporaryHold",
-        "requesterBookingStatus")
+      .select("purpose", "status", "signUpFailed", "checkoutHold",
+        "temporaryHold", "requesterBookingStatus")
       .limit(limit + 1));
     if (snap.docs.length > limit) {
       throw new HttpsError("failed-precondition",
@@ -45,10 +46,11 @@ export async function assertNoOutstandingMigrationHolds(params: {
         return row.checkoutHold !== undefined ||
           row.temporaryHold !== undefined;
       }
-      if (!terminalStatuses[collection].includes(row.status)) return true;
-      if (collection === "payments" && row.status === "completed") {
-        return row.signUpFailed !== false;
+      if (collection === GUEST_PAYMENTS && row.purpose === "booking") {
+        if (!bookingTerminalStatuses.includes(row.status)) return true;
+        return row.status === "completed" && row.signUpFailed !== false;
       }
+      if (!terminalStatuses[collection].includes(row.status)) return true;
       if (collection === "crossPathsPairHolds") {
         return row.requesterBookingStatus === "held";
       }

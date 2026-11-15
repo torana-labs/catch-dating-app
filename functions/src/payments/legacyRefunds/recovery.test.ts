@@ -49,18 +49,20 @@ function unprovenRazorpayIntent(payment: PaymentDocument,
 
 function fixture(provider: "stripe" | "razorpay" = "stripe") {
   const store = new Store();
-  const payment: PaymentDocument = {userId: "user1", eventId: "event1",
+  const payment: PaymentDocument = {purpose: "booking", userId: "user1",
+    eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", amount: 1000, currency: "INR",
     provider, ...(provider === "stripe" ? {providerPaymentId: "pi_one",
       stripeAccountId: "acct_one"} : {}),
     status: "completed", signUpFailed: false,
     createdAt: Timestamp.fromMillis(1)};
-  store.put("payments/payment1", {...payment});
+  store.put("guestPayments/payment1", {...payment});
   store.put("events/event1", {status: "active"});
   return {store, payment,
     stage: () => stageCancelledEventPayment({db: store.db(),
       paymentId: "payment1", nowMillis: 1000}),
-    read: () => store.get("payments/payment1") as unknown as PaymentDocument};
+    read: () =>
+      store.get("guestPayments/payment1") as unknown as PaymentDocument};
 }
 
 test("late capture stages a full refund only for a currently cancelled event",
@@ -78,7 +80,7 @@ test("late capture stages a full refund only for a currently cancelled event",
 test("host cancellation upgrades a frozen zero-refund guest cancellation",
   async () => {
     const h = fixture();
-    h.store.put("payments/payment1", {...h.payment,
+    h.store.put("guestPayments/payment1", {...h.payment,
       cancellationRefund: planLegacyCancellationRefund({payment: h.payment,
         reason: "guestCancelled", targetAmountMinor: 0, nowMillis: 1})});
     h.store.put("events/event1", {status: "cancelled"});
@@ -102,7 +104,7 @@ test("staging cannot invent capture authority or re-refund historical payments",
     for (const patch of [{status: "pending"},
       {signUpFailed: true}]) {
       const h = fixture(); h.store.put("events/event1", {status: "cancelled"});
-      h.store.put("payments/payment1", {...h.payment, ...patch});
+      h.store.put("guestPayments/payment1", {...h.payment, ...patch});
       await h.stage(); assert.equal(h.read().cancellationRefund, undefined);
     }
   });
@@ -271,10 +273,10 @@ function queryDatabase(store: Store, hooks: {
 }
 
 test("host cancellation stages all payments in bounded pages", async () => {
-  const h = fixture(); h.store.rows.delete("payments/payment1");
+  const h = fixture(); h.store.rows.delete("guestPayments/payment1");
   h.store.put("events/event1", {status: "cancelled"});
   for (let index = 0; index < 205; index++) {
-    const id = `payments/pay${String(index).padStart(3, "0")}`;
+    const id = `guestPayments/pay${String(index).padStart(3, "0")}`;
     h.store.put(id, {...h.payment});
   }
   const {db, pages} = queryDatabase(h.store);
@@ -287,12 +289,13 @@ test("host cancellation stages all payments in bounded pages", async () => {
 
 test("recovery selects oldest due work without a purchase-age cutoff",
   async () => {
-    const h = fixture(); h.store.rows.delete("payments/payment1");
+    const h = fixture(); h.store.rows.delete("guestPayments/payment1");
     for (let index = 0; index < 43; index++) {
       const cancellationRefund = planLegacyCancellationRefund({
         payment: h.payment, reason: "guestCancelled", targetAmountMinor: 1000,
         nowMillis: index + 1});
-      h.store.put(`payments/pay${index}`, {...h.payment, cancellationRefund});
+      h.store.put(
+        `guestPayments/pay${index}`, {...h.payment, cancellationRefund});
     }
     const {db} = queryDatabase(h.store); const processed: string[] = [];
     const result = await reconcileNativeCancellationRefunds({db,
@@ -306,12 +309,12 @@ test("recovery selects oldest due work without a purchase-age cutoff",
   });
 
 test("due recovery bounds unavailable reads with eight workers", async () => {
-  const h = fixture(); h.store.rows.delete("payments/payment1");
+  const h = fixture(); h.store.rows.delete("guestPayments/payment1");
   for (let index = 0; index < 39; index++) {
     const cancellationRefund = planLegacyCancellationRefund({
       payment: h.payment, reason: "guestCancelled", targetAmountMinor: 1000,
       nowMillis: index + 1});
-    h.store.put(`payments/pay${String(index).padStart(2, "0")}`,
+    h.store.put(`guestPayments/pay${String(index).padStart(2, "0")}`,
       {...h.payment, cancellationRefund});
   }
   let active = 0; let maxActive = 0;
@@ -340,13 +343,14 @@ test("a failed refund preflight leaves the due queue byte-for-byte intact",
       }});
     assert.deepEqual(result, {processed: 0, failed: 1});
     assert.equal(h.read().cancellationRefund?.state, "pending");
-    h.store.put("payments/payment1", {...h.read(), cancellationRefund: {
+    h.store.put("guestPayments/payment1", {...h.read(), cancellationRefund: {
       ...h.read().cancellationRefund!, state: "pending",
       nextAttemptAtMillis: 1000}});
     await reconcileNativeCancellationRefunds({db, nowMillis: 2000,
       process: async () => {
-        h.store.put("payments/payment1", {...h.read(), cancellationRefund: {
-          ...h.read().cancellationRefund!, nextAttemptAtMillis: 5000}});
+        h.store.put("guestPayments/payment1", {
+          ...h.read(), cancellationRefund: {
+            ...h.read().cancellationRefund!, nextAttemptAtMillis: 5000}});
         throw new Error("Retry already scheduled");
       }});
     assert.equal(h.read().cancellationRefund?.state, "pending");
@@ -356,7 +360,7 @@ test("a failed refund preflight leaves the due queue byte-for-byte intact",
 test("old refunded status without amount proof explicitly requires review",
   async () => {
     const h = fixture(); h.store.put("events/event1", {status: "cancelled"});
-    h.store.put("payments/payment1", {...h.payment, status: "refunded"});
+    h.store.put("guestPayments/payment1", {...h.payment, status: "refunded"});
     const {db} = queryDatabase(h.store);
     await stageCancelledEventRefunds({db, eventId: "event1",
       clock: () => 1000});
@@ -370,7 +374,7 @@ test("owned Razorpay cancellation staging freezes the runtime context",
   async () => {
     const h = fixture("razorpay");
     const payment = ownedPayment(h.payment);
-    h.store.put("payments/payment1", {...payment});
+    h.store.put("guestPayments/payment1", {...payment});
     h.store.put("events/event1", {status: "cancelled"});
     await stageCancelledEventPayment({db: h.store.db(),
       paymentId: "payment1", nowMillis: 1000,
@@ -386,10 +390,10 @@ test("ownership recovery: unknown refusal cannot trigger scheduler catch " +
   "writes",
 async () => {
   const h = fixture("razorpay");
-  h.store.rows.delete("payments/payment1");
-  h.store.put("payments/pay_one", {...h.payment,
+  h.store.rows.delete("guestPayments/payment1");
+  h.store.put("guestPayments/pay_one", {...h.payment,
     cancellationRefund: unprovenRazorpayIntent(h.payment, 1)});
-  const before = JSON.stringify(h.store.get("payments/pay_one"));
+  const before = JSON.stringify(h.store.get("guestPayments/pay_one"));
   const writesBefore = h.store.writes.length;
   const timelineBefore = h.store.timeline.length;
   const {db} = queryDatabase(h.store);
@@ -397,7 +401,7 @@ async () => {
     process: async () => {
       throw new Error("Unknown native order ownership");
     }});
-  assert.equal(JSON.stringify(h.store.get("payments/pay_one")), before);
+  assert.equal(JSON.stringify(h.store.get("guestPayments/pay_one")), before);
   assert.equal(h.store.writes.length - writesBefore, 0);
   assert.deepEqual(h.store.timeline.slice(timelineBefore)
     .filter((entry) => entry.startsWith("write:")), []);
@@ -407,15 +411,15 @@ test("ownership recovery: unknown legacy capture cannot stage " +
   "cancellation intent",
 async () => {
   const h = fixture("razorpay");
-  h.store.rows.delete("payments/payment1");
-  h.store.put("payments/pay_one", {...h.payment});
+  h.store.rows.delete("guestPayments/payment1");
+  h.store.put("guestPayments/pay_one", {...h.payment});
   h.store.put("events/event1", {status: "cancelled"});
-  const before = JSON.stringify(h.store.get("payments/pay_one"));
+  const before = JSON.stringify(h.store.get("guestPayments/pay_one"));
   const writesBefore = h.store.writes.length;
   const timelineBefore = h.store.timeline.length;
   await stageCancelledEventPayment({db: h.store.db(),
     paymentId: "pay_one", nowMillis: 1000}).catch(() => undefined);
-  assert.equal(JSON.stringify(h.store.get("payments/pay_one")), before);
+  assert.equal(JSON.stringify(h.store.get("guestPayments/pay_one")), before);
   assert.equal(h.store.writes.length - writesBefore, 0);
   assert.deepEqual(h.store.timeline.slice(timelineBefore)
     .filter((entry) => entry.startsWith("write:")), []);
@@ -423,25 +427,26 @@ async () => {
 
 function unresolvedQueueFixture(count: number) {
   const h = fixture("razorpay");
-  h.store.rows.delete("payments/payment1");
+  h.store.rows.delete("guestPayments/payment1");
   for (let index = 0; index < count; index++) {
     const id = `pay_unknown${String(index).padStart(4, "0")}`;
     const payment: PaymentDocument = {...h.payment, paymentId: id,
       orderId: `order_${id}`};
     const cancellationRefund = unprovenRazorpayIntent(payment, index + 1);
-    h.store.put(`payments/${id}`, {...payment, cancellationRefund});
+    h.store.put(`guestPayments/${id}`, {...payment, cancellationRefund});
   }
   const ownedStripe: PaymentDocument = {...h.payment, provider: "stripe",
     paymentId: "ownedStripe", providerPaymentId: "pi_one",
     stripeAccountId: "acct_one"};
   const cancellationRefund = planLegacyCancellationRefund({payment: ownedStripe,
     reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: count + 1});
-  h.store.put("payments/ownedStripe", {...ownedStripe, cancellationRefund});
+  h.store.put(
+    "guestPayments/ownedStripe", {...ownedStripe, cancellationRefund});
   return h;
 }
 function unresolvedQueueBytes(store: Store) {
   return JSON.stringify([...store.rows].filter(([path]) =>
-    path.startsWith("payments/pay_unknown")));
+    path.startsWith("guestPayments/pay_unknown")));
 }
 
 test("ownership recovery: 80 unresolved oldest rows do not block later " +
@@ -556,7 +561,7 @@ test("committed discovery survives interruption before provider work",
   });
 
 test("concurrent cursor writers cannot overwrite newer progress", async () => {
-  const h = fixture(); h.store.rows.delete("payments/payment1");
+  const h = fixture(); h.store.rows.delete("guestPayments/payment1");
   for (let index = 0; index < 40; index++) {
     const payment: PaymentDocument = {...h.payment, provider: "stripe",
       paymentId: `stripe_${index}`, providerPaymentId: `pi_${index}`,
@@ -564,7 +569,7 @@ test("concurrent cursor writers cannot overwrite newer progress", async () => {
     const cancellationRefund = planLegacyCancellationRefund({payment,
       reason: "guestCancelled", targetAmountMinor: 1000,
       nowMillis: index + 1});
-    h.store.put(`payments/stripe_${String(index).padStart(2, "0")}`,
+    h.store.put(`guestPayments/stripe_${String(index).padStart(2, "0")}`,
       {...payment, cancellationRefund});
   }
   let arrivals = 0;
@@ -633,14 +638,14 @@ test("foreign or malformed durable cursor authority stops before discovery",
 test("secret-bound staging proves provider ownership before refund intent",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     const own = ownedPayment({...h.payment, orderId: "order_owned"});
     const foreign = ownedPayment({...h.payment, orderId: "order_foreign",
       paymentId: "pay_foreign"});
-    h.store.put("payments/owned", {...own});
-    h.store.put("payments/foreign", {...foreign});
+    h.store.put("guestPayments/owned", {...own});
+    h.store.put("guestPayments/foreign", {...foreign});
     h.store.put("events/event1", {status: "cancelled"});
-    const foreignBefore = JSON.stringify(h.store.get("payments/foreign"));
+    const foreignBefore = JSON.stringify(h.store.get("guestPayments/foreign"));
     const result = await recoverCancelledRazorpayStagingPage({
       db: queryDatabase(h.store).db, nowMillis: 1000,
       provider: {authorizeRazorpayRefund: async (payment) => {
@@ -652,20 +657,20 @@ test("secret-bound staging proves provider ownership before refund intent",
     });
     assert.equal(result.staged, 1);
     assert.equal(result.failed, 0);
-    assert.equal((h.store.get("payments/owned")?.cancellationRefund as
+    assert.equal((h.store.get("guestPayments/owned")?.cancellationRefund as
       LegacyRefundIntent | undefined)?.reason, "eventCancelled");
-    assert.equal(JSON.stringify(h.store.get("payments/foreign")),
+    assert.equal(JSON.stringify(h.store.get("guestPayments/foreign")),
       foreignBefore);
   });
 
 test("staging checkpoints discovery before provider work and resumes",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     h.store.put("events/event1", {status: "cancelled"});
     for (let index = 0; index < 40; index++) {
       const id = `payment${String(index).padStart(2, "0")}`;
-      h.store.put(`payments/${id}`, {...ownedPayment(h.payment),
+      h.store.put(`guestPayments/${id}`, {...ownedPayment(h.payment),
         paymentId: `pay_${id}`, orderId: `order_${id}`});
     }
     let interrupt = true;
@@ -703,9 +708,9 @@ test("staging provider read failure retries after cursor wrap without writes",
   async () => {
     const h = fixture("razorpay");
     const payment = ownedPayment(h.payment);
-    h.store.put("payments/payment1", {...payment});
+    h.store.put("guestPayments/payment1", {...payment});
     h.store.put("events/event1", {status: "cancelled"});
-    const before = JSON.stringify(h.store.get("payments/payment1"));
+    const before = JSON.stringify(h.store.get("guestPayments/payment1"));
     const first = await recoverCancelledRazorpayStagingPage({
       db: queryDatabase(h.store).db, nowMillis: 1000,
       provider: {authorizeRazorpayRefund: async () => {
@@ -713,7 +718,7 @@ test("staging provider read failure retries after cursor wrap without writes",
       }},
     });
     assert.deepEqual(first, {scanned: 1, staged: 0, failed: 1});
-    assert.equal(JSON.stringify(h.store.get("payments/payment1")), before);
+    assert.equal(JSON.stringify(h.store.get("guestPayments/payment1")), before);
     const second = await recoverCancelledRazorpayStagingPage({
       db: queryDatabase(h.store).db, nowMillis: 2000,
       provider: {authorizeRazorpayRefund: async (current) =>
@@ -726,11 +731,11 @@ test("staging provider read failure retries after cursor wrap without writes",
 
 test("malformed due rows cannot block later valid refund work", async () => {
   const h = fixture("razorpay");
-  h.store.rows.delete("payments/payment1");
+  h.store.rows.delete("guestPayments/payment1");
   for (let index = 0; index < 39; index++) {
     const payment: PaymentDocument = {...h.payment,
       paymentId: `pay_unknown${index}`, orderId: `order_unknown${index}`};
-    h.store.put(`payments/pay${String(index).padStart(3, "0")}`,
+    h.store.put(`guestPayments/pay${String(index).padStart(3, "0")}`,
       {...payment,
         cancellationRefund: unprovenRazorpayIntent(payment, index + 1)});
   }
@@ -739,14 +744,14 @@ test("malformed due rows cannot block later valid refund work", async () => {
   const malformed = {...malformedPayment, amount: "not-an-integer",
     cancellationRefund: {...unprovenRazorpayIntent(malformedPayment, 40),
       nextAttemptAtMillis: 40.5}};
-  h.store.put("payments/pay039", malformed);
+  h.store.put("guestPayments/pay039", malformed);
   const stripe: PaymentDocument = {...h.payment, provider: "stripe",
     paymentId: "pay_stripe", providerPaymentId: "pi_stripe",
     stripeAccountId: "acct_one"};
-  h.store.put("payments/pay040", {...stripe,
+  h.store.put("guestPayments/pay040", {...stripe,
     cancellationRefund: planLegacyCancellationRefund({payment: stripe,
       reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: 41})});
-  const malformedBefore = JSON.stringify(h.store.get("payments/pay039"));
+  const malformedBefore = JSON.stringify(h.store.get("guestPayments/pay039"));
   const processed: string[] = [];
   const result = await reconcileNativeCancellationRefunds({
     db: queryDatabase(h.store).db, nowMillis: 1000,
@@ -755,30 +760,30 @@ test("malformed due rows cannot block later valid refund work", async () => {
     }});
   assert.deepEqual(result, {processed: 1, failed: 1});
   assert.deepEqual(processed, ["pay040"]);
-  assert.equal(JSON.stringify(h.store.get("payments/pay039")),
+  assert.equal(JSON.stringify(h.store.get("guestPayments/pay039")),
     malformedBefore);
 });
 
 test("fractional malformed ordering cannot poison durable progress",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     for (let index = 0; index < 39; index++) {
       const payment: PaymentDocument = {...h.payment,
         paymentId: `pay_unknown${index}`, orderId: `order_unknown${index}`};
-      h.store.put(`payments/pay${String(index).padStart(3, "0")}`,
+      h.store.put(`guestPayments/pay${String(index).padStart(3, "0")}`,
         {...payment,
           cancellationRefund: unprovenRazorpayIntent(payment, index + 1)});
     }
     const malformedPayment: PaymentDocument = {...h.payment,
       paymentId: "pay_malformed", orderId: "order_malformed"};
-    h.store.put("payments/pay039", {...malformedPayment,
+    h.store.put("guestPayments/pay039", {...malformedPayment,
       cancellationRefund: {...unprovenRazorpayIntent(malformedPayment, 40),
         nextAttemptAtMillis: 40.5}});
     const stripe: PaymentDocument = {...h.payment, provider: "stripe",
       paymentId: "pay_stripe", providerPaymentId: "pi_stripe",
       stripeAccountId: "acct_one"};
-    h.store.put("payments/pay040", {...stripe,
+    h.store.put("guestPayments/pay040", {...stripe,
       cancellationRefund: planLegacyCancellationRefund({payment: stripe,
         reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: 41})});
     let interrupt = true;
@@ -813,12 +818,12 @@ test("fractional malformed ordering cannot poison durable progress",
 test("negative-infinity ordering cannot poison durable progress",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     for (let index = 0; index < 40; index++) {
       const payment: PaymentDocument = {...h.payment,
         paymentId: `pay_infinite${index}`,
         orderId: `order_infinite${index}`};
-      h.store.put(`payments/pay${String(index).padStart(3, "0")}`,
+      h.store.put(`guestPayments/pay${String(index).padStart(3, "0")}`,
         {...payment, cancellationRefund: {
           ...unprovenRazorpayIntent(payment, index + 1),
           nextAttemptAtMillis: Number.NEGATIVE_INFINITY}});
@@ -826,7 +831,7 @@ test("negative-infinity ordering cannot poison durable progress",
     const stripe: PaymentDocument = {...h.payment, provider: "stripe",
       paymentId: "pay_stripe", providerPaymentId: "pi_stripe",
       stripeAccountId: "acct_one"};
-    h.store.put("payments/pay040", {...stripe,
+    h.store.put("guestPayments/pay040", {...stripe,
       cancellationRefund: planLegacyCancellationRefund({payment: stripe,
         reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: 1})});
     let interrupt = true;
@@ -862,17 +867,17 @@ test("negative-infinity ordering cannot poison durable progress",
 test("unsafe int64 ordering resumes with exact integer authority",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     const exactOrder = "-9007199254740995";
     const doublePayment: PaymentDocument = {...h.payment,
       paymentId: "pay_double", orderId: "order_double"};
-    h.store.put("payments/double000", {...doublePayment,
+    h.store.put("guestPayments/double000", {...doublePayment,
       cancellationRefund: {...unprovenRazorpayIntent(doublePayment, 1),
         nextAttemptAtMillis: -9007199254740996}});
     for (let index = 0; index < 40; index++) {
       const payment: PaymentDocument = {...h.payment,
         paymentId: `pay_integer${index}`, orderId: `order_integer${index}`};
-      h.store.put(`payments/pay${String(index).padStart(3, "0")}`,
+      h.store.put(`guestPayments/pay${String(index).padStart(3, "0")}`,
         {...payment, cancellationRefund: {
           ...unprovenRazorpayIntent(payment, index + 1),
           nextAttemptAtMillis: exactFirestoreInteger(exactOrder)}});
@@ -880,7 +885,7 @@ test("unsafe int64 ordering resumes with exact integer authority",
     const stripe: PaymentDocument = {...h.payment, provider: "stripe",
       paymentId: "pay_stripe", providerPaymentId: "pi_stripe",
       stripeAccountId: "acct_one"};
-    h.store.put("payments/pay040", {...stripe,
+    h.store.put("guestPayments/pay040", {...stripe,
       cancellationRefund: planLegacyCancellationRefund({payment: stripe,
         reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: 1})});
     let interrupt = true;
@@ -916,24 +921,24 @@ test("unsafe int64 ordering resumes with exact integer authority",
 test("long Firestore payment IDs remain valid durable cursor keys",
   async () => {
     const h = fixture("razorpay");
-    h.store.rows.delete("payments/payment1");
+    h.store.rows.delete("guestPayments/payment1");
     for (let index = 0; index < 39; index++) {
       const payment: PaymentDocument = {...h.payment,
         paymentId: `pay_unknown${index}`, orderId: `order_unknown${index}`};
-      h.store.put(`payments/pay${String(index).padStart(3, "0")}`,
+      h.store.put(`guestPayments/pay${String(index).padStart(3, "0")}`,
         {...payment,
           cancellationRefund: unprovenRazorpayIntent(payment, index + 1)});
     }
     const longId = "p".repeat(300);
     const malformedPayment: PaymentDocument = {...h.payment,
       paymentId: "pay_long", orderId: "order_long"};
-    h.store.put(`payments/${longId}`, {...malformedPayment,
+    h.store.put(`guestPayments/${longId}`, {...malformedPayment,
       amount: "not-an-integer",
       cancellationRefund: unprovenRazorpayIntent(malformedPayment, 40)});
     const stripe: PaymentDocument = {...h.payment, provider: "stripe",
       paymentId: "pay_stripe", providerPaymentId: "pi_stripe",
       stripeAccountId: "acct_one"};
-    h.store.put("payments/pay040", {...stripe,
+    h.store.put("guestPayments/pay040", {...stripe,
       cancellationRefund: planLegacyCancellationRefund({payment: stripe,
         reason: "guestCancelled", targetAmountMinor: 1000, nowMillis: 41})});
     let interrupt = true;
@@ -971,7 +976,7 @@ test("ownership recovery control: Stripe cancellation staging replays exactly",
     const h = fixture();
     const payment: PaymentDocument = {...h.payment, provider: "stripe",
       providerPaymentId: "pi_one", stripeAccountId: "acct_one"};
-    h.store.put("payments/payment1", {...payment});
+    h.store.put("guestPayments/payment1", {...payment});
     h.store.put("events/event1", {status: "cancelled"});
     await h.stage();
     const intent = JSON.stringify(h.read().cancellationRefund);

@@ -532,9 +532,10 @@ export async function buildRefundPlan({
     uid: user.uid,
     eventId,
     docs: [{
-      path: `payments/${paymentId}`,
+      path: `guestPayments/${paymentId}`,
       data: {
         ...marker,
+        purpose: "booking",
         userId: user.uid,
         orderId: `${seedPrefix}_refund_order_${eventId}_${user.uid}`,
         paymentId,
@@ -828,7 +829,8 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
     db.collection("matches").where("participantIds", "array-contains", userId).get(),
     db.collection("eventParticipations").where("uid", "==", userId).get(),
     db.collection("savedEvents").where("uid", "==", userId).get(),
-    db.collection("payments").where("userId", "==", userId).get(),
+    db.collection("guestPayments").where("purpose", "==", "booking")
+      .where("userId", "==", userId).get(),
     db.collection("notifications").doc(userId).collection("items").get(),
     db.collection("profileDecisions").doc(userId).collection("outgoing").get(),
     db.collection("events").get(),
@@ -1030,7 +1032,7 @@ export async function buildLaunchCleanupPlan({
     "crossPathsShowcaseEligibility",
     "scheduleLocks",
     "savedEvents",
-    "payments",
+    "guestPayments",
     "reviews",
     "matches",
     "seedEvents",
@@ -1134,7 +1136,7 @@ export async function buildStaleEventCleanupPlan({
     "eventParticipations",
     "scheduleLocks",
     "savedEvents",
-    "payments",
+    "guestPayments",
     "reviews",
   ]) {
     const snap = await db.collection(collectionName).get();

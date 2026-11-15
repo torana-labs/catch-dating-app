@@ -22,7 +22,7 @@ const T0 = Date.UTC(2026, 10, 1, 9);
 function harness() {
   const db = new FakeFirestore({
     "users/guest-1": {displayName: "Rhea Kapoor"},
-    "payments/pay-1": {userId: "guest-1"},
+    "guestPayments/pay-1": {purpose: "booking", userId: "guest-1"},
     "organizers/org-1": {hostUserIds: ["host-1"]},
     "users/host-1": {displayName: "Meher Bhatt"},
   });
@@ -113,12 +113,12 @@ test("owner, status and links to existing records", async () => {
   const id = supportConversationId("whatsapp", "+919800001234");
   await assert.rejects(adminUpdateSupportConversationHandler(ops({
     conversationId: id, ownerUid: "ops-1", status: "open",
-    links: [{kind: "payment", path: "payments/missing", label: "x"}]}),
+    links: [{kind: "payment", path: "guestPayments/missing", label: "x"}]}),
   h.deps), (error) => error instanceof HttpsError &&
     error.code === "not-found");
   await adminUpdateSupportConversationHandler(ops({conversationId: id,
     ownerUid: "ops-1", status: "open",
-    links: [{kind: "payment", path: "payments/pay-1",
+    links: [{kind: "payment", path: "guestPayments/pay-1",
       label: "₹1,500 captured"}]}), h.deps);
   const mine = await adminListSupportConversationsHandler(
     ops({view: "mine", audience: null, limit: 20}), h.deps);

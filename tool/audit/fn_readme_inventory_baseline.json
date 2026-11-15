@@ -99,7 +99,7 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "onPaymentWritten"
+      "function": "onBookingPaymentWritten"
     },
     {
       "rule": "missingReadmeFunction",

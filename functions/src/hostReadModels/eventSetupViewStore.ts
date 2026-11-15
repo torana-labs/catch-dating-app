@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
@@ -110,7 +111,7 @@ export async function reconcileEventSetupView(
       offerPaymentsSnap, momentSnap] = await Promise.all([
       tx.get(db.collection("organizers").doc(organizerId)),
       tx.get(db.collection("eventSetupPreferences").doc(eventId)),
-      tx.get(db.collection("payments").where("eventId", "==", eventId)),
+      tx.get(bookingPayments(db).where("eventId", "==", eventId)),
       tx.get(db.collection(GUEST_PAYMENTS)
         .where("purpose", "==", "publicEvent")
         .where("eventId", "==", eventId)),

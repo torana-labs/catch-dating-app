@@ -15,7 +15,7 @@ const booking: NativePaidBooking = {userId: "user1", eventId: "event1",
   orderId: "order_one", paymentId: "pay_one", amount: 1000,
   amountMinor: 1000, currency: "INR", provider: "razorpay",
   razorpayOwnership: {projectId: "catchdates-dev", schema: "1"}};
-const paymentPath = "payments/pay_one";
+const paymentPath = "guestPayments/pay_one";
 const participationPath = "eventParticipations/event1_user1";
 function admit(store: Store) {
   return store.db().runTransaction(async (tx) => {

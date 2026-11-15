@@ -217,7 +217,7 @@ test("seed decision validation rejects stale reaction target types", () => {
 test("seed document validation accepts valid social and payment docs", () => {
   const result = validateSeedDocuments({
     docs: [
-      {path: "payments/pay-1", data: validPaymentDoc()},
+      {path: "guestPayments/pay-1", data: {...validPaymentDoc(), purpose: "booking"}},
       {
         path: "profileDecisions/runner-1/outgoing/runner-2",
         data: validSwipeDoc(),

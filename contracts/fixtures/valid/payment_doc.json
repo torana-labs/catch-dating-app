@@ -1,4 +1,5 @@
 {
+  "purpose": "booking",
   "userId": "runner-1",
   "orderId": "order-1",
   "paymentId": "pay-1",

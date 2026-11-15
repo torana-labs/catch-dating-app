@@ -62,6 +62,7 @@ OrganizerContactEventEdgeDocument {
 
 function payment(overrides: Partial<PaymentDocument> = {}): PaymentDocument {
   return {
+    purpose: "booking",
     userId: "user-1",
     orderId: "order-1",
     paymentId: "payment-1",

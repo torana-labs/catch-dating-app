@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/razorpay_pending_orders.schema.json",
   "title": "RazorpayPendingOrderDocument",
-  "description": "Server-owned tracking record for a created-but-not-yet-fulfilled Razorpay order, stored at razorpayPendingOrders/{orderId}. Lets the webhook and reconciliation sweep recover bookings when the client verification callback never lands. Deleted once the matching payments/{paymentId} completed record exists.",
+  "description": "Server-owned tracking record for a created-but-not-yet-fulfilled Razorpay order, stored at razorpayPendingOrders/{orderId}. Lets the webhook and reconciliation sweep recover bookings when the client verification callback never lands. Deleted once the matching guestPayments/{paymentId} completed booking payment exists.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "razorpayPendingOrders",

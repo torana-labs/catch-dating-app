@@ -2249,7 +2249,7 @@ failed-booking records without an intent require reconciliation because an old
 provider request may have succeeded without a saved acknowledgement.
 
 Native checkout payments retain a server-owned `cancellationRefund` intent on
-`payments/{paymentId}`. Guest cancellation saves the quoted cash amount in the
+`guestPayments/{paymentId}` (purpose `booking`). Guest cancellation saves the quoted cash amount in the
 same transaction as admission release. Replays resume that amount rather than
 recomputing the deadline. A later host cancellation may raise it to the original
 charge amount while preserving an in-flight attempt. The payment fingerprint
@@ -2453,7 +2453,7 @@ The setup steps (Basics on resume, Details, Preferences, Publication) read
 time by the setup view evaluator: triggers on the event, its
 `eventSetupPreferences`, its organizer and the seven commitment collections
 (`eventAttendees`, `eventAttendeeImports`, `eventParticipations`,
-`eventWaitlistOffers`, `organizerEventOffers`, `payments`,
+`eventWaitlistOffers`, `organizerEventOffers`, booking `guestPayments`,
 `razorpayPendingOrders`) reread every source in one transaction and write the
 document only when the projection changed. Its `summary` is the manager
 projection the retired `getPrivateEventSetup` callable returned, including
@@ -5205,7 +5205,7 @@ under their own event names (`analytics/sql/README.md`).
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
-entity on `payments` and `guestPayments`. It is written once, when the capture is first observed
+entity on booking and checkout `guestPayments`. It is written once, when the capture is first observed
 with a reported fee; refunds stay in each record's existing refund fields.
 
 ## Organizer Bills And Nominator Credit

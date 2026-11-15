@@ -1152,8 +1152,13 @@ service cloud.firestore {
     // Private configuration is exposed only through current-manager callables.
     // Immutable admission/payment evidence has no direct client access.
     // Every guest checkout (public event, form, offer), keyed by purpose prefix.
+    // One ledger for every guest checkout. Website, form and offer payments
+    // stay server-only; a guest reads only their own in-app booking payments.
     match /guestPayments/{paymentId} {
-      allow read, write: if false;
+      allow read: if isAuthed()
+        && resource.data.purpose == 'booking'
+        && resource.data.userId == request.auth.uid;
+      allow write: if false;
     }
     match /publicEventAdmissionReceipts/{documentId} {
       allow read, write: if false;
@@ -3168,11 +3173,6 @@ service cloud.firestore {
     // ── Payments ──────────────────────────────────────────────────────────────
     // Written exclusively by Cloud Functions (verifyRazorpayPayment).
     // Users can only read their own payment records.
-    match /payments/{paymentId} {
-      allow read: if isAuthed() && resource.data.userId == request.auth.uid;
-      allow write: if false;
-    }
-
     // Server-owned tracking docs for created-but-unfulfilled Razorpay orders.
     // Written by createRazorpayOrder/razorpayWebhook and the reconciliation
     // sweep only; clients never touch them.

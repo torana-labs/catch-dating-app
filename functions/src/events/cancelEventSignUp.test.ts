@@ -301,7 +301,7 @@ test(
       ),
       "eventParticipations/event-1_runner-2":
         participation("runner-2", "waitlisted"),
-      "payments/pay-1": payment(),
+      "guestPayments/pay-1": payment(),
     });
 
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
@@ -320,7 +320,7 @@ test(
       paymentId: "pay_123",
       amountInPaise: 25000,
     }]);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
     assert.deepEqual(h.notifications, []);
   }
 );
@@ -576,7 +576,7 @@ test("retried cancellation with committed no-op sends no stale push or refund",
         participation("runner-1", "signedUp"),
       "eventParticipations/event-1_runner-2":
         participation("runner-2", "waitlisted"),
-      "payments/pay-1": payment()});
+      "guestPayments/pay-1": payment()});
     h.firestore.retryAfterFirstAttempt = () => {
       h.firestore.merge("eventParticipations/event-1_runner-1",
         {status: "cancelled"});
@@ -586,7 +586,7 @@ test("retried cancellation with committed no-op sends no stale push or refund",
     assert.deepEqual(result, {cancelled: false});
     assert.deepEqual(h.notifications, []);
     assert.deepEqual(h.refunds, []);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "completed");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "completed");
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
       ?.status, "waitlisted");
   });
@@ -637,7 +637,7 @@ test(
         "runner-2",
         "waitlisted"
       ),
-      "payments/pay-1": payment(),
+      "guestPayments/pay-1": payment(),
     }, {
       sendNotificationError: new Error("FCM unavailable"),
     });
@@ -649,7 +649,7 @@ test(
       paymentId: "pay_123",
       amountInPaise: 25000,
     }]);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
   }
 );
 
@@ -669,7 +669,7 @@ test(
         "runner-1",
         "signedUp"
       ),
-      "payments/pay-1": payment(),
+      "guestPayments/pay-1": payment(),
     }, {
       nowMillis: Date.parse("2026-05-02T00:30:00.000Z"),
     });
@@ -677,7 +677,7 @@ test(
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
 
     assert.deepEqual(h.refunds, []);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "completed");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "completed");
   }
 );
 
@@ -827,6 +827,7 @@ function participation(uid: string, status: string): FakeData {
 
 function payment(): FakeData {
   return {
+    purpose: "booking",
     userId: "runner-1",
     orderId: "order_123",
     paymentId: "pay_123",
@@ -896,18 +897,18 @@ test("guest cancellation saves its refund before provider failure and replays",
       "users/runner-1": user(),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "payments/pay-1": payment()}, options);
+      "guestPayments/pay-1": payment()}, options);
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
-    const saved = h.firestore.get("payments/pay-1")?.cancellationRefund as
+    const saved = h.firestore.get("guestPayments/pay-1")?.cancellationRefund as
       {state: string; targetAmountMinor: number};
     assert.equal(saved.state, "pending");
     assert.equal(saved.targetAmountMinor, 25000);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "completed");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "completed");
     delete options.refundError;
     // Replay after the event/policy deadline must use the saved quote.
     options.nowMillis += 3 * 86400_000;
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
     assert.equal(h.refunds.length, 1);
   });
 
@@ -917,7 +918,7 @@ test("foreign Razorpay guest cancellation has zero booking or refund effects",
       "users/runner-1": user(),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "payments/pay-1": payment()}, {
+      "guestPayments/pay-1": payment()}, {
       authorizeRazorpayRefund: async (current) => {
         const ownership = resolveRazorpayOrderOwnership({
           runtimeProjectId: "catchdates-dev",
@@ -946,7 +947,7 @@ test("Razorpay ownership read failure is retryable without partial effects",
       "users/runner-1": user(),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "payments/pay-1": payment()}, options);
+      "guestPayments/pay-1": payment()}, options);
     const before = cancellationEffectSnapshot(h.firestore);
     await assert.rejects(() =>
       cancelEventSignUpHandler(request("runner-1"), h.deps), /unavailable/);
@@ -956,7 +957,7 @@ test("Razorpay ownership read failure is retryable without partial effects",
       h.deps), {cancelled: true});
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
       ?.status, "cancelled");
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
   });
 
 test("guest cancellation rebinds ownership to the transaction payment read",
@@ -966,10 +967,10 @@ test("guest cancellation rebinds ownership to the transaction payment read",
       "users/runner-1": user(),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "payments/pay-1": payment()}, options);
+      "guestPayments/pay-1": payment()}, options);
     options.afterAuthorization = () => {
       options.afterAuthorization = undefined;
-      h.firestore.merge("payments/pay-1", {amount: 26000});
+      h.firestore.merge("guestPayments/pay-1", {amount: 26000});
     };
     await assert.rejects(() =>
       cancelEventSignUpHandler(request("runner-1"), h.deps),
@@ -977,7 +978,7 @@ test("guest cancellation rebinds ownership to the transaction payment read",
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
       ?.status, "signedUp");
     assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
-    assert.equal(h.firestore.get("payments/pay-1")?.cancellationRefund,
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.cancellationRefund,
       undefined);
     assert.deepEqual(h.refunds, []);
   });
@@ -992,7 +993,7 @@ test("Stripe guest cancellation does not require Razorpay authorization",
       "users/runner-1": user(),
       "eventParticipations/event-1_runner-1":
         participation("runner-1", "signedUp"),
-      "payments/pay-1": stripePayment}, {
+      "guestPayments/pay-1": stripePayment}, {
       authorizeRazorpayRefund: async (current) => {
         authorizationCalls++;
         return ownedRazorpayAuthorization(current);
@@ -1000,7 +1001,7 @@ test("Stripe guest cancellation does not require Razorpay authorization",
     });
     await cancelEventSignUpHandler(request("runner-1"), h.deps);
     assert.equal(authorizationCalls, 0);
-    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.status, "refunded");
     assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
       ?.status, "cancelled");
   });
@@ -1015,14 +1016,14 @@ test("completed no-refund Razorpay cancellation replays without provider I/O",
     "users/runner-1": user(),
     "eventParticipations/event-1_runner-1":
       participation("runner-1", "signedUp"),
-    "payments/pay-1": payment()}, options);
+    "guestPayments/pay-1": payment()}, options);
     assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
       h.deps), {cancelled: true});
     options.authorizationError = new Error("Provider unavailable");
     assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
       h.deps), {cancelled: false});
-    assert.equal(h.firestore.get("payments/pay-1")?.cancellationRefund &&
-      (h.firestore.get("payments/pay-1")?.cancellationRefund as FakeData)
+    assert.equal(h.firestore.get("guestPayments/pay-1")?.cancellationRefund &&
+      (h.firestore.get("guestPayments/pay-1")?.cancellationRefund as FakeData)
         .state, "complete");
     assert.deepEqual(h.refunds, []);
   });
@@ -1032,7 +1033,7 @@ function cancellationEffectSnapshot(firestore: FakeFirestore): string {
     firestore.get("events/event-1"),
     firestore.get("eventParticipations/event-1_runner-1"),
     firestore.get("eventSeatLedgers/event-1"),
-    firestore.get("payments/pay-1"),
+    firestore.get("guestPayments/pay-1"),
   ]);
 }
 

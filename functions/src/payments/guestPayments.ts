@@ -3,8 +3,9 @@
  * submissions and event offers. Each document's `purpose` names the flow that
  * owns it, and each flow keeps its own contract and parser over the shared
  * money core (amount, provider ids, refunds, routing, status). Ids carry a
- * per-flow prefix (pp_, fp_, ep_), so flows never share an id. Native Catch
- * booking payments stay in `payments`.
+ * per-flow prefix (pp_, fp_, ep_), so flows never share an id. In-app Catch
+ * booking payments are purpose `booking` (see bookingPayments.ts), keyed by
+ * the provider payment id or an auto id.
  */
 export const GUEST_PAYMENTS = "guestPayments";
 

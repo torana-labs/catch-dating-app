@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {GUEST_PAYMENTS, type GuestPaymentPurpose} from
   "../payments/guestPayments";
 import * as logger from "firebase-functions/logger";
@@ -288,7 +289,7 @@ async function loadReplaySources(db: FirebaseFirestore.Firestore):
   };
   const [facts, native, ...checkouts] = await Promise.all([
     read(db.collection(growthFactsCollection), growthFactsCollection),
-    read(db.collection("payments").where("status", "in",
+    read(bookingPayments(db).where("status", "in",
       ["completed", "refunded"]).select(...nativeFields), "payments"),
     ...checkoutSources.map((source) => read(db.collection(GUEST_PAYMENTS)
       .where("purpose", "==", source).where("capturedAt", "!=", null)

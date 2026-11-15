@@ -420,7 +420,7 @@ export {
   onEventSuccessConversationGraphWritten,
   onEventSuccessFeedbackWritten,
   onEventWaitlistOfferWritten,
-  onPaymentWritten,
+  onBookingPaymentWritten,
 } from "./marketplace/eventSuccessScorecards";
 export {
   getEventSuccessConversationGraph,
@@ -1042,7 +1042,7 @@ export {adminLinkOrganizerIntakeToSales} from
 
 export {adminListSalesFitQueue, adminRefreshSalesFitQueue,
   adminRefreshSalesFitQueueBatch} from "./admin/salesFitQueue/callables";
-export {onCancelledNativeEventRefunds, onNativeCancellationRefund,
+export {onCancelledNativeEventRefunds, onBookingCancellationRefund,
   recoverNativeCancellationRefunds} from "./payments/legacyRefunds/recovery";
 
 export {adminPreviewSalesImportHistory, adminApplySalesImportHistory,
@@ -1114,7 +1114,8 @@ export {onHostEventSetupViewEventChanged,
   onHostEventSetupViewAttendeeImportChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
-  onHostEventSetupViewEventOfferChanged, onHostEventSetupViewPaymentChanged,
+  onHostEventSetupViewEventOfferChanged,
+  onHostEventSetupViewBookingPaymentChanged,
   onHostEventSetupViewPendingOrderChanged,
   onHostEventSetupViewMomentChanged} from
   "./hostReadModels/eventSetupViewTriggers";
@@ -1133,7 +1134,8 @@ export {onHostProviderConnectionViewConnectionChanged,
   "./hostReadModels/providerConnectionViewTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
-  onHostRosterInsightTraitsChanged, onHostRosterInsightPaymentChanged} from
+  onHostRosterInsightTraitsChanged,
+  onHostRosterInsightBookingPaymentChanged} from
   "./hostReadModels/rosterInsightViewTriggers";
 export {onHostEventCaseViewCaseChanged, onHostEventCaseViewAttendeeChanged,
   onHostEventCaseViewEventChanged, onHostEventCaseViewOrganizerChanged} from
@@ -1166,7 +1168,7 @@ export {
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,
   onOrganizerGrowthGuestPaymentWritten,
-  onOrganizerGrowthNativePaymentWritten,
+  onOrganizerGrowthBookingPaymentWritten,
 } from "./growth/organizerGrowthTriggers";
 export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
 export {

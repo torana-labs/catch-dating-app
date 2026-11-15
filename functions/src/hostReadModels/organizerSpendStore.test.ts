@@ -22,6 +22,7 @@ const validateProjection =
 
 function spendPayment(patch: Data = {}): Data {
   return {
+    purpose: "booking",
     userId: "user-1",
     orderId: "order-1",
     paymentId: "pay-1",
@@ -229,13 +230,13 @@ test("a full totals document stays under Firestore's 1 MiB limit", () => {
 test("an account's spend at a cutoff counts only this organizer's payments",
   async () => {
     const db = store({
-      "payments/a": spendPayment({paymentId: "a",
+      "guestPayments/a": spendPayment({paymentId: "a",
         completedAt: at(nowMillis - day)}),
-      "payments/b": spendPayment({paymentId: "b", eventId: "event-2",
+      "guestPayments/b": spendPayment({paymentId: "b", eventId: "event-2",
         completedAt: at(nowMillis + 60_000)}),
-      "payments/c": spendPayment({paymentId: "c", eventId: "other-event",
+      "guestPayments/c": spendPayment({paymentId: "c", eventId: "other-event",
         completedAt: at(nowMillis - day)}),
-      "payments/d": spendPayment({paymentId: "d", userId: "user-2"}),
+      "guestPayments/d": spendPayment({paymentId: "d", userId: "user-2"}),
     });
     const result = await db.runTransaction((tx) => accountSpendAtCutoff(
       db.asFirestore(), tx as unknown as FirebaseFirestore.Transaction, {
@@ -246,13 +247,13 @@ test("an account's spend at a cutoff counts only this organizer's payments",
 
 test("a rebuild writes what the triggers would have", async () => {
   const payments: Record<string, Data> = {
-    "payments/a": spendPayment({paymentId: "a"}),
-    "payments/b": spendPayment({paymentId: "b", eventId: "event-2",
+    "guestPayments/a": spendPayment({paymentId: "a"}),
+    "guestPayments/b": spendPayment({paymentId: "b", eventId: "event-2",
       amount: 500, amountMinor: 500, completedAt: at(nowMillis + day)}),
-    "payments/c": spendPayment({paymentId: "c", userId: "user-2",
+    "guestPayments/c": spendPayment({paymentId: "c", userId: "user-2",
       currency: "usd", amount: 300, amountMinor: 300}),
-    "payments/d": spendPayment({paymentId: "d", status: "refunded"}),
-    "payments/e": spendPayment({paymentId: "e", eventId: "other-event"}),
+    "guestPayments/d": spendPayment({paymentId: "d", status: "refunded"}),
+    "guestPayments/e": spendPayment({paymentId: "e", eventId: "other-event"}),
   };
   const incremental = store(payments);
   let change = 0;

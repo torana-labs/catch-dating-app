@@ -573,7 +573,7 @@ function createPaymentsFirestore(paymentDoc: {
   };
 }): FirebaseFirestore.Firestore {
   const docFor = (path: string, docId: string) => {
-    if (path === "payments") return paymentDoc.ref;
+    if (path === "guestPayments") return paymentDoc.ref;
     if (path === "eventInviteLinks") {
       return {
         set: async (data: Record<string, unknown>) => {

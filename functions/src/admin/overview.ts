@@ -1,3 +1,4 @@
+import {bookingPayments} from "../payments/bookingPayments";
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -204,11 +205,11 @@ export async function adminGetOverviewHandler(
       db.collection("events").where("status", "==", "active")
     ),
     countCollection(
-      db.collection("payments").where("status", "==", "completed")
+      bookingPayments(db).where("status", "==", "completed")
     ),
-    countCollection(db.collection("payments").where("status", "==", "failed")),
+    countCollection(bookingPayments(db).where("status", "==", "failed")),
     countCollection(
-      db.collection("payments").where("signUpFailed", "==", true)
+      bookingPayments(db).where("signUpFailed", "==", true)
     ),
     countPayoutRestrictedHosts(db),
     listQueueItems(db, "reports", "status", "open", "safetyReport"),
@@ -477,8 +478,8 @@ async function listPaymentIssueItems(
   db: FirebaseFirestore.Firestore
 ): Promise<AdminQueueItem[]> {
   const [failed, signupFailed] = await Promise.all([
-    db.collection("payments").where("status", "==", "failed").limit(3).get(),
-    db.collection("payments").where("signUpFailed", "==", true).limit(3).get(),
+    bookingPayments(db).where("status", "==", "failed").limit(3).get(),
+    bookingPayments(db).where("signUpFailed", "==", true).limit(3).get(),
   ]);
   const seen = new Set<string>();
   return [...failed.docs, ...signupFailed.docs]
@@ -489,7 +490,7 @@ async function listPaymentIssueItems(
     })
     .slice(0, 5)
     .map((doc) =>
-      normalizeQueueItem("paymentIssue", `payments/${doc.id}`, doc.data())
+      normalizeQueueItem("paymentIssue", `guestPayments/${doc.id}`, doc.data())
     );
 }
 

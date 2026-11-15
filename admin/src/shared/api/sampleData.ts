@@ -223,12 +223,12 @@ export const sampleOverview: AdminOverviewResponse = {
     ],
     paymentIssues: [
       {
-        id: "payments/payment-1",
+        id: "guestPayments/payment-1",
         title: "INR 150000",
         detail: "event bandra-run-4 - user user_221",
         status: "failed",
         createdAt: "2026-06-01T04:52:00.000Z",
-        targetPath: "payments/payment-1",
+        targetPath: "guestPayments/payment-1",
       },
     ],
   },

@@ -62,7 +62,10 @@ const contractedPaths: ReadonlyArray<{
     validate: validateEventAttendeeDocument,
   },
   {pattern: /^savedEvents\/[^/]+$/u, validate: validateSavedEventDocument},
-  {pattern: /^payments\/[^/]+$/u, validate: validatePaymentDocument},
+  {
+    pattern: /^guestPayments\/[^/]+$/u,
+    validate: validatePaymentDocument,
+  },
   {pattern: /^matches\/[^/]+$/u, validate: validateMatchDocument},
   {
     pattern: /^matches\/[^/]+\/messages\/[^/]+$/u,

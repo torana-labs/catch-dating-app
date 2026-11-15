@@ -1,3 +1,5 @@
+import {GUEST_PAYMENTS} from "../guestPayments";
+import {bookingPaymentRef, bookingPayments} from "../bookingPayments";
 import * as admin from "firebase-admin";
 import {onDocumentUpdated, onDocumentWritten} from
   "firebase-functions/v2/firestore";
@@ -54,7 +56,7 @@ export async function stageCancelledEventPayment(input: {
   razorpayAuthorization?: LegacyRazorpayRefundAuthorization;
 }): Promise<void> {
   const {db, paymentId, nowMillis} = input;
-  const ref = db.collection("payments").doc(paymentId);
+  const ref = bookingPaymentRef(db, paymentId);
   await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(ref);
     if (!snapshot.exists) return;
@@ -85,7 +87,7 @@ export async function stageCancelledEventRefunds(input: {
   let cursor: FirebaseFirestore.QueryDocumentSnapshot | undefined;
   let failures = 0;
   do {
-    let query = db.collection("payments").where("eventId", "==", eventId)
+    let query = bookingPayments(db).where("eventId", "==", eventId)
       .where("status", "in", ["completed", "refunded"])
       .orderBy(admin.firestore.FieldPath.documentId()).limit(100);
     if (cursor) query = query.startAfter(cursor);
@@ -131,7 +133,7 @@ export async function reconcileNativeCancellationRefunds(input: {
       cancellationRefund.state:ASCENDING,
       cancellationRefund.nextAttemptAtMillis:ASCENDING
     ) */
-    let query = db.collection("payments")
+    let query = bookingPayments(db)
       .where("cancellationRefund.state", "==", "pending")
       .where("cancellationRefund.nextAttemptAtMillis", "<=", nowMillis)
       .orderBy("cancellationRefund.nextAttemptAtMillis")
@@ -227,7 +229,7 @@ export async function recoverCancelledRazorpayStagingPage(input: {
   const durable = await openRecoveryCursor({db, nowMillis,
     stateId: CANCELLATION_STAGING_STATE_ID});
   const limit = 40;
-  let query = db.collection("payments")
+  let query = bookingPayments(db)
     .where("razorpayOwnership.projectId", "==", runtimeProjectId)
     .orderBy(admin.firestore.FieldPath.documentId()).limit(limit);
   if (durable.continuation) {
@@ -430,8 +432,8 @@ export const onCancelledNativeEventRefunds = onDocumentUpdated({
     eventId: event.params.eventId});
 });
 
-export const onNativeCancellationRefund = onDocumentWritten({
-  document: "payments/{paymentId}", retry: true, timeoutSeconds: 120,
+export const onBookingCancellationRefund = onDocumentWritten({
+  document: `${GUEST_PAYMENTS}/{paymentId}`, retry: true, timeoutSeconds: 120,
   secrets: [razorpayKeySecret, stripeSecretKey],
 }, async (event) => {
   const value = event.data?.after.data();

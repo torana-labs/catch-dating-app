@@ -1,3 +1,4 @@
+import {bookingPaymentRef} from "./bookingPayments";
 import * as logger from "firebase-functions/logger";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -48,7 +49,7 @@ export async function fulfillRazorpayPayment({
   deps: RazorpayFulfillmentDeps;
 }): Promise<{fulfilled: boolean; alreadyFinalized: boolean}> {
   const inviteAttribution = inviteAttributionFromBooking(booking);
-  const paymentRef = db.collection("payments").doc(paymentId);
+  const paymentRef = bookingPaymentRef(db, paymentId);
   const existingPaymentSnap = await paymentRef.get();
   const existingPayment = existingPaymentSnap.data();
   const existingStatus = existingPayment?.status as

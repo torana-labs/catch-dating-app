@@ -1,5 +1,6 @@
 // Reads, resets and repairs the demo state Suvbot owns for one tester. Every
 // write goes through the Firestore contracts first (suvbotDocValidation.ts).
+import {bookingPayments} from "../payments/bookingPayments";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
 import {cohortIdForUser} from "../events/eventPolicy";
 import type {
@@ -145,11 +146,12 @@ export async function buildResetPlan(
       ["eventParticipations", "uid"],
       ["scheduleLocks", "uid"],
       ["savedEvents", "uid"],
-      ["payments", "userId"],
     ]) {
       await collectQuery(db.collection(collection)
         .where(field, "==", uid), collect);
     }
+    await collectQuery(bookingPayments(db).where("userId", "==", uid),
+      collect);
   }
   if (scope === "all" || scope === "chats") {
     const matches = await db.collection("matches")
@@ -369,7 +371,7 @@ export async function summarizeDemoState(
     db.collection("eventParticipations").where("uid", "==", uid).get(),
     db.collection("matches").where("participantIds", "array-contains", uid)
       .get(),
-    db.collection("payments").where("userId", "==", uid).get(),
+    bookingPayments(db).where("userId", "==", uid).get(),
   ]);
   const active = participations.docs
     .map((doc) => doc.data())

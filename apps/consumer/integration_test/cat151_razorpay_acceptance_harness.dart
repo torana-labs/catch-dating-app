@@ -195,7 +195,8 @@ class _Cat151AcceptanceScreenState
           .doc(eventParticipationId(eventId: eventId, uid: signedInUid))
           .get(const GetOptions(source: Source.server)),
       db
-          .collection('payments')
+          .collection('guestPayments')
+          .where('purpose', isEqualTo: 'booking')
           .where('userId', isEqualTo: signedInUid)
           .where('eventId', isEqualTo: eventId)
           .where('status', isEqualTo: PaymentStatus.completed.name)
@@ -581,7 +582,7 @@ class _Cat151AcceptanceScreenState
           .doc(event.id)
           .get(const GetOptions(source: Source.server)),
       db
-          .collection('payments')
+          .collection('guestPayments')
           .doc(admittedPaymentId)
           .get(const GetOptions(source: Source.server)),
       db

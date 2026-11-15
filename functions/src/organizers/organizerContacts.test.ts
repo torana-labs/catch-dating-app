@@ -450,6 +450,7 @@ test("customer revenue includes completed organizer payments only", () => {
     status: PaymentDocument["status"],
     amountMinor: number
   ): PaymentDocument => ({
+    purpose: "booking",
     userId: "user-1",
     orderId: `${eventId}-${status}`,
     paymentId: `${eventId}-${status}`,

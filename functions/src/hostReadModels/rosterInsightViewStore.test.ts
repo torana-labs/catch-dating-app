@@ -60,7 +60,8 @@ function contact(patch: Data = {}): Data {
 }
 
 function payment(id: string, patch: Data = {}): Data {
-  return {userId: "user-1", orderId: id, paymentId: id, eventId: "past-1",
+  return {purpose: "booking", userId: "user-1", orderId: id, paymentId: id,
+    eventId: "past-1",
     amount: 1500, amountMinor: 1500, currency: "INR", status: "completed",
     signUpFailed: false, createdAt: at(nowMillis - 30 * day),
     completedAt: at(nowMillis - 30 * day), ...patch};
@@ -88,8 +89,8 @@ function rosterDocs(): Record<string, Data> {
       identityState: "ambiguous", linkedUid: null}),
     [`organizerContactTraits/${contactId(1)}`]: {
       segmentIds: ["advocate", "active_member"]},
-    "payments/p1": payment("p1"),
-    "payments/p2": payment("p2", {eventId: "past-2",
+    "guestPayments/p1": payment("p1"),
+    "guestPayments/p2": payment("p2", {eventId: "past-2",
       completedAt: at(nowMillis - 20 * day)}),
   };
 }
@@ -97,7 +98,7 @@ function rosterDocs(): Record<string, Data> {
 async function withTotals(db: AudienceTestStore): Promise<AudienceTestStore> {
   let change = 0;
   for (const [path, data] of Object.entries(db.docs)) {
-    if (!path.startsWith("payments/")) continue;
+    if (!path.startsWith("guestPayments/")) continue;
     await applyPaymentSpendChange(db.asFirestore(),
       {changeId: `c${change++}`, after: data}, clock());
   }
@@ -167,9 +168,9 @@ test("an unchanged evaluation writes nothing; a check-in elsewhere does",
 
 test("top_catch_spender is never stored", async () => {
   const docs = rosterDocs();
-  docs["payments/p3"] = payment("p3", {userId: "user-2", amount: 10,
+  docs["guestPayments/p3"] = payment("p3", {userId: "user-2", amount: 10,
     amountMinor: 10});
-  docs["payments/p4"] = payment("p4", {userId: "user-2", amount: 10,
+  docs["guestPayments/p4"] = payment("p4", {userId: "user-2", amount: 10,
     amountMinor: 10, eventId: "past-2"});
   const db = await withTotals(new AudienceTestStore(docs));
   await reconcileRosterInsightView(db.asFirestore(), "event-1", clock());
@@ -182,7 +183,7 @@ test("top_catch_spender is never stored", async () => {
 test("partial totals give no spend at all, as the callable gave none",
   async () => {
     const docs = rosterDocs();
-    docs["payments/bad"] = payment("bad", {amountMinor: 1.5});
+    docs["guestPayments/bad"] = payment("bad", {amountMinor: 1.5});
     const db = await withTotals(new AudienceTestStore(docs));
     await reconcileRosterInsightView(db.asFirestore(), "event-1", clock());
     const row = rows(db).get(attendeeId(1))!;
@@ -205,7 +206,7 @@ test("spend straddling the cutoff is recomputed, and only then",
     const docs = rosterDocs();
     docs["events/next"] = event({startTime: at(nowMillis + 7 * day),
       endTime: at(nowMillis + 7 * day + hour)});
-    docs["payments/late"] = payment("late", {eventId: "next",
+    docs["guestPayments/late"] = payment("late", {eventId: "next",
       completedAt: at(startMillis + hour), amount: 900, amountMinor: 900});
     const live = await withTotals(new AudienceTestStore(docs));
     const during = await reconcileRosterInsightView(live.asFirestore(),
@@ -301,7 +302,7 @@ test("a full view of ready, paying regulars stays under 1 MiB", async () => {
       "advocate", "high_impact_advocate", "active_member"]};
     for (const currency of ["INR", "USD", "EUR"]) {
       for (const order of [1, 2]) {
-        docs[`payments/${currency}-${order}-${index}`] = payment(
+        docs[`guestPayments/${currency}-${order}-${index}`] = payment(
           `${currency}-${order}-${index}`, {userId: `user-${index}`,
             currency, eventId: "past-1"});
       }
