@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   sourceRulesFromManifest,
+  validateToolOrder,
   validateToolRoles,
   validateToolRules,
 } from "./tool_manifest_rules.mjs";
+import {sortToolsManifestText} from "./sort_tools_manifest.mjs";
 
 const rule = (id, extra = {}) => ({id, title: `Title ${id}`, appliesTo: ["tool/**"], instruction: `Do ${id}.`, ...extra});
 const gate = (extra = {}) => ({
@@ -47,6 +49,19 @@ test("rule entries must be complete, unique and resolvable", () => {
     {id: "a", status: "active", rules: [rule("R-1")]},
     {id: "b", status: "active", alsoEnforces: ["R-1"]},
   ]), []);
+});
+
+test("tools are sorted by id, and the sorter keeps every entry's text", () => {
+  assert.deepEqual(validateToolOrder([{id: "a:one"}, {id: "b:two"}]), []);
+  assert.match(validateToolOrder([{id: "b:two"}, {id: "a:one"}]).join("\n"),
+    /a:one: tools must be sorted by id, but it follows b:two/u);
+  assert.match(validateToolOrder([{id: "a:one"}, {id: "a:one"}]).join("\n"), /sorted by id/u);
+  const text = '{\n  "version": 1,\n  "tools": [\n    {\n      "id": "b:two",\n      "checks": ["x"]\n    },\n' +
+    '    {\n      "id": "a:one", "path": "tool/a.mjs"\n    }\n  ]\n}\n';
+  const sorted = sortToolsManifestText(text);
+  assert.equal(sorted, '{\n  "version": 1,\n  "tools": [\n    {\n      "id": "a:one", "path": "tool/a.mjs"\n    },\n' +
+    '    {\n      "id": "b:two",\n      "checks": ["x"]\n    }\n  ]\n}\n');
+  assert.equal(sortToolsManifestText(sorted), sorted);
 });
 
 test("tools held to a role must declare a valid one", () => {

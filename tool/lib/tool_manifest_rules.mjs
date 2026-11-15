@@ -18,6 +18,19 @@ const roleExemptPaths = [
   /^tool\/migrations\//u,
 ];
 
+/** Tools sorted by id, so parallel additions land at different places. */
+export function validateToolOrder(tools) {
+  for (let index = 1; index < tools.length; index++) {
+    const previous = tools[index - 1].id;
+    const current = tools[index].id;
+    if (!(previous < current)) {
+      return [`${current}: tools must be sorted by id, but it follows ${previous}; ` +
+        "run node tool/lib/sort_tools_manifest.mjs."];
+    }
+  }
+  return [];
+}
+
 export function validateToolRoles(tools) {
   const errors = [];
   const activeNodeTests = new Set(tools

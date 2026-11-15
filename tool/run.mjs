@@ -18,7 +18,7 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
-import {validateToolRoles, validateToolRules} from "./lib/tool_manifest_rules.mjs";
+import {validateToolOrder, validateToolRoles, validateToolRules} from "./lib/tool_manifest_rules.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
@@ -82,7 +82,8 @@ async function checkTools(args) {
     categories.flatMap((category) => selectTools(manifest, {category, ids}));
   const errors = validateManifest(manifest, loadComponentGraph());
   if (manifestOnly) {
-    errors.push(...validateToolRoles(manifest.tools), ...validateToolRules(manifest.tools));
+    errors.push(...validateToolOrder(manifest.tools), ...validateToolRoles(manifest.tools),
+      ...validateToolRules(manifest.tools));
   }
 
   if (errors.length > 0) {
