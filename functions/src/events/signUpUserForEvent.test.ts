@@ -3,7 +3,6 @@ import {communityMembershipRows} from
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import assert from "node:assert/strict";
 import test from "node:test";
-import {withCatchBookingRows} from "../shared/testing/catchBookingRows";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
 import {signUpUserForEvent} from "./signUpUserForEvent";
@@ -68,9 +67,9 @@ class FakeQuery {
 
   private matches(data: FakeData): boolean {
     return this.filters.every(([field, op, value]) => {
-      if (op === "==") return fieldAt(data, field) === value;
+      if (op === "==") return data[field] === value;
       if (op === "in" && Array.isArray(value)) {
-        return value.includes(fieldAt(data, field));
+        return value.includes(data[field]);
       }
       throw new Error(`Unsupported query op ${op}`);
     });
@@ -184,7 +183,7 @@ class FakeTransaction {
 }
 
 function firestore(initialDocs: Record<string, FakeData | undefined>) {
-  return new FakeFirestore(withCatchBookingRows(initialDocs)) as unknown as
+  return new FakeFirestore(initialDocs) as unknown as
     FirebaseFirestore.Firestore;
 }
 
@@ -351,15 +350,15 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   assert.equal(notification?.organizerId, "club-1");
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
-  // The roster row and its pointer land in the same transaction.
-  const pointer = fake.get("eventAttendeeIndex/event-1_runner-1");
+  // The roster row and the booking's link to it land in one transaction.
+  const pointer = fake.get("eventParticipations/event-1_runner-1");
   const row = fake.get(`eventAttendees/${pointer?.attendeeId}`) as
     {status?: string; linkedUid?: string; source?: string;
       booking?: {deletedAt: unknown}} | undefined;
   assert.equal(row?.status, "registered");
   assert.equal(row?.linkedUid, "runner-1");
   assert.equal(row?.source, "catchBooking");
-  assert.equal(row?.booking?.deletedAt, null);
+  assert.equal(row?.booking, undefined);
   assert.equal(
     fake.get(`scheduleLocks/user_runner-1_${scheduleSlot(
       "2026-05-02T01:30:00.000Z"
@@ -466,7 +465,7 @@ test("verified imported guest becomes a Catch signup without a second seat",
     assert.equal(fake.get("events/event-1")?.bookedCount, 1);
     assert.equal(fake.get("eventAttendees/guest-1")?.linkedUid, "runner-1");
     assert.equal(fake.get("eventAttendees/guest-1")?.source, "hostImport");
-    assert.equal(fake.get("eventAttendeeIndex/event-1_runner-1")?.attendeeId,
+    assert.equal(fake.get("eventParticipations/event-1_runner-1")?.attendeeId,
       "guest-1");
     assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
       "signedUp");
@@ -963,8 +962,8 @@ test("current persisted approval supplies the transactional review check",
         status: "waitlisted", hostApprovalStatus: "approved"}};
     const db = firestore(records);
     await signUpUserForEvent(db, "event-1", "runner-1");
-    assert.equal((db as unknown as FakeFirestore)
-      .get("eventParticipations/event-1_runner-1")?.status, "signedUp");
+    assert.equal(records["eventParticipations/event-1_runner-1"].status,
+      "signedUp");
   });
 
 test("unrestricted signup accepts minimal identity without inventing gender",
@@ -1044,10 +1043,3 @@ test("followers first refuses a non-follower until everyone can book",
     });
     await signUpUserForEvent(later, "event-1", "runner-1");
   });
-
-/** Reads a dotted field path, as Firestore queries do. */
-function fieldAt(data: FakeData, path: string): unknown {
-  return path.split(".").reduce<unknown>((value, part) =>
-    value && typeof value === "object" ?
-      (value as FakeData)[part] : undefined, data);
-}

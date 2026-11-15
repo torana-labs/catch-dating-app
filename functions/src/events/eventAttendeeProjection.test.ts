@@ -3,9 +3,6 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {
   catchBookingAttendeeDocument,
-  catchBookingFacts,
-  eventAttendeeIndexDocument,
-  eventAttendeeIndexId,
   participationStatus,
   projectedParticipationStatus,
 } from "./eventAttendeeProjection";
@@ -60,30 +57,6 @@ test("a Catch booking does not undo a Host check-in", () => {
   );
 });
 
-test("booking facts carry payment, cohort, approval and offer state", () => {
-  assert.deepEqual(catchBookingFacts(participation({paymentId: "pay_1",
-    genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
-    hostApprovalStatus: "approved", waitlistOfferId: "offer-1",
-    inviteSource: "Instagram"}), true, now), {status: "signedUp",
-    createdAt: earlier, signedUpAt: earlier, waitlistedAt: null,
-    attendedAt: null, cancelledAt: null, inviteLinkId: null,
-    inviteCapturedAt: null, paymentId: "pay_1",
-    genderAtSignup: "woman", cohortAtSignup: "womenInterestedInMen",
-    hostApprovalStatus: "approved", hostApprovalDecidedAt: null,
-    hostApprovalDecidedBy: null, waitlistOfferStatus: null,
-    waitlistOfferedAt: null, waitlistOfferExpiresAt: null,
-    waitlistOfferAcceptedAt: null, waitlistOfferId: "offer-1",
-    inviteSource: "Instagram", deletedAt: null});
-});
-
-test("a deleted or missing booking records its deletion time", () => {
-  assert.equal(catchBookingFacts(participation({status: "deleted",
-    deletedAt: earlier}), true, now).deletedAt, earlier);
-  assert.equal(catchBookingFacts(participation(), false, now).deletedAt, now);
-  assert.equal(catchBookingFacts(participation(), false, now).status,
-    "deleted");
-});
-
 test("a Catch booking never adds private contact data to a Host row", () => {
   const existing = {eventId: "event-1", organizerId: "organizer-1",
     source: "hostImport", status: "registered", phoneE164: "+919000000001",
@@ -105,10 +78,11 @@ test("a Catch booking never adds private contact data to a Host row", () => {
   assert.equal(fresh.status, "registered");
 });
 
-test("the index pointer is keyed by event and account", () => {
-  assert.equal(eventAttendeeIndexId("event-1", "user-1"), "event-1_user-1");
-  assert.deepEqual(eventAttendeeIndexDocument({source: participation(),
-    attendeeId: "att_1", organizerId: "organizer-1", now}), {
-    eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
-    attendeeId: "att_1", createdAt: now});
+test("the roster row carries no copy of the booking", () => {
+  const row = catchBookingAttendeeDocument({source: participation({
+    paymentId: "pay_1", hostApprovalStatus: "approved"}),
+  sourceExists: true, existing: undefined, organizerId: "organizer-1",
+  displayName: "Asha", now});
+  assert.equal("booking" in row, false);
+  assert.equal("paymentId" in row, false);
 });

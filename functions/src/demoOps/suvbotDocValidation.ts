@@ -16,9 +16,6 @@ import {
   validateEventAttendeeDocument,
 } from "../shared/generated/validators/eventAttendeeDocument";
 import {
-  validateEventAttendeeIndexDocument,
-} from "../shared/generated/validators/eventAttendeeIndexDocument";
-import {
   validateMatchDocument,
 } from "../shared/generated/validators/matchDocument";
 import {
@@ -63,10 +60,6 @@ const contractedPaths: ReadonlyArray<{
   {
     pattern: /^eventAttendees\/[^/]+$/u,
     validate: validateEventAttendeeDocument,
-  },
-  {
-    pattern: /^eventAttendeeIndex\/[^/]+$/u,
-    validate: validateEventAttendeeIndexDocument,
   },
   {pattern: /^savedEvents\/[^/]+$/u, validate: validateSavedEventDocument},
   {pattern: /^payments\/[^/]+$/u, validate: validatePaymentDocument},

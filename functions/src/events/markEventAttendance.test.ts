@@ -60,7 +60,7 @@ test(
 
     assert.deepEqual(h.notifications, []);
     // The check-in moves the guest's roster row in the same transaction.
-    const pointer = h.firestore.get("eventAttendeeIndex/event-1_runner-1");
+    const pointer = h.firestore.get("eventParticipations/event-1_runner-1");
     const row = h.firestore.get(`eventAttendees/${pointer?.attendeeId}`);
     assert.equal(row?.status, "checkedIn");
     assert.equal(row?.linkedUid, "runner-1");

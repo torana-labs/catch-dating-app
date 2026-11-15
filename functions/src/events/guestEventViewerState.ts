@@ -124,8 +124,11 @@ export async function readGuestEventViewerState(params: {
         (attendee.organizerId) !== organizerId)) {
       return viewer;
     }
-    if (attendee) {
-      guest.attendeeId = attendees.docs[0].id;
+    if (attendee) guest.attendeeId = attendees.docs[0].id;
+    // A native Catch booking (read above) governs admission; its roster row
+    // is the Host's view of it, not guest roster admission.
+    if (attendee && attendee.source !== "catchBooking" &&
+        viewer.admission !== "nativeParticipation") {
       viewer.waitlisted = attendee.status === "waitlisted";
       if (["registered", "checkedIn"].includes(attendee.status)) {
         guest.action = "registered";

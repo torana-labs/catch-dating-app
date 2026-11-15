@@ -9,6 +9,9 @@
   "x-firestore-path": "eventAttendees/{attendeeId}",
   "x-document-id-field": "id",
   "x-owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
+  "x-legacy-tolerated-fields": [
+    "booking"
+  ],
   "required": [
     "eventId",
     "organizerId",
@@ -187,7 +190,7 @@
     "booking": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "description": "The Catch booking held by the account linked to this row: its own lifecycle status and times, payment, signup cohort, host approval and waitlist offer state. Null or absent when no Catch booking is linked.",
+      "description": "Retired 15 Nov 2026: the booking lives only in eventParticipations, which links to this row through attendeeId. Nothing writes or reads this field; it stays in the schema only because the legal hold keeps the copies already stored on existing rows. Remove it when the hold lifts.",
       "x-catch-ownership": "callable-owned",
       "required": ["status", "createdAt", "signedUpAt", "waitlistedAt", "attendedAt", "cancelledAt", "paymentId", "genderAtSignup", "deletedAt"],
       "properties": {

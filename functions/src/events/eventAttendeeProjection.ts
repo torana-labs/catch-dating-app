@@ -1,84 +1,13 @@
 import type {
   EventAttendeeDocument,
-  EventAttendeeIndexDocument,
   EventParticipationDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 /**
- * Pure builders for a Catch booking's roster row and index pointer. Booking
- * callables write them in their own transaction through catchBookingRoster;
- * the copy-forward migration uses the same builders.
+ * Pure builder for a Catch booking's roster row. Booking callables write it in
+ * their own transaction through catchBookingRoster. The booking itself stays
+ * in eventParticipations; the row is the Host's view of that guest.
  */
-
-/** Server-only pointer collection from a Catch account to its roster row. */
-export const EVENT_ATTENDEE_INDEX = "eventAttendeeIndex";
-
-/**
- * Deterministic index id for one account on one event.
- * @param {string} eventId Event id.
- * @param {string} uid Catch account id.
- * @return {string} Document id under eventAttendeeIndex.
- */
-export function eventAttendeeIndexId(eventId: string, uid: string): string {
-  return `${eventId}_${uid}`;
-}
-
-/**
- * The index row pointing an account at its roster row.
- * @param {object} params Source booking, row id and time.
- * @return {EventAttendeeIndexDocument} Index document.
- */
-export function eventAttendeeIndexDocument(params: {
-  source: EventParticipationDocument;
-  attendeeId: string;
-  organizerId: string;
-  now: FirebaseFirestore.Timestamp;
-}): EventAttendeeIndexDocument {
-  return {eventId: params.source.eventId, organizerId: params.organizerId,
-    uid: params.source.uid, attendeeId: params.attendeeId,
-    createdAt: params.now};
-}
-
-/**
- * The Catch booking carried on the roster row: its own lifecycle (which a
- * Host-owned row's status does not reflect) and its admission facts.
- * @param {EventParticipationDocument} source Booking.
- * @param {boolean} sourceExists Whether the booking document still exists.
- * @param {FirebaseFirestore.Timestamp} now Fallback deletion time.
- * @return {NonNullable<EventAttendeeDocument["booking"]>} Booking facts.
- */
-export function catchBookingFacts(
-  source: EventParticipationDocument,
-  sourceExists: boolean,
-  now: FirebaseFirestore.Timestamp
-): NonNullable<EventAttendeeDocument["booking"]> {
-  const deleted = !sourceExists || source.status === "deleted";
-  return {
-    status: deleted ? "deleted" : source.status,
-    createdAt: source.createdAt,
-    signedUpAt: source.signedUpAt ?? null,
-    waitlistedAt: source.waitlistedAt ?? null,
-    attendedAt: source.attendedAt ?? null,
-    cancelledAt: source.cancelledAt ?? null,
-    inviteLinkId: source.inviteLinkId ?? null,
-    inviteCapturedAt: source.inviteCapturedAt ?? null,
-    paymentId: source.paymentId ?? null,
-    genderAtSignup: source.genderAtSignup ?? null,
-    cohortAtSignup: source.cohortAtSignup ?? null,
-    ...(source.communityMembershipAtSignup ?
-      {communityMembershipAtSignup: source.communityMembershipAtSignup} : {}),
-    hostApprovalStatus: source.hostApprovalStatus ?? null,
-    hostApprovalDecidedAt: source.hostApprovalDecidedAt ?? null,
-    hostApprovalDecidedBy: source.hostApprovalDecidedBy ?? null,
-    waitlistOfferStatus: source.waitlistOfferStatus ?? null,
-    waitlistOfferedAt: source.waitlistOfferedAt ?? null,
-    waitlistOfferExpiresAt: source.waitlistOfferExpiresAt ?? null,
-    waitlistOfferAcceptedAt: source.waitlistOfferAcceptedAt ?? null,
-    waitlistOfferId: source.waitlistOfferId ?? null,
-    inviteSource: source.inviteSource ?? null,
-    deletedAt: deleted ? source.deletedAt ?? now : null,
-  };
-}
 
 /**
  * The roster row for a Catch booking. A Host-supplied row keeps its contact
@@ -129,7 +58,6 @@ export function catchBookingAttendeeDocument(params: {
     attendanceRevision: existing?.attendanceRevision ?? 0,
     preCheckInStatus: status === "checkedIn" ?
       existing?.preCheckInStatus ?? "registered" : null,
-    booking: catchBookingFacts(source, params.sourceExists, now),
   };
 }
 

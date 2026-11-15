@@ -138,7 +138,7 @@ test("waitlist-host-leads marks only pre-receipt Sales enquiries as not new", as
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
-test("catch-booking-roster gives every booking one row and one pointer", async () => {
+test("catch-booking-roster gives every booking one roster row and links it", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "catch-booking-roster");
   const created = {_seconds: 1786625400, _nanoseconds: 0};
   const db = fakeDb({
@@ -154,6 +154,13 @@ test("catch-booking-roster gives every booking one row and one pointer", async (
       source: "catchBooking", linkedUid: "linked", status: "checkedIn"},
     "eventAttendees/att_host": {eventId: "e1", organizerId: "o1",
       source: "hostImport", linkedUid: null, status: "registered"},
+    "eventParticipations/e1_pointed": {eventId: "e1", organizerId: "o1", uid: "pointed",
+      status: "signedUp", createdAt: created, updatedAt: created, signedUpAt: created,
+      waitlistedAt: null, attendedAt: null, cancelledAt: null, deletedAt: null,
+      genderAtSignup: null, paymentId: null},
+    "eventAttendees/att_pointed": {eventId: "e1", organizerId: "o1",
+      source: "catchBooking", linkedUid: "pointed", status: "registered"},
+    "eventAttendeeIndex/e1_pointed": {attendeeId: "att_pointed"},
     "publicProfiles/new": {name: "  Asha "},
   });
   const plan = await planMigration(db, migration);
@@ -165,12 +172,13 @@ test("catch-booking-roster gives every booking one row and one pointer", async (
   const [newPath, newRow] = newRows[0];
   assert.equal(newRow.displayName, "Asha");
   assert.equal(newRow.status, "registered");
-  assert.equal(newRow.booking.paymentId, "pay_1");
-  assert.equal(db.data["eventAttendeeIndex/e1_new"].attendeeId, newPath.split("/")[1]);
+  assert.equal(newRow.booking, undefined);
+  assert.equal(db.data["eventParticipations/e1_new"].attendeeId, newPath.split("/")[1]);
   assert.equal(db.data["eventAttendees/att_existing"].status, "checkedIn");
-  assert.equal(db.data["eventAttendees/att_existing"].booking.hostApprovalStatus, "approved");
-  assert.equal(db.data["eventAttendeeIndex/e1_linked"].attendeeId, "att_existing");
-  assert.equal(db.data["eventAttendees/att_host"].booking, undefined);
+  assert.equal(db.data["eventAttendees/att_existing"].booking, undefined);
+  assert.equal(db.data["eventParticipations/e1_linked"].attendeeId, "att_existing");
+  assert.equal(db.data["eventParticipations/e1_pointed"].attendeeId, "att_pointed");
+  assert.equal(db.data["eventAttendees/att_host"].linkedUid, null);
   assert.ok(db.data["eventParticipations/e1_new"]);
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
