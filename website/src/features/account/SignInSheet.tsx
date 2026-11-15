@@ -114,7 +114,7 @@ export function SignInButton({label = copy.headerSignIn, onSignedIn, size = "sm"
  * The header's signed-out control: an outlined "Sign in" with a person icon,
  * last on the right where the avatar goes once signed in (approved 15 Nov).
  */
-export function HeaderSignInButton({onPressed}: {onPressed: () => void}) {
+function HeaderSignInButton({onPressed}: {onPressed: () => void}) {
   return <CatchButton label={copy.headerSignIn} leadingIcon="person" onPressed={onPressed} size="sm" variant="secondary" />;
 }
 

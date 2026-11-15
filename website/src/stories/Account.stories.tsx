@@ -5,11 +5,11 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {AccountPageView, type AccountPageViewProps} from "../features/account/AccountPage";
 import {renderAccountForm} from "../features/account/accountForm";
 import type {WebsiteAccountController} from "../features/account/useWebsiteAccountController";
-import {HeaderSignInButton, SignInSheetView} from "../features/account/SignInSheet";
+import {SignInSheetView} from "../features/account/SignInSheet";
 import {SiteAccountMenu} from "../features/account/SiteAccountMenu";
 import type {SiteAccountMenuController} from "../features/account/useSiteAccountMenuController";
 import {SiteAccountActionProvider} from "../shared/site";
-import {useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {CatchButton, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import type {SignInSheetController, SignInStage} from "../features/account/useSignInSheetController";
 import type {AccountTab} from "../features/account/accountPageModel";
 import type {WebsiteAccount} from "../firebase";
@@ -148,7 +148,7 @@ export const Unavailable: Story = {args: {phase: "failed", account: undefined}};
 function SignInPreview({args, controller}: {args: AccountPageViewProps; controller: SignInSheetController}) {
   const {anchor, wrap} = useCatchAdaptiveSheetAnchor();
   return (
-    <SiteAccountActionProvider value={{bar: wrap(<HeaderSignInButton onPressed={noop} />),
+    <SiteAccountActionProvider value={{bar: wrap(<CatchButton label={signInCopy.headerSignIn} leadingIcon="person" onPressed={noop} size="sm" variant="secondary" />),
       menu: {label: signInCopy.headerSignIn, onPressed: noop}}}>
       <AccountPageView {...args} />
       <SignInSheetView align="end" anchor={anchor} onClose={noop} open sheet={controller} />
