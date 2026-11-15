@@ -1740,6 +1740,14 @@ service cloud.firestore {
     match /eventChatRooms/{eventId} {
       allow read, write: if false;
     }
+    // Content-free change signals: triggers move revision counters when an
+    // event chat's messages, typing, room or memberships change. The app
+    // listens and reads the chat through its callables, which re-check
+    // admission and hide blocked senders per viewer, only when they move.
+    match /eventChatSignals/{eventId} {
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid);
+      allow list, write: if false;
+    }
     match /eventChatMemberships/{membershipId} {
       allow read, write: if false;
     }

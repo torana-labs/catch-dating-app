@@ -2,13 +2,17 @@
 // in rulesHarness.cjs.
 const {
   Timestamp,
+  assert,
   assertFails,
   assertSucceeds,
   authedDb,
+  collection,
+  deleteDoc,
   describe,
   doc,
   event,
   getDoc,
+  getDocs,
   it,
   match,
   seed,
@@ -175,6 +179,29 @@ describe("firestore.rules", () => {
         "messages",
         "message-1",
       ), message));
+    });
+
+    it("lets signed-in people get an event chat signal and nothing else", async () => {
+      const signal = {eventId: "event-1", messageRevision: 3,
+        typingRevision: 1, accessRevision: 2,
+        updatedAt: Timestamp.fromDate(new Date("2026-11-15T10:00:00Z"))};
+      await seed(["eventChatSignals", "event-1"], signal);
+      const db = authedDb("runner-1");
+      const own = await assertSucceeds(getDoc(doc(db, "eventChatSignals",
+        "event-1")));
+      assert.equal(own.data().messageRevision, 3);
+      // A chat with no activity yet reads as missing, not denied.
+      const quiet = await assertSucceeds(getDoc(doc(db, "eventChatSignals",
+        "event-2")));
+      assert.equal(quiet.exists(), false);
+      await assertFails(getDocs(collection(db, "eventChatSignals")));
+      await assertFails(setDoc(doc(db, "eventChatSignals", "event-1"),
+        signal));
+      await assertFails(updateDoc(doc(db, "eventChatSignals", "event-1"),
+        {messageRevision: 9}));
+      await assertFails(deleteDoc(doc(db, "eventChatSignals", "event-1")));
+      await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(db, "eventChatSignals", "event-1")));
     });
 
     it("allows participants to reset only their own unread count", async () => {

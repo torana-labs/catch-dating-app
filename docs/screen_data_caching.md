@@ -75,7 +75,7 @@ writes a `Duration` inline.
 | `bookingState` | Price, seats, eligibility, waitlist | 5 min | 60 s | Q4 |
 | `discovery` | Search, recommendations, cross-paths suggestions, "who's going" | 10 min | 2 min | Q5 |
 | `swipeDeck` | The catches deck | 10 min | Not within the window; refetched when it runs out | Q6 |
-| `eventChat` | Event chat messages and participants | 60 s | Polling unchanged | Q7 |
+| `eventChat` | Event chat messages and participants | 60 s | Read again when the chat's change signal moves (typing at most every 3 s); no polling | Q7 |
 | `accountReference` | Operable organizers, form templates, programme list, messaging setup, tracking settings | Session | 1 h | Q8 |
 | `guestProfileAnalytics` | Guest profile analytics | Session | 10 min | Q9 |
 | `listener` | Firestore listeners on detail screens | 60 s | Never: the listener stays current | Q14 |
