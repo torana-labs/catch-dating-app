@@ -243,6 +243,9 @@
                   "{workspaceRoot}/tool/ui_capture/**/*",
                   "{workspaceRoot}/design/website/**/*",
                   "{workspaceRoot}/website/scripts/**/*",
+                  "{workspaceRoot}/website/.storybook/**/*",
+                  "{workspaceRoot}/website/src/**/*.stories.*",
+                  "{workspaceRoot}/packages/web-ui/src/**/*.stories.*",
                   "^production",
                   "!{workspaceRoot}/**/*.md"
                 ]
@@ -301,6 +304,12 @@
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/contracts/**/*",
                   "{workspaceRoot}/widgetbook/**/*",
+                  "{workspaceRoot}/docs/design_parity/comprehensive_todo.md",
+                  "{workspaceRoot}/docs/design_parity/host_shell_route_ui_audit.md",
+                  "{workspaceRoot}/docs/widget_catalog.md",
+                  "{workspaceRoot}/docs/agent_operating_model.md",
+                  "{workspaceRoot}/docs/app_architecture.md",
+                  "{workspaceRoot}/lib/hosts/*/README.md",
                   "!{workspaceRoot}/tool/**/*.md",
                   "!{workspaceRoot}/analytics/**/*.md",
                   "!{workspaceRoot}/infra/**/*.md",
@@ -500,6 +509,7 @@
                 "command": "true",
                 "cache": false,
                 "inputs": [
+                  "{workspaceRoot}/docs/migrations/clubs_to_organizers.md",
                   "{workspaceRoot}/design/components/**/*",
                   "{workspaceRoot}/design/screens/**/*",
                   "{workspaceRoot}/design/tokens/**/*",

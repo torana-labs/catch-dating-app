@@ -300,6 +300,21 @@ rather than the Functions suite. Each contract family (`contracts-admin`,
 on it: for a BigQuery or HTTP contract change Nx selects Functions and its
 readers, not the Flutter app, though the planner's lanes still run until
 parity. `tool/nx/lane_inputs.test.mjs` pins these inputs.
+A document a check reads is an input of the lane that runs the check.
+`tool/nx/markdown_inputs.test.mjs` requires two things. First, every Markdown
+`impactPath` in the tools manifest must be a `lane-tools` input, because
+`affected-tools` re-runs those entries in the Tools lane. Second, every script
+CI runs that names a Markdown path must be listed. A reader is listed with the
+lanes that run its read, and the test checks through `nx affected` that the
+document selects those lanes. A mention is listed with why the name is not a
+read. Storybook stories and config are capture-freshness inputs, because the
+capture workflow renders from the Storybook build.
+The `nx-shadow` comparison explains every disagreement by a rule in
+`tool/nx/shadow_plan.mjs`, and a fixture from the real commit pins each rule.
+In `pr` and `merge_group` it compares Nx with the planner after the manifest
+diff narrows it, which is the selection those runs use. The cut-over to Nx-only
+selection (design A) needs a replay of at least 200 main commits with no
+unexplained disagreement.
 Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns the `Deploy backend` workflows and the
 backend package verifier: those changes run Functions,
