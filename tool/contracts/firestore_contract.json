@@ -983,23 +983,6 @@
       ]
     },
     {
-      "id": "eventAttendeeIndex",
-      "path": "eventAttendeeIndex/{indexId}",
-      "rulesMatch": "/eventAttendeeIndex/{indexId}",
-      "typescriptInterface": "EventAttendeeIndexDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps the roster pointer index server-only"
-      ],
-      "owner": "Catch booking callables, inside the transaction that writes the roster row",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "eventAttendeeIndex/{eventId}_{uid} points a Catch account at its one eventAttendees row (L5, #1691); catch-booking-roster copied existing bookings forward on 14 Nov 2026."
-      ]
-    },
-    {
       "id": "eventStaffPresence",
       "path": "eventStaffPresence/{presenceId}",
       "rulesMatch": "/eventStaffPresence/{presenceId}",
