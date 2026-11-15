@@ -367,7 +367,6 @@ class EventRehearsalSettingsController
   }
 
   void _refresh() {
-    ref.invalidate(eventRehearsalProvider(sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

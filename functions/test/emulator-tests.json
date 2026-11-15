@@ -87,6 +87,7 @@
   "lib/eventRehearsal/groupStaffStore.test.js",
   "lib/eventRehearsal/assistanceSettingsStore.test.js",
   "lib/eventRehearsal/movementGuidance.test.js",
+  "lib/eventRehearsal/hostView.test.js",
   "lib/events/attendanceDisposition.test.js",
   "lib/events/attendanceReport.test.js",
   "lib/payments/formPayments/formPaymentEmulator.test.js",

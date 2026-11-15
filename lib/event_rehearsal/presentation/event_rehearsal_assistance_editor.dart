@@ -392,7 +392,6 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
         ),
       );
     }
-    ref.invalidate(eventRehearsalProvider(sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

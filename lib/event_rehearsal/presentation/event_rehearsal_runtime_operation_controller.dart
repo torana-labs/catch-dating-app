@@ -281,7 +281,6 @@ class EventRehearsalRuntimeOperationController
       if (!_current(account, epoch)) throw _sessionChanged;
       _inFlight = null;
       _clearPending();
-      _refresh();
       state = RehearsalRuntimeOperationState(
         phase: RehearsalRuntimeOperationPhase.saved,
         kind: pending.kind,
@@ -302,10 +301,7 @@ class EventRehearsalRuntimeOperationController
               'invalid-argument',
               'callable-unavailable',
             }.contains(error.code);
-        if (definitive) {
-          _clearPending();
-          _refresh();
-        }
+        if (definitive) _clearPending();
         _inFlight = null;
         state = RehearsalRuntimeOperationState(
           phase: definitive
@@ -345,8 +341,6 @@ class EventRehearsalRuntimeOperationController
     _releasePending = null;
     release?.call();
   }
-
-  void _refresh() => ref.invalidate(eventRehearsalProvider(sessionId));
 }
 
 sealed class _PendingRuntimeOperation {

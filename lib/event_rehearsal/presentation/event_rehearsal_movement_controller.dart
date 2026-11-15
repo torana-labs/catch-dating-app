@@ -303,7 +303,6 @@ class EventRehearsalMovementController
         account: review.account,
       ),
     );
-    ref.invalidate(eventRehearsalProvider(scope.sessionId));
     ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 

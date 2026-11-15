@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -76,9 +78,9 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
-          eventRehearsalProvider(
-            repository.snapshot.session.id,
-          ).overrideWith((ref) => Stream.value(repository.snapshot)),
+          eventRehearsalProvider(repository.snapshot.session.id).overrideWith(
+            (ref) => repository.watch(repository.snapshot.session.id),
+          ),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -281,9 +283,17 @@ void main() {
   );
 }
 
+/// Mirrors the host view listener: each command's result arrives on [watch].
 class _Repository extends Fake implements EventRehearsalRepository {
   _Repository(this.snapshot);
   EventRehearsalBootstrap snapshot;
+  final _published = StreamController<EventRehearsalBootstrap>.broadcast();
+  @override
+  Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
+    yield snapshot;
+    yield* _published.stream;
+  }
+
   EventRehearsalBootstrap? roleSnapshot;
   final roleReads = <String>[];
   final writes = <RehearsalAssistanceChange>[];
@@ -304,8 +314,10 @@ class _Repository extends Fake implements EventRehearsalRepository {
     RehearsalAssistanceChange change,
   ) async {
     writes.add(change);
-    return snapshot = EventRehearsalBootstrap.fromCallableData(
+    snapshot = EventRehearsalBootstrap.fromCallableData(
       practiceVisitResult(change),
     );
+    _published.add(snapshot);
+    return snapshot;
   }
 }
