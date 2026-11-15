@@ -417,8 +417,8 @@ test("executor retries a temporary rules or index error but never a Functions ba
     "deploy:--project dev deploy --only firestore:rules --non-interactive",
     "deploy:--project dev deploy --only firestore:rules --non-interactive",
   ]);
-  assert.match(recovered.stdout, /::warning::Firebase firestore:rules deploy attempt 1 of 3 failed with HTTP 503/u);
-  assert.match(recovered.stdout, /::warning::Firebase firestore:indexes deploy attempt 1 of 3 failed with ECONNRESET/u);
+  assert.match(recovered.stderr, /::warning::Firebase firestore:rules deploy attempt 1 of 3 failed with HTTP 503/u);
+  assert.match(recovered.stderr, /::warning::Firebase firestore:indexes deploy attempt 1 of 3 failed with ECONNRESET/u);
   // A compile error stops at once, and so does a 503 that outlasts three attempts.
   const compile = run("Error: Compilation errors in firestore.rules.", 9);
   assert.notEqual(compile.status, 0);

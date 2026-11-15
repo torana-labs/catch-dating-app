@@ -220,11 +220,6 @@ test("each codebase's hash changes only with what it deploys", async (t) => {
   assert.deepEqual(await edit(".env.catchdates-dev", (text) => text.replace("\"2\"", "\"9\""), "env"), ["two"]);
 });
 
-test("a module that reads files beside itself must name the workflow it loads", async (t) => {
-  const {build} = codebaseFixture(t, {betaSource: "exports.b = require(\"node:path\").join(__dirname, \"x\");\nexports.b2 = 2;\n"});
-  await assert.rejects(build(), /lib\/beta\/b\.js reads files beside itself but names no Operations workflow/u);
-});
-
 test("each Function's own hash changes only with what that Function loads and reads", async (t) => {
   const {root, functionsDir, write, build} = codebaseFixture(t);
   // A second alpha module that shares nothing with a, declares a secret, and
@@ -267,4 +262,9 @@ test("each Function's own hash changes only with what that Function loads and re
   // The setup every Function runs moves every Function.
   assert.deepEqual(await changed("src/index.ts", (text) => text.replace("initializeApp()", "initializeApp({})"), "setup"),
     ["a", "b", "b2", "c", "d"]);
+});
+
+test("a module that reads files beside itself must name the workflow it loads", async (t) => {
+  const {build} = codebaseFixture(t, {betaSource: "exports.b = require(\"node:path\").join(__dirname, \"x\");\nexports.b2 = 2;\n"});
+  await assert.rejects(build(), /lib\/beta\/b\.js reads files beside itself but names no Operations workflow/u);
 });

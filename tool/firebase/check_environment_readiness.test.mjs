@@ -753,7 +753,8 @@ test("Deploy backend checks readiness before any mutation", () => {
   const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
     "Choose the Functions to deploy", "Check the platform is serving before touching it",
-    "Report what this deploy changes", "Check this environment is ready", "Deploy Firestore indexes",
+    "Report what this deploy changes", "Read the declared secrets' newest versions", "Plan the Functions to deploy",
+    "Check this environment is ready", "Deploy Firestore indexes",
     "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Record the delivered Functions",
     "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
@@ -767,13 +768,18 @@ test("Deploy backend checks readiness before any mutation", () => {
   // mutation and the record, so the next run deploys the whole delta.
   assert.match(block("Check the platform is serving before touching it"),
     /check_platform_availability\.mjs --env "\$DEPLOY_ENVIRONMENT" --callable adminListEventDirectory --gcloud-probe/u);
-  for (const name of ["Check this environment is ready", "Retire named Functions", "Deploy Functions",
+  for (const name of ["Check this environment is ready", "Retire named Functions",
     "Check callable access and Functions parity"]) {
     assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' \}\}/u,
       `${name} is skipped for a commit older than the deployed one and while the platform is not serving`);
   }
+  // An empty per-Function plan skips the Functions deploy itself, nothing else.
+  assert.match(block("Deploy Functions"), new RegExp("if: \\$\\{\\{ steps\\.guard\\.outputs\\.skip != 'true' && " +
+    "steps\\.platform\\.outputs\\.available != 'false' && " +
+    "!\\(steps\\.plan\\.outputs\\.mode == 'planned' && steps\\.plan\\.outputs\\.count == '0'\\) \\}\\}", "u"));
   // A named run deploys those Functions only and leaves the record alone.
-  for (const name of ["Report what this deploy changes", "Deploy Firestore indexes",
+  for (const name of ["Report what this deploy changes", "Read the declared secrets' newest versions",
+    "Plan the Functions to deploy", "Deploy Firestore indexes",
     "Record the delivered Functions", "Deploy Firestore and Storage rules", "Verify the active rules match this commit",
     "Record the deployed commit"]) {
     assert.match(block(name),
@@ -921,11 +927,15 @@ test("Deploy backend records the delivered Functions before the rules, and plans
   const full = step("Record the deployed commit");
   assert.match(functions, /task: "deploy:backend-functions"/u);
   assert.match(full, /task: "deploy:backend"/u);
-  // Both records carry the same payload, so either can be the planning base.
-  const payload = /--slurpfile codebases build\/functions-codebases\.json[\s\S]*payload: \{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}/u;
+  // Both records carry the planner's payload, so either can be the planning base.
+  const payload = /--slurpfile payload build\/functions-record\.json[\s\S]*payload: \$payload\[0\]\}/u;
   assert.match(functions, payload);
   assert.match(full, payload);
-  assert.match(functions, /deployments\/\$id\/statuses" -f state=success/u);
+  // A temporary GitHub API error retries both writes.
+  for (const record of [functions, full]) {
+    assert.match(record, /node tool\/firebase\/retry_transient\.mjs --label "Recording [^"]+" -- \\\s+gh api -X POST "repos\/\$GITHUB_REPOSITORY\/deployments"/u);
+    assert.match(record, /retry_transient\.mjs --label "Marking [^"]+ delivered" -- \\\s+gh api -X POST "repos\/\$GITHUB_REPOSITORY\/deployments\/\$id\/statuses" -f state=success/u);
+  }
   assert.match(step("Report what this deploy changes"),
     /DEPLOYED_ID: \$\{\{ steps\.guard\.outputs\.functions_deployment \|\| steps\.guard\.outputs\.deployment \}\}/u);
   // The guard checks both tasks; the daily pick keeps reading the full record.
@@ -933,6 +943,60 @@ test("Deploy backend records the delivered Functions before the rules, and plans
     /for task in deploy:backend deploy:backend-functions; do/u);
   const caller = fs.readFileSync(path.join(repoRoot, ".github/workflows/backend-deploy.yml"), "utf8");
   assert.match(caller, /deployments\?environment=prod&task=deploy:backend&per_page=30/u);
+});
+
+test("Deploy backend deploys exactly the planned Functions, and retries those, not every codebase", () => {
+  const workflow = backendDeployWorkflow();
+  const step = (name) => workflow.slice(workflow.indexOf(`name: ${name}`), workflow.indexOf("\n      - ", workflow.indexOf(`name: ${name}`)));
+  const plan = step("Plan the Functions to deploy");
+  assert.match(plan, /plan_function_deploy\.mjs --current build\/functions-codebases\.json\s+--previous build\/deployed-codebases\.json --secrets build\/secret-versions\.json/u);
+  assert.match(plan, /--record-out build\/functions-record\.json\s+--summary "\$GITHUB_STEP_SUMMARY" --github-output "\$GITHUB_OUTPUT"/u);
+  assert.match(plan, /TOOLCHAIN: .*steps\.toolchain\.outputs\.firebase-tools-version.*steps\.toolchain\.outputs\.node-version/u);
+  const secrets = step("Read the declared secrets' newest versions");
+  assert.match(secrets, /gcloud secrets versions describe latest --secret="\$secret"/u);
+  assert.doesNotMatch(secrets, /versions access/u, "metadata only, never the value");
+  assert.match(secrets, /::warning::Could not read the newest version of secret \$secret/u);
+  assert.match(secrets, />> "\$GITHUB_STEP_SUMMARY"/u);
+  const deploy = step("Deploy Functions");
+  assert.match(deploy, /DEPLOY_ONLY: \$\{\{ \(steps\.choose\.outputs\.mode == 'named' \|\| inputs\.full\) && steps\.choose\.outputs\.only \|\| steps\.plan\.outputs\.only \|\| steps\.choose\.outputs\.only \}\}/u);
+  assert.match(deploy, /if \[\[ "\$NAMED" != "true" && "\$PLANNED" != "true" \]\]; then only=functions; fi/u);
+});
+
+test("Deploy backend reads each declared secret's newest version and names any it cannot read", (t) => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Read the declared secrets' newest versions");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-secret-versions-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(cwd, "build"));
+  fs.writeFileSync(path.join(cwd, ".firebaserc"), JSON.stringify({projects: {dev: "demo-project"}}));
+  const run = (secrets, deniedSecret = "") => {
+    fs.writeFileSync(path.join(cwd, "build/functions-codebases.json"), JSON.stringify({version: 2, codebases: {
+      admin: {functionSecrets: Object.fromEntries(secrets.map((secret, index) => [`f${index}`, [secret]]))}, events: {}}}));
+    const summary = path.join(cwd, "summary.md");
+    fs.writeFileSync(summary, "");
+    const result = spawnSync("bash", ["-c", `
+      gcloud() {
+        [[ "$1 $2 $3 $4" == "secrets versions describe latest" && "$6" == "--project=demo-project" ]] || return 97
+        local secret="\${5#--secret=}"
+        if [[ "$secret" == "$DENIED" ]]; then echo "PERMISSION_DENIED: secretmanager.versions.get" >&2; return 1; fi
+        printf 'projects/1/secrets/%s/versions/7\\n' "$secret"
+      }
+      ${script}
+    `], {cwd, encoding: "utf8", env: {...process.env, DEPLOY_ENVIRONMENT: "dev", GITHUB_STEP_SUMMARY: summary, DENIED: deniedSecret}});
+    return {...result, summary: fs.readFileSync(summary, "utf8"),
+      versions: result.status === 0 ? JSON.parse(fs.readFileSync(path.join(cwd, "build/secret-versions.json"), "utf8")) : null};
+  };
+  const ok = run(["STRIPE_KEY", "META_TOKEN", "STRIPE_KEY"]);
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.deepEqual(ok.versions, {versions: {META_TOKEN: "projects/1/secrets/META_TOKEN/versions/7",
+    STRIPE_KEY: "projects/1/secrets/STRIPE_KEY/versions/7"}, failures: []});
+  assert.equal(ok.summary, "");
+  // A refused read does not fail the deploy; it is named, and the plan falls back.
+  const denied = run(["STRIPE_KEY", "META_TOKEN"], "META_TOKEN");
+  assert.equal(denied.status, 0, denied.stderr);
+  assert.deepEqual(denied.versions.failures, ["META_TOKEN"]);
+  assert.match(denied.stdout, /::warning::Could not read the newest version of secret META_TOKEN: PERMISSION_DENIED/u);
+  assert.match(denied.summary, /Could not read the newest version of secret `META_TOKEN`/u);
+  assert.deepEqual(run([]).versions, {versions: {}, failures: []});
 });
 
 test("Deploy backend reports the codebases it changes against the recorded hashes and refuses nothing", (t) => {
@@ -969,18 +1033,11 @@ test("Deploy backend reports the codebases it changes against the recorded hashe
     assert.equal(everything.status, 0, JSON.stringify(scenario));
     assert.match(everything.summary, /2 codebase build\(s\), 250 Function update\(s\)/u);
   }
-  // The record a successful run writes is what the next run reads back.
-  const record = workflow.slice(workflow.indexOf("name: Record the deployed commit"));
-  assert.match(record, /--slurpfile codebases build\/functions-codebases\.json/u);
-  assert.match(record, /payload: \{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}/u);
-  const jq = spawnSync("jq", ["-n", "--slurpfile", "codebases", path.join(cwd, "build/functions-codebases.json"),
-    "{version: $codebases[0].version, codebases: ($codebases[0].codebases | map_values({hash}))}"], {encoding: "utf8"});
-  if (jq.error?.code !== "ENOENT") {
-    assert.equal(jq.status, 0, jq.stderr);
-    const next = run({payload: jq.stdout.trim()});
-    assert.equal(next.status, 0, next.stderr);
-    assert.match(next.summary, /No codebase changed\./u);
-  }
+  // The planner's record payload (version 2) is what the next run reads back.
+  const next = run({payload: JSON.stringify({version: 2, toolchain: {}, codebases: {
+    admin: {hash: "a2", functions: {}}, events: {hash: "e1", functions: {}}}})});
+  assert.equal(next.status, 0, next.stderr);
+  assert.match(next.summary, /No codebase changed\./u);
 });
 
 test("Deploy backend retires exactly the listed Functions that are live", (t) => {

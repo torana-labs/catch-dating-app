@@ -17,6 +17,10 @@
 // and readiness failures. A failure that shows both a temporary error and one
 // of these is not retried either. Functions deploys keep their own retries.
 //
+// It also wraps the GitHub API calls that write the deploy records. Retrying a
+// deployment POST whose response was lost can leave a duplicate record of the
+// same commit, which every reader treats the same as one.
+//
 // Usage: retry_transient.mjs [--label <name>] [--attempts 3] -- <command> [args...]
 // Delays between attempts come from CATCH_TRANSIENT_RETRY_DELAYS (seconds,
 // comma-separated, default "30,60") and run through `sleep`.
@@ -24,7 +28,8 @@ import {spawn, spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
 const PERMANENT = [
-  [/HTTP Error: 4(?!29)\d\d\b/u, "a 4xx error other than 429"],
+  // The Firebase CLI writes "HTTP Error: 400"; gh writes "HTTP 422".
+  [/HTTP (?:Error: )?4(?!29)\d\d\b/u, "a 4xx error other than 429"],
   // Every rules deploy prints "checking firestore.rules for compilation
   // errors..."; only the error report itself counts.
   [/Compilation errors in |\[E\] \d+:\d+ /u, "a rules compilation error"],
@@ -32,7 +37,7 @@ const PERMANENT = [
   [/\bnot-ready\b/u, "a readiness failure"],
 ];
 const TEMPORARY = [
-  [/HTTP Error: (429|500|502|503|504)\b/u, (match) => `HTTP ${match[1]}`],
+  [/HTTP (?:Error: )?(429|500|502|503|504)\b/u, (match) => `HTTP ${match[1]}`],
   [/\b(ECONNRESET|ETIMEDOUT|ECONNREFUSED|EAI_AGAIN)\b|socket hang up/u, (match) => match[1] ?? "socket hang up"],
 ];
 
@@ -107,7 +112,8 @@ async function main(argv) {
       return status;
     }
     const delay = delays[Math.min(attempt - 1, delays.length - 1)];
-    console.log(`::warning::${label} attempt ${attempt} of ${attempts} failed with ${reason}, a temporary error; retrying in ${delay}s.`);
+    // stderr, so a caller capturing the command's output gets only that.
+    console.error(`::warning::${label} attempt ${attempt} of ${attempts} failed with ${reason}, a temporary error; retrying in ${delay}s.`);
     spawnSync("sleep", [String(delay)], {stdio: "inherit"});
   }
 }
