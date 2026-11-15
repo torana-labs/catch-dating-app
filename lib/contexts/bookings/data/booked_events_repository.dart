@@ -41,15 +41,15 @@ class BookedEventsRepository {
         statuses: const {EventParticipationStatus.signedUp},
       );
 
-  /// Events the user holds a place at (booked, waitlisted or attended), for
-  /// the overlapping-schedule check the booking command also runs.
+  /// Events the user is booked or waitlisted at, for the overlapping-schedule
+  /// check. The booking command also counts attended events; those have
+  /// started, so leaving out their history keeps this read small.
   Stream<List<Event>> watchScheduledEvents({required String uid}) =>
       _watchEventsForParticipationStatuses(
         uid: uid,
         statuses: const {
           EventParticipationStatus.signedUp,
           EventParticipationStatus.waitlisted,
-          EventParticipationStatus.attended,
         },
       );
 

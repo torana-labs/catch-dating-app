@@ -42,7 +42,7 @@ class EventViewerSources {
   /// Other upcoming bookings this organizer's member price already covers.
   final int upcomingMemberPricedBookings;
 
-  /// Events the guest is booked, waitlisted or attended at, for the
+  /// Events the guest is booked or waitlisted at, for the
   /// overlapping-schedule check.
   final List<Event> scheduledEvents;
   final bool hasInviteCode;

@@ -1,8 +1,16 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_booking_facts_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_composition.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_entitlement.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
@@ -190,5 +198,55 @@ void main() {
       compose(event(), profileReady: false).restriction,
       EventViewerRestriction.bookingDetailsRequired,
     );
+  });
+
+  test('the provider composes the guest\'s listeners', () async {
+    final target = event(price: 50000);
+    final container = ProviderContainer(
+      overrides: [
+        appClockProvider.overrideWithValue(AppClock.custom(() => now)),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        watchEventProvider(
+          target.id,
+        ).overrideWith((ref) => Stream.value(target)),
+        watchUserProfileProvider.overrideWith(
+          (ref) => Stream.value(buildUser()),
+        ),
+        watchEventParticipationProvider(
+          target.id,
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(null)),
+        watchScheduledEventsProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const [])),
+        watchMyHostMembershipsProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value([testMembership()])),
+        watchEventMembershipRulesProvider(
+          target.id,
+        ).overrideWith((ref) => Stream.value(null)),
+        watchGuestCommunityMembershipsProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const {})),
+        watchPublishedHostMembershipPlansProvider(
+          'organizer-1',
+        ).overrideWith((ref) => Stream.value([testPlan()])),
+        watchMyHostMembershipBenefitUsesProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const [])),
+        watchSignedUpEventsProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const [])),
+      ],
+      retry: (count, error) => null,
+    );
+    addTearDown(container.dispose);
+    final provider = eventViewerStateProvider(target.id, 'runner-1');
+    final subscription = container.listen(provider, (_, _) {});
+    addTearDown(subscription.close);
+    final viewer = await container.read(provider.future);
+    expect(viewer.route, EventViewerRoute.catchFreeBooking);
+    expect(viewer.quotedPriceInPaise, 0);
+    expect(viewer.hostMembership?.memberPriceApplied, isTrue);
   });
 }
