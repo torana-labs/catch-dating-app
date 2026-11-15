@@ -7297,6 +7297,25 @@
       "role": "gate"
     },
     {
+      "id": "ci:weekly-metrics",
+      "category": "ci",
+      "path": "tool/ci/ci_metrics.mjs",
+      "command": "node tool/ci/ci_metrics.mjs --dry-run",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci-metrics.yml",
+        "tool/ci/ci_metrics.mjs",
+        "tool/ci/ci_metrics.test.mjs"
+      ],
+      "description": "Posts one comment a week to the 'Weekly CI metrics' issue: main CI's time to a Required CI answer and job minutes per run by event, merge-queue runs per merged pull request, main pushes that reused the queue's result, peak concurrency, failure rates and flaky jobs, each compared with the previous week.",
+      "checks": [
+        "node --check tool/ci/ci_metrics.mjs",
+        "node --test tool/ci/ci_metrics.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:selection-miss-report",
       "category": "ci",
       "path": "tool/ci/selection_miss_report.mjs",
