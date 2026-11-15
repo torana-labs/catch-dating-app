@@ -1253,7 +1253,10 @@ folder. `--explain` on `functions_unit_test_selection.mjs` says why each
 selected test runs. `tool/impact/selection_replay.mjs --baseline <old
 functions_test_selection.mjs>` replays recent `main` commits through two
 selectors and lists every test the new one drops, with the reads that show it
-can't read the change.
+can't read the change. `tool/ci/selection_miss_report.mjs` (the
+`selection-miss` job of `Main CI alert`) checks failed nightly Functions tests against
+the selection of the commits since the last green nightly and reports any that
+none selected.
 `functions/scripts/run-tests.cjs` honors the result through
 `CATCH_TEST_SELECTION`; the merge queue, main and nightly run every listed test
 (`--full`). With `--github-output` it also writes the emulator shards CI starts
@@ -1301,3 +1304,19 @@ for the offline release-boundary tests.
 ## Generated Contract Outputs
 
 The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.
+
+In CI, validation lanes use `.github/actions/generate-contracts-cached`, which
+restores these outputs from a cache instead of regenerating them (about 28
+seconds a job). The key hashes every generator input: `contracts/**`,
+`tool/contracts/**`, `tool/lib/**`, the Functions manifest and lockfile, the
+action and the Node version. Only the validation lanes listed in
+`tool/ci/generate_contracts_cache.test.mjs` use it. Delivery, release,
+manually dispatched workflows and `contracts-ci.yml` use
+`.github/actions/generate-contracts`, which has no cache, so a ref they check
+out can never write an entry; the cached action also skips the cache on a
+manual dispatch or when the checkout is not the run's own commit. A hit still
+installs the Functions dependencies, because the generated validators load from
+`functions/node_modules`. The nightly run regenerates from scratch and fails if
+the cached outputs differ, which would mean the key misses an input. The
+tracked `brand.ts`, `notificationCopyEn.ts`, `marketCatalog.ts` and
+`adminActionCatalog.ts` are never cached.

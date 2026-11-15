@@ -45,7 +45,11 @@ top of the file, as Flutter tests do:
 Without that comment, a computed read, a child process or a dynamic import
 keeps every test that reaches the file on the broad rule: it runs whenever the
 change's top-level folder is named anywhere in its tree. `--explain` on the
-selector shows why each test was picked. The `test:rules` lane runs the
+selector shows why each test was picked. After a failed nightly, the
+`selection-miss` job of the `Main CI alert` workflow checks each failing Functions test against the
+pull request selection of every commit since the last green nightly, and opens
+or comments on a "Test selection missed a failing test" issue for any test no
+commit selected (`tool/ci/selection_miss_report.mjs`). The `test:rules` lane runs the
 strict list in `functions/test/emulator-tests.json`: add each new
 emulator-dependent test there, never to `functions/package.json`, whose edits
 redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
@@ -90,11 +94,14 @@ Flutter SDK, need no root because they follow global inputs. A computed path
 inside a declared root is trusted, so the nightly full run is the backstop for
 a declaration that misses a read.
 
-`.github/workflows/flutter-ci.yml` compiles Widgetbook and runs the Catch UI,
-Kernel, Consumer and Host package suites on every relevant Flutter change. On
+`.github/workflows/flutter-ci.yml` runs the Kernel, Catch UI, Consumer and Host
+package suites and compiles Widgetbook in one job, "Catch UI, Consumer & Host
+package tests", on every relevant Flutter change; a failing suite doesn't stop
+the others, and the job summary lists each outcome. On
 a pull request each package suite and Widgetbook run only when the change
 reaches its pubspec path-dependency closure
-(`tool/ci/flutter_package_scope.mjs`); a skipped suite leaves its job green
+(`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
+reach none unless a closure bundles or imports them); a skipped suite leaves its job green
 with a "not affected" reason in the job summary. Locally,
 `node tool/harness/verify_local.mjs` runs them all. Each test shard uploads its
 own LCOV; nightly and unverified main runs merge them into a feature-level

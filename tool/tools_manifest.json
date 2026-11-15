@@ -817,6 +817,52 @@
       "role": "gate"
     },
     {
+      "id": "ci:generate-contracts-cache",
+      "category": "ci",
+      "path": "tool/ci/generate_contracts_cache.test.mjs",
+      "command": "node --test tool/ci/generate_contracts_cache.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/actions/generate-contracts-cached/**",
+        ".github/actions/generate-contracts/**",
+        ".github/workflows/_backend-deploy.yml",
+        ".github/workflows/_web-hosting-build.yml",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/contracts-ci.yml",
+        ".github/workflows/data-validation.yml",
+        ".github/workflows/demo-ops-ci.yml",
+        ".github/workflows/firestore-rules-ci.yml",
+        ".github/workflows/flutter-ci.yml",
+        ".github/workflows/functions-ci.yml",
+        ".github/workflows/host-website.yml",
+        ".github/workflows/marketing-captures.yml",
+        ".github/workflows/mobile-beta.yml",
+        ".github/workflows/operations-ci.yml",
+        ".github/workflows/ops-seed-environment.yml",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/release-readiness.yml",
+        ".github/workflows/tools-ci.yml",
+        ".github/workflows/visual-integration-ci.yml",
+        ".github/workflows/website-next-preview.yml",
+        ".github/workflows/widgetbook-golden-baselines.yml",
+        "tool/ci/generate_contracts_cache.test.mjs"
+      ],
+      "description": "Keeps the schema contract cache opt-in, keyed on every generator input, out of delivery, release and generator-checking workflows, and verified nightly against a from-scratch generation.",
+      "checks": [
+        "node --check tool/ci/generate_contracts_cache.test.mjs",
+        "node --test tool/ci/generate_contracts_cache.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",
@@ -4456,7 +4502,7 @@
       "safety": "local-writes-artifacts",
       "status": "active",
       "role": "generator",
-      "description": "Validates manual or same-repository capture-label requests; plans on Linux which captures are stale and seeds the rest from main-line CI bundles; renders only stale captures with the canonical macOS exporter, or packages a Linux reuse bundle when none are, from exact source/controller checkouts, with distinct workflow and trigger provenance and without changing goldens or publishing.",
+      "description": "Validates manual or same-repository capture-label requests; plans on Linux which captures are stale and seeds the rest from any same-repository producer bundle whose input fingerprint matches; the nightly renders everything only when the native font or macOS runner image changed; renders only stale captures with the canonical macOS exporter, or packages a Linux reuse bundle when none are, from exact source/controller checkouts, with distinct workflow and trigger provenance and without changing goldens or publishing.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -4466,6 +4512,32 @@
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
         "node --test tool/marketing/export_hosted_captures.test.mjs"
+      ]
+    },
+    {
+      "id": "marketing:capture-drift",
+      "category": "marketing",
+      "path": "tool/marketing/compare_capture_drift.mjs",
+      "impactPaths": [
+        "tool/marketing/compare_capture_drift.test.mjs",
+        ".github/workflows/marketing-captures-drift.yml",
+        "tool/marketing/lib/capture_seeds.mjs",
+        "tool/marketing/lib/capture_provenance.mjs"
+      ],
+      "command": "node tool/marketing/compare_capture_drift.mjs",
+      "safety": "local-writes-artifacts",
+      "status": "active",
+      "role": "gate",
+      "description": "Weekly compare-only render: finds the app capture PNGs main would reuse, renders them afresh on macOS and fails, naming the captures, when any image bytes differ. Never republishes.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "checks": [
+        "node --check tool/marketing/compare_capture_drift.mjs",
+        "node --test tool/marketing/compare_capture_drift.test.mjs"
       ]
     },
     {
@@ -7196,6 +7268,29 @@
         "node --test tool/ci/main_red_alert.test.mjs"
       ],
       "role": "gate"
+    },
+    {
+      "id": "ci:selection-miss-report",
+      "category": "ci",
+      "path": "tool/ci/selection_miss_report.mjs",
+      "command": "node tool/ci/selection_miss_report.mjs",
+      "safety": "remote-write",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/functions-ci.yml",
+        ".github/workflows/main-red-alert.yml",
+        "functions/scripts/run-tests.cjs",
+        "tool/ci/selection_miss_report.mjs",
+        "tool/ci/selection_miss_report.test.mjs",
+        "tool/lib/functions_module_graph.mjs",
+        "tool/lib/functions_test_selection.mjs"
+      ],
+      "description": "After a failed nightly, checks each failing Functions unit and emulator test against the pull request selection of every commit since the last green nightly, and opens or comments on one 'Test selection missed a failing test' issue for any test none selected. Report-only.",
+      "checks": [
+        "node --check tool/ci/selection_miss_report.mjs",
+        "node --test tool/ci/selection_miss_report.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "ci:required-ci-floor",

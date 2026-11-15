@@ -13,6 +13,7 @@ import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqu
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {extractSteps} from "./lib/workflow_steps.mjs";
+import {parse as parseYaml} from "yaml";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
@@ -245,26 +246,28 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
 
 test("Flutter package suites and Widgetbook run only for changes their closure reaches", () => {
   const flutter = workflow("flutter-ci.yml");
-  for (const [step, packages] of [
-    ["Decide which package suites this change reaches", ["packages/catch_ui", "packages/kernel", "apps/consumer", "apps/host"]],
-    ["Decide whether this change reaches Widgetbook", ["widgetbook"]],
-  ]) {
-    const scope = namedStep(flutter, step);
-    assert.match(scope, /node tool\/ci\/flutter_package_scope\.mjs/u);
-    assert.match(scope, /--event "\$EVENT_NAME"/u);
-    assert.match(scope, /EVENT_NAME: \$\{\{ github\.event_name \}\}/u);
-    assert.match(scope, /--summary "\$GITHUB_STEP_SUMMARY"/u);
-    for (const name of packages) assert.match(scope, new RegExp(`--package ${name}\\b`, "u"));
+  const scope = namedStep(flutter, "Decide which package suites this change reaches");
+  assert.match(scope, /node tool\/ci\/flutter_package_scope\.mjs/u);
+  assert.match(scope, /--event "\$EVENT_NAME"/u);
+  assert.match(scope, /EVENT_NAME: \$\{\{ github\.event_name \}\}/u);
+  assert.match(scope, /--summary "\$GITHUB_STEP_SUMMARY"/u);
+  for (const name of ["packages/kernel", "packages/catch_ui", "apps/consumer", "apps/host", "widgetbook"]) {
+    assert.match(scope, new RegExp(`--package ${name}\\b`, "u"));
   }
-  for (const [step, output] of [
-    ["Catch UI package tests", "catch_ui"],
-    ["Kernel package tests", "kernel"],
-    ["Consumer package tests", "consumer"],
-    ["Host package tests", "host"],
-    ["Build Widgetbook web app", "widgetbook"],
-    ["Check the Widgetbook golden inventory", "widgetbook"],
+  // Each suite keeps its own scope output, and runs after an independent
+  // suite fails once its own setup step succeeded.
+  for (const [step, setup, output] of [
+    ["Kernel package tests", "pub", "kernel"],
+    ["Catch UI package tests", "pub", "catch_ui"],
+    ["Consumer package tests", "pub", "consumer"],
+    ["Host package tests", "pub", "host"],
+    ["Resolve Widgetbook dependencies", "pub", "widgetbook"],
+    ["Check the Widgetbook golden inventory", "widgetbook_pub", "widgetbook"],
+    ["Build Widgetbook web app", "widgetbook_pub", "widgetbook"],
   ]) {
-    assert.match(namedStep(flutter, step), new RegExp(`if: steps\\.scope\\.outputs\\.${output} == 'true'`, "u"), step);
+    assert.match(namedStep(flutter, step), new RegExp(
+      `if: \\$\\{\\{ !cancelled\\(\\) && steps\\.${setup}\\.outcome == 'success' && steps\\.scope\\.outputs\\.${output} == 'true' \\}\\}`,
+      "u"), step);
   }
 });
 
@@ -322,56 +325,92 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
 });
 
-test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequentially", () => {
+test("Flutter CI runs every package suite and Widgetbook in one job without masking failures", () => {
   const flutter = workflow("flutter-ci.yml");
+  // Widgetbook folded into the package job; host-website.yml's queue
+  // validation looks the job up by this exact name.
+  assert.doesNotMatch(flutter, /^  widgetbook:\n/mu);
+  assert.doesNotMatch(flutter, /Widgetbook analyze & build/u);
   const job = flutter.slice(
-    flutter.indexOf("  app-package-tests:"), flutter.indexOf("  widgetbook:"),
+    flutter.indexOf("  app-package-tests:"), flutter.indexOf("  analyze-and-test:"),
   );
-  assert.match(job, /^  app-package-tests:\n/mu);
+  assert.match(job, /^  app-package-tests:\n(?:    #.*\n)*    name: Catch UI, Consumer & Host package tests\n/mu);
+  assert.match(workflow("host-website.yml"), /flutter \/ Catch UI, Consumer & Host package tests/u);
+  assert.match(job, /timeout-minutes: 35\n/u);
   assert.doesNotMatch(job, /continue-on-error:|\n    if:|strategy:/u);
   const steps = extractSteps(`jobs:\n${job}`);
-  for (const [name, directory] of [
-    ["Catch UI package tests", "packages/catch_ui"],
-    ["Consumer package tests", "apps/consumer"],
-    ["Host package tests", "apps/host"],
+  const order = [];
+  for (const [name, directory, run] of [
+    ["Kernel package tests", "packages/kernel", "dart test --concurrency=1"],
+    ["Catch UI package tests", "packages/catch_ui", "flutter test --concurrency=1 --exclude-tags=golden"],
+    ["Consumer package tests", "apps/consumer", "flutter test --concurrency=1"],
+    ["Host package tests", "apps/host", "flutter test --concurrency=1"],
+    ["Resolve Widgetbook dependencies", "widgetbook", "flutter pub get"],
+    ["Check the Widgetbook golden inventory", "widgetbook",
+      'flutter test test/primitive_goldens_test.dart --plain-name "generator visits every registered case and every designation once"'],
+    ["Build Widgetbook web app", "widgetbook", "flutter build web --release"],
   ]) {
     const matches = steps.filter((step) => step.name === name);
     assert.equal(matches.length, 1, `${name} must run exactly once`);
     const [step] = matches;
-    assert.equal(step.workingDirectory, directory);
     // No filenames or name filters: Flutter discovers the whole package,
     // including nested and newly added test files. The library's macOS PNG
     // goldens run in visual-integration-ci.yml, so its job excludes the tag.
-    assert.equal(step.run, directory === "packages/catch_ui" ?
-      "flutter test --concurrency=1 --exclude-tags=golden" : "flutter test --concurrency=1");
-    assert.equal(step.runnable, true);
-    // The only condition is the pull request's change scope; locally and on
-    // every other event the suite runs.
-    assert.doesNotMatch(namedStep(job, name), /continue-on-error:/u);
-    assert.match(step.if, /^steps\.scope\.outputs\.\w+ == 'true'$/u);
+    assert.equal(step.workingDirectory, directory);
+    assert.equal(step.run, run);
+    // CI narrows to the change scope; locally every suite still runs.
+    assert.equal(step.runnable, true, name);
+    // No implicit success(): a failed suite never hides an independent one.
+    assert.match(step.if, /^\$\{\{ !cancelled\(\) && /u, name);
+    order.push(steps.indexOf(step));
   }
-  const kernel = steps.filter((step) => step.name === "Kernel package tests");
-  assert.equal(kernel.length, 1, "Kernel package tests must run exactly once");
-  assert.equal(kernel[0].workingDirectory, "packages/kernel");
-  // The kernel has no Flutter dependency, so Dart runs its whole test directory.
-  assert.equal(kernel[0].run, "dart test --concurrency=1");
-  assert.equal(kernel[0].runnable, true);
-  assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
+  // Cheapest first, the long Widgetbook web build last.
+  assert.deepEqual(order, [...order].sort((left, right) => left - right));
+  // Shared setup runs once, before every suite.
+  assert.equal(steps.filter((step) => step.run === "flutter pub get" && step.workingDirectory === ".").length, 1);
+  assert.equal((job.match(/uses: \.\/\.github\/actions\/setup-flutter/gu) ?? []).length, 1);
+  assert.equal((job.match(/node tool\/ci\/flutter_package_scope\.mjs/gu) ?? []).length, 1);
+  // The summary names every suite's outcome, even after a failure.
+  const summary = namedStep(job, "Summarize package suite outcomes");
+  assert.match(summary, /if: always\(\)/u);
+  for (const id of ["kernel", "catch_ui", "consumer", "host", "widgetbook_pub", "widgetbook_inventory", "widgetbook_build"]) {
+    assert.match(summary, new RegExp(`\\$\\{\\{ steps\\.${id}\\.outcome \\}\\}`, "u"), id);
+  }
+  const summaryRun = steps.find((step) => step.name === "Summarize package suite outcomes");
+  const out = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "package-summary-")), "summary.md");
+  const run = spawnSync("bash", ["-e", "-c", summaryRun.run], {
+    env: {
+      ...process.env, GITHUB_STEP_SUMMARY: out,
+      SCOPE_KERNEL: "true", KERNEL: "success", SCOPE_CATCH_UI: "true", CATCH_UI: "failure",
+      SCOPE_CONSUMER: "true", CONSUMER: "success", SCOPE_HOST: "false", HOST: "skipped",
+      SCOPE_WIDGETBOOK: "true", WIDGETBOOK_PUB: "failure", WIDGETBOOK_INVENTORY: "skipped", WIDGETBOOK_BUILD: "skipped",
+    },
+    encoding: "utf8",
+  });
+  assert.equal(run.status, 0, run.stderr);
+  const table = fs.readFileSync(out, "utf8");
+  assert.match(table, /\| Catch UI package tests \| failure \|/u);
+  assert.match(table, /\| Host package tests \| not affected \|/u);
+  assert.match(table, /\| Build Widgetbook web app \| not run: its setup or an earlier step failed \|/u);
 
+  assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
+  const aggregateJob = flutter.slice(flutter.indexOf("  analyze-and-test:"));
+  assert.doesNotMatch(aggregateJob, /widgetbook|WIDGETBOOK/u);
   const aggregate = extractSteps(flutter)
     .find((step) => step.name === "Check Flutter CI results");
   assert.match(namedStep(flutter, "Check Flutter CI results"),
     /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u);
   const environment = {
     ...process.env, TEST_PLAN_RESULT: "success", GATES_RESULT: "success",
-    APP_PACKAGES_RESULT: "success", COVERAGE_RESULT: "success",
-    TESTS_RESULT: "success", WIDGETBOOK_RESULT: "success",
+    APP_PACKAGES_RESULT: "success", COVERAGE_RESULT: "success", TESTS_RESULT: "success",
   };
-  for (const [result, expected] of [["success", 0], ["failure", 1], ["skipped", 1], ["cancelled", 1]]) {
-    const run = spawnSync("bash", ["-e", "-c", aggregate.run], {
-      env: {...environment, APP_PACKAGES_RESULT: result}, encoding: "utf8",
-    });
-    assert.equal(run.status, expected, `${result}: ${run.stderr}`);
+  for (const variable of ["TEST_PLAN_RESULT", "GATES_RESULT", "APP_PACKAGES_RESULT", "TESTS_RESULT"]) {
+    for (const [result, expected] of [["success", 0], ["failure", 1], ["skipped", 1], ["cancelled", 1]]) {
+      const check = spawnSync("bash", ["-e", "-c", aggregate.run], {
+        env: {...environment, [variable]: result}, encoding: "utf8",
+      });
+      assert.equal(check.status, expected, `${variable}=${result}: ${check.stderr}`);
+    }
   }
 });
 
@@ -1559,6 +1598,19 @@ test("the emulator lane sizes its matrix from one selection and starts nothing f
   assert.match(restore, /key: firebase-tools-\$\{\{ runner\.os \}\}-\$\{\{ steps\.toolchain\.outputs\.firebase-tools-version \}\}/u);
   assert.doesNotMatch(source, /npm install -g firebase-tools/u);
   assert.ok(source.indexOf(restore) < source.indexOf(namedStep(source, "Install the Firebase CLI")));
+});
+
+// A job whose `if` has no status function gets an implicit success(), which a
+// skipped job anywhere upstream fails. The capture plan follows a native probe
+// that only the nightly runs, so every job after it must state its own status.
+test("capture jobs after the optional native probe do not inherit its skip", () => {
+  const jobs = parseYaml(workflow("marketing-captures.yml")).jobs;
+  const needs = (id) => [jobs[id].needs ?? []].flat();
+  const after = (id, root) => needs(id).some((need) => need === root || after(need, root));
+  const downstream = Object.keys(jobs).filter((id) => after(id, "native_probe"));
+  assert.deepEqual(downstream.sort(), ["export", "plan", "reuse", "storybook"]);
+  const unguarded = downstream.filter((id) => !/!cancelled\(\)|always\(\)/u.test(String(jobs[id].if ?? "")));
+  assert.deepEqual(unguarded, [], "a job after native_probe needs !cancelled() or always() in its if");
 });
 
 test("canonical native captures reach consumers before dependency setup and builds", () => {

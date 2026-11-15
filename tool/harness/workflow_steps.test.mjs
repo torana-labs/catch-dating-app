@@ -10,6 +10,7 @@ import {
   extractSteps,
   planCodegenFreshness,
   planSourcePreflight,
+  scopedCondition,
   workflowForTarget,
 } from "./lib/workflow_steps.mjs";
 
@@ -805,6 +806,32 @@ test("a change-scope condition narrows CI but still runs locally", () => {
   assert.equal(steps[0].runnable, true);
   assert.equal(steps[1].runnable, false);
   assert.equal(steps[2].runnable, false);
+});
+
+test("a scoped step that runs after an independent failure still runs locally", () => {
+  const steps = extractSteps(`jobs:
+  checks:
+    steps:
+      - name: Independent suite
+        if: \${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.kernel == 'true' }}
+        run: echo independent
+      - name: Without scope
+        if: \${{ !cancelled() && steps.pub.outcome == 'success' }}
+        run: echo unscoped
+      - name: Always with scope
+        if: \${{ always() && steps.scope.outputs.kernel == 'true' }}
+        run: echo always
+      - name: Failure outcome
+        if: \${{ !cancelled() && steps.pub.outcome == 'failure' && steps.scope.outputs.kernel == 'true' }}
+        run: echo failure
+      - name: Unwrapped
+        if: "!cancelled() && steps.scope.outputs.kernel == 'true'"
+        run: echo unwrapped
+`);
+  assert.equal(steps[0].runnable, true);
+  for (const step of steps.slice(1)) assert.equal(step.runnable, false, step.name);
+  assert.equal(scopedCondition("${{ !cancelled() && steps.scope.outputs.kernel == 'true' }}"), true);
+  assert.equal(scopedCondition("${{ steps.scope.outputs.kernel == 'true' || steps.pub.outcome == 'success' }}"), false);
 });
 
 test("policy consumers retain condition metadata without granting local execution", () => {

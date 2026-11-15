@@ -72,6 +72,7 @@ export const notCalledByCi = {
   ".github/workflows/infra-drift.yml": "operations: schedule and dispatch",
   ".github/workflows/infra-plan.yml": "its own pull_request trigger validates it",
   ".github/workflows/main-red-alert.yml": "runs after main CI (workflow_run)",
+  ".github/workflows/marketing-captures-drift.yml": "maintenance: weekly schedule and dispatch, compare-only",
   ".github/workflows/marketing-website.yml": "deploy: push to main and dispatch",
   ".github/workflows/mobile-beta.yml": "release: schedule and dispatch",
   ".github/workflows/mobile-production.yml": "release: dispatch only",
@@ -98,6 +99,9 @@ export const declaredTargets = [
   {file: "tool/deploy_firebase_targets.sh", command: /\$functions_dir/u,
     targets: ["functions/package.json", "functions/package-lock.json"],
     why: "functions_dir defaults to $repo_root/functions"},
+  {file: ".github/actions/generate-contracts-cached/action.yml", command: /bash "\$\{GITHUB_ACTION_PATH\}\/outputs_digest\.sh"/u,
+    targets: [".github/actions/generate-contracts-cached/outputs_digest.sh"],
+    why: "GITHUB_ACTION_PATH is the action's own directory"},
 ];
 // The running script itself.
 // The running script itself, or arguments passed through to a named program.

@@ -68,6 +68,23 @@ function jobFields(job) {
   return fields;
 }
 
+const SCOPE_TERM = /^steps\.scope\.outputs\.\w+ == 'true'$/u;
+const SCOPED_TERMS = [/^!cancelled\(\)$/u, /^steps\.\w+\.outcome == 'success'$/u, SCOPE_TERM];
+
+/**
+ * Whether a step condition only narrows CI to a pull request's change scope:
+ * `steps.scope.outputs.<name> == 'true'`, or
+ * `${{ !cancelled() && steps.<id>.outcome == 'success' && steps.scope.outputs.<name> == 'true' }}`.
+ */
+export function scopedCondition(value) {
+  if (SCOPE_TERM.test(value)) return true;
+  const wrapped = /^\$\{\{ (.+) \}\}$/u.exec(value);
+  if (!wrapped) return false;
+  const terms = wrapped[1].split(" && ");
+  return terms.some((term) => SCOPE_TERM.test(term)) &&
+    terms.every((term) => SCOPED_TERMS.some((pattern) => pattern.test(term)));
+}
+
 export function extractSteps(source) {
   const {lines, jobs, inherited, reason} = workflowStructure(source);
   if (reason) return [skipped(reason)];
@@ -141,7 +158,10 @@ export function extractSteps(source) {
           step.if = value;
           // A pull request's change scope only narrows CI
           // (tool/ci/flutter_package_scope.mjs); locally the step always runs.
-          if (!/^steps\.scope\.outputs\.\w+ == 'true'$/u.test(value)) {
+          // So does a scoped step that also runs after an independent step
+          // failed, once its own setup step succeeded: locally every step
+          // before it has succeeded.
+          if (!scopedCondition(value)) {
             step.skipReason = "requires an explicit environment, condition, or non-bash shell";
           }
         } else if (key === "env" || key === "shell" && (value !== "bash" || body.some(line => line.trim() && !line.trimStart().startsWith("#")))) {
@@ -150,7 +170,10 @@ export function extractSteps(source) {
       }
       const raw = lines.slice(header.line - 1, nextLine - 1).join("\n");
       if (!step.skipReason && !step.run) step.skipReason = step.uses ? `composite action (${step.uses})` : "no run block";
-      if (step.run && GITHUB_COUPLED.test(raw)) step.skipReason = "references GitHub Actions runtime context";
+      // An accepted scope condition is evaluated by CI, not by the step's shell.
+      const coupled = step.if && scopedCondition(step.if) ?
+        raw.split("\n").filter((line) => !/^\s*if:/u.test(line)).join("\n") : raw;
+      if (step.run && GITHUB_COUPLED.test(coupled)) step.skipReason = "references GitHub Actions runtime context";
       if (context.length && step.run) step.skipReason = `requires inherited execution context (${context.join(", ")})`;
       step.runnable = step.skipReason === null;
       return step;

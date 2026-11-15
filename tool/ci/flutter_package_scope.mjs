@@ -208,9 +208,24 @@ function expandGenerated(changed) {
   return [...expanded];
 }
 
+/**
+ * The `packages/*` directories that hold a package.json and no pubspec.yaml:
+ * React and web packages no Dart build resolves. They are derived from the
+ * tree at run time. A job still runs when its closure reaches one of their
+ * files, through a bundled asset or a relative Dart directive.
+ */
+export function webOnlyPackages(files, manifests) {
+  const dartPackages = new Set(manifests.map(directoryOf));
+  return files
+    .filter((name) => /^packages\/[^/]+\/package\.json$/u.test(name))
+    .map(directoryOf)
+    .filter((directory) => !dartPackages.has(directory));
+}
+
 /** Whether a path is one some rule classifies, so it cannot hide a reader. */
-function classified(name, packageDirectories) {
+function classified(name, packageDirectories, webPackages = []) {
   return packageDirectories.some((directory) => directory !== "" && name.startsWith(`${directory}/`)) ||
+    webPackages.some((directory) => name.startsWith(`${directory}/`)) ||
     name.startsWith("lib/") || name.startsWith("assets/") ||
     UNREACHABLE_DIRECTORIES.some((directory) => name.startsWith(directory)) ||
     UNREACHABLE_ROOT_FILES.test(name) ||
@@ -229,7 +244,8 @@ export function decide({packages, changed, event, full = false, commitWindow = f
   const workspace = changed.filter(workspaceInput);
   if (workspace.length > 0) return all(`workspace input changed: ${workspace.slice(0, 5).join(", ")}`);
   const packageDirectories = manifests.map(directoryOf);
-  const unclassified = changed.filter((name) => !classified(name, packageDirectories));
+  const webPackages = webOnlyPackages(files, manifests);
+  const unclassified = changed.filter((name) => !classified(name, packageDirectories, webPackages));
   if (unclassified.length > 0) return all(`unclassified path changed: ${unclassified.slice(0, 5).join(", ")}`);
   const expanded = expandGenerated(changed);
   const decisions = {};
@@ -257,14 +273,15 @@ function git(args) {
   return execFileSync("git", args, {encoding: "utf8", maxBuffer: 1 << 28});
 }
 
-/** Every tracked Dart source and pubspec at [sha], read in one batch. */
+/** Every tracked Dart source, pubspec and packages/* package.json at [sha], read in one batch. */
 function readTree(sha) {
   const entries = git(["ls-tree", "-r", "-z", sha]).split("\0").filter(Boolean).map((entry) => {
     const tab = entry.indexOf("\t");
     const [, type, object] = entry.slice(0, tab).split(" ");
     return {name: entry.slice(tab + 1), type, object};
   }).filter(({name, type}) => type === "blob" &&
-    (name.endsWith(".dart") || name === "pubspec.yaml" || name.endsWith("/pubspec.yaml")));
+    (name.endsWith(".dart") || name === "pubspec.yaml" || name.endsWith("/pubspec.yaml") ||
+      /^packages\/[^/]+\/package\.json$/u.test(name)));
   const output = execFileSync("git", ["cat-file", "--batch"], {
     input: `${entries.map(({object}) => object).join("\n")}\n`,
     maxBuffer: 1 << 30,

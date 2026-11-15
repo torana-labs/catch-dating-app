@@ -438,9 +438,15 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
-On a pull request, the "Catch UI, Consumer & Host package tests" and
-"Widgetbook analyze & build" jobs run each package suite and the Widgetbook
-build only when the change reaches it (`tool/ci/flutter_package_scope.mjs`).
+One job, "Catch UI, Consumer & Host package tests", runs the Kernel, Catch
+UI, Consumer and Host package suites and then the Widgetbook dependency
+resolution, golden inventory and web build, after one shared setup. The job
+keeps that name because `host-website.yml`'s queue validation looks it up. Each
+suite is its own step with `!cancelled()` and its own setup step's success in
+its condition, so a failing suite never hides an independent one; any failure
+still fails the job, and a final step lists every suite's outcome in the job
+summary. On a pull request, each package suite and the Widgetbook steps run
+only when the change reaches them (`tool/ci/flutter_package_scope.mjs`).
 A suite's closure is its package directory and those of its transitive pubspec
 path dependencies (only `lib/` and `assets/` of the root package), plus what
 those manifests bundle from outside their directories and every Dart file the
@@ -452,7 +458,10 @@ lives. These keep every suite running: a workspace input (any `pubspec.lock`,
 `analysis_options*.yaml`, `l10n.yaml`, `build.yaml`, `dart_test.yaml`,
 `.metadata`, `tool/ci/toolchain.env`, `tool/harness/**`, the scope script, the
 Flutter CI workflow or its setup actions); any path no rule classifies; and a
-manifest the script cannot read. A skipped suite leaves its job green with a
+manifest the script cannot read. A `packages/*` directory with a
+`package.json` and no `pubspec.yaml` (the React and web packages, found in the
+head tree at run time) is classified as web-only, so a change there skips
+every suite unless a closure bundles or imports one of its files. A skipped suite leaves its job green with a
 "not affected: <reason>" summary, so the Required CI names are unchanged.
 Merge queue, main, nightly, manual and full runs execute every suite.
 
@@ -531,7 +540,10 @@ runs only outside pull requests and queue groups (nightly and unverified main
 runs); a pull request does not wait a runner turn for it. Compare nightly
 reports for full-suite trends. A shard
 containing only repository probes can legitimately observe no product lines.
-The matrix contains at most four nonempty shards and the required aggregate
+The planner sizes the matrix to the selection: one shard per 110 selected
+files, rounded up, between one and four (`shardCount` in
+`tool/harness/lib/flutter_test_selection.dart`), so a small selection doesn't
+pay the setup and runner wait of four shards. The matrix contains at most four nonempty shards and the required aggregate
 rejects missing planner or test results, and a missing coverage result outside
 pull requests and queue groups.
 
@@ -645,7 +657,7 @@ The current workflows are:
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
 | `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
-| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); a change outside `functions/` and `contracts/` reaches a test only when its import tree can read that path (`tool/lib/functions_test_reads.mjs`, `// test-selection-reads:` declarations), and a tree with an unbounded read keeps the broad top-level-folder rule. The merge queue, main and nightly run every discovered test. |
+| `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. On a pull request, `npm test` runs only the node --test files the change can reach (`tool/impact/functions_unit_test_selection.mjs`, through `CATCH_UNIT_TEST_SELECTION`); a change outside `functions/` and `contracts/` reaches a test only when its import tree can read that path (`tool/lib/functions_test_reads.mjs`, `// test-selection-reads:` declarations), and a tree with an unbounded read keeps the broad top-level-folder rule. The merge queue, main and nightly run every discovered test; the nightly also keeps a JUnit report for the test selection miss report. |
 | `.github/workflows/firestore-rules-ci.yml` | One `Plan emulator shards` job runs the Firestore and Storage contract checks and chooses the strict emulator tests; then zero, one or three emulator shards run them. A pull request no strict test can reach starts no emulator, up to 15 selected tests run in one shard, and merge-queue, main and nightly runs always use three. npm, the Firebase CLI and the emulator jars are cached. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
@@ -2142,6 +2154,32 @@ jobs separately; commented on each further failure; closed with a comment on
 the next green run. Opening the issue notifies repository watchers. Cancelled
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
+
+### Test selection miss report
+
+Pull requests run only the Functions unit and emulator tests their change can
+reach; the nightly runs them all. The `selection-miss` job of `Main CI alert`
+(`.github/workflows/main-red-alert.yml`, driven by
+`tool/ci/selection_miss_report.mjs`) runs after a failed nightly. It reads the
+nightly's failing Functions test files from its reports: the unit lane's JUnit
+report (`functions-unit-junit-*`, kept only on nightly runs through
+`CATCH_UNIT_TEST_JUNIT_PATH`) and the emulator shards' execution evidence
+(`backend-integration-execution-*`). For each failure it asks whether the pull
+request selection of any first-parent commit since the last green nightly
+(at most 150) would have run that test, using today's module graph. A test
+none of them selected is listed in one open issue, "Test selection missed a
+failing test": opened on the first miss, commented on after that. Nobody
+closes it automatically; close it once each listed test is explained.
+
+The merge queue still runs every test, so a miss is either a selector gap (a
+pull request that broke the test got no warning before it queued) or a flake
+or drift outside the repository. Rerun the test first. For a gap, `--explain`
+on `tool/impact/functions_unit_test_selection.mjs` for the suspect commit lists
+what it selected and why; the missing test's tree did not read the change, so
+fix the selector or add a `// test-selection-reads:` declaration. The report is report-only: it runs in
+a separate workflow after the nightly, so it never changes the nightly's result,
+and it checks only test selection within the Functions lanes, not whether CI
+planned those lanes at all.
 
 ### Website release train
 

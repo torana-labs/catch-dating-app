@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: ./.github/actions/generate-contracts
+      - uses: ./.github/actions/generate-contracts-cached
       - name: Validate requested surface
         env:
           REACT_SURFACE: ${{ inputs.surface }}

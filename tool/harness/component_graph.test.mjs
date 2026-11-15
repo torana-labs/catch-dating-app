@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
 import {
   deriveAppRoles,
@@ -533,6 +534,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness/compare_selectors.mjs",
       "/tool/nx/select_lanes.mjs",
       "/tool/nx/shadow_plan.mjs",
+      "/tool/nx/workflow_callers.mjs",
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
       "/tool/harness/component_graph.json",
@@ -1436,6 +1438,32 @@ test("nothing PR validation executes can be harness-scoped", () => {
   const widened = clone(graph);
   widened.classifications.find((entry) => entry.id === "harness-scoped-control").paths.include.push(probe);
   assert.equal(plan(probe, "pr", widened).pathMatches[probe].owner, "harness-scoped-control");
+});
+
+test("the planner's sparse checkout holds every module its entry points import", () => {
+  // Main push runs plan from this sparse checkout (pull requests and queue
+  // groups check out everything for Nx), so a module the planner imports but
+  // the list omits fails every main run at import time. On 14 Nov 2026 #1797
+  // added tool/nx/workflow_callers.mjs, imported by shadow_plan.mjs, and main
+  // CI was red until it was listed here.
+  const root = new URL("../../", import.meta.url);
+  const listed = new Set(graph.ciCheckout.planner.paths.map((entry) => entry.replace(/^\//u, "")));
+  const exists = (file) => fs.existsSync(new URL(file, root));
+  const seen = new Set();
+  const queue = [...listed].filter((file) => file.endsWith(".mjs"));
+  while (queue.length > 0) {
+    const file = queue.pop();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const source = fs.readFileSync(new URL(file, root), "utf8");
+    for (const [, specifier] of source.matchAll(/^\s*(?:import|export)\b[^;]*?\bfrom\s*["'](\.{1,2}\/[^"']+)["']/gmu)) {
+      const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier));
+      // Source text a script writes elsewhere (compare_selectors.mjs's runner)
+      // can look like an import; only a tracked module is a dependency.
+      if (exists(target)) queue.push(target);
+    }
+  }
+  assert.deepEqual([...seen].filter((file) => !listed.has(file)).sort(), []);
 });
 
 // Workflows ci.yml never calls (tool/nx/workflow_callers.mjs notCalledByCi)
