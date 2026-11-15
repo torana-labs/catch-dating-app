@@ -1,7 +1,5 @@
 ---
 doc_id: sizing_migration_prompt
-version: 1.0.1
-updated: 2026-08-06
 owner: ui_elevation_initiative
 status: reference — reusable agent prompt
 ---

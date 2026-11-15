@@ -1,7 +1,5 @@
 ---
 doc_id: agent_entrypoint
-version: 3.7.0
-updated: 2026-10-29
 owner: agent_operating_model
 status: active
 ---

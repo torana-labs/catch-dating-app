@@ -1,7 +1,5 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.29.0
-updated: 2026-11-14
 owner: marketing_website
 status: active
 ---

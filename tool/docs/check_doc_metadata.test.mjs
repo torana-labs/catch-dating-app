@@ -9,10 +9,8 @@ import {
   collectGovernedDocuments,
   compareDocumentMetadata,
   retiredDocumentPaths,
-  compareSemanticVersions,
   parseDocumentLifecycleStatus,
   parseGovernedDocument,
-  parseSemanticVersion,
   runSelfTest,
   widgetCatalogViolation,
   documentReferences,
@@ -56,7 +54,7 @@ for (const mode of ["working tree", "ref", "base"]) {
       fixtureGit(["config", "user.name", "Catch Test"]);
       fixtureGit(["config", "core.hooksPath", os.devNull]);
       fixtureGit(["config", "commit.gpgSign", "false"]);
-      writeDoc(repo, "1.2.0", "active");
+      writeDoc(repo, "sample", "");
       fixtureGit(["add", "."]);
       fixtureGit(["commit", "-qm", "local document"]);
       fixtureGit(["config", "remote.origin.url", "denydocs::fixture"]);
@@ -102,8 +100,6 @@ for (const mode of ["working tree", "ref", "base"]) {
 test("source frontmatter is the sole governed Markdown authority", () => {
   const source = `---
 doc_id: release_operations
-version: 1.12.0
-updated: 2026-08-07
 owner: release_operations
 status: active — current runbook
 ---
@@ -113,8 +109,6 @@ status: active — current runbook
   assert.deepEqual(parseGovernedDocument("docs/release_operations.md", source), {
     id: "release_operations",
     path: "docs/release_operations.md",
-    version: "1.12.0",
-    updated: "2026-08-07",
     owner: "release_operations",
     status: "active",
   });
@@ -126,15 +120,11 @@ test("governed source requires complete metadata and unique identity", () => {
   assert.throws(
     () => parseGovernedDocument(
       "docs/incomplete.md",
-      "---\ndoc_id: incomplete\nversion: 1.0.0\n---\n",
+      "---\ndoc_id: incomplete\n---\n",
     ),
     /missing owner, status/u,
   );
-  assert.equal(
-    parseGovernedDocument("docs/plain.md", "---\ndoc_id: plain\nowner: docs\nstatus: active\n---\n").version,
-    null,
-  );
-  const source = "---\ndoc_id: duplicate\nversion: 1.0.0\nupdated: 2026-08-07\nowner: docs\nstatus: active\n---\n";
+  const source = "---\ndoc_id: duplicate\nowner: docs\nstatus: active\n---\n";
   assert.throws(
     () => collectGovernedDocuments({
       paths: ["docs/a.md", "docs/b.md"],
@@ -189,58 +179,56 @@ status: active
   );
 });
 
-test("semantic versions compare without a duplicate catalog", () => {
-  assert.deepEqual(parseSemanticVersion("16"), {
-    raw: "16",
-    major: 16,
-    minor: 0,
-    patch: 0,
-    prerelease: [],
-  });
-  assert.equal(compareSemanticVersions("1.2", "1.2.0"), 0);
-  assert.equal(compareSemanticVersions("1.2.1", "1.2"), 1);
-  assert.equal(compareSemanticVersions("2.0.0-rc.1", "2.0.0"), -1);
-  assert.throws(() => parseSemanticVersion("1.02.0"), /Invalid semantic version/u);
+test("version and updated come from Git history: current frontmatter may not carry them", () => {
+  // This rejection replaces the old version-decrease comparison: with no
+  // version in the current tree there is nothing to decrease.
+  for (const [extra, message] of [
+    ["version: 1.0.0\n", /version comes from Git history; remove it from the frontmatter/u],
+    ["updated: 2026-08-07\n", /updated comes from Git history; remove it from the frontmatter/u],
+    ["version: 1.0.0\nupdated: 2026-08-07\n", /version and updated come from Git history; remove them/u],
+  ]) {
+    const source = `---\ndoc_id: sample\n${extra}owner: docs\nstatus: active\n---\n`;
+    assert.throws(() => parseGovernedDocument("docs/sample.md", source), message);
+    // A base revision from before the fields were removed still parses.
+    assert.equal(parseGovernedDocument("docs/sample.md", source, {validateCurrentContracts: false}).id, "sample");
+  }
+  // A stray field in an otherwise ungoverned document is still caught.
+  assert.throws(() => parseGovernedDocument("docs/stray.md", "---\nversion: 1.0.0\n---\n"), /version comes from Git history/u);
 });
 
-test("comparison rejects decreases and identity swaps while reporting deletions", () => {
+test("comparison rejects identity swaps while reporting deletions", () => {
   const result = compareDocumentMetadata({
     baseDocuments: [
-      doc("decrease", "docs/decrease.md", "2.0.0", "active"),
-      doc("identity", "docs/identity.md", "1.0.0", "active"),
-      doc("deleted", "docs/deleted.md", "1.0.0", "active"),
+      doc("identity", "docs/identity.md", "active"),
+      doc("deleted", "docs/deleted.md", "active"),
     ],
     currentDocuments: [
-      doc("decrease", "docs/decrease.md", "1.9.9", "active"),
-      doc("replacement", "docs/identity.md", "1.0.1", "active"),
+      doc("replacement", "docs/identity.md", "active"),
     ],
   });
   assert.equal(result.pass, false);
-  assert.deepEqual(
-    result.findings.map((entry) => entry.kind).sort(),
-    ["doc-id-changed", "version-decrease"],
-  );
+  assert.deepEqual(result.findings.map((entry) => entry.kind), ["doc-id-changed"]);
   assert.deepEqual(result.deletions.map((entry) => entry.id), ["deleted"]);
+  assert.equal("increases" in result || "unchanged" in result, false);
 });
 
-test("comparison allows additions, version increases, renames, and reviewed deletion", () => {
+test("comparison allows additions, renames, and reviewed deletion", () => {
   const result = compareDocumentMetadata({
     baseDocuments: [
-      doc("renamed", "docs/old.md", "1.0.0", "active"),
-      doc("retired", "docs/retired.md", "1.0.0", "retirement_ready"),
+      doc("renamed", "docs/old.md", "active"),
+      doc("retired", "docs/retired.md", "retirement_ready"),
     ],
     currentDocuments: [
-      doc("renamed", "docs/new.md", "1.1.0", "active"),
-      doc("addition", "docs/addition.md", "0.1.0", "draft"),
+      doc("renamed", "docs/new.md", "active"),
+      doc("addition", "docs/addition.md", "draft"),
     ],
   });
   assert.equal(result.pass, true);
-  assert.equal(result.increases.length, 1);
-  assert.equal(result.additions.length, 1);
+  assert.deepEqual(result.additions, [{id: "addition", path: "docs/addition.md"}]);
   assert.equal(result.deletions.length, 1);
 });
 
-test("known-bad self-test proves decrease detection and deletion reporting", () => {
+test("known-bad self-test proves identity, frontmatter-field and deletion detection", () => {
   const selfTest = runSelfTest();
   assert.equal(selfTest.pass, true);
   const cli = spawnSync(process.execPath, [scriptPath, "--self-test", "--json"], {
@@ -255,21 +243,31 @@ test("CLI compares source metadata at the working tree and an exact ref", () => 
   git(repo, ["init", "-q"]);
   git(repo, ["config", "user.email", "test@example.com"]);
   git(repo, ["config", "user.name", "Catch Test"]);
-  writeDoc(repo, "1.2.0", "active");
+  // The base still carries the old hand-kept fields; it parses.
+  writeDoc(repo, "sample", "version: 1.2.0\nupdated: 2026-08-07\n");
   git(repo, ["add", "."]);
   git(repo, ["commit", "-qm", "base"]);
   const base = git(repo, ["rev-parse", "HEAD"]).trim();
 
-  writeDoc(repo, "1.1.9", "active");
+  // A current document that still carries one is rejected.
+  writeDoc(repo, "sample", "version: 1.3.0\n");
+  const kept = spawnSync(process.execPath, [scriptPath, "--repo", repo, "--base", base, "--json"], {
+    encoding: "utf8",
+  });
+  assert.equal(kept.status, 1);
+  assert.match(kept.stderr, /docs\/sample\.md: version comes from Git history/u);
+
+  // An identity swap at an existing path is still a finding.
+  writeDoc(repo, "swapped", "");
   const bad = spawnSync(process.execPath, [scriptPath, "--repo", repo, "--base", base, "--json"], {
     encoding: "utf8",
   });
   assert.equal(bad.status, 1, bad.stderr);
-  assert.equal(JSON.parse(bad.stdout).findings[0].kind, "version-decrease");
+  assert.equal(JSON.parse(bad.stdout).findings[0].kind, "doc-id-changed");
 
-  writeDoc(repo, "1.3.0", "active");
+  writeDoc(repo, "sample", "");
   git(repo, ["add", "."]);
-  git(repo, ["commit", "-qm", "increase"]);
+  git(repo, ["commit", "-qm", "drop the fields"]);
   const target = git(repo, ["rev-parse", "HEAD"]).trim();
   const good = spawnSync(process.execPath, [
     scriptPath,
@@ -286,23 +284,16 @@ test("CLI compares source metadata at the working tree and an exact ref", () => 
   assert.equal(JSON.parse(good.stdout).targetRevision, target);
 });
 
-function doc(id, documentPath, version, status) {
-  return {
-    id,
-    path: documentPath,
-    version,
-    updated: "2026-08-07",
-    owner: "docs",
-    status,
-  };
+function doc(id, documentPath, status) {
+  return {id, path: documentPath, owner: "docs", status};
 }
 
-function writeDoc(repo, version, status) {
+function writeDoc(repo, id, extraFrontmatter) {
   const documentPath = path.join(repo, "docs", "sample.md");
   fs.mkdirSync(path.dirname(documentPath), {recursive: true});
   fs.writeFileSync(
     documentPath,
-    `---\ndoc_id: sample\nversion: ${version}\nupdated: 2026-08-07\nowner: docs\nstatus: ${status}\n---\n\n# Sample\n`,
+    `---\ndoc_id: ${id}\n${extraFrontmatter}owner: docs\nstatus: active\n---\n\n# Sample\n`,
   );
 }
 

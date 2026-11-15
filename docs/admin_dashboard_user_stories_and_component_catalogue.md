@@ -1,7 +1,5 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.6.0
-updated: 2026-11-01
 owner: admin_console
 status: active
 ---

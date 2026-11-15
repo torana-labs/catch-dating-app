@@ -1,7 +1,5 @@
 ---
 doc_id: project_context
-version: 3.1.4
-updated: 2026-10-29
 owner: agent_operating_model
 status: active
 ---

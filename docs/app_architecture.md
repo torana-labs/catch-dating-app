@@ -1,7 +1,5 @@
 ---
 doc_id: app_architecture
-version: 1.104.1
-updated: 2026-11-12
 owner: app_architecture
 status: active
 ---

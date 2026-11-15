@@ -1,7 +1,5 @@
 ---
 doc_id: docs_index
-version: 5.12.7
-updated: 2026-11-08
 owner: agent_operating_model
 status: active
 ---
@@ -176,9 +174,11 @@ contracts replace route/state/action inventories; they do not replace product
 policy, rationale, copy, or release procedures. Git retains completed work and
 historical evidence.
 
-Source frontmatter owns governed-document identity, version, date, owner, and
-status. The metadata check rejects malformed metadata, duplicate identities,
-identity swaps, and version decreases. Against a base revision, it also rejects
+Source frontmatter owns governed-document identity, owner, and status. Git
+history owns each document's version and last-change date, so frontmatter
+carries no `version` or `updated` field. The metadata check rejects malformed
+metadata, duplicate identities, identity swaps, and either of those fields in
+the current tree. Against a base revision, it also rejects
 surviving literal Markdown links or code-span references to Markdown removed or
 renamed in that change. It includes ungoverned Markdown and ignores fenced
 examples; code consumers, dynamic references, and external links still need

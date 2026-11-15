@@ -1,7 +1,5 @@
 ---
 doc_id: demo_data_seeding
-version: 1.4.4
-updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---

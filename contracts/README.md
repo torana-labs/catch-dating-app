@@ -1,7 +1,5 @@
 ---
 doc_id: schema_contracts
-version: 0.3.1
-updated: 2026-11-02
 owner: data_contracts
 status: active
 ---

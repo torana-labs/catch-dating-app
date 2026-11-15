@@ -1,7 +1,5 @@
 ---
 doc_id: assignment_engine
-version: 1.1.0
-updated: 2026-11-08
 owner: event_success
 status: active
 ---

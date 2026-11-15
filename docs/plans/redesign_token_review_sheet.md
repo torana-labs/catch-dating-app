@@ -1,7 +1,5 @@
 ---
 doc_id: redesign_token_review_sheet
-version: 1.0.0
-updated: 2026-11-03
 owner: redesign_programme
 status: active
 ---

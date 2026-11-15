@@ -1,7 +1,5 @@
 ---
 doc_id: marketing_site_visual_references
-version: 0.2.1
-updated: 2026-10-18
 owner: marketing_website
 status: active
 ---

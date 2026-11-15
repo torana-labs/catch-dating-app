@@ -1,7 +1,5 @@
 ---
 doc_id: widget_catalog
-version: 4.10.1
-updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
 ---

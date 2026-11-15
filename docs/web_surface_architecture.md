@@ -1,7 +1,5 @@
 ---
 doc_id: web_surface_architecture
-version: 0.50.0
-updated: 2026-11-14
 owner: web_platform
 status: active
 ---

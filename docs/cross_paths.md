@@ -1,7 +1,5 @@
 ---
 doc_id: cross_paths
-version: 1.13.1
-updated: 2026-11-02
 owner: product (approved direction 2026-08-05)
 status: active
 ---

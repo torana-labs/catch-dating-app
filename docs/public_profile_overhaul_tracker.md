@@ -1,7 +1,5 @@
 ---
 doc_id: public_profile_overhaul_tracker
-version: 0.3.1
-updated: 2026-06-05
 owner: public_profile
 status: active
 ---

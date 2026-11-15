@@ -1,7 +1,5 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.20.0
-updated: 2026-11-14
 owner: marketing_website
 status: active
 ---

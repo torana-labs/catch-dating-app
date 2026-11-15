@@ -1,7 +1,5 @@
 ---
 doc_id: design_parity_tracker
-version: 0.3.3
-updated: 2026-11-03
 owner: product_design_parity
 status: active
 ---

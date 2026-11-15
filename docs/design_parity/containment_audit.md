@@ -1,7 +1,5 @@
 ---
 doc_id: containment_audit
-version: 1.0.1
-updated: 2026-08-07
 owner: design_parity_review
 status: ready-for-implementation
 ---

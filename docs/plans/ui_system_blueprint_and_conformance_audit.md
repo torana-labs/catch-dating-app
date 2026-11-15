@@ -1,7 +1,5 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.31.0
-updated: 2026-11-02
 owner: app_architecture
 status: active
 ---

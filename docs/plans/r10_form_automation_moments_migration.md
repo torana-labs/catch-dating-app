@@ -1,7 +1,5 @@
 ---
 doc_id: r10_form_automation_moments_migration
-version: 0.5.0
-updated: 2026-09-29
 owner: program_operations
 status: approved-spec
 ---

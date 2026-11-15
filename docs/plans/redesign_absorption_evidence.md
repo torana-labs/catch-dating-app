@@ -1,7 +1,5 @@
 ---
 doc_id: redesign_absorption_evidence
-version: 0.1.0
-updated: 2026-11-02
 owner: ui_elevation_initiative
 status: draft
 ---

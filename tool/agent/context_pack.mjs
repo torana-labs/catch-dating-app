@@ -170,16 +170,21 @@ function addDoc(docs, docPath, reason) {
   const source = markdown ? repositorySnapshot.readText(docPath) ?? "" : "";
   docs.set(docPath, {
     path: docPath,
-    version: markdown ? parseDocumentVersion(source) : null,
+    lastChanged: lastChangedDate(docPath),
     status: markdown ? parseDocumentLifecycleStatus(source) : null,
     reason: existing ? `${existing.reason} ${reason}` : reason,
   });
 }
 
-function parseDocumentVersion(source) {
-  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/u.exec(source)?.[1];
-  if (frontmatter == null) return null;
-  return /^version:\s*["']?([^\s"'#]+)["']?\s*(?:#.*)?$/mu.exec(frontmatter)?.[1] ?? null;
+// The committer date of the last commit that touched docPath, from Git
+// history (documents no longer carry a hand-kept version or updated date).
+// A shallow checkout, common in CI, would report its boundary commit instead
+// of the real last change, so print nothing there rather than a wrong date.
+function lastChangedDate(docPath) {
+  lastChangedDate.historyComplete ??=
+    runGit(["rev-parse", "--is-shallow-repository"]).trim() === "false";
+  if (!lastChangedDate.historyComplete) return null;
+  return runGit(["log", "-1", "--format=%cs", "--", docPath]).trim() || null;
 }
 
 function renderMarkdown(value) {
@@ -194,8 +199,8 @@ function renderMarkdown(value) {
     "## Owner Docs",
   ];
   appendList(lines, value.ownerDocs, (doc) => {
-    const version = doc.version == null ? "" : ` v${doc.version}`;
-    return `${doc.path}${version}: ${doc.reason}`;
+    const changed = doc.lastChanged == null ? "" : ` (last changed ${doc.lastChanged})`;
+    return `${doc.path}${changed}: ${doc.reason}`;
   });
   lines.push("", "## Matching Skills");
   appendList(lines, value.skills, (skill) => `${skill.skill_id} (${skill.path})`);

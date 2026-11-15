@@ -1,7 +1,5 @@
 ---
 doc_id: action_cardinality_policy
-version: 1.1.2
-updated: 2026-11-02
 owner: product_architecture
 status: active
 ---

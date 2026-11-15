@@ -1,7 +1,5 @@
 ---
 doc_id: release_operations
-version: 3.3.5
-updated: 2026-11-14
 owner: recursive_audit_loop
 status: active
 ---

@@ -526,9 +526,10 @@ node tool/git/branch_hygiene.mjs --base origin/main --remote origin --json
 node tool/git/branch_hygiene.mjs --base origin/main --local --json
 ```
 
-Governed Markdown owns its identity, version, update date, owner, and lifecycle
-in source frontmatter. Versions may increase or remain unchanged but may not
-decrease. Identities must be unique, and reviewed deletions are allowed without
+Governed Markdown owns its identity, owner, and lifecycle in source
+frontmatter; Git history owns its version and last-change date, so the check
+rejects a `version` or `updated` field in the current tree. Identities must be
+unique, and reviewed deletions are allowed without
 a preparatory catalog or lifecycle edit. The target defaults to the working
 tree; no parallel catalog or generated integration-state artifact is
 maintained:

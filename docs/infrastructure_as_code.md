@@ -1,7 +1,5 @@
 ---
 doc_id: infrastructure_as_code
-version: 1.3.0
-updated: 2026-11-01
 owner: backend_platform
 status: active
 ---

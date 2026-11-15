@@ -1,7 +1,5 @@
 ---
 doc_id: ui_capture_pipeline_plan
-version: 0.4.1
-updated: 2026-11-02
 owner: ui_capture_pipeline
 status: remaining_work
 ---

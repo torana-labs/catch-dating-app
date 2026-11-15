@@ -1,7 +1,5 @@
 ---
 doc_id: test_impact_and_tooling_trim_plan
-version: 1.3.2
-updated: 2026-11-01
 owner: agent_operating_model
 status: proposed
 ---

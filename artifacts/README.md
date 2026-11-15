@@ -1,7 +1,5 @@
 ---
 doc_id: artifact_retention
-version: 1.0.1
-updated: 2026-10-29
 owner: design_system
 status: active
 ---

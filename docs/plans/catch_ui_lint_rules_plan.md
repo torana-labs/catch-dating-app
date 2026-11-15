@@ -1,7 +1,5 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.5.4
-updated: 2026-11-02
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work

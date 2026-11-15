@@ -1,7 +1,5 @@
 ---
 doc_id: demo_world_scenarios_spec
-version: 0.3.1
-updated: 2026-10-25
 owner: marketing_website
 status: active
 ---
