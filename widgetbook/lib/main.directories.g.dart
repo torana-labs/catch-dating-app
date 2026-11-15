@@ -13845,7 +13845,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'EventChatDirectoryRowList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Empty directory with more candidates',
+                name: 'Empty directory',
                 builder: _widgetbook_workspace_utility_event_chat
                     .eventChatDirectoryEmptyPreview,
               ),
