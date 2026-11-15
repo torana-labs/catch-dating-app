@@ -3362,7 +3362,17 @@ determinism pass), and native macOS app-shell smoke. Goldens and native smoke
 use separate pinned macOS runners at the same workflow source; neither job
 waits for or substitutes for the other. Committed generated-source freshness
 remains required in the golden job. The smoke retains bounded infrastructure
-retries, and every selected job must pass. Golden pixel comparisons are report
+retries, and every selected job must pass.
+
+The native macOS app-shell smoke is nightly-only: it runs on the daily schedule
+and on manual dispatch, and is skipped in pull requests, the merge queue and
+main pushes (owner decision, 15 Nov 2026). In the 30 days before (16 Oct to
+15 Nov) it caught no regression that the Headless journeys, goldens or
+analysis in the same run did not, and a runner cancellation on 2 Nov failed a
+merge-queue group on its own. A nightly smoke failure fails the scheduled run
+like any other nightly job, so the Main CI alert and the nightly issue still
+report it. Goldens and the Headless journeys keep running wherever the lane is
+selected. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad

@@ -273,6 +273,13 @@ jobs:
 
   native-smoke:
     name: macOS native app-shell smoke
+    # Nightly-only (owner decision, 15 Nov 2026): in 30 days of history it
+    # caught nothing the Headless journeys, goldens or analysis did not, and
+    # one runner cancellation failed a queue group. A called workflow sees the
+    # caller's event, so this skips pull requests, the merge queue and main
+    # pushes, and runs on the nightly schedule and on manual dispatch. A
+    # skipped job leaves the caller's visual-integration result green.
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: macos-26
     timeout-minutes: 30
     # Independent runners use the same immutable checkout. Committed codegen

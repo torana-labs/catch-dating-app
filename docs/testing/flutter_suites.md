@@ -32,7 +32,9 @@ change to an iOS build input, and every night;
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it
-for relevant changes, in the daily scheduled run, and on manual dispatch. CI sets `CATCH_GOLDEN_REPORT`, so golden
+for relevant changes, in the daily scheduled run, and on manual dispatch. The
+native smoke runs only in the nightly and on manual dispatch, never in pull
+requests or the merge queue (see `docs/release_operations.md`). CI sets `CATCH_GOLDEN_REPORT`, so golden
 pixel changes and missing baselines are listed in the job summary with their
 images retained as CI artifacts instead of failing; render errors and
 non-golden expectations still fail. Local `flutter test test/goldens` without
