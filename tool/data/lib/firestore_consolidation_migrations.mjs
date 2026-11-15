@@ -223,6 +223,46 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "guest-booking-facts",
+    description:
+      "Each person with an organizerCommunityMemberships decision gets one " +
+      "guestBookingFacts document holding every organizer's membership " +
+      "state, as decideOrganizerCommunityMembership now writes it. One " +
+      "document per person, created from their first membership by id; " +
+      "existing documents are never replaced.",
+    steps: [
+      {
+        source: "organizerCommunityMemberships",
+        target: "guestBookingFacts",
+        skipReason: "another membership of the same person creates the document",
+        targetId: async (id, data, db) => {
+          if (typeof data.uid !== "string" || !data.uid) return null;
+          const first = await db.collection("organizerCommunityMemberships")
+            .where("uid", "==", data.uid).orderBy("__name__").limit(1).get();
+          return first.docs[0]?.id === id ? data.uid : null;
+        },
+        transform: async (data, id, db) => {
+          const rows = await db.collection("organizerCommunityMemberships")
+            .where("uid", "==", data.uid).get();
+          const communityMemberships = {};
+          let updatedAtMillis = 1;
+          for (const row of rows.docs) {
+            const m = row.data();
+            if (typeof m.organizerId !== "string" ||
+                !["active", "revoked"].includes(m.state)) continue;
+            communityMemberships[m.organizerId] = {state: m.state,
+              revision: m.revision, decisionId: m.lastDecisionId,
+              updatedAtMillis: m.updatedAtMillis};
+            updatedAtMillis = Math.max(updatedAtMillis, m.updatedAtMillis ?? 1);
+          }
+          if (Object.keys(communityMemberships).length === 0) return null;
+          return {schemaVersion: 1, uid: data.uid, updatedAtMillis,
+            communityMemberships};
+        },
+      },
+    ],
+  },
 ];
 
 /**

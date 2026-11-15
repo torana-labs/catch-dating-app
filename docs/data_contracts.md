@@ -4380,6 +4380,19 @@ Direct client get/list/create/update/delete is denied for all four collections.
 
 ### Authenticated Event Viewer Read Source
 
+The Consumer app shows event booking state from Firestore listeners, not this
+callable: `eventViewerStateProvider` (`lib/contexts/bookings/data`) composes
+the event, the guest's own booking, profile and paid memberships, the event's
+`eventMembershipRules`, the organizer's published plans, the guest's other
+booked events (overlap) and `guestBookingFacts/{uid}` (community membership,
+projected by `decideOrganizerCommunityMembership`). It mirrors
+`signupPolicyDecision`, `quotePriceInPaise` and
+`evaluateHostMembershipEntitlement`; `contracts/parity/event_booking_viewer_cases.json`
+holds the cases both implementations must pass. A block between the guest and
+someone on the roster, the seat ledger's holds and invite-code validity stay
+command-time checks. The callable below keeps serving the website's guest
+surface and older app builds.
+
 `getEventViewerState` is an Auth/App-Check-protected, rate-limited callable over
 `readEventViewerStateSource`. Its strict request accepts no subject UID or
 organizer override; its response includes no private fields or checkout keys.

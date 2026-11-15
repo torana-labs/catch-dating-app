@@ -5021,6 +5021,27 @@
       ]
     },
     {
+      "id": "guestBookingFacts",
+      "path": "guestBookingFacts/{uid}",
+      "rulesMatch": "/guestBookingFacts/{uid}",
+      "typescriptInterface": "GuestBookingFactsDocument",
+      "dartModel": "lib/contexts/bookings/data/guest_booking_facts_repository.dart",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a guest get only their own booking facts"
+      ],
+      "owner": "decideOrganizerCommunityMembership callable",
+      "read": "the guest gets their own document only; nobody lists the collection",
+      "write": "server only; decideOrganizerCommunityMembership merges the organizer's community membership state in its decision transaction",
+      "exportedFunctions": [
+        "decideOrganizerCommunityMembership",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Lets the Consumer event screen show booking state from listeners instead of getEventViewerState (#1337 wave 2). Backfilled from organizerCommunityMemberships by the guestBookingFactsCommunityMemberships migration; account deletion removes it."
+      ]
+    },
+    {
       "id": "organizerCommunityMembershipDecisions",
       "path": "organizerCommunityMembershipDecisions/{decisionId}",
       "rulesMatch": "/organizerCommunityMembershipDecisions/{decisionId}",
@@ -5248,10 +5269,10 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps membership billing state server-only"
+        "lets signed-in guests get a published event's membership rules"
       ],
       "owner": "event membership rules callable",
-      "read": "server only; viewer state and the host callable project it",
+      "read": "any signed-in person gets the rules of a published event (the Consumer event screen shows member prices, early access and members-only from them); nobody lists the collection; private events stay server only",
       "write": "server only; manageEventMembershipRules",
       "exportedFunctions": [
         "manageEventMembershipRules",
