@@ -99,7 +99,11 @@ reaches its pubspec path-dependency closure
 (`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
 reach none unless a closure bundles or imports them); a skipped suite leaves its job green
 with a "not affected" reason in the job summary. Locally,
-`node tool/harness/verify_local.mjs` runs them all. Each test shard uploads its
+`node tool/harness/verify_local.mjs` runs them all. A test of `catch_ui` (or
+`catch_tokens`) alone that needs no root test helper belongs in
+`packages/catch_ui/test`, where its suite already runs on every change that
+reaches it; `no_root_test_imports_test.dart` keeps that tree from importing
+root `test/` files. Each test shard uploads its
 own LCOV; nightly and unverified main runs merge them into a feature-level
 Markdown coverage report.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
