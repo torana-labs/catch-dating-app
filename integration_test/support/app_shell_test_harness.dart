@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
@@ -555,6 +556,7 @@ List<Object> appShellTestOverrides({
       ).overrideWith((ref) => Stream.value(matches)),
       totalUnreadCountProvider(uid).overrideWithValue(0),
       eventChatRepositoryProvider.overrideWithValue(EmptyEventChatRepository()),
+      eventChatDirectoryProvider.overrideWith((ref) => Stream.value(const [])),
       conversationRepositoryProvider.overrideWithValue(
         conversationRepository ?? FakeShellConversationRepository(),
       ),

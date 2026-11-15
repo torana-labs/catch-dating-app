@@ -4185,6 +4185,17 @@ explicit join/leave and mute choices and versioned room terms.
 client access is denied. A room does not create event admission, a dating match,
 a public profile, or an organizer-card sharing grant.
 
+The Consumer chat list listens to `eventChatDirectoryEntries` instead of
+calling `listEventChats`: one row per event chat a person may see, at
+`{eventId}_{uid}`. Triggers on chat memberships, bookings, roster rows, rooms
+(revision changes), events (name, status, organizer, start) and users
+(profile claim, deletion) rebuild a row from `readEventChatAccess` and delete
+it when access ends, so out-of-order triggers converge. A row stores the
+room's own settings; the app derives the time-dependent room mode and its
+read, post and join flags as `readEventChatAccess` does. A person lists only
+their own rows. Opening a chat still goes through the access and message
+callables. `listEventChats` keeps serving older app builds:
+
 `listEventChats` discovers the caller's candidates from memberships, native
 participations and linked operational attendees in that order. Each request
 scans at most ten candidate records plus lookahead; a UID-bound cursor advances

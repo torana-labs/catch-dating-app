@@ -47,6 +47,30 @@ function functionsEventPolicy() {
   return eventPolicyModule;
 }
 
+let chatDirectoryModule = null;
+function functionsChatDirectory() {
+  try {
+    chatDirectoryModule ??= createFunctionsRequire()("./lib/chats/eventChatDirectory.js");
+  } catch (error) {
+    throw new Error(
+      "The event-chat-directory migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return chatDirectoryModule;
+}
+
+/** One clock per run, so a row reached from two sources is identical. */
+const chatDirectoryNowMillis = Date.now();
+
+/** The person's directory row from current authority, or null. */
+async function chatDirectoryRow(db, eventId, uid) {
+  if (typeof eventId !== "string" || !eventId || typeof uid !== "string" || !uid) return null;
+  const {eventChatDirectoryEntry} = functionsChatDirectory();
+  return db.runTransaction((tx) =>
+    eventChatDirectoryEntry(db, tx, eventId, uid, chatDirectoryNowMillis));
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -260,6 +284,53 @@ export const MIGRATIONS = [
           return {schemaVersion: 1, uid: data.uid, updatedAtMillis,
             communityMemberships};
         },
+      },
+    ],
+  },
+  {
+    name: "event-chat-directory",
+    description:
+      "Every person with an event chat membership, a Catch booking or a " +
+      "linked roster row gets the eventChatDirectoryEntries row the " +
+      "directory triggers now keep, computed from current access. A row " +
+      "reached from several sources is created from the first of chat " +
+      "membership, booking, roster row; existing rows are never replaced.",
+    steps: [
+      {
+        source: "eventChatMemberships",
+        target: "eventChatDirectoryEntries",
+        skipReason: "no current access",
+        targetId: (id, data) => `${data.eventId}_${data.uid}`,
+        transform: (data, id, db) => chatDirectoryRow(db, data.eventId, data.uid),
+      },
+      {
+        source: "eventParticipations",
+        target: "eventChatDirectoryEntries",
+        skipReason: "no current access, or created from the chat membership",
+        targetId: async (id, data, db) => {
+          if (!["signedUp", "attended"].includes(data.status)) return null;
+          const member = await db.collection("eventChatMemberships")
+            .where("eventId", "==", data.eventId).where("uid", "==", data.uid)
+            .limit(1).get();
+          return member.empty ? `${data.eventId}_${data.uid}` : null;
+        },
+        transform: (data, id, db) => chatDirectoryRow(db, data.eventId, data.uid),
+      },
+      {
+        source: "eventAttendees",
+        target: "eventChatDirectoryEntries",
+        skipReason: "no linked account or current access, or created from another source",
+        targetId: async (id, data, db) => {
+          if (typeof data.linkedUid !== "string" || !data.linkedUid) return null;
+          const [member, booking] = await Promise.all([
+            db.collection("eventChatMemberships").where("eventId", "==", data.eventId)
+              .where("uid", "==", data.linkedUid).limit(1).get(),
+            db.collection("eventParticipations").doc(`${data.eventId}_${data.linkedUid}`).get(),
+          ]);
+          const booked = ["signedUp", "attended"].includes(booking.data()?.status);
+          return member.empty && !booked ? `${data.eventId}_${data.linkedUid}` : null;
+        },
+        transform: (data, id, db) => chatDirectoryRow(db, data.eventId, data.linkedUid),
       },
     ],
   },

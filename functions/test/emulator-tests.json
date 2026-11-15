@@ -99,6 +99,7 @@
   "lib/chats/eventChatMessagesEmulator.test.js",
   "lib/chats/eventChatMessageActionsEmulator.test.js",
   "lib/chats/listEventChatsEmulator.test.js",
+  "lib/chats/eventChatDirectoryEmulator.test.js",
   "lib/chats/listEventChatParticipantsEmulator.test.js",
   "lib/chats/eventChatProfilesEmulator.test.js",
   "lib/programs/programGuests.emulator.test.js",

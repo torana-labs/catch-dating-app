@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_directory_entries.schema.json",
+  "title": "EventChatDirectoryEntryDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "One row per event chat a person may see in their chat list, at eventChatDirectoryEntries/{eventId}_{uid}. Triggers rebuild it from current admission, the event, the room and the chat membership whenever one of them changes; a person without access has no row. It stores the room's own settings so the app derives the time-dependent room mode. Opening a chat still goes through the access and message callables.",
+  "x-firestore-collection": "eventChatDirectoryEntries",
+  "x-firestore-path": "eventChatDirectoryEntries/{entryId}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat directory triggers",
+  "required": [
+    "schemaVersion",
+    "uid",
+    "eventId",
+    "organizerId",
+    "title",
+    "role",
+    "eventStartAtMillis",
+    "room",
+    "membership",
+    "profileClaimed",
+    "termsVersion",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "trigger-owned"},
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "title": {"type": "string", "maxLength": 200, "x-catch-ownership": "trigger-owned"},
+    "role": {"type": "string", "enum": ["host", "attendee"], "x-catch-ownership": "trigger-owned"},
+    "eventStartAtMillis": {"type": ["integer", "null"], "minimum": 0, "x-catch-ownership": "trigger-owned"},
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "revision", "opensAtMillis", "closesAtMillis"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["notCreated", "open", "announcementsOnly", "paused", "closed", "archived"]
+        },
+        "revision": {"type": "integer", "minimum": 0},
+        "opensAtMillis": {"type": ["integer", "null"], "minimum": 0},
+        "closesAtMillis": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "revision", "notificationsMuted"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["notJoined", "joined", "left", "removed", "banned"]
+        },
+        "revision": {"type": "integer", "minimum": 0},
+        "notificationsMuted": {"type": "boolean"}
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "profileClaimed": {"type": "boolean", "x-catch-ownership": "trigger-owned"},
+    "termsVersion": {"type": "string", "enum": ["event-chat-v1"], "x-catch-ownership": "trigger-owned"},
+    "updatedAtMillis": {"type": "integer", "minimum": 0, "x-catch-ownership": "trigger-owned"}
+  }
+}

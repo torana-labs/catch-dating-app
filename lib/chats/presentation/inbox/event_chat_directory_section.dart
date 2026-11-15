@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
@@ -16,30 +16,18 @@ class EventChatDirectorySection extends ConsumerWidget {
   const EventChatDirectorySection({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      CatchAsyncBoundary<EventChatDirectoryPage>.sliver(
-        value: ref.watch(eventChatDirectoryControllerProvider),
+      CatchAsyncBoundary<List<EventChatAccess>>.sliver(
+        value: ref.watch(eventChatDirectoryProvider),
         retainDataOn: const {},
-        onRetry: () => unawaited(
-          ref.read(eventChatDirectoryControllerProvider.notifier).refresh(),
-        ),
-        builder: (context, page) => EventChatDirectoryRowList(
-          page: page,
-          onLoadMore: () => unawaited(
-            ref.read(eventChatDirectoryControllerProvider.notifier).loadMore(),
-          ),
-          onSelected: (eventId) async {
-            await context.pushNamed(
+        onRetry: () => ref.invalidate(eventChatDirectoryProvider),
+        builder: (context, rooms) => EventChatDirectoryRowList(
+          rooms: rooms,
+          onSelected: (eventId) => unawaited(
+            context.pushNamed(
               Routes.eventChatScreen.name,
               pathParameters: {'eventId': eventId},
-            );
-            if (context.mounted) {
-              unawaited(
-                ref
-                    .read(eventChatDirectoryControllerProvider.notifier)
-                    .refresh(),
-              );
-            }
-          },
+            ),
+          ),
         ),
       );
 }
@@ -48,12 +36,10 @@ class EventChatDirectorySection extends ConsumerWidget {
 class EventChatDirectoryRowList extends StatelessWidget {
   const EventChatDirectoryRowList({
     super.key,
-    required this.page,
-    required this.onLoadMore,
+    required this.rooms,
     required this.onSelected,
   });
-  final EventChatDirectoryPage page;
-  final VoidCallback onLoadMore;
+  final List<EventChatAccess> rooms;
   final ValueChanged<String> onSelected;
   @override
   Widget build(BuildContext context) {
@@ -63,7 +49,7 @@ class EventChatDirectoryRowList extends StatelessWidget {
       sliver: SliverList.list(
         children: [
           gapH24,
-          if (page.items.isEmpty) ...[
+          if (rooms.isEmpty) ...[
             CatchLegacyText(
               l.eventChatsEmptyTitle,
               variant: CatchLegacyTextVariant.sectionTitle,
@@ -76,7 +62,7 @@ class EventChatDirectoryRowList extends StatelessWidget {
             ),
             gapH24,
           ],
-          for (final room in page.items)
+          for (final room in rooms)
             CatchSection.fieldRows(
               first: true,
               children: [
@@ -99,15 +85,6 @@ class EventChatDirectoryRowList extends StatelessWidget {
                 ),
               ],
             ),
-          if (page.nextCursor != null) ...[
-            gapH16,
-            CatchButton(
-              label: l.eventChatsLoadMore,
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
-              onPressed: onLoadMore,
-            ),
-          ],
           gapH24,
         ],
       ),

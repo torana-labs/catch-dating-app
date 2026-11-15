@@ -130,7 +130,7 @@ final class EventChatControllerProvider
 }
 
 String _$eventChatControllerHash() =>
-    r'138e1c3e178f3d589f9427175ac4383c2503523e';
+    r'6d89166126f24e0d3dc838fa57948aff9ebbe0b3';
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.
