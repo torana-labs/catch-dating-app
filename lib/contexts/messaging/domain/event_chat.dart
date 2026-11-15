@@ -72,6 +72,51 @@ class EventChatAccess {
       termsVersion: json['termsVersion']! as String,
     );
   }
+
+  /// Derives the access view from an `eventChatDirectoryEntries` row the way
+  /// Functions' `readEventChatAccess` does, at [now]: rows exist only for
+  /// active events the person is admitted to, and store the room's own
+  /// settings so a scheduled window opens and closes on time.
+  factory EventChatAccess.fromDirectoryEntry(
+    Map<String, Object?> json, {
+    required DateTime now,
+  }) {
+    final room = json['room']! as Map;
+    final member = json['membership']! as Map;
+    final opensAt = (room['opensAtMillis'] as num?)?.toInt();
+    final closesAt = (room['closesAtMillis'] as num?)?.toInt();
+    final mode = effectiveEventChatRoomMode(
+      status: room['status']! as String,
+      opensAtMillis: opensAt,
+      closesAtMillis: closesAt,
+      nowMillis: now.millisecondsSinceEpoch,
+    );
+    final host = json['role'] == 'host';
+    final claimed = json['profileClaimed'] == true;
+    final status = member['status']! as String;
+    final readable =
+        mode == 'open' || mode == 'announcementsOnly' || mode == 'paused';
+    final canRead = readable && claimed && status == 'joined';
+    return EventChatAccess(
+      eventId: json['eventId']! as String,
+      title: json['title']! as String,
+      organizerId: json['organizerId']! as String,
+      roomStatus: mode,
+      roomRevision: (room['revision']! as num).toInt(),
+      membershipStatus: status,
+      membershipRevision: (member['revision']! as num).toInt(),
+      canManage: host,
+      canJoin: readable && claimed && status != 'removed' && status != 'banned',
+      canReadMessages: canRead,
+      canPostMessages:
+          canRead && (mode == 'open' || mode == 'announcementsOnly' && host),
+      notificationsMuted: member['notificationsMuted'] == true,
+      opensAtMillis: opensAt,
+      closesAtMillis: closesAt,
+      profileClaimRequired: !claimed,
+      termsVersion: json['termsVersion']! as String,
+    );
+  }
   final String eventId, title, organizerId, roomStatus, membershipStatus;
   final String termsVersion;
   final int roomRevision, membershipRevision;
@@ -226,4 +271,20 @@ class EventChatPage {
   final List<EventChatTyping> typing;
   final int ownTypingRevision, serverTimeMillis;
   final bool typingHasMore;
+}
+
+/// The room's mode at [nowMillis], as Functions'
+/// `effectiveEventChatRoomMode` decides it from the Host's settings.
+String effectiveEventChatRoomMode({
+  required String status,
+  required int? opensAtMillis,
+  required int? closesAtMillis,
+  required int nowMillis,
+}) {
+  if (status == 'notCreated' || status == 'archived' || status == 'closed') {
+    return status;
+  }
+  if (opensAtMillis != null && nowMillis < opensAtMillis) return 'scheduled';
+  if (closesAtMillis != null && nowMillis >= closesAtMillis) return 'closed';
+  return status;
 }

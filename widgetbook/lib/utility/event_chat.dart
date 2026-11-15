@@ -6,7 +6,6 @@ import 'package:catch_dating_app/chats/presentation/widgets/event_chat_entry_sec
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -204,14 +203,16 @@ Widget eventChatDirectoryPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: WidgetbookFixtureScope(
         overrides: [
-          eventChatDirectoryControllerProvider.overrideWith(_Directory.new),
+          eventChatDirectoryProvider.overrideWith(
+            (_) => Stream.value([_state().access]),
+          ),
         ],
         child: const CustomScrollView(slivers: [EventChatDirectorySection()]),
       ),
     );
 
 @widgetbook.UseCase(
-  name: 'Empty directory with more candidates',
+  name: 'Empty directory',
   type: EventChatDirectoryRowList,
   path: '[P3 utility surfaces]/Event chat',
 )
@@ -219,28 +220,7 @@ Widget eventChatDirectoryEmptyPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CustomScrollView(
         slivers: [
-          EventChatDirectoryRowList(
-            page: EventChatDirectoryPage(
-              items: const [],
-              nextCursor: const {
-                'source': 'attendees',
-                'after': null,
-                'accountUid': 'preview-person',
-              },
-            ),
-            onLoadMore: () {},
-            onSelected: (_) {},
-          ),
+          EventChatDirectoryRowList(rooms: const [], onSelected: (_) {}),
         ],
       ),
     );
-
-class _Directory extends EventChatDirectoryController {
-  @override
-  Future<EventChatDirectoryPage> build() async =>
-      EventChatDirectoryPage(items: [_state().access], nextCursor: null);
-  @override
-  Future<void> refresh() async {}
-  @override
-  Future<void> loadMore() async {}
-}

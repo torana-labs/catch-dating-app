@@ -7,7 +7,6 @@ import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_c
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -20,19 +19,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_chat_controller_test.dart' show roomAccess;
-
-class FixtureDirectory extends EventChatDirectoryController {
-  FixtureDirectory(this.page);
-  final EventChatDirectoryPage page;
-  int _refreshes = 0;
-  @override
-  Future<void> refresh() async {
-    _refreshes++;
-  }
-
-  @override
-  Future<EventChatDirectoryPage> build() async => page;
-}
 
 void main() {
   setUpAll(loadCatchTestFonts);
@@ -47,18 +33,12 @@ void main() {
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
         var directReads = 0;
-        late FixtureDirectory directory;
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
               uidProvider.overrideWith((_) => Stream.value('person')),
-              eventChatDirectoryControllerProvider.overrideWith(
-                () => directory = FixtureDirectory(
-                  EventChatDirectoryPage(
-                    items: [roomAccess(join: true)],
-                    nextCursor: null,
-                  ),
-                ),
+              eventChatDirectoryProvider.overrideWith(
+                (_) => Stream.value([roomAccess(join: true)]),
               ),
               chatsListViewModelProvider.overrideWith((_) {
                 directReads++;
@@ -96,12 +76,6 @@ void main() {
         expect(find.text('Demo event'), findsOneWidget);
         expect(find.text('Ready to join'), findsOneWidget);
         expect(directReads, 0);
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-        tester.binding.handleAppLifecycleStateChanged(
-          AppLifecycleState.resumed,
-        );
-        await pumpFeatureUi(tester);
-        expect(directory._refreshes, 1);
         expect(tester.takeException(), isNull);
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(const ValueKey('capture')),
@@ -127,10 +101,7 @@ void main() {
       });
     }
   }
-  testWidgets('empty scan page keeps the continuation action accessible', (
-    tester,
-  ) async {
-    var more = 0;
+  testWidgets('an empty directory explains itself', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -139,24 +110,14 @@ void main() {
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
-              EventChatDirectoryRowList(
-                page: EventChatDirectoryPage(
-                  items: const [],
-                  nextCursor: const {'source': 'attendees'},
-                ),
-                onSelected: (_) {},
-                onLoadMore: () => more++,
-              ),
+              EventChatDirectoryRowList(rooms: const [], onSelected: (_) {}),
             ],
           ),
         ),
       ),
     );
     await pumpFeatureUi(tester);
-    final button = find.widgetWithText(CatchButton, 'Check more events');
-    expect(tester.getSize(button).height, greaterThanOrEqualTo(44));
-    await tester.tap(button);
-    expect(more, 1);
+    expect(find.byType(CatchButton), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

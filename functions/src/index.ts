@@ -1123,6 +1123,11 @@ export {onHostEventSetupDefaultViewDefaultsChanged,
   "./hostReadModels/eventSetupDefaultViewTriggers";
 export {onEventChatSignalRoomWritten, onEventChatSignalMembershipWritten} from
   "./chatSignals/eventChatSignals";
+export {onEventChatDirectoryMembershipWritten,
+  onEventChatDirectoryParticipationWritten,
+  onEventChatDirectoryAttendeeWritten, onEventChatDirectoryRoomWritten,
+  onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten} from
+  "./chats/eventChatDirectory";
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from
   "./hostReadModels/providerConnectionViewTriggers";

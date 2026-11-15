@@ -1,14 +1,11 @@
-import 'dart:async';
 
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -29,34 +26,9 @@ class ChatsListScreen extends ConsumerStatefulWidget {
   ConsumerState<ChatsListScreen> createState() => _ChatsListScreenState();
 }
 
-class _ChatsListScreenState extends ConsumerState<ChatsListScreen>
-    with WidgetsBindingObserver {
+class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
   late ConsumerChatScope _scope = widget.initialScope;
   HostInboxFilter _hostInboxFilter = HostInboxFilter.all;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed &&
-        !AppConfig.appRole.isHost &&
-        _scope == ConsumerChatScope.events &&
-        (ModalRoute.of(context)?.isCurrent ?? true)) {
-      unawaited(
-        ref.read(eventChatDirectoryControllerProvider.notifier).refresh(),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +62,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen>
         onHostFilterChanged: _handleHostFilterChanged,
         consumerScope: isHostApp ? null : _scope,
         onConsumerScopeChanged: (scope) => setState(() => _scope = scope),
-        actions: [
-          if (showEvents)
-            CatchIconAction.toolbar(
-              tooltip: context.l10n.eventChatRefresh,
-              onPressed: () => ref
-                  .read(eventChatDirectoryControllerProvider.notifier)
-                  .refresh(),
-              icon: CatchIcons.refresh,
-            ),
-        ],
       ),
       children: [
         if (showEvents)

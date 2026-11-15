@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
@@ -617,6 +618,9 @@ Widget _authenticatedShellProviderScope({
         fcmServiceProvider.overrideWithValue(_UnsupportedFcmService()),
         eventChatRepositoryProvider.overrideWithValue(
           EmptyEventChatRepository(),
+        ),
+        eventChatDirectoryProvider.overrideWith(
+          (ref) => Stream.value(const []),
         ),
         // ignore: scoped_providers_should_specify_dependencies
         watchMatchesForUserProvider(

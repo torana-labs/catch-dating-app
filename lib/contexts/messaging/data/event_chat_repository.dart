@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -93,18 +92,6 @@ class EventChatRepository {
       ).toJson(),
     );
   }
-
-  Future<EventChatDirectoryPage> directory({
-    Map<String, Object?>? cursor,
-  }) async => EventChatDirectoryPage.fromMap(
-    await _call(
-      'listEventChats',
-      ListEventChatsCallableRequest(
-        cursor: cursor,
-        limit: ReadLimitPolicy.eventChatDirectoryPage,
-      ).toJson(),
-    ),
-  );
 
   Future<EventChatAccess> access(String eventId) async =>
       EventChatAccess.fromMap(

@@ -9,14 +9,18 @@ part of 'event_chat_participants_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// No offline roster: refresh every loaded page, discard on authority failure,
-/// and hide names on backgrounding or account changes.
+/// and hide names on backgrounding or account changes. The roster reads
+/// again when the chat's change signal says the room or a membership moved;
+/// nothing polls.
 
 @ProviderFor(EventChatParticipantsController)
 final eventChatParticipantsControllerProvider =
     EventChatParticipantsControllerFamily._();
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
-/// and hide names on backgrounding or account changes.
+/// and hide names on backgrounding or account changes. The roster reads
+/// again when the chat's change signal says the room or a membership moved;
+/// nothing polls.
 final class EventChatParticipantsControllerProvider
     extends
         $AsyncNotifierProvider<
@@ -24,7 +28,9 @@ final class EventChatParticipantsControllerProvider
           EventChatParticipantsState
         > {
   /// No offline roster: refresh every loaded page, discard on authority failure,
-  /// and hide names on backgrounding or account changes.
+  /// and hide names on backgrounding or account changes. The roster reads
+  /// again when the chat's change signal says the room or a membership moved;
+  /// nothing polls.
   EventChatParticipantsControllerProvider._({
     required EventChatParticipantsControllerFamily super.from,
     required String super.argument,
@@ -63,10 +69,12 @@ final class EventChatParticipantsControllerProvider
 }
 
 String _$eventChatParticipantsControllerHash() =>
-    r'4cc322f9e537cf6595f92c621c166abf59e58fca';
+    r'9df2b7b6e5f7a902807d16fc991b041bbac75a7a';
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
-/// and hide names on backgrounding or account changes.
+/// and hide names on backgrounding or account changes. The roster reads
+/// again when the chat's change signal says the room or a membership moved;
+/// nothing polls.
 
 final class EventChatParticipantsControllerFamily extends $Family
     with
@@ -87,7 +95,9 @@ final class EventChatParticipantsControllerFamily extends $Family
       );
 
   /// No offline roster: refresh every loaded page, discard on authority failure,
-  /// and hide names on backgrounding or account changes.
+  /// and hide names on backgrounding or account changes. The roster reads
+  /// again when the chat's change signal says the room or a membership moved;
+  /// nothing polls.
 
   EventChatParticipantsControllerProvider call(String eventId) =>
       EventChatParticipantsControllerProvider._(argument: eventId, from: this);
@@ -97,7 +107,9 @@ final class EventChatParticipantsControllerFamily extends $Family
 }
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
-/// and hide names on backgrounding or account changes.
+/// and hide names on backgrounding or account changes. The roster reads
+/// again when the chat's change signal says the room or a membership moved;
+/// nothing polls.
 
 abstract class _$EventChatParticipantsController
     extends $AsyncNotifier<EventChatParticipantsState> {
