@@ -1,7 +1,5 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.333
-updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---

@@ -1,7 +1,5 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.4.1
-updated: 2026-10-30
 owner: host_tooling
 status: active
 ---

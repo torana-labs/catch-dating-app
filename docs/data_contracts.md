@@ -1,7 +1,5 @@
 ---
 doc_id: data_contracts
-version: 1.197.0
-updated: 2026-11-15
 owner: recursive_audit_loop
 status: active
 ---

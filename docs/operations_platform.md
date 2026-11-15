@@ -1,7 +1,5 @@
 ---
 doc_id: operations_platform
-version: 1.41.0
-updated: 2026-11-01
 owner: operations_platform
 status: active
 ---

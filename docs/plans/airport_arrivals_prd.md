@@ -1,7 +1,5 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.19
-updated: 2026-09-23
 owner: product
 status: draft
 ---

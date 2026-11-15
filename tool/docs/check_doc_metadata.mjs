@@ -7,69 +7,16 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-// version and updated are optional: Git has the history, and every PR bumping them collides.
+// Git has each document's history. Hand-kept version and updated fields made
+// every PR that touched a document collide on its frontmatter, so they are
+// rejected (owner-approved, 15 Nov 2026).
+const derivedKeys = ["version", "updated"];
 const governedKeys = ["doc_id", "owner", "status"];
 const isCliEntrypoint =
   process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 export class DocumentMetadataError extends Error {}
-
-export function parseSemanticVersion(value) {
-  if (typeof value !== "string" || value.trim() !== value || value === "") {
-    throw new DocumentMetadataError(`Invalid semantic version: ${JSON.stringify(value)}`);
-  }
-  const match = new RegExp(
-    "^(0|[1-9]\\d*)(?:\\.(0|[1-9]\\d*))?(?:\\.(0|[1-9]\\d*))?" +
-      "(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?" +
-      "(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
-    "u",
-  ).exec(value);
-  if (!match) throw new DocumentMetadataError(`Invalid semantic version: ${value}`);
-  const prerelease = match[4] == null ? [] : match[4].split(".");
-  for (const identifier of prerelease) {
-    if (/^\\d+$/u.test(identifier) && identifier.length > 1 && identifier.startsWith("0")) {
-      throw new DocumentMetadataError(
-        `Invalid semantic version prerelease identifier: ${value}`,
-      );
-    }
-  }
-  return {
-    raw: value,
-    major: Number(match[1]),
-    minor: Number(match[2] ?? 0),
-    patch: Number(match[3] ?? 0),
-    prerelease,
-  };
-}
-
-export function compareSemanticVersions(left, right) {
-  const a = typeof left === "string" ? parseSemanticVersion(left) : left;
-  const b = typeof right === "string" ? parseSemanticVersion(right) : right;
-  for (const field of ["major", "minor", "patch"]) {
-    if (a[field] < b[field]) return -1;
-    if (a[field] > b[field]) return 1;
-  }
-  if (a.prerelease.length === 0 && b.prerelease.length === 0) return 0;
-  if (a.prerelease.length === 0) return 1;
-  if (b.prerelease.length === 0) return -1;
-  const length = Math.max(a.prerelease.length, b.prerelease.length);
-  for (let index = 0; index < length; index += 1) {
-    const leftPart = a.prerelease[index];
-    const rightPart = b.prerelease[index];
-    if (leftPart == null) return -1;
-    if (rightPart == null) return 1;
-    if (leftPart === rightPart) continue;
-    const leftNumeric = /^\\d+$/u.test(leftPart);
-    const rightNumeric = /^\\d+$/u.test(rightPart);
-    if (leftNumeric && rightNumeric) {
-      return Number(leftPart) < Number(rightPart) ? -1 : 1;
-    }
-    if (leftNumeric !== rightNumeric) return leftNumeric ? -1 : 1;
-    return leftPart < rightPart ? -1 : 1;
-  }
-  return 0;
-}
 
 export function parseFrontmatter(source) {
   if (typeof source !== "string") return null;
@@ -128,6 +75,13 @@ export function parseGovernedDocument(
   const participates = ["doc_id", "version", "updated", "owner"].some((key) =>
     values.has(key));
   if (!participates) return null;
+  // A base revision from before the fields were removed still parses.
+  const derived = derivedKeys.filter((key) => values.has(key));
+  if (validateCurrentContracts && derived.length > 0) {
+    throw new DocumentMetadataError(
+      `${documentPath}: ${derived.join(" and ")} ${derived.length > 1 ? "come" : "comes"} from Git history; remove ${derived.length > 1 ? "them" : "it"} from the frontmatter.`,
+    );
+  }
 
   const missing = governedKeys.filter((key) => !values.get(key));
   if (missing.length > 0) {
@@ -139,17 +93,6 @@ export function parseGovernedDocument(
   if (!/^[A-Za-z0-9_.-]+$/u.test(docId)) {
     throw new DocumentMetadataError(`${documentPath}: invalid doc_id ${JSON.stringify(docId)}.`);
   }
-  const version = values.get("version") ?? null;
-  if (version !== null) parseSemanticVersion(version);
-  const updated = values.get("updated") ?? null;
-  if (updated !== null) {
-    const parsedDate = /^\d{4}-\d{2}-\d{2}$/u.test(updated)
-      ? new Date(`${updated}T00:00:00Z`)
-      : null;
-    if (parsedDate == null || Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== updated) {
-      throw new DocumentMetadataError(`${documentPath}: invalid updated date ${JSON.stringify(updated)}.`);
-    }
-  }
   const status = normalizeLifecycleStatus(values.get("status"));
   if (status == null) {
     throw new DocumentMetadataError(`${documentPath}: invalid lifecycle status.`);
@@ -157,8 +100,6 @@ export function parseGovernedDocument(
   return {
     id: docId,
     path: normalizePath(documentPath),
-    version,
-    updated,
     owner: values.get("owner"),
     status,
   };
@@ -221,8 +162,6 @@ export function compareDocumentMetadata({baseDocuments, currentDocuments}) {
   const currentByPath = new Map(currentDocuments.map((entry) => [entry.path, entry]));
   const findings = [];
   const deletions = [];
-  const increases = [];
-  const unchanged = [];
   for (const base of baseDocuments) {
     const current = currentById.get(base.id);
     if (current == null) {
@@ -239,39 +178,17 @@ export function compareDocumentMetadata({baseDocuments, currentDocuments}) {
         deletions.push({
           id: base.id,
           path: base.path,
-          version: base.version,
           baseStatus: base.status,
         });
       }
       continue;
     }
-    // A document may drop its version; only a version that stays can decrease.
-    const comparison = current.version === null || base.version === null ? 0 :
-      compareSemanticVersions(current.version, base.version);
-    const row = {
-      id: base.id,
-      basePath: base.path,
-      currentPath: current.path,
-      baseVersion: base.version,
-      currentVersion: current.version,
-    };
-    if (comparison < 0) {
-      findings.push({
-        kind: "version-decrease",
-        ...row,
-        reason: "source frontmatter version decreased",
-      });
-    } else if (comparison > 0) {
-      increases.push(row);
-    } else {
-      unchanged.push(row);
-    }
   }
   const baseIds = new Set(baseDocuments.map((entry) => entry.id));
   const additions = currentDocuments
     .filter((entry) => !baseIds.has(entry.id))
-    .map(({id, path: documentPath, version}) => ({id, path: documentPath, version}));
-  for (const rows of [findings, deletions, increases, unchanged, additions]) {
+    .map(({id, path: documentPath}) => ({id, path: documentPath}));
+  for (const rows of [findings, deletions, additions]) {
     rows.sort((left, right) =>
       String(left.id).localeCompare(String(right.id)) ||
       String(left.path ?? left.currentPath ?? "").localeCompare(
@@ -282,21 +199,25 @@ export function compareDocumentMetadata({baseDocuments, currentDocuments}) {
     pass: findings.length === 0,
     findings,
     deletions,
-    increases,
-    unchanged,
     additions,
   };
 }
 
 export function runSelfTest() {
   const base = [
-    {id: "decrease", path: "docs/decrease.md", version: "2.0.0", status: "active"},
-    {id: "deleted", path: "docs/deleted.md", version: "1.0.0", status: "active"},
+    {id: "renamed", path: "docs/decrease.md", status: "active"},
+    {id: "deleted", path: "docs/deleted.md", status: "active"},
   ];
   const current = [
-    {id: "decrease", path: "docs/decrease.md", version: "1.9.9", status: "active"},
+    {id: "renamed-again", path: "docs/decrease.md", status: "active"},
   ];
   const result = compareDocumentMetadata({baseDocuments: base, currentDocuments: current});
+  let derivedRejected = false;
+  try {
+    parseGovernedDocument("docs/sample.md", "---\ndoc_id: sample\nversion: 1.0.0\nowner: docs\nstatus: active\n---\n");
+  } catch (error) {
+    derivedRejected = error instanceof DocumentMetadataError;
+  }
   const machine = machineReferenceFindings({
     matches: [
       {path: "tool/example_policy.json", line: 3, text: '"docAnchor": "docs/deleted.md#scope"'},
@@ -310,7 +231,8 @@ export function runSelfTest() {
   return {
     pass:
       !result.pass &&
-      result.findings.some((entry) => entry.kind === "version-decrease") &&
+      result.findings.some((entry) => entry.kind === "doc-id-changed") &&
+      derivedRejected &&
       result.deletions.some((entry) => entry.id === "deleted") &&
       machine.findings.some((entry) => entry.kind === "retired-document-machine-reference") &&
       machine.findings.some((entry) => entry.kind === "removed-document-anchor"),
@@ -781,7 +703,7 @@ function printHelp() {
   console.log(`Usage: node tool/docs/check_doc_metadata.mjs [options]
 
 Options:
-  --base <ref>    Reject source-frontmatter identity swaps and version decreases,
+  --base <ref>    Reject source-frontmatter identity swaps,
                   and surviving references to documents or headings removed
                   since <ref>: Markdown links plus literal paths in registries,
                   tools, workflows and code.
@@ -815,12 +737,9 @@ function main() {
       pass: true,
       findings: [],
       deletions: [],
-      increases: [],
-      unchanged: [],
-      additions: currentDocuments.map(({id, path: documentPath, version}) => ({
+      additions: currentDocuments.map(({id, path: documentPath}) => ({
         id,
         path: documentPath,
-        version,
       })),
     };
     let baseRevision = null;
@@ -854,7 +773,7 @@ function main() {
       comparison.pass = comparison.findings.length === 0;
     }
     const report = {
-      schemaVersion: "1.1.0",
+      schemaVersion: "2.0.0",
       baseRevision,
       targetRevision: target.sourceRevision,
       governedDocuments: currentDocuments.length,

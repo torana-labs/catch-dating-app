@@ -1,7 +1,5 @@
 ---
 doc_id: host_memberships_spec
-version: 0.3.1
-updated: 2026-10-30
 owner: host_tooling
 status: proposed
 ---

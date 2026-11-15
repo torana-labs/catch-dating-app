@@ -1,7 +1,5 @@
 ---
 doc_id: r11_program_retention_policy
-version: 0.2.0
-updated: 2026-09-29
 owner: program_operations
 status: approved
 ---

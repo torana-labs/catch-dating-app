@@ -1,7 +1,5 @@
 ---
 doc_id: assignment_engine_ui_spec
-version: 1.0.0
-updated: 2026-11-08
 owner: event_success
 status: active
 ---

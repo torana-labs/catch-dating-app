@@ -1,7 +1,5 @@
 ---
 doc_id: marketing_landing_page_research
-version: 0.4.1
-updated: 2026-10-18
 owner: marketing_website
 status: active
 ---

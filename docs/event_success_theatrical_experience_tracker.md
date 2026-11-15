@@ -1,7 +1,5 @@
 ---
 doc_id: event_success_theatrical_experience_tracker
-version: 0.1.1
-updated: 2026-08-07
 owner: recursive_audit_loop
 status: temporary_active
 ---

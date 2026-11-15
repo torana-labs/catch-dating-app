@@ -1,7 +1,5 @@
 ---
 doc_id: location_stack
-version: 1.1.8
-updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---

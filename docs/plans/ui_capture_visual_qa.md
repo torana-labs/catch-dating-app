@@ -1,7 +1,5 @@
 ---
 doc_id: ui_capture_visual_qa
-version: 0.3.0
-updated: 2026-06-01
 owner: ui_capture_pipeline
 status: remaining_work
 ---

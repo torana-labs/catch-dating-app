@@ -1,7 +1,5 @@
 ---
 doc_id: event_run_of_show_and_movement_runtime_spec
-version: 1.0.0
-updated: 2026-08-25
 owner: events
 status: active
 ---

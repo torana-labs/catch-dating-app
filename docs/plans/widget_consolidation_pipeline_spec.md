@@ -1,7 +1,5 @@
 ---
 doc_id: widget_consolidation_pipeline_spec
-version: 0.5.0
-updated: 2026-09-06
 owner: widget_consolidation
 status: ready_for_execution
 ---

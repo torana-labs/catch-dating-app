@@ -1,7 +1,5 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.7.3
-updated: 2026-11-01
 owner: marketing_website
 status: active
 ---

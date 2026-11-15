@@ -1,7 +1,5 @@
 ---
 doc_id: redesign_surviving_tests
-version: 1.0.0
-updated: 2026-11-02
 owner: redesign_programme
 status: active
 ---

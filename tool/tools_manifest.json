@@ -322,7 +322,7 @@
           "node"
         ]
       },
-      "description": "Validates source-owned Markdown identity, version, date, owner, and lifecycle metadata; rejects duplicate identities, semantic version decreases, and identity swaps while reporting reviewed deletions without a duplicate catalog.",
+      "description": "Validates source-owned Markdown identity, owner, and lifecycle metadata; rejects duplicate identities, hand-kept version or updated fields, and identity swaps while reporting reviewed deletions without a duplicate catalog.",
       "checks": [
         "node --check tool/docs/check_doc_metadata.mjs",
         "node --test tool/docs/check_doc_metadata.test.mjs",

@@ -1,7 +1,5 @@
 ---
 doc_id: sales_demo_seed_tracker
-version: 0.1.17
-updated: 2026-10-30
 owner: demo_data
 status: active
 ---

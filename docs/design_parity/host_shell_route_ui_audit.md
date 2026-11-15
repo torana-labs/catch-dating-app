@@ -1,7 +1,5 @@
 ---
 doc_id: host_shell_route_ui_audit
-version: 1.2.0
-updated: 2026-08-31
 owner: design_parity_review
 status: active
 ---

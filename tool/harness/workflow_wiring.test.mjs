@@ -708,7 +708,10 @@ for (const filtered of [true, false]) {
       fs.mkdirSync(path.dirname(file), {recursive: true});
       fs.writeFileSync(file, content);
     };
-    const doc = (id, version) => `---\ndoc_id: ${id}\nversion: ${version}\nupdated: 2026-10-17\nowner: fixture\nstatus: active\n---\n\n# ${id}\n`;
+    // The base predates the removal of hand-kept version and updated fields.
+    const legacy = "version: 1.0.0\nupdated: 2026-10-17\n";
+    const doc = (id, extra = "", body = id) =>
+      `---\ndoc_id: ${id}\n${extra}owner: fixture\nstatus: active\n---\n\n# ${body}\n`;
     fs.mkdirSync(source);
     git(source, ["init", "-q"]);
     git(source, ["config", "core.hooksPath", os.devNull]);
@@ -716,22 +719,23 @@ for (const filtered of [true, false]) {
     git(source, ["config", "uploadpack.allowFilter", "true"]);
     write("tool/docs/check_doc_metadata.mjs", repositorySnapshot.readText(
       "tool/docs/check_doc_metadata.mjs", {required: true}));
-    write("AGENTS.md", doc("agents_fixture", "1.0.0"));
-    write("docs/current.md", doc("current_fixture", "1.0.0"));
-    write("docs/old-name.md", doc("renamed_fixture", "1.0.0"));
-    write("docs/base-only.md", doc("deleted_fixture", "1.0.0"));
+    write("AGENTS.md", doc("agents_fixture"));
+    write("docs/current.md", doc("current_fixture", legacy));
+    write("docs/old-name.md", doc("renamed_fixture", legacy));
+    write("docs/base-only.md", doc("deleted_fixture", legacy));
     git(source, ["add", "."]);
     git(source, ["commit", "-qm", "base"]);
     const base = git(source, ["rev-parse", "HEAD"]);
-    write("docs/current.md", doc("current_fixture", "1.1.0"));
+    write("docs/current.md", doc("current_fixture"));
     fs.renameSync(path.join(source, "docs/old-name.md"), path.join(source, "docs/new-name.md"));
+    write("docs/new-name.md", doc("renamed_fixture"));
     fs.unlinkSync(path.join(source, "docs/base-only.md"));
     git(source, ["add", "-A"]);
     git(source, ["commit", "-qm", "current"]);
     const head = git(source, ["rev-parse", "HEAD"]);
-    write("docs/current.md", doc("current_fixture", "0.9.0"));
+    write("docs/current.md", doc("swapped_fixture", "", "current_fixture"));
     git(source, ["add", "docs/current.md"]);
-    git(source, ["commit", "-qm", "invalid decrease"]);
+    git(source, ["commit", "-qm", "invalid identity swap"]);
     const invalid = git(source, ["rev-parse", "HEAD"]);
     const blobs = ["HEAD:AGENTS.md", `${head}:docs/current.md`,
       `${base}:docs/current.md`, `${base}:docs/base-only.md`, `${base}:docs/old-name.md`]
@@ -783,10 +787,9 @@ for (const filtered of [true, false]) {
       const report = JSON.parse(result.stdout);
       assert.equal(report.pass, true);
       assert.ok(report.deletions.some((row) => row.id === "deleted_fixture"));
-      assert.ok(report.increases.some((row) => row.id === "current_fixture"));
       const bad = run("--ref", invalid);
       assert.equal(bad.status, 1, bad.stderr);
-      assert.ok(JSON.parse(bad.stdout).findings.some((row) => row.kind === "version-decrease"));
+      assert.ok(JSON.parse(bad.stdout).findings.some((row) => row.kind === "doc-id-changed"));
     }
     assert.equal(fs.existsSync(receipt), false, "scanner must never invoke the remote");
     for (const [index, relative] of preserved.entries()) {

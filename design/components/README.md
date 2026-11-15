@@ -1,7 +1,5 @@
 ---
 doc_id: component_contract_registry
-version: 1.12.0
-updated: 2026-11-02
 owner: ui_elevation_initiative
 status: active
 ---

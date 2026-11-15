@@ -1,7 +1,5 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.12.0
-updated: 2026-11-08
 owner: event_success
 status: active
 ---

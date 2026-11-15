@@ -1,7 +1,5 @@
 ---
 doc_id: event_success
-version: 1.155.0
-updated: 2026-11-08
 owner: recursive_audit_loop
 status: active
 ---

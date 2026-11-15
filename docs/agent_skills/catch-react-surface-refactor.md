@@ -1,7 +1,5 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.3.1
-updated: 2026-10-25
 owner: agent_operating_model
 status: active
 ---

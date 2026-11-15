@@ -1,7 +1,5 @@
 ---
 doc_id: design_system_publishing
-version: 1.0.0
-updated: 2026-11-03
 owner: ui_elevation_initiative
 status: active
 ---

@@ -1,7 +1,5 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.3.0
-updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active
 ---

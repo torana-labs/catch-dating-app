@@ -1,7 +1,5 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.4.1
-updated: 2026-10-30
 owner: product
 status: active
 ---

@@ -1,7 +1,5 @@
 ---
 doc_id: composition_migration_spec
-version: 0.1.5
-updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---

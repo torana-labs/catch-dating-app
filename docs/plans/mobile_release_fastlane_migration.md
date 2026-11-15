@@ -1,7 +1,5 @@
 ---
 doc_id: mobile_release_fastlane_migration
-version: 1.1.1
-updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---

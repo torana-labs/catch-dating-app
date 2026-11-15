@@ -1,7 +1,5 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.3.0
-updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -228,8 +226,9 @@ compile-critical generated source, release runbooks, and CI checks remain.
 Historical implementation details remain recoverable from Git; they are not
 copied into an archive that would become a second active authority.
 
-Governed Markdown keeps identity and semantic version in source frontmatter.
-The metadata check blocks identity swaps and version decreases. Reviewed
+Governed Markdown keeps its identity in source frontmatter; Git history owns
+its version and date. The metadata check blocks identity swaps and hand-kept
+version or updated fields. Reviewed
 deletions are ordinary Git diffs; they do not require a preparatory lifecycle
 state or catalog edit.
 

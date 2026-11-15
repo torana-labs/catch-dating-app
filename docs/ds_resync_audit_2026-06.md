@@ -1,7 +1,5 @@
 ---
 doc_id: ds_resync_audit_2026-06
-version: 1.0.0
-updated: 2026-06-16
 owner: ui_elevation_initiative
 status: active — execution tracker for the design-system re-sync port
 ---

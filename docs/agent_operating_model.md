@@ -1,7 +1,5 @@
 ---
 doc_id: agent_operating_model
-version: 3.10.2
-updated: 2026-11-02
 owner: agent_operating_model
 status: active
 ---
@@ -203,8 +201,9 @@ node tool/git/audit_merge_drops.mjs \
   --theirs <integrated-tip> --merged <result> --json
 ```
 
-Governed Markdown owns its identity, semantic version, update date, owner, and
-lifecycle in source frontmatter. Validate it against Git directly:
+Governed Markdown owns its identity, owner, and lifecycle in source
+frontmatter; Git history owns its version and last-change date. Validate it
+against Git directly:
 
 ```sh
 node tool/docs/check_doc_metadata.mjs --base origin/main

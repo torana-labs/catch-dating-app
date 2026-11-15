@@ -1,7 +1,5 @@
 ---
 doc_id: widget_consolidation_rules
-version: 1.2.1
-updated: 2026-10-29
 owner: widget_consolidation
 status: active
 ---

@@ -1,7 +1,5 @@
 ---
 doc_id: app_listing_screenshot_production_brief
-version: 0.1.1
-updated: 2026-07-23
 owner: release_operations
 status: active
 ---

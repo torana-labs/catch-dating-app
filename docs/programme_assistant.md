@@ -1,7 +1,5 @@
 ---
 doc_id: programme_assistant
-version: 1.0.0
-updated: 2026-11-08
 owner: program_operations
 status: active
 ---

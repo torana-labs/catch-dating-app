@@ -1,7 +1,5 @@
 ---
 doc_id: agent_skills
-version: 1.5.0
-updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---

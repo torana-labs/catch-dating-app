@@ -1,7 +1,5 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.2.3
-updated: 2026-11-01
 owner: data_platform
 status: active
 ---

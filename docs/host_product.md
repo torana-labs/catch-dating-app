@@ -1,7 +1,5 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.6.3
-updated: 2026-11-02
 owner: host_tooling
 status: active
 ---
