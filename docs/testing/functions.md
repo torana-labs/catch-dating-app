@@ -1,3 +1,9 @@
+---
+doc_id: testing_functions
+owner: release_operations
+status: active
+---
+
 # Functions Tests
 
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,

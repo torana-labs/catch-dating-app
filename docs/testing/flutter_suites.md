@@ -1,3 +1,9 @@
+---
+doc_id: testing_flutter_suites
+owner: release_operations
+status: active
+---
+
 # Flutter Package, Golden And Native Suites
 
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,

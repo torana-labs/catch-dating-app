@@ -1,3 +1,9 @@
+---
+doc_id: testing_coverage
+owner: release_operations
+status: active
+---
+
 # Coverage And Test Maintainability
 
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,

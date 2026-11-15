@@ -1,3 +1,9 @@
+---
+doc_id: testing_catch_ui
+owner: release_operations
+status: active
+---
+
 # Catch UI Enforcement
 
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,
