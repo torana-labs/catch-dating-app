@@ -361,6 +361,23 @@ stop it and preserve only a reviewed Git diff. If the parent base advances,
 finish or preserve the old proposal and create a fresh worktree from the new
 exact SHA instead of silently rebasing a live child.
 
+### Pull Request Dependencies
+
+Every pull request targets `main` and can merge on its own.
+
+- Work that depends on an open PR waits until that PR merges, then starts a
+  fresh branch from the updated `origin/main`. If it is already open, keep it a
+  draft that targets `main` (the draft hold above) and merge `main` into it
+  once the base lands. No PR targets another PR's branch.
+- One PR covers one claimed path set. Split unrelated work into separate PRs
+  rather than one PR that grows across several claims.
+- Bring a branch up to date by merging `main` into it. Never rebase or
+  force-push a branch that has a PR.
+- The integration owner sequences PRs that touch hot files (for example
+  `nx.json`, `tool/nx/shadow_plan.mjs`, `tool/harness/component_graph.*` and
+  `tool/tools_manifest.json`), queueing one at a time. Merge `main` into such a
+  branch when the integration owner asks or right before it is enqueued.
+
 ### Ownership Rules
 
 - One file has one writer during a parallel batch.
