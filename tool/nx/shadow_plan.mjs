@@ -9,7 +9,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {callerLanes, isSelector, workflowCallers} from "./workflow_callers.mjs";
+import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
+import {describeChange, manifestChange, manifestFile, manifestPlannerLanes} from "./manifest_diff.mjs";
+import {callerLanes, isSelector, manifestLanes, workflowCallers} from "./workflow_callers.mjs";
 
 export const targets = ["analyze", "test", "lint", "build", "typecheck", "check", "conformance", "lane"];
 
@@ -75,6 +77,23 @@ export const callerGraph = () => (defaultGraph ??= workflowCallers({lanes: compa
 export const isControlPlane = (file, graph) => isSelector(file, graph ?? callerGraph());
 export const workflowLanes = (changedFiles, graph, manifestChange) => changedFiles.length === 0 ? new Set()
   : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes, manifestChange});
+
+/** The manifest diff between two commits, or null (every lane) when either version cannot be read. */
+export function readManifestChange(base, head, show = (rev) => run("git", ["show", `${rev}:${manifestFile}`])) {
+  try {
+    return manifestChange(show(base), show(head));
+  } catch {
+    return null;
+  }
+}
+
+/** The planner's lanes under the manifest diff rule, or null to keep its own selection. */
+export function plannerManifestLanes({mode, changedFiles, change, graph = callerGraph(),
+  componentGraph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"))}) {
+  return manifestPlannerLanes({mode, changedFiles, change, graph, allLanes: comparedLanes, queueOnly: queueOnlyCiTargets,
+    isSelector: isControlPlane, manifestLanes,
+    planOthers: (paths, planMode) => planAffected({changedPaths: paths, graph: componentGraph, mode: planMode})});
+}
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
@@ -211,6 +230,8 @@ export function summary(result, {base, head, mode}) {
     `- **Unexplained**: planner only ${list(result.unexplainedPlannerOnly)}; Nx only ${list(result.unexplainedNxOnly)}`,
     `- Nx tasks: ${list(result.nxTasks)}`,
     ...(result.unmappedTasks.length ? [`- **Unmapped Nx tasks** (map them in shadow_plan.mjs): ${list(result.unmappedTasks)}`] : []),
+    ...(result.manifestDiff ? [`- Manifest diff${result.manifestDiff.reportOnly ? " (report-only on main)" : ""}: ` +
+      `${result.manifestDiff.reason}; planner would select ${list(result.manifestDiff.plannerWouldSelect)}`] : []),
     "",
   ].join("\n");
 }
@@ -242,7 +263,7 @@ function main(argv) {
   for (let index = 0; index < argv.length; index += 2) {
     const [flag, value] = [argv[index], argv[index + 1]];
     if (!["--base", "--head", "--mode", "--out"].includes(flag) || !value) {
-      throw new Error("Usage: node tool/nx/shadow_plan.mjs --base <sha> --head <sha> [--mode pr|merge_group] [--out file]");
+      throw new Error("Usage: node tool/nx/shadow_plan.mjs --base <sha> --head <sha> [--mode pr|merge_group|main] [--out file]");
     }
     args[flag.slice(2)] = value;
   }
@@ -250,12 +271,22 @@ function main(argv) {
   const plan = JSON.parse(run(process.execPath, ["tool/harness.mjs", "plan", "--base", args.base, "--head", args.head,
     "--mode", args.mode, "--json"]));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
+  const manifest = changedFiles.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
   const result = compare({plannerLanes: plan.operations.ciTargets, plannerFull: plan.full === true,
-    ...nxAffected(args), mode: args.mode, changedFiles, plannerSources: plan.operationSources?.ciTargets ?? []});
+    ...nxAffected(args), mode: args.mode, changedFiles, plannerSources: plan.operationSources?.ciTargets ?? [],
+    manifestChange: manifest});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
+  // What the manifest diff rule selects on the planner side. On main it is
+  // report-only until the cut-over: main still runs every lane.
+  if (changedFiles.includes(manifestFile)) {
+    const plannerLanes = plannerManifestLanes({mode: args.mode, changedFiles, change: manifest});
+    report.manifestDiff = {reason: describeChange(manifest), all: !manifest || manifest.all,
+      ids: manifest?.ids ?? [], removed: manifest?.removed ?? [],
+      plannerWouldSelect: plannerLanes ?? [...comparedLanes], reportOnly: args.mode === "main"};
+  }
   if (args.out) fs.writeFileSync(args.out, `${JSON.stringify(report, null, 2)}\n`);
-  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(result, args));
-  console.log(summary(result, args));
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary(report, args));
+  console.log(summary(report, args));
   if (result.unmappedTasks.length > 0) {
     console.error(`::error::Nx tasks with no CI lane: ${result.unmappedTasks.join(", ")}. Map them in tool/nx/shadow_plan.mjs.`);
   }

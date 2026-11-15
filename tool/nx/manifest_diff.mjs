@@ -34,7 +34,7 @@ const all = (reason) => ({all: true, reason, ids: [], removed: []});
  * entries, plus every entry that runs one of them through alsoCheckIds, and
  * `removed` the entries the edit deletes.
  */
-export function manifestChange(baseText, headText) {
+export function manifestChange(baseText, headText, {bookkeeping = bookkeepingKeys} = {}) {
   let base;
   let head;
   try {
@@ -49,7 +49,7 @@ export function manifestChange(baseText, headText) {
     }
   }
   for (const key of new Set([...Object.keys(base), ...Object.keys(head)])) {
-    if (key === "tools" || bookkeepingKeys.has(key)) continue;
+    if (key === "tools" || bookkeeping.has(key)) continue;
     if (canonical(base[key]) !== canonical(head[key])) return all(`top-level "${key}" changed`);
   }
   const entries = (manifest, label) => {

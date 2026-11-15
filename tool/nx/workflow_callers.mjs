@@ -76,7 +76,7 @@ export const notCalledByCi = {
   ".github/workflows/marketing-website.yml": "deploy: push to main and dispatch",
   ".github/workflows/mobile-beta.yml": "release: schedule and dispatch",
   ".github/workflows/mobile-production.yml": "release: dispatch only",
-  ".github/workflows/nx-shadow.yml": "its own pull_request and merge_group triggers run it",
+  ".github/workflows/nx-shadow.yml": "its own pull_request, merge_group and main push triggers run it",
   ".github/workflows/observability-evidence.yml": "operations: dispatch only",
   ".github/workflows/ops-seed-environment.yml": "operations: dispatch only",
   ".github/workflows/package-golden-baselines.yml": "maintenance: dispatch only",
