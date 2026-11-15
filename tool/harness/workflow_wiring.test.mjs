@@ -1611,6 +1611,12 @@ test("capture jobs after the optional native probe do not inherit its skip", () 
   assert.deepEqual(downstream.sort(), ["export", "plan", "reuse", "storybook"]);
   const unguarded = downstream.filter((id) => !/!cancelled\(\)|always\(\)/u.test(String(jobs[id].if ?? "")));
   assert.deepEqual(unguarded, [], "a job after native_probe needs !cancelled() or always() in its if");
+  // !cancelled() alone would let a job run after a failed plan, so every job that
+  // needs the plan also requires it to have succeeded.
+  const unchecked = downstream.filter((id) => needs(id).includes("plan") && !String(jobs[id].if).includes("needs.plan.result == 'success'"));
+  assert.deepEqual(unchecked, [], "a job after plan must require needs.plan.result == 'success'");
+  // Render may proceed without the Storybook only when no web capture needs it.
+  assert.match(String(jobs.export.if), /needs\.storybook\.result == 'skipped' && needs\.plan\.outputs\.web_render != 'true'/u);
 });
 
 test("canonical native captures reach consumers before dependency setup and builds", () => {
