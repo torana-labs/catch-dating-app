@@ -687,7 +687,6 @@
   "EventInviteAttributionDocument",
   "EventParticipationDocument",
   "EventAttendeeDocument",
-  "EventAttendeeIndexDocument",
   "PushInstallationDocument",
   "AdminAuditLogDocument",
   "AdminRoleAssignmentDocument",

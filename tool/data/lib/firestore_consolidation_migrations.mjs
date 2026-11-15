@@ -216,12 +216,6 @@ export const MIGRATIONS = [
         fill: async (data, id, db) => {
           if (typeof data.attendeeId === "string" && data.attendeeId) return null;
           if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
-          // The retired eventAttendeeIndex pointer, where one was written.
-          const pointer = (await db.collection("eventAttendeeIndex")
-            .doc(`${data.eventId}_${data.uid}`).get()).data();
-          if (typeof pointer?.attendeeId === "string" && pointer.attendeeId) {
-            return {attendeeId: pointer.attendeeId};
-          }
           const linked = await linkedAttendeeId(db, data.eventId, data.uid);
           if (linked.ambiguous) return null;
           return {attendeeId: linked.id ?? uidAttendeeId(data.eventId, data.uid)};

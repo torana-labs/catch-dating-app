@@ -160,7 +160,6 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
       genderAtSignup: null, paymentId: null},
     "eventAttendees/att_pointed": {eventId: "e1", organizerId: "o1",
       source: "catchBooking", linkedUid: "pointed", status: "registered"},
-    "eventAttendeeIndex/e1_pointed": {attendeeId: "att_pointed"},
     "publicProfiles/new": {name: "  Asha "},
   });
   const plan = await planMigration(db, migration);
