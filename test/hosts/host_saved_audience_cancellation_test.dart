@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -18,14 +17,14 @@ void main() {
     );
     addTearDown(container.dispose);
     final subscription = container.listen(
-      hostAllSavedAudiencesProvider('a'),
+      hostAllSavedAudienceSummariesProvider('a'),
       (_, _) {},
     );
     expect(repository.requests, ['a:null']);
     subscription.close();
     await container.pump();
     repository.pages.first.complete(
-      const HostSavedAudiencePage(audiences: [], nextCursor: 'next'),
+      const HostSavedAudienceSummaryPage(audiences: [], nextCursor: 'next'),
     );
     await container.pump();
     expect(repository.requests, ['a:null']);
@@ -42,18 +41,20 @@ void main() {
       );
       addTearDown(container.dispose);
       final subscription = container.listen(
-        hostAllSavedAudiencesProvider('a'),
+        hostAllSavedAudienceSummariesProvider('a'),
         (_, _) {},
       );
       addTearDown(subscription.close);
-      final result = container.read(hostAllSavedAudiencesProvider('a').future);
+      final result = container.read(
+        hostAllSavedAudienceSummariesProvider('a').future,
+      );
       repository.pages.first.complete(
-        const HostSavedAudiencePage(audiences: [], nextCursor: 'next'),
+        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: 'next'),
       );
       await container.pump();
       expect(repository.requests, ['a:null', 'a:next']);
       repository.pages.last.complete(
-        const HostSavedAudiencePage(audiences: [], nextCursor: null),
+        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: null),
       );
       expect((await result).nextCursor, isNull);
     },
@@ -70,25 +71,28 @@ void main() {
       );
       addTearDown(container.dispose);
       final old = container.listen(
-        hostAllSavedAudiencesProvider('a'),
+        hostAllSavedAudienceSummariesProvider('a'),
         (_, _) {},
       );
       old.close();
       await container.pump();
       final current = container.listen(
-        hostAllSavedAudiencesProvider('b'),
+        hostAllSavedAudienceSummariesProvider('b'),
         (_, _) {},
       );
       addTearDown(current.close);
       repository.pages.first.complete(
-        const HostSavedAudiencePage(audiences: [], nextCursor: 'old-next'),
+        const HostSavedAudienceSummaryPage(
+          audiences: [],
+          nextCursor: 'old-next',
+        ),
       );
       await container.pump();
       expect(repository.requests, ['a:null', 'b:null']);
       repository.pages.last.complete(
-        const HostSavedAudiencePage(audiences: [], nextCursor: null),
+        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: null),
       );
-      await container.read(hostAllSavedAudiencesProvider('b').future);
+      await container.read(hostAllSavedAudienceSummariesProvider('b').future);
     },
   );
 }
@@ -105,16 +109,18 @@ class _Pages extends HostSavedAudienceRepository {
         ),
       );
   final requests = <String>[];
-  final pages = <Completer<HostSavedAudiencePage>>[];
+  final pages = <Completer<HostSavedAudienceSummaryPage>>[];
   @override
-  Future<HostSavedAudiencePage> listSavedAudiences(
+  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
     String organizerId, {
-    String status = 'active',
     String? cursor,
     int limit = 25,
+    bool byName = true,
+    bool? isStatic,
+    bool Function()? isCurrent,
   }) {
     requests.add('$organizerId:$cursor');
-    final page = Completer<HostSavedAudiencePage>();
+    final page = Completer<HostSavedAudienceSummaryPage>();
     pages.add(page);
     return page.future;
   }
