@@ -338,8 +338,15 @@ function validateDocumentSize(doc, currentReport) {
 function validateUser(doc, currentReport) {
   const data = doc.data;
   requireString(data, "name", doc, currentReport);
-  requireTimestamp(data, "dateOfBirth", doc, currentReport);
-  requireString(data, "gender", doc, currentReport);
+  // The users contract makes date of birth and gender optional: a profile
+  // still in onboarding has neither. A completed profile must have both, and
+  // either one must be typed correctly whenever it is present.
+  if (data.profileComplete === true || data.dateOfBirth != null) {
+    requireTimestamp(data, "dateOfBirth", doc, currentReport);
+  }
+  if (data.profileComplete === true || data.gender != null) {
+    requireString(data, "gender", doc, currentReport);
+  }
   requireString(data, "phoneNumber", doc, currentReport);
   requireBool(data, "profileComplete", doc, currentReport);
   requireArray(data, "profilePhotos", doc, currentReport);
