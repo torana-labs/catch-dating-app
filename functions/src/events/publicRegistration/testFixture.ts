@@ -91,7 +91,12 @@ export async function publicFixture() {
       loadCurrentAuthUser: h.auth,
       ...patch,
     });
-  return {...h, event, organizer, quote, reserve};
+  // A multi-place order freezes its whole amount, and the platform fee, in
+  // the routing snapshot.
+  const routingFor = (amountMinor: number) => amountMinor === 10000 ?
+    h.routing : {...h.routing, amountMinor,
+      transferAmountMinor: Math.round(amountMinor * 0.95)};
+  return {...h, event, organizer, quote, reserve, routingFor};
 }
 
 export async function publicCapturedFixture() {

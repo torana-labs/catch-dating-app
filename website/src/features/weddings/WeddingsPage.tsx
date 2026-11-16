@@ -5,9 +5,9 @@ import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/
 import {WeddingsBands} from "./sections/weddingsBands";
 import {useWeddingsLandingController} from "./useWeddingsController";
 
-/** The one site footer, named for weddings, with the product's line. */
+/** The host footer, named for weddings, with the product's line. */
 function Foot() {
-  return <PublicSiteFooter tagline={copy.foot.body} wordmark={copy.foot.title} />;
+  return <PublicSiteFooter tagline={copy.foot.body} variant="host" wordmark={copy.foot.title} />;
 }
 
 /**
@@ -21,7 +21,7 @@ export function WeddingsPage({captures}: {captures: CaptureSlots}) {
   const landing = useWeddingsLandingController();
   return (
     <CatchRoot format="nightsOut" theme="day">
-      <PublicSiteHeader />
+      <PublicSiteHeader variant="host" />
       <CatchSectionTopBar action={<CatchButton href="#apply" label={copy.sections.apply} size="sm" />} label={copy.sections.label} sections={copy.sections.items} />
       <WebsitePageMain id="top">
         <WeddingsBands captures={captures} landing={landing} />

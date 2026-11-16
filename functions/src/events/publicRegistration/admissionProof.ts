@@ -28,6 +28,7 @@ export function assertPublicPaidAdmission(
     raw.migrationRevision !== payment.migrationRevision ||
     raw.registrationRevision !== payment.registrationRevision ||
     raw.amountPaise !== payment.amountPaise ||
+    (raw.placeCount ?? 1) !== (payment.placeCount ?? 1) ||
     raw.currency !== payment.currency ||
     raw.providerOrderId !== payment.providerOrderId ||
     raw.providerPaymentId !== payment.providerPaymentId ||

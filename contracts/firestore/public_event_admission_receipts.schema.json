@@ -58,6 +58,12 @@
       "minimum": 100,
       "maximum": 100000000
     },
+    "placeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Places the admitted booking holds; must match its payment. Missing means 1."
+    },
     "currency": {
       "const": "INR"
     },

@@ -413,7 +413,7 @@ function HostLandingBands({captures, host}: {captures: CaptureSlots; host: Host}
 /**
  * The host landing (the RbWebHostV2 board) on the white ground: the site
  * header, then the page's sections with Start free trial in the bar that
- * takes its place once you scroll, the board's bands, and the short footer. `captures` are the marketing capture
+ * takes its place once you scroll, the board's bands, and the host footer. `captures` are the marketing capture
  * slots (src/app/marketingCaptures.ts).
  */
 export function HostPage({captures}: {captures: CaptureSlots}) {
@@ -421,12 +421,12 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
   return (
     <CatchRoot theme="day">
       {/* A host page's primary action is the trial, never the guest app (leak 3). */}
-      <PublicSiteHeader actions={<CatchButton href="#start" label={copy.sections.start} size="sm" />} />
+      <PublicSiteHeader actions={<CatchButton href="#start" label={copy.sections.start} size="sm" />} variant="host" />
       <CatchSectionTopBar action={<CatchButton href="#start" label={copy.sections.start} size="sm" />} label={copy.sections.label} sections={copy.sections.items} />
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
-      <PublicSiteFooter tagline={copy.footer.tagline} />
+      <PublicSiteFooter tagline={copy.footer.tagline} variant="host" />
     </CatchRoot>
   );
 }

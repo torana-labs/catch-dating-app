@@ -1,7 +1,7 @@
 import {createHash} from "crypto";
 import {
   assertReadySeatState, heldSeatCount, CanonicalSeatIdentity,
-  SeatAuthorityError, SeatLedger, SeatOperation,
+  reservationPlaces, SeatAuthorityError, SeatLedger, SeatOperation,
   SeatReceipt, SeatReservation, SeatTransaction,
 } from "./seatAuthority";
 
@@ -155,14 +155,17 @@ export async function prepareSeatBatch<Subject>(params: {
       fail("conflict", "This identity already has a confirmed seat.");
     }
     const active = operation.operation === "reserve";
-    delta += active ? 1 : -1;
-    if (!active) releaseCount++;
+    // A release returns every place a multi-place booking held.
+    const places = active ? 1 : reservationPlaces(reservation);
+    delta += active ? 1 : -places;
+    if (!active) releaseCount += places;
     const next: SeatReservation = {eventId: command.eventId,
       canonicalKey: identity.key, identityRevision: identity.revision,
       active, revision: (reservation?.revision ?? 0) + 1,
       reservedAtMillis: active ? command.nowMillis :
         reservation!.reservedAtMillis,
-      releasedAtMillis: active ? null : command.nowMillis};
+      releasedAtMillis: active ? null : command.nowMillis,
+      ...(places > 1 ? {places} : {})};
     nextReservations.push(next);
     nextReceipts.push({eventId: command.eventId,
       requestId: operation.requestId, requestHash,
