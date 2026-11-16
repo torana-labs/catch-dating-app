@@ -32,7 +32,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
 
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader />
+      <PublicSiteHeader variant="host" />
       <WebsitePageMain id="claim">
         <CatchPageBody gutter={false} pb="s8" pt="s4">
           {claimable && listing ? (
@@ -56,7 +56,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
           )}
         </CatchPageBody>
       </WebsitePageMain>
-      <PublicSiteFooter />
+      <PublicSiteFooter variant="host" />
     </CatchRoot>
   );
 }
