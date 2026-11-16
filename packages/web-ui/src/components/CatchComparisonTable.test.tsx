@@ -18,7 +18,7 @@ describe("CatchComparisonTable", () => {
     const {container} = render(<CatchComparisonTable {...props} />);
     expect(screen.getByRole("region", {name: "A sample comparison"}).tagName).toBe("SECTION");
     const table = screen.getByRole("table", {name: "A sample comparison"});
-    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["", "Our option", "First option", "Second option"]);
+    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["Our option", "First option", "Second option"]);
     expect(within(table).getAllByRole("rowheader").map((cell) => cell.textContent)).toEqual(["First property", "Second property"]);
     expect(container.querySelector("header")).toBeNull();
   });
