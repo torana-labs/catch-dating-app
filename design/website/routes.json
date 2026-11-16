@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 20,
-  "updated": "2026-10-22",
+  "version": 21,
+  "updated": "2026-11-16",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -18,7 +18,9 @@
     "nextRuntime": "website/app/[[...path]]/page.tsx",
     "nextPublicationPolicy": "website/src/server/publicReadPolicy.ts",
     "nextImplementation": "docs/marketing_website_architecture.md",
-    "nextPreviewHosting": "website/next-hosting.preview.json"
+    "nextPreviewHosting": "website/next-hosting.preview.json",
+    "contentRoutes": "website/src/features/playbook/playbookRoutes.ts",
+    "contentSchema": "website/src/content/playbook/playbookPage.schema.json"
   },
   "routes": [
     {
@@ -157,26 +159,26 @@
           "mobile"
         ],
         "states": [
-        "default",
-        "night-format",
-        "applicant-replay",
-        "layer-two",
-        "pricing-cap",
-        "start-band",
-        "phone"
-      ],
-        "stateCoverage": {
-          "storybook": [
-          "default"
-        ],
-          "manual": [
+          "default",
           "night-format",
           "applicant-replay",
           "layer-two",
           "pricing-cap",
           "start-band",
           "phone"
-        ]
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "default"
+          ],
+          "manual": [
+            "night-format",
+            "applicant-replay",
+            "layer-two",
+            "pricing-cap",
+            "start-band",
+            "phone"
+          ]
         }
       }
     },
@@ -1174,10 +1176,31 @@
       "review": {
         "priority": "p1",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "signed-out",
+          "loading",
+          "ticketing",
+          "trial-active",
+          "tools-only-pending",
+          "tools-only-active",
+          "not-owner",
+          "failed"
+        ],
         "stateCoverage": {
-          "storybook": ["signed-out", "loading", "ticketing", "trial-active", "tools-only-pending", "tools-only-active", "not-owner", "failed"],
+          "storybook": [
+            "signed-out",
+            "loading",
+            "ticketing",
+            "trial-active",
+            "tools-only-pending",
+            "tools-only-active",
+            "not-owner",
+            "failed"
+          ],
           "manual": []
         }
       }
@@ -1317,6 +1340,1510 @@
             "sent"
           ],
           "manual": []
+        }
+      }
+    },
+    {
+      "id": "host_run_clubs",
+      "kind": "contentFamily",
+      "path": "/host/run-clubs/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookRunClubs"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Run and walk clubs: the organiser-type template (hero, pains, a run morning, buyer's checklist, pricing at their size, FAQs, capture).",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_racket_sports",
+      "kind": "contentFamily",
+      "path": "/host/racket-sports/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookRacketSports"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Padel, pickleball, tennis and badminton.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_supper_clubs",
+      "kind": "contentFamily",
+      "path": "/host/supper-clubs/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookSupperClubs"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Applications, seating and prepayment.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_quiz_nights",
+      "kind": "contentFamily",
+      "path": "/host/quiz-nights/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookQuizNights"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Teams, rounds, live scores and repeat bookings.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_venues",
+      "kind": "contentFamily",
+      "path": "/host/venues/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookVenues"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Cafes, bars and breweries running their own nights.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_studios",
+      "kind": "contentFamily",
+      "path": "/host/studios/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookStudios"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Yoga, spin, strength and dance studios and instructors.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_nightlife",
+      "kind": "contentFamily",
+      "path": "/host/nightlife/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookMixers"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Mixers and pub crawls. /host/mixers/ stays a retired redirect, so the page lives here (decision 26).",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_workshops",
+      "kind": "contentFamily",
+      "path": "/host/workshops/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookWorkshops"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Workshops and classes.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_communities",
+      "kind": "contentFamily",
+      "path": "/host/communities/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookCommunities"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Communities.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_creators",
+      "kind": "contentFamily",
+      "path": "/host/creators/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookCreators"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Creators.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_teams",
+      "kind": "contentFamily",
+      "path": "/host/teams/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookTeams"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Companies and shared spaces.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_outdoors",
+      "kind": "contentFamily",
+      "path": "/host/outdoors/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookOutdoors"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Treks, rides and outdoor groups.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_facilities",
+      "kind": "contentFamily",
+      "path": "/host/facilities/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookFacilities"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Courts, clubhouses and sports facilities.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_colleges",
+      "kind": "contentFamily",
+      "path": "/host/colleges/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookColleges"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "College societies (decision 26 gave it this path).",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_brands",
+      "kind": "contentFamily",
+      "path": "/host/brands/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookBrands"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Attribution links and reporting for brand-run events.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "how_it_works",
+      "kind": "contentFamily",
+      "path": "/how-it-works/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookHowItWorks"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "The whole product on one page; every step links to its capability page.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_night",
+      "kind": "contentFamily",
+      "path": "/product/night/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookNight"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Every format's live tools, the live console, the tablet host stand and dress rehearsals.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_bookings",
+      "kind": "contentFamily",
+      "path": "/product/bookings/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookBookings"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Applications, approvals, waitlists, private offers, UPI payments and refunds.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_your_page",
+      "kind": "contentFamily",
+      "path": "/product/your-page/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookYourPage"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "The organiser page as link-in-bio.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_door",
+      "kind": "contentFamily",
+      "path": "/product/door/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookDoor"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "QR and self check-in, arrivals and the door on a tablet.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_messages",
+      "kind": "contentFamily",
+      "path": "/product/messages/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookMessages"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Reminders, audiences and automated messages.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_guests",
+      "kind": "contentFamily",
+      "path": "/product/guests/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookRecords"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "One record per guest across events.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_forms",
+      "kind": "contentFamily",
+      "path": "/product/forms/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookForms"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Forms, their links and responses beside guest records.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_reports",
+      "kind": "contentFamily",
+      "path": "/product/reports/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookReports"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Reports, payouts and team roles.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "pricing",
+      "kind": "contentFamily",
+      "path": "/pricing/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "PlaybookPricing (one-off)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Pricing off the /host/#pricing anchor so it can rank and take ads. A one-off board: its PR adds the sections it needs.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "safety",
+      "kind": "contentFamily",
+      "path": "/safety/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookSafety"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Host verification, Booked on Catch reviews, the code of conduct and reporting.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "about",
+      "kind": "contentFamily",
+      "path": "/about/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookAbout"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Who runs Catch and why. Waits on founder content (decision 22).",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "app_notify",
+      "kind": "contentFamily",
+      "path": "/app/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookStart (app state)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Where Get notified goes until the guest app ships; Get the app once the stores are live.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_start",
+      "kind": "contentFamily",
+      "path": "/host/start/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookStart (start state)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Start free trial, menu-free: store badges, a QR code on desktop and WhatsApp me the link.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_walkthrough",
+      "kind": "contentFamily",
+      "path": "/host/walkthrough/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookStart (walkthrough state)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Book a walkthrough, menu-free; a request form until the slot backend exists (decision 24).",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_demo",
+      "kind": "contentFamily",
+      "path": "/host/demo/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookDemo"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "A public, self-serve demo night. /demo/:invitationId/ stays the private demo (decision 26).",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_first_event",
+      "kind": "contentFamily",
+      "path": "/host/first-event/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookFirstEvent"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Plan your first event: a plan, a run sheet and what to charge.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_switch",
+      "kind": "contentFamily",
+      "path": "/host/switch/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookSwitch"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Leave the WhatsApp group behind: import, what changes and what does not.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "programmes",
+      "kind": "contentFamily",
+      "path": "/programmes/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookProgrammes"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Offsites, retreats and birthdays that are not weddings.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "refer",
+      "kind": "contentFamily",
+      "path": "/refer/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookRefer"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Host-to-host and guest-to-host referral.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "stories",
+      "kind": "contentFamily",
+      "path": "/stories/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookStories"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Host stories. Waits on three design partners (decision 20).",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "compare",
+      "kind": "contentFamily",
+      "path": "/compare/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookCompare (one-off)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Comparisons, status quo first. A one-off board.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "tools_no_show_calculator",
+      "kind": "contentFamily",
+      "path": "/tools/no-show-calculator/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookNoShow (one-off)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "The no-show calculator with WhatsApp capture. A one-off board.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "tools_event_page_from_link",
+      "kind": "contentFamily",
+      "path": "/tools/event-page-from-link/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookLinkTool"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Paste a link, get a draft page to claim.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "playbooks",
+      "kind": "contentFamily",
+      "path": "/playbooks/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookPlaybooks"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Host playbooks by format and city.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "host_first_event_plan",
+      "kind": "contentFamily",
+      "pathPattern": "/host/first-event/:plan/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "host",
+        "board": "PlaybookFirstEvent"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "A first-event plan by format and city, such as run-club-mumbai. One content file per plan.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "story_detail",
+      "kind": "contentFamily",
+      "pathPattern": "/stories/:slug/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookStory"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "One host story per content file.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "compare_detail",
+      "kind": "contentFamily",
+      "pathPattern": "/compare/:slug/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookCompareVs (one-off)"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "One comparison per content file, only against the competitors decision 17 names.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "playbook_guide",
+      "kind": "contentFamily",
+      "pathPattern": "/playbooks/:slug/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookGuide"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "One playbook guide per content file.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lp_campaign",
+      "kind": "contentFamily",
+      "pathPattern": "/lp/:campaign/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "resources",
+        "board": "PlaybookLpSupper"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Ad landing pages: always noindex and never in the sitemap, whatever meta.json says.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "new_to_city",
+      "kind": "contentFamily",
+      "pathPattern": "/new-to-:city/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "discovery",
+        "board": "PlaybookNewToCity"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "New to a city, such as /new-to-mumbai/; the city must be a market city slug.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "city_format",
+      "kind": "contentFamily",
+      "pathPattern": "/:city/:format/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "discovery",
+        "board": "PlaybookCityFormat"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "A city by format, such as /mumbai/run-clubs/; the city must be a market city slug. Matched last, and only for registered pages.",
+      "review": {
+        "priority": "p2",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
         }
       }
     }

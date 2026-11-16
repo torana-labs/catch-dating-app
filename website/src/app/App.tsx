@@ -5,7 +5,7 @@ import {organizerDirectoryDestination, retiredMarketingDestination} from "./reti
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
-import {Suspense, useMemo, type ComponentType} from "react";
+import {Suspense, useEffect, useMemo, useState, type ComponentType} from "react";
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
 import {BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useParams} from "react-router";
@@ -17,6 +17,7 @@ import {
   pageMetaForEvent,
   pageMetaForWeddingsPath,
   pageMetaForListing,
+  pageMetaForPlaybook,
   type PageKey,
 } from "./pageMeta";
 import {
@@ -42,6 +43,8 @@ import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
 import {PageShell} from "../shared/site";
+import type {PlaybookPageDocument} from "../content/playbook/playbookContract";
+import {loadPlaybookPage, resolvePlaybookPage, type PlaybookPageRef} from "../features/playbook/playbookPages";
 import {SiteAccountProvider} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
@@ -79,6 +82,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/weddings/WeddingsApplicationPage.tsx",
   "../features/notFound/NotFoundPage.tsx",
   "../features/legal/LegalPage.tsx",
+  "../features/playbook/PlaybookPage.tsx",
 ], {query: "?route-recovery"});
 
 function route<P extends object>(
@@ -183,6 +187,39 @@ const LegalPage = route(async () => ({
   default: (await import("../features/legal/LegalPage")).LegalPage,
 }), "../features/legal/LegalPage", "LegalPage");
 
+const PlaybookPage = route(async () => ({
+  default: (await import("../features/playbook/PlaybookPage")).PlaybookPage,
+}), "../features/playbook/PlaybookPage", "PlaybookPage");
+
+/**
+ * The redesign page a path names, once loaded: undefined while it loads,
+ * null when the path names none or its page cannot render yet (a section no
+ * kit component draws), which then 404s. A malformed page throws to the
+ * route's error boundary instead of rendering half a page.
+ */
+function usePlaybookDocument(ref: PlaybookPageRef | null): PlaybookPageDocument | null | undefined {
+  const [loaded, setLoaded] = useState<{key: string; page: PlaybookPageDocument | null} | null>(null);
+  useEffect(() => {
+    if (!ref) return;
+    let current = true;
+    loadPlaybookPage(ref).then(
+      (page) => {
+        if (current) setLoaded({key: ref.match.contentKey, page});
+      },
+      (error: unknown) => {
+        if (current) setLoaded(() => {
+          throw error;
+        });
+      },
+    );
+    return () => {
+      current = false;
+    };
+  }, [ref]);
+  if (!ref) return null;
+  return loaded?.key === ref.match.contentKey ? loaded.page : undefined;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -213,11 +250,15 @@ function CanonicalMarketingRouteShell() {
   const eventPage = useMemo(() => event ? eventPageFromListing(event.listing, event.eventId) : null, [event]);
   const listingRoute = getHostListingRouteForPath(location.pathname, listings);
   const listing = listingRoute?.listing ?? null;
-  const fallbackPage = pageKeyForCurrentRoute(
+  // A redesign page resolves before the router: its path is reserved by the route checker.
+  const playbookRef = useMemo(() => resolvePlaybookPage(location.pathname), [location.pathname]);
+  const playbookPage = usePlaybookDocument(playbookRef);
+  const routedPage = pageKeyForCurrentRoute(
     location.pathname,
     Boolean(listing),
     Boolean(event)
   );
+  const fallbackPage = routedPage === "playbook" && playbookPage === null ? "not_found" : routedPage;
   const page: PageKey = event
     ? "event_detail"
     : listing
@@ -239,6 +280,8 @@ function CanonicalMarketingRouteShell() {
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
+    fallbackPage === "playbook" ? (playbookPage && playbookRef ?
+      pageMetaForPlaybook(playbookPage, playbookRef.match.canonicalPath) : pageMeta.not_found) :
     pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
 
   useMarketingAnalytics(page, routeKey);
@@ -254,6 +297,9 @@ function CanonicalMarketingRouteShell() {
           hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ||
             page === "programme_link" ? "" : location.hash}
         />
+        {fallbackPage === "playbook" ? (
+          playbookPage ? <PlaybookPage captures={marketingCaptures} page={playbookPage} /> : <RouteLoadingState />
+        ) : (
         <Routes>
           <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
           <Route path={marketingRoutePaths.weddings} element={<WeddingsPage captures={marketingCaptures} />} />
@@ -418,6 +464,7 @@ function CanonicalMarketingRouteShell() {
             element={<NotFoundPage />}
           />
         </Routes>
+        )}
       </Suspense>
       </RouteChunkRecovery>
       {page === "event_runtime" || page === "event_rehearsal" ||
