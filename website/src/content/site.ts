@@ -21,6 +21,7 @@ export const whatsappChatCopy = {
   hostLinkMessage: `Hi ${brand.name}, please send me the ${brand.stores.hostAppName} link.`,
   hostQuestionMessage: `Hi ${brand.name}, I have a question about hosting on ${brand.name}.`,
   generalMessage: `Hi ${brand.name}, I have a question.`,
+  walkthroughMessage: `Hi ${brand.name}, I'd like a walkthrough of ${brand.name}.`,
   chat: "Chat on WhatsApp",
 } as const;
 
@@ -97,13 +98,15 @@ export const siteHeaderCopy = {
     action: {href: "/#app", label: guestAppActionLabel},
   },
   /**
-   * Host pages: What's on, the For hosts pages and Resources, then WhatsApp
-   * and the free trial. The bar opens pages, never a section of one, so
-   * Pricing (a band of /host/) stays in the footer until it has a page.
+   * Host pages: What's on, the For hosts pages, Pricing and Resources, then
+   * WhatsApp and the free trial. Pricing is the one bar link that opens a
+   * section (the pricing band of /host/), by the owner's call on 16 Nov,
+   * until /pricing/ ships.
    */
   host: {
     nav: [
       {label: "For hosts", links: [hostLandingLink, weddingsLink, claimLink]},
+      hostPricingLink,
       {label: "Resources", links: [helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: hostStartLink,
@@ -153,16 +156,17 @@ export const siteFooterCopy = {
   },
   /**
    * The help band across the top of the footer on guest and host pages, not
-   * on ad landing pages or one-job flows. It states no hours. Host pages add
-   * the walkthrough, which goes to the free-trial start until a walkthrough
-   * page exists.
+   * on ad landing pages or one-job flows. It states no hours. Guest pages add
+   * Help; host pages add the walkthrough, which asks for one on WhatsApp until
+   * walkthrough booking exists.
    */
   helpBand: {
     title: "We reply on WhatsApp, usually within an hour.",
     whatsapp: whatsappChatCopy.chat,
     guestMessage: whatsappChatCopy.generalMessage,
     hostMessage: whatsappChatCopy.hostQuestionMessage,
-    walkthrough: {href: hostStartLink.href, label: "Book a walkthrough"},
+    guestHelp: helpLink,
+    walkthrough: {label: "Book a walkthrough", message: whatsappChatCopy.walkthroughMessage},
   },
   /** A city not yet open: "Pune · soon". */
   soon: "soon",

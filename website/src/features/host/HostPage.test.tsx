@@ -26,9 +26,10 @@ describe("host landing", {timeout: 20_000}, () => {
     // A host page's primary action is the trial, never the guest app.
     expect(banner.getByRole("link", {name: copy.sections.start}).getAttribute("href")).toBe("#start");
     expect(banner.queryByRole("link", {name: /Get the app|Get notified/u})).toBeNull();
-    // The site top bar only opens pages; the page's sections live in their own bar.
+    // The site top bar opens pages, plus Pricing (the owner's 16 Nov call, until /pricing/ ships);
+    // the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/help/"]);
+    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/#pricing", "/help/"]);
     // The host header: the For hosts dropdown and WhatsApp before the free trial; the host footer.
     expect(banner.getByRole("button", {name: "For hosts"}).getAttribute("aria-expanded")).toBe("false");
     expect(banner.getByRole("link", {name: /WhatsApp/u}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\//u);

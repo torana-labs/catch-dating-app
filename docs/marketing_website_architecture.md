@@ -131,11 +131,12 @@ picks one explicitly:
 | Variant | Bar | Routes |
 |---|---|---|
 | `guest` (default) | What's on and For hosts; Get the app (or Get notified) | home, Explore, city pages, `/cities/`, organiser pages, event pages, account, legal and help pages, 404 |
-| `host` | What's on and Help; the For hosts dropdown (`CatchNavMenu`: Catch for hosts, Weddings, Claim your page); a WhatsApp link; Start free trial | `/host/`, `/host/billing/`, `/weddings/`, `/claim/` and `/claim/:listing/`, the demo continuation |
+| `host` | What's on, Pricing and Help; the For hosts dropdown (`CatchNavMenu`: Catch for hosts, Weddings, Claim your page); a WhatsApp link; Start free trial | `/host/`, `/host/billing/`, `/weddings/`, `/claim/` and `/claim/:listing/`, the demo continuation |
 | `minimal` | the wordmark alone | one-job flows on the site chrome: `/booking/…`, `/invite/…`, `/offer/`, `/f/…` |
 
 The bar opens pages, never a section of the current one (navigation proposal,
-15 Nov), so Pricing, a band of `/host/`, stays in the footer. A header group
+15 Nov), with one exception the owner made on 16 Nov: the host bar's Pricing
+opens the pricing band of `/host/` until `/pricing/` ships. A header group
 with a single page draws a plain link (Resources is Help alone today), and an
 empty group is left out. `CatchNavMenu` renders nothing under 600px, so the
 phone menu lists its pages after the links. It sits with the bar's actions

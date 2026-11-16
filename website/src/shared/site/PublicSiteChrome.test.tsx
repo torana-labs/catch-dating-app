@@ -92,7 +92,7 @@ describe("canonical public chrome", () => {
     const banner = within(screen.getByRole("banner"));
     // Resources holds one page today, so it is a plain link to Help, not a dropdown.
     expect(within(banner.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")]))
-      .toEqual([["What’s on", "/explore/"], ["Help", "/help/"]]);
+      .toEqual([["What’s on", "/explore/"], ["Pricing", "/host/#pricing"], ["Help", "/help/"]]);
     expect(banner.queryByRole("button", {name: "Resources"})).toBeNull();
     const forHosts = banner.getByRole("button", {name: "For hosts"});
     expect(forHosts.getAttribute("aria-expanded")).toBe("false");
@@ -114,7 +114,7 @@ describe("canonical public chrome", () => {
     );
     fireEvent.click(screen.getByRole("button", {name: publicSiteCopy.menu.openLabel}));
     expect(screen.getAllByRole("menuitem").map((item) => item.textContent))
-      .toEqual(["What’s on", "Help", "Catch for hosts", "Weddings", "Claim your page", "Sign in"]);
+      .toEqual(["What’s on", "Pricing", "Help", "Catch for hosts", "Weddings", "Claim your page", "Sign in"]);
   });
 
   it("keeps a one-job flow's header to the wordmark: no links, menu, account or primary action", () => {
@@ -191,18 +191,23 @@ describe("canonical public chrome", () => {
     expect(within(footer.getByRole("navigation", {name: "Footer"})).getAllByRole("heading", {level: 2})).toHaveLength(3);
   });
 
-  it("leads the footer with the help band: WhatsApp on guest pages, the walkthrough added on host pages", () => {
+  it("leads the footer with the help band: WhatsApp and Help on guest pages, WhatsApp and the walkthrough on host pages", () => {
+    const band = (root: ReturnType<typeof within>) =>
+      within(root.getByRole("heading", {level: 2, name: siteFooterCopy.helpBand.title}).parentElement!);
     const {unmount} = render(<PublicSiteFooter />);
-    const guest = within(screen.getByRole("contentinfo"));
-    expect(guest.getByRole("heading", {level: 2, name: siteFooterCopy.helpBand.title})).toBeTruthy();
+    const guest = band(within(screen.getByRole("contentinfo")));
     expect(guest.getByRole("link", {name: siteFooterCopy.helpBand.whatsapp}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    expect(guest.getByRole("link", {name: siteFooterCopy.helpBand.guestHelp.label}).getAttribute("href")).toBe("/help/");
     expect(guest.queryByRole("link", {name: siteFooterCopy.helpBand.walkthrough.label})).toBeNull();
     unmount();
     render(<PublicSiteFooter variant="host" />);
-    const host = within(screen.getByRole("contentinfo"));
-    expect(host.getByRole("link", {name: siteFooterCopy.helpBand.walkthrough.label}).getAttribute("href")).toBe("/host/#start");
+    const host = band(within(screen.getByRole("contentinfo")));
+    // Walkthrough booking doesn't exist yet, so the walkthrough asks for one on WhatsApp.
+    expect(host.getByRole("link", {name: siteFooterCopy.helpBand.walkthrough.label}).getAttribute("href"))
+      .toContain(encodeURIComponent(siteFooterCopy.helpBand.walkthrough.message));
     expect(host.getByRole("link", {name: siteFooterCopy.helpBand.whatsapp}).getAttribute("href"))
       .toContain(encodeURIComponent(siteFooterCopy.helpBand.hostMessage));
+    expect(host.queryByRole("link", {name: siteFooterCopy.helpBand.guestHelp.label})).toBeNull();
   });
 
   it("leaves the help band out of one-job flows", () => {
