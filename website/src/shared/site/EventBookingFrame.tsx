@@ -13,7 +13,7 @@ import {WebsitePageMain} from "./PageShell";
  * and the pages that use it stay private and unstored. A booking is a
  * one-job flow: the minimal header and no help band.
  */
-export function EventBookingFrame({kicker, title, body, banner, card = true, children}: {
+export function EventBookingFrame({kicker, title, body, banner, card = true, footer = true, children}: {
   kicker?: string;
   title: string;
   body?: string;
@@ -21,6 +21,8 @@ export function EventBookingFrame({kicker, title, body, banner, card = true, chi
   banner?: ReactNode;
   /** False: the children are the column's own blocks (an event update, a rehearsal). */
   card?: boolean;
+  /** False: no site footer, for a practice phone that only holds its controls. */
+  footer?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -31,7 +33,7 @@ export function EventBookingFrame({kicker, title, body, banner, card = true, chi
           {card ? <CatchGroundCard ground="white" outlined>{children}</CatchGroundCard> : children}
         </CatchFlowLayout>
       </WebsitePageMain>
-      <PublicSiteFooter helpBand={false} />
+      {footer ? <PublicSiteFooter helpBand={false} /> : null}
     </>
   );
 }
