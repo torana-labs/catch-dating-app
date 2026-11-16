@@ -8,13 +8,14 @@
     "$schema",
     "id",
     "route",
+    "meta",
     "header",
     "footer",
     "sections"
   ],
   "properties": {
     "$schema": {
-      "const": "../playbookPage.schema.json"
+      "const": "../../playbookPage.schema.json"
     },
     "id": {
       "type": "string",
@@ -23,6 +24,33 @@
     "route": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "noindex"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/copy"
+        },
+        "description": {
+          "$ref": "#/$defs/copy"
+        },
+        "noindex": {
+          "type": "boolean"
+        },
+        "socialDescription": {
+          "$ref": "#/$defs/copy"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)$"
+        }
+      }
     },
     "header": {
       "type": "object",
@@ -1564,26 +1592,6 @@
       },
       "minItems": 1,
       "maxItems": 24
-    },
-    "meta": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "title",
-        "description",
-        "twitterDescription"
-      ],
-      "properties": {
-        "title": {
-          "$ref": "#/$defs/copy"
-        },
-        "description": {
-          "$ref": "#/$defs/copy"
-        },
-        "twitterDescription": {
-          "$ref": "#/$defs/copy"
-        }
-      }
     }
   },
   "$defs": {

@@ -261,16 +261,23 @@ const sectionSpec = {
 } as const satisfies UnionSpec;
 
 const breadcrumbs = obj({links: list(obj({label: copy(), to: obj({route: str(routeIdPattern)})}), 1, 4), current: copy()});
+/**
+ * The page's own metadata: its title and descriptions for search and link
+ * previews, an optional preview image, and `noindex`, the one flag that keeps
+ * a page out of search and the sitemap until the owner approves it. Every
+ * page starts with `"noindex": true`; approval is the PR that sets it false.
+ * Ad landing pages stay noindex whatever this says.
+ */
+const pageMeta = obj({title: copy(), description: copy(), noindex: bool()}, {socialDescription: copy(), ogImage: str(assetPattern)});
+
 const pageSpec = obj({
-  $schema: constant("../playbookPage.schema.json"),
+  $schema: constant("../../playbookPage.schema.json"),
   id: str(pageIdPattern),
   route: str(routeIdPattern),
+  meta: pageMeta,
   header: obj({variant: oneOfValues(playbookHeaderVariants)}, {breadcrumbs}),
   footer: obj({variant: oneOfValues(playbookFooterVariants)}, {footnotes: list(obj({id: str(footnoteIdPattern), text: copy()}), 1, 12)}),
   sections: list(sectionSpec, 1, 24),
-}, {
-  /** A family instance's own title and descriptions; meta.json formats them with the family's template. */
-  meta: obj({title: copy(), description: copy(), twitterDescription: copy()}),
 });
 
 export type PlaybookPageDocument = Infer<typeof pageSpec>;
@@ -283,6 +290,20 @@ export type PlaybookMedia = Infer<typeof media>;
 export type PlaybookExcerptCard = Infer<typeof excerptCard>;
 export type PlaybookCardSource = PlaybookSectionOf<"cards">["source"];
 export type PlaybookLeadForm = NonNullable<PlaybookSectionOf<"cta">["leadForm"]>;
+export type PlaybookPageMeta = PlaybookPageDocument["meta"];
+
+/**
+ * One page's content in a section's page index
+ * (content/playbook/pages/<section>/index.ts): the JSON file beside the
+ * index, and its lazy import. The index key is the page's content key: the
+ * route id for a single page, or the route id and its parameters joined
+ * with `/` for a page of a family (`story_detail/carter-road-runners`).
+ */
+export interface PlaybookPageEntry {
+  readonly file: string;
+  readonly load: () => Promise<{default: unknown}>;
+}
+export type PlaybookPageIndex = {readonly [contentKey: string]: PlaybookPageEntry};
 
 export const playbookSectionTypes = Object.keys(sectionSpec.variants) as PlaybookSectionType[];
 
@@ -401,6 +422,8 @@ export interface PlaybookValidationContext {
   readonly routeIds: ReadonlySet<string>;
   /** Capture slot ids in the app-screenshot manifest. */
   readonly captureSlots: ReadonlySet<string>;
+  /** Routes whose pages never enter search, such as ad landing pages. */
+  readonly alwaysNoindexRoutes?: ReadonlySet<string>;
 }
 
 function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationContext | undefined): string[] {
@@ -463,6 +486,7 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
   }
   if (context) {
     if (!context.routeIds.has(page.route)) errors.push(`route ${page.route} is not a registered route`);
+    if (context.alwaysNoindexRoutes?.has(page.route) && !page.meta.noindex) errors.push(`meta.noindex must stay true on ${page.route} pages`);
     page.header.breadcrumbs?.links.forEach((link, index) => {
       if (!context.routeIds.has(link.to.route)) errors.push(`header.breadcrumbs.links[${index}] links unknown route ${link.to.route}`);
     });

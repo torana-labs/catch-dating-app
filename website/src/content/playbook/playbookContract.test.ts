@@ -1,6 +1,6 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import {describe, expect, it} from "vitest";
-import runClubs from "./pages/host-run-clubs.json";
+import runClubs from "./pages/host/run-clubs.json";
 import schema from "./playbookPage.schema.json";
 import {
   playbookPageJsonSchema,
@@ -48,6 +48,10 @@ describe("playbook page contract", () => {
     ["wrong $schema", fixture((page) => {page.$schema = "./other.json";})],
     ["unknown page key", fixture((page) => {page.extra = true;})],
     ["no sections", fixture((page) => {page.sections = [];})],
+    ["no meta", fixture((page) => {delete page.meta;})],
+    ["noindex left out", fixture((page) => {delete (page.meta as Mutable).noindex;})],
+    ["noindex as a string", fixture((page) => {(page.meta as Mutable).noindex = "true";})],
+    ["preview image outside /assets", fixture((page) => {(page.meta as Mutable).ogImage = "https://example.com/card.png";})],
     ["unknown section type", fixture((page) => {page.sections[0].type = "carousel";})],
     ["ground as hex", fixture((page) => {page.sections[0].ground = "#F07A55";})],
     ["kit tone instead of a ground", fixture((page) => {page.sections[0].ground = "m-coral";})],
@@ -98,6 +102,12 @@ describe("playbook page contract", () => {
     expect(validatePlaybookPage(unknownRoute, context).join("\n")).toMatch(/unknown route host_mixers/u);
     const unknownSlot = fixture((page) => {section(page, "timeline").media = {kind: "capture", slot: "host-run-morning"};});
     expect(validatePlaybookPage(unknownSlot, context).join("\n")).toMatch(/unknown capture slot host-run-morning/u);
+  });
+
+  it("keeps ad landing pages out of search whatever their meta says", () => {
+    const lp = fixture((page) => {page.route = "lp_campaign"; (page.meta as Mutable).noindex = false;});
+    const lpContext = {...context, routeIds: new Set([...context.routeIds, "lp_campaign"]), alwaysNoindexRoutes: new Set(["lp_campaign"])};
+    expect(validatePlaybookPage(lp, lpContext).join("\n")).toMatch(/meta.noindex must stay true/u);
   });
 
   it("requires a source for numeric proof and a section for every anchor", () => {

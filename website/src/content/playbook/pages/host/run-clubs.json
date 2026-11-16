@@ -1,7 +1,13 @@
 {
-  "$schema": "../playbookPage.schema.json",
+  "$schema": "../../playbookPage.schema.json",
   "id": "host_run_clubs",
   "route": "host_run_clubs",
+  "meta": {
+    "title": "{{brand.name}} for run clubs | Pace groups, sign-ups and check-in",
+    "description": "Sign-ups, pace pods, a first hello at the start line and next week’s run already booked, without the 200-message WhatsApp thread. Free runs stay free.",
+    "socialDescription": "Every runner in a pace group before Sunday. {{brand.name}} for run clubs: free runs stay free.",
+    "noindex": true
+  },
   "header": {
     "variant": "host",
     "breadcrumbs": {
