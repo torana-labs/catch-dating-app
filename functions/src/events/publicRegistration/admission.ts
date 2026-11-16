@@ -12,7 +12,8 @@ import {validatePublicEventAdmissionReceiptDocument} from
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {SeatIdentityAuthorityError} from "../seatIdentityAuthority";
-import {SeatAuthorityError} from "../seatAuthority/seatAuthority";
+import {SeatAuthorityError, reservationPlaces} from
+  "../seatAuthority/seatAuthority";
 import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
@@ -41,6 +42,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
+  publicPaymentPlaces,
 } from "./paymentLedger";
 import {assertPublicPaidAdmission} from "./admissionProof";
 import {prepareCatchBookingAdmission} from "./catchBookingBridge";
@@ -160,10 +162,12 @@ export async function finalizePublicPayment(input: {
         reservation,
         expectedActive: false,
       });
+      const {placeCount} = publicPaymentPlaces(p);
       if (
         !ledger ||
         !reservation ||
         ledger.migrationRevision !== p.migrationRevision ||
+        reservationPlaces(reservation) !== placeCount ||
         reservation.checkoutHold?.paymentId !== paymentId ||
         reservation.checkoutHold.expiresAtMillis !==
           p.checkoutExpiresAt.toMillis()
@@ -235,6 +239,10 @@ export async function finalizePublicPayment(input: {
         revenueOrderReference: p.providerOrderId,
         revenueOrderAmountMinor: p.amountPaise,
       };
+      // The paid booking decides the party: one row and one pass hold every
+      // place, and an older row's size never survives into it.
+      if (placeCount > 1) attendee.partySize = placeCount;
+      else delete attendee.partySize;
       const receipt: Receipt = {
         organizerId,
         eventId,
@@ -245,6 +253,7 @@ export async function finalizePublicPayment(input: {
         migrationRevision: p.migrationRevision,
         registrationRevision: p.registrationRevision,
         amountPaise: p.amountPaise,
+        placeCount,
         currency: p.currency,
         routing: p.routing,
         paymentId,
@@ -264,7 +273,7 @@ export async function finalizePublicPayment(input: {
       applyCheckoutHold(seats, confirm);
       tx.set(guest.attendeeRef, attendee);
       tx.update(db.collection("events").doc(eventId), {
-        bookedCount: ledger.occupied + 1,
+        bookedCount: ledger.occupied + placeCount,
         ...catchBooking?.eventCounts(event),
       });
       if (!draft.exists) {

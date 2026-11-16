@@ -19,6 +19,7 @@ import {readPublicPaidAdmission} from "./admissionProof";
 import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
+  publicPaymentPlaces,
 } from "./paymentLedger";
 
 /** Read a current, UID-owned view. No merchant IDs, routing secrets, phone or
@@ -93,7 +94,7 @@ export async function projectPublicPayment(input: {
             orderId: p.providerOrderId,
             amountPaise: p.amountPaise,
             currency: p.currency,
-            description: p.eventName,
+            description: checkoutDescription(p),
             expiresAtMillis: p.checkoutExpiresAt.toMillis(),
           };
         }
@@ -134,6 +135,7 @@ export async function projectPublicPayment(input: {
           eventId: p.eventId,
           attendeeId: proof.attendeeId,
           status: row.status,
+          placeCount: publicPaymentPlaces(p).placeCount,
         };
       }
       if (
@@ -153,16 +155,27 @@ export async function projectPublicPayment(input: {
   return input.tx ? read(input.tx) : db.runTransaction(read);
 }
 
+/** The provider sheet names the party size so the guest sees what they pay
+ * for; one place keeps the plain event name. */
+function checkoutDescription(p: Payment): string {
+  const {placeCount} = publicPaymentPlaces(p);
+  return placeCount > 1 ? `${p.eventName} · ${placeCount} places` :
+    p.eventName;
+}
+
 function paymentProjection(
   p: Payment,
   paymentId: string,
   checkout: NonNullable<Response["payment"]>["checkout"],
   cancellationQuote: NonNullable<Response["payment"]>["cancellationQuote"],
 ): NonNullable<Response["payment"]> {
+  const {placeCount, unitAmountPaise} = publicPaymentPlaces(p);
   return {
     paymentId,
     status: p.status,
     amountPaise: p.amountPaise,
+    placeCount,
+    unitAmountPaise,
     currency: p.currency,
     mode: p.routing.selection.mode,
     refundedAmountPaise: p.refundedAmountPaise,

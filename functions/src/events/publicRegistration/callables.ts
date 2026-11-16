@@ -140,6 +140,7 @@ export async function managePublicEventCheckoutHandler(
           nowMillis: deps.now()}),
         await publicHostMembershipQuoteTerms({db, tx, eventId: data.eventId,
           event, uid, nowMillis: deps.now()}),
+        data.placeCount ?? 1,
       )};
     });
     // Say so before the guest reviews a price nobody can collect.
@@ -204,6 +205,7 @@ export async function managePublicEventCheckoutHandler(
             await publicHostMembershipQuoteTerms({db, tx,
               eventId: data.eventId, event: source.event, uid,
               nowMillis: deps.now()}),
+            data.reviewedQuote.placeCount ?? 1,
           );
           return {organizerId: source.event.organizerId!, quote};
         });

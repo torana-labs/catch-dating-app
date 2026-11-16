@@ -36,6 +36,24 @@ export function publicAdmissionId(paymentId: string): string {
   return `public_paid_${paymentId}`;
 }
 
+/** Places and unit price of a stored booking. Checkouts written before
+ * multi-place booking carry neither field and are one place at amountPaise.
+ */
+export function publicPaymentPlaces(
+  p: Pick<Payment, "amountPaise" | "placeCount" | "unitAmountPaise">,
+): {placeCount: number; unitAmountPaise: number} {
+  const placeCount = p.placeCount ?? 1;
+  const unitAmountPaise = p.unitAmountPaise ?? p.amountPaise / placeCount;
+  if (!Number.isSafeInteger(placeCount) || placeCount < 1 ||
+      !Number.isSafeInteger(unitAmountPaise) ||
+      unitAmountPaise * placeCount !== p.amountPaise ||
+      (p.placeCount === undefined) !== (p.unitAmountPaise === undefined) &&
+        placeCount !== 1) {
+    registrationUnavailable();
+  }
+  return {placeCount, unitAmountPaise};
+}
+
 export function parsePublicPayment(
   raw: unknown,
   paymentId: string,
@@ -58,6 +76,7 @@ export function parsePublicPayment(
   ) {
     registrationUnavailable();
   }
+  publicPaymentPlaces(p);
   if (
     p.cancellation &&
     (!p.admissionReceiptId ||

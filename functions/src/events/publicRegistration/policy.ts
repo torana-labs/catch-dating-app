@@ -23,6 +23,21 @@ export type PublicCheckoutQuote = NonNullable<
   ManagePublicEventCheckoutCallableResponse["quote"]
 >;
 
+/** One public booking holds at most this many places, the booker included.
+ * The seat authority enforces capacity; this is the per-booking ceiling. */
+export const MAX_PUBLIC_BOOKING_PLACES = 4;
+
+/** A reviewed or requested place count; absent means one place. */
+export function publicBookingPlaces(value: unknown): number {
+  if (value === undefined) return 1;
+  if (!Number.isSafeInteger(value) || (value as number) < 1 ||
+      (value as number) > MAX_PUBLIC_BOOKING_PLACES) {
+    registrationUnavailable(
+      `Choose between 1 and ${MAX_PUBLIC_BOOKING_PLACES} places.`);
+  }
+  return value as number;
+}
+
 export function registrationUnavailable(
   message = "Registration is not available for this event.",
 ): never {
@@ -120,7 +135,10 @@ export function assertPublicRegistrationTerms(
   }
 }
 
-/** The returned terms are reviewed before a hold and frozen in the ledger. */
+/** The returned terms are reviewed before a hold and frozen in the ledger.
+ * A multi-place quote charges every place the same unit price; a one-place
+ * quote carries no place fields, so it matches what older clients echo.
+ */
 export function publicCheckoutQuote(
   eventId: string,
   event: EventDocument,
@@ -128,7 +146,9 @@ export function publicCheckoutQuote(
   nowMillis: number,
   hasActiveCommunityMembership = false,
   memberTerms: PublicMemberQuoteTerms | null = null,
+  placeCount = 1,
 ): PublicCheckoutQuote {
+  const places = publicBookingPlaces(placeCount);
   assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
     hasActiveCommunityMembership);
   if (
@@ -139,12 +159,24 @@ export function publicCheckoutQuote(
   ) {
     registrationUnavailable();
   }
+  // A member price is the member's own benefit; guests' places have no
+  // reviewed price yet, so a member books one place at a time.
+  if (memberTerms && places > 1) {
+    registrationUnavailable(
+      "Member pricing covers one place. Book a single place to use it.");
+  }
+  const unitAmountPaise = memberTerms?.priceInPaise ?? event.priceInPaise!;
+  const amountPaise = unitAmountPaise * places;
+  if (!Number.isSafeInteger(amountPaise) || amountPaise > 100_000_000) {
+    registrationUnavailable("Choose fewer places for one booking.");
+  }
   return {
     eventId,
     eventName: event.name,
     registrationRevision: event.publicRegistrationRevision!,
     startTimeMillis: event.startTime.toMillis(),
-    amountPaise: memberTerms?.priceInPaise ?? event.priceInPaise!,
+    amountPaise,
+    ...(places > 1 ? {unitAmountPaise, placeCount: places} : {}),
     ...(memberTerms ? {listAmountPaise: memberTerms.listPriceInPaise} : {}),
     currency: "INR",
     cancellationPolicy: eventCancellationPolicy(event),
