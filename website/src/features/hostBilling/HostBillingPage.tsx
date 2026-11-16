@@ -13,8 +13,8 @@ import {
 } from "@catch/web-ui";
 import {interpolateContent as fill} from "@content/interpolate";
 import {hostBillingCopy as copy} from "../../content/hostBilling";
-import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
-import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {publicSiteCopy} from "../../content/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {SignInButton} from "../account/SignInSheet";
 import {
   billPeriod,
@@ -45,9 +45,9 @@ export function HostBillingView(props: HostBillingController) {
   const {phase} = props;
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader />
+      <PublicSiteHeader breadcrumbs={{links: [publicSiteCopy.forHosts], current: copy.title}} variant="host" />
       <WebsitePageMain aria-labelledby={titleId} id="host-billing">
-        <CatchPageBody gutter={false} pb="s0" pt="s4">
+        <CatchPageBody gutter={false} pb="s8" pt="s4">
           <CatchPaneLayout
             main={
               <CatchStack gap={24}>
@@ -78,9 +78,7 @@ export function HostBillingView(props: HostBillingController) {
           />
         </CatchPageBody>
       </WebsitePageMain>
-      <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-        <PublicPageFooter links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
-      </CatchPageBody>
+      <PublicSiteFooter variant="host" />
     </CatchRoot>
   );
 }
