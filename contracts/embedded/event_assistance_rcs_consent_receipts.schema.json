@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_assistance_rcs_consent_receipts.schema.json",
+  "title": "EventRcsConsentReceiptDocument",
+  "$ref": "../shared/event_assistance_rcs_consent.schema.json#/definitions/ConsentReceipt"
+}

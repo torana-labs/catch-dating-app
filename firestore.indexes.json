@@ -7251,40 +7251,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "evidence.subjectUid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "eventAssistancePermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "channel",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.mode",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.organizerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.eventId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "attendeeId",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "subjectUid",
           "order": "ASCENDING"
         },

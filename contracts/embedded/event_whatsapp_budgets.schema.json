@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/event_whatsapp_budgets.schema.json",
+  "$id": "https://catch.app/contracts/embedded/event_whatsapp_budgets.schema.json",
   "title": "EventWhatsappBudgetDocument",
   "description": "Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.",
   "type": "object",
@@ -152,9 +152,5 @@
       "minimum": 0,
       "maximum": 9007199254740991
     }
-  },
-  "x-firestore-collection": "eventAssistanceWhatsappBudgets",
-  "x-firestore-path": "eventAssistanceWhatsappBudgets/{budgetId}",
-  "x-document-id-field": "budgetId",
-  "x-owner": "trusted WhatsApp event service workers"
+  }
 }

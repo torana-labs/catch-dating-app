@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_withdrawal_grants.schema.json",
+  "title": "EventAssistanceWithdrawalGrantDocument",
+  "description": "Signed guest-link authority to withdraw one channel permission; the document id is the channel prefix plus the guest link id. Each document carries `channel`; it matches exactly one channel shape.",
+  "oneOf": [
+    {
+      "$ref": "../embedded/event_assistance_sms_withdrawal_grants.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_rcs_withdrawal_grants.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_whatsapp_withdrawal_grants.schema.json"
+    }
+  ],
+  "x-firestore-collection": "eventAssistanceWithdrawalGrants",
+  "x-firestore-path": "eventAssistanceWithdrawalGrants/{grantId}",
+  "x-owner": "trusted event-assistance messaging services"
+}

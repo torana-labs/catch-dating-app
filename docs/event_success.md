@@ -3029,8 +3029,8 @@ and a ready, approved Catch sender covering the recipient prefix. The caller
 selects an explicit sender ID; the response exposes its display name, the event
 name and masked recipient number, never provider agent IDs or credentials.
 
-`eventAssistanceRcsPermissions` stores independent event-service permission;
-`eventAssistanceRcsConsentReceipts` proves the exact decision and resulting
+`eventAssistancePermissions` (channel `rcs`) stores independent event-service permission;
+`eventAssistanceConsentReceipts` (channel `rcs`) proves the exact decision and resulting
 permission hash. Both bind the Firebase subject, phone, attendee creation
 generation and Firestore event/attendee source generations. Sender records in
 `eventAssistanceRcsSenders` use the canonical RCS configuration, now including
@@ -3118,7 +3118,7 @@ ID. They do not require sign-in or authorize opt-in. The response contains only
 the recorded event preference, revision and lifetime, without guest, phone, event
 or provider identity. The preference is not a delivery-readiness assessment.
 
-`eventAssistanceRcsWithdrawalGrants` binds the original permission, event and
+`eventAssistanceWithdrawalGrants` (channel `rcs`) binds the original permission, event and
 attendee source generations, Firebase subject, recipient endpoint and provider
 agent. `prepareRcsWithdrawal` verifies the exact persisted permission, consent
 receipt and guest grant, then stages immutable issuance in its caller transaction
@@ -3220,7 +3220,7 @@ Slow or unsuccessful lookups cannot extend that window. Reservation and claim
 re-read source state, STOP, permission, sender, grant and both budgets; the
 observation must still match and be fresh. Lookup results never grant sends.
 
-Private `eventAssistanceRcsBudgets` contains separately approved event and UTC
+Private `eventAssistanceBudgets` (channel `rcs`) contains separately approved event and UTC
 sender-day budgets. Each binds the agent and currency; wrong currency, replaced
 agent, paused authority, clock drift or insufficient remaining funds blocks
 RCS. Both worst-case charges, immutable `eventAssistanceRcsDispatches` evidence,

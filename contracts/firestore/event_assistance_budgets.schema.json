@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_budgets.schema.json",
+  "title": "EventAssistanceBudgetDocument",
+  "description": "Reviewed event and sender-day spending ceilings for one channel. Conservative debits are reserved costs, not provider billing receipts. Each document carries `channel`; it matches exactly one channel shape.",
+  "oneOf": [
+    {
+      "$ref": "../embedded/event_assistance_sms_budgets.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_rcs_budgets.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_whatsapp_budgets.schema.json"
+    }
+  ],
+  "x-firestore-collection": "eventAssistanceBudgets",
+  "x-firestore-path": "eventAssistanceBudgets/{budgetId}",
+  "x-document-id-field": "budgetId",
+  "x-owner": "trusted event-assistance messaging services"
+}

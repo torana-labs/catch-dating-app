@@ -639,7 +639,15 @@ runtime binding before either channel's private history query. Channel-specific
 permission decoders retain their own consent and identity rules. These read
 contracts add no grant, connection, provider or financial authority.
 
-Private `eventAssistanceRcsPermissions` and `eventAssistanceRcsConsentReceipts`
+Event-day messaging consent and spend use one collection per record type for
+every channel: `eventAssistancePermissions`, `eventAssistanceConsentReceipts`,
+`eventAssistanceWithdrawalGrants` and `eventAssistanceBudgets`. Each document
+carries `channel` (`sms`, `rcs` or `whatsapp`) and matches exactly that
+channel's shape. Document ids carry a channel prefix (a withdrawal grant's id
+is `{channel}:{linkId}`), and every query filters on `channel` first, so one
+channel never reads another's consent or spend.
+
+Private `eventAssistancePermissions` (channel `rcs`) and `eventAssistanceConsentReceipts` (channel `rcs`)
 commit together. Granted and revoked records are a closed union; a grant
 requires explicit evidence and a matching immutable receipt, while initial
 withdrawal has null evidence. Exact request retries cannot reverse later
@@ -662,7 +670,7 @@ migration is performed by this source change.
 
 The same canonical contract now owns `WithdrawalGrant`, `WithdrawalView` and a
 closed `messageLink` revoke-only receipt variant with a null actor. Private
-`eventAssistanceRcsWithdrawalGrants` binds the original source generations,
+`eventAssistanceWithdrawalGrants` (channel `rcs`) binds the original source generations,
 subject, endpoint and agent. Transactional preparation verifies the persisted
 guest grant and exact permission/receipt before staging immutable issuance. The
 App-Check-protected bearer callables `getEventRcsWithdrawal` / `withdrawEventRcs`
@@ -679,7 +687,7 @@ retry. Bearer controls cannot opt in. Verified guest opt-in controls and live
 activation remain open.
 
 The RCS canonical contract also owns `Budget`, `CapabilityObservation` and
-`Dispatch`. Private `eventAssistanceRcsBudgets` binds each approved event or UTC
+`Dispatch`. Private `eventAssistanceBudgets` (channel `rcs`) binds each approved event or UTC
 sender-day limit to an agent and currency. Both pessimistic charges commit with
 one outbox claim. `eventAssistanceRcsDispatches` stores the corresponding
 before/after budget revisions and charges, original scope, permission and
@@ -5851,9 +5859,9 @@ The backend operation catalog owns execution, retry and signed-webhook semantics
 
 ### Event Service WhatsApp Consent Contract
 
-`eventAssistanceWhatsappPermissions` binds the event, attendee creation
+`eventAssistancePermissions` (channel `whatsapp`) binds the event, attendee creation
 generation, verified subject and recipient endpoint to an explicit organizer
-sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
+sender. Its immutable `eventAssistanceConsentReceipts` (channel `whatsapp`) prove the exact
 copy version, displayed sender hash and complete resulting permission hash.
 Future-event announcement consent remains separate and is never read as an
 Event Assistance grant. The receipt union distinguishes verified-participant
@@ -5907,7 +5915,7 @@ claim. The required view/grant review hash requires coordinated API and web
 bundle rollout; existing tabs must reload the updated client. Native preference
 UI and sender activation remain separate delivery work.
 
-`eventAssistanceWhatsappWithdrawalGrants/{linkId}` commits with the dispatch
+`eventAssistanceWithdrawalGrants/whatsapp:{linkId}` commits with the dispatch
 claim, debits and native reply binding. It pins the original event, attendee
 generation, verified subject, recipient endpoint and provider account/phone to
 the immutable guest grant hash. A changed identity or longer consent lifetime
@@ -5938,7 +5946,7 @@ The shared message gate caps all event-service routes at 24 hours after the
 current event end, including after a schedule change shortens a previously
 granted consent window.
 
-`eventAssistanceWhatsappBudgets` supplies independently approved event and UTC
+`eventAssistanceBudgets` (channel `whatsapp`) supplies independently approved event and UTC
 sender-day ceilings. Budget identity includes currency. Missing, paused, stale,
 wrong-scope or exhausted authority withholds the claim. Both conservative cost
 debits, `eventAssistanceWhatsappDispatches` material evidence and any native
@@ -6110,7 +6118,7 @@ reference, approved template parts and a bounded INR rate quote. It contains
 no provider password. Missing, inactive, paused or expired configuration never
 implies readiness.
 
-`eventAssistanceSmsPermissions` binds Catch event-service SMS to an event,
+`eventAssistancePermissions` (channel `sms`) binds Catch event-service SMS to an event,
 attendee creation generation, verified subject, phone endpoint and sender.
 The exact consent-copy version, receipt, timestamps, expiry and withdrawal
 state are required. Organizer marketing preference records are not permission
@@ -6130,7 +6138,7 @@ Revocation can proceed after fresh review without a ready sender or current
 phone claim. The required hash must roll out with the web client; old tabs
 must reload. Missing or malformed hashes fail callable validation.
 
-`eventAssistanceSmsConsentReceipts` records each exact decision atomically with
+`eventAssistanceConsentReceipts` (channel `sms`) records each exact decision atomically with
 its permission revision. Grant receipts pin the displayed copy hash and the
 hash of the complete resulting permission; dispatch requires that matching
 receipt. Receipt timestamps record when the signed phone claim was checked,
@@ -6207,7 +6215,7 @@ default-sender receipt keys and exact omitted-sender payload hashes are preserve
 The new response field, generated outputs and strict client readers require a
 coordinated rollout with this callable and index.
 
-`eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
+`eventAssistanceBudgets` (channel `sms`) bounds both event spend and sender-day spend in
 Asia/Kolkata. A trusted worker atomically charges both ceilings with the
 outbox claim. `eventAssistanceSmsDispatches` keeps one immutable attempt debit,
 rendered-material hash and sender/template/permission/quote references. It
@@ -6270,7 +6278,7 @@ platform request-log redaction/exclusion before activation. No new persisted
 document or client grant is introduced; existing outbox evidence owns duplicate
 and contradictory delivery reports.
 
-`eventAssistanceSmsWithdrawalGrants` is created in the same transaction as a
+`eventAssistanceWithdrawalGrants` (channel `sms`) is created in the same transaction as a
 live SMS dispatch claim. It binds the original guest-link hash to one permission,
 attendee generation, subject, sender and phone endpoint. Its separate lifetime
 ends with the permission captured at dispatch. An expired instruction does not

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_consent_receipts.schema.json",
+  "title": "EventAssistanceConsentReceiptDocument",
+  "description": "Append-only consent and withdrawal receipt for one channel. Each document carries `channel`; it matches exactly one channel shape.",
+  "oneOf": [
+    {
+      "$ref": "../embedded/event_assistance_sms_consent_receipts.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_rcs_consent_receipts.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_whatsapp_consent_receipts.schema.json"
+    }
+  ],
+  "x-firestore-collection": "eventAssistanceConsentReceipts",
+  "x-firestore-path": "eventAssistanceConsentReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "trusted event-assistance messaging services"
+}
