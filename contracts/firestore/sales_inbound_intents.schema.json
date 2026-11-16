@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_inbound_intents.schema.json",
   "title": "SalesInboundIntentDocument",
-  "description": "Private self-reported host submission, immutable at capture and linked only after identity review.",
+  "description": "Private self-reported host submission or website lead, immutable at capture and linked only after identity review.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesInboundIntents",
   "x-firestore-path": "salesInboundIntents/{intentId}",
   "x-document-id-field": "intentId",
-  "x-owner": "joinWaitlist and adminLinkSalesInboundIntent",
+  "x-owner": "joinWaitlist (Host applications and website leads), partner nominations and adminLinkSalesInboundIntent",
   "required": [
     "schemaVersion",
     "revision",
@@ -88,9 +88,17 @@
       "const": "self_reported"
     },
     "fullName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The applicant's name. Null only on a website lead whose form does not ask for one."
     },
     "email": {
       "anyOf": [
@@ -110,9 +118,17 @@
       "description": "Optional E.164 number the applicant gave. Absent on older intents (read as none). A website intent without an email carries one."
     },
     "city": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 80
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The city as submitted. Null only on a website lead sent without one."
     },
     "entryRoute": {
       "anyOf": [
@@ -361,6 +377,22 @@
           "type": "null"
         }
       ]
+    },
+    "leadKind": {
+      "enum": [
+        "guide",
+        "walkthrough",
+        "demo",
+        "venue",
+        "story",
+        "referral",
+        "org_contact",
+        "city_alerts"
+      ],
+      "description": "Present on a website lead (joinWaitlist requestKind); absent on Host applications and partner nominations. Staff reply on WhatsApp; nothing is sent automatically."
+    },
+    "lead": {
+      "$ref": "#/definitions/lead"
     },
     "programme": {
       "enum": [
@@ -633,6 +665,602 @@
           "programmeApplication"
         ]
       }
+    },
+    {
+      "if": {
+        "required": [
+          "leadKind"
+        ]
+      },
+      "then": {
+        "required": [
+          "lead",
+          "phone"
+        ],
+        "properties": {
+          "source": {
+            "const": "website"
+          },
+          "email": {
+            "type": "null"
+          },
+          "programme": false,
+          "programmeApplication": false,
+          "hostLead": false,
+          "acquisitionAttribution": false
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "guide"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "guide"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "walkthrough"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "walkthrough"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "demo"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "demo"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "venue"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "venue"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "story"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "story"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "referral"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "referral",
+                    "referralCredit"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "org_contact"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "orgContact"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "city_alerts"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "cityAlerts"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "cityNewPlans"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "properties": {
+                  "leadKind": {
+                    "const": "referral"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "hostApplication": {
+                  "type": "null"
+                },
+                "lead": {
+                  "not": {
+                    "required": [
+                      "referralCredit"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "else": {
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "not": {
+          "required": [
+            "lead"
+          ]
+        }
+      }
     }
   ],
   "definitions": {
@@ -704,6 +1332,362 @@
                 "application_cta"
               ]
             }
+          }
+        }
+      }
+    },
+    "lead": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What a website lead said, normalized: the consent it was given under, where it came from, the payload for its kind and, for a referral, whether the referrer can be credited.",
+      "required": [
+        "consent",
+        "sourcePage",
+        "entry"
+      ],
+      "properties": {
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "version",
+            "decidedAt"
+          ],
+          "description": "leadFollowUp: staff may message the number about this request. cityNewPlans: the standalone city new-plans purpose (city_alerts), recorded only; nothing is sent until approved templates exist.",
+          "properties": {
+            "purpose": {
+              "enum": [
+                "leadFollowUp",
+                "cityNewPlans"
+              ]
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{1,40}$"
+            },
+            "decidedAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            }
+          }
+        },
+        "sourcePage": {
+          "type": "string",
+          "pattern": "^/[^\\s?#]*$",
+          "maxLength": 512
+        },
+        "entry": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,39}$"
+        },
+        "cityId": {
+          "type": "string",
+          "pattern": "^[a-z]{2}-[a-z0-9]{1,3}-[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 64,
+          "description": "The market catalog id when the city was attributed."
+        },
+        "countryIsoCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "guide": {
+          "$ref": "#/definitions/leadGuide"
+        },
+        "walkthrough": {
+          "$ref": "#/definitions/leadWalkthrough"
+        },
+        "demo": {
+          "$ref": "#/definitions/leadDemo"
+        },
+        "venue": {
+          "$ref": "#/definitions/leadVenue"
+        },
+        "story": {
+          "$ref": "#/definitions/leadStory"
+        },
+        "referral": {
+          "$ref": "#/definitions/leadReferral"
+        },
+        "orgContact": {
+          "$ref": "#/definitions/leadOrgContact"
+        },
+        "cityAlerts": {
+          "$ref": "#/definitions/leadCityAlerts"
+        },
+        "referralCredit": {
+          "$ref": "#/definitions/leadReferralCredit"
+        }
+      }
+    },
+    "leadGuide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format"
+      ],
+      "properties": {
+        "format": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{1,39}$",
+          "description": "Which setup guide, as a slug: run_club, supper_club, quiz_night, social_night, racket_social, outdoor_group, studio, workshop, facility, venue, community, creator, society or team_social."
+        }
+      }
+    },
+    "leadWalkthrough": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preferredTime"
+      ],
+      "properties": {
+        "preferredTime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "The time the person asked for, as shown to them (Tue 18 · 16:00 IST). A request, not a booking: staff confirm on WhatsApp."
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "whatYouRun": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "leadDemo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "whatYouHost"
+      ],
+      "properties": {
+        "whatYouHost": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "currentQuestions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "description": "What they ask guests now: pasted questions or a link to their form."
+        }
+      }
+    },
+    "leadVenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spaceName",
+        "capacity",
+        "nights"
+      ],
+      "properties": {
+        "spaceName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "area": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140,
+          "description": "Area and city, as typed (Lower Parel, Mumbai)."
+        },
+        "capacity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "How many people fit, as typed (60 standing, 30 seated)."
+        },
+        "nights": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Nights they'd like to fill, as typed (Tuesdays and Wednesdays)."
+        }
+      }
+    },
+    "leadStory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "communityName",
+        "cadence"
+      ],
+      "properties": {
+        "communityName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "cadence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "What they host, and how often (A monthly supper club for 24)."
+        }
+      }
+    },
+    "leadReferral": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostName",
+        "hostLink",
+        "relationship"
+      ],
+      "properties": {
+        "hostName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140,
+          "description": "The host or club being referred."
+        },
+        "hostLink": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "description": "Their Instagram handle or website as typed; hostApplication.communityLink carries it as an https link when it reads as one."
+        },
+        "relationship": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "How the referrer knows them."
+        }
+      }
+    },
+    "leadOrgContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orgType",
+        "orgName"
+      ],
+      "properties": {
+        "orgType": {
+          "type": "string",
+          "enum": [
+            "college",
+            "team",
+            "brand"
+          ]
+        },
+        "orgName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140,
+          "description": "The society, college, company or brand."
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "leadCityAlerts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interests"
+      ],
+      "properties": {
+        "interests": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "description": "The format chips they picked; may be empty when the form has none.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "runs",
+              "courts",
+              "dinners",
+              "quizzes",
+              "nights_out",
+              "fitness",
+              "workshops",
+              "book_clubs"
+            ]
+          }
+        }
+      }
+    },
+    "leadReferralCredit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "referrerUid",
+        "referrerRole"
+      ],
+      "description": "Whether the nominator credit path can credit the referrer. The organizer listing this referral seeds names the referrer as its first nominator only with a signed-in Catch account. missing_referrer_account: the form was sent signed out, so only the typed name and number are known and no credit can be earned until staff record the referrer another way.",
+      "properties": {
+        "status": {
+          "enum": [
+            "referrer_account",
+            "missing_referrer_account"
+          ]
+        },
+        "referrerUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referrerRole": {
+          "anyOf": [
+            {
+              "enum": [
+                "guest",
+                "partner"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "referrer_account"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "referrerUid": {
+            "type": "string"
+          },
+          "referrerRole": {
+            "enum": [
+              "guest",
+              "partner"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "referrerUid": {
+            "type": "null"
+          },
+          "referrerRole": {
+            "type": "null"
           }
         }
       }
