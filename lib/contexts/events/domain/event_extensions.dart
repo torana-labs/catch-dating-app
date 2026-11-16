@@ -148,23 +148,45 @@ extension EventX on Event {
     };
   }
 
-  String get title {
-    final authoredName = name.trim();
-    if (authoredName.isNotEmpty) return authoredName;
-    return legacyDerivedTitle;
-  }
+  String get title => eventDisplayTitle(
+    name: name,
+    startTime: startTime,
+    eventFormat: eventFormat,
+  );
 
-  String get legacyDerivedTitle {
-    final weekday = AppTimeFormatters.longWeekday(startTime);
-    final hour = startTime.hour;
-    final period = hour < 12
-        ? StructuredDomainCopy.eventTitleMorning
-        : hour < 17
-        ? StructuredDomainCopy.eventTitleAfternoon
-        : StructuredDomainCopy.eventTitleEvening;
-    // copy:allow-inline(Composes governed period copy with dynamic event data)
-    return '$weekday $period ${eventFormat.eventTitleLabel}';
-  }
+  String get legacyDerivedTitle =>
+      eventLegacyDerivedTitle(startTime: startTime, eventFormat: eventFormat);
+}
+
+/// An event's title: its authored name, else one derived from when it starts
+/// and its format. Events and guest event cards share it.
+String eventDisplayTitle({
+  required String name,
+  required DateTime startTime,
+  required EventFormatSnapshot eventFormat,
+}) {
+  final authoredName = name.trim();
+  if (authoredName.isNotEmpty) return authoredName;
+  return eventLegacyDerivedTitle(
+    startTime: startTime,
+    eventFormat: eventFormat,
+  );
+}
+
+/// The title of an event without an authored name.
+String eventLegacyDerivedTitle({
+  required DateTime startTime,
+  required EventFormatSnapshot eventFormat,
+}) {
+  final weekday = AppTimeFormatters.longWeekday(startTime);
+  final hour = startTime.hour;
+  final period = hour < 12
+      ? StructuredDomainCopy.eventTitleMorning
+      : hour < 17
+      ? StructuredDomainCopy.eventTitleAfternoon
+      : StructuredDomainCopy.eventTitleEvening;
+  // copy:allow-inline(Composes governed period copy with dynamic event data)
+  return '$weekday $period ${eventFormat.eventTitleLabel}';
 }
 
 extension EventOriginX on EventOrigin {
