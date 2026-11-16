@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {defaultListingApprovalDeps, type ListingApprovalDeps} from "../admin/organizerListingApproval";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
@@ -54,7 +54,7 @@ export async function getInstantDraftHandler(request: CallableRequest<unknown>,
   return respond(base, state, await preview(db, state, after));
 }
 
-export const getInstantDraft = onCall({...appCheckCallableOptions, maxInstances: 10},
+export const getInstantDraft = onCall(appCheckCallableOptionsWithLimits({maxInstances: 10}),
   (request) => getInstantDraftHandler(request));
 
 function respond(base: Pick<GetInstantDraftResponse, "draftId" | "requestKind" | "link" | "followUp">,

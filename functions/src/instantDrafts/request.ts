@@ -2,7 +2,7 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {logger} from "firebase-functions";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {createSupplyIntakeRequest, intakeMarket} from "../operations/supplyIntake/requests";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
@@ -109,7 +109,7 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
   return response(created, false);
 }
 
-export const requestInstantDraft = onCall({...appCheckCallableOptions, maxInstances: 5},
+export const requestInstantDraft = onCall(appCheckCallableOptionsWithLimits({maxInstances: 5}),
   (request) => requestInstantDraftHandler(request));
 
 /** An exact retry finds its draft; the same key with a different submission or number is refused. */
