@@ -2,12 +2,18 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_instant_draft_payload.schema.json",
   "title": "GetInstantDraftCallablePayload",
-  "description": "Callable payload accepted by getInstantDraft: the draft page polls its draft with the id and the private token from its URL fragment. App Check is required; sign-in is not.",
+  "description": "Callable payload accepted by getInstantDraft: the draft page polls its draft with the id and the private token from its URL fragment. App Check is required; sign-in is not. After a needs_city answer the page sends the same id and token with the chosen city, which continues the same draft.",
   "type": "object",
   "additionalProperties": false,
   "required": ["draftId", "accessToken"],
   "properties": {
     "draftId": {"type": "string", "pattern": "^draft-[a-f0-9]{40}$"},
-    "accessToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+    "accessToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "city": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80,
+      "description": "Only after a needs_city answer: the marketId of one of the markets that answer offered (a city name or alias of an open market is accepted too). Refused when the draft is not waiting for a city or the city is not an open market."
+    }
   }
 }

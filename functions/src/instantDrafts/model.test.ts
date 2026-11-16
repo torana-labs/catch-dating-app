@@ -27,6 +27,8 @@ const requestCases: Array<[string, Record<string, unknown>]> = [
   ["short token", {...validRequest, accessToken: "A".repeat(42)}],
   ["token with padding", {...validRequest, accessToken: `${"A".repeat(42)}=`}],
   ["local number", {...validRequest, whatsapp: {...validRequest.whatsapp, phone: "9000000001"}}],
+  ["number left to the verified phone", {...validRequest, whatsapp: {consentVersion: "instant-draft-whatsapp-v1",
+    followUpConsent: true}}],
   ["old consent", {...validRequest, whatsapp: {...validRequest.whatsapp, consentVersion: "v0"}}],
   ["consent not ticked", {...validRequest, whatsapp: {...validRequest.whatsapp, followUpConsent: false}}],
   ["extra whatsapp field", {...validRequest, whatsapp: {...validRequest.whatsapp, marketing: true}}],
@@ -53,6 +55,8 @@ test("the getInstantDraft check accepts and refuses exactly what its schema does
   const draftId = instantDraftId("web-0f3c2a9e-5b1d-4c7e");
   for (const [label, payload] of [
     ["valid", {draftId, accessToken: "B".repeat(43)}],
+    ["with a chosen city", {draftId, accessToken: "B".repeat(43), city: "in-mh-mumbai"}],
+    ["one-letter city", {draftId, accessToken: "B".repeat(43), city: "M"}],
     ["intake id", {draftId: "nom-" + "a".repeat(40), accessToken: "B".repeat(43)}],
     ["no token", {draftId}],
     ["extra", {draftId, accessToken: "B".repeat(43), uid: "x"}],

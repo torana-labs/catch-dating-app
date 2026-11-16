@@ -14,8 +14,9 @@ import {approvedOrganizer} from "../operations/supplyIntake/eventPublication";
 import {adminApproveOrganizerListingHandler} from "../admin/organizerListingApproval";
 import {contractValidator} from "../shared/contractTestValidators";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {projectInboxSource} from "../admin/inbox/model";
 import {materializeInstantDraft} from "./materialize";
-import {instantDraftId} from "./model";
+import {instantDraftId, limiterKey} from "./model";
 import {requestInstantDraftHandler} from "./request";
 import {getInstantDraftHandler} from "./status";
 
@@ -26,6 +27,9 @@ const NOW = "2026-11-16T08:00:00.000Z";
 const SERVER_TIME = {_seconds: 1794816000, _nanoseconds: 0};
 const TOKEN = "t".repeat(43);
 const PHONE = "+919000000001";
+const UID = "submitter-1";
+/** A caller signed in with the website's phone code, so the token carries the verified number. */
+const VERIFIED = {uid: UID, token: {phone_number: PHONE}};
 
 const validators = {
   requestResponse: contractValidator("RequestInstantDraftCallableResponse"),
@@ -75,13 +79,13 @@ function harness() {
   };
   const callable = (data: unknown, auth: unknown = null) =>
     ({auth, data, rawRequest: {headers: {"x-forwarded-for": "198.51.100.7"}, ip: "198.51.100.7"}}) as unknown as CallableRequest<unknown>;
-  const submit = (overrides: Record<string, unknown> = {}) => requestInstantDraftHandler(callable({
+  const submit = (overrides: Record<string, unknown> = {}, auth: unknown = VERIFIED) => requestInstantDraftHandler(callable({
     requestId: "web-0f3c2a9e-5b1d-4c7e", requestKind: "event_link", entry: "event_page_tool",
     link: "https://lu.ma/afterfly", accessToken: TOKEN,
     whatsapp: {phone: PHONE, consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true},
-    city: "Mumbai", ...overrides}), deps);
-  const status = (draftId: string, accessToken = TOKEN) =>
-    getInstantDraftHandler(callable({draftId, accessToken}), deps as never);
+    city: "Mumbai", ...overrides}, auth), deps);
+  const status = (draftId: string, accessToken = TOKEN, extra: Record<string, unknown> = {}) =>
+    getInstantDraftHandler(callable({draftId, accessToken, ...extra}), deps as never);
   return {db, firestore, deps, limits, routes, callable, submit, status};
 }
 
@@ -90,7 +94,8 @@ function harness() {
  * then gives the build what reading a Luma page finds: the organizer's name
  * and one upcoming event.
  */
-async function build(h: ReturnType<typeof harness>, draftId: string, {events = 1, verdict = "none"} = {}) {
+async function build(h: ReturnType<typeof harness>, draftId: string,
+  {events = 1, verdict = "none", locality = null as string | null, address = null as string | null} = {}) {
   acceptPageFetch(h.db);
   const writer = new MemoryWriter();
   const outcome = await processSupplyIntakeRequest({db: h.db as unknown as Firestore, now: () => new Date(NOW),
@@ -109,7 +114,8 @@ async function build(h: ReturnType<typeof harness>, draftId: string, {events = 1
   for (const [index, id] of eventWorkItemIds.entries()) {
     h.db.write(`operationWorkItems/${id}`, {workItemId: id, normalizedPayload: {intake: {recordType: "listing_event_candidate",
       event: {title: `Afterfly social ${index + 1}`, startAt: `2026-12-0${index + 1}T19:00:00+05:30`,
-        endAt: `2026-12-0${index + 1}T22:00:00+05:30`, venue: "Bandra", sourceUrl: `https://lu.ma/afterfly-${index + 1}`}}}});
+        endAt: `2026-12-0${index + 1}T22:00:00+05:30`, venue: "Bandra", locality, address,
+        sourceUrl: `https://lu.ma/afterfly-${index + 1}`}}}});
   }
   h.db.write(path, {...stored, result: {...stored.result, eventCount: events, eventWorkItemIds,
     duplicateCheck: stored.result.duplicateCheck ? {...stored.result.duplicateCheck, verdict} :
@@ -135,8 +141,8 @@ test("an event link becomes a building draft at once, through Supply Intake, wit
   assert.notEqual(draft.accessTokenHash, TOKEN, "only the token's hash is stored");
   assert.equal(JSON.stringify(stored).includes(TOKEN), false);
   assert.deepEqual(draft.whatsapp, {phone: PHONE, consentVersion: "instant-draft-whatsapp-v1", consentedAt: NOW,
-    purpose: "instant_draft_follow_up"});
-  // Limits per number, per address, and for the whole tool, keyed by hashes.
+    purpose: "instant_draft_follow_up", verifiedByUid: UID});
+  // Limits per verified number, per address, and for the whole tool, keyed by hashes.
   assert.deepEqual(h.limits.map((limit) => limit.action), ["requestInstantDraft", "requestInstantDraftAddress",
     "requestInstantDraftDaily", "requestInstantDraftMonthly"]);
   assert.equal(h.limits.some((limit) => limit.key.includes("9000000001") || limit.key.includes("198.51")), false);
@@ -147,6 +153,37 @@ test("an event link becomes a building draft at once, through Supply Intake, wit
   assert.equal(h.limits.length, before);
   await assert.rejects(h.submit({link: "https://lu.ma/another"}), /changed/);
   await assert.rejects(h.submit({accessToken: "u".repeat(43)}), /changed/);
+  // The same submission from someone who verified another number is refused too.
+  await assert.rejects(h.submit({whatsapp: {consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true}},
+    {uid: "someone-else", token: {phone_number: "+919000000009"}}), /changed/);
+});
+
+test("only a caller who verified the WhatsApp number with a code can ask for a draft", async () => {
+  const h = harness();
+  const draftPath = (requestId: string) => `${supplyIntakeCollections.requests}/${instantDraftId(requestId)}`;
+  await assert.rejects(h.submit({requestId: "web-signedout-00000001"}, null),
+    (error: {code?: string}) => error.code === "unauthenticated");
+  // Signed in without a verified phone (an email sign-in, say).
+  await assert.rejects(h.submit({requestId: "web-nophone-000000001"}, {uid: UID, token: {email: "a@example.com"}}),
+    (error: {code?: string; message?: string}) => error.code === "failed-precondition" && /with a code/.test(error.message ?? ""));
+  // A number that is not the verified one.
+  await assert.rejects(h.submit({requestId: "web-mismatch-00000001", whatsapp: {phone: "+919000000002",
+    consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true}}),
+  (error: {code?: string; message?: string}) => error.code === "failed-precondition" && /number you confirmed/.test(error.message ?? ""));
+  assert.equal(h.db.read(draftPath("web-signedout-00000001")), undefined);
+  assert.equal(h.db.read(draftPath("web-mismatch-00000001")), undefined);
+  assert.equal(h.limits.length, 0, "a refused caller spends no limit");
+
+  // The website may leave the number out: the verified phone is the number.
+  const derived = await h.submit({requestId: "web-derived-000000001", whatsapp: {consentVersion: "instant-draft-whatsapp-v1",
+    followUpConsent: true}});
+  const stored = h.db.read(draftPath("web-derived-000000001"))!;
+  valid(validators.stored, stored, "SupplyIntakeRequestsDocument");
+  assert.equal((stored.instantDraft as {whatsapp: {phone: string}}).whatsapp.phone, PHONE);
+  assert.equal(derived.status, "building");
+  const [phoneLimit] = h.limits;
+  assert.equal(phoneLimit.action, "requestInstantDraft");
+  assert.equal(phoneLimit.key, limiterKey("phone", PHONE), "the per-number limit counts the verified phone");
 });
 
 test("a form link, a closed site or a bad submission is answered without guessing", async () => {
@@ -229,10 +266,60 @@ test("a build that cannot become a draft on its own waits for a person, with rea
   await build(h, duplicate.draftId, {verdict: "match"});
   assert.deepEqual((await h.status(duplicate.draftId)).reasons, ["duplicate_check_not_clear"]);
 
-  const noCity = await h.submit({requestId: "web-nocity-000000001", city: null});
-  await build(h, noCity.draftId);
-  assert.deepEqual((await h.status(noCity.draftId)).reasons, ["market_not_open"]);
+  // Events in a city Catch has not opened wait for staff rather than asking the submitter.
+  const pune = await h.submit({requestId: "web-pune-00000000001", city: null});
+  await build(h, pune.draftId, {locality: "Pune"});
+  assert.deepEqual([(await h.status(pune.draftId)).status, (await h.status(pune.draftId)).reasons],
+    ["staff_follow_up", ["market_not_open"]]);
   assert.equal(h.db.entries().some(([key]) => key.startsWith("organizers/")), false, "nothing was saved");
+});
+
+test("the market is read from the imported events when the submitter gives no city", async () => {
+  const h = harness();
+  const {draftId} = await h.submit({city: null});
+  await build(h, draftId, {address: "Linking Road, Bandra West, Mumbai, Maharashtra 400050"});
+  const ready = await h.status(draftId);
+  valid(validators.statusResponse, ready, "GetInstantDraftCallableResponse");
+  assert.deepEqual([ready.status, ready.markets], ["draft_ready", []]);
+  const organizer = h.db.read(`organizers/${ready.draft?.organizerId}`)!;
+  assert.equal(organizer.locationMarketId, "in-mh-mumbai");
+  const stored = h.db.read(`${supplyIntakeCollections.requests}/${draftId}`)!;
+  valid(validators.stored, stored, "SupplyIntakeRequestsDocument");
+  assert.deepEqual(((stored.instantDraft as {market: Record<string, unknown>}).market),
+    {marketId: "in-mh-mumbai", source: "event_location", at: NOW});
+});
+
+test("a draft whose city cannot be told asks the submitter, and their choice continues the same draft", async () => {
+  const h = harness();
+  const {draftId} = await h.submit({city: null});
+  await build(h, draftId);
+  const asking = await h.status(draftId);
+  valid(validators.statusResponse, asking, "GetInstantDraftCallableResponse");
+  assert.deepEqual([asking.status, asking.reasons, asking.draft, asking.pollAfterMs],
+    ["needs_city", ["city_not_inferred"], null, null]);
+  assert.ok(asking.markets.some((market) => market.marketId === "in-mh-mumbai" && market.label === "Mumbai"));
+  assert.ok(asking.markets.every((market) => market.marketId !== "in-ka-bengaluru"), "only open markets are offered");
+  // Polling again keeps asking; nothing goes to staff and nothing is saved.
+  assert.equal((await h.status(draftId)).status, "needs_city");
+  assert.equal(h.db.entries().some(([key]) => key.startsWith("organizers/")), false);
+  const waiting = h.db.read(`${supplyIntakeCollections.requests}/${draftId}`)!;
+  valid(validators.stored, waiting, "SupplyIntakeRequestsDocument");
+  const item = projectInboxSource("supplyIntakeRequest", draftId, waiting)!;
+  assert.deepEqual([item.lifecycle, item.state.code], ["working", "waiting_for_city"]);
+
+  await assert.rejects(h.status(draftId, TOKEN, {city: "Bengaluru"}), /open cities/);
+  await assert.rejects(h.status(draftId, "x".repeat(43), {city: "in-mh-mumbai"}), /not valid/);
+  const ready = await h.status(draftId, TOKEN, {city: "in-mh-mumbai"});
+  valid(validators.statusResponse, ready, "GetInstantDraftCallableResponse");
+  assert.equal(ready.status, "draft_ready");
+  assert.equal(ready.draft?.organizerId, h.db.entries().find(([key]) => key.startsWith("organizers/"))?.[0].split("/")[1]);
+  const stored = h.db.read(`${supplyIntakeCollections.requests}/${draftId}`)!;
+  valid(validators.stored, stored, "SupplyIntakeRequestsDocument");
+  assert.deepEqual([(stored.instantDraft as {market: {source: string}}).market.source,
+    (stored.instantDraft as {outcome: {state: string}}).outcome.state], ["chosen", "draft_ready"]);
+  // The same choice again replays; a different one is refused now that it is saved.
+  assert.equal((await h.status(draftId, TOKEN, {city: "in-mh-mumbai"})).status, "draft_ready");
+  await assert.rejects(h.status(draftId, TOKEN, {city: "in-mp-indore"}), /not waiting for a city/);
 });
 
 test("staff approving an instant draft's listing also save it unpublished", async () => {

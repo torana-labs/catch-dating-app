@@ -4,7 +4,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {defaultListingApprovalDeps, type ListingApprovalDeps} from "../admin/organizerListingApproval";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {materializeInstantDraft, type InstantDraftState} from "./materialize";
+import {chooseDraftCity, materializeInstantDraft, type InstantDraftState} from "./materialize";
 import {clientAddress} from "./request";
 import {
   DRAFT_POLL_MS,
@@ -20,8 +20,10 @@ import {
 
 // The draft page polls this with the id and the private token from its URL
 // fragment. A finished build that has not been saved yet is saved here as
-// well as by the worker, so the page never waits on a lost trigger. A wrong
-// id or token answers not-found, so a draft's existence never leaks.
+// well as by the worker, so the page never waits on a lost trigger. When the
+// draft needs a city, the page sends the chosen one with the same id and
+// token, which continues the same draft. A wrong id or token answers
+// not-found, so a draft's existence never leaks.
 
 export type GetInstantDraftDeps = ListingApprovalDeps & {checkRateLimit: typeof defaultCheckRateLimit};
 
@@ -44,6 +46,7 @@ export async function getInstantDraftHandler(request: CallableRequest<unknown>,
   if (!draft || !tokenMatches(data.accessToken, draft.accessTokenHash)) {
     throw new HttpsError("not-found", "This draft link is not valid.");
   }
+  if (data.city !== undefined) await chooseDraftCity(deps, data.draftId, data.city);
   const state = await materializeInstantDraft(deps, data.draftId);
   const after = (await ref.get()).data() ?? {};
   const link = {provider: draft.link.provider, support: draft.link.support, reason: draft.link.reason};
@@ -56,17 +59,22 @@ export const getInstantDraft = onCall({...appCheckCallableOptions, maxInstances:
 
 function respond(base: Pick<GetInstantDraftResponse, "draftId" | "requestKind" | "link" | "followUp">,
   state: InstantDraftState, draft: GetInstantDraftResponse["draft"]): GetInstantDraftResponse {
+  const none = {draft: null, markets: [], pollAfterMs: null};
   switch (state.state) {
   case "building":
     // A form link waits for a person; its build only gives staff context.
     return base.requestKind === "form_link" ?
-      {...base, status: "staff_follow_up", draft: null, reasons: ["form_import_not_available"], pollAfterMs: null} :
-      {...base, status: "building", draft: null, reasons: [], pollAfterMs: DRAFT_POLL_MS};
+      {...base, ...none, status: "staff_follow_up", reasons: ["form_import_not_available"]} :
+      {...base, ...none, status: "building", reasons: [], pollAfterMs: DRAFT_POLL_MS};
   case "draft_ready":
-    return draft ? {...base, status: "draft_ready", draft, reasons: [], pollAfterMs: null} :
-      {...base, status: "staff_follow_up", draft: null, reasons: ["draft_unavailable"], pollAfterMs: null};
+    return draft ? {...base, ...none, status: "draft_ready", draft, reasons: []} :
+      {...base, ...none, status: "staff_follow_up", reasons: ["draft_unavailable"]};
+  case "needs_city":
+    return {...base, ...none, status: "needs_city", reasons: ["city_not_inferred"], markets: state.markets.slice(0, 50)};
   case "needs_staff":
-    return {...base, status: "staff_follow_up", draft: null, reasons: state.reasons.slice(0, 20), pollAfterMs: null};
+    return {...base, ...none, status: "staff_follow_up", reasons: state.reasons.slice(0, 20)};
+  case "expired":
+    return {...base, ...none, status: "expired", reasons: ["unclaimed_after_30_days"]};
   default:
     throw new HttpsError("not-found", "This draft link is not valid.");
   }

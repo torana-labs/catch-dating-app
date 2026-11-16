@@ -16,13 +16,16 @@ import {
   parseRequestInstantDraftPayload,
   STAFF_REPLY,
   storedInstantDraft,
+  verifiedWhatsapp,
   type RequestInstantDraftPayload,
   type RequestInstantDraftResponse,
   type StoredInstantDraft,
 } from "./model";
 
 // The website's "event page from a link" tool and the demo request send one
-// link and a WhatsApp number. This front door writes a Supply Intake request
+// link from a caller who confirmed their WhatsApp number with a one-time code
+// (Firebase phone sign-in, the website's "Continue with phone" sheet). This
+// front door writes a Supply Intake request
 // (the same intake that builds listings for nominated organisers) carrying
 // the draft's private state, and answers at once: the worker starts reading
 // the link as soon as the request exists, and the page polls getInstantDraft.
@@ -44,14 +47,18 @@ const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 
 /**
- * App Check proves the website sent it; sign-in is not needed. Limits: per
- * WhatsApp number, per network address, and a daily and monthly ceiling for
- * the whole tool, because every draft spends Supply Intake's shared monthly
- * page allowance (acquisition_policy.json, 600 pages; at most 12 a draft).
+ * App Check proves the website sent it, and the caller must be signed in with
+ * a verified phone (owner decision, 16 Nov 2026): that phone is the WhatsApp
+ * number staff reply to, and a submitted number must match it. Limits: per
+ * verified number, per network address, and a daily and monthly ceiling for
+ * the whole tool. Pages are read from the tool's own monthly allowance
+ * (acquisition_policy.json pageFetch.maxInstantDraftRequestsPerMonth; at most
+ * 12 a draft), so drafts never spend the allowance staff nominations use.
  */
 export async function requestInstantDraftHandler(request: CallableRequest<unknown>,
   deps: RequestInstantDraftDeps = defaultDeps): Promise<RequestInstantDraftResponse> {
   const data = parseRequestInstantDraftPayload(request.data);
+  const verified = verifiedWhatsapp(request, data.whatsapp.phone);
   let url: URL;
   try {
     url = parseDraftLink(data.link);
@@ -63,9 +70,9 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
   const draftId = instantDraftId(data.requestId);
   const ref = db.collection(supplyIntakeCollections.requests).doc(draftId);
   const existing = await ref.get();
-  if (existing.exists) return replay(existing.data(), data);
+  if (existing.exists) return replay(existing.data(), data, verified.phone);
 
-  await deps.checkRateLimit(db, limiterKey("phone", data.whatsapp.phone), "requestInstantDraft",
+  await deps.checkRateLimit(db, limiterKey("phone", verified.phone), "requestInstantDraft",
     {maxRequests: 3, windowMs: HOUR});
   await deps.checkRateLimit(db, limiterKey("ip", clientAddress(request)), "requestInstantDraftAddress",
     {maxRequests: 10, windowMs: HOUR});
@@ -77,8 +84,8 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
   const instantDraft: StoredInstantDraft = {
     schemaVersion: 1, draftId, accessTokenHash: accessTokenHash(data.accessToken), requestKind: data.requestKind,
     entry: data.entry, link: {url: url.href, ...link},
-    whatsapp: {phone: data.whatsapp.phone, consentVersion: data.whatsapp.consentVersion,
-      consentedAt: now.toISOString(), purpose: "instant_draft_follow_up"},
+    whatsapp: {phone: verified.phone, consentVersion: data.whatsapp.consentVersion,
+      consentedAt: now.toISOString(), purpose: "instant_draft_follow_up", verifiedByUid: verified.uid},
     followUp: STAFF_REPLY, outcome: null,
   };
   const intake = {
@@ -95,7 +102,7 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
     await createSupplyIntakeRequest(tx, db, intake, now, {instantDraft});
     return instantDraft;
   });
-  if (!created) return replay((await ref.get()).data(), data);
+  if (!created) return replay((await ref.get()).data(), data, verified.phone);
   // The number and the token stay out of logs.
   logger.info("Instant draft requested.", {draftId, requestKind: data.requestKind, entry: data.entry,
     provider: link.provider, support: link.support, market: intake.market});
@@ -105,11 +112,11 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
 export const requestInstantDraft = onCall({...appCheckCallableOptions, maxInstances: 5},
   (request) => requestInstantDraftHandler(request));
 
-/** An exact retry finds its draft; the same key with a different submission is refused. */
-function replay(stored: unknown, data: RequestInstantDraftPayload): RequestInstantDraftResponse {
+/** An exact retry finds its draft; the same key with a different submission or number is refused. */
+function replay(stored: unknown, data: RequestInstantDraftPayload, phone: string): RequestInstantDraftResponse {
   const draft = storedInstantDraft((stored as {instantDraft?: unknown} | undefined)?.instantDraft);
   if (!draft || draft.accessTokenHash !== accessTokenHash(data.accessToken) || draft.requestKind !== data.requestKind ||
-      draft.entry !== data.entry || draft.whatsapp.phone !== data.whatsapp.phone ||
+      draft.entry !== data.entry || draft.whatsapp.phone !== phone ||
       draft.link.url !== parseDraftLink(data.link).href) {
     throw new HttpsError("already-exists", "This submission changed. Start a new draft.");
   }

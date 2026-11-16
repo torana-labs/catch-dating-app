@@ -184,7 +184,8 @@ test("a website instant draft waits for a WhatsApp reply from a person, who dism
     instantDraft: {schemaVersion: 1, draftId: "draft-1", accessTokenHash: "c".repeat(64), requestKind: "event_link",
       entry: "event_page_tool", link: {url: "https://lu.ma/afterfly", provider: "luma", support: "instant", reason: null},
       whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", consentedAt: "2026-10-28T16:11:00.000Z",
-        purpose: "instant_draft_follow_up"}, followUp: {channel: "whatsapp", mode: "staff_reply"}, outcome: null},
+        purpose: "instant_draft_follow_up", verifiedByUid: "submitter-1"}, followUp: {channel: "whatsapp", mode: "staff_reply"},
+      outcome: null},
     ...overrides});
   const waiting = projectInboxSource("supplyIntakeRequest", "draft-1", draft())!;
   assert.deepEqual([waiting.cameFrom, waiting.lifecycle, waiting.state.code, waiting.state.label],

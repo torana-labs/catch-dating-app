@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_instant_draft_response.schema.json",
   "title": "GetInstantDraftCallableResponse",
-  "description": "Callable response returned by getInstantDraft. building: still reading the link, poll again after pollAfterMs. draft_ready: a private, unpublished organizer draft exists; the page shows it and offers the organizer claim (requestOrganizerClaim and the Instagram or Luma verification) for draft.organizerId. staff_follow_up: a person follows up on WhatsApp; reasons say why. A wrong id or token answers not-found.",
+  "description": "Callable response returned by getInstantDraft. building: still reading the link, poll again after pollAfterMs. draft_ready: a private, unpublished organizer draft exists; the page shows it and offers the organizer claim (requestOrganizerClaim and the Instagram or Luma verification) for draft.organizerId. needs_city: Catch could not tell the city from the imported events; the page offers markets and sends the chosen one back with getInstantDraft (city), which continues the same draft. staff_follow_up: a person follows up on WhatsApp; reasons say why. expired: nobody claimed the draft within 30 days of saving it, so it was removed. A wrong id or token answers not-found.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["draftId", "status", "requestKind", "link", "draft", "reasons", "followUp", "pollAfterMs"],
+  "required": ["draftId", "status", "requestKind", "link", "draft", "reasons", "markets", "followUp", "pollAfterMs"],
   "properties": {
     "draftId": {"type": "string", "pattern": "^draft-[a-f0-9]{40}$"},
-    "status": {"type": "string", "enum": ["building", "draft_ready", "staff_follow_up"]},
+    "status": {"type": "string", "enum": ["building", "draft_ready", "needs_city", "staff_follow_up", "expired"]},
     "requestKind": {"type": "string", "enum": ["event_link", "form_link"]},
     "link": {"$ref": "request_instant_draft_response.schema.json#/definitions/linkSupport"},
     "draft": {
@@ -53,6 +53,20 @@
       "type": "array",
       "maxItems": 20,
       "items": {"type": "string", "pattern": "^[a-z][a-z0-9_:-]{0,79}$"}
+    },
+    "markets": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "The open launch markets to choose from. Empty unless status is needs_city.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["marketId", "label"],
+        "properties": {
+          "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,79}$"},
+          "label": {"type": "string", "minLength": 1, "maxLength": 120}
+        }
+      }
     },
     "followUp": {"$ref": "request_instant_draft_response.schema.json#/definitions/followUp"},
     "pollAfterMs": {"type": ["integer", "null"], "minimum": 500, "maximum": 60000}

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {createHash, timingSafeEqual} from "node:crypto";
-import {HttpsError} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {supplyIntakeRequestId} from "../operations/supplyIntake/requests";
 import type {DraftLinkClassification, DraftRequestKind} from "./links";
 
@@ -30,13 +30,25 @@ export interface RequestInstantDraftPayload {
   entry: DraftEntry;
   link: string;
   accessToken: string;
-  whatsapp: {phone: string; consentVersion: typeof WHATSAPP_CONSENT_VERSION; followUpConsent: true};
+  /**
+   * The number Catch replies to is the caller's verified Firebase phone. A
+   * submitted phone is optional and, when sent, must be that same number.
+   */
+  whatsapp: {phone?: string; consentVersion: typeof WHATSAPP_CONSENT_VERSION; followUpConsent: true};
   city?: string | null;
 }
 
 export interface GetInstantDraftPayload {
   draftId: string;
   accessToken: string;
+  /** The open market the submitter picked after a needs_city answer. */
+  city?: string;
+}
+
+/** An open launch market the website offers when the draft needs a city. */
+export interface DraftMarketOption {
+  marketId: string;
+  label: string;
 }
 
 export interface DraftFollowUp {
@@ -66,7 +78,7 @@ export interface DraftPreviewEvent {
 
 export interface GetInstantDraftResponse {
   draftId: string;
-  status: "building" | "draft_ready" | "staff_follow_up";
+  status: "building" | "draft_ready" | "needs_city" | "staff_follow_up" | "expired";
   requestKind: DraftRequestKind;
   link: DraftLinkClassification;
   draft: null | {
@@ -79,9 +91,13 @@ export interface GetInstantDraftResponse {
     events: DraftPreviewEvent[];
   };
   reasons: string[];
+  /** The open markets to choose from; empty unless status is needs_city. */
+  markets: DraftMarketOption[];
   followUp: DraftFollowUp;
   pollAfterMs: number | null;
 }
+
+export type DraftMarketSource = "submitted" | "event_location" | "chosen";
 
 /** supplyIntakeRequests.instantDraft, as the contract stores it. */
 export interface StoredInstantDraft {
@@ -92,10 +108,17 @@ export interface StoredInstantDraft {
   entry: DraftEntry;
   link: {url: string} & DraftLinkClassification;
   whatsapp: {phone: string; consentVersion: typeof WHATSAPP_CONSENT_VERSION; consentedAt: string;
-    purpose: "instant_draft_follow_up"};
+    purpose: "instant_draft_follow_up"; verifiedByUid: string};
   followUp: DraftFollowUp;
-  outcome: null | {state: "draft_ready" | "needs_staff"; reasons: string[]; at: string};
+  /** The open market the draft is saved in, once known, and where it came from. */
+  market?: {marketId: string; source: DraftMarketSource; at: string} | null;
+  /** When a saved, still unclaimed draft is removed; null once it is claimed, published or expired. */
+  expiresAt?: string | null;
+  outcome: null | {state: "draft_ready" | "needs_staff" | "needs_city" | "expired"; reasons: string[]; at: string};
 }
+
+/** A saved draft nobody claims is removed this long after it was saved (owner decision, 16 Nov 2026). */
+export const DRAFT_TTL_DAYS = 30;
 
 const REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{15,79}$/u;
 const TOKEN = /^[A-Za-z0-9_-]{43}$/u;
@@ -137,7 +160,9 @@ export function parseRequestInstantDraftPayload(value: unknown): RequestInstantD
   const whatsapp = record(data.whatsapp);
   if (!whatsapp) invalid("Add your WhatsApp number.");
   allowOnly(whatsapp, ["phone", "consentVersion", "followUpConsent"]);
-  if (typeof whatsapp.phone !== "string" || !PHONE.test(whatsapp.phone)) invalid("Enter your WhatsApp number with its country code.");
+  if (whatsapp.phone !== undefined && (typeof whatsapp.phone !== "string" || !PHONE.test(whatsapp.phone))) {
+    invalid("Enter your WhatsApp number with its country code.");
+  }
   if (whatsapp.consentVersion !== WHATSAPP_CONSENT_VERSION) invalid("Review the WhatsApp consent again.");
   if (whatsapp.followUpConsent !== true) invalid("Tick the box so we can message you on WhatsApp.");
   const city = data.city;
@@ -146,7 +171,8 @@ export function parseRequestInstantDraftPayload(value: unknown): RequestInstantD
   }
   return {requestId: data.requestId, requestKind: data.requestKind, entry: data.entry, link: data.link,
     accessToken: data.accessToken,
-    whatsapp: {phone: whatsapp.phone, consentVersion: WHATSAPP_CONSENT_VERSION, followUpConsent: true},
+    whatsapp: {...(whatsapp.phone === undefined ? {} : {phone: whatsapp.phone as string}),
+      consentVersion: WHATSAPP_CONSENT_VERSION, followUpConsent: true},
     ...(city === undefined ? {} : {city: city as string | null})};
 }
 
@@ -154,10 +180,34 @@ export function parseRequestInstantDraftPayload(value: unknown): RequestInstantD
 export function parseGetInstantDraftPayload(value: unknown): GetInstantDraftPayload {
   const data = record(value);
   if (!data) invalid("Send a draft id.");
-  allowOnly(data, ["draftId", "accessToken"]);
+  allowOnly(data, ["draftId", "accessToken", "city"]);
   if (typeof data.draftId !== "string" || !DRAFT_ID.test(data.draftId)) invalid("draftId is invalid.");
   if (typeof data.accessToken !== "string" || !TOKEN.test(data.accessToken)) invalid("accessToken is invalid.");
-  return {draftId: data.draftId, accessToken: data.accessToken};
+  if (data.city !== undefined && (typeof data.city !== "string" || data.city.length < 2 || data.city.length > 80)) {
+    invalid("city is invalid.");
+  }
+  return {draftId: data.draftId, accessToken: data.accessToken,
+    ...(data.city === undefined ? {} : {city: data.city as string})};
+}
+
+/**
+ * The caller's verified WhatsApp number: the phone their Firebase sign-in
+ * confirmed with a one-time code (the website's "Continue with phone" sheet,
+ * the same verification checkout and following by phone use). A submitted
+ * number must be that same number, so nobody can ask Catch to message a
+ * number they do not hold.
+ */
+export function verifiedWhatsapp(request: CallableRequest<unknown>, submittedPhone: string | undefined):
+  {uid: string; phone: string} {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Confirm your WhatsApp number with a code first.");
+  const phone = request.auth.token?.phone_number;
+  if (typeof phone !== "string" || !PHONE.test(phone)) {
+    throw new HttpsError("failed-precondition", "Confirm your WhatsApp number with a code first.");
+  }
+  if (submittedPhone !== undefined && submittedPhone !== phone) {
+    throw new HttpsError("failed-precondition", "Use the WhatsApp number you confirmed with a code.");
+  }
+  return {uid: request.auth.uid, phone};
 }
 
 /** Reads supplyIntakeRequests.instantDraft back, or null when the request has none. */

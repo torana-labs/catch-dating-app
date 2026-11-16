@@ -184,12 +184,14 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   // person until Catch-owned WhatsApp templates are approved.
   const instantDraft = channel === "web_instant_draft" ? record(data.instantDraft) : null;
   const draftWhatsapp = record(instantDraft?.whatsapp);
+  const draftOutcome = record(instantDraft?.outcome);
   const cameFrom = channel === "message_nomination" ? `${who} on WhatsApp` :
     channel === "admin_nomination" ? `${who} in Admin` :
       channel === "sales_inbound_intent" ? "Host website" :
         channel === "discovery_run" ? "Discovery" :
           instantDraft ? (instantDraft.entry === "demo_request" ? "Website demo request" : "Website draft tool") : who;
-  const market = marketForIdOrAlias(text(request.market));
+  // An instant draft records the market it was saved in (submitted, read from its events, or picked).
+  const market = marketForIdOrAlias(text(record(instantDraft?.market)?.marketId) ?? text(request.market));
   const city = market?.slug ?? text(request.market);
   const journey: JourneyStep[] = [{
     stepId: "submitted",
@@ -244,6 +246,11 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
       tone: "danger",
     });
   }
+  if (instantDraft && draftOutcome?.state === "needs_city") {
+    journey.push({stepId: "needs-city", occurredAt: iso(draftOutcome.at) ?? updatedAt,
+      title: "Asked the organizer to pick a city", detail: "Its events did not say which city", actorUid: null,
+      tone: "ink"});
+  }
   if (approval && instantDraft) {
     journey.push({stepId: "draft-saved", occurredAt: iso(approval.approvedAt) ?? updatedAt,
       title: "Saved as a private draft", detail: "Nothing goes live until the organizer claims it",
@@ -260,10 +267,21 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   let lifecycle: InboxLifecycle;
   let state: InboxState;
   let closedAt: string | null = null;
-  if (data.status === "failed") {
+  if (instantDraft && draftOutcome?.state === "expired") {
+    // Nobody claimed it within 30 days; the cleanup removed the draft and freed its page address.
+    lifecycle = "closed";
+    closedAt = iso(draftOutcome.at) ?? updatedAt;
+    state = {code: "expired", label: "Draft removed, never claimed", tone: "neutral"};
+    journey.push({stepId: "draft-expired", occurredAt: closedAt, title: "Removed after 30 days unclaimed",
+      detail: "Its page address is free again", actorUid: null, tone: "ink"});
+  } else if (data.status === "failed") {
     type = "stuck";
     lifecycle = "open";
     state = {code: "needs_person", label: "Needs a person", tone: "danger"};
+  } else if (data.status === "completed" && instantDraft && draftOutcome?.state === "needs_city" && !approval) {
+    // The organizer picks the city on the draft page; nothing for staff to do yet.
+    lifecycle = "working";
+    state = {code: "waiting_for_city", label: "Waiting for the organizer to pick a city", tone: "neutral"};
   } else if (data.status === "completed" && instantDraft) {
     // Open until a person replies on WhatsApp and dismisses it with a note.
     lifecycle = "open";
