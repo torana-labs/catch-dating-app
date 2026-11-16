@@ -9,6 +9,13 @@ import {
   validateWebsiteMeta,
 } from "./website_meta_contract.mjs";
 import {inMarket} from "../../website/src/content/markets/in.ts";
+import {
+  matchPlaybookRoute,
+  playbookFamilyRoutes,
+  playbookFixedRoutes,
+  playbookTopSegment,
+  siteRouteHrefs,
+} from "../../website/src/features/playbook/playbookRoutes.ts";
 
 const args = parseArgs(process.argv.slice(2));
 const liveMarketKeys = new Set(
@@ -76,6 +83,14 @@ validateRedirects(contract.redirects ?? [], hostingConfig);
 validateRoutes(contract.routes ?? [], routeStoryDeclarations);
 validateGeneratedListingFamilies(contract.routes ?? [], hostListings);
 validateMarketingNotFoundHosting(contract.routes ?? [], hostingConfig);
+errors.push(...contentFamilyRouteErrors({
+  routes: contract.routes ?? [],
+  fixed: playbookFixedRoutes,
+  families: playbookFamilyRoutes,
+  siteHrefs: siteRouteHrefs,
+  citySlugs: marketCitySlugs(),
+  hosting: hostingConfig,
+}));
 
 if (errors.length > 0) {
   console.error("Website route contract check failed:");
@@ -200,19 +215,21 @@ function validateRoute(route, storyDeclarations) {
     return;
   }
   const label = route.id ?? "<missing-id>";
-  const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily"]);
-  const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite"]);
+  const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily", "contentFamily"]);
+  const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild"]);
   const allowedIndexing = new Set([
     "index",
     "noindex-follow",
     "listing-controlled",
     "event-controlled",
+    "owner-approval",
   ]);
   const allowedSitemap = new Set([
     "included",
     "excluded",
     "listing-controlled",
     "event-controlled",
+    "owner-approval",
   ]);
 
   if (!route.id) errors.push("route missing id.");
@@ -231,7 +248,11 @@ function validateRoute(route, storyDeclarations) {
     errors.push(`${label}: httpStatus must be ${expectedHttpStatus}.`);
   }
 
-  if (route.kind === "generatedFamily") {
+  if (route.kind === "contentFamily") {
+    if (Boolean(route.path) === Boolean(route.pathPattern) || route.pathPatterns) {
+      errors.push(`${label}: content route needs exactly one of path or pathPattern.`);
+    }
+  } else if (route.kind === "generatedFamily") {
     if (!route.pathPattern && !Array.isArray(route.pathPatterns)) {
       errors.push(`${label}: generated route needs pathPattern or pathPatterns.`);
     }
@@ -313,11 +334,16 @@ function validatePageKey(route) {
     "refunds",
     "contact",
     "not_found",
+    "playbook",
   ]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
     return;
   }
+  if ((route.pageKey === "playbook") !== (route.kind === "contentFamily")) {
+    errors.push(`${route.id}: the playbook pageKey is for contentFamily routes, and they use only it.`);
+  }
+  if (route.pageKey === "playbook") return;
   if (route.pageKey === "listing") {
     if (!appRoutingSource.includes("getHostListingRouteForPath")) {
       errors.push(`${route.id}: App.tsx must resolve generated listing routes first.`);
@@ -659,6 +685,116 @@ function validateGeneratedListingFamilies(routes, listings) {
       paths.add(normalizedLegacyPath);
     }
   }
+}
+
+/** Every slug a market city answers to at the top level: its slug and its retired slugs. */
+function marketCitySlugs() {
+  return inMarket.cities.flatMap((city) => [city.slug, ...(city.legacySlugs ?? [])]);
+}
+
+function routePathOrPatterns(route) {
+  if (route.path) return [normalizeRoutePath(route.path)];
+  return routePatterns(route).filter((pattern) => pattern.startsWith("/")).map(normalizeRoutePath);
+}
+
+function topLiteralSegment(pattern) {
+  return String(pattern).split("/")[1]?.split(":")[0] ?? "";
+}
+
+function hostingSourceCovers(source, routePath) {
+  const normalized = String(source).replace(/\/\*\*$/u, "");
+  return routePath === normalizeRoutePath(normalized) ||
+    (String(source).endsWith("/**") && routePath.startsWith(normalizeRoutePath(normalized)));
+}
+
+/**
+ * The redesign's content routes: routes.json and
+ * website/src/features/playbook/playbookRoutes.ts list the same routes, each
+ * waits for the owner's approval before it is indexed (ad landing pages
+ * never are), no path collides with another route, a Hosting redirect or
+ * rewrite, and no top-level segment of any route is a market city slug
+ * (cityForPath and the /<city>/<format>/ family read a bare first segment as
+ * a city).
+ */
+function contentFamilyRouteErrors({routes, fixed, families, siteHrefs, citySlugs, hosting}) {
+  const findings = [];
+  const contentRoutes = routes.filter((route) => route?.kind === "contentFamily");
+  const otherRoutes = routes.filter((route) => route?.kind !== "contentFamily");
+  const registered = new Map([
+    ...fixed.map((route) => [route.id, {path: route.path, group: route.group}]),
+    ...families.map((route) => [route.id, {pathPattern: route.pattern, group: route.group}]),
+  ]);
+  const declared = new Set();
+  for (const route of contentRoutes) {
+    declared.add(route.id);
+    const expected = registered.get(route.id);
+    if (!expected) {
+      findings.push(`${route.id}: contentFamily route is not registered in playbookRoutes.ts.`);
+      continue;
+    }
+    if (expected.path && normalizeRoutePath(route.path ?? "") !== expected.path) {
+      findings.push(`${route.id}: path must be ${expected.path}, as playbookRoutes.ts registers it.`);
+    }
+    if (expected.pathPattern && route.pathPattern !== expected.pathPattern) {
+      findings.push(`${route.id}: pathPattern must be ${expected.pathPattern}, as playbookRoutes.ts registers it.`);
+    }
+    if (route.content?.group !== expected.group) {
+      findings.push(`${route.id}: content.group must be ${expected.group}, as playbookRoutes.ts registers it.`);
+    }
+    if (route.staticOutput !== "content-postbuild") {
+      findings.push(`${route.id}: contentFamily routes use staticOutput content-postbuild.`);
+    }
+    const alwaysNoindex = route.indexing === "noindex-follow";
+    if (!["owner-approval", "noindex-follow"].includes(route.indexing)) {
+      findings.push(`${route.id}: contentFamily routes are indexed only on the owner's approval (owner-approval) or never (noindex-follow).`);
+    }
+    if (route.sitemap !== (alwaysNoindex ? "excluded" : "owner-approval")) {
+      findings.push(`${route.id}: sitemap must be ${alwaysNoindex ? "excluded" : "owner-approval"} to follow its indexing.`);
+    }
+    if ((route.id === "lp_campaign") !== alwaysNoindex) {
+      findings.push(`${route.id}: only ad landing pages (lp_campaign) are always noindex.`);
+    }
+    for (const routePath of routePathOrPatterns(route).filter(() => route.path)) {
+      for (const other of otherRoutes) {
+        const patterns = other.path ? [other.path] : routePatterns(other);
+        if (patterns.some((pattern) => matchesRoutePattern(routePath, pattern) && pattern.startsWith("/"))) {
+          findings.push(`${route.id}: ${routePath} collides with route ${other.id}.`);
+        }
+      }
+      const marketing = (hosting?.hosting ?? []).find((target) => target?.target === "marketing");
+      for (const entry of [...(marketing?.redirects ?? []), ...(marketing?.rewrites ?? [])]) {
+        if (entry?.source && hostingSourceCovers(entry.source, routePath)) {
+          findings.push(`${route.id}: ${routePath} is caught by the Hosting ${entry.destination ? "rule" : "function"} for ${entry.source}.`);
+        }
+      }
+    }
+  }
+  for (const id of registered.keys()) {
+    if (!declared.has(id)) findings.push(`${id}: playbookRoutes.ts registers it, but routes.json has no contentFamily route.`);
+  }
+  for (const [id, href] of Object.entries(siteHrefs)) {
+    const route = otherRoutes.find((candidate) => candidate.id === id);
+    if (!route || normalizeRoutePath(route.path ?? "") !== href) {
+      findings.push(`siteRouteHrefs.${id}: must name a routes.json route with path ${href}.`);
+    }
+  }
+  const cities = new Set(citySlugs);
+  for (const route of routes) {
+    for (const pattern of routePathOrPatterns(route)) {
+      const segment = topLiteralSegment(pattern);
+      if (segment && cities.has(segment)) {
+        findings.push(`${route.id}: top-level segment ${segment} is a market city slug.`);
+      }
+      if (segment.endsWith("-") && [...cities].some((slug) => slug.startsWith(segment))) {
+        findings.push(`${route.id}: a market city slug starts with ${segment}.`);
+      }
+    }
+  }
+  for (const route of [...fixed, ...families]) {
+    const segment = playbookTopSegment(route);
+    if (segment && cities.has(segment)) findings.push(`${route.id}: top-level segment ${segment} is a market city slug.`);
+  }
+  return findings;
 }
 
 function normalizeMarketKey(value) {
@@ -1116,6 +1252,67 @@ export const OrganizerSearch = {
     }).join("\n"),
     /\/host\/preview\/\*\*: missing matching Firebase Hosting redirect/u
   );
+  const contentRoute = {
+    id: "host_run_clubs",
+    kind: "contentFamily",
+    path: "/host/run-clubs/",
+    content: {group: "host", board: "PlaybookRunClubs"},
+    staticOutput: "content-postbuild",
+    indexing: "owner-approval",
+    sitemap: "owner-approval",
+  };
+  const contentInputs = {
+    routes: [{id: "host", kind: "static", path: "/host/"}, contentRoute],
+    fixed: [{id: "host_run_clubs", group: "host", path: "/host/run-clubs/"}],
+    families: [],
+    siteHrefs: {host: "/host/"},
+    citySlugs: ["mumbai", "delhi"],
+    hosting: {hosting: [{target: "marketing", redirects: [], rewrites: []}]},
+  };
+  assert.deepEqual(contentFamilyRouteErrors(contentInputs), []);
+  assert.match(contentFamilyRouteErrors({...contentInputs, fixed: []}).join("\n"), /not registered in playbookRoutes/u);
+  assert.match(
+    contentFamilyRouteErrors({...contentInputs, routes: [contentInputs.routes[0]]}).join("\n"),
+    /routes.json has no contentFamily route/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({...contentInputs, routes: [contentInputs.routes[0], {...contentRoute, indexing: "index", sitemap: "included"}]}).join("\n"),
+    /owner's approval/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({...contentInputs, routes: [contentInputs.routes[0], {...contentRoute, indexing: "noindex-follow", sitemap: "excluded"}]}).join("\n"),
+    /only ad landing pages/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({...contentInputs, citySlugs: ["host"]}).join("\n"),
+    /top-level segment host is a market city slug/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({
+      ...contentInputs,
+      routes: [...contentInputs.routes, {id: "new_to_city", kind: "contentFamily", pathPattern: "/new-to-:city/"}],
+      citySlugs: ["new-to-goa"],
+    }).join("\n"),
+    /a market city slug starts with new-/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({
+      ...contentInputs,
+      hosting: {hosting: [{target: "marketing", redirects: [{source: "/host/run-clubs/**", destination: "/host/"}]}]},
+    }).join("\n"),
+    /caught by the Hosting rule/u
+  );
+  assert.match(
+    contentFamilyRouteErrors({
+      ...contentInputs,
+      routes: [...contentInputs.routes, {id: "claim_lookup", kind: "clientDynamic", pathPattern: "/host/:listing/"}],
+    }).join("\n"),
+    /collides with route claim_lookup/u
+  );
+  assert.match(contentFamilyRouteErrors({...contentInputs, siteHrefs: {host: "/hosts/"}}).join("\n"), /siteRouteHrefs.host/u);
+  assert.equal(matchPlaybookRoute("/host/run-clubs")?.contentKey, "host_run_clubs");
+  assert.equal(matchPlaybookRoute("/new-to-mumbai/")?.contentKey, "new_to_city/mumbai");
+  assert.equal(matchPlaybookRoute("/mumbai/run-clubs/")?.contentKey, "city_format/mumbai/run-clubs");
   console.log("Website route checker self-test passed.");
 }
 

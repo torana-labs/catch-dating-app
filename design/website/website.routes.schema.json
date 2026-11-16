@@ -68,7 +68,7 @@
           "id": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
           "kind": {
             "type": "string",
-            "enum": ["static", "clientDynamic", "generatedFamily"]
+            "enum": ["static", "clientDynamic", "generatedFamily", "contentFamily"]
           },
           "path": {"type": "string"},
           "pathPattern": {"type": "string"},
@@ -80,23 +80,33 @@
           },
           "pageKey": {
             "type": "string",
-            "enum": ["home", "host", "event_runtime", "event_invite", "organizers", "listing", "event_detail", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found"]
+            "enum": ["home", "visitor_discovery", "cities", "host", "weddings", "organizers", "listing", "event_detail", "event_runtime", "event_rehearsal", "sales_demo", "event_assistance", "event_offer", "account", "host_billing", "event_booking", "event_invite", "household_rsvp", "programme_link", "public_form", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found", "playbook"]
           },
           "source": {"type": "string"},
           "metaKey": {"type": "string"},
           "metaFactory": {"type": "string"},
           "staticOutput": {
             "type": "string",
-            "enum": ["postbuild", "generated-postbuild", "spa-rewrite"]
+            "enum": ["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild"]
           },
           "httpStatus": {"type": "integer", "enum": [200, 404]},
           "indexing": {
             "type": "string",
-            "enum": ["index", "noindex-follow", "listing-controlled", "event-controlled"]
+            "enum": ["index", "noindex-follow", "listing-controlled", "event-controlled", "owner-approval"]
           },
           "sitemap": {
             "type": "string",
-            "enum": ["included", "excluded", "listing-controlled", "event-controlled"]
+            "enum": ["included", "excluded", "listing-controlled", "event-controlled", "owner-approval"]
+          },
+          "content": {
+            "description": "contentFamily routes: the section folder its pages ship in (website/src/content/playbook/pages/<group>/) and the design board.",
+            "type": "object",
+            "required": ["group", "board"],
+            "additionalProperties": false,
+            "properties": {
+              "group": {"type": "string", "enum": ["host", "product", "resources", "discovery"]},
+              "board": {"type": "string"}
+            }
           },
           "notes": {"type": "string"},
           "review": {
