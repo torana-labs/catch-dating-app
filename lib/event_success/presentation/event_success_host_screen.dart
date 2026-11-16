@@ -230,12 +230,18 @@ class _EventSuccessHostSectionState
     final accountabilityAttendeesState = catchAsyncStateFromAsyncValue(
       accountabilityAttendeesAsync,
     );
+    final selectedLayoutId = persistedPlan?.layoutId;
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         shouldLoadAssignments &&
-            persistedPlan.layoutId != null &&
+            selectedLayoutId != null &&
             persistedPlan.structureConfig.unitKind !=
                 EventSuccessUnitKind.wholeGroup
-        ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
+        ? ref.watch(
+            watchEventSuccessSelectedLayoutProvider(
+              organizerId: event.organizerId,
+              layoutId: selectedLayoutId,
+            ),
+          )
         : const AsyncData<EventSuccessLayout?>(null);
     final spatialLayoutState = eventSuccessHostSpatialLayoutState(
       plan: persistedPlan,
@@ -399,6 +405,8 @@ class _EventSuccessHostSectionState
             ),
             onRetry: () => _retryEventSuccessHostSection(
               eventId: event.id,
+              organizerId: event.organizerId,
+              selectedLayoutId: selectedLayoutId,
               retryIntent: retryIntent,
               assignmentParticipantUidsKey: assignmentParticipantUidsKey,
               rotationParticipantUidsKey: rotationParticipantUidsKey,
@@ -555,6 +563,8 @@ class _EventSuccessHostSectionState
       resourceFailures: state.resourceFailures,
       onRetryResource: (retryIntent) => _retryEventSuccessHostSection(
         eventId: event.id,
+        organizerId: event.organizerId,
+        selectedLayoutId: selectedLayoutId,
         retryIntent: retryIntent,
         assignmentParticipantUidsKey: assignmentParticipantUidsKey,
         rotationParticipantUidsKey: rotationParticipantUidsKey,

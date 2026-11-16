@@ -12546,9 +12546,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchEventSuccessScorecardProvider(
         _hostLiveRoomReferenceEvent.id,
       ).overrideWith((ref) => Stream.value(null)),
-      eventSuccessSpatialLayoutProvider(
-        _hostLiveRoomReferenceEvent.id,
-      ).overrideWith((ref) async => _hostLiveRoomReferenceLayout),
+      watchEventSuccessSelectedLayoutProvider(
+        organizerId: _hostLiveRoomReferenceEvent.organizerId,
+        layoutId: _hostLiveRoomReferenceLayout.layoutId,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomReferenceLayout)),
       watchEventParticipationRosterProvider(
         _hostLiveRoomReferenceEvent.id,
       ).overrideWith((ref) => Stream.value(_hostLiveRoomRoster)),
