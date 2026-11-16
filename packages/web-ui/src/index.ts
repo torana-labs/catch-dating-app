@@ -57,6 +57,15 @@ export {CatchCtaSection} from "./components/CatchCtaSection";
 export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
 export {CatchFaqSection} from "./components/CatchFaqSection";
 export type {CatchFaqSectionProps} from "./components/CatchFaqSection";
+export {CatchFlowLayout} from "./components/CatchFlowLayout";
+export type {CatchFlowLayoutProps} from "./components/CatchFlowLayout";
+export {CatchFormStepList} from "./components/CatchFormStepList";
+export type {
+  CatchFormStepListDirection,
+  CatchFormStepListProps,
+  CatchFormStepListStatus,
+  CatchFormStepReviewItem,
+} from "./components/CatchFormStepList";
 export {CatchHeroSection} from "./components/CatchHeroSection";
 export type {
   CatchHeroSectionAside,
