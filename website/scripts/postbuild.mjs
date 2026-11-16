@@ -8,6 +8,10 @@ import {
   staticRouteMeta,
 } from "../../tool/marketing/website_meta_contract.mjs";
 import {applyBrand, brand} from "@catch/brand";
+import {validatedPlaybookPage} from "../src/content/playbook/playbookContract.ts";
+import {pendingPlaybookBindings} from "../src/features/playbook/playbookBindings.ts";
+import {alwaysNoindexPlaybookRoutes, registeredPlaybookPages} from "../src/features/playbook/playbookPages.ts";
+import {playbookStructuredData} from "../src/features/playbook/playbookStructuredData.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -150,6 +154,25 @@ for (const event of publicEvents) {
       event,
       websiteMeta.event.staticLabels
     ),
+  });
+}
+
+// The redesign's content pages: every registered page that renders, with
+// its own meta. A page is noindex (and so out of sitemap.xml) until its
+// meta.noindex is false; ad landing pages always are.
+for (const ref of registeredPlaybookPages()) {
+  const file = path.join(websiteRoot, "src", "content", "playbook", "pages", ref.match.route.group, ref.entry.file);
+  const page = validatedPlaybookPage(JSON.parse(fs.readFileSync(file, "utf8")));
+  if (pendingPlaybookBindings(page).length > 0) continue;
+  const branded = applyBrand(page);
+  const noindex = branded.meta.noindex || alwaysNoindexPlaybookRoutes.has(branded.route);
+  writeRoute(ref.match.canonicalPath, {
+    title: branded.meta.title,
+    description: branded.meta.description,
+    canonical: `${baseUrl}${ref.match.canonicalPath}`,
+    twitterDescription: branded.meta.socialDescription ?? branded.meta.description,
+    robots: noindex ? "noindex, follow" : undefined,
+    structuredData: playbookStructuredData(branded, ref.match.canonicalPath, baseUrl),
   });
 }
 

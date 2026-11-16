@@ -88,17 +88,7 @@
                     "$ref": "#/$defs/copy"
                   },
                   "to": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "route"
-                    ],
-                    "properties": {
-                      "route": {
-                        "type": "string",
-                        "pattern": "^[a-z][a-z0-9_]*$"
-                      }
-                    }
+                    "$ref": "#/$defs/destination"
                   }
                 }
               },
@@ -107,6 +97,33 @@
             },
             "current": {
               "$ref": "#/$defs/copy"
+            }
+          }
+        },
+        "action": {
+          "$ref": "#/$defs/action"
+        },
+        "offer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "market",
+            "lead",
+            "body"
+          ],
+          "properties": {
+            "market": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{1,49}$"
+            },
+            "lead": {
+              "$ref": "#/$defs/copy"
+            },
+            "body": {
+              "$ref": "#/$defs/copy"
+            },
+            "action": {
+              "$ref": "#/$defs/action"
             }
           }
         }
@@ -147,6 +164,21 @@
           },
           "minItems": 1,
           "maxItems": 12
+        },
+        "phoneBar": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action"
+          ],
+          "properties": {
+            "action": {
+              "$ref": "#/$defs/action"
+            },
+            "note": {
+              "$ref": "#/$defs/copy"
+            }
+          }
         }
       }
     },
@@ -269,6 +301,9 @@
                 "minItems": 1,
                 "maxItems": 4
               },
+              "note": {
+                "$ref": "#/$defs/copy"
+              },
               "media": {
                 "$ref": "#/$defs/media"
               }
@@ -343,6 +378,9 @@
                     "then": {
                       "$ref": "#/$defs/copy"
                     },
+                    "kicker": {
+                      "$ref": "#/$defs/copy"
+                    },
                     "ground": {
                       "enum": [
                         "white",
@@ -377,7 +415,8 @@
                 "enum": [
                   2,
                   3,
-                  4
+                  4,
+                  6
                 ]
               },
               "align": {
@@ -406,8 +445,7 @@
               "type",
               "id",
               "ground",
-              "title",
-              "media"
+              "title"
             ],
             "properties": {
               "type": {
@@ -433,14 +471,17 @@
               "title": {
                 "$ref": "#/$defs/copy"
               },
-              "media": {
-                "$ref": "#/$defs/media"
-              },
               "kicker": {
                 "$ref": "#/$defs/copy"
               },
               "lead": {
                 "$ref": "#/$defs/copy"
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              },
+              "leadForm": {
+                "$ref": "#/$defs/leadForm"
               },
               "pageTitle": {
                 "type": "boolean"
@@ -491,8 +532,13 @@
                     "label": {
                       "$ref": "#/$defs/copy"
                     },
-                    "link": {
-                      "$ref": "#/$defs/action"
+                    "links": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/action"
+                      },
+                      "minItems": 1,
+                      "maxItems": 3
                     }
                   }
                 },
@@ -730,6 +776,19 @@
               "meta": {
                 "$ref": "#/$defs/copy"
               },
+              "avatarGround": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
               "metrics": {
                 "type": "array",
                 "items": {
@@ -750,6 +809,9 @@
                     "footnote": {
                       "type": "string",
                       "pattern": "^[a-z][a-z0-9-]*$"
+                    },
+                    "source": {
+                      "$ref": "#/$defs/copy"
                     }
                   }
                 },
@@ -758,6 +820,9 @@
               },
               "media": {
                 "$ref": "#/$defs/photo"
+              },
+              "link": {
+                "$ref": "#/$defs/action"
               }
             }
           },
@@ -769,6 +834,7 @@
               "id",
               "ground",
               "price",
+              "title",
               "examples"
             ],
             "properties": {
@@ -795,6 +861,9 @@
               "price": {
                 "$ref": "#/$defs/copy"
               },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
               "examples": {
                 "type": "array",
                 "items": {
@@ -802,8 +871,7 @@
                   "additionalProperties": false,
                   "required": [
                     "title",
-                    "value",
-                    "body"
+                    "value"
                   ],
                   "properties": {
                     "title": {
@@ -823,10 +891,10 @@
               "kicker": {
                 "$ref": "#/$defs/copy"
               },
-              "priceNote": {
+              "cap": {
                 "$ref": "#/$defs/copy"
               },
-              "lead": {
+              "trial": {
                 "$ref": "#/$defs/copy"
               },
               "actions": {
@@ -950,28 +1018,13 @@
                 "maxItems": 3
               },
               "leadForm": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "id",
-                  "label",
-                  "submitLabel"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "pattern": "^[a-z][a-z0-9_]*$"
-                  },
-                  "label": {
-                    "$ref": "#/$defs/copy"
-                  },
-                  "submitLabel": {
-                    "$ref": "#/$defs/copy"
-                  }
-                }
+                "$ref": "#/$defs/leadForm"
               },
               "storeBadges": {
-                "type": "boolean"
+                "enum": [
+                  "guest",
+                  "host"
+                ]
               },
               "media": {
                 "$ref": "#/$defs/media"
@@ -1067,6 +1120,14 @@
                     "properties": {
                       "kind": {
                         "const": "stories"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      },
+                      "city": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
                       }
                     }
                   },
@@ -1079,10 +1140,57 @@
                     "properties": {
                       "kind": {
                         "const": "playbooks"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      },
+                      "city": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "group"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "people"
+                      },
+                      "group": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
                       }
                     }
                   }
                 ]
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "key",
+                    "label"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]*$"
+                    },
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 2,
+                "maxItems": 8
               },
               "kicker": {
                 "$ref": "#/$defs/copy"
@@ -1183,6 +1291,16 @@
                     "body": {
                       "$ref": "#/$defs/copy"
                     },
+                    "accent": {
+                      "enum": [
+                        "coral",
+                        "pink",
+                        "yellow",
+                        "mint",
+                        "indigo",
+                        "magenta"
+                      ]
+                    },
                     "tips": {
                       "type": "array",
                       "items": {
@@ -1197,49 +1315,23 @@
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
-                          "title",
-                          "body"
+                          "time",
+                          "title"
                         ],
                         "properties": {
+                          "time": {
+                            "$ref": "#/$defs/copy"
+                          },
                           "title": {
                             "$ref": "#/$defs/copy"
                           },
                           "body": {
-                            "$ref": "#/$defs/copy"
-                          },
-                          "label": {
                             "$ref": "#/$defs/copy"
                           }
                         }
                       },
                       "minItems": 1,
                       "maxItems": 8
-                    },
-                    "columns": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "title",
-                          "list"
-                        ],
-                        "properties": {
-                          "title": {
-                            "$ref": "#/$defs/copy"
-                          },
-                          "list": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/$defs/copy"
-                            },
-                            "minItems": 1,
-                            "maxItems": 8
-                          }
-                        }
-                      },
-                      "minItems": 1,
-                      "maxItems": 4
                     },
                     "media": {
                       "$ref": "#/$defs/media"
@@ -1257,9 +1349,20 @@
               },
               "layout": {
                 "enum": [
-                  "steps",
-                  "panels"
+                  "tabs",
+                  "steps"
                 ]
+              },
+              "align": {
+                "enum": [
+                  "start",
+                  "center"
+                ]
+              },
+              "defaultItem": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
               }
             }
           },
@@ -1303,21 +1406,48 @@
                 "items": {
                   "$ref": "#/$defs/copy"
                 },
-                "minItems": 2,
+                "minItems": 1,
                 "maxItems": 6
               },
               "rows": {
                 "type": "array",
                 "items": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/copy"
-                  },
-                  "minItems": 2,
-                  "maxItems": 6
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "cells"
+                  ],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "cells": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [],
+                        "properties": {
+                          "text": {
+                            "$ref": "#/$defs/copy"
+                          },
+                          "status": {
+                            "enum": [
+                              "yes",
+                              "no",
+                              "unknown"
+                            ]
+                          }
+                        }
+                      },
+                      "minItems": 1,
+                      "maxItems": 6
+                    }
+                  }
                 },
                 "minItems": 1,
-                "maxItems": 20
+                "maxItems": 30
               },
               "kicker": {
                 "$ref": "#/$defs/copy"
@@ -1325,7 +1455,18 @@
               "lead": {
                 "$ref": "#/$defs/copy"
               },
-              "note": {
+              "rowHeader": {
+                "$ref": "#/$defs/copy"
+              },
+              "highlightColumn": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "source": {
+                "$ref": "#/$defs/copy"
+              },
+              "checked": {
                 "$ref": "#/$defs/copy"
               }
             }
@@ -1441,13 +1582,8 @@
                   "body": {
                     "$ref": "#/$defs/copy"
                   },
-                  "actions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/action"
-                    },
-                    "minItems": 1,
-                    "maxItems": 2
+                  "action": {
+                    "$ref": "#/$defs/action"
                   }
                 }
               }
@@ -1497,6 +1633,77 @@
               },
               "caption": {
                 "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "component"
+            ],
+            "properties": {
+              "type": {
+                "const": "custom"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "component": {
+                "enum": [
+                  "noShowCalculator",
+                  "eventPageFromLink",
+                  "walkthroughSlots",
+                  "pricingCalculator"
+                ]
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "key",
+                    "text"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[a-z][A-Za-z0-9]*$"
+                    },
+                    "text": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 40
               }
             }
           },
@@ -1642,6 +1849,23 @@
             "route": {
               "type": "string",
               "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "anchor": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "page"
+          ],
+          "properties": {
+            "page": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z0-9][a-z0-9-]*)*$"
             },
             "anchor": {
               "type": "string",
@@ -1857,6 +2081,84 @@
         },
         "note": {
           "$ref": "#/$defs/copy"
+        },
+        "cover": {
+          "type": "string",
+          "pattern": "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)$"
+        }
+      }
+    },
+    "leadForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "requestKind",
+        "label",
+        "submitLabel"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "requestKind": {
+          "enum": [
+            "guide",
+            "walkthrough",
+            "demo",
+            "venue",
+            "story",
+            "referral",
+            "org_contact",
+            "city_alerts"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "submitLabel": {
+          "$ref": "#/$defs/copy"
+        },
+        "format": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "label"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "name",
+                  "preferredTime",
+                  "whatYouHost",
+                  "area",
+                  "capacity",
+                  "nights",
+                  "orgType",
+                  "orgName"
+                ]
+              },
+              "label": {
+                "$ref": "#/$defs/copy"
+              },
+              "placeholder": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "note": {
+          "$ref": "#/$defs/copy"
         }
       }
     },
@@ -1876,6 +2178,9 @@
             "slot": {
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "alt": {
+              "$ref": "#/$defs/copy"
             }
           }
         },
@@ -1897,6 +2202,26 @@
         },
         {
           "$ref": "#/$defs/photo"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "qr"
+            },
+            "to": {
+              "$ref": "#/$defs/destination"
+            },
+            "label": {
+              "$ref": "#/$defs/copy"
+            }
+          }
         }
       ]
     },
