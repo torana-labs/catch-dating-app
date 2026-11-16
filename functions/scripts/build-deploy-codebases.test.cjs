@@ -227,7 +227,10 @@ test("each Function's own hash changes only with what that Function loads and re
   write("src/index.ts", "import * as admin from \"firebase-admin\";\nadmin.initializeApp();\n" +
     "export {a} from \"./alpha/a\";\nexport {c} from \"./alpha/c\";\nexport {d} from \"./alpha/d\";\n" +
     "export {b, b2} from \"./beta/b\";\n");
-  write("lib/alpha/c.js", "const defineSecret = (name) => name;\nexports.c = defineSecret(\"C_KEY\");\n");
+  // c declares one secret by a plain call and one the way tsc compiles an
+  // imported defineSecret: `(0, params_1.defineSecret)(` with the name on the next line.
+  write("lib/alpha/c.js", "const defineSecret = (name) => name;\nconst params_1 = {defineSecret};\n" +
+    "exports.c = [defineSecret(\"C_KEY\"), (0, params_1.defineSecret)(\n    \"C_TS_KEY\")];\n");
   write("lib/alpha/d.js", "const name = \"./c.js\";\nexports.d = () => require(name);\n");
   write("lib/beta/b.js", "const path = require(\"node:path\");\n" +
     "const root = path.join(__dirname, \"../operations/src/workflows\", \"flow-one\");\n" +
@@ -238,7 +241,7 @@ test("each Function's own hash changes only with what that Function loads and re
   };
   const base = await manifest("base");
   assert.deepEqual(Object.keys(base.one.functionHashes), ["a", "c", "d"]);
-  assert.deepEqual(base.one.functionSecrets, {c: ["C_KEY"]});
+  assert.deepEqual(base.one.functionSecrets, {c: ["C_KEY", "C_TS_KEY"]});
   assert.deepEqual(base.one.computedLoads, ["d"]);
   // A computed import of a named workflow's file, built from __dirname, stays bounded.
   assert.equal(base.two.computedLoads, undefined);
@@ -262,6 +265,12 @@ test("each Function's own hash changes only with what that Function loads and re
   // The setup every Function runs moves every Function.
   assert.deepEqual(await changed("src/index.ts", (text) => text.replace("initializeApp()", "initializeApp({})"), "setup"),
     ["a", "b", "b2", "c", "d"]);
+});
+
+test("a secret named by anything but a literal stops the build", async (t) => {
+  const {build} = codebaseFixture(t, {betaSource: "const params_1 = {defineSecret: (n) => n};\n" +
+    "const name = \"B_KEY\";\nexports.b = (0, params_1.defineSecret)(name);\nexports.b2 = 2;\n"});
+  await assert.rejects(build(), /lib\/beta\/b\.js calls defineSecret without a literal name/u);
 });
 
 test("a module that reads files beside itself must name the workflow it loads", async (t) => {
