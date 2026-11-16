@@ -425,6 +425,25 @@ jobs:
               $on = 0 if /^\s*$/;
               print "functions:$1\n" if $on && /^\s+([a-z0-9_-]+:[A-Za-z0-9_-]+)\(/' build/functions-deploy.log |
               sort -u | paste -sd, -)"
+            # Narrow only when the CLI's final error is its per-Function one and
+            # every Function it names is in those lists. Any other error (a
+            # build, an upload, a secret grant) or an unlisted Function (an
+            # aborted delete) would stay stale behind a narrow retry that
+            # passes, and parity checks only presence; the broad retry
+            # redeploys whatever did not land.
+            if [[ -n "$failed" ]] && ! FAILED="$failed" perl -e '
+              my %listed = map { (split /:/)[-1] => 1 } split /,/, $ENV{FAILED};
+              my ($final, $other) = (0, 0);
+              while (<>) {
+                s/\e\[[0-9;]*m//g;
+                if (/^Error: There was an error deploying functions/) { $final = 1; next }
+                if (/^Error:/) { $other = 1; next }
+                if ($final && /^- Error Failed to .+ function (\S+) in region /) { $other = 1 unless $listed{$1} }
+              }
+              exit($final && !$other ? 0 : 1)' build/functions-deploy.log; then
+              echo "::warning::The CLI reported a failure outside its list of failed Functions; the next attempt deploys broadly."
+              failed=""
+            fi
             if (( attempt == attempts )); then
               echo "::error::Functions deploy failed after $attempts attempts${failed:+; still failing: $failed}."
               break
