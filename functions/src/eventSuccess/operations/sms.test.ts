@@ -121,7 +121,7 @@ async function harness(realDb?: Firestore, id = "test") {
   for (const scope of smsBudgetScopes(context, start)) {
     const begins = scope.kind === "senderDay" ?
       Date.parse(scope.day + "T00:00:00+05:30") : start - 1000;
-    const budget: Budget = {schemaVersion: 1,
+    const budget: Budget = {schemaVersion: 1, channel: "sms",
       budgetId: smsBudgetId(sender.senderId, scope), revision: 1,
       senderId: sender.senderId, scope, status: "active",
       approvalId: "fixture-spending", currency: "INR",

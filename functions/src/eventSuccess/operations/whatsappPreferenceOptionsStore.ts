@@ -33,7 +33,7 @@ export class WhatsappPreferenceOptionsStore {
       const configuredSenderId = route?.senderId ?? null;
       // The index checker consumes this declaration as one line.
       // eslint-disable-next-line max-len
-      // firestore-index: eventAssistanceWhatsappPermissions (context.mode:ASCENDING, context.organizerId:ASCENDING, context.eventId:ASCENDING, attendeeId:ASCENDING, evidence.subjectUid:ASCENDING, __name__:ASCENDING)
+      // firestore-index: eventAssistancePermissions (channel:ASCENDING, context.mode:ASCENDING, context.organizerId:ASCENDING, context.eventId:ASCENDING, attendeeId:ASCENDING, evidence.subjectUid:ASCENDING, __name__:ASCENDING)
       let query = this.db.collection(WHATSAPP_PERMISSIONS)
         .where("channel", "==", "whatsapp")
         .where("context.mode", "==", "live")

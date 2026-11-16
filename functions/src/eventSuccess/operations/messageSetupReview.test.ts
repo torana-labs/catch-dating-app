@@ -67,8 +67,7 @@ for (const route of routes) {
       "eventAssistanceRuntimeConfigs", "eventAssistanceSmsSenders",
       "eventAssistanceRcsSenders", "organizerSenderConnections",
       "eventAssistanceWhatsappPolicies", "organizerMessageTemplates",
-      "eventAssistanceSmsBudgets", "eventAssistanceRcsBudgets",
-      "eventAssistanceWhatsappBudgets"]);
+      "eventAssistanceBudgets"]);
     assert.ok(reads.every((path) => allowed.has(path.split("/")[0])));
     for (const field of ["secret", "credential", "principalEntityId",
       "phoneE164", "providerAccountId", "agentId"]) {

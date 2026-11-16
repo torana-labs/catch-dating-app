@@ -121,10 +121,12 @@ test("RCS never borrows SMS consent, and fallback never borrows RCS consent",
     assert.equal(h.requests.length, 0);
     const other = await rcsHarness(undefined, "other");
     other.behavior.capability = "unreachable";
-    for (const collection of ["eventAssistanceSmsPermissions",
-      "eventAssistanceWhatsappPermissions"]) {
-      for (const [path] of other.fake.entries()) {
-        if (path.startsWith(collection + "/")) other.fake.remove(path);
+    // Remove every SMS and WhatsApp permission; RCS consent stays.
+    for (const [path, value] of other.fake.entries()) {
+      if (path.startsWith("eventAssistancePermissions/") &&
+          ["sms", "whatsapp"].includes(
+            (value as {channel?: string}).channel ?? "")) {
+        other.fake.remove(path);
       }
     }
     assert.equal((await other.dispatch()).kind, "waiting");

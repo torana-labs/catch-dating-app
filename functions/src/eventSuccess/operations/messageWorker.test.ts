@@ -57,7 +57,7 @@ async function mixed(realDb?: Firestore, id = "test", routes: Routes =
     const budgetId = smsBudgetId(sender.senderId, scope);
     const path = smsCollections.budgets + "/" + budgetId;
     smsBudgets.push(path);
-    await h.write(path, {schemaVersion: 1, budgetId, revision: 1,
+    await h.write(path, {schemaVersion: 1, channel: "sms", budgetId, revision: 1,
       senderId: sender.senderId, scope, status: "active",
       approvalId: "fixture", currency: "INR", limitMicros: 10_000_000,
       chargedMicros: 0, startsAt: begins, endsAt: scope.kind === "senderDay" ?

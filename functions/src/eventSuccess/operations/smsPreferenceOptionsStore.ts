@@ -33,7 +33,7 @@ export class SmsPreferenceOptionsStore {
       const configuredSenderId = route?.senderId ?? null;
       // The index checker consumes this declaration as one line.
       // eslint-disable-next-line max-len
-      // firestore-index: eventAssistanceSmsPermissions (context.mode:ASCENDING, context.organizerId:ASCENDING, context.eventId:ASCENDING, attendeeId:ASCENDING, evidence.subjectUid:ASCENDING, __name__:ASCENDING)
+      // firestore-index: eventAssistancePermissions (channel:ASCENDING, context.mode:ASCENDING, context.organizerId:ASCENDING, context.eventId:ASCENDING, attendeeId:ASCENDING, evidence.subjectUid:ASCENDING, __name__:ASCENDING)
       let query = this.db.collection(smsCollections.permissions)
         .where("channel", "==", "sms")
         .where("context.mode", "==", "live")
