@@ -1125,7 +1125,9 @@ test("Deploy backend can deploy Functions in groups on dev, to measure pacing, a
     const next = workflow.slice(start + 3).search(/\n  [a-z][\w-]*:\n/u);
     return workflow.slice(start, next < 0 ? undefined : start + 3 + next);
   };
-  assert.match(job("dev"), /batch: \$\{\{ inputs\.batch \|\| 0 \}\}/u);
+  // Run 43812113622 never created its dev job: a dispatched number input is a
+  // string in the inputs context, and the called workflow's number input refuses it.
+  assert.match(job("dev"), /batch: \$\{\{ fromJSON\(inputs\.batch \|\| '0'\) \}\}/u);
   for (const other of ["prod", "staging"]) assert.doesNotMatch(job(other), /batch:/u, other);
 });
 
