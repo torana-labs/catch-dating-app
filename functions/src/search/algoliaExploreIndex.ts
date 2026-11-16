@@ -7,6 +7,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {eventOrganizerRef} from "../shared/eventOrganizers";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
+import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
 import {
   algoliaAppId,
   organizersIndexName,
@@ -48,6 +49,8 @@ export interface AlgoliaOrganizerSearchRecord {
   locationMarketId: string;
   nextEventAtEpoch: number | null;
   nextEventLabel: string | null;
+  /** Resolved women-led default; exploreSearch filters on it. */
+  womenLed: boolean;
 }
 
 export interface AlgoliaEventSearchRecord {
@@ -65,6 +68,8 @@ export interface AlgoliaEventSearchRecord {
   startTimeEpoch: number;
   endTimeEpoch: number | null;
   status: EventDocument["status"];
+  /** Resolved label: event override, else organizer default. */
+  womenLed: boolean;
 }
 
 /**
@@ -84,6 +89,7 @@ export function organizerSearchIndexSettings(): Record<string, unknown> {
       "filterOnly(locationMarketId)",
       "filterOnly(status)",
       "filterOnly(archived)",
+      "filterOnly(womenLed)",
     ],
     customRanking: [
       "desc(memberCount)",
@@ -110,6 +116,7 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
       "filterOnly(discoveryMarketId)",
       "filterOnly(status)",
       "filterOnly(organizerId)",
+      "filterOnly(womenLed)",
     ],
     customRanking: [
       "asc(startTimeEpoch)",
@@ -159,6 +166,7 @@ export function buildOrganizerSearchRecord(
     archived: organizer.archived,
     nextEventAtEpoch: timestampEpochSeconds(organizer.nextEventAt),
     nextEventLabel: organizer.nextEventLabel ?? null,
+    womenLed: organizerWomenLed(organizer),
   };
 }
 
@@ -216,6 +224,7 @@ export function buildEventSearchRecord(
     startTimeEpoch,
     endTimeEpoch: timestampEpochSeconds(event.endTime),
     status: event.status,
+    womenLed: eventWomenLed(organizer, event),
   };
 }
 
