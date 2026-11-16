@@ -31,6 +31,7 @@ import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dar
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
@@ -55,6 +56,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_host_photos.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/modules.dart';
@@ -6480,16 +6482,16 @@ List<Object> _reviewsHistoryProviderOverrides({
   final eventIds = ReviewsHistoryState.eventIdsFor(reviewValues);
   if (eventIds.isEmpty) return overrides;
 
-  final effectiveEvents =
+  final AsyncValue<List<Event>> effectiveEvents =
       events ??
       AsyncData([
         for (final event in _reviewHistoryEvents)
           if (eventIds.contains(event.id)) event,
       ]);
   overrides.add(
-    watchEventsByIdsProvider(
-      EventsByIdQuery(eventIds),
-    ).overrideWithValue(effectiveEvents),
+    watchOwnEventCardsByIdProvider(
+      viewerUid,
+    ).overrideWithValue(_captureCardsById(effectiveEvents)),
   );
 
   return overrides;
@@ -6824,16 +6826,16 @@ List<Object> _paymentHistoryProviderOverrides({
   if (paymentValues == null || paymentValues.isEmpty) return overrides;
 
   final eventIds = {for (final payment in paymentValues) payment.eventId};
-  final effectiveEvents =
+  final AsyncValue<List<Event>> effectiveEvents =
       events ??
       AsyncData([
         for (final event in _paymentHistoryEvents)
           if (eventIds.contains(event.id)) event,
       ]);
   overrides.add(
-    watchEventsByIdsProvider(
-      EventsByIdQuery(eventIds),
-    ).overrideWithValue(effectiveEvents),
+    watchOwnEventCardsByIdProvider(
+      viewerUid,
+    ).overrideWithValue(_captureCardsById(effectiveEvents)),
   );
 
   return overrides;
@@ -15417,3 +15419,14 @@ final _profileFixture = ProfileView(
     ),
   ],
 );
+
+/// The guest event cards the history lists read, from capture events.
+AsyncValue<Map<String, GuestEventCard>> _captureCardsById(
+  AsyncValue<List<Event>> events,
+) => switch (events) {
+  AsyncData(:final value) => AsyncData({
+    for (final event in value) event.id: GuestEventCard.fromEvent(event),
+  }),
+  AsyncError(:final error, :final stackTrace) => AsyncError(error, stackTrace),
+  _ => const AsyncLoading(),
+};

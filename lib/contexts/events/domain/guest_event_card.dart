@@ -38,6 +38,35 @@ class GuestEventCard {
     required this.synthetic,
   });
 
+  /// The card the guest event triggers write for [event]: its list fields,
+  /// without live booking counts.
+  factory GuestEventCard.fromEvent(Event event) => GuestEventCard(
+    eventId: event.id,
+    organizerId: event.organizerId,
+    name: event.name,
+    published: true,
+    status: event.status,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    eventTimezone: event.eventTimezone,
+    eventFormat: event.eventFormat,
+    distanceKm: event.distanceKm,
+    pace: event.pace,
+    meetingPoint: event.meetingPoint,
+    meetingLocation: event.meetingLocation,
+    startingPointLat: event.startingPointLat,
+    startingPointLng: event.startingPointLng,
+    locationDetails: event.locationDetails,
+    description: event.description,
+    capacityLimit: event.capacityLimit,
+    priceInPaise: event.priceInPaise,
+    currency: event.currency,
+    priceHiddenUntilBookingOpens: event.priceHiddenUntilBookingOpens,
+    publicRegistrationEnabled: event.publicRegistrationEnabled,
+    demandPricing: event.effectiveEventPolicy.usesDemandPricing,
+    synthetic: event.synthetic,
+  );
+
   /// Parses a stored card, or returns null for a missing or malformed one: a
   /// list leaves out an event it cannot show rather than failing whole.
   static GuestEventCard? fromData(Object? value) {

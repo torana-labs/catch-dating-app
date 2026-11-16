@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_platform/time/time_zone_calendar.dart';
@@ -49,6 +50,28 @@ class EventFormatters {
     if (remainderMinutes == 0) return '${hours}h';
     return '${hours}h ${remainderMinutes}m';
   }
+}
+
+/// The date and time labels an event list shows, from a guest event card.
+extension GuestEventCardFormattingX on GuestEventCard {
+  DateTime localTime(DateTime instant) {
+    final zone = eventTimezone;
+    return zone != null && isIanaTimeZone(zone)
+        ? timeZoneCalendarDateAtInstant(instant, zone)
+        : instant;
+  }
+
+  DateTime get localStartTime => localTime(startTime);
+  DateTime? get localEndTime => switch (endTime) {
+    final end? => localTime(end),
+    null => null,
+  };
+
+  String get longDateLabel => EventFormatters.longDate(localStartTime);
+  String get timeRangeLabel => switch (localEndTime) {
+    final end? => EventFormatters.timeRange(localStartTime, end),
+    null => EventFormatters.time(localStartTime),
+  };
 }
 
 extension EventFormattingX on Event {
