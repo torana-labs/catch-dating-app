@@ -19,7 +19,11 @@ class HostEventOperatorScreen extends ConsumerWidget {
     final accessAsync = ref.watch(hostEventOperatorAccessProvider(eventId));
     return CatchAsyncBoundary<HostEventOperatorAccess>(
       value: accessAsync,
-      onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
+      // Retry the listeners access is built from, not the composition.
+      onRetry: () => ref
+        ..invalidate(hostOperatorEventProvider(eventId))
+        ..invalidate(hostOperatorOrganizerManagerIdsProvider)
+        ..invalidate(hostOwnEventStaffGrantProvider),
       loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
