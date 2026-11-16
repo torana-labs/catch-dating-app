@@ -31,6 +31,7 @@ void main() {
         email: 'x@example.test',
         hostDefaults: const OrganizerHostDefaults(),
         publicListingEnabled: true,
+        womenLed: true,
       );
 
       final schema = contractSchema('UpdateOrganizerCallablePayload');
@@ -51,6 +52,12 @@ void main() {
     test('omits parameters that were not passed', () {
       final patch = UpdateOrganizerPatch(name: 'New Name');
       expect(patch.toFieldsJson(), {'name': 'New Name'});
+    });
+
+    test('serializes the women-led declaration as a plain boolean', () {
+      expect(UpdateOrganizerPatch(womenLed: false).toFieldsJson(), {
+        'womenLed': false,
+      });
     });
 
     test('serializes organizer type by its canonical contract name', () {
