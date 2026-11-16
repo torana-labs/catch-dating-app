@@ -76,7 +76,7 @@ final class DashboardFullViewModelProvider
   DashboardFullViewModelProvider._({
     required DashboardFullViewModelFamily super.from,
     required ({
-      List<Event> signedUpEvents,
+      List<GuestEventCard> signedUpEvents,
       UserProfile user,
       String uid,
       List<String> followedOrganizerIds,
@@ -111,7 +111,7 @@ final class DashboardFullViewModelProvider
     final argument =
         this.argument
             as ({
-              List<Event> signedUpEvents,
+              List<GuestEventCard> signedUpEvents,
               UserProfile user,
               String uid,
               List<String> followedOrganizerIds,
@@ -146,7 +146,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'21df40c2bc908d513a2c3a9fee04c26fdf8f1dc6';
+    r'bbe47dd33f80f12cb8a3abf76cb68df4ad89b685';
 
 /// Combines signed-up and attended events into the live-layer home model.
 
@@ -155,7 +155,7 @@ final class DashboardFullViewModelFamily extends $Family
         $FunctionalFamilyOverride<
           DashboardFullViewModel,
           ({
-            List<Event> signedUpEvents,
+            List<GuestEventCard> signedUpEvents,
             UserProfile user,
             String uid,
             List<String> followedOrganizerIds,
@@ -173,7 +173,7 @@ final class DashboardFullViewModelFamily extends $Family
   /// Combines signed-up and attended events into the live-layer home model.
 
   DashboardFullViewModelProvider call({
-    required List<Event> signedUpEvents,
+    required List<GuestEventCard> signedUpEvents,
     required UserProfile user,
     required String uid,
     required List<String> followedOrganizerIds,
@@ -254,4 +254,4 @@ final class DashboardHomeScreenStateProvider
 }
 
 String _$dashboardHomeScreenStateHash() =>
-    r'670e6c4762ff228baa208d3edead0980be1ecbc6';
+    r'af1eed29ce00800ccb91bc0f2f5810b026d9e5ac';

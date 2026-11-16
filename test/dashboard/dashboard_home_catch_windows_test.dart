@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
@@ -60,12 +60,12 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([attended])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([attended]))),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
@@ -129,12 +129,12 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([attended])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([attended]))),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),

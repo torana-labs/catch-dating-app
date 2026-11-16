@@ -786,7 +786,7 @@ void main() {
           body: SizedBox(
             width: 380,
             child: EventActionCard(
-              event: event,
+              title: event.title,
               subtitle: 'Stride Social',
               badges: const [
                 EventActionCardBadge(

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -73,7 +73,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             case DashboardHomeRetryTarget.signedUpEvents:
               final uid = error.uid;
               if (uid != null) {
-                ref.invalidate(watchSignedUpEventsProvider(uid));
+                ref.invalidate(watchSignedUpEventCardsProvider(uid));
               }
           }
         },

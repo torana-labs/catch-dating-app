@@ -28,7 +28,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
@@ -1752,14 +1751,15 @@ List<Object> _dashboardProviderOverrides({
           membershipsStream ??
           Stream<List<OrganizerFollow>>.value(effectiveMemberships),
     ),
-    watchSignedUpEventsProvider(captureViewerUid).overrideWith(
+    watchSignedUpEventCardsProvider(captureViewerUid).overrideWith(
       (ref) =>
-          signedUpEventsStream ??
-          Stream<List<Event>>.value(effectiveSignedUpEvents),
+          (signedUpEventsStream ??
+                  Stream<List<Event>>.value(effectiveSignedUpEvents))
+              .map(guestEventCardsOf),
     ),
-    watchAttendedEventsProvider(
-      captureViewerUid,
-    ).overrideWithValue(attendedEvents ?? AsyncData(_dashboardAttendedEvents)),
+    watchAttendedEventCardsProvider(captureViewerUid).overrideWithValue(
+      _captureCardsAsync(attendedEvents ?? AsyncData(_dashboardAttendedEvents)),
+    ),
     watchActivityNotificationsProvider(
       captureViewerUid,
     ).overrideWithValue(notifications ?? AsyncData(_dashboardNotifications)),
@@ -12703,9 +12703,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchActivityNotificationsProvider(
         captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
-      watchSignedUpEventsProvider(
-        captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
+      watchSignedUpEventCardsProvider(captureViewerUid).overrideWithValue(
+        AsyncData(guestEventCardsOf(_dashboardSignedUpEvents)),
+      ),
     ],
     builder: (context) => const ActivityScreen(),
   ),
@@ -12718,9 +12718,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchActivityNotificationsProvider(
         captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
-      watchSignedUpEventsProvider(
-        captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
+      watchSignedUpEventCardsProvider(captureViewerUid).overrideWithValue(
+        AsyncData(guestEventCardsOf(_dashboardSignedUpEvents)),
+      ),
     ],
     builder: (context) => const _ActivityMarkAllReadCapture(
       mode: _ActivityMarkAllReadCaptureMode.pending,
@@ -12735,9 +12735,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchActivityNotificationsProvider(
         captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
-      watchSignedUpEventsProvider(
-        captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
+      watchSignedUpEventCardsProvider(captureViewerUid).overrideWithValue(
+        AsyncData(guestEventCardsOf(_dashboardSignedUpEvents)),
+      ),
     ],
     builder: (context) => const _ActivityMarkAllReadCapture(
       mode: _ActivityMarkAllReadCaptureMode.error,
@@ -12752,9 +12752,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchActivityNotificationsProvider(
         captureViewerUid,
       ).overrideWithValue(AsyncData(_activityScreenNotifications)),
-      watchSignedUpEventsProvider(
-        captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
+      watchSignedUpEventCardsProvider(captureViewerUid).overrideWithValue(
+        AsyncData(guestEventCardsOf(_dashboardSignedUpEvents)),
+      ),
     ],
     builder: (context) => const _ActivityDeepLinkErrorCapture(),
   ),
