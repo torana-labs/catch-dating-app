@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerIntakeCurationDecisions",
   "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
   "x-document-id-field": "operationId",
-  "x-owner": "adminRecordOrganizerCuration, adminCreateOrganizerDraftFromCandidate and adminApproveOrganizerListing callables",
+  "x-owner": "adminApproveOrganizerListing callable (the retired adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate wrote earlier records)",
   "required": [
     "schemaVersion",
     "operationId",

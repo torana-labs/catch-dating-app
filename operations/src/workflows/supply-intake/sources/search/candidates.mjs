@@ -15,8 +15,8 @@ import {SEARCH_RESULT_BATCH_VERSION} from "./capture.mjs";
 
 export const SEARCH_CANDIDATE_QUEUE_VERSION = 1;
 
-// The surface shape the Admin curation callable accepts
-// (contracts/callables/admin_record_organizer_curation_payload.schema.json).
+// The surface shape an organizer curation record stores
+// (contracts/firestore/organizer_intake_curation_decisions.schema.json).
 const CURATION_PLATFORMS = new Set([
   "bookMyShow",
   "district",

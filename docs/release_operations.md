@@ -1212,12 +1212,9 @@ Rollback uses `--action revoke --generation <generation>` first, then
 Both retain the exact organizer/form and manager arguments and apply guards.
 Revocation immediately disables registry routing even if the form is unpublished.
 The CLI first verifies live project/Hosting metadata. If that API is unavailable,
-a currently authorized manager can use the deployed App Check-protected
-`manageOrganizerFormDomain` callable with `{action: "revoke", hostname,
-organizerId}`; it checks current manager authority and writes Firestore without
-Hosting API access. Confirm the callable result and registry state before
-resuming provider cleanup. Do not bypass authentication/App Check or claim a
-failed CLI command revoked routing.
+stop and retry once it is back: the manager callable that could also revoke a
+domain (`manageOrganizerFormDomain`) was retired on 16 Nov 2026. Do not bypass
+authentication/App Check or claim a failed CLI command revoked routing.
 Origin removal preserves unrelated entries and reports inherited parent-domain,
 wildcard CORS and other same-host origins that can retain provider trust. Do not
 claim all provider trust is removed when `providerTrustRemoved` is false. Hosting
@@ -2811,9 +2808,9 @@ complete for each target environment (`dev`, `staging`, and `prod`):
 - [ ] Verify paid INR bookings, on the website and in the Consumer app, go
   through `managePublicEventCheckout` on the organizer's own connected
   Razorpay account when `eventAdmission` is `razorpayOAuth`. The checkout key
-  is that connection's OAuth public token, never a Catch key. The Consumer app
-  no longer calls `createRazorpayOrder`, which refuses new orders and keeps
-  only existing-order verification and refunds. `RAZORPAY_KEY_SECRET` remains
+  is that connection's OAuth public token, never a Catch key. Catch's own
+  native checkout (`createRazorpayOrder`, `verifyRazorpayPayment`) is retired;
+  only refunds of old native payments remain. `RAZORPAY_KEY_SECRET` remains
   server-only and must never enter a client contract or artifact.
 - [ ] Verify an organizer with no ready connection sees paid booking refused
   with the organizer-payments-not-ready message, and that Host Payouts shows
@@ -2910,8 +2907,8 @@ the evidence in the release ticket.
   Invoices (payment link as fallback); tools-only purchases are payment links.
 - [ ] Add a webhook on Catch's account to
   `https://asia-south1-<project>.cloudfunctions.net/razorpayWebhook` with events
-  `invoice.paid`, `payment_link.paid` (and the existing `payment.captured`,
-  `payment.failed`), and replace the placeholder `RAZORPAY_WEBHOOK_SECRET`
+  `invoice.paid` and `payment_link.paid` (other events, including
+  `payment.captured`, are acknowledged and ignored), and replace the placeholder `RAZORPAY_WEBHOOK_SECRET`
   version (One-Time Environment Setup above) with that webhook's secret.
 - [ ] Test mode first: send one bill, pay its invoice with a Razorpay test card,
   and confirm Admin → Money shows it paid; buy tools-only on the billing

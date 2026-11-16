@@ -361,8 +361,6 @@
         "getOrganizerFormPayment",
         "findOrganizerFormPayment",
         "reconcileOrganizerFormPayments",
-        "createRazorpayOrder",
-        "verifyRazorpayPayment",
         "createStripeCheckoutSession",
         "onHostRosterInsightBookingPaymentChanged"
       ],
@@ -597,28 +595,11 @@
       "rulesMatch": "/crossPathsShowcaseEligibility/{uid}",
       "typescriptInterface": "CrossPathsShowcaseEligibilityDocument",
       "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "adminSetCrossPathsShowcaseEligibility callable",
-      "read": "server only; admin reviewers use a sanitized role-gated callable projection",
-      "write": "server only; audited admin review decision",
-      "exportedFunctions": [
-        "adminListCrossPathsShowcaseCandidates",
-        "adminSetCrossPathsShowcaseEligibility"
-      ],
-      "operations": [
-        {
-          "id": "admin_showcase_review",
-          "type": "callable",
-          "owner": "adminSetCrossPathsShowcaseEligibility",
-          "function": "adminSetCrossPathsShowcaseEligibility",
-          "payloadSchemaRef": "contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
-          "rulesMustContain": [
-            "allow read, write: if false"
-          ],
-          "rulesTestNames": [
-            "denies all client access to Cross Paths showcase eligibility"
-          ]
-        }
-      ],
+      "owner": "retired adminSetCrossPathsShowcaseEligibility callable; records kept read-only, removed by account deletion",
+      "read": "server only",
+      "write": "server only; account deletion removes a user's record",
+      "exportedFunctions": [],
+      "operations": [],
       "migrationNotes": [
         "Eligibility is activity-neutral and score-free. A reviewed approval is bound to the current public profile fingerprint and is revalidated by server suggestion logic."
       ]
@@ -678,8 +659,7 @@
         "joinEventWaitlist",
         "leaveEventWaitlist",
         "markEventAttendance",
-        "selfCheckInAttendance",
-        "verifyRazorpayPayment"
+        "selfCheckInAttendance"
       ],
       "operations": [
         {
@@ -1743,7 +1723,6 @@
       "read": "server only; manager sees bounded callable status",
       "write": "server only",
       "exportedFunctions": [
-        "manageOrganizerFormDomain",
         "resolvePublicFormDomain"
       ]
     },
@@ -1785,8 +1764,7 @@
       "write": "immutable server-created version only",
       "exportedFunctions": [
         "publishOrganizerForm",
-        "listParticipantActivity",
-        "getParticipantActivity"
+        "listParticipantActivity"
       ],
       "migrationNotes": [
         "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
@@ -2353,7 +2331,6 @@
       "write": "server only",
       "exportedFunctions": [
         "signUpForFreeEvent",
-        "verifyRazorpayPayment",
         "cancelEventSignUp",
         "joinEventWaitlist",
         "leaveEventWaitlist",
@@ -2830,7 +2807,6 @@
         "updateEvent",
         "cancelEvent",
         "signUpForFreeEvent",
-        "verifyRazorpayPayment",
         "cancelEventSignUp"
       ],
       "migrationNotes": [
@@ -3697,9 +3673,7 @@
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
-      "exportedFunctions": [
-        "adminListIntakeOperations"
-      ],
+      "exportedFunctions": [],
       "migrationNotes": [
         "Portable record shape is contracts/operations/run.schema.json; browser reads use a role-gated projection."
       ]
@@ -3712,9 +3686,7 @@
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
-      "exportedFunctions": [
-        "adminListIntakeOperations"
-      ],
+      "exportedFunctions": [],
       "migrationNotes": [
         "Portable record shape is contracts/operations/work_item.schema.json; primaryStage is exclusive and lifecycle outcomes are separate."
       ]
@@ -3804,7 +3776,6 @@
         "adminListInboxItems",
         "adminGetInboxItem",
         "adminUpdateInboxItem",
-        "adminRebuildInbox",
         "onSupplyIntakeRequestWrittenSyncInbox",
         "onOrganizerClaimRequestWrittenSyncInbox",
         "onSalesInboundIntentWrittenSyncInbox",
@@ -3853,7 +3824,6 @@
       "exportedFunctions": [
         "adminSearchPeople",
         "onUserWrittenIndexPeople",
-        "adminRebuildInbox",
         "reconcileAdminInboxNightly"
       ],
       "migrationNotes": [

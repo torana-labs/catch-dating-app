@@ -4,8 +4,6 @@ import path from "node:path";
 import test from "node:test";
 import type {ActivityNotificationDocument} from
   "./generated/activityNotificationDocument";
-import type {ArchiveOrganizerCallablePayload} from
-  "./generated/archiveOrganizerCallablePayload";
 import type {BlockUserCallablePayload} from
   "./generated/blockUserCallablePayload";
 import type {CancelEventCallablePayload} from
@@ -19,8 +17,6 @@ import type {CreateEventReviewCallablePayload} from
   "./generated/createEventReviewCallablePayload";
 import type {DeleteEventCallablePayload} from
   "./generated/deleteEventCallablePayload";
-import type {DeleteOrganizerCallablePayload} from
-  "./generated/deleteOrganizerCallablePayload";
 import type {DeleteEventReviewCallablePayload} from
   "./generated/deleteEventReviewCallablePayload";
 import type {FetchSwipeCandidatesCallableResponse} from
@@ -66,18 +62,12 @@ import type {UpdateEventReviewCallablePayload} from
 import type {UnblockUserCallablePayload} from
   "./generated/unblockUserCallablePayload";
 import type {UserProfileDocument} from "./generated/userProfileDocument";
-import type {VerifyRazorpayPaymentCallablePayload} from
-  "./generated/verifyRazorpayPaymentCallablePayload";
 import {schemaErrorMessages} from "./generated/schemaValidationRuntime";
 import {contractValidator} from "./contractTestValidators";
 
 const validateActivityNotificationDocument =
   contractValidator<ActivityNotificationDocument>(
     "ActivityNotificationDocument"
-  );
-const validateArchiveOrganizerCallablePayload =
-  contractValidator<ArchiveOrganizerCallablePayload>(
-    "ArchiveOrganizerCallablePayload"
   );
 const validateBlockUserCallablePayload =
   contractValidator<BlockUserCallablePayload>("BlockUserCallablePayload");
@@ -107,10 +97,6 @@ const validateCreateSavedEventClientWrite =
   contractValidator("CreateSavedEventClientWrite");
 const validateDeleteEventCallablePayload =
   contractValidator<DeleteEventCallablePayload>("DeleteEventCallablePayload");
-const validateDeleteOrganizerCallablePayload =
-  contractValidator<DeleteOrganizerCallablePayload>(
-    "DeleteOrganizerCallablePayload"
-  );
 const validateDeleteEventReviewCallablePayload =
   contractValidator<DeleteEventReviewCallablePayload>(
     "DeleteEventReviewCallablePayload"
@@ -230,12 +216,6 @@ const validateUnblockUserCallablePayload =
   contractValidator<UnblockUserCallablePayload>("UnblockUserCallablePayload");
 const validateUserProfileDocument =
   contractValidator<UserProfileDocument>("UserProfileDocument");
-const validateVerifyRazorpayPaymentCallablePayload =
-  contractValidator<VerifyRazorpayPaymentCallablePayload>(
-    "VerifyRazorpayPaymentCallablePayload"
-  );
-const validateRazorpayOrderCallableResponse =
-  contractValidator("RazorpayOrderCallableResponse");
 
 type Validator = Parameters<typeof schemaErrorMessages>[0];
 const contractRoot = fs.existsSync(path.resolve(process.cwd(), "contracts")) ?
@@ -480,14 +460,6 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/update_organizer_payload.json")
   );
   assertValid(
-    validateArchiveOrganizerCallablePayload as Validator,
-    readFixture("fixtures/valid/archive_organizer_payload.json")
-  );
-  assertValid(
-    validateDeleteOrganizerCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_organizer_payload.json")
-  );
-  assertValid(
     validateSetOrganizerNotificationPreferenceCallablePayload as Validator,
     readFixture(
       "fixtures/valid/set_organizer_notification_preference_payload.json"
@@ -558,14 +530,6 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateReportUserCallablePayload as Validator,
     readFixture("fixtures/valid/report_user_payload.json")
-  );
-  assertValid(
-    validateVerifyRazorpayPaymentCallablePayload as Validator,
-    readFixture("fixtures/valid/verify_razorpay_payment_payload.json")
-  );
-  assertValid(
-    validateRazorpayOrderCallableResponse as Validator,
-    readFixture("fixtures/valid/razorpay_order_response.json")
   );
   assertValid(
     validatePlacesAutocompleteCallablePayload as Validator,
@@ -667,10 +631,6 @@ test("generated schema validators reject invalid contract fixtures", () => {
   assertInvalid(
     validatePlacesAutocompleteCallablePayload as Validator,
     readFixture("fixtures/invalid/places_autocomplete_short_input.json")
-  );
-  assertInvalid(
-    validateRazorpayOrderCallableResponse as Validator,
-    readFixture("fixtures/invalid/razorpay_order_response_missing_amount.json")
   );
   assertInvalid(
     validateCreateChatMessageClientWrite as Validator,

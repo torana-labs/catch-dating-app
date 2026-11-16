@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerIntakeReviewDecisions",
   "x-firestore-path": "organizerIntakeReviewDecisions/{entityId}",
   "x-document-id-field": "entityId",
-  "x-owner": "adminDecideOrganizerIntake callable",
+  "x-owner": "retired adminDecideOrganizerIntake callable; existing records are kept read-only",
   "required": [
     "schemaVersion",
     "entityId",

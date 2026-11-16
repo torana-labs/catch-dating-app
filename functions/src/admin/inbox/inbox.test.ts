@@ -12,7 +12,6 @@ import {syncInboxProjection, syncInboxSource} from "./store";
 import {
   adminGetInboxItemHandler,
   adminListInboxItemsHandler,
-  adminRebuildInboxHandler,
   adminUpdateInboxItemHandler,
 } from "./callables";
 import {reconcileAdminInbox, wakeSnoozedInboxItems} from "./triggers";
@@ -270,18 +269,6 @@ test("a sales associate reads only what they nominated", async () => {
   const own = await adminGetInboxItemHandler(h.request({itemId: "supply-req-1"}, {salesStaff: true}, "riya"), h.deps);
   assert.equal(own.canWork, false);
   await assert.rejects(adminGetInboxItemHandler(h.request({itemId: "supply-req-1"}, {salesStaff: true}, "karan"), h.deps), /not found/);
-});
-
-test("rebuild projects documents written before the triggers, owner only", async () => {
-  const h = harness();
-  h.db.write("supplyIntakeRequests/req-1", nomination("req-1"));
-  h.db.write("supplyIntakeRequests/req-2", nomination("req-2", {status: "queued", result: null}));
-  const rebuilt = await adminRebuildInboxHandler(h.request({source: "supplyIntakeRequest", limit: 1, cursor: null}, {adminOwner: true}), h.deps);
-  assert.deepEqual(rebuilt, {source: "supplyIntakeRequest", scanned: 1, written: 1, nextCursor: "req-1"});
-  const rest = await adminRebuildInboxHandler(h.request({source: "supplyIntakeRequest", limit: 1, cursor: "req-1"}, {adminOwner: true}), h.deps);
-  assert.equal(rest.written, 1);
-  assert.equal((h.db.read("adminInboxItems/supply-req-2") as {status: string}).status, "working");
-  await assert.rejects(adminRebuildInboxHandler(h.request({source: "people", limit: 1, cursor: null}), h.deps), /not authorized/);
 });
 
 test("the nightly reconcile projects every source and the people index, and a rerun changes nothing", async () => {

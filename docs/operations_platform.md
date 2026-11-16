@@ -891,11 +891,11 @@ receipt with `applyAllowed: false`. It cannot publish or mutate an event,
 organizer, website, or app record.
 
 Organizer draft creation is deliberately outside `promote`. The reviewed
-Admin action `adminCreateOrganizerDraftFromCandidate` re-reads the exact
-organizer work item and may create only a hidden, unclaimed, source-backed
-canonical draft. Its deterministic curation receipt is the durable join back
-to the Intake Ready stage; publication, indexing, crawling, app visibility,
-and ownership remain separate governed operations.
+Admin action that turned a candidate into a hidden draft
+(`adminCreateOrganizerDraftFromCandidate`) was retired on 16 Nov 2026 with the
+old Intake review screen; its curation receipts are kept read-only.
+Publication, indexing, crawling, app visibility and ownership remain separate
+governed operations.
 
 Organizer review approval and exposure are also distinct. The review decision
 records public-page publication, search indexing, and app discovery as three

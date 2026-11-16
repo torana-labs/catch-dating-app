@@ -8,7 +8,7 @@
   "x-firestore-collection": "eventIntakeReviewDecisions",
   "x-firestore-path": "eventIntakeReviewDecisions/{decisionId}",
   "x-document-id-field": "decisionId",
-  "x-owner": "adminRecordEventIntakeReviewDecision callable",
+  "x-owner": "retired adminRecordEventIntakeReviewDecision callable; existing records are kept read-only",
   "required": [
     "schemaVersion",
     "decisionId",

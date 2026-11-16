@@ -908,8 +908,8 @@ changed projection.
 For a reviewed candidate with no existing-entity match, the detail pane exposes
 a bounded organizer name, independent public slug, type, and review-note form.
 The source-evidence section reports how many candidate fields have artifact
-lineage. `adminCreateOrganizerDraftFromCandidate` allocates the opaque document
-id and creates only the fail-closed canonical draft; unverified member-facing
+lineage. The retired `adminCreateOrganizerDraftFromCandidate` allocated the opaque
+document id and created only the fail-closed canonical draft; unverified member-facing
 description, locality, and listing descriptor remain blank. The Admin route
 then opens `/organizers/{organizerId}` for the separately governed publishing
 workflow, while the website URL comes from `publicPage.canonicalPath`. Intake

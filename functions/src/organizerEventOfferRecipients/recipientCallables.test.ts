@@ -5,14 +5,14 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {setup, uid, phone, now} from
   "../payments/offerPayments/offerPaymentTestFixture";
-import {org, eventId, responseId, offerId, actorUid} from
+import {eventId, offerId} from
   "../organizerFormAdmission/admissionTestFixture";
 import {OFFER_PAYMENT_COLLECTION, reserveOfferPayment, parseOfferPayment} from
   "../payments/offerPayments/offerPaymentReservation";
 import {claimOfferRecipientInvitation, readVerifiedOfferRecipient} from
   "./recipientGrant";
-import {manageEventOfferCheckoutHandler, prepareEventOfferInvitationHandler,
-  recipientCallableDefaults} from "./recipientCallables";
+import {manageEventOfferCheckoutHandler, recipientCallableDefaults} from
+  "./recipientCallables";
 
 import {offerCancellationPolicy} from
   "../payments/offerPayments/offerCancellationPolicy";
@@ -21,7 +21,6 @@ import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {finalizeCapturedOfferPayment} from
   "../payments/offerPayments/offerPaymentAdmission";
 import {Timestamp} from "firebase-admin/firestore";
-import {BRAND} from "../shared/generated/brand";
 
 const request = (data: unknown, user = uid, verifiedPhone: unknown = phone) =>
   ({data, auth: {uid: user, token: {phone_number: verifiedPhone}}}) as
@@ -141,22 +140,6 @@ test("a withdrawn offer preserves ended payment history",
       action: "status", paymentId, callback: null}), h.deps);
     assert.equal(result.payment?.status, "expired");
     assert.equal(h.executions(), 0);
-  });
-
-test("invitation links are manager-only and keep secrets in the fragment",
-  async () => {
-    const h = await harness();
-    const payload = {organizerId: org, eventId, responseId, offerId,
-      expectedOfferGeneration: 1, expectedOfferRevision: 2};
-    await assert.rejects(prepareEventOfferInvitationHandler(request(payload),
-      h.deps));
-    const result = await prepareEventOfferInvitationHandler(
-      request(payload, actorUid), h.deps);
-    const url = new URL(result.url);
-    assert.equal(url.origin, BRAND.web.origin);
-    assert.equal(url.pathname, "/offer");
-    assert.equal(url.search, "");
-    assert.match(url.hash, /^#[A-Za-z0-9_-]{43}$/u);
   });
 
 test("owned cancellation is limited to the payer", async () => {

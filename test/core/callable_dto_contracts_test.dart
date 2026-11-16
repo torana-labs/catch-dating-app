@@ -30,7 +30,6 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         CancelEventCallableRequest,
         CreateOrganizerCallableRequest,
         CreateEventReviewCallableRequest,
-        DeleteOrganizerCallableRequest,
         DeleteEventReviewCallableRequest,
         EventIdCallableRequest,
         MarkEventAttendanceCallableRequest,
@@ -171,10 +170,6 @@ void main() {
         }).toCallableJson(organizerId: 'club-1'),
       );
       _expectValid(
-        'DeleteOrganizerCallablePayload',
-        const DeleteOrganizerCallableRequest(organizerId: 'club-1').toJson(),
-      );
-      _expectValid(
         'SetOrganizerNotificationPreferenceCallablePayload',
         const SetOrganizerNotificationPreferenceCallableRequest(
           organizerId: 'club-1',
@@ -199,13 +194,6 @@ void main() {
           inviteCode: 'CATCH_2026',
         ).toJson(),
       );
-      _expectValid(
-        'CreateRazorpayOrderCallablePayload',
-        const CreateRazorpayOrderCallableRequest(
-          eventId: 'event-1',
-          inviteCode: 'CATCH_2026',
-        ).toJson(),
-      );
       // Trim normalization round-trip: whitespace-padded inviteCode in →
       // trimmed value out, satisfying the schema's pattern.
       final trimmed = const EventBookingCallableRequest(
@@ -214,15 +202,6 @@ void main() {
       ).toJson();
       _expectValid('EventBookingCallablePayload', trimmed);
       expect(trimmed['inviteCode'], 'CATCH_2026');
-
-      _expectValid(
-        'VerifyRazorpayPaymentCallablePayload',
-        const VerifyRazorpayPaymentCallableRequest(
-          paymentId: 'pay_9A33XWu170gUtm',
-          orderId: 'order_9A33XWu170gUtm',
-          signature: 'abc123',
-        ).toJson(),
-      );
     });
 
     test('places request DTOs match generated payload schemas', () {
@@ -344,9 +323,6 @@ void main() {
       final attendanceResponse = _readValidFixtureMap(
         'mark_event_attendance_response.json',
       );
-      final razorpayOrderResponse = _readValidFixtureMap(
-        'razorpay_order_response.json',
-      );
       final placesAutocompleteResponse = _readValidFixtureMap(
         'places_autocomplete_response.json',
       );
@@ -378,19 +354,6 @@ void main() {
           attendanceResponse,
         ).attended,
         isTrue,
-      );
-      _expectValid('RazorpayOrderCallableResponse', razorpayOrderResponse);
-      expect(
-        RazorpayOrderCallableResponse.fromCallableData(
-          razorpayOrderResponse,
-        ).amountInPaise,
-        49900,
-      );
-      expect(
-        RazorpayOrderCallableResponse.fromCallableData(
-          razorpayOrderResponse,
-        ).keyId,
-        'rzp_test_server_environment',
       );
       _expectValid(
         'PlacesAutocompleteCallableResponse',
@@ -522,17 +485,6 @@ void main() {
           // missing label/description/icon
         }),
         throwsStateError,
-      );
-      // RazorpayOrderCallableResponse throws a typed exception (not a
-      // StateError) — the public contract is "throws on malformed input".
-      expect(
-        () => RazorpayOrderCallableResponse.fromCallableData(<String, Object?>{
-          'orderId': '',
-          'amount': 0,
-          'currency': '',
-          'keyId': '',
-        }),
-        throwsA(isA<RazorpayOrderCallableResponseFormatException>()),
       );
       expect(
         () => StripeCheckoutSessionCallableResponse.fromCallableData(

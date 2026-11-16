@@ -15,10 +15,6 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "adminDecideOrganizerIntake"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "adminDecideOrganizerPolicyGap"
     },
     {
@@ -36,14 +32,6 @@
     {
       "rule": "missingReadmeFunction",
       "function": "adminGetUserAnalytics"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "adminRecordEventIntakeReviewDecision"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "adminRecordOrganizerCuration"
     },
     {
       "rule": "missingReadmeFunction",

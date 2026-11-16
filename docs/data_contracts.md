@@ -3802,8 +3802,9 @@ the selected mode, makes paid booking unavailable rather than falling back.
 guest learns before reviewing a price. `quote`, `prepare` and paid
 `configureEventRegistration` refuse with `failed-precondition` and
 `details.reason: "organizerPaymentsNotReady"`; clients match the reason, not
-the message. The retired `createRazorpayOrder` refuses every new order, and
-the Consumer app no longer calls it.
+the message. Catch's own native checkout (`createRazorpayOrder`,
+`verifyRazorpayPayment`) is retired; only refunds of old native payments
+remain.
 
 `managePublicEventCheckout` quotes, prepares, finds, reconciles and cancels a
 UID-owned public checkout. It requires App Check, rate limits and current phone
@@ -4093,9 +4094,9 @@ unavailable; account deletion removes the pointers. Claimed profile updates,
 image transfer, participant-owned cards and explicit event sharing are separate
 operations and must not infer permission from these prepared pointers.
 
-`listParticipantActivity` and `getParticipantActivity` return only the
-authenticated account’s own submitted form metadata, independent of profile
-claims or verified-phone grants. The point and page adapters share exact UID,
+`listParticipantActivity` returns only the authenticated account’s own
+submitted form metadata, independent of profile claims or verified-phone
+grants. The page adapter checks exact UID,
 response/version scope, notice, captured identity, timestamps, withdrawal and
 account-deletion proof. Lists query `respondentUid`, scan at most 31 rows in
 one read transaction, cache each immutable version within that transaction,
@@ -4902,14 +4903,13 @@ capacity, payment, and release invariants remain server-owned. Disabling the
 selected-event gate remains available and invalidates pending invitations
 without silently closing an accepted event plan.
 
-Cross Paths showcase eligibility is independently owned by the audited
-`adminSetCrossPathsShowcaseEligibility` callable. The record contains only
+Cross Paths showcase eligibility was owned by the audited
+`adminSetCrossPathsShowcaseEligibility` callable, retired on 16 Nov 2026 with
+its reader; existing records are kept read-only. The record contains only
 `eligible`, `needsReview`, or `paused`, coarse reason codes, rule/review
 versions, a SHA-256 public-profile fingerprint, the neutral human-review
 checklist, reviewer identity/note, and timestamps. It never contains a numeric
-attractiveness or desirability score. `adminListCrossPathsShowcaseCandidates`
-projects bounded public-profile evidence plus effective status to authorized
-reviewers; support is read-only. Approval requires objective readiness and the
+attractiveness or desirability score. Approval requires objective readiness and the
 complete checklist. Profile or rule changes invalidate approval at read time.
 Firestore rules deny every client read/write, and account deletion removes the
 record.
@@ -5078,9 +5078,9 @@ exporting it. Functions repositories and the importer use generated validators
 from those same bundled schemas, so a record rejected by the contract cannot be
 accepted by a hand-written semantic subset. Human owner/blocker signals require
 the canonical queryable task flag, and published or terminal records cannot
-remain in the active human-review lane. The live admin surface reads
-those durable records through `adminListIntakeOperations`; it cannot enqueue a
-run or mutate workflow state.
+remain in the active human-review lane. The Admin reader for these records
+(`adminListIntakeOperations`) was retired on 16 Nov 2026 with the old Intake
+review screen.
 
 Organizer discovery candidates are normalized into the bounded
 `normalizedPayload.intake` projection on organizer work items. The payload
@@ -5122,8 +5122,9 @@ content hash, locator, extraction method, extractor version, and confidence.
 This is deterministic extraction metadata; it grants no truth, ownership, or
 publication authority.
 
-`adminCreateOrganizerDraftFromCandidate` is the only candidate-to-entity
-scaffolder. It validates the exact work item and reviewed evidence, rejects
+`adminCreateOrganizerDraftFromCandidate` was the candidate-to-entity
+scaffolder; it was retired on 16 Nov 2026 with the old Intake review screen,
+and its receipts are kept read-only. While it ran, it validated the exact work item and reviewed evidence, rejects
 existing-entity matches and duplicate identity receipts, allocates an opaque
 Firestore organizer id, and separately reserves the reviewed public slug. It
 creates an unclaimed `organizers/{id}` draft with `appVisibility=hidden`,
@@ -5131,8 +5132,7 @@ creates an unclaimed `organizers/{id}` draft with `appVisibility=hidden`,
 `clubs/{id}` compatibility shadow, reserves the canonical route, and records a
 deterministic `organizerIntakeCurationDecisions/{id}` receipt. The receipt
 contains the source work-item, candidate, normalized identity key, public slug,
-and target-field provenance and is returned by `adminListIntakeOperations` as
-a bounded draft link. Intake review notes remain audited operator context; they
+and target-field provenance. Intake review notes remain audited operator context; they
 are never copied into member-facing description or source summary. Unknown
 description, locality, and public listing descriptor values remain empty until
 an operator supplies verified content. No crawl enablement or owner binding is

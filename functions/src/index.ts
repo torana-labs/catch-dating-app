@@ -18,8 +18,6 @@ export {onCatchWhatsappWebhookEventCreated,
 export {onMessageNominationListingReady} from
   "./catchMessaging/listingReadyReply";
 
-export {createRazorpayOrder} from "./payments/createRazorpayOrder";
-export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
 export {razorpayWebhook} from "./payments/razorpayWebhook";
 export {listOrganizerFormPayments} from
   "./payments/formPayments/formPaymentLedger";
@@ -40,7 +38,7 @@ export {refreshOrganizerFormPaymentTokens} from
   "./payments/formPayments/formPaymentTokenRefresh";
 export {organizerRazorpayPartnerWebhook} from
   "./payments/formPayments/razorpayAuthorizationRevocation";
-export {prepareEventOfferInvitation, manageEventOfferCheckout} from
+export {manageEventOfferCheckout} from
   "./organizerEventOfferRecipients/recipientCallables";
 export {reconcileOrganizerEventOfferPayments} from
   "./payments/offerPayments/offerPaymentRecovery";
@@ -230,11 +228,7 @@ export {
   onCityPlansOrganizerPageWritten,
   rebuildCityPlansHourly,
 } from "./cityPlans/triggers";
-export {
-  archiveOrganizer,
-  deleteOrganizer,
-  updateOrganizer,
-} from "./organizers/mutateOrganizer";
+export {updateOrganizer} from "./organizers/mutateOrganizer";
 export {
   followOrganizer,
   setOrganizerNotificationPreference,
@@ -307,8 +301,6 @@ export {
 } from "./organizers/organizerFormResponses";
 export {resolvePublicFormDomain} from
   "./organizers/organizerFormDomainHttp";
-export {manageOrganizerFormDomain} from
-  "./organizers/organizerFormDomainCallables";
 export {
   getOrganizerFormAnalytics,
   getOrganizerFormResponseDetail,
@@ -484,8 +476,7 @@ export {
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
 export {getEventViewerState} from "./events/eventViewerState";
-export {listParticipantActivity, getParticipantActivity}
-  from "./profiles/participantActivity";
+export {listParticipantActivity} from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
@@ -580,10 +571,6 @@ export {
   adminSetOrganizerIndexStatus,
 } from "./admin/organizerIndexing";
 export {
-  adminListCrossPathsShowcaseCandidates,
-  adminSetCrossPathsShowcaseEligibility,
-} from "./admin/crossPathsShowcaseEligibility";
-export {
   adminGetOrganizerDetails,
   adminListOrganizerDetails,
   adminUpdateOrganizerDetails,
@@ -612,21 +599,9 @@ export {
   adminGetEventIntakeDashboard,
 } from "./admin/eventIntakeDashboard";
 export {
-  adminListIntakeOperations,
-} from "./admin/intakeOperations";
-export {
   adminListActionExecutions,
   adminRecordActionExecution,
 } from "./admin/adminActionExecutions";
-export {
-  adminDecideOrganizerIntake,
-} from "./admin/organizerIntake";
-export {
-  adminRecordOrganizerCuration,
-} from "./admin/organizerCuration";
-export {
-  adminCreateOrganizerDraftFromCandidate,
-} from "./admin/organizerDraftFromCandidate";
 export {
   adminApproveOrganizerListing,
 } from "./admin/organizerListingApproval";
@@ -636,7 +611,6 @@ export {
 export {
   adminGetInboxItem,
   adminListInboxItems,
-  adminRebuildInbox,
   adminUpdateInboxItem,
 } from "./admin/inbox/callables";
 export {adminListMyNominations} from "./admin/inbox/myNominations";
@@ -657,18 +631,12 @@ export {
   onUserWrittenIndexPeople,
 } from "./admin/peopleSearch";
 export {
-  adminListActivityLog,
-} from "./admin/activityLog";
-export {
   adminGetListingEventReview,
   adminPublishListingEvents,
 } from "./admin/listingEventImports";
 export {
   adminListSupplyIntakePolicies,
 } from "./admin/supplyIntakePolicies";
-export {
-  adminRecordEventIntakeReviewDecision,
-} from "./admin/eventIntakeReview";
 export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
@@ -1034,8 +1002,6 @@ export {
   salesAssistant,
 } from "./salesAssistant/http";
 
-export {adminLinkOrganizerIntakeToSales} from
-  "./admin/salesIntakeBridge/callables";
 
 export {adminListSalesFitQueue, adminRefreshSalesFitQueue,
   adminRefreshSalesFitQueueBatch} from "./admin/salesFitQueue/callables";

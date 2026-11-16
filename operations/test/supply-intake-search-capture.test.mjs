@@ -517,14 +517,20 @@ async function curationSurfaceValidator() {
   // The shared contract also carries non-schema metadata under definitions.
   const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});
   addFormats(ajv);
-  for (const file of [
-    "contracts/shared/event_common.schema.json",
-    "contracts/callables/admin_record_organizer_curation_payload.schema.json",
-  ]) {
+  // The curation record's surface references the shared and operations
+  // contracts, so load both directories before the record itself.
+  const files = [];
+  for (const directory of ["contracts/shared", "contracts/operations"]) {
+    for (const name of await fs.readdir(path.join(repoRoot, directory))) {
+      if (name.endsWith(".schema.json")) files.push(path.join(directory, name));
+    }
+  }
+  files.push("contracts/firestore/organizer_intake_curation_decisions.schema.json");
+  for (const file of files) {
     ajv.addSchema(JSON.parse(await fs.readFile(path.join(repoRoot, file), "utf8")));
   }
   return ajv.compile({
-    $ref: "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json#/definitions/surface",
+    $ref: "https://catch.app/contracts/firestore/organizer_intake_curation_decisions.schema.json#/definitions/surface",
   });
 }
 

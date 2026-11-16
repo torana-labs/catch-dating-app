@@ -45,14 +45,6 @@ export function normalizeUpdateOrganizerPayload(data: unknown): unknown {
   };
 }
 
-export function normalizeArchiveOrganizerPayload(data: unknown): unknown {
-  if (!isRecord(data)) return data;
-  return normalizeFields(data, {
-    stringFields: ["organizerId"],
-    nullableStringFields: ["reason"],
-  });
-}
-
 export function normalizeOrganizerIdPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
   return normalizeFields(data, {stringFields: ["organizerId"]});

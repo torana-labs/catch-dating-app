@@ -195,7 +195,7 @@ test("current secret consumers and direct readers resolve from current source", 
   const result = collect(repo, {consumers: [...new Set(consumers)]});
   assert.equal(result.functions.length, new Set(consumers).size);
   const byName = new Map(result.functions.map((f) => [f.consumer, f]));
-  assert.deepEqual(byName.get("createRazorpayOrder").secretNames, ["RAZORPAY_KEY_SECRET"]);
+  assert.deepEqual(byName.get("razorpayWebhook").secretNames, ["RAZORPAY_KEY_SECRET", "RAZORPAY_WEBHOOK_SECRET"]);
   assert.deepEqual(byName.get("stripeWebhook").secretNames, ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]);
   assert.deepEqual(byName.get("refreshProgramFlightStatuses").secretNames, []);
   // Readiness used to require payment keys here after source moved refunds out.

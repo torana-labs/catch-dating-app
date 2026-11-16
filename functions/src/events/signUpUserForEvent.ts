@@ -63,8 +63,8 @@ import {
 } from "./inviteLinks";
 
 /**
- * Core sign-up business logic — shared by verifyRazorpayPayment (paid events)
- * and signUpForFreeEvent (free events).
+ * Core sign-up business logic — shared by signUpForFreeEvent (free events),
+ * the Stripe webhook (paid events), join-request decisions and waitlist offers.
  *
  * Uses a transaction to atomically:
  *   1. Read the event and the user's profile.
