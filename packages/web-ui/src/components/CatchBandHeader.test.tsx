@@ -14,7 +14,7 @@ describe("CatchBandHeader", () => {
     // Outside a root the size class is compact: page-title resolves to display-title (38px).
     expect(heading.dataset.variant).toBe("display-title");
     expect(container.querySelectorAll("p")).toHaveLength(0);
-    const header = container.querySelector("header")!;
+    const header = container.querySelector<HTMLElement>("[data-direction]")!;
     expect(header.dataset).toMatchObject({align: "start", direction: "column"});
     expect(header.dataset.ground).toBeUndefined();
     expect(header.hasAttribute("data-catch-theme")).toBe(false);
@@ -49,7 +49,7 @@ describe("CatchBandHeader", () => {
 
   it("centres a column header and its parts", () => {
     const {container} = render(<CatchBandHeader align="center" kicker="Kicker" lead="Lead." title="Headline" />);
-    expect(container.querySelector("header")!.dataset.align).toBe("center");
+    expect(container.querySelector<HTMLElement>("[data-direction]")!.dataset.align).toBe("center");
     for (const text of ["Kicker", "Headline", "Lead."]) {
       expect(screen.getByText(text).dataset.align).toBe("center");
     }
@@ -61,7 +61,7 @@ describe("CatchBandHeader", () => {
         <CatchBandHeader align="center" direction="row" lead="Lead." title="Headline" />
       </CatchRoot>,
     );
-    const header = container.querySelector("header")!;
+    const header = container.querySelector<HTMLElement>("[data-direction]")!;
     expect(header.dataset).toMatchObject({align: "start", direction: "row"});
     const row = header.firstElementChild as HTMLElement;
     expect(row.dataset).toMatchObject({direction: "row", equal: ""});
@@ -70,7 +70,7 @@ describe("CatchBandHeader", () => {
 
   it("stacks a row on a compact page", () => {
     const {container} = render(<CatchBandHeader direction="row" lead="Lead." title="Headline" />);
-    const row = container.querySelector("header")!.firstElementChild as HTMLElement;
+    const row = container.querySelector<HTMLElement>("[data-direction]")!.firstElementChild as HTMLElement;
     expect(row.dataset.direction).toBe("column");
   });
 
@@ -81,12 +81,23 @@ describe("CatchBandHeader", () => {
       </section>,
     );
     expect(screen.getByRole("region", {name: "Labelled headline"})).toBeTruthy();
-    expect(document.getElementById("sample-anchor")!.tagName).toBe("HEADER");
+    expect(document.getElementById("sample-anchor")!.tagName).toBe("DIV");
+  });
+
+  it("adds no landmark, so a page of bands keeps its single banner", () => {
+    render(
+      <>
+        <CatchBandHeader title="First band" />
+        <CatchBandHeader title="Second band" />
+      </>,
+    );
+    expect(screen.queryByRole("banner")).toBeNull();
+    expect(screen.getAllByRole("heading", {level: 2})).toHaveLength(2);
   });
 
   it("takes a given ground's inks and the dark theme on ink, without a fill of its own", () => {
     const {container, rerender} = render(<CatchBandHeader ground="ink" title="Headline" />);
-    const header = () => container.querySelector("header")!;
+    const header = () => container.querySelector<HTMLElement>("[data-direction]")!;
     expect(header().dataset).toMatchObject({ground: "ink", catchTheme: "dark"});
     rerender(<CatchBandHeader ground="mint" title="Headline" />);
     expect(header().dataset).toMatchObject({ground: "mint", catchTheme: "light"});
@@ -100,6 +111,6 @@ describe("CatchBandHeader", () => {
     );
     const heading = screen.getByRole("heading", {name: "Night headline"});
     expect(heading.closest("[data-catch-theme]")!.getAttribute("data-catch-theme")).toBe("dark");
-    expect(heading.closest("header")!.hasAttribute("data-catch-theme")).toBe(false);
+    expect(heading.closest("[data-direction]")!.hasAttribute("data-catch-theme")).toBe(false);
   });
 });

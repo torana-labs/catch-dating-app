@@ -43,7 +43,9 @@ export interface CatchBandHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 
  * an optional lead. The headline takes the page-title role (38, 48 and 64px by
  * size class), inside the 72px cap of blueprint D19 at every size. A row header
  * sets the lead across from the headline on a wide page, as the host landing's
- * sections do. It draws no box; the band behind it owns the fill.
+ * sections do. It draws no box; the band behind it owns the fill. It renders a
+ * plain div, not a header element: a page has many bands, and a header outside
+ * a section or article is a banner landmark, which a page may have only once.
  */
 export function CatchBandHeader({
   title,
@@ -69,7 +71,7 @@ export function CatchBandHeader({
     ? <CatchText align={textAlign} as="p" className={styles.lead} tone="secondary" variant="body-lead">{lead}</CatchText>
     : null;
   return (
-    <header
+    <div
       {...rest}
       className={ground ? `${styles.header} ${styles.onGround}` : styles.header}
       data-align={row ? "start" : align}
@@ -88,6 +90,6 @@ export function CatchBandHeader({
           {leadText}
         </CatchStack>
       )}
-    </header>
+    </div>
   );
 }
