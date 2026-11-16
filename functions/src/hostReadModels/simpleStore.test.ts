@@ -112,8 +112,30 @@ test("Group details reject an uncontracted field inside the definition",
         definitionHash: "a".repeat(64), definitionVersion: 1,
         lastPreviewMatchCount: 0, lastPreviewAt: null,
         createdAt: now, updatedAt: now}});
-    await assert.rejects(reconcileSimpleSummary(db.asFirestore(), "groups",
-      "group"), /safe read contract/);
+    // Left out, not thrown: the group never reaches either view, and it
+    // cannot block the organizer's group directory.
+    await reconcileSimpleSummary(db.asFirestore(), "groups", "group");
     assert.equal(db.docs["hostGroupDetails/group"], undefined);
     assert.equal(db.docs["hostGroupSummaries/group"], undefined);
+    assert.equal(await activateSimpleSummaries(db.asFirestore(), "groups",
+      "org"), 0);
+    assert.equal(db.docs["hostDirectorySummaries/org"].groupSummaryVersion, 1);
   });
+
+test("an event that fails its contract is left out and the directory " +
+  "still activates", async () => {
+  const db = new AudienceTestStore({"organizers/org": {hostUserId: "host"},
+    "events/good": event(),
+    // A field left by the clubs-to-organizers rename that the schema rejects.
+    "events/legacy": {...event(), name: "Sample", clubId: "old-club"}});
+  await backfillSimpleSummaries(db.asFirestore(), "events", "org", true);
+  assert.notEqual(db.docs["hostEventSummaries/good"], undefined);
+  assert.equal(db.docs["hostEventSummaries/legacy"], undefined);
+  assert.equal(await activateSimpleSummaries(db.asFirestore(), "events",
+    "org"), 1);
+  assert.equal(db.docs["hostDirectorySummaries/org"].eventSummaryVersion, 1);
+  // A stale row for a source that now fails is removed, not kept.
+  db.docs["hostEventSummaries/legacy"] = {organizerId: "org"};
+  await reconcileSimpleSummary(db.asFirestore(), "events", "legacy");
+  assert.equal(db.docs["hostEventSummaries/legacy"], undefined);
+});
