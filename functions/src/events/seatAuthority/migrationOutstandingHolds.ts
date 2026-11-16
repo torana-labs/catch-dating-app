@@ -5,7 +5,6 @@ import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 const terminalStatuses: Record<string, readonly string[]> = {
   eventWaitlistOffers: ["declined", "expired", "cancelled"],
   crossPathsPairHolds: ["confirmed", "expired", "cancelled", "invalidated"],
-  razorpayPendingOrders: ["failed", "expired"],
   // Website and offer checkouts; paid forms carry no event. In-app booking
   // payments in the same ledger use bookingTerminalStatuses.
   [GUEST_PAYMENTS]: ["admitted", "expired", "refunded", "failed",

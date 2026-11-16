@@ -3171,15 +3171,6 @@ service cloud.firestore {
     }
 
     // ── Payments ──────────────────────────────────────────────────────────────
-    // Written exclusively by Cloud Functions (verifyRazorpayPayment).
-    // Users can only read their own payment records.
-    // Server-owned tracking docs for created-but-unfulfilled Razorpay orders.
-    // Written by createRazorpayOrder/razorpayWebhook and the reconciliation
-    // sweep only; clients never touch them.
-    match /razorpayPendingOrders/{orderId} {
-      allow read, write: if false;
-    }
-
     // Server-owned Stripe Connect and Razorpay Route account state. New ids are
     // {uid}_{provider}; resource ownership keeps both direct reads and the
     // host's provider-list query scoped to the signed-in user. Legacy Stripe

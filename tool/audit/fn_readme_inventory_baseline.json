@@ -111,10 +111,6 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "reconcileRazorpayOrders"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "recordEventInviteLinkOpen"
     },
     {

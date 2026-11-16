@@ -136,7 +136,6 @@ Function deployment plans:
 - `expireCrossPathsPairHolds`
 - `expireEventRehearsals`
 - `expireEventWaitlistOffers`
-- `reconcileRazorpayOrders`
 - `sendEventReminders`
 
 They were undeployed from dev, staging, and production on 2026-09-02 after live

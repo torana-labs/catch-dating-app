@@ -1281,8 +1281,7 @@
         "onHostEventSetupViewParticipationChanged",
         "onHostEventSetupViewWaitlistOfferChanged",
         "onHostEventSetupViewEventOfferChanged",
-        "onHostEventSetupViewBookingPaymentChanged",
-        "onHostEventSetupViewPendingOrderChanged",
+        "onHostEventSetupViewGuestPaymentChanged",
         "onHostEventSetupViewMomentChanged"
       ],
       "migrationNotes": [

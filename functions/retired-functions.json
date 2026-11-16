@@ -21,13 +21,16 @@
   "listEventAssistanceDepartureRosters",
   "listOrganizerAttentionItems",
   "onEventParticipationRosterProjected",
+  "onHostEventSetupViewBookingPaymentChanged",
   "onHostEventSetupViewPaymentChanged",
+  "onHostEventSetupViewPendingOrderChanged",
   "onHostRosterInsightPaymentChanged",
   "onNativeCancellationRefund",
   "onOrganizerGrowthNativePaymentWritten",
   "onOrganizerGrowthOfferPaymentWritten",
   "onOrganizerGrowthPublicPaymentWritten",
   "onPaymentWritten",
+  "reconcileRazorpayOrders",
   "revokeParticipantOrganizerDataGrant",
   "submitParticipantOrganizerApplication"
 ]
